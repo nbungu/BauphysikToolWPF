@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:BauphysikToolWPF.UI"
       xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
 
@@ -12,7 +13,12 @@
         <vm:FO2_ViewModel/>
     </UserControl.DataContext>
 
-    <Grid>
-        
+    <Grid Background="SlateGray">
+        <lvc:CartesianChart Series="{Binding Series}">
+            <lvc:CartesianChart.DataContext>
+                <vm:LiveChartsViewModel/>
+            </lvc:CartesianChart.DataContext>
+        </lvc:CartesianChart>
+
     </Grid>
 </UserControl>

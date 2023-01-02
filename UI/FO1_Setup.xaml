@@ -6,16 +6,24 @@
             xmlns:local="clr-namespace:BauphysikToolWPF.UI"  
             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
             mc:Ignorable="d"
-            d:DesignHeight="800" d:DesignWidth="1200">
+            d:DesignHeight="700" d:DesignWidth="1200">
 
     <UserControl.DataContext>
+        <!-- globally sets a reference for Bindings in this xaml-->
         <vm:FO1_ViewModel/>
     </UserControl.DataContext>
+    
+    <!--
+    the DataContext is used to specify the data source for a UI element,
+    while the ItemsSource is used to specify the data source for a list of items.
+    Both can be used for binding to display and modify data in the UI.
+    -->
 
     <UserControl.Resources>
-        <!--defines a Template for the LayerListView. Accessible in the xaml via its key.
-        x:DataTemplate refers to the underlying Class Model from "Binding"-->
-
+        <!--
+        Defines a Template for the Items in the LayerListView.
+        The Bindings are retrieved from the ItemsSource which is set by the backend.
+        -->
         <DataTemplate x:Key="LayerListViewTemplate">
             <Grid Margin="8">
                 <Grid.RowDefinitions>
@@ -30,7 +38,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.RowSpan="2">
-                    <Ellipse Height="32" Width="32" Margin="6" VerticalAlignment="Center" HorizontalAlignment="Center" Fill="SlateGray"/>
+                    <Ellipse Height="32" Width="32" Margin="6" VerticalAlignment="Center" HorizontalAlignment="Center" Fill="{Binding LayerColor}"/>
                     <Label Content="{Binding LayerPosition}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 </Grid>
                 <Label Grid.Column="1" Content="{Binding LayerName}" FontWeight="Bold"/>

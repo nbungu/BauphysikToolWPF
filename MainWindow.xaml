@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="800" Width="1200" Background="#EDEDED" WindowStartupLocation="CenterScreen">
+        Title="MainWindow" Height="700" Width="1200" Background="#EDEDED" WindowStartupLocation="CenterScreen">
     
     <!-- https://www.codeproject.com/Articles/5275552/WPF-Compact-Navigation-Menu -->
     <Window.Resources>

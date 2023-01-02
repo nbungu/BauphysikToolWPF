@@ -40,6 +40,12 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get { return correspondingMaterial().Category; }
         }
+        [Ignore]
+        public string LayerColor
+        {
+            get { return correspondingMaterial().ColorCode; }
+        }
+
 
         //------Konstruktor-----//
 
