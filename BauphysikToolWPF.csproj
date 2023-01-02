@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net7.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Resources\Icons\GL_003x80_back.png" />
+    <None Remove="Resources\Icons\GL_010x80_create.png" />
+    <None Remove="Resources\Icons\GL_011x80_delete.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Dapper" Version="2.0.123" />
+    <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\GL_003x80_back.png" />
+    <Resource Include="Resources\Icons\GL_010x80_create.png" />
+    <Resource Include="Resources\Icons\GL_011x80_delete.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="SQLiteRepo\DemoDB.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

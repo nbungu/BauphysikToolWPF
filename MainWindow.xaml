@@ -1,0 +1,41 @@
+﻿<Window x:Class="BauphysikToolWPF.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BauphysikToolWPF"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1200" Background="#EDEDED" WindowStartupLocation="CenterScreen">
+    
+    <!-- https://www.codeproject.com/Articles/5275552/WPF-Compact-Navigation-Menu -->
+    <Window.Resources>
+
+        <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
+            <!--These setter are for the default Values-->
+            <Setter Property="ContentTemplate" Value="{StaticResource FO1_Setup_Template}"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Calculate">
+                    <!--These setter are for the trigger values-->
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO2_Calculate_Template}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="64"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        
+        <!-- Other Resources declared in App.xaml -->
+        <ListBox x:Name="NavigationMenuListBox" 
+                 Style="{StaticResource NavigationListBoxStyle}"
+                 ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
+                 ItemTemplate="{DynamicResource NavigationDataTemplate}"
+                 ItemsSource="{StaticResource NavigationMenuItems}"/>
+
+        <ContentControl Grid.Column="1" Style="{StaticResource NavigationContentStyle}"/>
+    </Grid>
+</Window>
