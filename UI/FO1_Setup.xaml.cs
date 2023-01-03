@@ -2,10 +2,12 @@
 using BauphysikToolWPF.EnvironmentData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.ViewModels;
+using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -32,10 +34,13 @@ namespace BauphysikToolWPF.UI
         // Instance Variables - only for "MainPage" instances
         //
 
-        // (Instance-) Contructor - when 'new' Keyword is used to create class
+        // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_Setup()
         {
-            InitializeComponent();                          // loads xaml of this page
+
+            InitializeComponent();                          // Initializes xaml objects
+                                                            // -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
+                                                            // -> e.g. Calls the FO1_ViewModel constructor & LiveChartsViewModel constructor
             LoadEnvironmentData();                          // loads saved environment data
             LoadLayers();                                   // Initial loading of the layers
             DatabaseAccess.LayerAdded += DB_LayerAdded;     // register with an event (when Layers have been added)
@@ -66,7 +71,8 @@ namespace BauphysikToolWPF.UI
             List<Layer> layers = DatabaseAccess.GetLayers();
 
             layers_ListView.ItemsSource = layers;                   // Refresh ListView Items
-            DrawLayerCanvas.DrawRectanglesFromLayers(layers, layers_Canvas);   // Draw Rectangles
+
+            new DrawLayerCanvas(layers, layers_Canvas); // Draw Rectangles
         }
 
         private void ReorderLayerPosition()
@@ -86,25 +92,21 @@ namespace BauphysikToolWPF.UI
 
         private void LoadEnvironmentData()
         {
-            var tiData = ReferenceTemp.GetTiData();
+            var tiData = ReferenceTemp.TiData;
             Ti_Category_Picker.ItemsSource = tiData.Keys.ToList(); //Pass data to picker
-            Ti_Category_Picker.SelectedItem = tiData.Keys.ToList().First(); //set default entry
-            Ti_Input.Text = tiData.GetValueOrDefault(Ti_Category_Picker.SelectedItem.ToString()).ToString(); //get corresponding value
+            Ti_Category_Picker.SelectedItem = tiData.Keys.ToList().First(); // TODO
 
-            var rsiData = SurfaceResistance.GetRsiData();
+            var rsiData = SurfaceResistance.RsiData;
             Rsi_Category_Picker.ItemsSource = rsiData.Keys.ToList(); //Pass data to picker
-            Rsi_Category_Picker.SelectedItem = rsiData.Keys.ToList().First(); //set default entry
-            Rsi_Input.Text = rsiData.GetValueOrDefault(Rsi_Category_Picker.SelectedItem.ToString()).ToString(); //get corresponding value
+            Rsi_Category_Picker.SelectedItem = rsiData.Keys.ToList().First(); //set default entry -> invokes SelectedIndexChanged
 
-            var teData = ReferenceTemp.GetTeData();
+            var teData = ReferenceTemp.TeData;
             Te_Category_Picker.ItemsSource = teData.Keys.ToList(); //Pass data to picker
-            Te_Category_Picker.SelectedItem = teData.Keys.ToList().First(); //set default entry
-            Te_Input.Text = teData.GetValueOrDefault(Te_Category_Picker.SelectedItem.ToString()).ToString(); //get corresponding value
+            Te_Category_Picker.SelectedItem = teData.Keys.ToList().First(); //set default entry -> invokes SelectedIndexChanged
 
-            var rseData = SurfaceResistance.GetRseData();
+            var rseData = SurfaceResistance.RseData;
             Rse_Category_Picker.ItemsSource = rseData.Keys.ToList(); //Pass data to picker
-            Rse_Category_Picker.SelectedItem = rseData.Keys.ToList().First(); //set default entry
-            Rse_Input.Text = rseData.GetValueOrDefault(Rse_Category_Picker.SelectedItem.ToString()).ToString(); //get corresponding value
+            Rse_Category_Picker.SelectedItem = rseData.Keys.ToList().First(); //set default entry -> invokes SelectedIndexChanged
         }
 
 
@@ -138,36 +140,59 @@ namespace BauphysikToolWPF.UI
 
         private void Ti_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            double tiVal = ReferenceTemp.GetTiData().GetValueOrDefault(Ti_Category_Picker.SelectedItem.ToString());
+            double tiVal = ReferenceTemp.TiData.GetValueOrDefault(Ti_Category_Picker.SelectedItem.ToString());
             Ti_Input.Text = tiVal.ToString(); //get corresponding value
-            ReferenceTemp.selectedTiValue = tiVal;
+            ReferenceTemp.selectedTi = new Dictionary<string, double>() { { Ti_Category_Picker.SelectedItem.ToString(), tiVal } };
         }
 
         private void Te_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            double teVal = ReferenceTemp.GetTeData().GetValueOrDefault(Te_Category_Picker.SelectedItem.ToString());
+            double teVal = ReferenceTemp.TeData.GetValueOrDefault(Te_Category_Picker.SelectedItem.ToString());
             Te_Input.Text = teVal.ToString(); //get corresponding value
-            ReferenceTemp.selectedTeValue = teVal;
+            ReferenceTemp.selectedTe = new Dictionary<string, double>() { { Te_Category_Picker.SelectedItem.ToString(), teVal } };
         }
 
         private void Rsi_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            double rsiVal = SurfaceResistance.GetRsiData().GetValueOrDefault(Rsi_Category_Picker.SelectedItem.ToString());
+            double rsiVal = SurfaceResistance.RsiData.GetValueOrDefault(Rsi_Category_Picker.SelectedItem.ToString());
             Rsi_Input.Text = rsiVal.ToString(); //get corresponding value
-            SurfaceResistance.selectedRsiValue = rsiVal;
+            SurfaceResistance.selectedRsi = new Dictionary<string, double>() { { Rsi_Category_Picker.SelectedItem.ToString(), rsiVal } };
         }
 
         private void Rse_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            double rseVal = SurfaceResistance.GetRseData().GetValueOrDefault(Rse_Category_Picker.SelectedItem.ToString());
+            double rseVal = SurfaceResistance.RseData.GetValueOrDefault(Rse_Category_Picker.SelectedItem.ToString());
             Rse_Input.Text = rseVal.ToString(); //get corresponding value
-            SurfaceResistance.selectedRseValue = rseVal;
+            SurfaceResistance.selectedRse = new Dictionary<string, double>() { { Rse_Category_Picker.SelectedItem.ToString(), rseVal } };
         }
 
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+
             Regex regex = new Regex("[^0-9.,]+"); //regex that matches disallowed text
             e.Handled = regex.IsMatch(e.Text);
+
+            double convUserInput = Convert.ToDouble(e.Text);
+
+            switch (((TextBox)sender).Name)
+            {
+                case "Ti_Input":
+                    //ReferenceTemp.selectedTi = new Dictionary<string, double>() { { "Custom value", convUserInput } };
+                    ReferenceTemp.AddTiData("Custom value", convUserInput);
+                    LoadEnvironmentData();
+                    return;
+                case "Te_Input":
+                    ReferenceTemp.selectedTe = new Dictionary<string, double>() { { "Custom value", convUserInput } };
+                    return;
+                case "Rsi_Input":
+                    SurfaceResistance.selectedRsi = new Dictionary<string, double>() { { "Custom value", convUserInput } };
+                    return;
+                case "Rse_Input":
+                    SurfaceResistance.selectedRse = new Dictionary<string, double>() { { "Custom value", convUserInput } };
+                    return;
+                default: throw new ArgumentException("Could not assign value");
+            }
+
         }
 
         private void layers_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -188,7 +213,7 @@ namespace BauphysikToolWPF.UI
             layer.IsSelected = true;
 
             // Layers are not being updated inside the local DB 
-            DrawLayerCanvas.DrawRectanglesFromLayers(layers_ListView.ItemsSource as List<Layer>, layers_Canvas);
+            new DrawLayerCanvas(layers_ListView.ItemsSource as List<Layer>, layers_Canvas);
 
         }
     }

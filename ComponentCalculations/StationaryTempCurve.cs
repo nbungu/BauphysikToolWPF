@@ -77,8 +77,8 @@ namespace BauphysikToolWPF.ComponentCalculations
         private double qValue;
         public double QValue { get => qValue; set => qValue = value; }
 
-        private double[] layerTemps;
-        public double[] LayerTemps { get => layerTemps; set => layerTemps = value; }
+        private Dictionary<double, double> layerTemps; // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
+        public Dictionary<double, double> LayerTemps { get => layerTemps; set => layerTemps = value; }
 
         // (Instance-) Constructor
         public StationaryTempCurve(List<Layer> layers, double rsi, double rse, double ti, double te)
@@ -121,7 +121,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetRTotal()
         {
-            return SurfaceResistance.selectedRsiValue + SumOfLayersR + SurfaceResistance.selectedRseValue;
+            return SurfaceResistance.selectedRsi.Values.First() + SumOfLayersR + SurfaceResistance.selectedRse.Values.First();
         }
 
         private double GetUValue()
@@ -131,27 +131,34 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetqValue()
         {
-            return UValue * (ReferenceTemp.selectedTiValue - ReferenceTemp.selectedTeValue);
+            return UValue * (ReferenceTemp.selectedTi.Values.First() - ReferenceTemp.selectedTe.Values.First());
         }
 
-        private double[] GetLayerTemps()
+        private Dictionary<double, double> GetLayerTemps()
         {
-            double[] elementTemps = new double[Layers.Count+1]; //e.g. 4 Layers have 5 Temps: 3 temps in between each other + left & right surface temp.
+            Dictionary<double, double> elementTemps = new Dictionary<double, double>();
 
             //Starting from inner side
-            double tsi = ReferenceTemp.selectedTiValue - SurfaceResistance.selectedRsiValue * QValue;
-            elementTemps[0] = tsi;
+            double widthPosition = TotalElementWidth;
+            double tVal = ReferenceTemp.selectedTi.Values.First() - SurfaceResistance.selectedRsi.Values.First() * QValue; // Tsi
 
-            for (int i = 0; i<(Layers.Count); i++)
+            elementTemps.Add(widthPosition, tVal); // key, value
+
+            for (int i = 0; i<Layers.Count; i++)
             {
-                double current_tVal = elementTemps[i] - Layers[i].LayerResistance * QValue;
-                elementTemps[i+1] = current_tVal;
+                double current_widthPosition = widthPosition - Layers[i].LayerThickness;
+                double current_tVal = elementTemps.Values.ElementAt(i) - Layers[i].LayerResistance * QValue;
+                elementTemps.Add(current_widthPosition, current_tVal);
+
+                widthPosition = current_widthPosition;
             }
-            return elementTemps;
+            if (widthPosition == 0)
+                return elementTemps;
+            else throw new ArgumentOutOfRangeException("calculation failed");
         }
 
         /* Hardcoded example:
-         double tsiVal = tiVal - SurfaceResistance.selectedRsiValue * qValue;
+         double tsiVal = tiVal - SurfaceResistance.selectedRsi * qValue;
         Tsi_Value.Text = "θsi [°C]: " + tsiVal.ToString();
 
 		double t1_2Val = tsiVal - (layers[0].LayerResistance) * qValue;

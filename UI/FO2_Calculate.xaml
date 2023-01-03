@@ -13,16 +13,8 @@
         <vm:FO2_ViewModel/>
     </UserControl.DataContext>
 
-    <Grid Background="#EDEDED">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".5*"/>
-            <ColumnDefinition Width=".5*"/>
-        </Grid.ColumnDefinitions>
-
-        <Rectangle Grid.Column="1"/>
-
+    <Grid Background="#EDEDED" Margin="16">
         <lvc:CartesianChart
-            Grid.ColumnSpan="2"
             Series="{Binding TempCurve}"
             Sections="{Binding Layers}"
             XAxes="{Binding XAxes}"
@@ -32,16 +24,17 @@
             TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
             TooltipTextPaint="{Binding TooltipTextPaint}"
             TooltipTextSize="16"
+            Background="White">
+            <!--
+            
             LegendPosition="Left"
             LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
             LegendTextPaint="{Binding LegendTextPaint}"
             LegendTextSize="16"
-            Background="Transparent">
-            
+            -->
             <lvc:CartesianChart.DataContext>
                 <vm:LiveChartsViewModel/>
             </lvc:CartesianChart.DataContext>
         </lvc:CartesianChart>
-
     </Grid>
 </UserControl>

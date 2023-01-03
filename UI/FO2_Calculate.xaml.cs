@@ -20,9 +20,12 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class FO2_Calculate : UserControl //Page
     {
-        public FO2_Calculate()
+        public FO2_Calculate() //
         {
             InitializeComponent();
+            // -> Initializes xaml objects
+            // -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
+            // -> e.g. Calls the FO1_ViewModel constructor & LiveChartsViewModel constructor
         }
     }
 }
