@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.UI
 
         public DrawLayerCanvas(List<Layer> layers, Canvas canvas)
         {
-            this.TempCurve = new StationaryTempCurve(layers, SurfaceResistance.selectedRsi.Values.First(), SurfaceResistance.selectedRse.Values.First(), ReferenceTemp.selectedTi.Values.First(), ReferenceTemp.selectedTe.Values.First());
+            this.TempCurve = new StationaryTempCurve(layers, RSurfaces.selectedRsi.First().Value, RSurfaces.selectedRse.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
             this.Layers = layers;
             this.Canvas = canvas;
             DrawRectanglesFromLayers();

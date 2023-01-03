@@ -121,7 +121,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetRTotal()
         {
-            return SurfaceResistance.selectedRsi.Values.First() + SumOfLayersR + SurfaceResistance.selectedRse.Values.First();
+            return RSurfaces.selectedRsi.First().Value + SumOfLayersR + RSurfaces.selectedRse.First().Value;
         }
 
         private double GetUValue()
@@ -131,7 +131,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetqValue()
         {
-            return UValue * (ReferenceTemp.selectedTi.Values.First() - ReferenceTemp.selectedTe.Values.First());
+            return UValue * (Temperatures.selectedTi.First().Value - Temperatures.selectedTe.First().Value);
         }
 
         private Dictionary<double, double> GetLayerTemps()
@@ -140,7 +140,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
             //Starting from inner side
             double widthPosition = TotalElementWidth;
-            double tVal = ReferenceTemp.selectedTi.Values.First() - SurfaceResistance.selectedRsi.Values.First() * QValue; // Tsi
+            double tVal = Temperatures.selectedTi.First().Value - RSurfaces.selectedRsi.First().Value * QValue; // Tsi
 
             elementTemps.Add(widthPosition, tVal); // key, value
 

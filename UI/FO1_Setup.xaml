@@ -47,14 +47,83 @@
                 <Label Grid.Column="3" Grid.RowSpan="2" Content="{Binding LayerResistance}" ContentStringFormat='Ri = {0} (m²K)/W' VerticalAlignment="Center"/>
             </Grid>
         </DataTemplate>
+        
+        
 
-        <Style x:Key="TextBoxStyle" TargetType="TextBox">
+        <Style x:Key="TextBoxStyle1" TargetType="TextBox">
+            <!--These setters are for the default appearance-->
             <Setter Property="Width" Value="40"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="IsEnabled" Value="False"/>
+            <Setter Property="Foreground" Value="Gray"/>
             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
+            <!--These setters are for the trigger appearance-->
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Source={x:Reference Te_Category_Picker}, Path=Text}" Value="Custom Value">
+                    <!--These setters are for the trigger values-->
+                    <Setter Property="IsEnabled" Value="True"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
+        <Style x:Key="TextBoxStyle2" TargetType="TextBox">
+            <!--These setters are for the default appearance-->
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="IsEnabled" Value="False"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
+            <!--These setters are for the trigger appearance-->
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Source={x:Reference Rse_Category_Picker}, Path=Text}" Value="Custom Value">
+                    <!--These setters are for the trigger values-->
+                    <Setter Property="IsEnabled" Value="True"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="TextBoxStyle3" TargetType="TextBox">
+            <!--These setters are for the default appearance-->
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="IsEnabled" Value="False"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
+            <!--These setters are for the trigger appearance-->
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Source={x:Reference Ti_Category_Picker}, Path=Text}" Value="Custom Value">
+                    <!--These setters are for the trigger values-->
+                    <Setter Property="IsEnabled" Value="True"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="TextBoxStyle4" TargetType="TextBox">
+            <!--These setters are for the default appearance-->
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="IsEnabled" Value="False"/>
+            <Setter Property="Foreground" Value="Gray"/>
+            
+            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
+            <!--These setters are for the trigger appearance-->
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Source={x:Reference Rsi_Category_Picker}, Path=Text}" Value="Custom Value">
+                    <!--These setters are for the trigger values-->
+                    <Setter Property="IsEnabled" Value="True"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
 
     </UserControl.Resources>
 
@@ -135,6 +204,7 @@
                 <RowDefinition Height="32" />
                 <RowDefinition Height="40" />
                 <RowDefinition Height="40" />
+                <RowDefinition Height="40" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -150,31 +220,43 @@
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Margin="0,8,8,8">
                 <Label Content="Air Temperature: " Width="100"/>
                 <ComboBox x:Name="Te_Category_Picker" Width="160" VerticalAlignment="Stretch" SelectionChanged="Te_Category_Picker_SelectedIndexChanged"/>
-                <TextBox x:Name="Te_Input" Style="{StaticResource TextBoxStyle}"/>
+                <TextBox x:Name="Te_Input" Style="{StaticResource TextBoxStyle1}"/>
                 <Label Content="°C"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" Margin="0,8,8,8">
                 <Label Content="Rse: " Width="100"/>
                 <ComboBox x:Name="Rse_Category_Picker" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rse_Category_Picker_SelectedIndexChanged"/>
-                <TextBox x:Name="Rse_Input" Style="{StaticResource TextBoxStyle}"/>
+                <TextBox x:Name="Rse_Input" Style="{StaticResource TextBoxStyle2}"/>
                 <Label Content="(m²K)/W"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0" Margin="0,8,8,8">
+                <Label Content="Rel. Humitdity: " Width="100"/>
+                <ComboBox x:Name="x1_Category_Picker" Width="160" VerticalAlignment="Stretch" />
+                <TextBox x:Name="x1_Input" Style="{StaticResource TextBoxStyle2}"/>
+                <Label Content="%"/>
             </StackPanel>
 
             <!--Mittlere Trennlinie-->
-            <Line Grid.RowSpan="3" Grid.Column="1" Y2="600" VerticalAlignment="Stretch" HorizontalAlignment="Center" Stroke="SlateGray" StrokeThickness="2"/>
+            <Line Grid.RowSpan="4" Grid.Column="1" Y2="600" VerticalAlignment="Stretch" HorizontalAlignment="Center" Stroke="SlateGray" StrokeThickness="2"/>
 
             <!--Innenseitige Randbedingungen-->
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Margin="0,8,8,8">
                 <Label Content="Air Temperature: " Width="100"/>
                 <ComboBox x:Name="Ti_Category_Picker" Width="160" VerticalAlignment="Stretch" SelectionChanged="Ti_Category_Picker_SelectedIndexChanged"/>
-                <TextBox x:Name="Ti_Input" Style="{StaticResource TextBoxStyle}"/>
+                <TextBox x:Name="Ti_Input" Style="{StaticResource TextBoxStyle3}"/>
                 <Label Content="°C" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Margin="0,8,8,8">
                 <Label Content="Rsi: " Width="100"/>
                 <ComboBox x:Name="Rsi_Category_Picker" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rsi_Category_Picker_SelectedIndexChanged"/>
-                <TextBox x:Name="Rsi_Input" Style="{StaticResource TextBoxStyle}"/>
+                <TextBox x:Name="Rsi_Input" Style="{StaticResource TextBoxStyle4}"/>
                 <Label Content="(m²K)/W" VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2" Margin="0,8,8,8">
+                <Label Content="Rel. Humitdity: " Width="100"/>
+                <ComboBox x:Name="x2_Category_Picker" Width="160" VerticalAlignment="Stretch" />
+                <TextBox x:Name="x2_Input" Style="{StaticResource TextBoxStyle2}"/>
+                <Label Content="%"/>
             </StackPanel>
         </Grid>
 

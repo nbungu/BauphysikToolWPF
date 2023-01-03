@@ -43,7 +43,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return;
 
             // Do the Calculations
-            this.TempCurveCalc = new StationaryTempCurve(DatabaseAccess.GetLayers(), SurfaceResistance.selectedRsi.Values.First(), SurfaceResistance.selectedRse.Values.First(), ReferenceTemp.selectedTi.Values.First(), ReferenceTemp.selectedTe.Values.First());
+            this.TempCurveCalc = new StationaryTempCurve(DatabaseAccess.GetLayers(), RSurfaces.selectedRsi.First().Value, RSurfaces.selectedRse.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
             this.Layers = DrawLayerSections();
             this.TempCurve = DrawTempCurvePoints();
             this.XAxes = DrawXAxes();
