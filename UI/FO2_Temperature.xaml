@@ -43,9 +43,9 @@
         </lvc:CartesianChart>
 
         <StackPanel Orientation="Vertical" Grid.Row="1">
-            <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K'/>
-            <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²'/>
-            <Label Content="{Binding TempCurveCalc.FRsiValue}" ContentStringFormat='fRsi = {0}'/>
+            <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' FontSize="16"/>
+            <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²' FontSize="16"/>
+            <Label Content="{Binding TempCurveCalc.FRsiValue}" ContentStringFormat='fRsi = {0}' FontSize="16"/>
         </StackPanel>
     </Grid>
 </UserControl>

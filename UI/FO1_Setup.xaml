@@ -24,29 +24,46 @@
         Defines a Template for the Items in the LayerListView.
         The Bindings are retrieved from the ItemsSource which is set by the backend.
         -->
-        <DataTemplate x:Key="LayerListViewTemplate">
+        <DataTemplate x:Key="LVItem_Content">
             <Grid Margin="8">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="26" />
+                    <RowDefinition Height="26" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="80"/>
                     <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="52"/>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.RowSpan="2">
-                    <Ellipse Height="32" Width="32" Margin="6" VerticalAlignment="Center" HorizontalAlignment="Center" Fill="{Binding LayerColor}"/>
-                    <Label Content="{Binding LayerPosition}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <Ellipse Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center" Fill="{Binding LayerColor}"/>
+                    <Label Content="{Binding LayerPosition}" Margin="0,0,8,0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
                 </Grid>
-                <Label Grid.Column="1" Content="{Binding LayerName}" FontWeight="Bold"/>
-                <Label Grid.Column="1" Grid.Row="1" Content="{Binding LayerCategory}" FontStyle="Italic" VerticalAlignment="Bottom" />
+                <Label Grid.Column="1" Content="{Binding LayerName}" FontWeight="Bold" Height="32"/>
+                <Label Grid.Column="1" Grid.Row="1" Content="{Binding LayerCategory}" FontStyle="Italic" VerticalAlignment="Bottom" Height="32"/>
                 <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' VerticalAlignment="Center"/>
                 <Label Grid.Column="3" Grid.RowSpan="2" Content="{Binding LayerResistance}" ContentStringFormat='Ri = {0} (m²K)/W' VerticalAlignment="Center"/>
+                
+                <!--TODO make button appear only if lvitem is clicked-->
+                <Button Content="T" Grid.Column="4" Grid.RowSpan="2"/>
             </Grid>
         </DataTemplate>
+        
+        <Style x:Key="LVItem_Properties" TargetType="{x:Type ListViewItem}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Setter Property="ContextMenu">
+                <Setter.Value>
+                    <ContextMenu>
+                        <MenuItem Name="menuItemClose" Header="Exit"/>
+                        <MenuItem Name="menuItemOpen" Header="Open"/>
+                    </ContextMenu>
+                </Setter.Value>
+            </Setter>
+        </Style>
         
         
 
@@ -163,10 +180,12 @@
 
             <ListView x:Name="layers_ListView"
                       Grid.Row="2"
-                      ItemTemplate="{StaticResource LayerListViewTemplate}"
+                      ItemTemplate="{StaticResource LVItem_Content}"
+                      ItemContainerStyle="{StaticResource LVItem_Properties}"
                       VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch"
-                      SelectionChanged="layers_ListView_SelectionChanged"/>
+                      SelectionChanged="layers_ListView_SelectionChanged"
+                      SelectionMode="Single"/>
             <!--ItemsSource gets set by backend-->
         </Grid>
 

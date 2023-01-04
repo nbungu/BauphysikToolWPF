@@ -64,11 +64,21 @@ namespace BauphysikToolWPF.UI
                     StrokeThickness = layer.IsSelected ? 1 : 0.4,
                     Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(layer.correspondingMaterial().ColorCode))
                 };
+                Label label = new Label()
+                {
+                    Content = layer.LayerPosition,
+                    FontSize = 12
+                };
 
                 // Draw layer rectangle
                 Canvas.Children.Add(rect);
                 Canvas.SetTop(rect, bottom);
                 Canvas.SetLeft(rect, left);
+
+                Canvas.Children.Add(label);
+                Canvas.SetTop(label, bottom);
+                Canvas.SetLeft(label, left);
+
 
                 right -= layerWidth; // Add new layer at left edge of previous layer
             }
