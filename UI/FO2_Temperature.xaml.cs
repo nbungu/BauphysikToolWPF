@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace BauphysikToolWPF.UI
 {
     /// <summary>
-    /// Interaktionslogik für FO2_Calculate.xaml
+    /// Interaktionslogik für FO2_Temperature.xaml
     /// </summary>
-    public partial class FO2_Calculate : UserControl //Page
+    public partial class FO2_Temperature : UserControl //Page
     {
-        public FO2_Calculate() //
+        public FO2_Temperature() //
         {
             InitializeComponent();
             // -> Initializes xaml objects

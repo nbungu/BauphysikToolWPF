@@ -77,6 +77,10 @@ namespace BauphysikToolWPF.ComponentCalculations
         private double qValue;
         public double QValue { get => qValue; set => qValue = value; }
 
+        private double fRsiValue;
+        public double FRsiValue { get => fRsiValue; set => fRsiValue = value; }
+
+
         private Dictionary<double, double> layerTemps; // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
         public Dictionary<double, double> LayerTemps { get => layerTemps; set => layerTemps = value; }
 
@@ -96,6 +100,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             UValue = GetUValue();
             QValue = GetqValue();
             LayerTemps = GetLayerTemps();
+            FRsiValue = GetfRsiValue();
         }
 
         // Methods
@@ -126,12 +131,12 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetUValue()
         {
-            return Math.Pow(RTotal, -1);
+            return Math.Round(Math.Pow(RTotal, -1),3);
         }
 
         private double GetqValue()
         {
-            return UValue * (Temperatures.selectedTi.First().Value - Temperatures.selectedTe.First().Value);
+            return Math.Round(UValue * (Temperatures.selectedTi.First().Value - Temperatures.selectedTe.First().Value), 3);
         }
 
         private Dictionary<double, double> GetLayerTemps()
@@ -155,6 +160,12 @@ namespace BauphysikToolWPF.ComponentCalculations
             if (widthPosition == 0)
                 return elementTemps;
             else throw new ArgumentOutOfRangeException("calculation failed");
+        }
+
+        private double GetfRsiValue()
+        {
+            double tsi = LayerTemps.First().Value;
+            return Math.Round((tsi - Te) / (Ti - Te), 3);
         }
 
         /* Hardcoded example:

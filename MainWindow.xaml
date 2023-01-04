@@ -11,12 +11,17 @@
     <Window.Resources>
 
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
-            <!--These setter are for the default Values-->
-            <Setter Property="ContentTemplate" Value="{StaticResource FO1_Setup_Template}"/>
+            <!--This setter is for the default value-->
+            <Setter Property="ContentTemplate" Value="{StaticResource FO1_Template}"/>
+            
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Calculate">
-                    <!--These setter are for the trigger values-->
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO2_Calculate_Template}"/>
+                <!--When the SelectedItem in the NavMenuListBox has the Value "Temperature"....-->
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Temperature">
+                    <!--....use the FO2_Template as the ContentTemplate Value-->
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO2_Template}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Vapour">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO3_Template}"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>

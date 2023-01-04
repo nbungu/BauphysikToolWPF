@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    public class FO2_ViewModel
+    public class FO3_ViewModel
     {
-        public string Title { get; } = "Temperature"; // Called by 'InitializeComponent()' due to Class-Binding in xaml via DataContext
+        public string Title { get; } = "Vapour"; // Called by 'InitializeComponent()' due to Class-Binding in xaml via DataContext
     }
 }

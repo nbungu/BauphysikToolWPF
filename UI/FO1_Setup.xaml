@@ -57,14 +57,12 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="IsEnabled" Value="False"/>
-            <Setter Property="Foreground" Value="Gray"/>
             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
             <!--These setters are for the trigger appearance-->
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Source={x:Reference Te_Category_Picker}, Path=Text}" Value="Custom Value">
                     <!--These setters are for the trigger values-->
                     <Setter Property="IsEnabled" Value="True"/>
-                    <Setter Property="Foreground" Value="Black"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -75,14 +73,12 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="IsEnabled" Value="False"/>
-            <Setter Property="Foreground" Value="Gray"/>
             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
             <!--These setters are for the trigger appearance-->
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Source={x:Reference Rse_Category_Picker}, Path=Text}" Value="Custom Value">
                     <!--These setters are for the trigger values-->
                     <Setter Property="IsEnabled" Value="True"/>
-                    <Setter Property="Foreground" Value="Black"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -93,14 +89,12 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="IsEnabled" Value="False"/>
-            <Setter Property="Foreground" Value="Gray"/>
             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
             <!--These setters are for the trigger appearance-->
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Source={x:Reference Ti_Category_Picker}, Path=Text}" Value="Custom Value">
                     <!--These setters are for the trigger values-->
                     <Setter Property="IsEnabled" Value="True"/>
-                    <Setter Property="Foreground" Value="Black"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -111,15 +105,12 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="IsEnabled" Value="False"/>
-            <Setter Property="Foreground" Value="Gray"/>
-            
             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
             <!--These setters are for the trigger appearance-->
             <Style.Triggers>
                 <DataTrigger Binding="{Binding Source={x:Reference Rsi_Category_Picker}, Path=Text}" Value="Custom Value">
                     <!--These setters are for the trigger values-->
                     <Setter Property="IsEnabled" Value="True"/>
-                    <Setter Property="Foreground" Value="Black"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>

@@ -26,7 +26,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     [ObservableObject]
     public partial class LiveChartsViewModel
     {
-        private StationaryTempCurve TempCurveCalc { get; set; }
+        public StationaryTempCurve TempCurveCalc { get; set; }
         public ISeries[] TempCurve { get; set; }
         public RectangularSection[] Layers { get; set; }
         public Axis[] XAxes { get; set; }
@@ -93,18 +93,19 @@ namespace BauphysikToolWPF.UI.ViewModels
                 right -= layerWidth; // Add new layer at left edge of previous layer
             }
 
-            //TODO: Taupunkttemp
-            /*new RectangularSection
+            //TODO: is hardcoded
+            /*fRsi frsi = new fRsi(TempCurveCalc.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
+            rects[5] = new RectangularSection
             {
-                Yi = 5,
-                Yj = 5,
+                Yi = fRsi.TsiMin,
+                Yj = fRsi.TsiMin,
                 Stroke = new SolidColorPaint
                 {
                     Color = SKColors.Red,
                     StrokeThickness = 1,
                     PathEffect = new DashEffect(new float[] { 2, 2 })
                 }
-            },*/
+            };*/
 
             return rects;
         }
