@@ -29,28 +29,5 @@ namespace BauphysikToolWPF.EnvironmentData
         public static double Rse_Value { get; set; }
         public static double Rel_Fi_Value { get; set; }
         public static double Rel_Fe_Value { get; set; }
-
-        // SQLite doesnt allow other types than TEXT, INT, REAL or BLOB 
-        //List<Layer> has to be converted into BLOB -> byte[]
-        /*public byte[] ConvertListToBLOB()
-        {
-            byte[] layersByteArray = new byte[layers.Count * sizeof(Layer)];
-            Buffer.BlockCopy(layers, 0, layersByteArray, 0, layersByteArray.Length);
-
-            return;
-        }*/
-
-        /*public Material correspondingMaterial()
-        {
-            return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId);
-        }*/
-
-        /*public byte[] ConvertBLOBToList()
-        {
-            string[] scores;
-            byte[] scoresByteArray = person.Scores;
-            scores = new string[scoresByteArray.Length / sizeof(string)];
-            Buffer.BlockCopy(scoresByteArray, 0, scores, 0, scoresByteArray.Length);
-        }*/
     }
 }

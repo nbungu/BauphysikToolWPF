@@ -94,7 +94,7 @@
                 <DataTrigger Binding="{Binding}" Value="Temperature">
                     <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_003x80_back.png"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="Vapour">
+                <DataTrigger Binding="{Binding}" Value="Moisture">
                     <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_003x80_back.png"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
@@ -103,7 +103,7 @@
         <x:Array x:Key="NavigationMenuItems" Type="system:String">
             <system:String>Setup</system:String>
             <system:String>Temperature</system:String>
-            <system:String>Vapour</system:String>
+            <system:String>Moisture</system:String>
         </x:Array>
 
         <DataTemplate x:Key="FO1_Template">
@@ -115,7 +115,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="FO3_Template">
-            <ui:FO3_Vapour/>
+            <ui:FO3_Moisture/>
         </DataTemplate>
 
     </Application.Resources>

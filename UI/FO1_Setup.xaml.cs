@@ -122,6 +122,9 @@ namespace BauphysikToolWPF.UI
 
         private void Ti_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (Ti_Category_Picker.SelectedIndex == -1) // empty selection
+                return;
+
             string tiKey = Ti_Category_Picker.SelectedItem.ToString();
             UserSaved.Ti = tiKey;
 
@@ -133,7 +136,10 @@ namespace BauphysikToolWPF.UI
 
         private void Te_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
-            string teKey = Te_Category_Picker.SelectedItem.ToString(); 
+            if (Te_Category_Picker.SelectedIndex == -1) // empty selection
+                return;
+
+            string teKey = Te_Category_Picker.SelectedItem.ToString();
             UserSaved.Te = teKey;
 
             // Set corresponding value in the TB
@@ -144,6 +150,9 @@ namespace BauphysikToolWPF.UI
 
         private void Rsi_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (Rsi_Category_Picker.SelectedIndex == -1) // empty selection
+                return;
+
             string rsiKey = Rsi_Category_Picker.SelectedItem.ToString();
             UserSaved.Rsi = rsiKey;
 
@@ -155,6 +164,8 @@ namespace BauphysikToolWPF.UI
 
         private void Rse_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
+            if (Rse_Category_Picker.SelectedIndex == -1) // empty selection
+                return;
 
             string rseKey = Rse_Category_Picker.SelectedItem.ToString();
             UserSaved.Rse = rseKey;
@@ -175,16 +186,24 @@ namespace BauphysikToolWPF.UI
             switch (((TextBox)sender).Name)
             {
                 case "Ti_Input":
+                    UserSaved.Ti = "";
                     UserSaved.Ti_Value = userInput;
+                    Ti_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Te_Input":
+                    UserSaved.Te = "";
                     UserSaved.Te_Value = userInput;
+                    Te_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rsi_Input":
+                    UserSaved.Rsi = "";
                     UserSaved.Rsi_Value = userInput;
+                    Rsi_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rse_Input":
+                    UserSaved.Rse = "";
                     UserSaved.Rse_Value = userInput;
+                    Rse_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 default: throw new ArgumentException("Could not assign value");
             }
@@ -209,6 +228,10 @@ namespace BauphysikToolWPF.UI
 
             // Layers are not being updated inside the local DB 
             new DrawLayerCanvas(layers_ListView.ItemsSource as List<Layer>, layers_Canvas);
+        }
+
+        private void editLayer_Button_Click(object sender, RoutedEventArgs e)
+        {
 
         }
     }

@@ -11,6 +11,7 @@
     <None Remove="Resources\Icons\GL_003x80_back.png" />
     <None Remove="Resources\Icons\GL_010x80_create.png" />
     <None Remove="Resources\Icons\GL_011x80_delete.png" />
+    <None Remove="Resources\Icons\GL_015x80_edit.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,6 +27,7 @@
     <Resource Include="Resources\Icons\GL_003x80_back.png" />
     <Resource Include="Resources\Icons\GL_010x80_create.png" />
     <Resource Include="Resources\Icons\GL_011x80_delete.png" />
+    <Resource Include="Resources\Icons\GL_015x80_edit.png" />
   </ItemGroup>
 
   <ItemGroup>

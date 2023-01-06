@@ -16,11 +16,11 @@ using System.Windows.Shapes;
 namespace BauphysikToolWPF.UI
 {
     /// <summary>
-    /// Interaktionslogik für FO3_Vapour.xaml
+    /// Interaktionslogik für FO3_Moisture.xaml
     /// </summary>
-    public partial class FO3_Vapour : UserControl
+    public partial class FO3_Moisture : UserControl
     {
-        public FO3_Vapour()
+        public FO3_Moisture()
         {
             InitializeComponent();
         }
