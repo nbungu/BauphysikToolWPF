@@ -9,7 +9,7 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
 
-    <!--Main Reference for all Bindings in this UserControl-->
+    <!--Main Reference for all Bindings used inside this UserControl-->
     <UserControl.DataContext>
         <vm:LiveChartsViewModel/>
     </UserControl.DataContext>
@@ -24,7 +24,7 @@
         <lvc:CartesianChart
             Grid.Row="0"
             Series="{Binding TempCurve}"
-            Sections="{Binding Layers}"
+            Sections="{Binding LayerSections}"
             XAxes="{Binding XAxes}"
             YAxes="{Binding YAxes}"   
             EasingFunction="{x:Null}"

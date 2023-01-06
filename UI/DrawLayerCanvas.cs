@@ -17,13 +17,21 @@ namespace BauphysikToolWPF.UI
 {
     public class DrawLayerCanvas
     {
-        private StationaryTempCurve TempCurve { get; set; }
-        public List<Layer> Layers { get; set; } 
-        public Canvas Canvas { get; set; }  
+        private List<Layer> layers;
+        public List<Layer> Layers //for Validation
+        {
+            get { return layers; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("null layer list specified");
+                layers = value;
+            }
+        }
+        public Canvas Canvas { get; set; }
 
         public DrawLayerCanvas(List<Layer> layers, Canvas canvas)
         {
-            this.TempCurve = new StationaryTempCurve(layers, RSurfaces.selectedRsi.First().Value, RSurfaces.selectedRse.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
             this.Layers = layers;
             this.Canvas = canvas;
             DrawRectanglesFromLayers();
@@ -78,7 +86,6 @@ namespace BauphysikToolWPF.UI
                 Canvas.Children.Add(label);
                 Canvas.SetTop(label, bottom);
                 Canvas.SetLeft(label, left);
-
 
                 right -= layerWidth; // Add new layer at left edge of previous layer
             }

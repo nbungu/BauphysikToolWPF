@@ -39,11 +39,11 @@
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.RowSpan="2">
-                    <Ellipse Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center" Fill="{Binding LayerColor}"/>
+                    <Ellipse Fill="{Binding Material.ColorCode}" Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <Label Content="{Binding LayerPosition}" Margin="0,0,8,0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
                 </Grid>
-                <Label Grid.Column="1" Content="{Binding LayerName}" FontWeight="Bold" Height="32"/>
-                <Label Grid.Column="1" Grid.Row="1" Content="{Binding LayerCategory}" FontStyle="Italic" VerticalAlignment="Bottom" Height="32"/>
+                <Label Grid.Column="1" Content="{Binding Material.Name}" FontWeight="Bold" Height="32"/>
+                <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.Category}" FontStyle="Italic" VerticalAlignment="Bottom" Height="32"/>
                 <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' VerticalAlignment="Center"/>
                 <Label Grid.Column="3" Grid.RowSpan="2" Content="{Binding LayerResistance}" ContentStringFormat='Ri = {0} (m²K)/W' VerticalAlignment="Center"/>
                 
@@ -180,6 +180,7 @@
 
             <ListView x:Name="layers_ListView"
                       Grid.Row="2"
+                      ItemsSource="{Binding Layers, Mode=OneWay}"
                       ItemTemplate="{StaticResource LVItem_Content}"
                       ItemContainerStyle="{StaticResource LVItem_Properties}"
                       VerticalAlignment="Stretch"
@@ -229,20 +230,20 @@
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Margin="0,8,8,8">
                 <Label Content="Air Temperature: " Width="100"/>
-                <ComboBox x:Name="Te_Category_Picker" Width="160" VerticalAlignment="Stretch" SelectionChanged="Te_Category_Picker_SelectedIndexChanged"/>
+                <ComboBox x:Name="Te_Category_Picker" ItemsSource="{Binding Te_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Te_Category_Picker_SelectedIndexChanged"/>
                 <TextBox x:Name="Te_Input" Style="{StaticResource TextBoxStyle1}"/>
                 <Label Content="°C"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" Margin="0,8,8,8">
                 <Label Content="Rse: " Width="100"/>
-                <ComboBox x:Name="Rse_Category_Picker" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rse_Category_Picker_SelectedIndexChanged"/>
+                <ComboBox x:Name="Rse_Category_Picker" ItemsSource="{Binding Rse_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rse_Category_Picker_SelectedIndexChanged"/>
                 <TextBox x:Name="Rse_Input" Style="{StaticResource TextBoxStyle2}"/>
                 <Label Content="(m²K)/W"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0" Margin="0,8,8,8">
                 <Label Content="Rel. Humitdity: " Width="100"/>
-                <ComboBox x:Name="x1_Category_Picker" Width="160" VerticalAlignment="Stretch" />
-                <TextBox x:Name="x1_Input" Style="{StaticResource TextBoxStyle2}"/>
+                <ComboBox x:Name="RelFe_Category_Picker" Width="160" VerticalAlignment="Stretch" />
+                <TextBox x:Name="RelFe_Input" Style="{StaticResource TextBoxStyle2}"/>
                 <Label Content="%"/>
             </StackPanel>
 
@@ -252,13 +253,13 @@
             <!--Innenseitige Randbedingungen-->
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Margin="0,8,8,8">
                 <Label Content="Air Temperature: " Width="100"/>
-                <ComboBox x:Name="Ti_Category_Picker" Width="160" VerticalAlignment="Stretch" SelectionChanged="Ti_Category_Picker_SelectedIndexChanged"/>
+                <ComboBox x:Name="Ti_Category_Picker" ItemsSource="{Binding Ti_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Ti_Category_Picker_SelectedIndexChanged"/>
                 <TextBox x:Name="Ti_Input" Style="{StaticResource TextBoxStyle3}"/>
                 <Label Content="°C" VerticalAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Margin="0,8,8,8">
                 <Label Content="Rsi: " Width="100"/>
-                <ComboBox x:Name="Rsi_Category_Picker" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rsi_Category_Picker_SelectedIndexChanged"/>
+                <ComboBox x:Name="Rsi_Category_Picker" ItemsSource="{Binding Rsi_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rsi_Category_Picker_SelectedIndexChanged"/>
                 <TextBox x:Name="Rsi_Input" Style="{StaticResource TextBoxStyle4}"/>
                 <Label Content="(m²K)/W" VerticalAlignment="Center"/>
             </StackPanel>

@@ -80,12 +80,9 @@ namespace BauphysikToolWPF.UI
                     //LayerPosition gets set by SQLite DB (AI)
                     MaterialId = material.MaterialId,
                     LayerThickness = Convert.ToDouble(thickness_TextBox.Text),
-
-                    //TODO: Gets not retreived on GetLayers() -> 1:1 rel not working
-                    Material = material,
+                    Material = material
                 };
                 DatabaseAccess.CreateLayer(layer);
-                // TODO: absichern
                 this.Close();
             }
         }

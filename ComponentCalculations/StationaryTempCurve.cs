@@ -19,48 +19,11 @@ namespace BauphysikToolWPF.ComponentCalculations
             get { return layers; }  
             set
             {
-                if(value == null || value.Count == 0)
-                    throw new ArgumentNullException("Empty layer list specified");
+                if(value == null)
+                    throw new ArgumentNullException("null layer list specified");
                 layers = value;
             }
         }
-        private double rsi;
-        public double Rsi //for Validation
-        {
-            get { return rsi; }
-            set 
-            {
-                if(value >= 0)
-                {
-                    rsi = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Rsi Value cannot be negative");
-                }
-            }
-        }
-        private double rse;
-        public double Rse //for Validation
-        {
-            get { return rse; }
-            set
-            {
-                if (value >= 0)
-                {
-                    rse = value;
-                }
-                else
-                {
-                    throw new ArgumentException("Rse Value cannot be negative");
-                }
-            }
-        }
-        private double ti;
-        public double Ti { get => ti; set => ti = value; }
-
-        private double te;
-        public double Te { get => te; set => te = value; }
 
         private double totalElementWidth;
         public double TotalElementWidth { get => totalElementWidth; set => totalElementWidth = value; }
@@ -85,14 +48,10 @@ namespace BauphysikToolWPF.ComponentCalculations
         public Dictionary<double, double> LayerTemps { get => layerTemps; set => layerTemps = value; }
 
         // (Instance-) Constructor
-        public StationaryTempCurve(List<Layer> layers, double rsi, double rse, double ti, double te)
+        public StationaryTempCurve()
         {
             //User specified
-            Layers = layers;
-            Rsi = rsi;
-            Rse = rse;
-            Ti = ti;
-            Te = te;
+            Layers = DatabaseAccess.GetLayers();
             //Calculated from input parameters of constructor
             TotalElementWidth = GetTotalElementWidth();
             SumOfLayersR = GetLayersR();
@@ -121,12 +80,12 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 rLayers += l.LayerResistance;
             }
-            return rLayers;
+            return Math.Round(rLayers,3);
         }
 
         private double GetRTotal()
         {
-            return RSurfaces.selectedRsi.First().Value + SumOfLayersR + RSurfaces.selectedRse.First().Value;
+            return Math.Round(UserSaved.Rsi_Value + SumOfLayersR + UserSaved.Rse_Value, 3);
         }
 
         private double GetUValue()
@@ -136,7 +95,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetqValue()
         {
-            return Math.Round(UValue * (Temperatures.selectedTi.First().Value - Temperatures.selectedTe.First().Value), 3);
+            return Math.Round(UValue * (UserSaved.Ti_Value - UserSaved.Te_Value), 3);
         }
 
         private Dictionary<double, double> GetLayerTemps()
@@ -145,7 +104,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
             //Starting from inner side
             double widthPosition = TotalElementWidth;
-            double tVal = Temperatures.selectedTi.First().Value - RSurfaces.selectedRsi.First().Value * QValue; // Tsi
+            double tVal = UserSaved.Ti_Value - UserSaved.Rsi_Value * QValue; // Tsi
 
             elementTemps.Add(widthPosition, tVal); // key, value
 
@@ -165,7 +124,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         private double GetfRsiValue()
         {
             double tsi = LayerTemps.First().Value;
-            return Math.Round((tsi - Te) / (Ti - Te), 3);
+            return Math.Round((tsi - UserSaved.Te_Value) / (UserSaved.Ti_Value - UserSaved.Te_Value), 3);
         }
 
         /* Hardcoded example:

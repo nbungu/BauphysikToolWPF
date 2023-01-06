@@ -22,13 +22,13 @@ using System.Windows.Ink;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for LiveCharts: Used in xaml as "DataContext"
+    //ViewModel for FO2_Temperature.cs: Used in xaml as "DataContext"
     [ObservableObject]
     public partial class LiveChartsViewModel
     {
         public StationaryTempCurve TempCurveCalc { get; set; }
         public ISeries[] TempCurve { get; set; }
-        public RectangularSection[] Layers { get; set; }
+        public RectangularSection[] LayerSections { get; set; }
         public Axis[] XAxes { get; set; }
         public Axis[] YAxes { get; set; }
         public SolidColorPaint TooltipTextPaint { get; set; }
@@ -38,13 +38,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public LiveChartsViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
-            // Only Draw and Calculate if at least one Layer is defined
-            if (DatabaseAccess.GetLayers() == null || DatabaseAccess.GetLayers().Count == 0)
-                return;
-
-            // Do the Calculations
-            this.TempCurveCalc = new StationaryTempCurve(DatabaseAccess.GetLayers(), RSurfaces.selectedRsi.First().Value, RSurfaces.selectedRse.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
-            this.Layers = DrawLayerSections();
+            this.TempCurveCalc = new StationaryTempCurve();
+            this.LayerSections = DrawLayerSections();
             this.TempCurve = DrawTempCurvePoints();
             this.XAxes = DrawXAxes();
             this.YAxes = DrawYAxes();
@@ -81,7 +76,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 {
                     Xi = left,
                     Xj = right,
-                    Fill = new SolidColorPaint(SKColor.Parse(layer.correspondingMaterial().ColorCode)),
+                    Fill = new SolidColorPaint(SKColor.Parse(layer.Material.ColorCode)),
                     Stroke = new SolidColorPaint
                     {
                         Color = SKColors.Black,

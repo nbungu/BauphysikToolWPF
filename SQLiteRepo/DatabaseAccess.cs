@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SQLiteNetExtensions.Extensions;
+using System.Windows.Media.Media3D;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
@@ -36,20 +38,19 @@ namespace BauphysikToolWPF.SQLiteRepo
         // Retreive Data from Table "Layer"
         public static List<Layer> GetLayers()
         {
-            List<Layer> layers = sqlConn.Table<Layer>().ToList();
+            List<Layer> layers = sqlConn.GetAllWithChildren<Layer>(); // old Method: List<Layer> layers = sqlConn.Table<Layer>().ToList();
             return layers;
         }
 
-        public static int CreateLayer(Layer layer) // returns int, which represents the number of rows that were inserted into the table
+        public static void CreateLayer(Layer layer)
         {
-            int i = sqlConn.Insert(layer);
+            sqlConn.InsertWithChildren(layer);  //Method from SQLiteExt -> adds a relationship to a child object ('Material') 
             OnLayerAdded(); //raises an event
-            return i;
         }
 
-        public static int UpdateLayer(Layer layer)
+        public static void UpdateLayer(Layer layer)
         {
-            return sqlConn.Update(layer);
+            sqlConn.UpdateWithChildren(layer);
         }
 
         public static int DeleteLayer(Layer layer)
@@ -110,5 +111,40 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             return sqlConn.Table<Material>().Where(a => a.BulkDensity == 0).ToList();
         }*/
+
+        // Retreive Data from Table "EnvVars"
+        public static List<EnvVars> GetEnvVars()
+        {
+            List<EnvVars> envVars = sqlConn.Table<EnvVars>().ToList();
+            return envVars;
+        }
+
+        // TODO: only one dataset allowed in this Table: Verify!
+        public static int CreateEnvVars(EnvVars envVars)
+        {
+            return sqlConn.Insert(envVars);
+        }
+
+        public static int UpdateEnvVars(EnvVars envVars)
+        {
+            return sqlConn.Update(envVars);
+        }
+
+        public static int DeleteEnvVars(EnvVars envVars)
+        {
+            return sqlConn.Delete(envVars);
+        }
+
+        public static int DeleteAllEnvVars()
+        {
+            return sqlConn.DeleteAll<EnvVars>();
+        }
+        public static List<EnvVars> QueryEnvVarsByCategory(string category)
+        {
+            if (category == "*")
+                return sqlConn.Query<EnvVars>("SELECT * FROM EnvVars");
+            else
+                return sqlConn.Query<EnvVars>("SELECT * FROM EnvVars WHERE Category == " + "\"" + category + "\"");
+        }
     }
 }

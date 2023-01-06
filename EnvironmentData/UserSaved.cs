@@ -6,35 +6,29 @@ using System.Text;
 using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
 
-namespace BauphysikToolWPF.SQLiteRepo
+namespace BauphysikToolWPF.EnvironmentData
 {
-    public class UserEnvVars
+    // TODO: use Class UserEnvVars in SQLite instead
+    public static class UserSaved
     {
         //------Variablen-----//
 
 
         //------Eigenschaften-----//
 
-        [NotNull, PrimaryKey, AutoIncrement, Unique] //SQL Attributes
-        public int VarSetId { get; set; }
-
-        [NotNull]
-        public double Ti { get; set; }
-
-        [NotNull]
-        public double Te { get; set; }
-
-        [NotNull]
-        public double Rsi { get; set; }
-
-        [NotNull]
-        public double Rse { get; set; }
-
-        [NotNull]
-        public double Rel_Fi { get; set; }
-
-        [NotNull]
-        public double Rel_Fe { get; set; }
+        public static int VarSetId { get; set; }
+        public static string Ti { get; set; }
+        public static string Te { get; set; }
+        public static string Rsi { get; set; }
+        public static string Rse { get; set; }
+        public static string Rel_Fi { get; set; }
+        public static string Rel_Fe { get; set; }
+        public static double Ti_Value { get; set; }
+        public static double Te_Value { get; set; }
+        public static double Rsi_Value { get; set; }
+        public static double Rse_Value { get; set; }
+        public static double Rel_Fi_Value { get; set; }
+        public static double Rel_Fe_Value { get; set; }
 
         // SQLite doesnt allow other types than TEXT, INT, REAL or BLOB 
         //List<Layer> has to be converted into BLOB -> byte[]
@@ -53,12 +47,10 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         /*public byte[] ConvertBLOBToList()
         {
-            double[] scores;
+            string[] scores;
             byte[] scoresByteArray = person.Scores;
-            scores = new double[scoresByteArray.Length / sizeof(double)];
+            scores = new string[scoresByteArray.Length / sizeof(string)];
             Buffer.BlockCopy(scoresByteArray, 0, scores, 0, scoresByteArray.Length);
         }*/
-
-
     }
 }
