@@ -33,13 +33,16 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public FO1_ViewModel() // Called by 'InitializeComponent()' from FO1_Setup.cs due to Class-Binding in xaml via DataContext
         {
+            //For the ListView
             Layers = DatabaseAccess.GetLayers();
+
+            //For the ComboBoxes
             Ti_Keys = DatabaseAccess.QueryEnvVarsByCategory("Ti").Select(e => e.Key).ToList();
             Te_Keys = DatabaseAccess.QueryEnvVarsByCategory("Te").Select(e => e.Key).ToList();
             Rsi_Keys = DatabaseAccess.QueryEnvVarsByCategory("Rsi").Select(e => e.Key).ToList();
             Rse_Keys = DatabaseAccess.QueryEnvVarsByCategory("Rse").Select(e => e.Key).ToList();
-        }
 
-        //TODO: TextBox Viewmodel implementieren
+            //TODO: TextBox Viewmodel implementieren
+        }
     }
 }

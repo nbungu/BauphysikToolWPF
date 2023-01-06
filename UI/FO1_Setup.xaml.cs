@@ -133,7 +133,6 @@ namespace BauphysikToolWPF.UI
 
         private void Te_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
         {
-
             string teKey = Te_Category_Picker.SelectedItem.ToString(); 
             UserSaved.Te = teKey;
 

@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 
 namespace BauphysikToolWPF.UI
 {
+    // TODO: transform to static class since I only have one canvas to draw on
     public class DrawLayerCanvas
     {
         private List<Layer> layers;

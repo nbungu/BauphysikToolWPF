@@ -11,7 +11,7 @@
 
     <!--Main Reference for all Bindings used inside this UserControl-->
     <UserControl.DataContext>
-        <vm:LiveChartsViewModel/>
+        <vm:FO2_ViewModel/>
     </UserControl.DataContext>
     
 
