@@ -12,16 +12,16 @@
 
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
             <!--This setter is for the default value-->
-            <Setter Property="ContentTemplate" Value="{StaticResource FO1_Template}"/>
+            <Setter Property="ContentTemplate" Value="{StaticResource FO1_Setup}"/>
             
             <Style.Triggers>
                 <!--When the SelectedItem in the NavMenuListBox has the Value "Temperature"....-->
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Temperature">
                     <!--....use the FO2_Template as the ContentTemplate Value-->
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO2_Template}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO2_Temperature}"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Vapour">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO3_Template}"/>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Moisture">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO3_Moisture}"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -30,7 +30,7 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="64"/>
+            <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
         
@@ -39,7 +39,8 @@
                  Style="{StaticResource NavigationListBoxStyle}"
                  ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
                  ItemTemplate="{DynamicResource NavigationDataTemplate}"
-                 ItemsSource="{StaticResource NavigationMenuItems}"/>
+                 ItemsSource="{StaticResource NavigationMenuItems}">
+        </ListBox>
 
         <ContentControl Grid.Column="1" Style="{StaticResource NavigationContentStyle}"/>
     </Grid>

@@ -23,6 +23,11 @@ namespace BauphysikToolWPF.UI
         public FO3_Moisture()
         {
             InitializeComponent();
+
+            //Buch S.36f
+            //Frsi
+            //phi Max
+            //
         }
     }
 }

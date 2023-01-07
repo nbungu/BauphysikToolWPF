@@ -12,27 +12,22 @@ namespace BauphysikToolWPF.SQLiteRepo
 {
     public delegate void Notify(); // delegate (signature: return type void, no input parameters)
 
-    public static class DatabaseAccess // publisher of 'LayerAdded' event
+    public static class DatabaseAccess // publisher of 'LayersChanged' event
     {
         private static string dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\SQLiteRepo\\DemoDB.db"));
         private static SQLiteConnection sqlConn = new SQLiteConnection(dbPath);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
-        public static event Notify LayerAdded;      // event
-        public static event Notify LayerDeleted;    // event
+        public static event Notify LayersChanged;      // event
 
         // (Instanzen-) Konstruktor nicht möglich bei statischen Klassen
         /*public DatabaseAccess()
         {
         }*/
 
-        public static void OnLayerAdded() //protected virtual method
+        public static void OnLayersChanged() //protected virtual method
         {
-            LayerAdded?.Invoke(); //if LayerAdded is not null then call delegate
-        }
-        public static void OnLayerDeleted() //protected virtual method
-        {
-            LayerDeleted?.Invoke(); //if LayerDeleted is not null then call delegate
+            LayersChanged?.Invoke(); //if LayerAdded is not null then call delegate
         }
 
         // Retreive Data from Table "Layer"
@@ -45,7 +40,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static void CreateLayer(Layer layer)
         {
             sqlConn.InsertWithChildren(layer);  //Method from SQLiteExt -> adds a relationship to a child object ('Material') 
-            OnLayerAdded(); //raises an event
+            OnLayersChanged(); //raises an event
         }
 
         public static void UpdateLayer(Layer layer)
@@ -56,7 +51,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static int DeleteLayer(Layer layer)
         {
             int i = sqlConn.Delete(layer);
-            OnLayerDeleted();
+            OnLayersChanged();
             return i;
         }
 
@@ -66,7 +61,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             // TODO:
             // Reset AutoIncrement status from 'sqlite_sequence' table
             // delete from sqlite_sequence where name='your_table';
-            OnLayerDeleted();
+            OnLayersChanged();
             return i;
         }
 

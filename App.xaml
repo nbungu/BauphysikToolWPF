@@ -16,20 +16,15 @@
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="SelectedIndex" Value="0"/>
             <Setter Property="Width" Value="Auto"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListBox}">
-                        <Border Background="{TemplateBinding Background}"
-                        BorderThickness="0"
-                        Padding="0"
-                        SnapsToDevicePixels="true">
-                            <ScrollViewer Padding="{TemplateBinding Padding}"
-                                    Focusable="false">
-                                <ItemsPresenter SnapsToDevicePixels=
-                                    "{TemplateBinding SnapsToDevicePixels}"/>
+                        <Border Background="{TemplateBinding Background}" BorderThickness="0" Padding="0" SnapsToDevicePixels="true">
+                            <ScrollViewer Padding="{TemplateBinding Padding}" Focusable="false">
+                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                             </ScrollViewer>
                         </Border>
                     </ControlTemplate>
@@ -62,8 +57,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsSelected" Value="true">
-                                <Setter TargetName="Bd" Property="Background" 
-                         Value="{StaticResource PrimaryLightBrush}"/>
+                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                             <MultiTrigger>
@@ -71,13 +65,11 @@
                                     <Condition Property="IsSelected" Value="true"/>
                                     <Condition Property="Selector.IsSelectionActive" Value="false"/>
                                 </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="Bd" 
-                         Value="{StaticResource PrimaryLightBrush}"/>
+                                <Setter Property="Background" TargetName="Bd" Value="{StaticResource PrimaryLightBrush}"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </MultiTrigger>
                             <Trigger Property="IsEnabled" Value="false">
-                                <Setter Property="Foreground" 
-                         Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+                                <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -86,16 +78,27 @@
         </Style>
 
         <DataTemplate x:Key="NavigationDataTemplate">
-            <Image Source="Resources/Icons/GL_003x80_back.png" x:Name="MenuItemIcon" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="12"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="64"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Image x:Name="MenuItemIcon" Grid.Column="0" Source="Resources/Icons/GL_019x80_home.png" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8"/>
+                <Label x:Name="MenuItemLabel" Grid.Column="1" VerticalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Margin="0,8,8,8"/>
+            </Grid>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding}" Value="Setup">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_003x80_back.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_019x80_home.png"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Setup"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Temperature">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_003x80_back.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/CL_001x80_climate_menu.png"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Temperature"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Moisture">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_003x80_back.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/CL_025x80_air_quality_inside_air.png"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Moisture"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -106,15 +109,15 @@
             <system:String>Moisture</system:String>
         </x:Array>
 
-        <DataTemplate x:Key="FO1_Template">
+        <DataTemplate x:Key="FO1_Setup">
             <ui:FO1_Setup/>
         </DataTemplate>
 
-        <DataTemplate x:Key="FO2_Template">
+        <DataTemplate x:Key="FO2_Temperature">
             <ui:FO2_Temperature/>
         </DataTemplate>
 
-        <DataTemplate x:Key="FO3_Template">
+        <DataTemplate x:Key="FO3_Moisture">
             <ui:FO3_Moisture/>
         </DataTemplate>
 

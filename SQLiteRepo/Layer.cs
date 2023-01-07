@@ -21,6 +21,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Eigenschaften-----//
 
         [NotNull, PrimaryKey, AutoIncrement, Unique] //SQL Attributes
+        public int LayerId { get; set; }
+
+        [NotNull] //SQL Attributes
         public int LayerPosition { get; set; } //Inside = 1 ....
 
         [SQLiteNetExtensions.Attributes.ForeignKey(typeof(Material))]

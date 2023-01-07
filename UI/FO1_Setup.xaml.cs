@@ -27,7 +27,7 @@ namespace BauphysikToolWPF.UI
     /// <summary>
     /// Interaktionslogik für FO1_Setup.xaml
     /// </summary>
-    public partial class FO1_Setup : UserControl //Page
+    public partial class FO1_Setup : UserControl
     {
         // Class Variables - Belongs to the Class-Type itself and stays the same
         //
@@ -41,24 +41,15 @@ namespace BauphysikToolWPF.UI
             InitializeComponent();                          // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
             LoadLayers();                                   // Init Canvas and Layers
             LoadEnvironmentData();                          // loads saved environment data
-            DatabaseAccess.LayerAdded += DB_LayerAdded;     // register with an event (when Layers have been added)
-            DatabaseAccess.LayerDeleted += DB_LayerDeleted; // register with an event (when Layers have been deleted)
+            DatabaseAccess.LayersChanged += DB_LayersChanged;     // register with an event (when Layers have been added)
         }
 
-        // event handler
-        public void DB_LayerAdded() // has to match the signature of the delegate (return type void, no input parameters)
-        {
-            LoadLayers();
-        }
-
-        public void DB_LayerDeleted()
+        // event handlers
+        public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
             ReorderLayerPosition();
             LoadLayers();
         }
-
-        // override Methods
-        //
 
         // custom Methods
         private void LoadLayers()
@@ -87,13 +78,15 @@ namespace BauphysikToolWPF.UI
         {
             Ti_Category_Picker.SelectedItem = UserSaved.Ti;
             Rsi_Category_Picker.SelectedItem = UserSaved.Rsi;
+            RelFi_Category_Picker.SelectedItem = UserSaved.Rel_Fi;
             Te_Category_Picker.SelectedItem = UserSaved.Te;
             Rse_Category_Picker.SelectedItem = UserSaved.Rse;
+            RelFe_Category_Picker.SelectedItem = UserSaved.Rel_Fe;
             // -> invokes SelectedIndexChanged
         }
 
         // UI Methods
-        private void AddLayerClicked(object sender, EventArgs e)
+        private void addLayerClicked(object sender, EventArgs e)
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             var window = new AddLayerWindow();
@@ -103,7 +96,7 @@ namespace BauphysikToolWPF.UI
             window.Show();          // Open as modeless
         }
 
-        private void DeleteLayerClicked(object sender, EventArgs e)
+        private void deleteLayerClicked(object sender, EventArgs e)
         {
             if (layers_ListView.SelectedItem is null)
                 return;
@@ -115,12 +108,17 @@ namespace BauphysikToolWPF.UI
             DatabaseAccess.DeleteLayer(layer);
         }
 
-        private void deleteAllLayers_Button_Clicked(object sender, EventArgs e)
+        private void deleteAllLayersClicked(object sender, EventArgs e)
         {
             DatabaseAccess.DeleteAllLayers();
         }
 
-        private void Ti_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
+        private void editLayerClicked(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Ti_Category_Picker_SelectionChanged(object sender, EventArgs e)
         {
             if (Ti_Category_Picker.SelectedIndex == -1) // empty selection
                 return;
@@ -134,7 +132,7 @@ namespace BauphysikToolWPF.UI
             Ti_Input.Text = tiValue.ToString();
         }
 
-        private void Te_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
+        private void Te_Category_Picker_SelectionChanged(object sender, EventArgs e)
         {
             if (Te_Category_Picker.SelectedIndex == -1) // empty selection
                 return;
@@ -148,7 +146,7 @@ namespace BauphysikToolWPF.UI
             Te_Input.Text = teValue.ToString();
         }
 
-        private void Rsi_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
+        private void Rsi_Category_Picker_SelectionChanged(object sender, EventArgs e)
         {
             if (Rsi_Category_Picker.SelectedIndex == -1) // empty selection
                 return;
@@ -162,7 +160,7 @@ namespace BauphysikToolWPF.UI
             Rsi_Input.Text = rsiValue.ToString();
         }
 
-        private void Rse_Category_Picker_SelectedIndexChanged(object sender, EventArgs e)
+        private void Rse_Category_Picker_SelectionChanged(object sender, EventArgs e)
         {
             if (Rse_Category_Picker.SelectedIndex == -1) // empty selection
                 return;
@@ -174,6 +172,34 @@ namespace BauphysikToolWPF.UI
             double rseValue = DatabaseAccess.QueryEnvVarsByCategory("Rse").Where(e => e.Key == rseKey).First().Value;
             UserSaved.Rse_Value = rseValue;
             Rse_Input.Text = rseValue.ToString();
+        }
+
+        private void RelFe_Category_Picker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (RelFe_Category_Picker.SelectedIndex == -1) // empty selection
+                return;
+
+            string key = RelFe_Category_Picker.SelectedItem.ToString();
+            UserSaved.Rel_Fe = key;
+
+            //Set corresponding value in the TB
+            double value = DatabaseAccess.QueryEnvVarsByCategory("Rel_Fe").Where(e => e.Key == key).First().Value;
+            UserSaved.Rel_Fe_Value = value;
+            RelFe_Input.Text = value.ToString();
+        }
+
+        private void RelFi_Category_Picker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (RelFi_Category_Picker.SelectedIndex == -1) // empty selection
+                return;
+
+            string key = RelFi_Category_Picker.SelectedItem.ToString();
+            UserSaved.Rel_Fi = key;
+
+            //Set corresponding value in the TB
+            double value = DatabaseAccess.QueryEnvVarsByCategory("Rel_Fi").Where(e => e.Key == key).First().Value;
+            UserSaved.Rel_Fi_Value = value;
+            RelFi_Input.Text = value.ToString();
         }
 
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -228,11 +254,6 @@ namespace BauphysikToolWPF.UI
 
             // Layers are not being updated inside the local DB 
             new DrawLayerCanvas(layers_ListView.ItemsSource as List<Layer>, layers_Canvas);
-        }
-
-        private void editLayer_Button_Click(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

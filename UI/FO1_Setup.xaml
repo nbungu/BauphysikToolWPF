@@ -24,7 +24,7 @@
         Defines a Template for the Items in the LayerListView.
         The Bindings are retrieved from the ItemsSource which is set by the backend.
         -->
-        <DataTemplate x:Key="LVItem_Content">
+        <DataTemplate x:Key="LVItem_DesignTemplate">
             <Grid Margin="8">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="26" />
@@ -66,44 +66,6 @@
             </Grid>
         </DataTemplate>
 
-        <Style x:Key="MaterialUIButton" TargetType="{x:Type Button}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".9"/>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="LightSlateGray"/>
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
         <Style x:Key="LVItem_Properties" TargetType="{x:Type ListViewItem}">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
@@ -115,6 +77,27 @@
                     </ContextMenu>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="CustomButton" TargetType="{x:Type Button}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
@@ -132,15 +115,6 @@
                 </DataTrigger>
             </Style.Triggers>
             -->
-        </Style>
-
-        <Style x:Key="LVItem_ButtonRow_Style" TargetType="Button">
-            <Setter Property="Visibility" Value="Hidden"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedItem, ElementName=layers_ListView}" Value="null">
-                    <Setter Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-            </Style.Triggers>
         </Style>
 
     </UserControl.Resources>
@@ -169,30 +143,30 @@
 
             <Label Content="Aktueller Bauteilaufbau"/>
 
-            <StackPanel Orientation="Horizontal" Grid.Row="1" Margin="0,8,8,8">
+            <StackPanel Orientation="Horizontal" Grid.Row="1">
 
-                <Button x:Name="addLayer_Button" Style="{StaticResource MaterialUIButton}" Click="AddLayerClicked" Margin="0,0,8,0">
+                <Button x:Name="addLayer_Button" Style="{StaticResource CustomButton}" Click="addLayerClicked" Margin="0,8,8,8">
                     <StackPanel Orientation="Horizontal" Margin="4,0,16,0">
                         <Image Source="/Resources/Icons/GL_010x80_create.png" Stretch="Fill" Height="36" Width="36" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Add Layer" VerticalAlignment="Center" Margin="4,0,0,0"/>
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="deleteLayer_Button" Style="{StaticResource MaterialUIButton}" Click="DeleteLayerClicked" Margin="0,0,8,0">
+                <Button x:Name="deleteLayer_Button" Style="{StaticResource CustomButton}" Click="deleteLayerClicked" Margin="0,8,8,8">
                     <StackPanel Orientation="Horizontal" Margin="4,0,16,0">
                         <Image Source="/Resources/Icons/GL_011x80_delete.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Delete Layer" VerticalAlignment="Center" Margin="4,0,0,0"/>
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="deleteAllLayers_Button" Style="{StaticResource MaterialUIButton}" Click="deleteAllLayers_Button_Clicked" Margin="0,0,8,0">
+                <Button x:Name="deleteAllLayers_Button" Style="{StaticResource CustomButton}" Click="deleteAllLayersClicked" Margin="0,8,8,8">
                     <StackPanel Orientation="Horizontal" Margin="4,0,16,0">
                         <Image Source="/Resources/Icons/GL_011x80_delete.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Delete All" VerticalAlignment="Center" Margin="4,0,0,0"/>
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="editLayer_Button" Style="{StaticResource MaterialUIButton}" Click="editLayer_Button_Click" Margin="0,0,8,0">
+                <Button x:Name="editLayer_Button" Style="{StaticResource CustomButton}" Click="editLayerClicked" Margin="0,8,8,8">
                     <StackPanel Orientation="Horizontal" Margin="4,0,16,0">
                         <Image Source="/Resources/Icons/GL_015x80_edit.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Edit Layer" VerticalAlignment="Center" Margin="4,0,0,0"/>
@@ -204,13 +178,13 @@
             <ListView x:Name="layers_ListView"
                       Grid.Row="2"
                       ItemsSource="{Binding Layers, Mode=OneWay}"
-                      ItemTemplate="{StaticResource LVItem_Content}"
+                      ItemTemplate="{StaticResource LVItem_DesignTemplate}"
                       ItemContainerStyle="{StaticResource LVItem_Properties}"
                       VerticalAlignment="Stretch"
                       HorizontalAlignment="Stretch"
                       SelectionChanged="layers_ListView_SelectionChanged"
                       SelectionMode="Single"/>
-            <!--ItemsSource gets set by backend-->
+            <!--ItemsSource gets updated by backend-->
         </Grid>
 
         <!--Top Right Grid -->
@@ -253,19 +227,19 @@
 
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0" Margin="0,8,8,8">
                 <Label Content="Air Temperature: " Width="100" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                <ComboBox x:Name="Te_Category_Picker" ItemsSource="{Binding Te_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Te_Category_Picker_SelectedIndexChanged"/>
+                <ComboBox x:Name="Te_Category_Picker" ItemsSource="{Binding Te_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Te_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Te_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="°C" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="0" Margin="0,8,8,8">
                 <Label Content="Rse: " Width="100" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                <ComboBox x:Name="Rse_Category_Picker" ItemsSource="{Binding Rse_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rse_Category_Picker_SelectedIndexChanged"/>
+                <ComboBox x:Name="Rse_Category_Picker" ItemsSource="{Binding Rse_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rse_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Rse_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="(m²K)/W" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="0" Margin="0,8,8,8">
                 <Label Content="Rel. Humitdity: " Width="100" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                <ComboBox x:Name="RelFe_Category_Picker" Width="160" VerticalAlignment="Stretch" />
+                <ComboBox x:Name="RelFe_Category_Picker" ItemsSource="{Binding Rel_Fe_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="RelFe_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="RelFe_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="%" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
@@ -276,20 +250,20 @@
             <!--Innenseitige Randbedingungen-->
             <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="2" Margin="0,8,8,8">
                 <Label Content="Air Temperature: " Width="100" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                <ComboBox x:Name="Ti_Category_Picker" ItemsSource="{Binding Ti_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Ti_Category_Picker_SelectedIndexChanged"/>
+                <ComboBox x:Name="Ti_Category_Picker" ItemsSource="{Binding Ti_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Ti_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Ti_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="°C" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="2" Grid.Column="2" Margin="0,8,8,8">
                 <Label Content="Rsi: " Width="100" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                <ComboBox x:Name="Rsi_Category_Picker" ItemsSource="{Binding Rsi_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rsi_Category_Picker_SelectedIndexChanged"/>
+                <ComboBox x:Name="Rsi_Category_Picker" ItemsSource="{Binding Rsi_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="Rsi_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Rsi_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="(m²K)/W" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Grid.Row="3" Grid.Column="2" Margin="0,8,8,8">
                 <Label Content="Rel. Humitdity: " Width="100" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
-                <ComboBox x:Name="x2_Category_Picker" Width="160" VerticalAlignment="Stretch" />
-                <TextBox x:Name="x2_Input" Style="{StaticResource TextBoxStyle}"/>
+                <ComboBox x:Name="RelFi_Category_Picker" ItemsSource="{Binding Rel_Fi_Keys}" Width="160" VerticalAlignment="Stretch" SelectionChanged="RelFi_Category_Picker_SelectionChanged"/>
+                <TextBox x:Name="RelFi_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="%" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
         </Grid>

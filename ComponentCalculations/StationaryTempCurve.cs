@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.ComponentCalculations
     {
         //(Instance-) Variables and encapsulated properties
 
-        private List<Layer> layers;
+        private List<Layer> layers = new List<Layer>();
         public List<Layer> Layers //for Validation
         {     
             get { return layers; }  
@@ -24,35 +24,23 @@ namespace BauphysikToolWPF.ComponentCalculations
                 layers = value;
             }
         }
-
-        private double totalElementWidth;
-        public double TotalElementWidth { get => totalElementWidth; set => totalElementWidth = value; }
-
-        private double sumOfLayersR;
-        public double SumOfLayersR { get => sumOfLayersR; set => sumOfLayersR = value; }
-
-        private double rTotal;
-        public double RTotal { get => rTotal; set => rTotal = value; }
-
-        private double uValue;
-        public double UValue { get => uValue; set => uValue = value; }
-
-        private double qValue;
-        public double QValue { get => qValue; set => qValue = value; }
-
-        private double fRsiValue;
-        public double FRsiValue { get => fRsiValue; set => fRsiValue = value; }
-
-
-        private Dictionary<double, double> layerTemps; // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
-        public Dictionary<double, double> LayerTemps { get => layerTemps; set => layerTemps = value; }
+        public double TotalElementWidth { get; private set; } = 0;
+        public double SumOfLayersR { get; private set; } = 0;
+        public double RTotal { get; private set; } = 0;
+        public double UValue { get; private set; } = 0;
+        public double QValue { get; private set; } = 0;
+        public double FRsiValue { get; private set; } = 0;
+        public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
 
         // (Instance-) Constructor
         public StationaryTempCurve()
         {
-            //User specified
+            if (DatabaseAccess.GetLayers().Count == 0)
+                return;
+
+            //User specified (public setter)
             Layers = DatabaseAccess.GetLayers();
-            //Calculated from input parameters of constructor
+            //Calculated parameters (private setter)
             TotalElementWidth = GetTotalElementWidth();
             SumOfLayersR = GetLayersR();
             RTotal = GetRTotal();
@@ -98,24 +86,30 @@ namespace BauphysikToolWPF.ComponentCalculations
             return Math.Round(UValue * (UserSaved.Ti_Value - UserSaved.Te_Value), 3);
         }
 
-        private Dictionary<double, double> GetLayerTemps()
+        private List<KeyValuePair<double, double>> GetLayerTemps()
         {
-            Dictionary<double, double> elementTemps = new Dictionary<double, double>();
+            //Dictionaries are not ordered: Instead use List as ordered collection
+            List<KeyValuePair<double,double>> elementTemps = new List<KeyValuePair<double,double>>();
 
             //Starting from inner side
             double widthPosition = TotalElementWidth;
             double tVal = UserSaved.Ti_Value - UserSaved.Rsi_Value * QValue; // Tsi
 
-            elementTemps.Add(widthPosition, tVal); // key, value
+            elementTemps.Add(new KeyValuePair<double, double>(widthPosition, tVal)); // key, value
 
             for (int i = 0; i<Layers.Count; i++)
             {
                 double current_widthPosition = widthPosition - Layers[i].LayerThickness;
-                double current_tVal = elementTemps.Values.ElementAt(i) - Layers[i].LayerResistance * QValue;
-                elementTemps.Add(current_widthPosition, current_tVal);
+                double current_tVal = elementTemps.ElementAt(i).Value - Layers[i].LayerResistance * QValue;
+                elementTemps.Add(new KeyValuePair<double, double>(current_widthPosition, current_tVal));
 
                 widthPosition = current_widthPosition;
             }
+
+            // Adding Ti at beginning & Te at end of the List
+            //elementTemps.Insert(0, new KeyValuePair<double, double>(TotalElementWidth + 1, UserSaved.Ti_Value));
+            //elementTemps.Insert(elementTemps.Count, new KeyValuePair<double, double>(-1, UserSaved.Te_Value));
+
             if (widthPosition == 0)
                 return elementTemps;
             else throw new ArgumentOutOfRangeException("calculation failed");
@@ -123,7 +117,8 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetfRsiValue()
         {
-            double tsi = LayerTemps.First().Value;
+            double tsi = LayerTemps.Find(t => t.Key == TotalElementWidth).Value; //gets the Tsi Value
+            //TODO: durch 0 teilen abfangen
             return Math.Round((tsi - UserSaved.Te_Value) / (UserSaved.Ti_Value - UserSaved.Te_Value), 3);
         }
 

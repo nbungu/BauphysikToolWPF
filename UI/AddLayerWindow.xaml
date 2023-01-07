@@ -9,15 +9,52 @@
 
     <Window.Resources>
 
-        <Style x:Key="TriggerStyle" TargetType="Button">
-            <!--These setters are for the default values-->
-            <Setter Property="Background" Value="LightSlateGray"/>
-            <Setter Property="Foreground" Value="White"/>
+ 
+
+        <Style x:Key="MaterialUIButton" TargetType="{x:Type Button}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".6"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
             <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightSlateGray"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
                 <DataTrigger Binding="{Binding Source={x:Reference thickness_TextBox}, Path=Text.Length}" Value="0">
                     <!--These setters are for the trigger values-->
                     <Setter Property="IsEnabled" Value="False"/>
                     <Setter Property="Foreground" Value="Gray"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".2"/>
+                        </Setter.Value>
+                    </Setter>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -120,7 +157,7 @@
         </StackPanel>
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="8">
-            <Button Content="Add Material" Click="AddMaterial_Clicked" Style="{StaticResource TriggerStyle}"/>
+            <Button Content="Add Material" Click="AddMaterial_Clicked" Style="{StaticResource MaterialUIButton}"/>
         </Grid>
 
     </Grid>
