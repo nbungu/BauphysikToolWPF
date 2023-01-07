@@ -4,9 +4,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF.UI"
+             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
-            
+
+    <!--Main Reference for all Bindings used inside this UserControl-->
+    <UserControl.DataContext>
+        <vm:FO3_ViewModel/>
+    </UserControl.DataContext>
+
+    <Grid Background="#EDEDED" Margin="16">
+        <StackPanel Orientation="Vertical" Grid.Row="1">
+            <Label Content="{Binding FRsiCalc.Tsi}" ContentStringFormat='θsi = {0} °C' FontSize="16" FontWeight="Bold"/>
+            <Label Content="{Binding FRsiCalc.FRsi}" ContentStringFormat='fRsi = {0}' FontSize="16" FontWeight="Bold" FontStyle="Italic"/>
+            <Label Content="{Binding FRsiCalc.PhiMax}" ContentStringFormat='φmax = {0} %' FontSize="16" FontWeight="Bold"/>
+        </StackPanel>
     </Grid>
 </UserControl>

@@ -29,11 +29,10 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double RTotal { get; private set; } = 0;
         public double UValue { get; private set; } = 0;
         public double QValue { get; private set; } = 0;
-        public double FRsiValue { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
 
         // (Instance-) Constructor
-        public StationaryTempCurve()
+        public StationaryTempCurve() // TODO add parameters
         {
             if (DatabaseAccess.GetLayers().Count == 0)
                 return;
@@ -47,7 +46,6 @@ namespace BauphysikToolWPF.ComponentCalculations
             UValue = GetUValue();
             QValue = GetqValue();
             LayerTemps = GetLayerTemps();
-            FRsiValue = GetfRsiValue();
         }
 
         // Methods
@@ -113,13 +111,6 @@ namespace BauphysikToolWPF.ComponentCalculations
             if (widthPosition == 0)
                 return elementTemps;
             else throw new ArgumentOutOfRangeException("calculation failed");
-        }
-
-        private double GetfRsiValue()
-        {
-            double tsi = LayerTemps.Find(t => t.Key == TotalElementWidth).Value; //gets the Tsi Value
-            //TODO: durch 0 teilen abfangen
-            return Math.Round((tsi - UserSaved.Te_Value) / (UserSaved.Ti_Value - UserSaved.Te_Value), 3);
         }
 
         /* Hardcoded example:
