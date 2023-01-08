@@ -29,6 +29,9 @@ namespace BauphysikToolWPF.ComponentCalculations
         private double GetfRsiValue()
         {
             //TODO: durch 0 teilen abfangen
+            if(UserSaved.Ti_Value - UserSaved.Te_Value == 0)
+                return 0;
+
             return Math.Round((Tsi - UserSaved.Te_Value) / (UserSaved.Ti_Value - UserSaved.Te_Value), 3);
         }
 

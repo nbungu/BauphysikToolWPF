@@ -15,15 +15,24 @@
     </UserControl.DataContext>
     
 
-    <Grid Background="#EDEDED" Margin="16">
+    <Grid Background="#EDEDED">
         <Grid.RowDefinitions>
-            <RowDefinition Height=".75*" />
-            <RowDefinition Height=".25*" />
+            <RowDefinition Height="64" />
+            <RowDefinition Height="*" />
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".8*"/>
+            <ColumnDefinition Width=".2*"/>
+        </Grid.ColumnDefinitions>
 
-        <Border Grid.Row="0" BorderBrush="#FFABADB3" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True"/>
-        <lvc:CartesianChart
-            Grid.Row="0"
+        <!--Top Left -->
+        <Label Grid.Row="0" Grid.Column="0" Content="Stationärer Temperaturverlauf" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
+        <!--Top Right -->
+        <Label Grid.Row="0" Grid.Column="1" Content="Eigenschaften" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
+
+        <Border Grid.Row="1" BorderBrush="#FFABADB3" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="16">
+            <lvc:CartesianChart
+            Grid.Row="1"
             ClipToBounds="True"
             Series="{Binding TempCurve}"
             Sections="{Binding LayerSections}"
@@ -34,18 +43,18 @@
             TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
             TooltipTextPaint="{Binding TooltipTextPaint}"
             TooltipTextSize="16"
-            Background="White"
-            Margin="16"/>
+            Background="White"/>
             <!--
             LegendPosition="Left"
             LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
             LegendTextPaint="{Binding LegendTextPaint}"
             LegendTextSize="16"
             -->
-
-        <StackPanel Orientation="Vertical" Grid.Row="1">
-            <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' FontSize="16" FontWeight="Bold"/>
-            <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²' FontSize="16" FontWeight="Bold"/>
+        </Border>
+        
+        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="16">
+            <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
+            <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²' FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
         </StackPanel>
     </Grid>
 </UserControl>

@@ -13,7 +13,6 @@ namespace BauphysikToolWPF.UI.ViewModels
     public class FO3_ViewModel
     {
         public string Title { get; } = "Moisture"; // Called by 'InitializeComponent()' due to Class-Binding in xaml via DataContext
-
         public fRsi FRsiCalc { get; set; }
 
         public FO3_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
