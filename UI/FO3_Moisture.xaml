@@ -14,10 +14,6 @@
     </UserControl.DataContext>
 
     <Grid Background="#EDEDED" Margin="16">
-        <StackPanel Orientation="Vertical" Grid.Row="1">
-            <Label Content="{Binding FRsiCalc.Tsi}" ContentStringFormat='θsi = {0} °C' FontSize="16" FontWeight="Bold"/>
-            <Label Content="{Binding FRsiCalc.FRsi}" ContentStringFormat='fRsi = {0}' FontSize="16" FontWeight="Bold" FontStyle="Italic"/>
-            <Label Content="{Binding FRsiCalc.PhiMax}" ContentStringFormat='φmax = {0} %' FontSize="16" FontWeight="Bold"/>
-        </StackPanel>
+        
     </Grid>
 </UserControl>

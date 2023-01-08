@@ -78,10 +78,10 @@ namespace BauphysikToolWPF.UI
         {
             Ti_Category_Picker.SelectedItem = UserSaved.Ti;
             Rsi_Category_Picker.SelectedItem = UserSaved.Rsi;
-            RelFi_Category_Picker.SelectedItem = UserSaved.Rel_Fi;
+            Rel_Fi_Category_Picker.SelectedItem = UserSaved.Rel_Fi;
             Te_Category_Picker.SelectedItem = UserSaved.Te;
             Rse_Category_Picker.SelectedItem = UserSaved.Rse;
-            RelFe_Category_Picker.SelectedItem = UserSaved.Rel_Fe;
+            Rel_Fe_Category_Picker.SelectedItem = UserSaved.Rel_Fe;
             // -> invokes SelectedIndexChanged
         }
 
@@ -176,32 +176,33 @@ namespace BauphysikToolWPF.UI
 
         private void RelFe_Category_Picker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (RelFe_Category_Picker.SelectedIndex == -1) // empty selection
+            if (Rel_Fe_Category_Picker.SelectedIndex == -1) // empty selection
                 return;
 
-            string key = RelFe_Category_Picker.SelectedItem.ToString();
+            string key = Rel_Fe_Category_Picker.SelectedItem.ToString();
             UserSaved.Rel_Fe = key;
 
             //Set corresponding value in the TB
             double value = DatabaseAccess.QueryEnvVarsByCategory("Rel_Fe").Where(e => e.Key == key).First().Value;
             UserSaved.Rel_Fe_Value = value;
-            RelFe_Input.Text = value.ToString();
+            Rel_Fe_Input.Text = value.ToString();
         }
 
         private void RelFi_Category_Picker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (RelFi_Category_Picker.SelectedIndex == -1) // empty selection
+            if (Rel_Fi_Category_Picker.SelectedIndex == -1) // empty selection
                 return;
 
-            string key = RelFi_Category_Picker.SelectedItem.ToString();
+            string key = Rel_Fi_Category_Picker.SelectedItem.ToString();
             UserSaved.Rel_Fi = key;
 
             //Set corresponding value in the TB
             double value = DatabaseAccess.QueryEnvVarsByCategory("Rel_Fi").Where(e => e.Key == key).First().Value;
             UserSaved.Rel_Fi_Value = value;
-            RelFi_Input.Text = value.ToString();
+            Rel_Fi_Input.Text = value.ToString();
         }
 
+        //TODO: doesnt gets called somehow?!
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             Regex regex = new Regex("[^0-9.,-]+"); //regex that matches disallowed text
@@ -230,6 +231,16 @@ namespace BauphysikToolWPF.UI
                     UserSaved.Rse = "";
                     UserSaved.Rse_Value = userInput;
                     Rse_Category_Picker.SelectedIndex = -1; // empty selection
+                    return;
+                case "Rel_Fi_Input":
+                    UserSaved.Rel_Fi = "";
+                    UserSaved.Rel_Fi_Value = userInput;
+                    Rel_Fi_Category_Picker.SelectedIndex = -1; // empty selection
+                    return;
+                case "Rel_Fe_Input":
+                    UserSaved.Rel_Fe = "";
+                    UserSaved.Rel_Fe_Value = userInput;
+                    Rel_Fe_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 default: throw new ArgumentException("Could not assign value");
             }

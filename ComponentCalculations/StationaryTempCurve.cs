@@ -11,6 +11,12 @@ namespace BauphysikToolWPF.ComponentCalculations
 {
     public class StationaryTempCurve
     {
+        //static Class variables
+
+        public static readonly double FRsiMin = 0.7;
+
+        public static readonly double TsiMin = 12.6;
+
         //(Instance-) Variables and encapsulated properties
 
         private List<Layer> layers = new List<Layer>();
@@ -29,6 +35,8 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double RTotal { get; private set; } = 0;
         public double UValue { get; private set; } = 0;
         public double QValue { get; private set; } = 0;
+        public double FRsi { get; private set; } = 0;
+        public double PhiMax { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
 
         // (Instance-) Constructor
@@ -46,6 +54,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             UValue = GetUValue();
             QValue = GetqValue();
             LayerTemps = GetLayerTemps();
+            FRsi = GetfRsiValue();
+            PhiMax = GetMaxRelF();
         }
 
         // Methods
@@ -111,6 +121,24 @@ namespace BauphysikToolWPF.ComponentCalculations
             if (widthPosition == 0)
                 return elementTemps;
             else throw new ArgumentOutOfRangeException("calculation failed");
+        }
+        private double GetfRsiValue()
+        {
+            //TODO: durch 0 teilen abfangen
+            if (UserSaved.Ti_Value - UserSaved.Te_Value == 0)
+                return 0;
+
+            return Math.Round((LayerTemps.First().Value - UserSaved.Te_Value) / (UserSaved.Ti_Value - UserSaved.Te_Value), 3);
+        }
+
+        private double GetMaxRelF() //maximal zulässige Raumluftfeuchte
+        {
+            if (FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) >= 0 && FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) <= 30)
+            {
+                double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) + UserSaved.Te_Value) / (109.8 + UserSaved.Ti_Value), 8.02) * 100;
+                return Math.Round(phiMax, 3);
+            }
+            throw new ArgumentException("Randbedingung zur Berechnung nicht erfüllt.");
         }
 
         /* Hardcoded example:

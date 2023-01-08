@@ -60,20 +60,20 @@
         </Style>
 
         <DataTemplate x:Key="MaterialListViewTemplate">
-            <Grid Margin="8">
+            <Grid Margin="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="24" />
+                    <RowDefinition Height="24" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="240"/>
+                    <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="116"/>
                     <ColumnDefinition Width="116"/>
                     <ColumnDefinition Width="116"/>
                 </Grid.ColumnDefinitions>
 
-                <Label Content="{Binding Name}" FontWeight="Bold"/>
-                <Label Grid.Row="1" Content="{Binding Category}" FontStyle="Italic" VerticalAlignment="Bottom" />
+                <Label Content="{Binding Name}" Height="28" FontWeight="Bold"/>
+                <Label Grid.Row="1" Content="{Binding Category}" Height="28" FontStyle="Italic" VerticalAlignment="Bottom" />
                 <Label Grid.Column="1" Grid.RowSpan="2" Content="{Binding BulkDensity}" ContentStringFormat='ρ = {0} kg/m³' VerticalAlignment="Center"/>
                 <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding ThermalConductivity}" ContentStringFormat='λ = {0} W/(m·K)' VerticalAlignment="Center"/>
                 <Label Grid.Column="3" Grid.RowSpan="2" Content="{Binding SpecificHeatCapacity}" ContentStringFormat='c = {0} J/(kg·K)' VerticalAlignment="Center"/>

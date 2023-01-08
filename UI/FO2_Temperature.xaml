@@ -5,6 +5,7 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:BauphysikToolWPF.UI"
       xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+      xmlns:env="clr-namespace:BauphysikToolWPF.EnvironmentData"
       xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800">
@@ -21,8 +22,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".8*"/>
-            <ColumnDefinition Width=".2*"/>
+            <ColumnDefinition Width=".6*"/>
+            <ColumnDefinition Width=".4*"/>
         </Grid.ColumnDefinitions>
 
         <!--Top Left -->
@@ -43,7 +44,8 @@
             TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
             TooltipTextPaint="{Binding TooltipTextPaint}"
             TooltipTextSize="16"
-            Background="White"/>
+            Background="White"
+            Margin="8,0,0,8"/>
             <!--
             LegendPosition="Left"
             LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
@@ -51,10 +53,43 @@
             LegendTextSize="16"
             -->
         </Border>
-        
-        <StackPanel Orientation="Vertical" Grid.Column="1" Grid.Row="1" Margin="16">
-            <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-            <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²' FontSize="16" FontWeight="Bold" HorizontalAlignment="Left"/>
-        </StackPanel>
+
+        <Grid Grid.Column="1" Grid.Row="1" Margin="16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".5*"/>
+                <ColumnDefinition Width=".5*"/>
+                <ColumnDefinition Width=".5*"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Vertical" Grid.Column="0">
+                <Label Content="Randbed." FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Line X1="80" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
+                <Label Content="{x:Static env:UserSaved.Ti_Value}" ContentStringFormat='θi = {0} °C' />
+                <Label Content="{x:Static env:UserSaved.Te_Value}" ContentStringFormat='θe = {0} °C'/>
+                <Label Content="{x:Static env:UserSaved.Rsi_Value}" ContentStringFormat='Rsi = {0} m²K/W' />
+                <Label Content="{x:Static env:UserSaved.Rse_Value}" ContentStringFormat='Rse = {0} m²K/W' />
+                <Label Content="{x:Static env:UserSaved.Rel_Fi_Value}" ContentStringFormat='φi = {0} %' />
+                <Label Content="{x:Static env:UserSaved.Rel_Fe_Value}" ContentStringFormat='φe = {0} %' />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Grid.Column="1">
+                <Label Content="Ist-Werte" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Line X1="80" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
+                <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' />
+                <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²'/>
+                <Label Content="{Binding TempCurveCalc.FRsi}" ContentStringFormat='fRsi = {0}'  FontStyle="Italic"/>
+                <Label Content="{Binding TempCurveCalc.PhiMax}" ContentStringFormat='φmax = {0} %' />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Grid.Column="2">
+                <Label Content="Soll-Werte" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Line X1="80" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
+                <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' />
+                <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²' />
+                <Label Content="{Binding TempCurveCalc.FRsi}" ContentStringFormat='fRsi = {0}'  FontStyle="Italic"/>
+                <Label Content="{Binding TempCurveCalc.PhiMax}" ContentStringFormat='φmax = {0} %' />
+            </StackPanel>
+
+        </Grid>
     </Grid>
 </UserControl>

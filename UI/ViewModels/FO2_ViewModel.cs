@@ -123,11 +123,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 Values = new ObservablePoint[]
                 {
-                    new ObservablePoint(tsi_Pos+0.4, tsi-0.9*deltaTi),
+                    new ObservablePoint(tsi_Pos+0.8, tsi-0.9*deltaTi),
                     null, // cuts the line between the points
                     new ObservablePoint(tsi_Pos, tsi),
-                    new ObservablePoint(tsi_Pos+0.4, tsi+0.9*deltaTi),
-                    new ObservablePoint(tsi_Pos+1, UserSaved.Ti_Value)
+                    new ObservablePoint(tsi_Pos+0.8, tsi+0.9*deltaTi),
+                    new ObservablePoint(tsi_Pos+2, UserSaved.Ti_Value)
                 },
                 Fill = null,
                 LineSmoothness = 0.8,
@@ -169,11 +169,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 Values = new ObservablePoint[]
                 {   
-                    new ObservablePoint(tse_Pos-1, UserSaved.Te_Value),
-                    new ObservablePoint(tse_Pos-0.4, tse-0.9*deltaTe),
+                    new ObservablePoint(tse_Pos-2, UserSaved.Te_Value),
+                    new ObservablePoint(tse_Pos-0.8, tse-0.9*deltaTe),
                     new ObservablePoint(tse_Pos, tse),
                     null, // cuts the line between the points
-                    new ObservablePoint(tse_Pos-0.4, tse+0.9*deltaTe),
+                    new ObservablePoint(tse_Pos-0.8, tse+0.9*deltaTe),
 
                 },
                 Fill = null,
