@@ -30,23 +30,24 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string> Te_Keys { get; set; }
         public List<string> Rsi_Keys { get; set; }
         public List<string> Rse_Keys { get; set; }
-        public List<string> Rel_Fe_Keys { get; set; }
         public List<string> Rel_Fi_Keys { get; set; }
-
+        public List<string> Rel_Fe_Keys { get; set; }
         public FO1_ViewModel() // Called by 'InitializeComponent()' from FO1_Setup.cs due to Class-Binding in xaml via DataContext
         {
             //For the ListView
-            Layers = DatabaseAccess.GetLayers();
+            Layers = FO1_Setup.Layers;
 
             //For the ComboBoxes
-            Ti_Keys = DatabaseAccess.QueryEnvVarsByCategory("Ti").Select(e => e.Key).ToList();
-            Te_Keys = DatabaseAccess.QueryEnvVarsByCategory("Te").Select(e => e.Key).ToList();
-            Rsi_Keys = DatabaseAccess.QueryEnvVarsByCategory("Rsi").Select(e => e.Key).ToList();
-            Rse_Keys = DatabaseAccess.QueryEnvVarsByCategory("Rse").Select(e => e.Key).ToList();
-            Rel_Fe_Keys = DatabaseAccess.QueryEnvVarsByCategory("Rel_Fe").Select(e => e.Key).ToList();
-            Rel_Fi_Keys = DatabaseAccess.QueryEnvVarsByCategory("Rel_Fi").Select(e => e.Key).ToList();
+            Ti_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Ti").Select(e => e.Key).ToList();
+            Te_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Te").Select(e => e.Key).ToList();
+            Rsi_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Rsi").Select(e => e.Key).ToList();
+            Rse_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Rse").Select(e => e.Key).ToList();
+            Rel_Fe_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Rel_Fe").Select(e => e.Key).ToList();
+            Rel_Fi_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Rel_Fi").Select(e => e.Key).ToList();
 
             //TODO: TextBox Viewmodel implementieren
+
+            //TODO: Canvas Viewmodel implementieren
         }
     }
 }

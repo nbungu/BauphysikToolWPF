@@ -15,7 +15,6 @@
         <vm:FO2_ViewModel/>
     </UserControl.DataContext>
     
-
     <Grid Background="#EDEDED">
         <Grid.RowDefinitions>
             <RowDefinition Height="64" />
@@ -43,14 +42,14 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
                         <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <Label Content="{x:Static env:UserSaved.Te_Value}" ContentStringFormat='θe = {0} °C' VerticalContentAlignment="Center"/>
+                        <Label Content="{Binding TempCurveCalc.Te}" ContentStringFormat='θe = {0} °C' VerticalContentAlignment="Center"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <Label Content="{x:Static env:UserSaved.Rse_Value}" ContentStringFormat='Rse = {0} m²K/W' VerticalContentAlignment="Center" />
+                        <Label Content="{Binding TempCurveCalc.Rse}" ContentStringFormat='Rse = {0} m²K/W' VerticalContentAlignment="Center" />
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
-                        <Label Content="{x:Static env:UserSaved.Rsi_Value}" ContentStringFormat='Rsi = {0} m²K/W' VerticalContentAlignment="Center" />
+                        <Label Content="{Binding TempCurveCalc.Rsi}" ContentStringFormat='Rsi = {0} m²K/W' VerticalContentAlignment="Center" />
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <Label Content="{x:Static env:UserSaved.Ti_Value}" ContentStringFormat='θi = {0} °C' VerticalContentAlignment="Center" />
+                        <Label Content="{Binding TempCurveCalc.Ti}" ContentStringFormat='θi = {0} °C' VerticalContentAlignment="Center" />
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <Label Content="Innen" VerticalContentAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
@@ -94,7 +93,7 @@
                 <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' />
                 <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²' />
                 <Label Content="{Binding TempCurveCalc.FRsi}" ContentStringFormat='fRsi = {0}'  FontStyle="Italic"/>
-                <Label Content="{x:Static env:UserSaved.Rel_Fi_Value}" ContentStringFormat='φi = {0} %' />
+                <Label Content="{Binding TempCurveCalc.Rel_Fi}" ContentStringFormat='φi = {0} %' />
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Grid.Column="1">

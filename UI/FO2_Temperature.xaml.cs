@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BauphysikToolWPF.ComponentCalculations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,8 +21,11 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class FO2_Temperature : UserControl //Page
     {
+        public static StationaryTempCurve TempCalc { get; private set; }
+        
         public FO2_Temperature() //
         {
+            TempCalc = new StationaryTempCurve(FO1_Setup.Layers); 
             InitializeComponent();
             // -> Initializes xaml objects
             // -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)

@@ -4,6 +4,7 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:BauphysikToolWPF.UI"  
+            xmlns:env="clr-namespace:BauphysikToolWPF.EnvironmentData"
             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
             mc:Ignorable="d"
             d:DesignHeight="700" d:DesignWidth="1200">
@@ -229,7 +230,7 @@
             </StackPanel>
             <Label Grid.Row="3" Content="Rel. Humitdity: " VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
             <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom" Height="24">
-                <ComboBox x:Name="Rel_Fe_Category_Picker" ItemsSource="{Binding Rel_Fe_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="RelFe_Category_Picker_SelectionChanged"/>
+                <ComboBox x:Name="Rel_Fe_Category_Picker" ItemsSource="{Binding Rel_Fe_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="Rel_Fe_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Rel_Fe_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="%" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
@@ -252,7 +253,7 @@
             </StackPanel>
             <Label  Grid.Row="3" Grid.Column="2" Content="Rel. Humitdity: " VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
             <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="24">
-                <ComboBox x:Name="Rel_Fi_Category_Picker" ItemsSource="{Binding Rel_Fi_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="RelFi_Category_Picker_SelectionChanged"/>
+                <ComboBox x:Name="Rel_Fi_Category_Picker" ItemsSource="{Binding Rel_Fi_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="Rel_Fi_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Rel_Fi_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="%" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>

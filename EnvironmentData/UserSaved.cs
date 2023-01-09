@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Formats.Asn1.AsnWriter;
@@ -16,18 +17,13 @@ namespace BauphysikToolWPF.EnvironmentData
 
         //------Eigenschaften-----//
 
-        public static int VarSetId { get; set; }
-        public static string Ti { get; set; }
-        public static string Te { get; set; }
-        public static string Rsi { get; set; }
-        public static string Rse { get; set; }
-        public static string Rel_Fi { get; set; }
-        public static string Rel_Fe { get; set; }
-        public static double Ti_Value { get; set; }
-        public static double Te_Value { get; set; }
-        public static double Rsi_Value { get; set; }
-        public static double Rse_Value { get; set; }
-        public static double Rel_Fi_Value { get; set; } // TODO validate: max val = 100
-        public static double Rel_Fe_Value { get; set; } // TODO validate: max val = 100
+        public static KeyValuePair<string, double> Ti { get; set; }
+        public static KeyValuePair<string, double> Te { get; set; }
+        public static KeyValuePair<string, double> Rsi { get; set; }
+        public static KeyValuePair<string, double> Rse { get; set; }
+        public static KeyValuePair<string, double> Rel_Fi { get; set; }
+        public static KeyValuePair<string, double> Rel_Fe { get; set; }
+
+        
     }
 }

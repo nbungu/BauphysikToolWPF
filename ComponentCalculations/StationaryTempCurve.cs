@@ -38,15 +38,21 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double FRsi { get; private set; } = 0;
         public double PhiMax { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
+        public double Ti { get; private set; } = UserSaved.Ti.Value;
+        public double Te { get; private set; } = UserSaved.Te.Value;
+        public double Rsi { get; private set; } = UserSaved.Rsi.Value;
+        public double Rse { get; private set; } = UserSaved.Rse.Value;
+        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi.Value;
+        public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe.Value;
 
         // (Instance-) Constructor
-        public StationaryTempCurve() // TODO add parameters
+        public StationaryTempCurve(List<Layer> layers)
         {
-            if (DatabaseAccess.GetLayers().Count == 0)
+            if (layers.Count == 0)
                 return;
 
             //User specified (public setter)
-            Layers = DatabaseAccess.GetLayers();
+            Layers = layers;
             //Calculated parameters (private setter)
             TotalElementWidth = GetTotalElementWidth();
             SumOfLayersR = GetLayersR();
@@ -81,7 +87,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetRTotal()
         {
-            return Math.Round(UserSaved.Rsi_Value + SumOfLayersR + UserSaved.Rse_Value, 2);
+            return Math.Round(Rsi + SumOfLayersR + Rse, 2);
         }
 
         private double GetUValue()
@@ -91,7 +97,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetqValue()
         {
-            return Math.Round(UValue * (UserSaved.Ti_Value - UserSaved.Te_Value), 3);
+            return Math.Round(UValue * (Ti - Te), 3);
         }
 
         private List<KeyValuePair<double, double>> GetLayerTemps()
@@ -101,7 +107,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
             //Starting from inner side
             double widthPosition = TotalElementWidth;
-            double tVal = UserSaved.Ti_Value - UserSaved.Rsi_Value * QValue; // Tsi
+            double tVal = Ti - Rsi * QValue; // Tsi
 
             elementTemps.Add(new KeyValuePair<double, double>(widthPosition, tVal)); // key, value
 
@@ -125,17 +131,17 @@ namespace BauphysikToolWPF.ComponentCalculations
         private double GetfRsiValue()
         {
             //TODO: durch 0 teilen abfangen
-            if (UserSaved.Ti_Value - UserSaved.Te_Value == 0)
+            if (Ti - Te == 0)
                 return 0;
 
-            return Math.Round((LayerTemps.First().Value - UserSaved.Te_Value) / (UserSaved.Ti_Value - UserSaved.Te_Value), 2);
+            return Math.Round((LayerTemps.First().Value - Te) / (Ti - Te), 2);
         }
 
         private double GetMaxRelF() //maximal zulässige Raumluftfeuchte
         {
-            if (FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) >= 0 && FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) <= 30)
+            if (FRsi * (Ti - Te) >= 0 && FRsi * (Ti - Te) <= 30)
             {
-                double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) + UserSaved.Te_Value) / (109.8 + UserSaved.Ti_Value), 8.02) * 100;
+                double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (Ti - Te) + Te) / (109.8 + Ti), 8.02) * 100;
                 return Math.Round(phiMax, 1);
             }
             throw new ArgumentException("Randbedingung zur Berechnung nicht erfüllt."); //TODO Rechnung erlauben, jedoch Hinweis entsprechend einblenden
