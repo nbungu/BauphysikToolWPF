@@ -138,7 +138,7 @@ namespace BauphysikToolWPF.ComponentCalculations
                 double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) + UserSaved.Te_Value) / (109.8 + UserSaved.Ti_Value), 8.02) * 100;
                 return Math.Round(phiMax, 3);
             }
-            throw new ArgumentException("Randbedingung zur Berechnung nicht erfüllt.");
+            throw new ArgumentException("Randbedingung zur Berechnung nicht erfüllt."); //TODO Rechnung erlauben, jedoch Hinweis entsprechend einblenden
         }
 
         /* Hardcoded example:

@@ -205,47 +205,53 @@ namespace BauphysikToolWPF.UI
         //TODO: doesnt gets called somehow?!
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9.,-]+"); //regex that matches disallowed text
+            //Handle the input
+            string userInput = e.Text;
+            Regex regex = new Regex("[^0-9,-]+"); //regex that matches disallowed text
             e.Handled = regex.IsMatch(e.Text);
 
-            double userInput = Convert.ToDouble(e.Text); // TODO error when negative
+            // only allow one decimal point
+            if ((userInput == ".") && ((sender as TextBox).Text.IndexOf('.') > -1))
+            {
+                e.Handled = true;
+            }
 
+            //set new value as UserSaved Data
             switch (((TextBox)sender).Name)
             {
                 case "Ti_Input":
                     UserSaved.Ti = "";
-                    UserSaved.Ti_Value = userInput;
+                    UserSaved.Ti_Value = Convert.ToDouble(Ti_Input.Text+userInput);
                     Ti_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Te_Input":
                     UserSaved.Te = "";
-                    UserSaved.Te_Value = userInput;
+                    UserSaved.Te_Value = Convert.ToDouble(Te_Input.Text + userInput);
                     Te_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rsi_Input":
                     UserSaved.Rsi = "";
-                    UserSaved.Rsi_Value = userInput;
+                    UserSaved.Rsi_Value = Convert.ToDouble(Rsi_Input.Text + userInput);
                     Rsi_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rse_Input":
                     UserSaved.Rse = "";
-                    UserSaved.Rse_Value = userInput;
+                    UserSaved.Rse_Value = Convert.ToDouble(Rse_Input.Text + userInput);
                     Rse_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rel_Fi_Input":
                     UserSaved.Rel_Fi = "";
-                    UserSaved.Rel_Fi_Value = userInput;
+                    UserSaved.Rel_Fi_Value = Convert.ToDouble(Rel_Fi_Input.Text + userInput);
                     Rel_Fi_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rel_Fe_Input":
                     UserSaved.Rel_Fe = "";
-                    UserSaved.Rel_Fe_Value = userInput;
+                    UserSaved.Rel_Fe_Value = Convert.ToDouble(Rel_Fe_Input.Text + userInput);
                     Rel_Fe_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 default: throw new ArgumentException("Could not assign value");
             }
         }
-
         private void layers_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (layers_ListView.SelectedItem is null)
@@ -266,5 +272,5 @@ namespace BauphysikToolWPF.UI
             // Layers are not being updated inside the local DB 
             new DrawLayerCanvas(layers_ListView.ItemsSource as List<Layer>, layers_Canvas);
         }
-    }
+    }   
 }

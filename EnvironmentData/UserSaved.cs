@@ -27,7 +27,7 @@ namespace BauphysikToolWPF.EnvironmentData
         public static double Te_Value { get; set; }
         public static double Rsi_Value { get; set; }
         public static double Rse_Value { get; set; }
-        public static double Rel_Fi_Value { get; set; }
-        public static double Rel_Fe_Value { get; set; }
+        public static double Rel_Fi_Value { get; set; } // TODO validate: max val = 100
+        public static double Rel_Fe_Value { get; set; } // TODO validate: max val = 100
     }
 }
