@@ -22,8 +22,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".6*"/>
-            <ColumnDefinition Width=".4*"/>
+            <ColumnDefinition Width=".7*"/>
+            <ColumnDefinition Width=".3*"/>
         </Grid.ColumnDefinitions>
 
         <!--Top Left -->
@@ -31,63 +31,79 @@
         <!--Top Right -->
         <Label Grid.Row="0" Grid.Column="1" Content="Eigenschaften" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
 
-        <Border Grid.Row="1" BorderBrush="#FFABADB3" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="16">
-            <lvc:CartesianChart
-            Grid.Row="1"
-            ClipToBounds="True"
-            Series="{Binding TempCurve}"
-            Sections="{Binding LayerSections}"
-            XAxes="{Binding XAxes}"
-            YAxes="{Binding YAxes}"   
-            EasingFunction="{x:Null}"
-            TooltipPosition="Top"
-            TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
-            TooltipTextPaint="{Binding TooltipTextPaint}"
-            TooltipTextSize="16"
-            Background="White"
-            Margin="8,0,0,8"/>
-            <!--
-            LegendPosition="Left"
-            LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
-            LegendTextPaint="{Binding LegendTextPaint}"
-            LegendTextSize="16"
-            -->
-        </Border>
+        <!--Bottom Left-->
+        <Grid Grid.Row="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
+            <Border Grid.Row="0" BorderBrush="#FFABADB3" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
+                        <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                        <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
+                        <Label Content="{x:Static env:UserSaved.Te_Value}" ContentStringFormat='θe = {0} °C' VerticalContentAlignment="Center"/>
+                        <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
+                        <Label Content="{x:Static env:UserSaved.Rse_Value}" ContentStringFormat='Rse = {0} m²K/W' VerticalContentAlignment="Center" />
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
+                        <Label Content="{x:Static env:UserSaved.Rsi_Value}" ContentStringFormat='Rsi = {0} m²K/W' VerticalContentAlignment="Center" />
+                        <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
+                        <Label Content="{x:Static env:UserSaved.Ti_Value}" ContentStringFormat='θi = {0} °C' VerticalContentAlignment="Center" />
+                        <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
+                        <Label Content="Innen" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1" BorderBrush="#FFABADB3" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0">
+                <lvc:CartesianChart
+                    Grid.Row="1"
+                    ClipToBounds="True"
+                    Series="{Binding TempCurve}"
+                    Sections="{Binding LayerSections}"
+                    XAxes="{Binding XAxes}"
+                    YAxes="{Binding YAxes}"   
+                    EasingFunction="{x:Null}"
+                    TooltipPosition="Top"
+                    TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
+                    TooltipTextPaint="{Binding TooltipTextPaint}"
+                    TooltipTextSize="16"
+                    Background="White"
+                    Margin="8,0,0,8"/>
+                        <!--
+                    LegendPosition="Left"
+                    LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
+                    LegendTextPaint="{Binding LegendTextPaint}"
+                    LegendTextSize="16"
+                    -->
+            </Border>
+        </Grid>
+
+        <!--Bottom Right-->
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".5*"/>
                 <ColumnDefinition Width=".5*"/>
                 <ColumnDefinition Width=".5*"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Vertical" Grid.Column="0">
-                <Label Content="Randbed." FontWeight="Bold" HorizontalAlignment="Center"/>
-                <Line X1="80" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <Label Content="{x:Static env:UserSaved.Ti_Value}" ContentStringFormat='θi = {0} °C' />
-                <Label Content="{x:Static env:UserSaved.Te_Value}" ContentStringFormat='θe = {0} °C'/>
-                <Label Content="{x:Static env:UserSaved.Rsi_Value}" ContentStringFormat='Rsi = {0} m²K/W' />
-                <Label Content="{x:Static env:UserSaved.Rse_Value}" ContentStringFormat='Rse = {0} m²K/W' />
-                <Label Content="{x:Static env:UserSaved.Rel_Fi_Value}" ContentStringFormat='φi = {0} %' />
-                <Label Content="{x:Static env:UserSaved.Rel_Fe_Value}" ContentStringFormat='φe = {0} %' />
-            </StackPanel>
-
-            <StackPanel Orientation="Vertical" Grid.Column="1">
                 <Label Content="Ist-Werte" FontWeight="Bold" HorizontalAlignment="Center"/>
-                <Line X1="80" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' />
-                <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²'/>
-                <Label Content="{Binding TempCurveCalc.FRsi}" ContentStringFormat='fRsi = {0}'  FontStyle="Italic"/>
-                <Label Content="{Binding TempCurveCalc.PhiMax}" ContentStringFormat='φmax = {0} %' />
-            </StackPanel>
-
-            <StackPanel Orientation="Vertical" Grid.Column="2">
-                <Label Content="Soll-Werte" FontWeight="Bold" HorizontalAlignment="Center"/>
-                <Line X1="80" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
+                <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
                 <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' />
                 <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²' />
                 <Label Content="{Binding TempCurveCalc.FRsi}" ContentStringFormat='fRsi = {0}'  FontStyle="Italic"/>
-                <Label Content="{Binding TempCurveCalc.PhiMax}" ContentStringFormat='φmax = {0} %' />
+                <Label Content="{x:Static env:UserSaved.Rel_Fi_Value}" ContentStringFormat='φi = {0} %' />
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Grid.Column="1">
+                <Label Content="Soll-Werte" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
+                <Label Content="tbd"/>
+                <Label Content="tbd"/>
+                <Label Content="> 0.7" FontStyle="Italic"/>
+                <Label Content="{Binding TempCurveCalc.PhiMax}" ContentStringFormat="&lt; {0} %" />
             </StackPanel>
 
         </Grid>

@@ -76,12 +76,12 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 rLayers += l.LayerResistance;
             }
-            return Math.Round(rLayers,3);
+            return Math.Round(rLayers,2);
         }
 
         private double GetRTotal()
         {
-            return Math.Round(UserSaved.Rsi_Value + SumOfLayersR + UserSaved.Rse_Value, 3);
+            return Math.Round(UserSaved.Rsi_Value + SumOfLayersR + UserSaved.Rse_Value, 2);
         }
 
         private double GetUValue()
@@ -128,7 +128,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             if (UserSaved.Ti_Value - UserSaved.Te_Value == 0)
                 return 0;
 
-            return Math.Round((LayerTemps.First().Value - UserSaved.Te_Value) / (UserSaved.Ti_Value - UserSaved.Te_Value), 3);
+            return Math.Round((LayerTemps.First().Value - UserSaved.Te_Value) / (UserSaved.Ti_Value - UserSaved.Te_Value), 2);
         }
 
         private double GetMaxRelF() //maximal zulässige Raumluftfeuchte
@@ -136,7 +136,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             if (FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) >= 0 && FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) <= 30)
             {
                 double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (UserSaved.Ti_Value - UserSaved.Te_Value) + UserSaved.Te_Value) / (109.8 + UserSaved.Ti_Value), 8.02) * 100;
-                return Math.Round(phiMax, 3);
+                return Math.Round(phiMax, 1);
             }
             throw new ArgumentException("Randbedingung zur Berechnung nicht erfüllt."); //TODO Rechnung erlauben, jedoch Hinweis entsprechend einblenden
         }
