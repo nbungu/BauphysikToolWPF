@@ -42,8 +42,6 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double Te { get; private set; } = UserSaved.Te.Value;
         public double Rsi { get; private set; } = UserSaved.Rsi.Value;
         public double Rse { get; private set; } = UserSaved.Rse.Value;
-        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi.Value;
-        public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe.Value;
 
         // (Instance-) Constructor
         public StationaryTempCalc(List<Layer> layers)
@@ -108,7 +106,6 @@ namespace BauphysikToolWPF.ComponentCalculations
             //Starting from inner side
             double widthPosition = TotalElementWidth;
             double value = Ti - Rsi * QValue; // Tsi
-
             temp_List.Add(new KeyValuePair<double, double>(widthPosition, value)); // key, value
 
             for (int i = 0; i<Layers.Count; i++)
@@ -116,13 +113,8 @@ namespace BauphysikToolWPF.ComponentCalculations
                 double currentWidthPosition = widthPosition - Layers[i].LayerThickness;
                 double currentValue = temp_List.ElementAt(i).Value - Layers[i].R_Value * QValue;
                 temp_List.Add(new KeyValuePair<double, double>(currentWidthPosition, currentValue));
-
                 widthPosition = currentWidthPosition;
             }
-
-            // Adding Ti at beginning & Te at end of the List
-            //temp_List.Insert(0, new KeyValuePair<double, double>(TotalElementWidth + 1, UserSaved.Ti_Value));
-            //temp_List.Insert(temp_List.Count, new KeyValuePair<double, double>(-1, UserSaved.Te_Value));
 
             if (widthPosition == 0)
                 return temp_List;

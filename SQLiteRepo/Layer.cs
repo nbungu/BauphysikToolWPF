@@ -47,7 +47,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
 
         [Ignore]
-        public double Sd_Value
+        public double Sd_Thickness // sd thickness in m
         {
             get { return Math.Round((this.LayerThickness/100) * Material.DiffusionResistance, 3); }
         }

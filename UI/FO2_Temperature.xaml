@@ -92,7 +92,7 @@
                 <Label Content="{Binding StationaryTempCalculation.UValue}" ContentStringFormat='U = {0} W/m²K' FontSize="14" />
                 <Label Content="{Binding StationaryTempCalculation.QValue}" ContentStringFormat='q = {0} W/m²' FontSize="14"/>
                 <Label Content="{Binding StationaryTempCalculation.FRsi}" ContentStringFormat='fRsi = {0}' FontSize="14" FontStyle="Italic"/>
-                <Label Content="{Binding StationaryTempCalculation.Rel_Fi}" ContentStringFormat='φi = {0} %' FontSize="14"/>
+                <Label Content="{Binding Rel_Fi}" ContentStringFormat='φi = {0} %' FontSize="14"/>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Grid.Column="1">

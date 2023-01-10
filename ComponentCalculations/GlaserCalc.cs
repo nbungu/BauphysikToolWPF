@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.EnvironmentData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,9 @@ namespace BauphysikToolWPF.ComponentCalculations
                 layers = value;
             }
         }
-        public double TotalElementWidth { get; private set; } = 0;
+        public double TotalSdWidth { get; private set; } = 0;
+        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi.Value;
+        public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe.Value;
 
         public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P_sat in Pa
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P in Pa
@@ -36,20 +39,20 @@ namespace BauphysikToolWPF.ComponentCalculations
             //User specified (public setter)
             Layers = layers;
             //Calculated parameters (private setter)
-            TotalElementWidth = GetTotalEquivalentElementWidth();   // Gl. 5.2; S.246
-            LayerPsat = GetLayerPsat();                             // Gl. 2.4; S.164
-            LayerP = GetLayerP();                                   // Gl. 2.3; S.164
+            TotalSdWidth = GetTotalSdWidth();   // Gl. 5.2; S.246
+            LayerPsat = GetLayerPsat();         // Gl. 2.4; S.164
+            LayerP = GetLayerP();               // Gl. 2.3; S.164
         }
 
         // Methods
-        private double GetTotalEquivalentElementWidth()
+        private double GetTotalSdWidth()
         {
             double width = 0;
             foreach (Layer l in Layers)
             {
-                width += l.Sd_Value; // sum of sd-values
+                width += l.Sd_Thickness; // sum of sd-values
             }
-            return width;
+            return Math.Round(width,3);
         }
         private List<KeyValuePair<double, double>> GetLayerPsat()
         {
@@ -57,32 +60,42 @@ namespace BauphysikToolWPF.ComponentCalculations
             List<KeyValuePair<double,double>> p_sat_List = new List<KeyValuePair<double,double>>();
 
             //Starting from inner side
-            double widthPosition = TotalElementWidth;
-            double value = Ti - Rsi * QValue; // Tsi
+            double widthPosition = TotalSdWidth;
 
-            p_sat_List.Add(new KeyValuePair<double, double>(widthPosition, value)); // key, value
-
-            for (int i = 0; i<Layers.Count; i++)
-            {
-                double currentWidthPosition = widthPosition - Layers[i].LayerThickness;
-                double currentValue = p_sat_List.ElementAt(i).Value - Layers[i].R_Value * QValue;
+            for (int i = 0; i<LayerTemps.Count; i++)
+            {     
+                double currentWidthPosition = Math.Round(widthPosition,3);
+                double currentValue = P_sat(LayerTemps[i].Value);
                 p_sat_List.Add(new KeyValuePair<double, double>(currentWidthPosition, currentValue));
 
-                widthPosition = currentWidthPosition;
+                if (i == Layers.Count)
+                    break; //avoid index out of range exception on Layers[i]: Has 1 less item than in LayerTemps[i]
+                widthPosition -= Layers[i].Sd_Thickness;
             }
 
-            // Adding Ti at beginning & Te at end of the List
-            //p_sat_List.Insert(0, new KeyValuePair<double, double>(TotalElementWidth + 1, UserSaved.Ti_Value));
-            //p_sat_List.Insert(p_sat_List.Count, new KeyValuePair<double, double>(-1, UserSaved.Te_Value));
-
-            if (widthPosition == 0)
+            if (Math.Round(widthPosition,3) == 0)
                 return p_sat_List;
             else throw new ArgumentOutOfRangeException("calculation failed");
         }
         private List<KeyValuePair<double, double>> GetLayerP()
         {
-            List<KeyValuePair<double, double>> p_List = new List<KeyValuePair<double, double>>();
-            return;
+            double pi = Math.Round((Rel_Fi/100) * P_sat(Ti),1);
+            double pe = Math.Round((Rel_Fe/100) * P_sat(Te),1);
+            List<KeyValuePair<double, double>> p_List = new List<KeyValuePair<double, double>>()
+            {
+                new KeyValuePair<double, double>(TotalSdWidth, pi),
+                new KeyValuePair<double, double>(0, pe)
+            };
+            return p_List;
+        }
+
+        private double P_sat(double temperature)
+        {
+            double a = (temperature < 0) ? 4.689 : 288.68;
+            double b = (temperature < 0) ? 1.486 : 1.098;
+            double n = (temperature < 0) ? 12.3 : 8.02;
+            double p_sat = a * Math.Pow(b + (temperature / 100), n);
+            return Math.Round(p_sat,1);
         }
 
     }

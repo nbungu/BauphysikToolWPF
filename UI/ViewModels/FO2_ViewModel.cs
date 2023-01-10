@@ -37,6 +37,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipBackgroundPaint { get; set; }
         public SolidColorPaint LegendTextPaint { get; set; }
         public SolidColorPaint LegendBackgroundPaint { get; set; }
+        public double Rel_Fi { get; set; } = UserSaved.Rel_Fi.Value;
 
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
