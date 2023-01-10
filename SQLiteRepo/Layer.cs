@@ -41,9 +41,15 @@ namespace BauphysikToolWPF.SQLiteRepo
         public bool IsSelected { get; set; } // For UI Purposes 
 
         [Ignore]
-        public double LayerResistance
+        public double R_Value
         {
             get { return Math.Round((this.LayerThickness/100) / Material.ThermalConductivity, 3); }
+        }
+
+        [Ignore]
+        public double Sd_Value
+        {
+            get { return Math.Round((this.LayerThickness/100) * Material.DiffusionResistance, 3); }
         }
 
         //------Konstruktor-----//

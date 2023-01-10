@@ -22,10 +22,10 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class FO3_Moisture : UserControl
     {
-        public static GlaserCurve GlaserCalc { get; private set; }
+        public static GlaserCalc GlaserCalculation { get; private set; }
         public FO3_Moisture()
         {
-            GlaserCalc = new GlaserCurve(FO1_Setup.Layers); //for FO3_ViewModel
+            GlaserCalculation = new GlaserCalc(FO1_Setup.Layers); //for FO3_ViewModel
             InitializeComponent();
         }
     }

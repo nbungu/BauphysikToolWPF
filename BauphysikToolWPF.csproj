@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Einheiten\Rsi_Rse.png" />
     <None Remove="Resources\Icons\CL_001x80_climate_menu.png" />
     <None Remove="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
     <None Remove="Resources\Icons\GL_003x80_back.png" />
@@ -27,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Einheiten\Rsi_Rse.png" />
     <Resource Include="Resources\Icons\CL_001x80_climate_menu.png" />
     <Resource Include="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
     <Resource Include="Resources\Icons\GL_003x80_back.png" />

@@ -39,18 +39,18 @@
             <Border Grid.Row="0" BorderBrush="#FFABADB3" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True">
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
-                        <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                        <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <Label Content="{Binding TempCurveCalc.Te}" ContentStringFormat='θe = {0} °C' VerticalContentAlignment="Center"/>
+                        <Label Content="{Binding StationaryTempCalculation.Te}" ContentStringFormat='θe = {0} °C' VerticalContentAlignment="Center" FontSize="14"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <Label Content="{Binding TempCurveCalc.Rse}" ContentStringFormat='Rse = {0} m²K/W' VerticalContentAlignment="Center" />
+                        <Label Content="{Binding StationaryTempCalculation.Rse}" ContentStringFormat='Rse = {0} m²K/W' VerticalContentAlignment="Center" FontSize="14"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
-                        <Label Content="{Binding TempCurveCalc.Rsi}" ContentStringFormat='Rsi = {0} m²K/W' VerticalContentAlignment="Center" />
+                        <Label Content="{Binding StationaryTempCalculation.Rsi}" ContentStringFormat='Rsi = {0} m²K/W' VerticalContentAlignment="Center" FontSize="14"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <Label Content="{Binding TempCurveCalc.Ti}" ContentStringFormat='θi = {0} °C' VerticalContentAlignment="Center" />
+                        <Label Content="{Binding StationaryTempCalculation.Ti}" ContentStringFormat='θi = {0} °C' VerticalContentAlignment="Center" FontSize="14"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <Label Content="Innen" VerticalContentAlignment="Center" FontWeight="Bold"/>
+                        <Label Content="Innen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -59,7 +59,7 @@
                 <lvc:CartesianChart
                     Grid.Row="1"
                     ClipToBounds="True"
-                    Series="{Binding TempCurve}"
+                    Series="{Binding DataPoints}"
                     Sections="{Binding LayerSections}"
                     XAxes="{Binding XAxes}"
                     YAxes="{Binding YAxes}"   
@@ -67,7 +67,7 @@
                     TooltipPosition="Top"
                     TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
                     TooltipTextPaint="{Binding TooltipTextPaint}"
-                    TooltipTextSize="16"
+                    TooltipTextSize="14"
                     Background="White"
                     Margin="8,0,0,8"/>
                         <!--
@@ -87,21 +87,21 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Vertical" Grid.Column="0">
-                <Label Content="Ist-Werte" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <Label Content="{Binding TempCurveCalc.UValue}" ContentStringFormat='U = {0} W/m²K' />
-                <Label Content="{Binding TempCurveCalc.QValue}" ContentStringFormat='q = {0} W/m²' />
-                <Label Content="{Binding TempCurveCalc.FRsi}" ContentStringFormat='fRsi = {0}'  FontStyle="Italic"/>
-                <Label Content="{Binding TempCurveCalc.Rel_Fi}" ContentStringFormat='φi = {0} %' />
+                <Label Content="{Binding StationaryTempCalculation.UValue}" ContentStringFormat='U = {0} W/m²K' FontSize="14" />
+                <Label Content="{Binding StationaryTempCalculation.QValue}" ContentStringFormat='q = {0} W/m²' FontSize="14"/>
+                <Label Content="{Binding StationaryTempCalculation.FRsi}" ContentStringFormat='fRsi = {0}' FontSize="14" FontStyle="Italic"/>
+                <Label Content="{Binding StationaryTempCalculation.Rel_Fi}" ContentStringFormat='φi = {0} %' FontSize="14"/>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Grid.Column="1">
-                <Label Content="Soll-Werte" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <Label Content="tbd"/>
-                <Label Content="tbd"/>
-                <Label Content="> 0.7" FontStyle="Italic"/>
-                <Label Content="{Binding TempCurveCalc.PhiMax}" ContentStringFormat="&lt; {0} %" />
+                <Label Content="tbd" FontSize="14"/>
+                <Label Content="tbd" FontSize="14"/>
+                <Label Content="> 0.7" FontSize="14" FontStyle="Italic"/>
+                <Label Content="{Binding StationaryTempCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14"/>
             </StackPanel>
         </Grid>
 

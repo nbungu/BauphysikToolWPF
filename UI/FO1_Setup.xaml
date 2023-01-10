@@ -40,13 +40,13 @@
 
                 <Grid Grid.RowSpan="2">
                     <Ellipse Fill="{Binding Material.ColorCode}" Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <Label Content="{Binding LayerPosition}" Margin="0,0,8,0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="16"/>
+                    <Label Content="{Binding LayerPosition}" Margin="0,0,8,0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
                 </Grid>
                 <Label Grid.Column="1" Content="{Binding Material.Name}" Height="28" FontWeight="Bold"/>
                 <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.Category}" Height="28" FontStyle="Italic" VerticalAlignment="Bottom"/>
                 <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' VerticalAlignment="Center"/>
                 <Line Grid.Column="2" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="0.5"/>
-                <Label Grid.Column="3" Grid.RowSpan="2" Content="{Binding LayerResistance}" ContentStringFormat='Ri = {0} (m²K)/W' VerticalAlignment="Center" Margin="8,0,0,0"/>
+                <Label Grid.Column="3" Grid.RowSpan="2" Content="{Binding R_Value}" ContentStringFormat='Ri = {0} (m²K)/W' VerticalAlignment="Center" Margin="8,0,0,0"/>
                 
                 <!--TODO make button appear only if lvitem is clicked
                 <Button Content="T" Grid.Column="4" Grid.RowSpan="2" Margin="8,0,0,0">
@@ -102,8 +102,9 @@
 
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
             <!--These setters are for the default appearance-->
-            <Setter Property="Width" Value="40"/>
+            <Setter Property="Width" Value="44"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
@@ -138,33 +139,33 @@
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <Button x:Name="addLayer_Button" Style="{StaticResource CustomButton}" Click="addLayerClicked" Margin="0,0,8,8">
-                    <StackPanel Orientation="Horizontal" Margin="4,0,16,0">
-                        <Image Source="/Resources/Icons/GL_010x80_create.png" Stretch="Fill" Height="36" Width="36" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                        <Image Source="/Resources/Icons/GL_010x80_create.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Add Layer" VerticalAlignment="Center" Margin="4,0,0,0"/>
                     </StackPanel>
                 </Button>
 
                 <Button x:Name="deleteLayer_Button" Style="{StaticResource CustomButton}" Click="deleteLayerClicked" Margin="0,0,8,8">
-                    <StackPanel Orientation="Horizontal" Margin="4,0,16,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                         <Image Source="/Resources/Icons/GL_011x80_delete.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Delete Layer" VerticalAlignment="Center" Margin="4,0,0,0"/>
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="deleteAllLayers_Button" Style="{StaticResource CustomButton}" Click="deleteAllLayersClicked" Margin="0,0,8,8">
-                    <StackPanel Orientation="Horizontal" Margin="4,0,16,0">
-                        <Image Source="/Resources/Icons/GL_011x80_delete.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
-                        <TextBlock Text="Delete All" VerticalAlignment="Center" Margin="4,0,0,0"/>
-                    </StackPanel>
-                </Button>
-
                 <Button x:Name="editLayer_Button" Style="{StaticResource CustomButton}" Click="editLayerClicked" Margin="0,0,8,8">
-                    <StackPanel Orientation="Horizontal" Margin="4,0,16,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                         <Image Source="/Resources/Icons/GL_015x80_edit.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Edit Layer" VerticalAlignment="Center" Margin="4,0,0,0"/>
                     </StackPanel>
                 </Button>
             </StackPanel>
+            
+            <Button x:Name="deleteAllLayers_Button" Style="{StaticResource CustomButton}" Click="deleteAllLayersClicked" HorizontalAlignment="Right" Margin="0,0,0,8">
+                <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
+                    <Image Source="/Resources/Icons/GL_011x80_delete.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                    <TextBlock Text="Delete All" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                </StackPanel>
+            </Button>
 
             <ListView x:Name="layers_ListView"
                       Grid.Row="1"
@@ -179,83 +180,79 @@
         </Grid>
 
         <!--Middle Right-->
-        <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="16">
+        <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
-                <RowDefinition Height="32" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Label Content="Außen - Linke Seite" HorizontalContentAlignment="Left"/>
-            <Label x:Name="layer_Label" Content="-" HorizontalContentAlignment="Center" />
-            <Label Content="Innen - Rechte Seite" HorizontalContentAlignment="Right" />
-
-            <Viewbox Grid.Row="1" ClipToBounds="True">
+            <Viewbox Grid.Row="0" ClipToBounds="True">
                 <!--Canvas inside of ViewBox makes it dynamically sizable-->
                 <Canvas x:Name="layers_Canvas" Width="400" Height="400" SnapsToDevicePixels="True"/>
                 <!-- Canvas Children defined in backend-->
             </Viewbox>
 
+            <Label Grid.Row="1" Content="Außenseite" FontSize="14" HorizontalContentAlignment="Left"/>
+            <Label Grid.Row="1" x:Name="layer_Label" FontSize="14" Content="-" HorizontalContentAlignment="Center" />
+            <Label Grid.Row="1" Content="Innenseite" FontSize="14" HorizontalContentAlignment="Right" />
+
         </Grid>
 
         <!--Bottom Left -->
-        <Grid Grid.Row="2" Grid.Column="0" Margin="16">
+        <Grid Grid.Row="2" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32" />
-                <RowDefinition Height="50" />
-                <RowDefinition Height="50" />
-                <RowDefinition Height="50" />
+                <RowDefinition Height="56" />
+                <RowDefinition Height="56" />
+                <RowDefinition Height="56" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="24" />
-                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width=".5*" />
+                <ColumnDefinition Width=".5*" />
             </Grid.ColumnDefinitions>
 
-            <Label Content="Außenseitige Randbedingungen" FontWeight="Bold" Grid.Column="0"/>
-            <Label Content="Innenseitige Randbedingungen" FontWeight="Bold" Grid.Column="2"/>
+            <Label Content="Außenseitige Randbedingungen" FontSize="14" FontWeight="Bold" Grid.Column="0"/>
+            <Label Content="Innenseitige Randbedingungen" FontSize="14" FontWeight="Bold" Grid.Column="2"/>
 
             <!--Außenseitige Randbedingungen-->
 
-            <Label Grid.Row="1" Content="Air Temperature: " VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
-            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="24">
-                <ComboBox x:Name="Te_Category_Picker" ItemsSource="{Binding Te_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="Te_Category_Picker_SelectionChanged"/>
+            <Label Grid.Row="1" Content="θe - Außenluft: " FontSize="14" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
+                <ComboBox x:Name="Te_Category_Picker" FontSize="14" ItemsSource="{Binding Te_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Te_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Te_Input" Style="{StaticResource TextBoxStyle}"/>
-                <Label Content="°C" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                <Label Content="°C" Height="32" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
-            <Label Grid.Row="2" Content="Rse: " VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
-            <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="24">
-                <ComboBox x:Name="Rse_Category_Picker" ItemsSource="{Binding Rse_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="Rse_Category_Picker_SelectionChanged"/>
+            <Label Grid.Row="2" Content="Rse: " FontSize="14" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
+            <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
+                <ComboBox x:Name="Rse_Category_Picker" FontSize="14" ItemsSource="{Binding Rse_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rse_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Rse_Input" Style="{StaticResource TextBoxStyle}"/>
-                <Label Content="(m²K)/W" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                <Image Source="/Resources/Einheiten/Rsi_Rse.png" Width="30" Height="30" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
             </StackPanel>
-            <Label Grid.Row="3" Content="Rel. Humitdity: " VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
-            <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom" Height="24">
-                <ComboBox x:Name="Rel_Fe_Category_Picker" ItemsSource="{Binding Rel_Fe_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="Rel_Fe_Category_Picker_SelectionChanged"/>
+            <Label Grid.Row="3" Content="φe - Rel. Feuchte: " FontSize="14" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
+            <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
+                <ComboBox x:Name="Rel_Fe_Category_Picker" FontSize="14" ItemsSource="{Binding Rel_Fe_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rel_Fe_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Rel_Fe_Input" Style="{StaticResource TextBoxStyle}"/>
-                <Label Content="%" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                <Label Content="%" Height="32" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
-
-            <!--Mittlere Trennlinie-->
-            <Line Grid.RowSpan="4" Grid.Column="1" Y2="600" VerticalAlignment="Stretch" HorizontalAlignment="Center" Stroke="#FFABADB3" StrokeThickness="1"/>
 
             <!--Innenseitige Randbedingungen-->
-            <Label Grid.Row="1" Grid.Column="2" Content="Air Temperature: " VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
-            <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="24">
-                <ComboBox x:Name="Ti_Category_Picker" ItemsSource="{Binding Ti_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="Ti_Category_Picker_SelectionChanged"/>
+            <Label Grid.Row="1" Grid.Column="1" Content="θi - Raumluft: " FontSize="14" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
+            <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
+                <ComboBox x:Name="Ti_Category_Picker" FontSize="14" ItemsSource="{Binding Ti_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Ti_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Ti_Input" Style="{StaticResource TextBoxStyle}"/>
-                <Label Content="°C" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                <Label Content="°C" Height="32" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
-            <Label Grid.Row="2" Grid.Column="2" Content="Rsi: " VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
-            <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="24">
-                <ComboBox x:Name="Rsi_Category_Picker" ItemsSource="{Binding Rsi_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="Rsi_Category_Picker_SelectionChanged"/>
+            <Label Grid.Row="2" Grid.Column="1" Content="Rsi: " FontSize="14" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
+            <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
+                <ComboBox x:Name="Rsi_Category_Picker" FontSize="14" ItemsSource="{Binding Rsi_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rsi_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Rsi_Input" Style="{StaticResource TextBoxStyle}"/>
-                <Label Content="(m²K)/W" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                <Image Source="/Resources/Einheiten/Rsi_Rse.png" Width="30" Height="30" Stretch="Fill" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
             </StackPanel>
-            <Label  Grid.Row="3" Grid.Column="2" Content="Rel. Humitdity: " VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
-            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="24">
-                <ComboBox x:Name="Rel_Fi_Category_Picker" ItemsSource="{Binding Rel_Fi_Keys}" Width="152" VerticalAlignment="Stretch" SelectionChanged="Rel_Fi_Category_Picker_SelectionChanged"/>
+            <Label Grid.Row="3" Grid.Column="1" Content="φi - Rel. Feuchte: " FontSize="14" VerticalAlignment="Top" VerticalContentAlignment="Center" HorizontalAlignment="Left"/>
+            <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
+                <ComboBox x:Name="Rel_Fi_Category_Picker" FontSize="14" ItemsSource="{Binding Rel_Fi_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rel_Fi_Category_Picker_SelectionChanged"/>
                 <TextBox x:Name="Rel_Fi_Input" Style="{StaticResource TextBoxStyle}"/>
-                <Label Content="%" Height="32" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+                <Label Content="%" Height="32" FontSize="14" FontWeight="SemiBold" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
         </Grid>
 

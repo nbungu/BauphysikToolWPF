@@ -100,7 +100,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Label Content="Select Category" Padding="0,8,8,8" FontWeight="Bold"/>
+            <Label Content="Select Category" FontWeight="Bold" FontSize="14" VerticalContentAlignment="Center"/>
 
             <ListView x:Name="collectionView_Categories"
                       ItemsSource="{Binding DistinctCategories}"
@@ -117,7 +117,7 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <Label Content="{Binding}" HorizontalAlignment="Right" />
+                            <Label Content="{Binding}" FontSize="14" HorizontalAlignment="Right" />
                         </Grid>
                     </DataTemplate>
                 </ListView.ItemTemplate>
@@ -131,7 +131,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Label Content="Select Material" Padding="0,8,8,8" FontWeight="Bold"/>
+            <Label Content="Select Material" FontWeight="Bold" FontSize="14" VerticalContentAlignment="Center"/>
 
             <Grid Grid.Row="1" Margin="0, 0, 0, 8">
                 <Grid.ColumnDefinitions>
@@ -140,8 +140,8 @@
                 </Grid.ColumnDefinitions>
 
 
-                <TextBox x:Name="searchBar_Materials" Grid.Column="0" VerticalContentAlignment="Center" TextChanged="searchBar_TextChanged" Height="32"/>
-                <Button x:Name="button_CreateMaterial" Grid.Column="1" Content="Create new" Click="button_CreateMaterial_Clicked" Height="32" Margin="8,0,0,0"/>
+                <TextBox x:Name="searchBar_Materials" Grid.Column="0" VerticalContentAlignment="Center" TextChanged="searchBar_TextChanged" FontSize="14" Height="32"/>
+                <Button x:Name="button_CreateMaterial" Grid.Column="1" Content="Create new" Click="button_CreateMaterial_Clicked" Height="32" FontSize="14" Margin="8,0,0,0"/>
             </Grid>
 
             <ListView x:Name="collectionView_Materials"
@@ -151,9 +151,9 @@
         </Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="8">
-            <Label Content="Specify layer thickness" FontWeight="Bold" VerticalAlignment="Center"/>
-            <TextBox x:Name="thickness_TextBox" Text="" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput" Height="32" Width="56"/>
-            <Label Content="cm" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Label Content="Specify layer thickness" FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
+            <TextBox x:Name="thickness_TextBox" Text="" VerticalContentAlignment="Center" FontSize="14" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput" Height="32" Width="56"/>
+            <Label Content="cm" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
         </StackPanel>
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="8">

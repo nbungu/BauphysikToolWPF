@@ -28,9 +28,9 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO2_ViewModel
     {
         public string Title { get; } = "Temperature";
-        public StationaryTempCurve TempCurveCalc { get; set; }
+        public StationaryTempCalc StationaryTempCalculation { get; set; }
         public RectangularSection[] LayerSections { get; set; }
-        public ISeries[] TempCurve { get; set; }
+        public ISeries[] DataPoints { get; set; }
         public Axis[] XAxes { get; set; }
         public Axis[] YAxes { get; set; }
         public SolidColorPaint TooltipTextPaint { get; set; }
@@ -40,29 +40,29 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
-            this.TempCurveCalc = FO2_Temperature.TempCalc;
+            this.StationaryTempCalculation = FO2_Temperature.StationaryTempCalculation;
             this.LayerSections = DrawLayerSections();
-            this.TempCurve = DrawTempCurvePoints();
+            this.DataPoints = DrawTempCurvePoints();
             this.XAxes = DrawXAxes();
             this.YAxes = DrawYAxes();
             this.TooltipTextPaint = new SolidColorPaint
             {
                 Color = new SKColor(0, 0, 0),
-                SKTypeface = SKTypeface.FromFamilyName("Arial"),
+                SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
             };
             this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
         }
         private RectangularSection[] DrawLayerSections()
         {
-            if (TempCurveCalc.Layers.Count == 0)
+            if (StationaryTempCalculation.Layers.Count == 0)
                 return new RectangularSection[0];
 
-            RectangularSection[] rects = new RectangularSection[TempCurveCalc.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[StationaryTempCalculation.Layers.Count];
 
-            double fullWidth = TempCurveCalc.TotalElementWidth;
+            double fullWidth = StationaryTempCalculation.TotalElementWidth;
             double right = fullWidth;
 
-            foreach (Layer layer in TempCurveCalc.Layers)
+            foreach (Layer layer in StationaryTempCalculation.Layers)
             {
                 int position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.LayerThickness;
@@ -86,7 +86,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
 
             //TODO: is hardcoded
-            /*fRsi frsi = new fRsi(TempCurveCalc.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
+            /*fRsi frsi = new fRsi(StationaryTempCalculation.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
             rects[5] = new RectangularSection
             {
                 Yi = fRsi.TsiMin,
@@ -103,13 +103,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] DrawTempCurvePoints()
         {
-            if (TempCurveCalc.Layers.Count == 0)
+            if (StationaryTempCalculation.Layers.Count == 0)
                 return new ISeries[0];
 
             ISeries[] series = new ISeries[3]; // more than one series possible to draw in the same graph      
 
-            double tsi_Pos = TempCurveCalc.LayerTemps.First().Key;
-            double tsi = TempCurveCalc.LayerTemps.First().Value;
+            double tsi_Pos = StationaryTempCalculation.LayerTemps.First().Key;
+            double tsi = StationaryTempCalculation.LayerTemps.First().Value;
             double deltaTi = Math.Abs(UserSaved.Ti.Value - tsi);
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
@@ -128,11 +128,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 TooltipLabelFormatter = null
             };
             
-            ObservablePoint[] tempValues = new ObservablePoint[TempCurveCalc.LayerTemps.Count()]; // represents the temperature points
-            for (int i = 0; i < TempCurveCalc.LayerTemps.Count(); i++)
+            ObservablePoint[] tempValues = new ObservablePoint[StationaryTempCalculation.LayerTemps.Count()]; // represents the temperature points
+            for (int i = 0; i < StationaryTempCalculation.LayerTemps.Count(); i++)
             {
-                double x = TempCurveCalc.LayerTemps.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(TempCurveCalc.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
+                double x = StationaryTempCalculation.LayerTemps.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(StationaryTempCalculation.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
                 tempValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             // Set properties & add temperature points to the series
@@ -154,8 +154,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
 
-            double tse_Pos = TempCurveCalc.LayerTemps.Last().Key;
-            double tse = TempCurveCalc.LayerTemps.Last().Value;
+            double tse_Pos = StationaryTempCalculation.LayerTemps.Last().Key;
+            double tse = StationaryTempCalculation.LayerTemps.Last().Value;
             double deltaTe = Math.Abs(UserSaved.Te.Value - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
@@ -178,7 +178,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             series[1] = tempCurveSeries;
             series[2] = rseCurveSeries;
 
-
             return series;
         }
         private Axis[] DrawXAxes()
@@ -188,7 +187,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             axes[0] = new Axis
             {
                 Name = "Element thickness [cm]",
-                NameTextSize = 16,
+                NameTextSize = 14,
                 NamePaint = new SolidColorPaint(SKColors.Black),
                 //Labels = new string[] { "Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5" },
                 LabelsPaint = new SolidColorPaint(SKColors.Black),
@@ -216,7 +215,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 NamePaint = new SolidColorPaint(SKColors.Black),
                 LabelsPaint = new SolidColorPaint(SKColors.Black),
                 TextSize = 14,
-                NameTextSize = 16,
+                NameTextSize = 14,
                 Position = LiveChartsCore.Measure.AxisPosition.Start,
                 SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
                 {

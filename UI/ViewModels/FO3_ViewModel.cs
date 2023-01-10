@@ -27,11 +27,10 @@ namespace BauphysikToolWPF.UI.ViewModels
     [ObservableObject]
     public partial class FO3_ViewModel
     {
-        public string Title { get; } = "Moisture"; // Called by 'InitializeComponent()' due to Class-Binding in xaml via DataContext
-        
-        //public GlaserCurve GlaserCurveCalc { get; set; }
+        public string Title { get; } = "Moisture"; // Called by 'InitializeComponent()' due to Class-Binding in xaml via DataContext        
+        public GlaserCalc GlaserCalculation { get; set; }
         public RectangularSection[] LayerSections { get; set; }
-        public ISeries[] GlaserCurve { get; set; }
+        public ISeries[] DataPoints { get; set; }
         public Axis[] XAxes { get; set; }
         public Axis[] YAxes { get; set; }
         public SolidColorPaint TooltipTextPaint { get; set; }
@@ -40,7 +39,163 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint LegendBackgroundPaint { get; set; }
         public FO3_ViewModel() // Called by 'InitializeComponent()' from FO3_Moisture.cs due to Class-Binding in xaml via DataContext
         {
-            
+            this.GlaserCalculation = FO3_Moisture.GlaserCalculation;
+            this.LayerSections = DrawLayerSections();
+            this.DataPoints = DrawGlaserCurvePoints();
+            this.XAxes = DrawXAxes();
+            this.YAxes = DrawYAxes();
+            this.TooltipTextPaint = new SolidColorPaint
+            {
+                Color = new SKColor(0, 0, 0),
+                SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
+            };
+            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
+        }
+        private RectangularSection[] DrawLayerSections()
+        {
+            if (GlaserCalculation.Layers.Count == 0)
+                return new RectangularSection[0];
+
+            RectangularSection[] rects = new RectangularSection[GlaserCalculation.Layers.Count];
+
+            double fullWidth = GlaserCalculation.TotalElementWidth;
+            double right = fullWidth;
+
+            foreach (Layer layer in GlaserCalculation.Layers)
+            {
+                int position = layer.LayerPosition - 1; // change to 0 based index
+                double layerWidth = layer.Sd_Value;
+                double left = right - layerWidth; // start drawing from right side (beginning with INSIDE Layer, which is first list element)
+
+                // Set properties of the layer rectangle at the desired position
+                rects[position] = new RectangularSection
+                {
+                    Xi = left,
+                    Xj = right,
+                    Fill = new SolidColorPaint(SKColor.Parse(layer.Material.ColorCode)),
+                    Stroke = new SolidColorPaint
+                    {
+                        Color = SKColors.Black,
+                        StrokeThickness = 1,
+                        //PathEffect = new DashEffect(new float[] { 6, 6 })
+                    },
+                    ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
+                };
+                right -= layerWidth; // Add new layer at left edge of previous layer
+            }
+
+            return rects;
+        }
+        private ISeries[] DrawGlaserCurvePoints()
+        {
+            if (GlaserCalculation.Layers.Count == 0)
+                return new ISeries[0];
+
+            ISeries[] series = new ISeries[2];     
+
+            ObservablePoint[] p_Curve_Values = new ObservablePoint[GlaserCalculation.LayerTemps.Count()]; // represents the temperature points
+            for (int i = 0; i < GlaserCalculation.LayerTemps.Count(); i++)
+            {
+                double x = GlaserCalculation.LayerTemps.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(GlaserCalculation.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
+                tempValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+            }
+            LineSeries<ObservablePoint> p_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            {
+                Values = tempValues,
+                Fill = null,
+                LineSmoothness = 0,
+                Stroke = new SolidColorPaint(SKColors.Red, 2), 
+                GeometryFill = new SolidColorPaint(SKColors.Red),
+                GeometryStroke = new SolidColorPaint(SKColors.Red),
+                GeometrySize = 6,
+                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
+            };
+
+            ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[GlaserCalculation.LayerTemps.Count()]; // represents the temperature points
+            for (int i = 0; i < GlaserCalculation.LayerTemps.Count(); i++)
+            {
+                double x = GlaserCalculation.LayerTemps.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(GlaserCalculation.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
+                tempValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+            }
+            LineSeries<ObservablePoint> p_sat_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            {
+                Values = tempValues,
+                Fill = null,
+                LineSmoothness = 0,
+                Stroke = new SolidColorPaint(SKColors.Red, 2),
+                GeometryFill = new SolidColorPaint(SKColors.Red),
+                GeometryStroke = new SolidColorPaint(SKColors.Red),
+                GeometrySize = 6,
+                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
+            };
+
+            series[0] = p_Curve;
+            series[1] = p_sat_Curve;
+
+            return series;
+        }
+        private Axis[] DrawXAxes()
+        {
+            Axis[] axes = new Axis[1];
+
+            axes[0] = new Axis
+            {
+                Name = "Element thickness [cm]",
+                NameTextSize = 14,
+                NamePaint = new SolidColorPaint(SKColors.Black),
+                //Labels = new string[] { "Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5" },
+                LabelsPaint = new SolidColorPaint(SKColors.Black),
+                TextSize = 14,
+                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 }
+            };
+            /*axes[1] = new Axis
+            {
+                Name = "Layer Nr.",
+                NameTextSize = 16,
+                NamePaint = new SolidColorPaint(SKColors.Black),
+                Labels = new string[] { "1", "2", "3", "4" },
+                LabelsPaint = new SolidColorPaint(SKColors.Black),
+                TextSize = 14
+            };*/
+            return axes;
+        }
+        private Axis[] DrawYAxes()
+        {
+            Axis[] axes = new Axis[1];
+
+            axes[0] = new Axis
+            {
+                Name = "Temperature curve [°C]",
+                NamePaint = new SolidColorPaint(SKColors.Black),
+                LabelsPaint = new SolidColorPaint(SKColors.Black),
+                TextSize = 14,
+                NameTextSize = 14,
+                Position = LiveChartsCore.Measure.AxisPosition.Start,
+                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
+                {
+                    StrokeThickness = 1,
+                    PathEffect = new DashEffect(new float[] { 3, 3 })
+                }
+            };
+            return axes;
+            /*
+            axes[1] = new Axis
+            {
+                Name = "test",
+                NamePaint = new SolidColorPaint(SKColors.Black),
+                LabelsPaint = new SolidColorPaint(SKColors.Black),
+                TextSize = 14,
+                NameTextSize = 16,
+                Position = LiveChartsCore.Measure.AxisPosition.End,
+                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
+                {
+                    StrokeThickness = 1,
+                    PathEffect = new DashEffect(new float[] { 3, 3 })
+                },
+                ShowSeparatorLines = true
+            };*/
         }
     }
 }

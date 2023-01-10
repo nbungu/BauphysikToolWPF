@@ -75,7 +75,7 @@ namespace BauphysikToolWPF.UI
                 Label label = new Label()
                 {
                     Content = layer.LayerPosition,
-                    FontSize = 12
+                    FontSize = 14
                 };
 
                 // Draw layer rectangle

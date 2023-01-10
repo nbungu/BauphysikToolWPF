@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace BauphysikToolWPF.ComponentCalculations
 {
-    public class StationaryTempCurve
+    public class StationaryTempCalc
     {
         //static Class variables
 
@@ -46,7 +46,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe.Value;
 
         // (Instance-) Constructor
-        public StationaryTempCurve(List<Layer> layers)
+        public StationaryTempCalc(List<Layer> layers)
         {
             if (layers.Count == 0)
                 return;
@@ -55,13 +55,13 @@ namespace BauphysikToolWPF.ComponentCalculations
             Layers = layers;
             //Calculated parameters (private setter)
             TotalElementWidth = GetTotalElementWidth();
-            SumOfLayersR = GetLayersR();
-            RTotal = GetRTotal();
-            UValue = GetUValue();
-            QValue = GetqValue();
-            LayerTemps = GetLayerTemps();
-            FRsi = GetfRsiValue(); // Gl. 3-1
-            PhiMax = GetMaxRelF(); // Gl. 3-3
+            SumOfLayersR = GetLayersR();    // Gl. 2-54; S.28
+            RTotal = GetRTotal();           // Gl. 2-55; S.28
+            UValue = GetUValue();           // Gl. 2-57; S.29
+            QValue = GetqValue();           // Gl. 2-65; S.31
+            LayerTemps = GetLayerTemps();   // Bsp. S.33
+            FRsi = GetfRsiValue();          // Gl. 3-1; S.36
+            PhiMax = GetMaxRelF();          // Gl. 3-3; S.37
         }
 
         // Methods
@@ -80,7 +80,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             double rLayers = 0;
             foreach (Layer l in Layers)
             {
-                rLayers += l.LayerResistance;
+                rLayers += l.R_Value;
             }
             return Math.Round(rLayers,2);
         }
@@ -103,29 +103,29 @@ namespace BauphysikToolWPF.ComponentCalculations
         private List<KeyValuePair<double, double>> GetLayerTemps()
         {
             //Dictionaries are not ordered: Instead use List as ordered collection
-            List<KeyValuePair<double,double>> elementTemps = new List<KeyValuePair<double,double>>();
+            List<KeyValuePair<double,double>> temp_List = new List<KeyValuePair<double,double>>();
 
             //Starting from inner side
             double widthPosition = TotalElementWidth;
-            double tVal = Ti - Rsi * QValue; // Tsi
+            double value = Ti - Rsi * QValue; // Tsi
 
-            elementTemps.Add(new KeyValuePair<double, double>(widthPosition, tVal)); // key, value
+            temp_List.Add(new KeyValuePair<double, double>(widthPosition, value)); // key, value
 
             for (int i = 0; i<Layers.Count; i++)
             {
-                double current_widthPosition = widthPosition - Layers[i].LayerThickness;
-                double current_tVal = elementTemps.ElementAt(i).Value - Layers[i].LayerResistance * QValue;
-                elementTemps.Add(new KeyValuePair<double, double>(current_widthPosition, current_tVal));
+                double currentWidthPosition = widthPosition - Layers[i].LayerThickness;
+                double currentValue = temp_List.ElementAt(i).Value - Layers[i].R_Value * QValue;
+                temp_List.Add(new KeyValuePair<double, double>(currentWidthPosition, currentValue));
 
-                widthPosition = current_widthPosition;
+                widthPosition = currentWidthPosition;
             }
 
             // Adding Ti at beginning & Te at end of the List
-            //elementTemps.Insert(0, new KeyValuePair<double, double>(TotalElementWidth + 1, UserSaved.Ti_Value));
-            //elementTemps.Insert(elementTemps.Count, new KeyValuePair<double, double>(-1, UserSaved.Te_Value));
+            //temp_List.Insert(0, new KeyValuePair<double, double>(TotalElementWidth + 1, UserSaved.Ti_Value));
+            //temp_List.Insert(temp_List.Count, new KeyValuePair<double, double>(-1, UserSaved.Te_Value));
 
             if (widthPosition == 0)
-                return elementTemps;
+                return temp_List;
             else throw new ArgumentOutOfRangeException("calculation failed");
         }
         private double GetfRsiValue()
@@ -151,16 +151,16 @@ namespace BauphysikToolWPF.ComponentCalculations
          double tsiVal = tiVal - SurfaceResistance.selectedRsi * qValue;
         Tsi_Value.Text = "θsi [°C]: " + tsiVal.ToString();
 
-		double t1_2Val = tsiVal - (layers[0].LayerResistance) * qValue;
+		double t1_2Val = tsiVal - (layers[0].R_Value) * qValue;
 		T1_2_Value.Text = "θ1/2 [°C]: " + t1_2Val.ToString();
 
-		double t2_3Val = t1_2Val - (layers[1].LayerResistance) * qValue;
+		double t2_3Val = t1_2Val - (layers[1].R_Value) * qValue;
 		T2_3_Value.Text = "θ2/3 [°C]: " + t2_3Val.ToString();
 
-		double t3_4Val = t2_3Val- (layers[2].LayerResistance) * qValue;
+		double t3_4Val = t2_3Val- (layers[2].R_Value) * qValue;
 		T3_4_Value.Text = "θ3/4 [°C]: " + t3_4Val.ToString();
 
-		double tseVal = t3_4Val - (layers[3].LayerResistance) * qValue;
+		double tseVal = t3_4Val - (layers[3].R_Value) * qValue;
 		Tse_Value.Text = "θse [°C]: " + tseVal.ToString();
          */
     }

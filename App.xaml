@@ -85,7 +85,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Image x:Name="MenuItemIcon" Grid.Column="0" Source="Resources/Icons/GL_019x80_home.png" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="8"/>
-                <Label x:Name="MenuItemLabel" Grid.Column="1" VerticalAlignment="Center" HorizontalContentAlignment="Center" FontWeight="Bold" Margin="0,8,8,8"/>
+                <Label x:Name="MenuItemLabel" Grid.Column="1" VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" FontWeight="Bold" Margin="0,8,8,8"/>
             </Grid>
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding}" Value="Setup">
