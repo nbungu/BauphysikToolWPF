@@ -40,11 +40,11 @@ namespace BauphysikToolWPF.UI
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_Setup()
         {
-            Layers = DatabaseAccess.GetLayers();                // default init value
-            EnvVars = DatabaseAccess.GetEnvVars();              // default init value
+            Layers = DatabaseAccess.GetLayers();                // for FO1, FO2 & FO3 ViewModel
+            EnvVars = DatabaseAccess.GetEnvVars();              // for FO1 ViewModel
             InitializeComponent();                              // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
             new DrawLayerCanvas(Layers, layers_Canvas);         // Initial Draw of the Canvas
-            DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with an event (when Layers have been added)
+            DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with an event (when Layers have been changed)
         }
 
         // event handlers

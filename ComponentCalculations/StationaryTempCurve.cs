@@ -60,8 +60,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             UValue = GetUValue();
             QValue = GetqValue();
             LayerTemps = GetLayerTemps();
-            FRsi = GetfRsiValue();
-            PhiMax = GetMaxRelF();
+            FRsi = GetfRsiValue(); // Gl. 3-1
+            PhiMax = GetMaxRelF(); // Gl. 3-3
         }
 
         // Methods

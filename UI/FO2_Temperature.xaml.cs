@@ -23,9 +23,9 @@ namespace BauphysikToolWPF.UI
     {
         public static StationaryTempCurve TempCalc { get; private set; }
         
-        public FO2_Temperature() //
+        public FO2_Temperature()
         {
-            TempCalc = new StationaryTempCurve(FO1_Setup.Layers); 
+            TempCalc = new StationaryTempCurve(FO1_Setup.Layers); //for FO2_ViewModel
             InitializeComponent();
             // -> Initializes xaml objects
             // -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)

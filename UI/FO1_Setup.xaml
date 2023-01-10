@@ -259,7 +259,7 @@
             </StackPanel>
         </Grid>
 
-        <GridSplitter Grid.Column="1" Grid.RowSpan="3" HorizontalAlignment="Left" Margin="-1,16,0,16" VerticalAlignment="Stretch" Width="2" Background="#FFABADB3"/>
+        <GridSplitter Grid.Column="1" Grid.RowSpan="3" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
 
     </Grid>
 
