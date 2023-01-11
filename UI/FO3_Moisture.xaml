@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF.UI"
+             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d" 
@@ -13,6 +14,31 @@
     <UserControl.DataContext>
         <vm:FO3_ViewModel/>
     </UserControl.DataContext>
+
+    <UserControl.Resources>
+
+        <!--Custom TextBox for Subscript Text-->
+        <Style TargetType="{x:Type controls:MathTextBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:MathTextBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="14" Text="{TemplateBinding BaseText}" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="14" Margin="-3,2,0,0" VerticalAlignment="Center">
+                                <Run Text=""/>
+                                <Run BaselineAlignment="Subscript" Text="{TemplateBinding SubscriptText}" FontSize="12"/>
+                            </TextBlock>
+                            <TextBlock x:Name="equals" FontSize="14" Text=" = " VerticalAlignment="Center"/>
+                            <TextBlock FontSize="14" Text="{TemplateBinding Value}" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="placeholder" FontSize="14" Text=" " VerticalAlignment="Center"/>
+                            <TextBlock FontSize="14" Text="{TemplateBinding Unit}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+    </UserControl.Resources>
 
     <Grid Background="#EDEDED">
         <Grid.RowDefinitions>
@@ -43,10 +69,10 @@
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <Label Content="{Binding GlaserCalculation.Te}" ContentStringFormat='θe = {0} °C' VerticalContentAlignment="Center" FontSize="14"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <Label Content="{Binding GlaserCalculation.Rse}" ContentStringFormat='Rse = {0} m²K/W' VerticalContentAlignment="Center" FontSize="14"/>
+                        <Label Content="{Binding GlaserCalculation.Rel_Fe}" ContentStringFormat='φe = {0} %' VerticalContentAlignment="Center" FontSize="14"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
-                        <Label Content="{Binding GlaserCalculation.Rsi}" ContentStringFormat='Rsi = {0} m²K/W' VerticalContentAlignment="Center" FontSize="14"/>
+                        <Label Content="{Binding GlaserCalculation.Rel_Fi}" ContentStringFormat='φi = {0} %' VerticalContentAlignment="Center" FontSize="14"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <Label Content="{Binding GlaserCalculation.Ti}" ContentStringFormat='θi = {0} °C' VerticalContentAlignment="Center" FontSize="14"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
@@ -83,19 +109,16 @@
             <StackPanel Orientation="Vertical" Grid.Column="0">
                 <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <Label Content="{Binding GlaserCalculation.UValue}" ContentStringFormat='U = {0} W/m²K' FontSize="14" />
-                <Label Content="{Binding GlaserCalculation.QValue}" ContentStringFormat='q = {0} W/m²' FontSize="14"/>
-                <Label Content="{Binding GlaserCalculation.FRsi}" ContentStringFormat='fRsi = {0}' FontSize="14" FontStyle="Italic"/>
-                <Label Content="{Binding GlaserCalculation.Rel_Fi}" ContentStringFormat='φi = {0} %' FontSize="14"/>
+                <controls:MathTextBox BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding GlaserCalculation.FRsi}" Height="28"/>
+                <controls:MathTextBox BaseText="Φ" SubscriptText="i" Value="{Binding GlaserCalculation.Rel_Fi}" Unit="%" Height="28"/>
+                <controls:MathTextBox BaseText="X" SubscriptText="i" Height="28"/>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Grid.Column="1">
                 <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <Label Content="tbd" FontSize="14"/>
-                <Label Content="tbd" FontSize="14"/>
-                <Label Content="> 0.7" FontSize="14" FontStyle="Italic"/>
-                <Label Content="{Binding GlaserCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14"/>
+                <Label Content="> 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
+                <Label Content="{Binding GlaserCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
             </StackPanel>
         </Grid>
 

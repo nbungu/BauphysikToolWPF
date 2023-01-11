@@ -105,11 +105,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Values = p_Curve_Values,
                 Fill = null,
                 LineSmoothness = 0,
-                Stroke = new SolidColorPaint(SKColors.Red, 2), 
-                GeometryFill = new SolidColorPaint(SKColors.Red),
-                GeometryStroke = new SolidColorPaint(SKColors.Red),
+                Stroke = new SolidColorPaint(SKColors.Blue, 2), 
+                GeometryFill = new SolidColorPaint(SKColors.Blue),
+                GeometryStroke = new SolidColorPaint(SKColors.Blue),
                 GeometrySize = 6,
-                TooltipLabelFormatter = (chartPoint) => $"tbd: {chartPoint.PrimaryValue} Pa",
+                TooltipLabelFormatter = (chartPoint) => $"pi: {chartPoint.PrimaryValue} Pa",
             };
 
             ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[GlaserCalculation.LayerPsat.Count()]; // represents the temperature points
@@ -128,7 +128,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometryFill = new SolidColorPaint(SKColors.Red),
                 GeometryStroke = new SolidColorPaint(SKColors.Red),
                 GeometrySize = 6,
-                TooltipLabelFormatter = (chartPoint) => $"tbd: {chartPoint.PrimaryValue} Pa",
+                TooltipLabelFormatter = (chartPoint) => $"p_sat_i: {chartPoint.PrimaryValue} Pa",
             };
 
             series[0] = p_Curve;
