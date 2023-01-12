@@ -81,19 +81,27 @@ namespace BauphysikToolWPF.UI.CustomControls
 
         public static readonly DependencyProperty FollowingTextProperty = DependencyProperty.Register("FollowingText", typeof(string), typeof(MathTextBox), new PropertyMetadata(string.Empty));
 
-        /*public bool ShowEquation
+        public static void SetSubscriptFontSize(UIElement element, double value)
         {
-            get
-            {
-                return (bool)GetValue(ShowEquationProperty);
-            }
-            set
-            {
-                SetValue(ShowEquationProperty, value);
-            }
+            element.SetValue(SubscriptFontSizeProperty, value);
+        }
+        public static double GetSubscriptFontSize(UIElement element)
+        {
+            return (double)element.GetValue(SubscriptFontSizeProperty);
         }
 
-        public static readonly DependencyProperty ShowEquationProperty = DependencyProperty.Register("ShowEquation", typeof(bool), typeof(MathTextBox), new PropertyMetadata(false));
-        */
+        public static readonly DependencyProperty SubscriptFontSizeProperty = DependencyProperty.Register("SubscriptFontSize", typeof(double), typeof(MathTextBox), new PropertyMetadata((double)12.0));
+        
+        public static void SetFontSize(UIElement element, double value)
+        {
+            element.SetValue(FontSizeProperty, value);
+        }
+        public static double GetFontSize(UIElement element)
+        {
+            return (double)element.GetValue(FontSizeProperty);
+        }
+
+        public static new readonly DependencyProperty FontSizeProperty = DependencyProperty.Register("FontSize", typeof(double), typeof(MathTextBox), new PropertyMetadata((double)14.0));
+
     }
 }

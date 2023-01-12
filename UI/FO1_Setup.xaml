@@ -34,11 +34,12 @@
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="190"/>
                     <ColumnDefinition Width="72"/>
-                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="112"/>
+                    <ColumnDefinition Width="80"/>
                 </Grid.ColumnDefinitions>
-
+                <!--Here: Binding source are LVItems-->
                 <Grid Grid.RowSpan="2">
                     <Ellipse Fill="{Binding Material.ColorCode}" Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <Label Content="{Binding LayerPosition}" Margin="0,0,8,0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
@@ -47,8 +48,10 @@
                 <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.Category}" Height="28" FontStyle="Italic" VerticalAlignment="Bottom"/>
                 <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' VerticalAlignment="Center"/>
                 <Line Grid.Column="2" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="0.5"/>
-                <Label Grid.Column="3" Grid.RowSpan="2" Content="{Binding R_Value}" ContentStringFormat='Ri = {0} (m²K)/W' VerticalAlignment="Center" Margin="8,0,0,0"/>
-                
+                <controls:MathTextBox Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="{Binding LayerPosition}" Value="{Binding R_Value}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                <Line Grid.Column="3" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="0.5"/>
+                <controls:MathTextBox Grid.Column="4" Grid.RowSpan="2" BaseText="s" SubscriptText="d" Value="{Binding Sd_Thickness}" Unit="m" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+
                 <!--TODO make button appear only if lvitem is clicked
                 <Button Content="T" Grid.Column="4" Grid.RowSpan="2" Margin="8,0,0,0">
                     <Button.Style>

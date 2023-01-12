@@ -19,16 +19,16 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type controls:MathTextBox}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontSize="14" Text="{TemplateBinding BaseText}" VerticalAlignment="Center"/>
-                            <TextBlock FontSize="14" Margin="-3,2,0,0" VerticalAlignment="Center">
+                            <TextBlock FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding BaseText}" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="{TemplateBinding FontSize}" Margin="-3,1,0,0" VerticalAlignment="Center">
                                 <Run Text=""/>
-                                <Run BaselineAlignment="Subscript" Text="{TemplateBinding SubscriptText}" FontSize="12"/>
+                                <Run BaselineAlignment="Subscript" Text="{TemplateBinding SubscriptText}" FontSize="{TemplateBinding SubscriptFontSize}"/>
                             </TextBlock>
-                            <TextBlock x:Name="equals" FontSize="14" Text=" = " VerticalAlignment="Center"/>
-                            <TextBlock FontSize="14" Text="{TemplateBinding Value}" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="equals" FontSize="{TemplateBinding FontSize}" Text=" = " VerticalAlignment="Center"/>
+                            <TextBlock FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding Value}" VerticalAlignment="Center"/>
 
-                            <TextBlock x:Name="placeholder" FontSize="14" Text=" " VerticalAlignment="Center"/>
-                            <TextBlock FontSize="14" Text="{TemplateBinding Unit}" VerticalAlignment="Center"/>
+                            <TextBlock x:Name="placeholder" FontSize="{TemplateBinding FontSize}" Text=" " VerticalAlignment="Center"/>
+                            <TextBlock FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding Unit}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ControlTemplate>
                 </Setter.Value>
@@ -41,13 +41,13 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type controls:SubscriptLabel}">
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock FontSize="14" Text="{TemplateBinding PrependText}" VerticalAlignment="Center"/>
-                            <TextBlock FontSize="14" Text="{TemplateBinding BaseText}" VerticalAlignment="Center"/>
-                            <TextBlock FontSize="14" Margin="-3,2,0,0" VerticalAlignment="Center">
+                            <TextBlock FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding PrependText}" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding BaseText}" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="{TemplateBinding FontSize}" Margin="-3,1,0,0" VerticalAlignment="Center">
                                 <Run Text=""/>
-                                <Run BaselineAlignment="Subscript" Text="{TemplateBinding SubscriptText}" FontSize="12"/>
+                                <Run BaselineAlignment="Subscript" Text="{TemplateBinding SubscriptText}" FontSize="{TemplateBinding SubscriptFontSize}"/>
                             </TextBlock>
-                            <TextBlock FontSize="14" Text="{TemplateBinding AppendText}" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding AppendText}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </ControlTemplate>
                 </Setter.Value>
