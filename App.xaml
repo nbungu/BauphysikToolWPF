@@ -3,13 +3,56 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:BauphysikToolWPF"
              xmlns:ui="clr-namespace:BauphysikToolWPF.UI"
+             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:system="clr-namespace:System;assembly=System.Runtime"
              StartupUri="MainWindow.xaml">
     
+    <!--Sets Resources available for entire Application-->
     <Application.Resources>
 
         <SolidColorBrush x:Key="PrimaryDarkBrush" Color="LightSlateGray"/>
         <SolidColorBrush x:Key="PrimaryLightBrush" Color="#EDEDED"/>
+
+        <!--Custom TextBox for Subscript Text with Equation-->
+        <Style TargetType="{x:Type controls:MathTextBox}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:MathTextBox}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="14" Text="{TemplateBinding BaseText}" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="14" Margin="-3,2,0,0" VerticalAlignment="Center">
+                                <Run Text=""/>
+                                <Run BaselineAlignment="Subscript" Text="{TemplateBinding SubscriptText}" FontSize="12"/>
+                            </TextBlock>
+                            <TextBlock x:Name="equals" FontSize="14" Text=" = " VerticalAlignment="Center"/>
+                            <TextBlock FontSize="14" Text="{TemplateBinding Value}" VerticalAlignment="Center"/>
+
+                            <TextBlock x:Name="placeholder" FontSize="14" Text=" " VerticalAlignment="Center"/>
+                            <TextBlock FontSize="14" Text="{TemplateBinding Unit}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Custom Label for Subscript Text-->
+        <Style TargetType="{x:Type controls:SubscriptLabel}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:SubscriptLabel}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontSize="14" Text="{TemplateBinding PrependText}" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="14" Text="{TemplateBinding BaseText}" VerticalAlignment="Center"/>
+                            <TextBlock FontSize="14" Margin="-3,2,0,0" VerticalAlignment="Center">
+                                <Run Text=""/>
+                                <Run BaselineAlignment="Subscript" Text="{TemplateBinding SubscriptText}" FontSize="12"/>
+                            </TextBlock>
+                            <TextBlock FontSize="14" Text="{TemplateBinding AppendText}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <Style x:Key="NavigationListBoxStyle" TargetType="{x:Type ListBox}">
             <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>

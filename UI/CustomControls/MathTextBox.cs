@@ -81,5 +81,19 @@ namespace BauphysikToolWPF.UI.CustomControls
 
         public static readonly DependencyProperty FollowingTextProperty = DependencyProperty.Register("FollowingText", typeof(string), typeof(MathTextBox), new PropertyMetadata(string.Empty));
 
+        /*public bool ShowEquation
+        {
+            get
+            {
+                return (bool)GetValue(ShowEquationProperty);
+            }
+            set
+            {
+                SetValue(ShowEquationProperty, value);
+            }
+        }
+
+        public static readonly DependencyProperty ShowEquationProperty = DependencyProperty.Register("ShowEquation", typeof(bool), typeof(MathTextBox), new PropertyMetadata(false));
+        */
     }
 }

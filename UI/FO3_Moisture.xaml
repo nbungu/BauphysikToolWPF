@@ -14,32 +14,7 @@
     <UserControl.DataContext>
         <vm:FO3_ViewModel/>
     </UserControl.DataContext>
-
-    <UserControl.Resources>
-
-        <!--Custom TextBox for Subscript Text-->
-        <Style TargetType="{x:Type controls:MathTextBox}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type controls:MathTextBox}">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock FontSize="14" Text="{TemplateBinding BaseText}" VerticalAlignment="Center"/>
-                            <TextBlock FontSize="14" Margin="-3,2,0,0" VerticalAlignment="Center">
-                                <Run Text=""/>
-                                <Run BaselineAlignment="Subscript" Text="{TemplateBinding SubscriptText}" FontSize="12"/>
-                            </TextBlock>
-                            <TextBlock x:Name="equals" FontSize="14" Text=" = " VerticalAlignment="Center"/>
-                            <TextBlock FontSize="14" Text="{TemplateBinding Value}" VerticalAlignment="Center"/>
-                            <TextBlock x:Name="placeholder" FontSize="14" Text=" " VerticalAlignment="Center"/>
-                            <TextBlock FontSize="14" Text="{TemplateBinding Unit}" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-    </UserControl.Resources>
-
+    
     <Grid Background="#EDEDED">
         <Grid.RowDefinitions>
             <RowDefinition Height="64" />
@@ -111,7 +86,6 @@
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
                 <controls:MathTextBox BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding GlaserCalculation.FRsi}" Height="28"/>
                 <controls:MathTextBox BaseText="Φ" SubscriptText="i" Value="{Binding GlaserCalculation.Rel_Fi}" Unit="%" Height="28"/>
-                <controls:MathTextBox BaseText="X" SubscriptText="i" Height="28"/>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Grid.Column="1">
