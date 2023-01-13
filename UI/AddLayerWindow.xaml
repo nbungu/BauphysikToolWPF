@@ -5,13 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF.UI"
         mc:Ignorable="d"
-        Title="AddLayerWindow" Background="#EDEDED" Height="488" Width="880">
+        Title="AddLayerWindow" Background="{StaticResource PrimaryLightBrush}" Height="488" Width="880">
 
     <Window.Resources>
 
- 
-
-        <Style x:Key="MaterialUIButton" TargetType="{x:Type Button}">
+        <!--Custom Button04: rounded corners, click effects, materialUI -->
+        <Style x:Key="ButtonStyle04" TargetType="{x:Type Button}">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontSize" Value="14"/>
@@ -82,7 +81,7 @@
 
     </Window.Resources>
 
-    <Grid Background="#EDEDED" Margin="8">
+    <Grid Background="{StaticResource PrimaryLightBrush}" Margin="8">
         <Grid.RowDefinitions>
             <RowDefinition Height=".8*"/>
             <RowDefinition Height="Auto"/>
@@ -157,7 +156,7 @@
         </StackPanel>
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="8">
-            <Button Content="Add Material" Click="AddMaterial_Clicked" Style="{StaticResource MaterialUIButton}"/>
+            <Button Content="Add Material" Click="AddMaterial_Clicked" Style="{StaticResource ButtonStyle04}"/>
         </Grid>
 
     </Grid>

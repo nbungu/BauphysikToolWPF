@@ -20,9 +20,16 @@ namespace BauphysikToolWPF
     /// </summary>
     public partial class MainWindow : Window
     {
+        public static ListBox navigationMenuListBox;
+        
         public MainWindow()
         {
             InitializeComponent();
+            navigationMenuListBox = this.NavigationMenuListBox;
+        }
+        public static void SetPage(string page)
+        {
+            navigationMenuListBox.SelectedItem = page; // MainWindow.xaml Binding changes the ContentPage based on the SelectedItem string
         }
     }
 }

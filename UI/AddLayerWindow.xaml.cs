@@ -80,6 +80,7 @@ namespace BauphysikToolWPF.UI
                     //LayerId gets set by SQLite DB (AutoIncrement)
                     LayerPosition = 1,
                     MaterialId = material.MaterialId,
+                    ElementId = FO1_Setup.ElementId,
                     LayerThickness = Convert.ToDouble(thickness_TextBox.Text),
                     Material = material
                 };

@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         public string Title { get; } = "Setup";
 
-        private List<Layer> layers;
+        private List<Layer> layers; //TODO remove new
         public List<Layer> Layers //for Validation
         {
             get { return layers; }
@@ -38,12 +38,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             Layers = FO1_Setup.Layers;
 
             //For the ComboBoxes
-            Ti_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Ti").Select(e => e.Key).ToList();
-            Te_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Te").Select(e => e.Key).ToList();
-            Rsi_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Rsi").Select(e => e.Key).ToList();
-            Rse_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Rse").Select(e => e.Key).ToList();
-            Rel_Fe_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Rel_Fe").Select(e => e.Key).ToList();
-            Rel_Fi_Keys = FO1_Setup.EnvVars.Where(e => e.Category == "Rel_Fi").Select(e => e.Key).ToList();
+            Ti_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Ti").Select(e => e.Comment).ToList();
+            Te_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Te").Select(e => e.Comment).ToList();
+            Rsi_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rsi").Select(e => e.Comment).ToList();
+            Rse_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rse").Select(e => e.Comment).ToList();
+            Rel_Fe_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rel_Fe").Select(e => e.Comment).ToList();
+            Rel_Fi_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rel_Fi").Select(e => e.Comment).ToList();
 
             //TODO: TextBox Viewmodel implementieren
 

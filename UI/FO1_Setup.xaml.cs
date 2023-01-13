@@ -31,6 +31,8 @@ namespace BauphysikToolWPF.UI
     public partial class FO1_Setup : UserControl
     {
         // Class Variables - Belongs to the Class-Type itself and stays the same
+        public static int ElementId { get; set; }
+        public static Element Element { get; private set; } = new Element(); // avoid null value
         public static List<Layer> Layers { get; private set; } = new List<Layer>(); // avoid null value
         public static List<EnvVars> EnvVars { get; private set; } = new List<EnvVars>(); // avoid null value
 
@@ -40,7 +42,11 @@ namespace BauphysikToolWPF.UI
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_Setup()
         {
-            Layers = DatabaseAccess.GetLayers();                // for FO1, FO2 & FO3 ViewModel
+            Element = DatabaseAccess.QueryElementsById(ElementId);
+            Layers = (Element.Layers == null) ? new List<Layer>() : Element.Layers;
+            //TODO Layers aus FK von Element holen -> LoadElement -> Element.Layers
+            
+            //Layers = DatabaseAccess.GetLayers();                // for FO1, FO2 & FO3 ViewModel
             EnvVars = DatabaseAccess.GetEnvVars();              // for FO1 ViewModel
             InitializeComponent();                              // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
             new DrawLayerCanvas(Layers, layers_Canvas);         // Initial Draw of the Canvas
@@ -105,7 +111,7 @@ namespace BauphysikToolWPF.UI
 
         private void editLayerClicked(object sender, RoutedEventArgs e)
         {
-
+            //TODO
         }
 
         private void Ti_Category_Picker_SelectionChanged(object sender, EventArgs e)
@@ -114,7 +120,7 @@ namespace BauphysikToolWPF.UI
                 return;
 
             string key = Ti_Category_Picker.SelectedItem.ToString();
-            double val = EnvVars.Where(e => e.Category == "Ti").ToList().Find(e => e.Key == key).Value;
+            double val = EnvVars.Where(e => e.Symbol == "Ti").ToList().Find(e => e.Comment == key).Value;
             UserSaved.Ti = new KeyValuePair<string, double>(key, val);
 
             Ti_Input.Text = val.ToString();
@@ -126,7 +132,7 @@ namespace BauphysikToolWPF.UI
                 return;
 
             string key = Rsi_Category_Picker.SelectedItem.ToString();
-            double val = EnvVars.Where(e => e.Category == "Rsi").ToList().Find(e => e.Key == key).Value;
+            double val = EnvVars.Where(e => e.Symbol == "Rsi").ToList().Find(e => e.Comment == key).Value;
             UserSaved.Rsi = new KeyValuePair<string, double>(key, val);
 
             // Set corresponding value in the TB
@@ -138,7 +144,7 @@ namespace BauphysikToolWPF.UI
                 return;
 
             string key = Rel_Fi_Category_Picker.SelectedItem.ToString();
-            double val = EnvVars.Where(e => e.Category == "Rel_Fi").ToList().Find(e => e.Key == key).Value;
+            double val = EnvVars.Where(e => e.Symbol == "Rel_Fi").ToList().Find(e => e.Comment == key).Value;
             UserSaved.Rel_Fi = new KeyValuePair<string, double>(key, val);
 
             //Set corresponding value in the TB
@@ -151,7 +157,7 @@ namespace BauphysikToolWPF.UI
                 return;
 
             string key = Te_Category_Picker.SelectedItem.ToString();
-            double val = EnvVars.Where(e => e.Category == "Te").ToList().Find(e => e.Key == key).Value;
+            double val = EnvVars.Where(e => e.Symbol == "Te").ToList().Find(e => e.Comment == key).Value;
             UserSaved.Te = new KeyValuePair<string, double>(key, val);
 
             Te_Input.Text = val.ToString();
@@ -162,7 +168,7 @@ namespace BauphysikToolWPF.UI
                 return;
 
             string key = Rse_Category_Picker.SelectedItem.ToString();
-            double val = EnvVars.Where(e => e.Category == "Rse").ToList().Find(e => e.Key == key).Value;
+            double val = EnvVars.Where(e => e.Symbol == "Rse").ToList().Find(e => e.Comment == key).Value;
             UserSaved.Rse = new KeyValuePair<string, double>(key, val);
 
             // Set corresponding value in the TB
@@ -175,7 +181,7 @@ namespace BauphysikToolWPF.UI
                 return;
 
             string key = Rel_Fe_Category_Picker.SelectedItem.ToString();
-            double val = DatabaseAccess.QueryEnvVarsByCategory("Rel_Fe").Where(e => e.Key == key).First().Value;
+            double val = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Where(e => e.Comment == key).First().Value;
             UserSaved.Rel_Fe = new KeyValuePair<string, double>(key, val);
 
             Rel_Fe_Input.Text = val.ToString();

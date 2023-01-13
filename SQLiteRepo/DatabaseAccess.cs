@@ -18,7 +18,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         private static SQLiteConnection sqlConn = new SQLiteConnection(dbPath);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
-        public static event Notify LayersChanged;      // event
+        public static event Notify LayersChanged; // event
+        public static event Notify ElementsChanged; // event
 
         // (Instanzen-) Konstruktor nicht möglich bei statischen Klassen
         /*public DatabaseAccess()
@@ -28,6 +29,10 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static void OnLayersChanged() //protected virtual method
         {
             LayersChanged?.Invoke(); //if LayerAdded is not null then call delegate
+        }
+        public static void OnElementsChanged() //protected virtual method
+        {
+            ElementsChanged?.Invoke(); //if LayerAdded is not null then call delegate
         }
 
         // Retreive Data from Table "Layer"
@@ -39,8 +44,8 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void CreateLayer(Layer layer)
         {
-            sqlConn.InsertWithChildren(layer);  //Method from SQLiteExt -> adds a relationship to a child object ('Material') 
-            OnLayersChanged(); //raises an event
+            sqlConn.InsertWithChildren(layer); //Method from SQLiteExt -> adds a relationship to a child object ('Material') 
+            OnLayersChanged(); // raises an event
         }
 
         public static void UpdateLayer(Layer layer)
@@ -58,11 +63,12 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static int DeleteAllLayers()
         {
             int i = sqlConn.DeleteAll<Layer>();
-            // TODO:
-            // Reset AutoIncrement status from 'sqlite_sequence' table
-            // delete from sqlite_sequence where name='your_table';
             OnLayersChanged();
             return i;
+        }
+        public static List<Layer> QueryLayersByElementId(int elementId)
+        {
+            return sqlConn.Query<Layer>("SELECT * FROM Layer WHERE ElementId == " + elementId);
         }
 
         // Retreive Data from Table "Material"
@@ -114,7 +120,6 @@ namespace BauphysikToolWPF.SQLiteRepo
             return envVars;
         }
 
-        // TODO: only one dataset allowed in this Table: Verify!
         public static int CreateEnvVars(EnvVars envVars)
         {
             return sqlConn.Insert(envVars);
@@ -134,12 +139,45 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             return sqlConn.DeleteAll<EnvVars>();
         }
-        public static List<EnvVars> QueryEnvVarsByCategory(string category)
+        public static List<EnvVars> QueryEnvVarsBySymbol(string symbol)
         {
-            if (category == "*")
+            if (symbol == "*")
                 return sqlConn.Query<EnvVars>("SELECT * FROM EnvVars");
             else
-                return sqlConn.Query<EnvVars>("SELECT * FROM EnvVars WHERE Category == " + "\"" + category + "\"");
+                return sqlConn.Query<EnvVars>("SELECT * FROM EnvVars WHERE Symbol == " + "\"" + symbol + "\"");
+        }
+
+        // Retreive Data from Table "Element"
+        public static List<Element> GetElements()
+        {
+            List<Element> element = sqlConn.Table<Element>().ToList();
+            return element;
+        }
+
+        public static int CreateElement(Element element)
+        {
+            int i = sqlConn.Insert(element);
+            OnElementsChanged();
+            return i;
+        }
+
+        public static int UpdateElement(Element element)
+        {
+            return sqlConn.Update(element);
+        }
+
+        public static int DeleteElement(Element element)
+        {
+            return sqlConn.Delete(element);
+        }
+
+        public static int DeleteAllElements()
+        {
+            return sqlConn.DeleteAll<Element>();
+        }
+        public static Element QueryElementsById(int id)
+        {
+            return sqlConn.Query<Element>("SELECT * FROM Element WHERE ElementId == " + id).First();
         }
     }
 }

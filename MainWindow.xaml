@@ -5,19 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1200" Background="#EDEDED" WindowStartupLocation="CenterScreen">
+        Title="MainWindow" Height="700" Width="1200" Background="{StaticResource PrimaryLightBrush}" WindowStartupLocation="CenterScreen">
     
     <!-- https://www.codeproject.com/Articles/5275552/WPF-Compact-Navigation-Menu -->
     <Window.Resources>
 
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
             <!--This setter is for the default value-->
-            <Setter Property="ContentTemplate" Value="{StaticResource FO1_Setup}"/>
-            
+            <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
             <Style.Triggers>
-                <!--When the SelectedItem in the NavMenuListBox has the Value "Temperature"....-->
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Setup">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_Setup}"/>
+                </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Temperature">
-                    <!--....use the FO2_Template as the ContentTemplate Value-->
                     <Setter Property="ContentTemplate" Value="{StaticResource FO2_Temperature}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Moisture">
@@ -42,6 +42,6 @@
                  ItemsSource="{StaticResource NavigationMenuItems}">
         </ListBox>
 
-        <ContentControl Grid.Column="1" Style="{StaticResource NavigationContentStyle}"/>
+        <ContentControl x:Name="mainWindow_Content" Grid.Column="1" Style="{StaticResource NavigationContentStyle}"/>
     </Grid>
 </Window>

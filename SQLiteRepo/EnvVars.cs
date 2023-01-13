@@ -19,15 +19,15 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int Id { get; set; }
 
         [NotNull]
-        public string Category { get; set; }
+        public string Symbol { get; set; }
 
         [NotNull]
-        public string Key { get; set; }
+        public string Comment { get; set; }
 
         [NotNull]
         public double Value { get; set; }
 
-        public string Dimension { get; set; }
+        public string Unit { get; set; }
 
         // SQLite doesnt allow other types than TEXT, INT, REAL or BLOB 
         //List<Layer> has to be converted into BLOB -> byte[]

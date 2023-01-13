@@ -26,6 +26,8 @@
         Defines a Template for the Items in the LayerListView.
         The Bindings are retrieved from the ItemsSource which is set by the backend.
         -->
+        <controls:ItemSelectedToEnabledConverter x:Key="ItemSelectedToEnabledConverter"/>
+        
         <DataTemplate x:Key="LVItem_DesignTemplate">
             <Grid Margin="4">
                 <Grid.RowDefinitions>
@@ -51,22 +53,6 @@
                 <controls:MathTextBox Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="{Binding LayerPosition}" Value="{Binding R_Value}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 <Line Grid.Column="3" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="0.5"/>
                 <controls:MathTextBox Grid.Column="4" Grid.RowSpan="2" BaseText="s" SubscriptText="d" Value="{Binding Sd_Thickness}" Unit="m" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
-
-                <!--TODO make button appear only if lvitem is clicked
-                <Button Content="T" Grid.Column="4" Grid.RowSpan="2" Margin="8,0,0,0">
-                    <Button.Style>
-                        <Style TargetType="{x:Type Button}">
-                            <Setter Property="Visibility" Value="Hidden"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsMouseOver, ElementName=layers_ListView}" Value="True">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </Button.Style>
-                </Button>
-                -->
-
             </Grid>
         </DataTemplate>
 
@@ -83,29 +69,6 @@
             </Setter>
         </Style>
 
-        <controls:ItemSelectedToEnabledConverter x:Key="ItemSelectedToEnabledConverter"/>
-
-        <Style x:Key="CustomButton" TargetType="{x:Type Button}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
             <!--These setters are for the default appearance-->
             <Setter Property="Width" Value="44"/>
@@ -119,7 +82,7 @@
     </UserControl.Resources>
 
     <!--Main Grid: 2x2-->
-    <Grid Background="#EDEDED">
+    <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="64"/>
             <RowDefinition Height=".6*"/>
@@ -142,21 +105,21 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0">
-                <Button x:Name="addLayer_Button" Style="{StaticResource CustomButton}" Click="addLayerClicked" Margin="0,0,8,8">
+                <Button x:Name="addLayer_Button" Style="{StaticResource ButtonStyle03}" Click="addLayerClicked" Margin="0,0,8,8">
                     <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                         <Image Source="/Resources/Icons/GL_010x80_create.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Hinzufügen" VerticalAlignment="Center" Margin="4,0,0,0"/>
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="deleteLayer_Button" Style="{StaticResource CustomButton}" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}" Click="deleteLayerClicked" Margin="0,0,8,8">
+                <Button x:Name="deleteLayer_Button" Style="{StaticResource ButtonStyle03}" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}" Click="deleteLayerClicked" Margin="0,0,8,8">
                     <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                         <Image Source="/Resources/Icons/GL_011x80_delete.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Löschen" VerticalAlignment="Center" Margin="4,0,0,0"/>
                     </StackPanel>
                 </Button>
 
-                <Button x:Name="editLayer_Button" Style="{StaticResource CustomButton}" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}" Click="editLayerClicked" Margin="0,0,8,8">
+                <Button x:Name="editLayer_Button" Style="{StaticResource ButtonStyle03}" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}" Click="editLayerClicked" Margin="0,0,8,8">
                     <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                         <Image Source="/Resources/Icons/GL_015x80_edit.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                         <TextBlock Text="Bearbeiten" VerticalAlignment="Center" Margin="4,0,0,0"/>
@@ -164,7 +127,7 @@
                 </Button>
             </StackPanel>
 
-            <Button x:Name="deleteAllLayers_Button" Style="{StaticResource CustomButton}" Click="deleteAllLayersClicked" HorizontalAlignment="Right" Margin="0,0,0,8">
+            <Button x:Name="deleteAllLayers_Button" Style="{StaticResource ButtonStyle03}" Click="deleteAllLayersClicked" HorizontalAlignment="Right" Margin="0,0,0,8">
                 <StackPanel Orientation="Horizontal" Margin="0,0,8,0">
                     <Image Source="/Resources/Icons/GL_011x80_delete.png" Stretch="Fill" Height="30" Width="30" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                     <TextBlock Text="Alle löschen" VerticalAlignment="Center" Margin="4,0,0,0"/>

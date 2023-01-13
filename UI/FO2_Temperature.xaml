@@ -15,7 +15,7 @@
         <vm:FO2_ViewModel/>
     </UserControl.DataContext>
 
-    <Grid Background="#EDEDED">
+    <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="64" />
             <RowDefinition Height="*" />
@@ -37,7 +37,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" BorderBrush="#FFABADB3" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True">
+            <Border Grid.Row="0" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True">
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
                         <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
@@ -56,7 +56,7 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Row="1" BorderBrush="#FFABADB3" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0">
+            <Border Grid.Row="1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0">
                 <lvc:CartesianChart
                     Grid.Row="1"
                     ClipToBounds="True"
