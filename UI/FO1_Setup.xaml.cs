@@ -115,7 +115,7 @@ namespace BauphysikToolWPF.UI
 
             string key = Ti_Category_Picker.SelectedItem.ToString();
             double val = EnvVars.Where(e => e.Category == "Ti").ToList().Find(e => e.Key == key).Value;
-            UserSaved.Ti = new KeyValuePair<string, double>( key, val);
+            UserSaved.Ti = new KeyValuePair<string, double>(key, val);
 
             Ti_Input.Text = val.ToString();
         }
