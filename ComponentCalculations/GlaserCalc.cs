@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -29,7 +30,6 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double TotalSdWidth { get; private set; } = 0;
         public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi.Value;
         public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe.Value;
-
         public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P_sat in Pa
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P in Pa
 
@@ -56,8 +56,8 @@ namespace BauphysikToolWPF.ComponentCalculations
         }
         private List<KeyValuePair<double, double>> GetLayerPsat()
         {
-            //Dictionaries are not ordered: Instead use List as ordered collection
-            List<KeyValuePair<double,double>> p_sat_List = new List<KeyValuePair<double,double>>();
+            //Dictionary is not ordered: Instead use List as ordered collection
+            List<KeyValuePair<double,double>> p_sat_List = new List<KeyValuePair<double,double>>(); //new Methode(): Konstruktoren aufruf
 
             //Starting from inner side
             double widthPosition = TotalSdWidth;
