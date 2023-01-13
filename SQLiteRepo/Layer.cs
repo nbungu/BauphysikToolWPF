@@ -20,24 +20,27 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Eigenschaften-----//
 
-        [NotNull, PrimaryKey, AutoIncrement, Unique] //SQL Attributes
+        [NotNull, PrimaryKey, AutoIncrement, Unique, SQLiteNetExtensions.Attributes.ForeignKey(typeof(Layer))] // FK for the n:1 relation
         public int LayerId { get; set; }
 
         [NotNull] //SQL Attributes
         public int LayerPosition { get; set; } //Inside = 1 ....
 
-        [SQLiteNetExtensions.Attributes.ForeignKey(typeof(Material))]
-        public int MaterialId { get; set; } // Used Material specified by ID
+        [SQLiteNetExtensions.Attributes.ForeignKey(typeof(Material))] // FK for the 1:1 relation
+        public int MaterialId { get; set; } // This Layer is made out of Material X
+
+        [SQLiteNetExtensions.Attributes.ForeignKey(typeof(Element))] // FK for the 1:n relation
+        public int ElementId { get; set; } // To which Parent Element this Layer belongs    
 
         [NotNull]
         public double LayerThickness { get; set; }  // Layer thickness in cm
 
         //------Not part of the Database-----//
 
-        [OneToOne] //relationships and the ForeignKey property will be discovered and updated automatically at runtime.
-        public Material Material { get; set; } // the corresp. object/Type for the foreign-key. The 'Material' object itself is not stored in DB!
+        [OneToOne] // 1:1 relationship with Material
+        public Material Material { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
 
-        [Ignore] 
+        [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 
 
         [Ignore]
