@@ -32,7 +32,6 @@ namespace BauphysikToolWPF.UI
     {
         // Class Variables - Belongs to the Class-Type itself and stays the same
         public static int ElementId { get; set; }
-        public static Element Element { get; private set; } = new Element(); // avoid null value
         public static List<Layer> Layers { get; private set; } = new List<Layer>(); // avoid null value
         public static List<EnvVars> EnvVars { get; private set; } = new List<EnvVars>(); // avoid null value
 
@@ -42,11 +41,8 @@ namespace BauphysikToolWPF.UI
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_Setup()
         {
-            Element = DatabaseAccess.QueryElementsById(ElementId);
-            Layers = (Element.Layers == null) ? new List<Layer>() : Element.Layers;
-            //TODO Layers aus FK von Element holen -> LoadElement -> Element.Layers
-            
-            //Layers = DatabaseAccess.GetLayers();                // for FO1, FO2 & FO3 ViewModel
+            ElementId = FO0_LandingPage.SelectedElement.ElementId;
+            Layers = DatabaseAccess.QueryLayersByElementId(ElementId); // for FO1, FO2 & FO3 ViewModel                
             EnvVars = DatabaseAccess.GetEnvVars();              // for FO1 ViewModel
             InitializeComponent();                              // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
             new DrawLayerCanvas(Layers, layers_Canvas);         // Initial Draw of the Canvas
@@ -56,17 +52,13 @@ namespace BauphysikToolWPF.UI
         // event handlers
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
-            Layers = DatabaseAccess.GetLayers();        // Update Layer variable in this class
-            ReorderLayerPosition(Layers);               // Establish correct LayerPosition 
-            LoadLayers(Layers);                         // Redraw Canvas, Update LVItemsSource
+            Layers = DatabaseAccess.QueryLayersByElementId(ElementId);  // Update Layer variable in this class
+            ReorderLayerPosition(Layers);                               // Establish correct LayerPosition 
+            layers_ListView.ItemsSource = Layers;       // Update LVItemsSource
+            new DrawLayerCanvas(Layers, layers_Canvas); // Redraw Canvas
         }
 
         // custom Methods
-        private void LoadLayers(List<Layer> layers)
-        {
-            layers_ListView.ItemsSource = layers;       // Update LVItems
-            new DrawLayerCanvas(layers, layers_Canvas); // Update Canvas
-        }
 
         private void ReorderLayerPosition(List<Layer> layers)
         {

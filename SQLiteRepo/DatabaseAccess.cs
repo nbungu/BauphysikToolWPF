@@ -68,14 +68,13 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
         public static List<Layer> QueryLayersByElementId(int elementId)
         {
-            return sqlConn.Query<Layer>("SELECT * FROM Layer WHERE ElementId == " + elementId);
+           return sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId);
         }
 
         // Retreive Data from Table "Material"
         public static List<Material> GetMaterials()
         {
-            List<Material> materials = sqlConn.Table<Material>().ToList();
-            return materials;
+            return sqlConn.Table<Material>().ToList();
         }
 
         public static int CreateMaterial(Material material) // returns int, which represents the number of rows that were inserted into the table
@@ -150,25 +149,28 @@ namespace BauphysikToolWPF.SQLiteRepo
         // Retreive Data from Table "Element"
         public static List<Element> GetElements()
         {
-            List<Element> element = sqlConn.Table<Element>().ToList();
-            return element;
+            return sqlConn.GetAllWithChildren<Element>();
         }
 
-        public static int CreateElement(Element element)
+        public static void CreateElement(Element element)
         {
-            int i = sqlConn.Insert(element);
+            sqlConn.InsertWithChildren(element); //Method from SQLiteExt -> adds a relationship to a child object ('Layers') 
             OnElementsChanged();
-            return i;
         }
 
-        public static int UpdateElement(Element element)
+        public static void UpdateElement(Element element)
         {
-            return sqlConn.Update(element);
+            sqlConn.UpdateWithChildren(element);
         }
 
         public static int DeleteElement(Element element)
         {
             return sqlConn.Delete(element);
+        }
+
+        public static int DeleteElementById(int elementId)
+        {
+            return sqlConn.Delete(elementId); // ON DELETE CASCADE -> deletes corresp. Layers via the foreignkey constraint
         }
 
         public static int DeleteAllElements()
@@ -177,7 +179,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
         public static Element QueryElementsById(int id)
         {
-            return sqlConn.Query<Element>("SELECT * FROM Element WHERE ElementId == " + id).First();
+            //return sqlConn.Query<Element>("SELECT * FROM Element WHERE ElementId == " + id).First();
+
+            return sqlConn.GetWithChildren<Element>(id);
         }
     }
 }

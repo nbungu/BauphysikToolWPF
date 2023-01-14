@@ -5,20 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF.UI"
         mc:Ignorable="d"
-        Title="NewElementWindow" Height="200" Width="320" WindowStartupLocation="CenterScreen">
+        Title="NewElementWindow" Height="Auto" Width="320" WindowStartupLocation="CenterScreen">
 
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height=".5*"/>
-            <RowDefinition Height=".5*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Vertical" Margin="8">
+        <StackPanel Orientation="Vertical" Margin="16">
             <Label Content="Name des Bauteils" FontSize="14"/>
             <TextBox x:Name="elementName_TextBox" Text="" VerticalContentAlignment="Center" FontSize="14" MaxLength="50" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
-        <Grid Grid.Row="1" Margin="8">
+        <Grid Grid.Row="1" Margin="16">
             <Button x:Name="createElement_Button" Content="Übernehmen" Click="createElement_Button_Click" Style="{StaticResource ButtonStyle02_A}"/>
         </Grid>
 

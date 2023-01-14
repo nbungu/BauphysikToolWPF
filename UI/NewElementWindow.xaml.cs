@@ -33,10 +33,11 @@ namespace BauphysikToolWPF.UI
             Element element = new Element()
             {
                 //ElementId gets set by SQLite DB (AutoIncrement)
-                Name = elementName_TextBox.Text
+                Name = elementName_TextBox.Text,
+                Layers = new List<Layer>()
             };
             DatabaseAccess.CreateElement(element);
-            FO1_Setup.ElementId = DatabaseAccess.GetElements().Last().ElementId;
+            FO0_LandingPage.SelectedElement = element;
             this.Close();
             MainWindow.SetPage("Setup");
         }

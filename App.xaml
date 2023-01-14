@@ -119,7 +119,7 @@
             </Setter>
         </Style>
 
-        <!--Custom Button02: rounded corners, highlighted blue, click effects-->
+        <!--Custom Button02: full rounded corners, highlighted blue, click effects-->
         <Style x:Key="ButtonStyle02_A" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
             <Setter Property="Foreground" Value="White"/>
@@ -150,7 +150,7 @@
             </Style.Resources>
         </Style>
 
-        <!--Custom Button02: rounded corners, click effects-->
+        <!--Custom Button02: full rounded corners, click effects-->
         <Style x:Key="ButtonStyle02_B" TargetType="{x:Type Button}">
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
@@ -176,8 +176,7 @@
                 <Style TargetType="Border">
                     <Setter Property="CornerRadius" Value="16"/>
                 </Style>
-            </Style.Resources>
-            
+            </Style.Resources>            
         </Style>
 
         <!--Custom Button03: rectangular, click effects -->

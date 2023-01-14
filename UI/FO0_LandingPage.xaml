@@ -4,8 +4,71 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF.UI"
+             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
+
+    <UserControl.DataContext>
+        <!-- globally sets a reference for Bindings in this xaml-->
+        <vm:FO0_ViewModel/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+
+        <!--Custom ButtonGridPanel: light rounded corners, click effects-->
+        <Style x:Key="ButtonStyleGridPanel" TargetType="{x:Type Button}">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="IsEnabled" Value="True"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="HorizontalContentAlignment" Value="Right"/>
+            <Setter Property="VerticalContentAlignment" Value="Top"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <!--
+                <Trigger Property="{Binding IsEditing}" Value="True">
+                    <Setter Property="IsEnabled" Value="False"/>
+                </Trigger>
+                -->
+            </Style.Triggers>
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="16"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+        
+        <!--Here: Binding (typeof 'Element') from the ItemsSource Property-->
+        <DataTemplate x:Key="WrapPanelItem_DesignTemplate">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Button Grid.Row="0" x:Name="openElement_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" Click="openElement_Button_Click"/>
+                <Label Grid.Row="1" x:Name="recentElement_Label" Content="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+            </Grid>
+        </DataTemplate>
+
+        <ItemsPanelTemplate x:Key="WrapPanel_Template">
+            <WrapPanel x:Name="element_WrapPanel" ItemWidth="144" ItemHeight="192" ClipToBounds="True"/>
+        </ItemsPanelTemplate>
+
+    </UserControl.Resources>
 
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
@@ -23,6 +86,7 @@
             <Button x:Name="createNewElement_Button" Content="Bauteil erstellen" Style="{StaticResource ButtonStyle02_A}" Click="createNewElement_Button_Click" Margin="0,0,0,16"/>
             <Button x:Name="openElement_Button" Content="Öffnen" Style="{StaticResource ButtonStyle02_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
+            <Button x:Name="editElementList_Button" Content="Liste bearbeiten" Style="{StaticResource ButtonStyle02_B}" Margin="0,16,0,16" Click="editElementList_Button_Click"/>            
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
             <Button Content="Einstellungen" Style="{StaticResource ButtonStyle02_B}" Margin="0,0,0,16"/>
@@ -42,11 +106,18 @@
 
             <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellt" FontSize="14" FontWeight="Bold"/>
 
-            <WrapPanel x:Name="recentElements_WrapPanel" Grid.Row="1" Grid.Column="1" ItemWidth="144" ItemHeight="192">
-                
-            </WrapPanel>
+            <!--"WrapPanel inside a ListBox does pick up the DataTemplate you define .. so you have complete liberty to bind any list to your WrapPanel"-->
+            <ItemsControl x:Name="element_ItemsControl"
+                          Grid.Row="1"
+                          Grid.Column="1"
+                          ItemsSource="{Binding Elements}"
+                          ItemsPanel="{StaticResource WrapPanel_Template}"
+                          ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
+                          Background="Transparent"
+                          BorderThickness="0">
+            </ItemsControl>
 
-            <Button Grid.Row="1" Grid.Column="2" Content="Weiter" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Bottom" Margin="16" Click="Button_Click"/>
+            <Button Grid.Row="1" Grid.Column="2" Content="Weiter" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Bottom" Margin="16"/>
         </Grid>
 
     </Grid>

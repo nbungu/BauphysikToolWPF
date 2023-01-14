@@ -41,7 +41,7 @@
                     <ColumnDefinition Width="112"/>
                     <ColumnDefinition Width="80"/>
                 </Grid.ColumnDefinitions>
-                <!--Here: Binding source are LVItems-->
+                <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
                 <Grid Grid.RowSpan="2">
                     <Ellipse Fill="{Binding Material.ColorCode}" Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     <Label Content="{Binding LayerPosition}" Margin="0,0,8,0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>

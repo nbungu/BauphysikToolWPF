@@ -37,9 +37,9 @@
         <!-- Other Resources declared in App.xaml -->
         <ListBox x:Name="NavigationMenuListBox" 
                  Style="{StaticResource NavigationListBoxStyle}"
+                 ItemsSource="{StaticResource NavigationMenuItems}"
                  ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
-                 ItemTemplate="{DynamicResource NavigationDataTemplate}"
-                 ItemsSource="{StaticResource NavigationMenuItems}">
+                 ItemTemplate="{DynamicResource NavigationDataTemplate}">
         </ListBox>
 
         <ContentControl x:Name="mainWindow_Content" Grid.Column="1" Style="{StaticResource NavigationContentStyle}"/>
