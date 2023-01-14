@@ -165,17 +165,23 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static int DeleteElement(Element element)
         {
-            return sqlConn.Delete(element);
+            int i = sqlConn.Delete(element);
+            OnElementsChanged();
+            return i;
         }
 
         public static int DeleteElementById(int elementId)
         {
-            return sqlConn.Delete(elementId); // ON DELETE CASCADE -> deletes corresp. Layers via the foreignkey constraint
+            int i = sqlConn.Delete<Element>(elementId);
+            OnElementsChanged();
+            return i; // ON DELETE CASCADE -> deletes corresp. Layers via the foreignkey constraint
         }
 
         public static int DeleteAllElements()
         {
-            return sqlConn.DeleteAll<Element>();
+            int i = sqlConn.DeleteAll<Element>();
+            OnElementsChanged();
+            return i;
         }
         public static Element QueryElementsById(int id)
         {

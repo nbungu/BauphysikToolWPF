@@ -20,7 +20,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Eigenschaften-----//
 
-        [NotNull, PrimaryKey, AutoIncrement, Unique] 
+        [PrimaryKey, NotNull, AutoIncrement, Unique] 
         public int ElementId { get; set; }
 
         [NotNull]
@@ -28,7 +28,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Not part of the Database-----//
 
-        [OneToMany(CascadeOperations = CascadeOperation.All)] // 1:n relationship with Layer, ON DELETE CASCADE
+        [OneToMany] // 1:n relationship with Layer, ON DELETE CASCADE
         public List<Layer> Layers { get; set; } // the corresp. object/Type for the foreign-key. The 'List<Layer>' object itself is not stored in DB!
 
         //------Konstruktor-----//

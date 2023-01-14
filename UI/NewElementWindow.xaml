@@ -5,22 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF.UI"
         mc:Ignorable="d"
-        Title="NewElementWindow" Height="Auto" Width="320" WindowStartupLocation="CenterScreen">
+        Title="NewElementWindow" Height="180" Width="320" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False">
 
-    <Grid Background="{StaticResource PrimaryLightBrush}">
+    <Grid Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="78"/>
+            <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Vertical" Margin="16">
+        <StackPanel Orientation="Vertical" Margin="16,8,16,8" VerticalAlignment="Center">
             <Label Content="Name des Bauteils" FontSize="14"/>
             <TextBox x:Name="elementName_TextBox" Text="" VerticalContentAlignment="Center" FontSize="14" MaxLength="50" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
-        <Grid Grid.Row="1" Margin="16">
-            <Button x:Name="createElement_Button" Content="Übernehmen" Click="createElement_Button_Click" Style="{StaticResource ButtonStyle02_A}"/>
-        </Grid>
+        <Button x:Name="createElement_Button" Grid.Row="1" Margin="16" Content="Übernehmen" Click="createElement_Button_Click" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Center"/>
 
     </Grid>
 </Window>
