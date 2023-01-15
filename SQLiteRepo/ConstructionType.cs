@@ -13,7 +13,7 @@ using System.Diagnostics;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     //https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
-    public class Element 
+    public class ConstructionType
     {
         //------Variablen-----//
 
@@ -21,21 +21,12 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Eigenschaften-----//
 
         [PrimaryKey, NotNull, AutoIncrement, Unique] 
-        public int ElementId { get; set; }
+        public int ConstructionTypeId { get; set; }
 
         [NotNull]
         public string Name { get; set; }
 
-        [SQLiteNetExtensions.Attributes.ForeignKey(typeof(ConstructionType))] // FK for the 1:1 relation
-        public int ConstructionTypeId { get; set; } // This Layer is made out of Material X
-
         //------Not part of the Database-----//
-
-        [OneToMany] // 1:n relationship with Layer, ON DELETE CASCADE
-        public List<Layer> Layers { get; set; } // the corresp. object/Type for the foreign-key. The 'List<Layer>' object itself is not stored in DB!
-
-        [OneToOne] // 1:1 relationship with ConstructionType
-        public ConstructionType ConstructionType { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
 
 
         //------Konstruktor-----//
@@ -45,7 +36,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Methoden-----//
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return ElementId + "_" + Name + " (" + this.ConstructionType.Name + ")";
+            return Name + " (Id: " + ConstructionTypeId + ")";
         }
     }
 }

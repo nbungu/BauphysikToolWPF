@@ -189,5 +189,12 @@ namespace BauphysikToolWPF.SQLiteRepo
 
             return sqlConn.GetWithChildren<Element>(id);
         }
+
+        // Retreive Data from Table "ConstructionType"
+        public static List<ConstructionType> GetConstructionTypes()
+        {
+            List<ConstructionType> cType = sqlConn.Table<ConstructionType>().ToList();
+            return cType;
+        }
     }
 }
