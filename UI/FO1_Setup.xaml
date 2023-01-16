@@ -94,7 +94,7 @@
         </Grid.ColumnDefinitions>
 
         <!--Top Left -->
-        <Label Grid.Row="0" Grid.Column="0" Content="Schichten des Bauteils X" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
+        <Label Grid.Row="0" Grid.Column="0" Content="{Binding ElementName}" ContentStringFormat='Schichtaufbau - {0}' HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
         <!--Top Right -->
         <Label Grid.Row="0" Grid.Column="1" Content="Bauteilquerschnitt" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
         <!--Middle Left -->

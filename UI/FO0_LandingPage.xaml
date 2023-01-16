@@ -22,11 +22,10 @@
             <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="IsEnabled" Value="True"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="10"/>
             <Setter Property="HorizontalContentAlignment" Value="Right"/>
             <Setter Property="VerticalContentAlignment" Value="Top"/>
-            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Padding" Value="8,8,12,8"/>
             <Setter Property="RenderTransform">
                 <Setter.Value>
                     <ScaleTransform ScaleX="1" ScaleY="1" />
@@ -55,7 +54,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Button Grid.Row="0" x:Name="openElement_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" Click="openElement_Button_Click"/>
+                <Button Grid.Row="0" x:Name="openElement_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" ContentStringFormat='ID: {0}' Click="openElement_Button_Click"/>
                 <Label Grid.Row="1" x:Name="recentElement_Label" Content="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>

@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.EnvironmentData;
+using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,22 +28,26 @@ namespace BauphysikToolWPF.UI
 
         private void createElement_Button_Click(object sender, RoutedEventArgs e)
         {
-            if (elementName_TextBox.Text == String.Empty)
-                this.Close();
-
-            Element element = new Element()
+            // check if name and construction type is set
+            if (construcitonType_Picker.SelectedIndex != -1 && elementName_TextBox.Text != "")
             {
-                //ElementId gets set by SQLite DB (AutoIncrement)
-                Name = elementName_TextBox.Text,
-                Layers = new List<Layer>(),
-                //TODO:
-                //ConstructionTypeId = ,
-                //ConstructionType = 
-            };
-            DatabaseAccess.CreateElement(element);
-            FO0_LandingPage.SelectedElement = element;
-            this.Close();
-            MainWindow.SetPage("Setup");
+                string constrName = construcitonType_Picker.SelectedItem.ToString();
+                int constrId = DatabaseAccess.GetConstructionTypes().Find(e => e.Name == constrName).ConstructionTypeId;
+
+                Element element = new Element()
+                {
+                    //ElementId gets set by SQLite DB (AutoIncrement)
+                    Name = elementName_TextBox.Text,
+                    Layers = new List<Layer>(),
+                    //TODO:
+                    ConstructionTypeId = constrId,
+                    ConstructionType = new ConstructionType() { ConstructionTypeId = constrId, Name = constrName}
+                };
+                DatabaseAccess.CreateElement(element);
+                FO0_LandingPage.SelectedElement = element;
+                this.Close();
+                MainWindow.SetPage("Setup");
+            }           
         }
     }
 }

@@ -27,7 +27,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public string Name { get; set; }
 
         [SQLiteNetExtensions.Attributes.ForeignKey(typeof(ConstructionType))] // FK for the 1:1 relation
-        public int ConstructionTypeId { get; set; } // This Layer is made out of Material X
+        public int ConstructionTypeId { get; set; } // This Element is construction type X
 
         //------Not part of the Database-----//
 

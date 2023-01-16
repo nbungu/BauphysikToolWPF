@@ -58,10 +58,22 @@
             </Style.Triggers>
         </Style>
 
+        <DataTemplate x:Key="CategoriesListViewTemplate">
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="24"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Content="{Binding}" Height="28"/>
+            </Grid>
+        </DataTemplate>
+
         <DataTemplate x:Key="MaterialListViewTemplate">
             <Grid Margin="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="24" />
                     <RowDefinition Height="24" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
@@ -69,13 +81,14 @@
                     <ColumnDefinition Width="116"/>
                     <ColumnDefinition Width="116"/>
                     <ColumnDefinition Width="116"/>
+                    <ColumnDefinition Width="116"/>
                 </Grid.ColumnDefinitions>
-
+                <!--Binding reference are the ListViewItems-->
                 <Label Content="{Binding Name}" Height="28" FontWeight="Bold"/>
-                <Label Grid.Row="1" Content="{Binding Category}" Height="28" FontStyle="Italic" VerticalAlignment="Bottom" />
-                <Label Grid.Column="1" Grid.RowSpan="2" Content="{Binding BulkDensity}" ContentStringFormat='ρ = {0} kg/m³' VerticalAlignment="Center"/>
-                <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding ThermalConductivity}" ContentStringFormat='λ = {0} W/(m·K)' VerticalAlignment="Center"/>
-                <Label Grid.Column="3" Grid.RowSpan="2" Content="{Binding SpecificHeatCapacity}" ContentStringFormat='c = {0} J/(kg·K)' VerticalAlignment="Center"/>
+                <Label Grid.Column="1" Content="{Binding BulkDensity}" ContentStringFormat='ρ = {0} kg/m³' Height="28" VerticalAlignment="Center"/>
+                <Label Grid.Column="2" Content="{Binding ThermalConductivity}" ContentStringFormat='λ = {0} W/(m·K)' Height="28" VerticalAlignment="Center"/>
+                <Label Grid.Column="3" Content="{Binding SpecificHeatCapacity}" ContentStringFormat='c = {0} J/(kg·K)' Height="28" VerticalAlignment="Center"/>
+                <Label Grid.Column="4" Content="{Binding DiffusionResistance}" ContentStringFormat='µ = {0}' Height="28" VerticalAlignment="Center"/>
             </Grid>
         </DataTemplate>
 
@@ -103,23 +116,10 @@
 
             <ListView x:Name="collectionView_Categories"
                       ItemsSource="{Binding DistinctCategories}"
+                      ItemTemplate="{StaticResource CategoriesListViewTemplate}"
                       SelectionMode="Single"
                       Grid.Row="1"
                       SelectionChanged="collectionView_Categories_SelectionChanged">
-                <ListView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Margin="8">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <Label Content="{Binding}" FontSize="14" HorizontalAlignment="Right" />
-                        </Grid>
-                    </DataTemplate>
-                </ListView.ItemTemplate>
             </ListView>
         </Grid>
         
@@ -146,7 +146,7 @@
             <ListView x:Name="collectionView_Materials"
                       Grid.Row="2"        
                       ItemTemplate="{StaticResource MaterialListViewTemplate}"/>
-                  <!--ItemsSource gets set by backend-->
+                  <!--ItemsSource gets set by backend, based on selected category-->
         </Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="8">

@@ -32,6 +32,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string> Rse_Keys { get; set; }
         public List<string> Rel_Fi_Keys { get; set; }
         public List<string> Rel_Fe_Keys { get; set; }
+        public string ElementName { get; set; }
+
         public FO1_ViewModel() // Called by 'InitializeComponent()' from FO1_Setup.cs due to Class-Binding in xaml via DataContext
         {
             //For the ListView
@@ -44,6 +46,9 @@ namespace BauphysikToolWPF.UI.ViewModels
             Rse_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rse").Select(e => e.Comment).ToList();
             Rel_Fe_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rel_Fe").Select(e => e.Comment).ToList();
             Rel_Fi_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rel_Fi").Select(e => e.Comment).ToList();
+
+            //For the Page title
+            ElementName = FO0_LandingPage.SelectedElement.Name;
 
             //TODO: TextBox Viewmodel implementieren
 

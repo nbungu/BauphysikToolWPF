@@ -68,6 +68,7 @@ namespace BauphysikToolWPF.UI
             if (collectionView_Materials.SelectedItem is null)
                 return;
 
+            //ItemsSource of collectionView holds the List<Material>. 
             var material = collectionView_Materials.SelectedItem as Material;
             if (material is null)
             {
