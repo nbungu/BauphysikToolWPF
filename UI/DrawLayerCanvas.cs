@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
+using System.Reflection.Emit;
 
 namespace BauphysikToolWPF.UI
 {
@@ -70,11 +71,11 @@ namespace BauphysikToolWPF.UI
                     Width = layerWidth,
                     Height = canvasHeight,
                     Stroke = layer.IsSelected ? Brushes.Blue : Brushes.Black,
-                    StrokeThickness = layer.IsSelected ? 1 : 0.4,
-                    Fill = Test3(),//new SolidColorBrush((Color)ColorConverter.ConvertFromString(layer.correspondingMaterial().ColorCode)),
-                   // OpacityMask = GetTextureFromImage()
+                    StrokeThickness = layer.IsSelected ? 1.4 : 0.4,
+                    Fill = (layer.Material.Category == "Insulation") ? GetInsulationHatchPattern(layerWidth, canvasHeight) : new SolidColorBrush((Color)ColorConverter.ConvertFromString(layer.correspondingMaterial().ColorCode)),
+                    //OpacityMask = GetTextureFromImage()
                 };
-                Label label = new Label()
+                System.Windows.Controls.Label label = new System.Windows.Controls.Label()
                 {
                     Content = layer.LayerPosition,
                     FontSize = 14
@@ -96,20 +97,17 @@ namespace BauphysikToolWPF.UI
         private ImageBrush GetTextureFromImage()
         {
             ImageBrush textureBrush = new ImageBrush(new BitmapImage(new Uri("../../../Resources/Icons/CL_001x80_climate_menu.png", UriKind.Relative)));
-
             // Set the OpacityMask of the rectangle to the texture brush
             return textureBrush;
-
         }
 
-        private DrawingBrush Test3()
+        private DrawingBrush GetInsulationHatchPattern(double rectWidth, double rectHeigt)
         {
-
+            double w_h_ratio = rectWidth / rectHeigt;
 
             DrawingBrush brush = new DrawingBrush();
-
             // Create a GeometryGroup to contain the hatch lines
-            GeometryGroup hatchContent = new GeometryGroup();            
+            GeometryGroup hatchContent = new GeometryGroup();          
 
             PathGeometry pathGeometry = new PathGeometry();
 
@@ -118,28 +116,27 @@ namespace BauphysikToolWPF.UI
             double arcEndX_Left = arcRad;
             double arcEndX_Right = 60 - arcRad;
 
-            double currentY_Left = 10;
-            double currentY_Right = 0;
+            double currentY_Left = 0;
 
             //Imaginary Rectangle, coordinate origin is at top left corner
             PathFigure pathFigure = new PathFigure();
-            pathFigure.StartPoint = new Point(arcEndX_Left, 0); // Startpoint of the segment series
+            pathFigure.StartPoint = new Point(0, 0); // Startpoint of the segment series
             pathFigure.IsClosed = false;
             pathFigure.IsFilled = false;
 
-
-            for(int i = 0; i<4; i++)
+            int iMax = Convert.ToInt32(-20 * w_h_ratio + 20); //increase the number of loops for narrow rectangles; decrease for broader ones
+            for (int i = 0; i<iMax; i++)
             {
                 currentY_Left += arcRad;
-                ArcSegment leftArc1 = new ArcSegment();                
-                leftArc1.Point = new Point(arcEndX_Left, currentY_Left); // Connects previous Point with this (End)point of the Segment
-                leftArc1.Size = new Size(arcRad, arcRad);
-                leftArc1.IsLargeArc = false;
-                leftArc1.SweepDirection = SweepDirection.Counterclockwise;
-                pathFigure.Segments.Add(leftArc1);
+                //First quarter circle 
+                ArcSegment startingArc = new ArcSegment();
+                startingArc.Point = new Point(arcEndX_Left, currentY_Left); // Connects previous Point with this (End)point of the Segment
+                startingArc.Size = new Size(arcRad, arcRad);
+                startingArc.IsLargeArc = false;
+                startingArc.SweepDirection = SweepDirection.Counterclockwise;
+                pathFigure.Segments.Add(startingArc);
 
-                currentY_Right += arcRad;
-                LineSegment connectingLineLTR = new LineSegment() { Point = new Point(arcEndX_Right, currentY_Right) }; // Connects previous Point with this (End)point of the Segment
+                LineSegment connectingLineLTR = new LineSegment() { Point = new Point(arcEndX_Right, currentY_Left-arcRad) }; // Connects previous Point with this (End)point of the Segment
                 pathFigure.Segments.Add(connectingLineLTR);
 
                 currentY_Left += arcRad;
@@ -150,18 +147,23 @@ namespace BauphysikToolWPF.UI
                 rightArc1.SweepDirection = SweepDirection.Clockwise;
                 pathFigure.Segments.Add(rightArc1);
 
-                currentY_Right += arcRad;
-                LineSegment connectingLineRTL = new LineSegment() { Point = new Point(arcEndX_Left, currentY_Right) }; // Connects previous Point with this (End)point of the Segment
+                LineSegment connectingLineRTL = new LineSegment() { Point = new Point(arcEndX_Left, currentY_Left - arcRad) }; // Connects previous Point with this (End)point of the Segment
                 pathFigure.Segments.Add(connectingLineRTL);
+
+                //End quarter circle 
+                ArcSegment endArc = new ArcSegment();
+                endArc.Point = new Point(0, currentY_Left); // Connects previous Point with this (End)point of the Segment
+                endArc.Size = new Size(arcRad, arcRad);
+                endArc.IsLargeArc = false;
+                endArc.SweepDirection = SweepDirection.Counterclockwise;
+                pathFigure.Segments.Add(endArc);
             }
             pathGeometry.Figures.Add(pathFigure);
-
             hatchContent.Children.Add(pathGeometry);
-            hatchContent.Transform = new RotateTransform(45);
 
             // Use the hatch lines as the Drawing's content
-            brush.Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, 0.2), hatchContent);
-
+            brush.Drawing = new GeometryDrawing(new SolidColorBrush(Colors.Red), new Pen(Brushes.Black, 0.2), hatchContent);
+            
             return brush;
         }
     }
