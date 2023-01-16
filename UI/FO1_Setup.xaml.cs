@@ -20,6 +20,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
@@ -45,7 +46,7 @@ namespace BauphysikToolWPF.UI
             Layers = DatabaseAccess.QueryLayersByElementId(ElementId); // for FO1, FO2 & FO3 ViewModel                
             EnvVars = DatabaseAccess.GetEnvVars();              // for FO1 ViewModel
             InitializeComponent();                              // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
-            new DrawLayerCanvas(Layers, layers_Canvas);         // Initial Draw of the Canvas
+            new DrawLayerCanvas(Layers, layers_Canvas, test_Grid);         // Initial Draw of the Canvas
             DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with an event (when Layers have been changed)
         }
 
@@ -55,7 +56,7 @@ namespace BauphysikToolWPF.UI
             Layers = DatabaseAccess.QueryLayersByElementId(ElementId);  // Update Layer variable in this class
             ReorderLayerPosition(Layers);                               // Establish correct LayerPosition 
             layers_ListView.ItemsSource = Layers;       // Update LVItemsSource
-            new DrawLayerCanvas(Layers, layers_Canvas); // Redraw Canvas
+            new DrawLayerCanvas(Layers, layers_Canvas, test_Grid); // Redraw Canvas
         }
 
         // custom Methods
@@ -240,7 +241,7 @@ namespace BauphysikToolWPF.UI
             layer.IsSelected = true;
 
             // Redraw to show selected layer 
-            new DrawLayerCanvas(layers_ListView.ItemsSource as List<Layer>, layers_Canvas);
+            new DrawLayerCanvas(layers_ListView.ItemsSource as List<Layer>, layers_Canvas, test_Grid);
         }
     }   
 }

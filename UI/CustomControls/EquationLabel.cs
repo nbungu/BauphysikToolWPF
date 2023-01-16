@@ -9,7 +9,7 @@ using System.Windows.Documents;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
-    public class MathTextBox : Control
+    public class EquationLabel : Control
     {
         public string BaseText
         {
@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             }
         }
 
-        public static readonly DependencyProperty BaseTextProperty = DependencyProperty.Register("BaseText", typeof(string), typeof(MathTextBox), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty BaseTextProperty = DependencyProperty.Register("BaseText", typeof(string), typeof(EquationLabel), new PropertyMetadata(string.Empty));
 
         public string SubscriptText
         {
@@ -37,7 +37,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             }
         }
 
-        public static readonly DependencyProperty SubscriptTextProperty = DependencyProperty.Register("SubscriptText", typeof(string), typeof(MathTextBox), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty SubscriptTextProperty = DependencyProperty.Register("SubscriptText", typeof(string), typeof(EquationLabel), new PropertyMetadata(string.Empty));
 
         public string Value
         {
@@ -51,7 +51,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             }
         }
 
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(string), typeof(MathTextBox), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(string), typeof(EquationLabel), new PropertyMetadata(string.Empty));
 
         public string Unit
         {
@@ -65,7 +65,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             }
         }
 
-        public static readonly DependencyProperty UnitProperty = DependencyProperty.Register("Unit", typeof(string), typeof(MathTextBox), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty UnitProperty = DependencyProperty.Register("Unit", typeof(string), typeof(EquationLabel), new PropertyMetadata(string.Empty));
 
         public string FollowingText
         {
@@ -79,7 +79,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             }
         }
 
-        public static readonly DependencyProperty FollowingTextProperty = DependencyProperty.Register("FollowingText", typeof(string), typeof(MathTextBox), new PropertyMetadata(string.Empty));
+        public static readonly DependencyProperty FollowingTextProperty = DependencyProperty.Register("FollowingText", typeof(string), typeof(EquationLabel), new PropertyMetadata(string.Empty));
 
         public static void SetSubscriptFontSize(UIElement element, double value)
         {
@@ -90,7 +90,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             return (double)element.GetValue(SubscriptFontSizeProperty);
         }
 
-        public static readonly DependencyProperty SubscriptFontSizeProperty = DependencyProperty.Register("SubscriptFontSize", typeof(double), typeof(MathTextBox), new PropertyMetadata((double)12.0));
+        public static readonly DependencyProperty SubscriptFontSizeProperty = DependencyProperty.Register("SubscriptFontSize", typeof(double), typeof(EquationLabel), new PropertyMetadata((double)12.0));
         
         public static void SetFontSize(UIElement element, double value)
         {
@@ -101,7 +101,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             return (double)element.GetValue(FontSizeProperty);
         }
 
-        public static new readonly DependencyProperty FontSizeProperty = DependencyProperty.Register("FontSize", typeof(double), typeof(MathTextBox), new PropertyMetadata((double)14.0));
+        public static new readonly DependencyProperty FontSizeProperty = DependencyProperty.Register("FontSize", typeof(double), typeof(EquationLabel), new PropertyMetadata((double)14.0));
 
     }
 }

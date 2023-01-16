@@ -14,6 +14,8 @@ using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using System.Windows.Media.Imaging;
 using System.Reflection.Emit;
+using SkiaSharp;
+using Xceed.Wpf.Toolkit.Converters;
 
 namespace BauphysikToolWPF.UI
 {
@@ -30,18 +32,22 @@ namespace BauphysikToolWPF.UI
                 layers = value;
             }
         }
-        public Canvas Canvas { get; set; }
+        public Canvas Canvas { get; set; } // holds the layer rectangles
 
-        public DrawLayerCanvas(List<Layer> layers, Canvas canvas)
+        public Grid Grid { get; set; } // holds the measurement lines
+
+        public DrawLayerCanvas(List<Layer> layers, Canvas canvas, Grid grid)
         {
             this.Layers = layers;
             this.Canvas = canvas;
+            this.Grid = grid;
             DrawRectanglesFromLayers();
         }
-
+       
         public void DrawRectanglesFromLayers()
         {
             Canvas.Children.Clear();
+            Grid.Children.Clear();
             
             if (Layers == null || Layers.Count == 0)
                 return;
@@ -65,106 +71,57 @@ namespace BauphysikToolWPF.UI
                 double layerWidth = canvasWidth * layerWidthScale;
                 double left = right - layerWidth; // start drawing from right canvas side (beginning with INSIDE Layer, which is first list element) -> We want Inside layer position on right/inner side. 
 
-                // Set properties of the layer rectangle
-                Rectangle rect = new Rectangle()
+                Line line = new Line()
+                {
+                    Y1 = 0,
+                    Y2 = 8,
+                    X1 = right,
+                    X2 = right,
+                    Stroke = new SolidColorBrush(Colors.Black),
+                    StrokeThickness = 1,
+                    //RenderTransform = new RotateTransform(45),
+                    VerticalAlignment = VerticalAlignment.Center,
+                };
+                Grid.Children.Add(line);
+
+                Rectangle baseRect = new Rectangle()
                 {
                     Width = layerWidth,
                     Height = canvasHeight,
                     Stroke = layer.IsSelected ? Brushes.Blue : Brushes.Black,
-                    StrokeThickness = layer.IsSelected ? 1.4 : 0.4,
-                    Fill = (layer.Material.Category == "Insulation") ? GetInsulationHatchPattern(layerWidth, canvasHeight) : new SolidColorBrush((Color)ColorConverter.ConvertFromString(layer.correspondingMaterial().ColorCode)),
-                    //OpacityMask = GetTextureFromImage()
+                    StrokeThickness = layer.IsSelected ? 2 : 0.2,
+                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(layer.correspondingMaterial().ColorCode)),
                 };
+
+                // Draw layer rectangle
+                Canvas.Children.Add(baseRect);
+                Canvas.SetTop(baseRect, bottom);
+                Canvas.SetLeft(baseRect, left);
+                
+                Rectangle hatchPatternRect = new Rectangle()
+                {
+                    Width = layerWidth - 1,
+                    Height = canvasHeight,
+                    Fill = HatchPattern.GetHatchPattern(layer.Material.Category, layerWidth, canvasHeight),
+                    Opacity = 0.7
+                };
+                // Draw hatch pattern rectangle
+                Canvas.Children.Add(hatchPatternRect);
+                Canvas.SetTop(hatchPatternRect, bottom);
+                Canvas.SetLeft(hatchPatternRect, left+0.5);
+
+                // Add Label with layer position
                 System.Windows.Controls.Label label = new System.Windows.Controls.Label()
                 {
                     Content = layer.LayerPosition,
                     FontSize = 14
                 };
-
-                // Draw layer rectangle
-                Canvas.Children.Add(rect);
-                Canvas.SetTop(rect, bottom);
-                Canvas.SetLeft(rect, left);
-
                 Canvas.Children.Add(label);
-
                 Canvas.SetTop(label, bottom);
                 Canvas.SetLeft(label, left);
 
                 right -= layerWidth; // Add new layer at left edge of previous layer
             }
-        }
-        private ImageBrush GetTextureFromImage()
-        {
-            ImageBrush textureBrush = new ImageBrush(new BitmapImage(new Uri("../../../Resources/Icons/CL_001x80_climate_menu.png", UriKind.Relative)));
-            // Set the OpacityMask of the rectangle to the texture brush
-            return textureBrush;
-        }
-
-        private DrawingBrush GetInsulationHatchPattern(double rectWidth, double rectHeigt)
-        {
-            double w_h_ratio = rectWidth / rectHeigt;
-
-            DrawingBrush brush = new DrawingBrush();
-            // Create a GeometryGroup to contain the hatch lines
-            GeometryGroup hatchContent = new GeometryGroup();          
-
-            PathGeometry pathGeometry = new PathGeometry();
-
-            //Imaginary 60x60 Rectangle
-            double arcRad = 10;
-            double arcEndX_Left = arcRad;
-            double arcEndX_Right = 60 - arcRad;
-
-            double currentY_Left = 0;
-
-            //Imaginary Rectangle, coordinate origin is at top left corner
-            PathFigure pathFigure = new PathFigure();
-            pathFigure.StartPoint = new Point(0, 0); // Startpoint of the segment series
-            pathFigure.IsClosed = false;
-            pathFigure.IsFilled = false;
-
-            int iMax = Convert.ToInt32(-20 * w_h_ratio + 20); //increase the number of loops for narrow rectangles; decrease for broader ones
-            for (int i = 0; i<iMax; i++)
-            {
-                currentY_Left += arcRad;
-                //First quarter circle 
-                ArcSegment startingArc = new ArcSegment();
-                startingArc.Point = new Point(arcEndX_Left, currentY_Left); // Connects previous Point with this (End)point of the Segment
-                startingArc.Size = new Size(arcRad, arcRad);
-                startingArc.IsLargeArc = false;
-                startingArc.SweepDirection = SweepDirection.Counterclockwise;
-                pathFigure.Segments.Add(startingArc);
-
-                LineSegment connectingLineLTR = new LineSegment() { Point = new Point(arcEndX_Right, currentY_Left-arcRad) }; // Connects previous Point with this (End)point of the Segment
-                pathFigure.Segments.Add(connectingLineLTR);
-
-                currentY_Left += arcRad;
-                ArcSegment rightArc1 = new ArcSegment();             
-                rightArc1.Point = new Point(arcEndX_Right, currentY_Left); // Connects previous Point with this (End)point of the Segment
-                rightArc1.Size = new Size(arcRad, arcRad);
-                rightArc1.IsLargeArc = false;
-                rightArc1.SweepDirection = SweepDirection.Clockwise;
-                pathFigure.Segments.Add(rightArc1);
-
-                LineSegment connectingLineRTL = new LineSegment() { Point = new Point(arcEndX_Left, currentY_Left - arcRad) }; // Connects previous Point with this (End)point of the Segment
-                pathFigure.Segments.Add(connectingLineRTL);
-
-                //End quarter circle 
-                ArcSegment endArc = new ArcSegment();
-                endArc.Point = new Point(0, currentY_Left); // Connects previous Point with this (End)point of the Segment
-                endArc.Size = new Size(arcRad, arcRad);
-                endArc.IsLargeArc = false;
-                endArc.SweepDirection = SweepDirection.Counterclockwise;
-                pathFigure.Segments.Add(endArc);
-            }
-            pathGeometry.Figures.Add(pathFigure);
-            hatchContent.Children.Add(pathGeometry);
-
-            // Use the hatch lines as the Drawing's content
-            brush.Drawing = new GeometryDrawing(new SolidColorBrush(Colors.Red), new Pen(Brushes.Black, 0.2), hatchContent);
-            
-            return brush;
         }
     }
 }

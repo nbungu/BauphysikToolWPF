@@ -17,10 +17,10 @@
         <SolidColorBrush x:Key="PrimaryBorderBrush" Color="#FFABADB3"/>
 
         <!--Custom TextBox for Subscript Text with Equation-->
-        <Style TargetType="{x:Type controls:MathTextBox}">
+        <Style TargetType="{x:Type controls:EquationLabel}">
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type controls:MathTextBox}">
+                    <ControlTemplate TargetType="{x:Type controls:EquationLabel}">
                         <StackPanel Orientation="Horizontal">
                             <TextBlock FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding BaseText}" VerticalAlignment="Center"/>
                             <TextBlock FontSize="{TemplateBinding FontSize}" Margin="-3,1,0,0" VerticalAlignment="Center">
@@ -51,6 +51,21 @@
                                 <Run BaselineAlignment="Subscript" Text="{TemplateBinding SubscriptText}" FontSize="{TemplateBinding SubscriptFontSize}"/>
                             </TextBlock>
                             <TextBlock FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding AppendText}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Custom TextBox for fractions-->
+        <Style TargetType="{x:Type controls:FractionLabel}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type controls:FractionLabel}">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Height="18" FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding CounterText}" VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="0,0,0,1"/>
+                            <Line X2="30" StrokeThickness="1" Stroke="Black" VerticalAlignment="Center"/>
+                            <TextBlock Height="18" FontSize="{TemplateBinding FontSize}" Text="{TemplateBinding DenominatorText}" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="0,-2,0,0"/>
                         </StackPanel>
                     </ControlTemplate>
                 </Setter.Value>

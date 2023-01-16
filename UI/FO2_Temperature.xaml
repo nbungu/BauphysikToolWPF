@@ -42,14 +42,14 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
                         <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:MathTextBox BaseText="θ" SubscriptText="e" Value="{Binding StationaryTempCalculation.Te}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding StationaryTempCalculation.Te}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:MathTextBox BaseText="R" SubscriptText="se" Value="{Binding StationaryTempCalculation.Rse}" Unit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="R" SubscriptText="se" Value="{Binding StationaryTempCalculation.Rse}" Unit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
-                        <controls:MathTextBox BaseText="R" SubscriptText="si" Value="{Binding StationaryTempCalculation.Rsi}" Unit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="R" SubscriptText="si" Value="{Binding StationaryTempCalculation.Rsi}" Unit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:MathTextBox BaseText="θ" SubscriptText="i" Value="{Binding StationaryTempCalculation.Ti}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding StationaryTempCalculation.Ti}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <Label Content="Innen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
                     </StackPanel>
@@ -90,10 +90,10 @@
             <StackPanel Orientation="Vertical" Grid.Column="0">
                 <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>                
-                <controls:MathTextBox BaseText="U" Value="{Binding StationaryTempCalculation.UValue}" Unit="W/m²K" Height="28"/>
-                <controls:MathTextBox BaseText="q" Value="{Binding StationaryTempCalculation.QValue}" Unit="W/m²" Height="28"/>
-                <controls:MathTextBox BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding StationaryTempCalculation.FRsi}" Height="28"/>
-                <controls:MathTextBox BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
+                <controls:EquationLabel BaseText="U" Value="{Binding StationaryTempCalculation.UValue}" Unit="W/m²K" Height="28"/>
+                <controls:EquationLabel BaseText="q" Value="{Binding StationaryTempCalculation.QValue}" Unit="W/m²" Height="28"/>
+                <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding StationaryTempCalculation.FRsi}" Height="28"/>
+                <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Grid.Column="1">
