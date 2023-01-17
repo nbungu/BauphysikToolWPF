@@ -33,70 +33,90 @@ namespace BauphysikToolWPF.UI
             }
         }
         public Canvas Canvas { get; set; } // holds the layer rectangles
-
         public Grid Grid { get; set; } // holds the measurement lines
 
         public DrawLayerCanvas(List<Layer> layers, Canvas canvas, Grid grid)
         {
+            if (layers == null || layers.Count == 0)
+                return;
+
             this.Layers = layers;
             this.Canvas = canvas;
             this.Grid = grid;
-            DrawRectanglesFromLayers();
+            DrawRectanglesFromLayers(Layers, Canvas);
+            DrawMeasurementLine(Canvas.Width, Layers, Grid);
+        }
+
+        //Horizontal measurement Line - TODO make own class or even XAML object
+        public void DrawMeasurementLine(double fullWidth_px, List<Layer> measurementObject, Grid container)
+        {
+            container.Children.Clear();
+            double right = fullWidth_px;
+
+            // Horizontal base line
+            Line baseLine = new Line() { X2 = fullWidth_px, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1, VerticalAlignment = VerticalAlignment.Center };
+            container.Children.Add(baseLine);
+
+            double elementWidth = 0;
+            foreach (Layer layer in measurementObject)
+            {
+                elementWidth += layer.LayerThickness;
+            }
+            foreach (Layer layer in measurementObject)
+            {
+                double layerWidthScale = layer.LayerThickness / elementWidth; // from  0 ... 1
+                double layerWidth = fullWidth_px * layerWidthScale;
+
+                // vertical tick
+                Line line = new Line() { Y2 = 12, X1 = right, X2 = right, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1, VerticalAlignment = VerticalAlignment.Center };
+                container.Children.Add(line);
+
+                right -= layerWidth; // Add new layer at left edge of previous layer
+            }
+            // last vertical tick
+            Line lineEnd = new Line() { Y2 = 12, X1 = right, X2 = right, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1, VerticalAlignment = VerticalAlignment.Center };
+            container.Children.Add(lineEnd);
         }
        
-        public void DrawRectanglesFromLayers()
+        public void DrawRectanglesFromLayers(List<Layer> layers, Canvas canvas)
         {
-            Canvas.Children.Clear();
-            Grid.Children.Clear();
-            
-            if (Layers == null || Layers.Count == 0)
-                return;
+            canvas.Children.Clear();
+            double right = canvas.Width;
 
-            double canvasHeight = Canvas.Height;
-            double canvasWidth = Canvas.Width;
-            double bottom = 0;
-            double right = canvasWidth;
-            double fullWidth = 0;
-
-            //TODO refactor: variablen sollen nicht bei jedem foreach neu initialisiert und zugeweisen werden müssen
-
-            //Get width of all layers combined to get fullWidth
-            foreach (Layer layer in Layers)
+            double elementWidth = 0;
+            foreach (Layer layer in layers)
             {
-                fullWidth += layer.LayerThickness;
+                elementWidth += layer.LayerThickness;
             }
-            foreach (Layer layer in Layers)
+            foreach (Layer layer in layers)
             {
-                double layerWidthScale = layer.LayerThickness / fullWidth; // from  0 ... 1
-                double layerWidth = canvasWidth * layerWidthScale;
+                double layerWidthScale = layer.LayerThickness / elementWidth; // from  0 ... 1
+                double layerWidth = canvas.Width * layerWidthScale;
                 double left = right - layerWidth; // start drawing from right canvas side (beginning with INSIDE Layer, which is first list element) -> We want Inside layer position on right/inner side. 
 
-                Line line = new Line() { Y2 = 12, X1 = right, X2 = right, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1.5, VerticalAlignment = VerticalAlignment.Center };
-                Grid.Children.Add(line);
-
+                // Draw layer rectangle
                 Rectangle baseRect = new Rectangle()
                 {
                     Width = layerWidth,
-                    Height = canvasHeight,
+                    Height = canvas.Height,
                     Stroke = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
                     StrokeThickness = layer.IsSelected ? 2 : 0.2,
                     Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(layer.correspondingMaterial().ColorCode)),
                 };
-                // Draw layer rectangle
-                Canvas.Children.Add(baseRect);
-                Canvas.SetTop(baseRect, bottom);
+                canvas.Children.Add(baseRect);
+                Canvas.SetTop(baseRect, 0);
                 Canvas.SetLeft(baseRect, left);
-                
+
+                // Draw hatch pattern rectangle
                 Rectangle hatchPatternRect = new Rectangle()
                 {
                     Width = layerWidth - 1,
-                    Height = canvasHeight,
-                    Fill = HatchPattern.GetHatchPattern(layer.Material.Category, layerWidth, canvasHeight),
+                    Height = canvas.Height,
+                    Fill = HatchPattern.GetHatchPattern(layer.Material.Category, layerWidth, canvas.Height),
                     Opacity = 0.7
                 };
-                // Draw hatch pattern rectangle
-                Canvas.Children.Add(hatchPatternRect);
-                Canvas.SetTop(hatchPatternRect, bottom);
+                canvas.Children.Add(hatchPatternRect);
+                Canvas.SetTop(hatchPatternRect, 0);
                 Canvas.SetLeft(hatchPatternRect, left+0.5);
 
                 // Add Label with layer position
@@ -105,14 +125,12 @@ namespace BauphysikToolWPF.UI
                     Content = layer.LayerPosition,
                     FontSize = 14
                 };
-                Canvas.Children.Add(label);
-                Canvas.SetTop(label, bottom);
+                canvas.Children.Add(label);
+                Canvas.SetTop(label, 0);
                 Canvas.SetLeft(label, left);
 
                 right -= layerWidth; // Add new layer at left edge of previous layer
             }
-            Line lineEnd = new Line() { Y2 = 12, X1 = right, X2 = right, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1.5, VerticalAlignment = VerticalAlignment.Center };
-            Grid.Children.Add(lineEnd);
         }
     }
 }
