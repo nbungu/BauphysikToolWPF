@@ -147,24 +147,24 @@
         </Grid>
 
         <!--Middle Right-->
-        <Grid Grid.Row="1" Grid.Column="1" Margin="16">
+        <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="16">
             <Viewbox ClipToBounds="True">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="64"/>
+                        <RowDefinition Height="40"/>
                     </Grid.RowDefinitions>
                     <!--Canvas inside of ViewBox makes it dynamically sizable-->
                     <!--Canvas Children defined in backend-->
                     <Canvas x:Name="layers_Canvas" Grid.Row="0" Width="400" Height="400" SnapsToDevicePixels="True"/>
-                    <Line Grid.Row="1" X2="{Binding ElementName=layers_Canvas, Path=Width}" Stroke="Black" StrokeThickness="1"/>
-                    <Grid x:Name="test_Grid" Grid.Row="1" ClipToBounds="True" Width="{Binding ElementName=layers_Canvas, Path=Width}"/>
+                    <Line Grid.Row="1" X2="{Binding ElementName=layers_Canvas, Path=Width}" Stroke="Black" StrokeThickness="1.5" VerticalAlignment="Center"/>
+                    <Grid Grid.Row="1" x:Name="test_Grid" ClipToBounds="True"/>
                 </Grid>
             </Viewbox>            
         </Grid>
 
         <!--Bottom Left -->
-        <Grid Grid.Row="2" Grid.Column="1" Margin="16">
+        <Grid Grid.Row="2" Grid.Column="0" Margin="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32" />
                 <RowDefinition Height="56" />

@@ -71,28 +71,17 @@ namespace BauphysikToolWPF.UI
                 double layerWidth = canvasWidth * layerWidthScale;
                 double left = right - layerWidth; // start drawing from right canvas side (beginning with INSIDE Layer, which is first list element) -> We want Inside layer position on right/inner side. 
 
-                Line line = new Line()
-                {
-                    Y1 = 0,
-                    Y2 = 8,
-                    X1 = right,
-                    X2 = right,
-                    Stroke = new SolidColorBrush(Colors.Black),
-                    StrokeThickness = 1,
-                    //RenderTransform = new RotateTransform(45),
-                    VerticalAlignment = VerticalAlignment.Center,
-                };
+                Line line = new Line() { Y2 = 12, X1 = right, X2 = right, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1.5, VerticalAlignment = VerticalAlignment.Center };
                 Grid.Children.Add(line);
 
                 Rectangle baseRect = new Rectangle()
                 {
                     Width = layerWidth,
                     Height = canvasHeight,
-                    Stroke = layer.IsSelected ? Brushes.Blue : Brushes.Black,
+                    Stroke = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
                     StrokeThickness = layer.IsSelected ? 2 : 0.2,
                     Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(layer.correspondingMaterial().ColorCode)),
                 };
-
                 // Draw layer rectangle
                 Canvas.Children.Add(baseRect);
                 Canvas.SetTop(baseRect, bottom);
@@ -122,6 +111,8 @@ namespace BauphysikToolWPF.UI
 
                 right -= layerWidth; // Add new layer at left edge of previous layer
             }
+            Line lineEnd = new Line() { Y2 = 12, X1 = right, X2 = right, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1.5, VerticalAlignment = VerticalAlignment.Center };
+            Grid.Children.Add(lineEnd);
         }
     }
 }
