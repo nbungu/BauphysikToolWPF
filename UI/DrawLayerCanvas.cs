@@ -21,62 +21,12 @@ namespace BauphysikToolWPF.UI
 {
     public class DrawLayerCanvas
     {
-        private List<Layer> layers;
-        public List<Layer> Layers //for Validation
-        {
-            get { return layers; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("null layer list specified");
-                layers = value;
-            }
-        }
-        public Canvas Canvas { get; set; } // holds the layer rectangles
-        public Grid Grid { get; set; } // holds the measurement lines
-
-        public DrawLayerCanvas(List<Layer> layers, Canvas canvas, Grid grid)
+        public DrawLayerCanvas(List<Layer> layers, Canvas canvas)
         {
             if (layers == null || layers.Count == 0)
                 return;
-
-            this.Layers = layers;
-            this.Canvas = canvas;
-            this.Grid = grid;
-            DrawRectanglesFromLayers(Layers, Canvas);
-            DrawMeasurementLine(Canvas.Width, Layers, Grid);
-        }
-
-        //Horizontal measurement Line - TODO make own class or even XAML object
-        public void DrawMeasurementLine(double fullWidth_px, List<Layer> measurementObject, Grid container)
-        {
-            container.Children.Clear();
-            double right = fullWidth_px;
-
-            // Horizontal base line
-            Line baseLine = new Line() { X2 = fullWidth_px, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1, VerticalAlignment = VerticalAlignment.Center };
-            container.Children.Add(baseLine);
-
-            double elementWidth = 0;
-            foreach (Layer layer in measurementObject)
-            {
-                elementWidth += layer.LayerThickness;
-            }
-            foreach (Layer layer in measurementObject)
-            {
-                double layerWidthScale = layer.LayerThickness / elementWidth; // from  0 ... 1
-                double layerWidth = fullWidth_px * layerWidthScale;
-
-                // vertical tick
-                Line line = new Line() { Y2 = 12, X1 = right, X2 = right, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1, VerticalAlignment = VerticalAlignment.Center };
-                container.Children.Add(line);
-
-                right -= layerWidth; // Add new layer at left edge of previous layer
-            }
-            // last vertical tick
-            Line lineEnd = new Line() { Y2 = 12, X1 = right, X2 = right, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = 1, VerticalAlignment = VerticalAlignment.Center };
-            container.Children.Add(lineEnd);
-        }
+            DrawRectanglesFromLayers(layers, canvas);
+        }               
        
         public void DrawRectanglesFromLayers(List<Layer> layers, Canvas canvas)
         {
@@ -88,6 +38,7 @@ namespace BauphysikToolWPF.UI
             {
                 elementWidth += layer.LayerThickness;
             }
+            // Drawing from right to left
             foreach (Layer layer in layers)
             {
                 double layerWidthScale = layer.LayerThickness / elementWidth; // from  0 ... 1

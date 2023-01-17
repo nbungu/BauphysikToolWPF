@@ -157,7 +157,7 @@
                     <!--Canvas inside of ViewBox makes it dynamically sizable-->
                     <!--Canvas Children defined in backend-->
                     <Canvas x:Name="layers_Canvas" Grid.Row="0" Width="400" Height="400" SnapsToDevicePixels="True"/>
-                    <Grid Grid.Row="1" x:Name="test_Grid" ClipToBounds="True"/>
+                    <Grid Grid.Row="1" x:Name="measurement_Grid" Width="{Binding ElementName=layers_Canvas, Path=Width}"/>
                 </Grid>
             </Viewbox>            
         </Grid>
