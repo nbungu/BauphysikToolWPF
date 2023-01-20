@@ -12,6 +12,7 @@ namespace BauphysikToolWPF.SQLiteRepo
     {
         //------Variablen-----//
 
+        // Normierungsfehler
 
         //------Eigenschaften-----//
 

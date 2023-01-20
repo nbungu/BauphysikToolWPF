@@ -24,6 +24,8 @@ namespace BauphysikToolWPF.EnvironmentData
         public static KeyValuePair<string, double> Rel_Fi { get; set; }
         public static KeyValuePair<string, double> Rel_Fe { get; set; }
 
+        //als eine Hastable
+
         
     }
 }

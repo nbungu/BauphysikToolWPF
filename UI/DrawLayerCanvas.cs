@@ -16,29 +16,30 @@ using System.Windows.Media.Imaging;
 using System.Reflection.Emit;
 using SkiaSharp;
 using Xceed.Wpf.Toolkit.Converters;
+using System.ComponentModel;
 
 namespace BauphysikToolWPF.UI
 {
     public class DrawLayerCanvas
     {
-        public DrawLayerCanvas(List<Layer> layers, Canvas canvas)
-        {
-            if (layers == null || layers.Count == 0)
-                return;
-            DrawRectanglesFromLayers(layers, canvas);
-        }               
-       
-        public void DrawRectanglesFromLayers(List<Layer> layers, Canvas canvas)
+        // custom parameter constructor, with optional parameter "showPositionLabel"
+        public DrawLayerCanvas(List<Layer> layers, Canvas canvas, bool showPositionLabel = true)
         {
             canvas.Children.Clear();
-            double right = canvas.Width;
 
+            if (layers == null || layers.Count == 0)
+                return;
+
+            // check if canvas was already created in frontend
+            canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
+
+            double right = canvas.Width;
             double elementWidth = 0;
             foreach (Layer layer in layers)
             {
                 elementWidth += layer.LayerThickness;
             }
-            // Drawing from right to left
+            // Drawing from right to left: first layer in list is inside (= right side)
             foreach (Layer layer in layers)
             {
                 double layerWidthScale = layer.LayerThickness / elementWidth; // from  0 ... 1
@@ -68,20 +69,22 @@ namespace BauphysikToolWPF.UI
                 };
                 canvas.Children.Add(hatchPatternRect);
                 Canvas.SetTop(hatchPatternRect, 0);
-                Canvas.SetLeft(hatchPatternRect, left+0.5);
+                Canvas.SetLeft(hatchPatternRect, left + 0.5);
 
-                // Add Label with layer position
-                System.Windows.Controls.Label label = new System.Windows.Controls.Label()
+                if (showPositionLabel == true)
                 {
-                    Content = layer.LayerPosition,
-                    FontSize = 14
-                };
-                canvas.Children.Add(label);
-                Canvas.SetTop(label, 0);
-                Canvas.SetLeft(label, left);
-
+                    // Add Label with layer position
+                    System.Windows.Controls.Label label = new System.Windows.Controls.Label()
+                    {
+                        Content = layer.LayerPosition,
+                        FontSize = 14
+                    };
+                    canvas.Children.Add(label);
+                    Canvas.SetTop(label, 0);
+                    Canvas.SetLeft(label, left);
+                }
                 right -= layerWidth; // Add new layer at left edge of previous layer
             }
-        }
+        }               
     }
 }
