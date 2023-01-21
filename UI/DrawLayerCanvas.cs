@@ -64,8 +64,8 @@ namespace BauphysikToolWPF.UI
                 {
                     Width = layerWidth - 1,
                     Height = canvas.Height,
-                    Fill = HatchPattern.GetHatchPattern(layer.Material.Category, layerWidth, canvas.Height),
-                    Opacity = 0.7
+                    Fill = HatchPattern.GetHatchPattern(layer.Material.Category, layerWidth, canvas.Height, 0.5),
+                    Opacity = 0.6
                 };
                 canvas.Children.Add(hatchPatternRect);
                 Canvas.SetTop(hatchPatternRect, 0);

@@ -11,16 +11,19 @@ namespace BauphysikToolWPF.UI
 {
     public static class HatchPattern
     {
-        public static DrawingBrush GetHatchPattern(string category, double rectWidth, double rectHeight)
+        public static DrawingBrush GetHatchPattern(string category, double rectWidth, double rectHeight, double lineThickness)
         {
             DrawingBrush brush = new DrawingBrush();
             switch (category)
             {
                 case "Insulation":
-                    brush = GetInsulationBrush(rectWidth, rectHeight);
+                    brush = GetInsulationBrush(rectWidth, rectHeight, lineThickness);
                     break;
                 case "Bricks":
-                    brush = GetBricksBrush(rectWidth, rectHeight);
+                    brush = GetBricksBrush(rectWidth, rectHeight, lineThickness);
+                    break;
+                case "Concrete":
+                    brush = GetConcreteBrush(rectWidth, rectHeight, lineThickness);
                     break;
                 default:
                     break;
@@ -51,57 +54,76 @@ namespace BauphysikToolWPF.UI
 
             return brush;
         }*/
-
-        public static DrawingBrush GetBricksBrush(double rectWidth, double rectHeight)
+        // Brush for Beton (bewehrt)
+        public static DrawingBrush GetConcreteBrush(double rectWidth, double rectHeight, double lineThickness)
         {
-            double w_h_ratio = rectWidth / rectHeight;
-            double currentY = 0;
-            double currentX = 0;
             // Create a GeometryGroup to contain the hatch lines
             GeometryGroup hatchContent = new GeometryGroup();
 
-            int iMax = Convert.ToInt32(-20 * w_h_ratio + 20);
-            for (int i = 0; i < iMax; i++)
-            {
-                LineGeometry line = new LineGeometry()
-                {
-                    StartPoint = new Point(0, 0),
-                    EndPoint = new Point(10, 1
-                    0)
-                };
-                hatchContent.Children.Add(line);
-                currentX += 30;
-                currentY += 30;
-            }
-            /*
-
-            LineGeometry line = new LineGeometry()
-            {
-                StartPoint = new Point(0, 0),
-                EndPoint = new Point(60, 60)
-            };
+            LineGeometry line = new LineGeometry() { StartPoint = new Point(0, 0), EndPoint = new Point(32, 32) };
             hatchContent.Children.Add(line);
-
-            LineGeometry line2 = new LineGeometry()
-            {
-                StartPoint = new Point(60, 0),
-                EndPoint = new Point(-60, 60),                                
-            };
+            LineGeometry line2 = new LineGeometry() { StartPoint = new Point(16, 0), EndPoint = new Point(32, 16) };
             hatchContent.Children.Add(line2);
 
-            LineGeometry line3 = new LineGeometry()
-            {
-                StartPoint = new Point(60, 0),
-                EndPoint = new Point(-60, 60),
-            };*/
-
             // Use the hatch lines as the Drawing's content
-            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(new SolidColorBrush(Colors.Gray), new Pen(Brushes.Black, 0.2), hatchContent) };
-
+            DrawingBrush brush = new DrawingBrush()
+            {
+                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
+                TileMode = TileMode.Tile,
+                Viewport = new Rect(0, 0, 32, 32),
+                ViewportUnits = BrushMappingMode.Absolute,
+                Viewbox = new Rect(0, 0, 32, 32),
+                ViewboxUnits = BrushMappingMode.Absolute
+            };
             return brush;
         }
 
-        public static DrawingBrush GetInsulationBrush(double rectWidth, double rectHeight)
+        // Brush for Dichtstoffe
+        public static DrawingBrush GetXXBrush(double rectWidth, double rectHeight, double lineThickness)
+        {
+            // Create a GeometryGroup to contain the hatch lines
+            GeometryGroup hatchContent = new GeometryGroup();
+
+            LineGeometry line = new LineGeometry() { StartPoint = new Point(0, 0), EndPoint = new Point(32, 32) };
+            hatchContent.Children.Add(line);
+
+            // Use the hatch lines as the Drawing's content
+            DrawingBrush brush = new DrawingBrush()
+            {
+                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
+                TileMode = TileMode.FlipXY,
+                Viewport = new Rect(0, 0, 32, 32),
+                ViewportUnits = BrushMappingMode.Absolute,
+                Viewbox = new Rect(0, 0, 32, 32),
+                ViewboxUnits = BrushMappingMode.Absolute
+            };
+            return brush;
+        }
+
+        //Brush for Mauerwerk
+        public static DrawingBrush GetBricksBrush(double rectWidth, double rectHeight, double lineThickness)
+        {
+            // Create a GeometryGroup to contain the hatch lines
+            GeometryGroup hatchContent = new GeometryGroup();
+
+            LineGeometry line = new LineGeometry() { StartPoint = new Point(0, 0), EndPoint = new Point(32, 32) };
+            hatchContent.Children.Add(line);
+
+            // Use the hatch lines as the Drawing's content
+            DrawingBrush brush = new DrawingBrush()
+            {
+                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
+                TileMode = TileMode.Tile,
+                Viewport = new Rect(0,0,32, 32),
+                ViewportUnits = BrushMappingMode.Absolute,
+                Viewbox = new Rect(0,0,32, 32),
+                ViewboxUnits = BrushMappingMode.Absolute
+            };
+            return brush;
+        }
+
+        //Brush for Wärmedämmung
+        public static DrawingBrush GetInsulationBrush(double rectWidth, double rectHeight, double lineThickness)
         {
             double w_h_ratio = rectWidth / rectHeight;
 
@@ -114,7 +136,6 @@ namespace BauphysikToolWPF.UI
             //Imaginary Rectangle, coordinate origin is at top left corner
             PathFigure pathFigure = new PathFigure();
             pathFigure.StartPoint = new Point(0, 0); // Startpoint of the segment series
-            //pathFigure.IsFilled = true;
 
             int iMax = Convert.ToInt32(-20 * w_h_ratio + 20); //increase the number of loops for narrow rectangles; decrease for broader ones
             for (int i = 0; i < iMax; i++)
@@ -165,19 +186,9 @@ namespace BauphysikToolWPF.UI
             hatchContent.Children.Add(pathGeometry);
 
             // Use the hatch lines as the Drawing's content
-            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, 0.4), hatchContent) };
+            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent) };
 
             return brush;
-        }
-
-        public static ImageBrush GetImageBrush(string source)
-        {
-            string uriBase = "../../../Resources/Icons/";
-            string uri = uriBase + source;
-
-            ImageBrush textureBrush = new ImageBrush(new BitmapImage(new Uri(uri, UriKind.Relative)));
-            // Set the OpacityMask of the rectangle to the texture brush
-            return textureBrush;
         }
     }
 }
