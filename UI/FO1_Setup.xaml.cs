@@ -31,10 +31,10 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class FO1_Setup : UserControl
     {
-        // Class Variables - Belongs to the Class-Type itself and stays the same
+        // Class Variables - Belongs to the Class-Type itself and stay the same
         public static int ElementId { get; set; } = -1; // no element set
-        public static List<Layer> Layers { get; private set; } = new List<Layer>(); // avoid null value
-        public static List<EnvVars> EnvVars { get; private set; } = new List<EnvVars>(); // avoid null value
+        public static List<Layer> Layers { get; private set; } = new List<Layer>(); // for FO1, FO2 & FO3 ViewModel
+        public static List<EnvVars> EnvVars { get; private set; } = DatabaseAccess.GetEnvVars(); // for FO1 ViewModel
 
         // Instance Variables - only for "MainPage" instances
         //
@@ -46,8 +46,7 @@ namespace BauphysikToolWPF.UI
             if(ElementId != FO0_LandingPage.SelectedElement.ElementId)
             {
                 ElementId = FO0_LandingPage.SelectedElement.ElementId;
-                Layers = DatabaseAccess.QueryLayersByElementId(ElementId);  // for FO1, FO2 & FO3 ViewModel                
-                EnvVars = DatabaseAccess.GetEnvVars();                      // for FO1 ViewModel
+                Layers = DatabaseAccess.QueryLayersByElementId(ElementId);                
             }
             InitializeComponent();                              // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
             new DrawLayerCanvas(Layers, layers_Canvas);         // Initial Draw of the Canvas
@@ -66,7 +65,6 @@ namespace BauphysikToolWPF.UI
         }
 
         // custom Methods
-
         private void ReorderLayerPosition(List<Layer> layers)
         {
             if (layers.Count > 0)
@@ -90,7 +88,6 @@ namespace BauphysikToolWPF.UI
             window.ShowDialog();    // Open as modal (Parent window pauses, waiting for the window to be closed)
             //window.Show();          // Open as modeless
         }
-
         private void deleteLayerClicked(object sender, EventArgs e)
         {
             if (layers_ListView.SelectedItem is null)
@@ -102,17 +99,14 @@ namespace BauphysikToolWPF.UI
 
             DatabaseAccess.DeleteLayer(layer);
         }
-
         private void deleteAllLayersClicked(object sender, EventArgs e)
         {
             DatabaseAccess.DeleteAllLayers();
         }
-
         private void editLayerClicked(object sender, RoutedEventArgs e)
         {
             //TODO
         }
-
         private void Ti_Category_Picker_SelectionChanged(object sender, EventArgs e)
         {
             if (Ti_Category_Picker.SelectedIndex == -1) // empty selection
@@ -120,11 +114,10 @@ namespace BauphysikToolWPF.UI
 
             string key = Ti_Category_Picker.SelectedItem.ToString();
             double val = EnvVars.Where(e => e.Symbol == "Ti").ToList().Find(e => e.Comment == key).Value;
-            UserSaved.Ti = new KeyValuePair<string, double>(key, val);
+            UserSaved.Ti = new KeyValuePair<string, double>("Ti", val);
 
             Ti_Input.Text = val.ToString();
         }
-
         private void Rsi_Category_Picker_SelectionChanged(object sender, EventArgs e)
         {
             if (Rsi_Category_Picker.SelectedIndex == -1) // empty selection
@@ -132,7 +125,7 @@ namespace BauphysikToolWPF.UI
 
             string key = Rsi_Category_Picker.SelectedItem.ToString();
             double val = EnvVars.Where(e => e.Symbol == "Rsi").ToList().Find(e => e.Comment == key).Value;
-            UserSaved.Rsi = new KeyValuePair<string, double>(key, val);
+            UserSaved.Rsi = new KeyValuePair<string, double>("Rsi", val);
 
             // Set corresponding value in the TB
             Rsi_Input.Text = val.ToString();
@@ -144,12 +137,11 @@ namespace BauphysikToolWPF.UI
 
             string key = Rel_Fi_Category_Picker.SelectedItem.ToString();
             double val = EnvVars.Where(e => e.Symbol == "Rel_Fi").ToList().Find(e => e.Comment == key).Value;
-            UserSaved.Rel_Fi = new KeyValuePair<string, double>(key, val);
+            UserSaved.Rel_Fi = new KeyValuePair<string, double>("Rel_Fi", val);
 
             //Set corresponding value in the TB
             Rel_Fi_Input.Text = val.ToString();
         }
-
         private void Te_Category_Picker_SelectionChanged(object sender, EventArgs e)
         {
             if (Te_Category_Picker.SelectedIndex == -1) // empty selection
@@ -157,7 +149,7 @@ namespace BauphysikToolWPF.UI
 
             string key = Te_Category_Picker.SelectedItem.ToString();
             double val = EnvVars.Where(e => e.Symbol == "Te").ToList().Find(e => e.Comment == key).Value;
-            UserSaved.Te = new KeyValuePair<string, double>(key, val);
+            UserSaved.Te = new KeyValuePair<string, double>("Te", val);
 
             Te_Input.Text = val.ToString();
         }
@@ -168,24 +160,22 @@ namespace BauphysikToolWPF.UI
 
             string key = Rse_Category_Picker.SelectedItem.ToString();
             double val = EnvVars.Where(e => e.Symbol == "Rse").ToList().Find(e => e.Comment == key).Value;
-            UserSaved.Rse = new KeyValuePair<string, double>(key, val);
+            UserSaved.Rse = new KeyValuePair<string, double>("Rse", val);
 
             // Set corresponding value in the TB
             Rse_Input.Text = val.ToString();
         }
-
         private void Rel_Fe_Category_Picker_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (Rel_Fe_Category_Picker.SelectedIndex == -1) // empty selection
                 return;
 
             string key = Rel_Fe_Category_Picker.SelectedItem.ToString();
-            double val = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Where(e => e.Comment == key).First().Value;
-            UserSaved.Rel_Fe = new KeyValuePair<string, double>(key, val);
+            double val = EnvVars.Where(e => e.Symbol == "Rel_Fe").ToList().Find(e => e.Comment == key).Value;
+            UserSaved.Rel_Fe = new KeyValuePair<string, double>("Rel_Fe", val);
 
             Rel_Fe_Input.Text = val.ToString();
         }
-
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             //Handle the input
@@ -203,27 +193,27 @@ namespace BauphysikToolWPF.UI
             switch (((TextBox)sender).Name)
             {
                 case "Ti_Input":
-                    UserSaved.Ti = new KeyValuePair<string, double>("", Convert.ToDouble(Ti_Input.Text + userInput));
+                    UserSaved.Ti = new KeyValuePair<string, double>("Ti", Convert.ToDouble(Ti_Input.Text + userInput));
                     Ti_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Te_Input":
-                    UserSaved.Te = new KeyValuePair<string, double>("", Convert.ToDouble(Te_Input.Text + userInput));
+                    UserSaved.Te = new KeyValuePair<string, double>("Te", Convert.ToDouble(Te_Input.Text + userInput));
                     Te_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rsi_Input":
-                    UserSaved.Rsi = new KeyValuePair<string, double>("", Convert.ToDouble(Rsi_Input.Text + userInput));
+                    UserSaved.Rsi = new KeyValuePair<string, double>("Rsi", Convert.ToDouble(Rsi_Input.Text + userInput));
                     Rsi_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rse_Input":
-                    UserSaved.Rse = new KeyValuePair<string, double>("", Convert.ToDouble(Rse_Input.Text + userInput));
+                    UserSaved.Rse = new KeyValuePair<string, double>("Rse", Convert.ToDouble(Rse_Input.Text + userInput));
                     Rse_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rel_Fi_Input":
-                    UserSaved.Rel_Fi = new KeyValuePair<string, double>("", Convert.ToDouble(Rel_Fi_Input.Text + userInput));
+                    UserSaved.Rel_Fi = new KeyValuePair<string, double>("Rel_Fi", Convert.ToDouble(Rel_Fi_Input.Text + userInput));
                     Rel_Fi_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 case "Rel_Fe_Input":
-                    UserSaved.Rel_Fe = new KeyValuePair<string, double>("", Convert.ToDouble(Rel_Fe_Input.Text + userInput));
+                    UserSaved.Rel_Fe = new KeyValuePair<string, double>("Rel_Fe", Convert.ToDouble(Rel_Fe_Input.Text + userInput));
                     Rel_Fe_Category_Picker.SelectedIndex = -1; // empty selection
                     return;
                 default: throw new ArgumentException("Could not assign value");

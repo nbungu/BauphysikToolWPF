@@ -14,6 +14,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public class FO1_ViewModel
     {
         public string Title { get; } = "Setup";
+        public string ElementName { get; set; }
 
         private List<Layer> layers; //TODO remove new
         public List<Layer> Layers //for Validation
@@ -32,8 +33,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string> Rse_Keys { get; set; }
         public List<string> Rel_Fi_Keys { get; set; }
         public List<string> Rel_Fe_Keys { get; set; }
-        public string ElementName { get; set; }
-
         public FO1_ViewModel() // Called by 'InitializeComponent()' from FO1_Setup.cs due to Class-Binding in xaml via DataContext
         {
             //For the ListView

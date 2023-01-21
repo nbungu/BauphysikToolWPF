@@ -19,7 +19,7 @@ namespace BauphysikToolWPF.UI
         public static DrawingBrush ConcreteBrush { get; private set; }
         public static DrawingBrush GetHatchPattern(string category, double lineThickness, double rectWidth, double rectHeight)
         {
-            // return corresp. class variable already set, otherwise draw new Brush
+            // return corresp. class variable if already set, otherwise draw new Brush
             switch (category)
             {
                 case "Insulation":
