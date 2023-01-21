@@ -30,7 +30,7 @@ namespace BauphysikToolWPF.UI
         {
             Elements = DatabaseAccess.GetElements();
             InitializeComponent();
-            DatabaseAccess.ElementsChanged += DB_ElementsChanged;   // register with an event (when Layers have been changed)
+            DatabaseAccess.ElementsChanged += DB_ElementsChanged;   // register with an event (when Elements have been changed)
         }
 
         // event handlers

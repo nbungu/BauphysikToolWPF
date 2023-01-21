@@ -6,56 +6,76 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Animation;
+using LiveChartsCore.SkiaSharpView.VisualElements;
 
 namespace BauphysikToolWPF.UI
 {
     public static class HatchPattern
     {
-        public static DrawingBrush GetHatchPattern(string category, double rectWidth, double rectHeight, double lineThickness)
+        public static DrawingBrush PlasterBrush { get; private set; }
+        public static DrawingBrush InsulationBrush { get; private set; }
+        public static DrawingBrush BricksBrush { get; private set; }
+        public static DrawingBrush ConcreteBrush { get; private set; }
+        public static DrawingBrush GetHatchPattern(string category, double lineThickness, double rectWidth, double rectHeight)
         {
-            DrawingBrush brush = new DrawingBrush();
+            // return corresp. class variable already set, otherwise draw new Brush
             switch (category)
             {
                 case "Insulation":
-                    brush = GetInsulationBrush(rectWidth, rectHeight, lineThickness);
-                    break;
+                    return InsulationBrush ??= GetInsulationBrush(rectWidth, rectHeight, lineThickness);
                 case "Bricks":
-                    brush = GetBricksBrush(rectWidth, rectHeight, lineThickness);
-                    break;
+                    return BricksBrush ??= GetBricksBrush(lineThickness);
                 case "Concrete":
-                    brush = GetConcreteBrush(rectWidth, rectHeight, lineThickness);
-                    break;
+                    return ConcreteBrush ??= GetConcreteBrush(lineThickness);
+                case "Mortar and Plasters":
+                    return PlasterBrush ??= GetPlasterBrush(lineThickness);
                 default:
-                    break;
+                    return new DrawingBrush();
             }
+        }
+
+        // Brush for Mörtel/Putz
+        private static DrawingBrush GetPlasterBrush(double lineThickness)
+        { 
+            // Create a GeometryGroup to contain the hatch lines
+            GeometryGroup hatchContent = new GeometryGroup();            
+
+            //only small ones
+            for (int i=0; i < 40; i++)
+            {
+                EllipseGeometry ellipse = new EllipseGeometry(new Point(new Random().Next(1, 127), new Random().Next(3, 125)), 1, 1);
+                hatchContent.Children.Add(ellipse);
+            }
+            //only medium ones
+            for (int i = 0; i < 15; i++)
+            {
+                EllipseGeometry ellipse = new EllipseGeometry(new Point(new Random().Next(4, 124), new Random().Next(4, 124)), new Random().Next(2, 3), new Random().Next(2, 3), new RotateTransform(new Random().Next(0, 45)));
+                hatchContent.Children.Add(ellipse);
+            }
+            //only big ones
+            for (int i = 0; i < 10; i++)
+            {
+                EllipseGeometry ellipse = new EllipseGeometry(new Point(new Random().Next(8, 120), new Random().Next(8, 120)), new Random().Next(3, 4), new Random().Next(3, 4), new RotateTransform(new Random().Next(0, 30)));
+                hatchContent.Children.Add(ellipse);
+            }
+            // Use the hatch lines as the Drawing's content
+            DrawingBrush brush = new DrawingBrush()
+            {
+                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
+                TileMode = TileMode.FlipXY,
+                Viewport = new Rect(0, 0, 128, 128),
+                ViewportUnits = BrushMappingMode.Absolute,
+                Viewbox = new Rect(0, 0, 128, 128),
+                ViewboxUnits = BrushMappingMode.Absolute,
+                Transform = new RotateTransform(15)
+                
+            };
             return brush;
         }
 
-        /*public static DrawingBrush GetPlasterBrush(double rectWidth, double rectHeight)
-        {
-            int filterDistortion = Convert.ToInt32(rectWidth); // avoid distortion when drawing the ellipse
-            
-            double area = rectWidth*rectHeight;
-
-            // Create a GeometryGroup to contain the hatch lines
-            GeometryGroup hatchContent = new GeometryGroup();
-            
-
-            int iMax = Convert.ToInt32(area/300); //increase the number of points for bigger areas; decrease for smaller ones
-            for (int i=0; i<100; i++)
-            {
-                EllipseGeometry ellipse = new EllipseGeometry(new Point(new Random().Next(0, 200), new Random().Next(0, 200)), new Random().Next(2, 4), new Random().Next(2, 4), new RotateTransform(new Random().Next(0,45)));
-                hatchContent.Children.Add(ellipse);
-            }   
-            hatchContent.Transform= new ScaleTransform(1.0, 0.5);
-
-            // Use the hatch lines as the Drawing's content
-            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(new SolidColorBrush(Colors.Gray), new Pen(Brushes.Black, 0.2), hatchContent) };
-
-            return brush;
-        }*/
         // Brush for Beton (bewehrt)
-        public static DrawingBrush GetConcreteBrush(double rectWidth, double rectHeight, double lineThickness)
+        private static DrawingBrush GetConcreteBrush(double lineThickness)
         {
             // Create a GeometryGroup to contain the hatch lines
             GeometryGroup hatchContent = new GeometryGroup();
@@ -79,7 +99,7 @@ namespace BauphysikToolWPF.UI
         }
 
         // Brush for Dichtstoffe
-        public static DrawingBrush GetXXBrush(double rectWidth, double rectHeight, double lineThickness)
+        private static DrawingBrush GetXXBrush(double lineThickness)
         {
             // Create a GeometryGroup to contain the hatch lines
             GeometryGroup hatchContent = new GeometryGroup();
@@ -101,7 +121,7 @@ namespace BauphysikToolWPF.UI
         }
 
         //Brush for Mauerwerk
-        public static DrawingBrush GetBricksBrush(double rectWidth, double rectHeight, double lineThickness)
+        private static DrawingBrush GetBricksBrush(double lineThickness)
         {
             // Create a GeometryGroup to contain the hatch lines
             GeometryGroup hatchContent = new GeometryGroup();
@@ -123,7 +143,7 @@ namespace BauphysikToolWPF.UI
         }
 
         //Brush for Wärmedämmung
-        public static DrawingBrush GetInsulationBrush(double rectWidth, double rectHeight, double lineThickness)
+        private static DrawingBrush GetInsulationBrush(double rectWidth, double rectHeight, double lineThickness)
         {
             double w_h_ratio = rectWidth / rectHeight;
 

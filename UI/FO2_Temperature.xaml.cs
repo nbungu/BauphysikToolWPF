@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
+using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,7 +26,12 @@ namespace BauphysikToolWPF.UI
         
         public FO2_Temperature()
         {
-            StationaryTempCalculation = new StationaryTempCalc(FO1_Setup.Layers); //for FO2_ViewModel
+            // If Layers is not set or has changed, update class variables
+            //TODO EnvVars can change too!!
+            if (FO1_Setup.Layers != StationaryTempCalculation?.Layers)
+            {
+                StationaryTempCalculation = new StationaryTempCalc(FO1_Setup.Layers); //for FO2_ViewModel
+            }
             InitializeComponent();
             // -> Initializes xaml objects
             // -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)

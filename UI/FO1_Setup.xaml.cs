@@ -32,7 +32,7 @@ namespace BauphysikToolWPF.UI
     public partial class FO1_Setup : UserControl
     {
         // Class Variables - Belongs to the Class-Type itself and stays the same
-        public static int ElementId { get; set; }
+        public static int ElementId { get; set; } = -1; // no element set
         public static List<Layer> Layers { get; private set; } = new List<Layer>(); // avoid null value
         public static List<EnvVars> EnvVars { get; private set; } = new List<EnvVars>(); // avoid null value
 
@@ -42,9 +42,13 @@ namespace BauphysikToolWPF.UI
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_Setup()
         {
-            ElementId = FO0_LandingPage.SelectedElement.ElementId;
-            Layers = DatabaseAccess.QueryLayersByElementId(ElementId); // for FO1, FO2 & FO3 ViewModel                
-            EnvVars = DatabaseAccess.GetEnvVars();              // for FO1 ViewModel
+            // If Element is not set (-1) or has changed, update class variables
+            if(ElementId != FO0_LandingPage.SelectedElement.ElementId)
+            {
+                ElementId = FO0_LandingPage.SelectedElement.ElementId;
+                Layers = DatabaseAccess.QueryLayersByElementId(ElementId);  // for FO1, FO2 & FO3 ViewModel                
+                EnvVars = DatabaseAccess.GetEnvVars();                      // for FO1 ViewModel
+            }
             InitializeComponent();                              // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
             new DrawLayerCanvas(Layers, layers_Canvas);         // Initial Draw of the Canvas
             new DrawMeasurementLine(measurement_Grid, Layers);  // Initial Draw of the measurement line
@@ -83,8 +87,8 @@ namespace BauphysikToolWPF.UI
             var window = new AddLayerWindow();
 
             //window.Owner = this;
-            //window.ShowDialog();    // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.Show();          // Open as modeless
+            window.ShowDialog();    // Open as modal (Parent window pauses, waiting for the window to be closed)
+            //window.Show();          // Open as modeless
         }
 
         private void deleteLayerClicked(object sender, EventArgs e)

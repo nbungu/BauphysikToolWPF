@@ -25,7 +25,12 @@ namespace BauphysikToolWPF.UI
         public static GlaserCalc GlaserCalculation { get; private set; }
         public FO3_Moisture()
         {
-            GlaserCalculation = new GlaserCalc(FO1_Setup.Layers); //for FO3_ViewModel
+            // If Layers is not set or has changed, update class variables
+            //TODO EnvVars can change too!!
+            if (FO1_Setup.Layers != GlaserCalculation?.Layers)
+            {
+                GlaserCalculation = new GlaserCalc(FO1_Setup.Layers); //for FO3_ViewModel
+            }            
             InitializeComponent();
         }
     }
