@@ -19,12 +19,15 @@ namespace BauphysikToolWPF.UI
                 case "Insulation":
                     brush = GetInsulationBrush(rectWidth, rectHeight);
                     break;
+                case "Bricks":
+                    brush = GetBricksBrush(rectWidth, rectHeight);
+                    break;
                 default:
                     break;
             }
             return brush;
         }
-        
+
         /*public static DrawingBrush GetPlasterBrush(double rectWidth, double rectHeight)
         {
             int filterDistortion = Convert.ToInt32(rectWidth); // avoid distortion when drawing the ellipse
@@ -48,6 +51,55 @@ namespace BauphysikToolWPF.UI
 
             return brush;
         }*/
+
+        public static DrawingBrush GetBricksBrush(double rectWidth, double rectHeight)
+        {
+            double w_h_ratio = rectWidth / rectHeight;
+            double currentY = 0;
+            double currentX = 0;
+            // Create a GeometryGroup to contain the hatch lines
+            GeometryGroup hatchContent = new GeometryGroup();
+
+            int iMax = Convert.ToInt32(-20 * w_h_ratio + 20);
+            for (int i = 0; i < iMax; i++)
+            {
+                LineGeometry line = new LineGeometry()
+                {
+                    StartPoint = new Point(0, 0),
+                    EndPoint = new Point(10, 1
+                    0)
+                };
+                hatchContent.Children.Add(line);
+                currentX += 30;
+                currentY += 30;
+            }
+            /*
+
+            LineGeometry line = new LineGeometry()
+            {
+                StartPoint = new Point(0, 0),
+                EndPoint = new Point(60, 60)
+            };
+            hatchContent.Children.Add(line);
+
+            LineGeometry line2 = new LineGeometry()
+            {
+                StartPoint = new Point(60, 0),
+                EndPoint = new Point(-60, 60),                                
+            };
+            hatchContent.Children.Add(line2);
+
+            LineGeometry line3 = new LineGeometry()
+            {
+                StartPoint = new Point(60, 0),
+                EndPoint = new Point(-60, 60),
+            };*/
+
+            // Use the hatch lines as the Drawing's content
+            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(new SolidColorBrush(Colors.Gray), new Pen(Brushes.Black, 0.2), hatchContent) };
+
+            return brush;
+        }
 
         public static DrawingBrush GetInsulationBrush(double rectWidth, double rectHeight)
         {
