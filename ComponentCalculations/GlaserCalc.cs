@@ -27,17 +27,27 @@ namespace BauphysikToolWPF.ComponentCalculations
                 layers = value;
             }
         }
+        private List<EnvVars> envVars = new List<EnvVars>();
+        public List<EnvVars> EnvVars //for Validation
+        {
+            get { return envVars; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("null envVars list specified");
+                envVars = value;
+            }
+        }
         public double TotalSdWidth { get; private set; } = 0;
-        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi.Value;
-        public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe.Value;
         public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P_sat in Pa
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P in Pa
 
         // (Instance-) Constructor
-        public GlaserCalc(List<Layer> layers) : base(layers) //parameter aus base class mitnehmen
+        public GlaserCalc(List<Layer> layers, List<EnvVars> envVars) : base(layers, envVars) //parameter aus base class mitnehmen
         {
             //User specified (public setter)
             Layers = layers;
+            EnvVars = envVars;
             //Calculated parameters (private setter)
             TotalSdWidth = GetTotalSdWidth();   // Gl. 5.2; S.246
             LayerPsat = GetLayerPsat();         // Gl. 2.4; S.164

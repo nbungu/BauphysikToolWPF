@@ -20,6 +20,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
         public static event Notify LayersChanged; // event
         public static event Notify ElementsChanged; // event
+        public static event Notify ElementEnvVarsChanged; //event
 
         // (Instanzen-) Konstruktor nicht möglich bei statischen Klassen
         /*public DatabaseAccess()
@@ -28,18 +29,21 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void OnLayersChanged() //protected virtual method
         {
-            LayersChanged?.Invoke(); //if LayerAdded is not null then call delegate
+            LayersChanged?.Invoke(); //if LayersChanged is not null then call delegate
         }
         public static void OnElementsChanged() //protected virtual method
         {
-            ElementsChanged?.Invoke(); //if LayerAdded is not null then call delegate
+            ElementsChanged?.Invoke(); //if ElementsChanged is not null then call delegate
+        }
+        public static void OnElementEnvVarsChanged() //protected virtual method
+        {
+            ElementEnvVarsChanged?.Invoke(); //if ElementEnvVarsChanged is not null then call delegate
         }
 
         // Retreive Data from Table "Layer"
         public static List<Layer> GetLayers()
         {
-            List<Layer> layers = sqlConn.GetAllWithChildren<Layer>(); // old Method: List<Layer> layers = sqlConn.Table<Layer>().ToList();
-            return layers;
+            return sqlConn.GetAllWithChildren<Layer>(); // old Method: List<Layer> layers = sqlConn.Table<Layer>().ToList();
         }
 
         public static void CreateLayer(Layer layer)
@@ -53,18 +57,16 @@ namespace BauphysikToolWPF.SQLiteRepo
             sqlConn.UpdateWithChildren(layer);
         }
 
-        public static int DeleteLayer(Layer layer)
+        public static void DeleteLayer(Layer layer)
         {
-            int i = sqlConn.Delete(layer);
+            sqlConn.Delete(layer);
             OnLayersChanged();
-            return i;
         }
 
-        public static int DeleteAllLayers()
+        public static void DeleteAllLayers()
         {
-            int i = sqlConn.DeleteAll<Layer>();
+            sqlConn.DeleteAll<Layer>();
             OnLayersChanged();
-            return i;
         }
         public static List<Layer> QueryLayersByElementId(int elementId)
         {
@@ -77,19 +79,19 @@ namespace BauphysikToolWPF.SQLiteRepo
             return sqlConn.Table<Material>().ToList();
         }
 
-        public static int CreateMaterial(Material material) // returns int, which represents the number of rows that were inserted into the table
+        public static void CreateMaterial(Material material)
         {
-            return sqlConn.Insert(material);
+            sqlConn.Insert(material);
         }
 
-        public static int UpdateMaterial(Material material)
+        public static void UpdateMaterial(Material material)
         {
-            return sqlConn.Update(material);
+            sqlConn.Update(material);
         }
 
-        public static int DeleteMaterial(Material material)
+        public static void DeleteMaterial(Material material)
         {
-            return sqlConn.Delete(material);
+            sqlConn.Delete(material);
         }
 
         public static List<Material> QueryMaterialByCategory(string category)
@@ -107,37 +109,12 @@ namespace BauphysikToolWPF.SQLiteRepo
                 return sqlConn.Query<Material>("SELECT * FROM Material").Where(m => m.Name.Contains(searchString)).ToList();
         }
 
-        /*public static List<Material> LinqZeroBalance()
-        {
-            return sqlConn.Table<Material>().Where(a => a.BulkDensity == 0).ToList();
-        }*/
-
         // Retreive Data from Table "EnvVars"
         public static List<EnvVars> GetEnvVars()
         {
-            List<EnvVars> envVars = sqlConn.Table<EnvVars>().ToList();
-            return envVars;
+            return sqlConn.GetAllWithChildren<EnvVars>();
         }
 
-        public static int CreateEnvVars(EnvVars envVars)
-        {
-            return sqlConn.Insert(envVars);
-        }
-
-        public static int UpdateEnvVars(EnvVars envVars)
-        {
-            return sqlConn.Update(envVars);
-        }
-
-        public static int DeleteEnvVars(EnvVars envVars)
-        {
-            return sqlConn.Delete(envVars);
-        }
-
-        public static int DeleteAllEnvVars()
-        {
-            return sqlConn.DeleteAll<EnvVars>();
-        }
         public static List<EnvVars> QueryEnvVarsBySymbol(string symbol)
         {
             if (symbol == "*")
@@ -161,40 +138,65 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static void UpdateElement(Element element)
         {
             sqlConn.UpdateWithChildren(element);
+            OnElementsChanged();
         }
 
-        public static int DeleteElement(Element element)
+        public static void DeleteElement(Element element)
         {
-            int i = sqlConn.Delete(element);
+            sqlConn.Delete(element);
             OnElementsChanged();
-            return i;
         }
 
-        public static int DeleteElementById(int elementId)
+        public static void DeleteElementById(int elementId)
         {
-            int i = sqlConn.Delete<Element>(elementId);
+            sqlConn.Delete<Element>(elementId);
             OnElementsChanged();
-            return i; // ON DELETE CASCADE -> deletes corresp. Layers via the foreignkey constraint
+            // ON DELETE CASCADE -> deletes corresp. Layers and ElementEnvVars via the foreignkey constraint
         }
-
-        public static int DeleteAllElements()
+        public static void DeleteAllElements()
         {
-            int i = sqlConn.DeleteAll<Element>();
+            sqlConn.DeleteAll<Element>();
             OnElementsChanged();
-            return i;
         }
         public static Element QueryElementsById(int id)
         {
-            //return sqlConn.Query<Element>("SELECT * FROM Element WHERE ElementId == " + id).First();
-
             return sqlConn.GetWithChildren<Element>(id);
         }
 
         // Retreive Data from Table "ConstructionType"
         public static List<ConstructionType> GetConstructionTypes()
         {
-            List<ConstructionType> cType = sqlConn.Table<ConstructionType>().ToList();
-            return cType;
+            return sqlConn.Table<ConstructionType>().ToList();
+        }
+
+        // Retreive Data from Table "ElementEnvVars"
+        public static List<ElementEnvVars> GetElementEnvVars()
+        {
+            return sqlConn.Table<ElementEnvVars>().ToList();
+        }
+        public static void CreateElementEnvVars(ElementEnvVars elementEnvVars)
+        {
+            sqlConn.Insert(elementEnvVars);
+            OnElementEnvVarsChanged();
+        }
+
+        public static int UpdateElementEnvVars(ElementEnvVars elementEnvVars)
+        {
+            int i = sqlConn.Update(elementEnvVars);
+            OnElementEnvVarsChanged();
+            return i;
+        }
+
+        public static void DeleteElementEnvVars(ElementEnvVars elementEnvVars)
+        {
+            sqlConn.Delete(elementEnvVars);
+            OnElementEnvVarsChanged();
+        }
+
+        public static void DeleteAllElementEnvVars()
+        {
+            sqlConn.DeleteAll<ElementEnvVars>();
+            OnElementEnvVarsChanged();
         }
     }
 }

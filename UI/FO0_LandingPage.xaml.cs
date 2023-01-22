@@ -54,7 +54,7 @@ namespace BauphysikToolWPF.UI
 
         private void openElement_Button_Click(object sender, RoutedEventArgs e)
         {
-            int elementId = Convert.ToInt16((sender as Button).Content);
+            int elementId = Convert.ToInt32((sender as Button).Content);
             SelectedElement = DatabaseAccess.QueryElementsById(elementId);
             MainWindow.SetPage("Setup");
         }

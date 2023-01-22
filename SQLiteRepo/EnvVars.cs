@@ -1,4 +1,5 @@
 ﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,23 +13,27 @@ namespace BauphysikToolWPF.SQLiteRepo
     {
         //------Variablen-----//
 
-        // Normierungsfehler
+        // Hinweis auf Normierungsfehler
 
         //------Eigenschaften-----//
 
         [NotNull, PrimaryKey, AutoIncrement, Unique] //SQL Attributes
-        public int Id { get; set; }
+        public int EnvVarId { get; set; }
 
         [NotNull]
         public string Symbol { get; set; }
-
-        [NotNull]
-        public string Comment { get; set; }
-
         [NotNull]
         public double Value { get; set; }
 
+        public string Comment { get; set; }
+
         public string Unit { get; set; }
+
+        //------Not part of the Database-----//
+
+        [ManyToMany(typeof(ElementEnvVars))] // m:n relationship with Element (ElementEnvVars is intermediate entity)
+        public List<Element> Elements { get; set; }
+
 
         // SQLite doesnt allow other types than TEXT, INT, REAL or BLOB 
         //List<Layer> has to be converted into BLOB -> byte[]

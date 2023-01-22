@@ -30,6 +30,17 @@ namespace BauphysikToolWPF.ComponentCalculations
                 layers = value;
             }
         }
+        private List<EnvVars> envVars = new List<EnvVars>();
+        public List<EnvVars> EnvVars //for Validation
+        {
+            get { return envVars; }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("null envVars list specified");
+                envVars = value;
+            }
+        }
         public double TotalElementWidth { get; private set; } = 0;
         public double SumOfLayersR { get; private set; } = 0;
         public double RTotal { get; private set; } = 0;
@@ -38,19 +49,28 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double FRsi { get; private set; } = 0;
         public double PhiMax { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
-        public double Ti { get; private set; } = UserSaved.Ti.Value;
-        public double Te { get; private set; } = UserSaved.Te.Value;
-        public double Rsi { get; private set; } = UserSaved.Rsi.Value;
-        public double Rse { get; private set; } = UserSaved.Rse.Value;
+        public double Ti { get; private set; } = 0;
+        public double Te { get; private set; } = 0;
+        public double Rsi { get; private set; } = 0;
+        public double Rse { get; private set; } = 0;
+        public double Rel_Fi { get; private set; } = 0;
+        public double Rel_Fe { get; private set; } = 0;
 
         // (Instance-) Constructor
-        public StationaryTempCalc(List<Layer> layers)
+        public StationaryTempCalc(List<Layer> layers, List<EnvVars> envVars)
         {
             if (layers.Count == 0)
                 return;
 
             //User specified (public setter)
             Layers = layers;
+            EnvVars = envVars;
+            Ti = envVars.Find(e => e.Symbol == "Ti").Value;
+            Te = envVars.Find(e => e.Symbol == "Te").Value;
+            Rsi = envVars.Find(e => e.Symbol == "Rsi").Value;
+            Rse = envVars.Find(e => e.Symbol == "Rse").Value;
+            Rel_Fi = envVars.Find(e => e.Symbol == "Rel_Fi").Value;
+            Rel_Fe = envVars.Find(e => e.Symbol == "Rel_Fe").Value;
             //Calculated parameters (private setter)
             TotalElementWidth = GetTotalElementWidth();
             SumOfLayersR = GetLayersR();    // Gl. 2-54; S.28

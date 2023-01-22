@@ -37,7 +37,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipBackgroundPaint { get; set; }
         public SolidColorPaint LegendTextPaint { get; set; }
         public SolidColorPaint LegendBackgroundPaint { get; set; }
-        public double Rel_Fi { get; set; } = UserSaved.Rel_Fi.Value;
+        public double Rel_Fi { get; set; } = UserSaved.Rel_Fi;
 
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
@@ -111,7 +111,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             double tsi_Pos = StationaryTempCalculation.LayerTemps.First().Key;
             double tsi = StationaryTempCalculation.LayerTemps.First().Value;
-            double deltaTi = Math.Abs(UserSaved.Ti.Value - tsi);
+            double deltaTi = Math.Abs(UserSaved.Ti - tsi);
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
@@ -120,7 +120,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     null, // cuts the line between the points
                     new ObservablePoint(tsi_Pos, tsi),
                     new ObservablePoint(tsi_Pos+0.8, tsi+0.9*deltaTi),
-                    new ObservablePoint(tsi_Pos+2, UserSaved.Ti.Value)
+                    new ObservablePoint(tsi_Pos+2, UserSaved.Ti)
                 },
                 Fill = null,
                 LineSmoothness = 0.8,
@@ -157,12 +157,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             double tse_Pos = StationaryTempCalculation.LayerTemps.Last().Key;
             double tse = StationaryTempCalculation.LayerTemps.Last().Value;
-            double deltaTe = Math.Abs(UserSaved.Te.Value - tse);
+            double deltaTe = Math.Abs(UserSaved.Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
                 {   
-                    new ObservablePoint(tse_Pos-2, UserSaved.Te.Value),
+                    new ObservablePoint(tse_Pos-2, UserSaved.Te),
                     new ObservablePoint(tse_Pos-0.8, tse-0.9*deltaTe),
                     new ObservablePoint(tse_Pos, tse),
                     null, // cuts the line between the points

@@ -7,7 +7,6 @@ using System.Reflection.Emit;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Data.Common;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
 namespace BauphysikToolWPF.SQLiteRepo
@@ -26,7 +25,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull]
         public string Name { get; set; }
 
-        [SQLiteNetExtensions.Attributes.ForeignKey(typeof(ConstructionType))] // FK for the 1:1 relation
+        [ForeignKey(typeof(ConstructionType))] // FK for the 1:1 relation
         public int ConstructionTypeId { get; set; } // This Element is construction type X
 
         //------Not part of the Database-----//
@@ -37,6 +36,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         [OneToOne] // 1:1 relationship with ConstructionType
         public ConstructionType ConstructionType { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
 
+        [ManyToMany(typeof(ElementEnvVars))] // m:n relationship with EnvVars (ElementEnvVars is intermediate entity)
+        public List<EnvVars> EnvVars { get; set; }
 
         //------Konstruktor-----//
 

@@ -38,13 +38,15 @@ namespace BauphysikToolWPF.UI.ViewModels
             //For the ListView
             Layers = FO1_Setup.Layers;
 
+            List<EnvVars> envVars = DatabaseAccess.QueryEnvVarsBySymbol("Ti");
+
             //For the ComboBoxes
-            Ti_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Ti").Select(e => e.Comment).ToList();
-            Te_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Te").Select(e => e.Comment).ToList();
-            Rsi_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rsi").Select(e => e.Comment).ToList();
-            Rse_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rse").Select(e => e.Comment).ToList();
-            Rel_Fe_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rel_Fe").Select(e => e.Comment).ToList();
-            Rel_Fi_Keys = FO1_Setup.EnvVars.Where(e => e.Symbol == "Rel_Fi").Select(e => e.Comment).ToList();
+            Ti_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList();
+            Te_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList();
+            Rsi_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Select(e => e.Comment).ToList();
+            Rse_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Rse").Select(e => e.Comment).ToList();
+            Rel_Fi_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Select(e => e.Comment).ToList();
+            Rel_Fe_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Select(e => e.Comment).ToList();
 
             //For the Page title
             ElementName = FO0_LandingPage.SelectedElement.Name;

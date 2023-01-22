@@ -16,67 +16,64 @@ namespace BauphysikToolWPF.EnvironmentData
         //------Variablen-----//
 
         // Save all as unordered collection. Key must be unique!
-        public static Dictionary<string, double> UserEnvVars = new Dictionary<string, double>();
+        public static Dictionary<string, double> UserEnvVars = new Dictionary<string, double>()
+        {
+            {"Ti", 0 },
+            {"Te", 0 },
+            {"Rsi", 0 },
+            {"Rse", 0 },
+            {"Rel_Fi", 0 },
+            {"Rel_Fe", 0 },
+        };
 
         //------Eigenschaften-----//
-        private static KeyValuePair<string, double> ti;
-        public static KeyValuePair<string, double> Ti
+        // Kapselung von UserEnvVars
+        public static double Ti
         {
-            get { return ti; }
+            get { return UserEnvVars["Ti"]; }
             set
             {
-                ti = value;
-                UserEnvVars.Add(ti.Key, ti.Value);
+                UserEnvVars["Ti"] = value;
             }
         }
-        private static KeyValuePair<string, double> te;
-        public static KeyValuePair<string, double> Te
+        public static double Te
         {
-            get { return te; }
+            get { return UserEnvVars["Te"]; }
             set
             {
-                te = value;
-                UserEnvVars.Add(te.Key, te.Value);
+                UserEnvVars["Te"] = value;
             }
         }
-        private static KeyValuePair<string, double> rsi;
-        public static KeyValuePair<string, double> Rsi
+        public static double Rsi
         {
-            get { return rsi; }
+            get { return UserEnvVars["Rsi"]; }
             set
             {
-                rsi = value;
-                UserEnvVars.Add(rsi.Key, rsi.Value);
+                UserEnvVars["Rsi"] = value;
             }
         }
-        private static KeyValuePair<string, double> rse;
-        public static KeyValuePair<string, double> Rse
+        public static double Rse
         {
-            get { return rse; }
+            get { return UserEnvVars["Rse"]; }
             set
             {
-                rse = value;
-                UserEnvVars.Add(rse.Key, rse.Value);
+                UserEnvVars["Rse"] = value;
             }
         }
-        private static KeyValuePair<string, double> rel_Fi;
-        public static KeyValuePair<string, double> Rel_Fi
+        public static double Rel_Fi
         {
-            get { return rel_Fi; }
+            get { return UserEnvVars["Rel_Fi"]; }
             set
             {
-                rel_Fi = value;
-                UserEnvVars.Add(rel_Fi.Key, rel_Fi.Value);
+                UserEnvVars["Rel_Fi"] = value;
             }
         }
-        private static KeyValuePair<string, double> rel_Fe;
-        public static KeyValuePair<string, double> Rel_Fe
+        public static double Rel_Fe
         {
-            get { return rel_Fe; }
+            get { return UserEnvVars["Rel_Fe"]; }
             set
             {
-                rel_Fe = value;
-                UserEnvVars.Add(rel_Fe.Key, rel_Fe.Value);
+                UserEnvVars["Rel_Fe"] = value;
             }
         }
     }

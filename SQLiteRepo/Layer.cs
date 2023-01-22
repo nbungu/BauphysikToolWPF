@@ -7,7 +7,6 @@ using System.Reflection.Emit;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Data.Common;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
 namespace BauphysikToolWPF.SQLiteRepo
@@ -20,16 +19,16 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Eigenschaften-----//
 
-        [NotNull, PrimaryKey, AutoIncrement, Unique, SQLiteNetExtensions.Attributes.ForeignKey(typeof(Layer))] // FK for the n:1 relation
+        [NotNull, PrimaryKey, AutoIncrement, Unique, ForeignKey(typeof(Layer))] // FK for the n:1 relation
         public int LayerId { get; set; }
 
         [NotNull] //SQL Attributes
         public int LayerPosition { get; set; } //Inside = 1 ....
 
-        [SQLiteNetExtensions.Attributes.ForeignKey(typeof(Material))] // FK for the 1:1 relation
+        [ForeignKey(typeof(Material))] // FK for the 1:1 relation
         public int MaterialId { get; set; } // This Layer is made out of Material X
 
-        [SQLiteNetExtensions.Attributes.ForeignKey(typeof(Element))] // FK for the 1:n relation
+        [ForeignKey(typeof(Element))] // FK for the 1:n relation
         public int ElementId { get; set; } // To which Parent Element this Layer belongs    
 
         [NotNull]
@@ -68,9 +67,9 @@ namespace BauphysikToolWPF.SQLiteRepo
             return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId);
         }
 
-        public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
+        /*public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
             return LayerThickness + " cm, "+ Material.Name + " (Pos. " + this.LayerPosition + ")";
-        }
+        }*/
     }
 }
