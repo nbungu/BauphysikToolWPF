@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.EnvironmentData;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using SkiaSharp;
 
@@ -38,9 +38,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             //For the ListView
             Layers = FO1_Setup.Layers;
 
-            List<EnvVars> envVars = DatabaseAccess.QueryEnvVarsBySymbol("Ti");
-
-            //For the ComboBoxes
+            //For the ComboBoxes - Get List entries and set selection 
             Ti_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList();
             Te_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList();
             Rsi_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Select(e => e.Comment).ToList();

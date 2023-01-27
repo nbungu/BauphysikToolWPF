@@ -1,6 +1,6 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.EnvironmentData;
 using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.ViewModels;
 using LiveChartsCore.Kernel;
 using Newtonsoft.Json.Linq;
@@ -32,9 +32,14 @@ namespace BauphysikToolWPF.UI
     public partial class FO1_Setup : UserControl
     {
         // Class Variables - Belongs to the Class-Type itself and stay the same
-        public static int ElementId { get; set; } = -1; // no element set
-        public static List<Layer> Layers { get; private set; } = new List<Layer>(); // for FO1, FO2 & FO3 ViewModel
-        public static List<EnvVars> ElementEnvVars { get; private set; } = new List<EnvVars>();
+        public static int ElementId { get; set; } = -1; // Default: no element set
+        public static List<Layer> Layers { get; private set; } // for FO1, FO2 & FO3 ViewModel
+        
+        // Save computation time by avoiding unnecessary new instances
+        public static bool RecalculateTemp { get; set; } = false;
+        public static bool RecalculateGlaser { get; set; } = false;
+        private static DrawLayerCanvas canvas { get; set; }
+        private static DrawLayerCanvas measurementLine { get; set; }
 
         // Instance Variables - only for "MainPage" instances
         //
@@ -46,17 +51,24 @@ namespace BauphysikToolWPF.UI
             if(ElementId != FO0_LandingPage.SelectedElement.ElementId)
             {
                 ElementId = FO0_LandingPage.SelectedElement.ElementId;
-                Layers = DatabaseAccess.QueryLayersByElementId(ElementId); //
-                ElementEnvVars = DatabaseAccess.QueryElementsById(ElementId).EnvVars;
+                Layers = DatabaseAccess.QueryLayersByElementId(ElementId);
+                RecalculateTemp = true;
+                RecalculateGlaser = true;
             }
+
+            // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent();                              // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
+            
+            // Drawing
+            LoadDropDownSelections();                           // Loads last selection of the dropdown box (Picker)
             new DrawLayerCanvas(Layers, layers_Canvas);         // Initial Draw of the Canvas
             new DrawMeasurementLine(measurement_Grid, Layers);  // Initial Draw of the measurement line
-            DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with an event (when Layers have been changed)
-            DatabaseAccess.ElementEnvVarsChanged += DB_ElementEnvVarsChanged;   // register with an event (when Layers have been changed)
+
+            DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with event, when Layers changed
+            UserSaved.EnvVarsChanged += Session_EnvVarsChanged;
         }
 
-        // event handlers
+        // event handlers - subscribers
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
             Layers = DatabaseAccess.QueryLayersByElementId(ElementId);  // Update Layer variable in this class
@@ -64,13 +76,26 @@ namespace BauphysikToolWPF.UI
             layers_ListView.ItemsSource = Layers;       // Update LVItemsSource
             new DrawLayerCanvas(Layers, layers_Canvas); // Redraw Canvas
             new DrawMeasurementLine(measurement_Grid, Layers); // Redraw measurement line
+            RecalculateTemp = true;
+            RecalculateGlaser = true;
         }
-        public void DB_ElementEnvVarsChanged() // has to match the signature of the delegate (return type void, no input parameters)
+        public void Session_EnvVarsChanged()
         {
-            ElementEnvVars = DatabaseAccess.QueryElementsById(ElementId).EnvVars;
+            RecalculateTemp = true;
+            RecalculateGlaser = true;
         }
 
         // custom Methods
+        private void LoadDropDownSelections()
+        {
+            // TODO implement in xaml
+            Ti_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Ti_ComboBox"];
+            Te_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Te_ComboBox"];
+            Rsi_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rsi_ComboBox"];
+            Rse_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rse_ComboBox"];
+            Rel_Fi_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rel_Fi_ComboBox"];
+            Rel_Fe_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rel_Fe_ComboBox"];
+        }
         private void ReorderLayerPosition(List<Layer> layers)
         {
             if (layers.Count > 0)
@@ -83,7 +108,21 @@ namespace BauphysikToolWPF.UI
                 }
             }
         }
-
+        public void UpdateElementEnvVars(int elementID, EnvVars envVar)
+        {
+            // Add m:n realtion to Database
+            ElementEnvVars elemEnvVars = new ElementEnvVars()
+            {
+                //Id gets set by SQLite (Autoincrement)
+                ElementId = elementID,
+                EnvVarId = envVar.EnvVarId,
+            };
+            // Only insert every envVar once!            
+            if (DatabaseAccess.UpdateElementEnvVars(elemEnvVars) == 0)
+                // If no row is updated ( == 0), create a new one
+                DatabaseAccess.CreateElementEnvVars(elemEnvVars);
+        }
+        
         // UI Methods
         private void addLayerClicked(object sender, EventArgs e)
         {
@@ -113,103 +152,86 @@ namespace BauphysikToolWPF.UI
         {
             //TODO
         }
-
-        public void UpdateElementEnvVars(int elementID, EnvVars envVar)
+        private void Ti_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Add m:n realtion to Database
-            ElementEnvVars elemEnvVars = new ElementEnvVars()
-            {
-                //Id gets set by SQLite (Autoincrement)
-                ElementId = elementID,
-                ElementName = DatabaseAccess.QueryElementsById(elementID).Name,
-                EnvVarId = envVar.EnvVarId,
-                EnvVarSymbol = envVar.Symbol
-            };
-            // Only insert every envVar once!            
-            if (DatabaseAccess.UpdateElementEnvVars(elemEnvVars) == 0)
-                // If no row is updated ( == 0), create a new one
-                DatabaseAccess.CreateElementEnvVars(elemEnvVars);   
-        }
-        private void Ti_Category_Picker_SelectionChanged(object sender, EventArgs e)
-        {
-            if (Ti_Category_Picker.SelectedIndex == -1) // empty selection
+            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
                 return;
 
-            string item = Ti_Category_Picker.SelectedItem.ToString();
+            string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == item);
-
-            // Set corresponding value in the TB
             Ti_Input.Text = currentEnvVar.Value.ToString();
+            UserSaved.Ti = currentEnvVar.Value;
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
         }
-        private void Rsi_Category_Picker_SelectionChanged(object sender, EventArgs e)
+        private void Rsi_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            if (Rsi_Category_Picker.SelectedIndex == -1) // empty selection
+            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
                 return;
 
-            string item = Rsi_Category_Picker.SelectedItem.ToString();
+            string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == item);
-            
-            // Set corresponding value in the TB
             Rsi_Input.Text = currentEnvVar.Value.ToString();
+            UserSaved.Rsi = currentEnvVar.Value;
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
-            UpdateElementEnvVars(ElementId, currentEnvVar);         
+            UpdateElementEnvVars(ElementId, currentEnvVar);
         }
-        private void Rel_Fi_Category_Picker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Rel_Fi_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            if (Rel_Fi_Category_Picker.SelectedIndex == -1) // empty selection
+            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
                 return;
 
-            string item = Rel_Fi_Category_Picker.SelectedItem.ToString();
+            string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == item);
-
-            // Set corresponding value in the TB
             Rel_Fi_Input.Text = currentEnvVar.Value.ToString();
+            UserSaved.Rel_Fi = currentEnvVar.Value;
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
         }
-        private void Te_Category_Picker_SelectionChanged(object sender, EventArgs e)
+        private void Te_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            if (Te_Category_Picker.SelectedIndex == -1) // empty selection
+            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
                 return;
 
-            string item = Te_Category_Picker.SelectedItem.ToString();
+            string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == item);
-
-            // Set corresponding value in the TB
             Te_Input.Text = currentEnvVar.Value.ToString();
+            UserSaved.Te = currentEnvVar.Value;
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
         }
-        private void Rse_Category_Picker_SelectionChanged(object sender, EventArgs e)
+        private void Rse_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            if (Rse_Category_Picker.SelectedIndex == -1) // empty selection
+            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
                 return;
 
-            string item = Rse_Category_Picker.SelectedItem.ToString();
+            string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == item);
-
-            // Set corresponding value in the TB
             Rse_Input.Text = currentEnvVar.Value.ToString();
+            UserSaved.Rse = currentEnvVar.Value;
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
         }
-        private void Rel_Fe_Category_Picker_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void Rel_Fe_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            if (Rel_Fe_Category_Picker.SelectedIndex == -1) // empty selection
+            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
                 return;
 
-            string item = Rel_Fe_Category_Picker.SelectedItem.ToString();
+            string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == item);
-
-            // Set corresponding value in the TB
             Rel_Fe_Input.Text = currentEnvVar.Value.ToString();
+            UserSaved.Rel_Fe = currentEnvVar.Value;
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
@@ -222,40 +244,40 @@ namespace BauphysikToolWPF.UI
             e.Handled = regex.IsMatch(e.Text);
 
             // only allow one decimal point
-            if ((userInput == ".") && ((sender as TextBox).Text.IndexOf('.') > -1))
+            if (userInput == "." && (sender as TextBox).Text.IndexOf('.') > -1)
             {
                 e.Handled = true;
             }
 
             //set new value as UserSaved Data
-            switch (((TextBox)sender).Name)
+            /*switch (((TextBox)sender).Name)
             {
                 case "Ti_Input":
                     UserSaved.Ti = Convert.ToDouble(Ti_Input.Text + userInput);
-                    Ti_Category_Picker.SelectedIndex = -1; // empty selection
+                    Ti_ComboBox.SelectedIndex = -1; // empty selection
                     return;
                 case "Te_Input":
                     UserSaved.Te = Convert.ToDouble(Te_Input.Text + userInput);
-                    Te_Category_Picker.SelectedIndex = -1; // empty selection
+                    Te_ComboBox.SelectedIndex = -1; // empty selection
                     return;
                 case "Rsi_Input":
                     UserSaved.Rsi = Convert.ToDouble(Rsi_Input.Text + userInput);
-                    Rsi_Category_Picker.SelectedIndex = -1; // empty selection
+                    Rse_ComboBox.SelectedIndex = -1; // empty selection
                     return;
                 case "Rse_Input":
                     UserSaved.Rse = Convert.ToDouble(Rse_Input.Text + userInput);
-                    Rse_Category_Picker.SelectedIndex = -1; // empty selection
+                    Rse_ComboBox.SelectedIndex = -1; // empty selection
                     return;
                 case "Rel_Fi_Input":
                     UserSaved.Rel_Fi = Convert.ToDouble(Rel_Fi_Input.Text + userInput);
-                    Rel_Fi_Category_Picker.SelectedIndex = -1; // empty selection
+                    Rel_Fi_ComboBox.SelectedIndex = -1; // empty selection
                     return;
                 case "Rel_Fe_Input":
                     UserSaved.Rel_Fe = Convert.ToDouble(Rel_Fe_Input.Text + userInput);
-                    Rel_Fe_Category_Picker.SelectedIndex = -1; // empty selection
+                    Rel_Fe_ComboBox.SelectedIndex = -1; // empty selection
                     return;
                 default: throw new ArgumentException("Could not assign value");
-            }
+            }*/
         }
         private void layers_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

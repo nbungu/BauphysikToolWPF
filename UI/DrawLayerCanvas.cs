@@ -1,6 +1,4 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
-using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.EnvironmentData;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;

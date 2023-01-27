@@ -13,7 +13,6 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using LiveChartsCore.Defaults;
 using BauphysikToolWPF.ComponentCalculations;
 using BauphysikToolWPF.SQLiteRepo;
-using BauphysikToolWPF.EnvironmentData;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using System.Reflection.Emit;
@@ -37,11 +36,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipBackgroundPaint { get; set; }
         public SolidColorPaint LegendTextPaint { get; set; }
         public SolidColorPaint LegendBackgroundPaint { get; set; }
-        public double Rel_Fi { get; set; } = UserSaved.Rel_Fi;
+        public double Ti { get; set; } = 0;
+        public double Te { get; set; } = 0;
+        public double Rel_Fi { get; set; } = 0;
 
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
             this.StationaryTempCalculation = FO2_Temperature.StationaryTempCalculation;
+            this.Rel_Fi = StationaryTempCalculation.Rel_Fi;
+            this.Ti = StationaryTempCalculation.Ti;
+            this.Te = StationaryTempCalculation.Te;
             this.LayerSections = DrawLayerSections();
             this.DataPoints = DrawTempCurvePoints();
             this.XAxes = DrawXAxes();
@@ -111,7 +115,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             double tsi_Pos = StationaryTempCalculation.LayerTemps.First().Key;
             double tsi = StationaryTempCalculation.LayerTemps.First().Value;
-            double deltaTi = Math.Abs(UserSaved.Ti - tsi);
+            double deltaTi = Math.Abs(Ti - tsi);
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
@@ -120,7 +124,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     null, // cuts the line between the points
                     new ObservablePoint(tsi_Pos, tsi),
                     new ObservablePoint(tsi_Pos+0.8, tsi+0.9*deltaTi),
-                    new ObservablePoint(tsi_Pos+2, UserSaved.Ti)
+                    new ObservablePoint(tsi_Pos+2, Ti)
                 },
                 Fill = null,
                 LineSmoothness = 0.8,
@@ -157,12 +161,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             double tse_Pos = StationaryTempCalculation.LayerTemps.Last().Key;
             double tse = StationaryTempCalculation.LayerTemps.Last().Value;
-            double deltaTe = Math.Abs(UserSaved.Te - tse);
+            double deltaTe = Math.Abs(Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
                 {   
-                    new ObservablePoint(tse_Pos-2, UserSaved.Te),
+                    new ObservablePoint(tse_Pos-2, Te),
                     new ObservablePoint(tse_Pos-0.8, tse-0.9*deltaTe),
                     new ObservablePoint(tse_Pos, tse),
                     null, // cuts the line between the points

@@ -11,7 +11,6 @@ using System.Windows.Media.Media3D;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     public delegate void Notify(); // delegate (signature: return type void, no input parameters)
-
     public static class DatabaseAccess // publisher of 'LayersChanged' event
     {
         private static string dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\SQLiteRepo\\DemoDB.db"));
@@ -22,11 +21,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static event Notify ElementsChanged; // event
         public static event Notify ElementEnvVarsChanged; //event
 
-        // (Instanzen-) Konstruktor nicht möglich bei statischen Klassen
-        /*public DatabaseAccess()
-        {
-        }*/
-
+        // event handlers - publisher
         public static void OnLayersChanged() //protected virtual method
         {
             LayersChanged?.Invoke(); //if LayersChanged is not null then call delegate

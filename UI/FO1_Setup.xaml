@@ -4,7 +4,6 @@
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:BauphysikToolWPF.UI"
-            xmlns:env="clr-namespace:BauphysikToolWPF.EnvironmentData"
             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
             mc:Ignorable="d"
@@ -181,19 +180,19 @@
             <!--Außenseitige Randbedingungen-->
             <controls:SubscriptLabel Grid.Row="1" BaseText="θ" SubscriptText="e" AppendText=" - Außenluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="28"/>
             <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                <ComboBox x:Name="Te_Category_Picker" FontSize="14" ItemsSource="{Binding Te_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Te_Category_Picker_SelectionChanged"/>
+                <ComboBox x:Name="Te_ComboBox" FontSize="14" ItemsSource="{Binding Te_Keys}" SelectedIndex="{Binding Te_Selection}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Te_ComboBox_SelectionChanged"/>
                 <TextBox x:Name="Te_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="°C" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
             <controls:SubscriptLabel Grid.Row="2" BaseText="R" SubscriptText="se" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="28"/>
             <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                <ComboBox x:Name="Rse_Category_Picker" FontSize="14" ItemsSource="{Binding Rse_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rse_Category_Picker_SelectionChanged"/>
+                <ComboBox x:Name="Rse_ComboBox" FontSize="14" ItemsSource="{Binding Rse_Keys}" SelectedIndex="{Binding Rse_Selection}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rse_ComboBox_SelectionChanged"/>
                 <TextBox x:Name="Rse_Input" Style="{StaticResource TextBoxStyle}"/>
                 <controls:FractionLabel FontSize="14" CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
             </StackPanel>
             <controls:SubscriptLabel Grid.Row="3" BaseText="Φ" SubscriptText="e" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="28"/>
             <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                <ComboBox x:Name="Rel_Fe_Category_Picker" FontSize="14" ItemsSource="{Binding Rel_Fe_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rel_Fe_Category_Picker_SelectionChanged"/>
+                <ComboBox x:Name="Rel_Fe_ComboBox" FontSize="14" ItemsSource="{Binding Rel_Fe_Keys}" SelectedIndex="{Binding Rel_Fe_Selection}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rel_Fe_ComboBox_SelectionChanged"/>
                 <TextBox x:Name="Rel_Fe_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="%" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
@@ -201,19 +200,19 @@
             <!--Innenseitige Randbedingungen-->
             <controls:SubscriptLabel Grid.Row="1" Grid.Column="1" BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="28"/>
             <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                <ComboBox x:Name="Ti_Category_Picker" FontSize="14" ItemsSource="{Binding Ti_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Ti_Category_Picker_SelectionChanged"/>
+                <ComboBox x:Name="Ti_ComboBox" FontSize="14" ItemsSource="{Binding Ti_Keys}" SelectedIndex="{Binding Ti_Selection}"  Width="144" VerticalAlignment="Stretch" SelectionChanged="Ti_ComboBox_SelectionChanged"/>
                 <TextBox x:Name="Ti_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="°C" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>
             <controls:SubscriptLabel Grid.Row="2" Grid.Column="1" BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="28"/>
             <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                <ComboBox x:Name="Rsi_Category_Picker" FontSize="14" ItemsSource="{Binding Rsi_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rsi_Category_Picker_SelectionChanged"/>
+                <ComboBox x:Name="Rsi_ComboBox" FontSize="14" ItemsSource="{Binding Rsi_Keys}" SelectedIndex="{Binding Rsi_Selection}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rsi_ComboBox_SelectionChanged"/>
                 <TextBox x:Name="Rsi_Input" Style="{StaticResource TextBoxStyle}"/>
                 <controls:FractionLabel FontSize="14" CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
             </StackPanel>
             <controls:SubscriptLabel Grid.Row="3" Grid.Column="1" BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="28"/>
             <StackPanel Grid.Row="3" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                <ComboBox x:Name="Rel_Fi_Category_Picker" FontSize="14" ItemsSource="{Binding Rel_Fi_Keys}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rel_Fi_Category_Picker_SelectionChanged"/>
+                <ComboBox x:Name="Rel_Fi_ComboBox" FontSize="14" ItemsSource="{Binding Rel_Fi_Keys}" SelectedIndex="{Binding Rel_Fi_Selection}" Width="144" VerticalAlignment="Stretch" SelectionChanged="Rel_Fi_ComboBox_SelectionChanged"/>
                 <TextBox x:Name="Rel_Fi_Input" Style="{StaticResource TextBoxStyle}"/>
                 <Label Content="%" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
             </StackPanel>

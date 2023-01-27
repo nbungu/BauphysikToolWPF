@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.EnvironmentData;
 using BauphysikToolWPF.SQLiteRepo;
 using SkiaSharp;
 

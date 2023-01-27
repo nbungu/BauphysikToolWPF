@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
@@ -22,13 +23,16 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class FO3_Moisture : UserControl
     {
-        public static GlaserCalc GlaserCalculation { get; private set; }
+        public static GlaserCalc? GlaserCalculation { get; private set; }
         public FO3_Moisture()
         {
             // If Layers or EnvVars are not set or have changed, update class variables
-            if (FO1_Setup.Layers != GlaserCalculation?.Layers || FO1_Setup.ElementEnvVars != GlaserCalculation?.EnvVars)
+            if (FO1_Setup.RecalculateGlaser == true)
             {
-                GlaserCalculation = new GlaserCalc(FO1_Setup.Layers, FO1_Setup.ElementEnvVars); //for FO3_ViewModel
+                GlaserCalculation = new GlaserCalc(FO1_Setup.Layers, UserSaved.UserEnvVars); //for FO3_ViewModel
+
+                // Reset Recalculate Flag
+                FO1_Setup.RecalculateGlaser = false;
             }            
             InitializeComponent();
         }

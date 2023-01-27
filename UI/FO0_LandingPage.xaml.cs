@@ -19,21 +19,19 @@ using System.Xml.Linq;
 
 namespace BauphysikToolWPF.UI
 {
-    /// <summary>
-    /// Interaktionslogik für LandingPage.xaml
-    /// </summary>
-    public partial class FO0_LandingPage : UserControl
+    public partial class FO0_LandingPage : UserControl  // publisher of 'ElementSelectionChanged' event
     {
         public static List<Element> Elements { get; private set; } = new List<Element>(); // avoid null value
         public static Element SelectedElement { get; set; }
+
         public FO0_LandingPage()
         {
             Elements = DatabaseAccess.GetElements();
             InitializeComponent();
-            DatabaseAccess.ElementsChanged += DB_ElementsChanged;   // register with an event (when Elements have been changed)
+            DatabaseAccess.ElementsChanged += DB_ElementsChanged; // register with an event (when Elements have been changed)
         }
 
-        // event handlers
+        // event handlers - subscribers
         public void DB_ElementsChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
             Elements = DatabaseAccess.GetElements();
@@ -41,7 +39,6 @@ namespace BauphysikToolWPF.UI
         }
 
         // custom Methods
-
         private void createNewElement_Button_Click(object sender, RoutedEventArgs e)
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.

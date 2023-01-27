@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.EnvironmentData;
-using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI;
 using Newtonsoft.Json.Linq;
 using System;
@@ -27,14 +26,14 @@ namespace BauphysikToolWPF.ComponentCalculations
                 layers = value;
             }
         }
-        private List<EnvVars> envVars = new List<EnvVars>();
-        public List<EnvVars> EnvVars //for Validation
+        private Dictionary<string,double> envVars = new Dictionary<string, double>();
+        public Dictionary<string, double> EnvVars //for Validation
         {
             get { return envVars; }
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("null envVars list specified");
+                    throw new ArgumentNullException("null envVars dict specified");
                 envVars = value;
             }
         }
@@ -43,7 +42,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P in Pa
 
         // (Instance-) Constructor
-        public GlaserCalc(List<Layer> layers, List<EnvVars> envVars) : base(layers, envVars) //parameter aus base class mitnehmen
+        public GlaserCalc(List<Layer> layers, Dictionary<string, double> envVars) : base(layers, envVars) //parameter aus base class mitnehmen
         {
             //User specified (public setter)
             Layers = layers;

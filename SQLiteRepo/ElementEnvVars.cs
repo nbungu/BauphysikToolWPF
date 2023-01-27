@@ -23,10 +23,8 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         [ForeignKey(typeof(EnvVars))] // FK for the x:x relation
         public int EnvVarId { get; set; }
-        public string EnvVarSymbol { get; set; }
 
         [ForeignKey(typeof(Element))] // FK for the x:x relation
         public int ElementId { get; set; }
-        public string ElementName { get; set; }
     }
 }

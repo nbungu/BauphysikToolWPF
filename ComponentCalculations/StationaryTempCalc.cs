@@ -1,5 +1,5 @@
-﻿using BauphysikToolWPF.EnvironmentData;
-using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.SessionData;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,14 +30,14 @@ namespace BauphysikToolWPF.ComponentCalculations
                 layers = value;
             }
         }
-        private List<EnvVars> envVars = new List<EnvVars>();
-        public List<EnvVars> EnvVars //for Validation
+        private Dictionary<string, double> envVars = new Dictionary<string, double>();
+        public Dictionary<string, double> EnvVars //for Validation
         {
             get { return envVars; }
             set
             {
                 if (value == null)
-                    throw new ArgumentNullException("null envVars list specified");
+                    throw new ArgumentNullException("null envVars dict specified");
                 envVars = value;
             }
         }
@@ -57,7 +57,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double Rel_Fe { get; private set; } = 0;
 
         // (Instance-) Constructor
-        public StationaryTempCalc(List<Layer> layers, List<EnvVars> envVars)
+        public StationaryTempCalc(List<Layer> layers, Dictionary<string, double> envVars)
         {
             if (layers.Count == 0)
                 return;
@@ -65,12 +65,12 @@ namespace BauphysikToolWPF.ComponentCalculations
             //User specified (public setter)
             Layers = layers;
             EnvVars = envVars;
-            Ti = envVars.Find(e => e.Symbol == "Ti").Value;
-            Te = envVars.Find(e => e.Symbol == "Te").Value;
-            Rsi = envVars.Find(e => e.Symbol == "Rsi").Value;
-            Rse = envVars.Find(e => e.Symbol == "Rse").Value;
-            Rel_Fi = envVars.Find(e => e.Symbol == "Rel_Fi").Value;
-            Rel_Fe = envVars.Find(e => e.Symbol == "Rel_Fe").Value;
+            Ti = envVars["Ti"];
+            Te = envVars["Te"];
+            Rsi = envVars["Rsi"];
+            Rse = envVars["Rse"];
+            Rel_Fi = envVars["Rel_Fi"];
+            Rel_Fe = envVars["Rel_Fe"];
             //Calculated parameters (private setter)
             TotalElementWidth = GetTotalElementWidth();
             SumOfLayersR = GetLayersR();    // Gl. 2-54; S.28

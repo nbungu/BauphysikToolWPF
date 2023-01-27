@@ -13,7 +13,6 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using LiveChartsCore.Defaults;
 using BauphysikToolWPF.ComponentCalculations;
 using BauphysikToolWPF.SQLiteRepo;
-using BauphysikToolWPF.EnvironmentData;
 using System.Windows.Controls;
 using System.Windows.Media.Media3D;
 using System.Reflection.Emit;
