@@ -1,13 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
 using System.Windows;
-using System.Windows.Media.Imaging;
-using System.Windows.Media.Animation;
-using LiveChartsCore.SkiaSharpView.VisualElements;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI
 {
@@ -17,18 +10,19 @@ namespace BauphysikToolWPF.UI
         public static DrawingBrush InsulationBrush { get; private set; }
         public static DrawingBrush BricksBrush { get; private set; }
         public static DrawingBrush ConcreteBrush { get; private set; }
+
         public static DrawingBrush GetHatchPattern(string category, double lineThickness, double rectWidth, double rectHeight)
         {
             // return corresp. class variable if already set, otherwise draw new Brush
             switch (category)
             {
-                case "Insulation":
+                case "Wärmedämmung":
                     return InsulationBrush ??= GetInsulationBrush(rectWidth, rectHeight, lineThickness);
-                case "Bricks":
+                case "Mauerwerk":
                     return BricksBrush ??= GetBricksBrush(lineThickness);
-                case "Concrete":
+                case "Beton":
                     return ConcreteBrush ??= GetConcreteBrush(lineThickness);
-                case "Mortar and Plasters":
+                case "Mörtel und Putze":
                     return PlasterBrush ??= GetPlasterBrush(lineThickness);
                 default:
                     return new DrawingBrush();

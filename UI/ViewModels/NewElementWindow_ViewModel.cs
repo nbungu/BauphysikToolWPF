@@ -1,11 +1,6 @@
-﻿using System;
+﻿using BauphysikToolWPF.SQLiteRepo;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.SQLiteRepo;
-using SkiaSharp;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {

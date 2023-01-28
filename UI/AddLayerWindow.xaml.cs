@@ -2,17 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace BauphysikToolWPF.UI
 {
@@ -50,7 +43,7 @@ namespace BauphysikToolWPF.UI
         private void LoadCategoriesList()
         {
             List<string> categoryList = new List<string>(distinctCategories);
-            categoryList.Insert(0, "Show All");
+            categoryList.Insert(0, "Alle anzeigen");
             collectionView_Categories.ItemsSource = categoryList;
         }
         private void LoadMaterialsByCategory(string category = "*")
@@ -115,7 +108,7 @@ namespace BauphysikToolWPF.UI
             if (selectedCategory is null)
                 return;
 
-            if (selectedCategory == "Show All")
+            if (selectedCategory == "Alle anzeigen")
                 LoadMaterialsByCategory();
             else
                 LoadMaterialsByCategory(selectedCategory);

@@ -1,24 +1,14 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media;
-using LiveChartsCore.SkiaSharpView.Painting;
-using SkiaSharp;
-using LiveChartsCore.SkiaSharpView.Painting.Effects;
-using LiveChartsCore.Defaults;
-using BauphysikToolWPF.ComponentCalculations;
+﻿using BauphysikToolWPF.ComponentCalculations;
 using BauphysikToolWPF.SQLiteRepo;
-using System.Windows.Controls;
-using System.Windows.Media.Media3D;
-using System.Reflection.Emit;
-using System.Windows.Shapes;
-using System.Windows.Ink;
-using LiveChartsCore.Measure;
+using CommunityToolkit.Mvvm.ComponentModel;
+using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView.Painting.Effects;
+using SkiaSharp;
+using System;
+using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {

@@ -83,8 +83,7 @@
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
-            <Button Content="Einstellungen" Style="{StaticResource ButtonStyle02_B}" Margin="0,0,0,16"/>
-            <Button Content="Schließen" Style="{StaticResource ButtonStyle02_B}"/>
+            <Button x:Name="closeApp_Button" Content="Schließen" Style="{StaticResource ButtonStyle02_B}" Click="closeApp_Button_Click"/>
         </StackPanel>
 
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">

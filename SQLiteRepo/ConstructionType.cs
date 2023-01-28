@@ -1,14 +1,4 @@
 ﻿using SQLite;
-using SQLiteNetExtensions.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection.Emit;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using System.Data.Common;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {

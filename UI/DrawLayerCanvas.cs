@@ -1,20 +1,9 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
-using System.Windows.Media.Imaging;
-using System.Reflection.Emit;
-using SkiaSharp;
-using Xceed.Wpf.Toolkit.Converters;
-using System.ComponentModel;
 
 namespace BauphysikToolWPF.UI
 {
@@ -29,7 +18,7 @@ namespace BauphysikToolWPF.UI
                 return;
 
             // check if canvas was already created in frontend
-            canvas = canvas ?? throw new ArgumentNullException(nameof(canvas));
+            canvas = canvas ?? throw new ArgumentNullException(nameof(canvas) + " is not initialized or not found");
 
             double right = canvas.Width;
             double elementWidth = 0;
@@ -72,7 +61,7 @@ namespace BauphysikToolWPF.UI
                 if (showPositionLabel == true)
                 {
                     // Add Label with layer position
-                    System.Windows.Controls.Label label = new System.Windows.Controls.Label()
+                    Label label = new Label()
                     {
                         Content = layer.LayerPosition,
                         FontSize = 14

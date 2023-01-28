@@ -43,6 +43,14 @@
                 <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
                 <Grid Grid.RowSpan="2">
                     <Ellipse Fill="{Binding Material.ColorCode}" Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <!--<Ellipse Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Ellipse.Fill>
+                            <RadialGradientBrush MappingMode="RelativeToBoundingBox" Center="0.5, 0.5" RadiusX="0.3" RadiusY="0.3" >
+                                <GradientStop Color="LightGray" Offset="0.0"/>
+                                <GradientStop Color="{Binding Material.ColorCode}" Offset="1"/>
+                            </RadialGradientBrush>
+                        </Ellipse.Fill>
+                    </Ellipse>-->
                     <Label Content="{Binding LayerPosition}" Margin="0,0,8,0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
                 </Grid>
                 <Label Grid.Column="1" Content="{Binding Material.Name}" Height="28" FontWeight="Bold"/>
@@ -147,7 +155,7 @@
 
         <!--Middle Right-->
         <Grid Grid.Row="1" Grid.RowSpan="2" Grid.Column="1" Margin="16">
-            <Viewbox ClipToBounds="True">
+            <Viewbox ClipToBounds="True" VerticalAlignment="Top">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
