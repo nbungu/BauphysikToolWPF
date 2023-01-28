@@ -26,12 +26,12 @@ namespace BauphysikToolWPF.UI
             LoadMaterialsByCategory(); // Update Material List, based on selected Category
         }
 
-       /* protected override void OnAppearing() //default Methode wird überschrieben
-        {
-            // TODO: keeps looping in background
-            base.OnAppearing();
-            
-        }*/
+        /* protected override void OnAppearing() //default Methode wird überschrieben
+         {
+             // TODO: keeps looping in background
+             base.OnAppearing();
+
+         }*/
 
         private void LoadDistinctCategories()
         {
@@ -77,7 +77,7 @@ namespace BauphysikToolWPF.UI
                     MaterialId = material.MaterialId,
                     Material = material,
                     ElementId = FO0_LandingPage.SelectedElement.ElementId,
-                    Element = FO0_LandingPage.SelectedElement   
+                    Element = FO0_LandingPage.SelectedElement
                 };
                 DatabaseAccess.CreateLayer(layer);
                 this.Close();

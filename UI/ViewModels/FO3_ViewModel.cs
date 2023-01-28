@@ -79,7 +79,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (GlaserCalculation.Layers.Count == 0)
                 return new ISeries[0];
 
-            ISeries[] series = new ISeries[2];     
+            ISeries[] series = new ISeries[2];
 
             ObservablePoint[] p_Curve_Values = new ObservablePoint[GlaserCalculation.LayerP.Count()]; // represents the temperature points
             for (int i = 0; i < GlaserCalculation.LayerP.Count(); i++)
@@ -93,7 +93,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Values = p_Curve_Values,
                 Fill = null,
                 LineSmoothness = 0,
-                Stroke = new SolidColorPaint(SKColors.Blue, 2), 
+                Stroke = new SolidColorPaint(SKColors.Blue, 2),
                 GeometryFill = new SolidColorPaint(SKColors.Blue),
                 GeometryStroke = new SolidColorPaint(SKColors.Blue),
                 GeometrySize = 6,

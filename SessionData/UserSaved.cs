@@ -110,11 +110,11 @@ namespace BauphysikToolWPF.SessionData
             get { return userEnvVars["Rel_Fe"]; }
             set
             {
-                if(value != userEnvVars["Rel_Fe"])
+                if (value != userEnvVars["Rel_Fe"])
                 {
                     userEnvVars["Rel_Fe"] = value;
                     OnEnvVarsChanged(); // raises an event
-                }                           
+                }
             }
         }
     }

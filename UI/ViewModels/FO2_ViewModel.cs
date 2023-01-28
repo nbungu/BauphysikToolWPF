@@ -122,7 +122,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 0,
                 TooltipLabelFormatter = null
             };
-            
+
             ObservablePoint[] tempValues = new ObservablePoint[StationaryTempCalculation.LayerTemps.Count()]; // represents the temperature points
             for (int i = 0; i < StationaryTempCalculation.LayerTemps.Count(); i++)
             {
@@ -134,7 +134,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             LineSeries<ObservablePoint> tempCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = tempValues,
-                Fill = null,               
+                Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
                 //properties of the connecting dots  
@@ -155,7 +155,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
-                {   
+                {
                     new ObservablePoint(tse_Pos-2, Te),
                     new ObservablePoint(tse_Pos-0.8, tse-0.9*deltaTe),
                     new ObservablePoint(tse_Pos, tse),
@@ -178,7 +178,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private Axis[] DrawXAxes()
         {
             Axis[] axes = new Axis[1];
-            
+
             axes[0] = new Axis
             {
                 Name = "Element thickness [cm]",

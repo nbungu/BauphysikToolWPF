@@ -10,7 +10,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Eigenschaften-----//
 
-        [PrimaryKey, NotNull, AutoIncrement, Unique] 
+        [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int ConstructionTypeId { get; set; }
 
         [NotNull]

@@ -72,6 +72,6 @@ namespace BauphysikToolWPF.UI
                 }
                 right -= layerWidth; // Add new layer at left edge of previous layer
             }
-        }               
+        }
     }
 }

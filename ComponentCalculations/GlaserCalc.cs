@@ -19,7 +19,7 @@ namespace BauphysikToolWPF.ComponentCalculations
                 layers = value;
             }
         }
-        private Dictionary<string,double> envVars = new Dictionary<string, double>();
+        private Dictionary<string, double> envVars = new Dictionary<string, double>();
         public Dictionary<string, double> EnvVars //for Validation
         {
             get { return envVars; }
@@ -54,19 +54,19 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 width += l.Sd_Thickness; // sum of sd-values
             }
-            return Math.Round(width,3);
+            return Math.Round(width, 3);
         }
         private List<KeyValuePair<double, double>> GetLayerPsat()
         {
             //Dictionary is not ordered: Instead use List as ordered collection
-            List<KeyValuePair<double,double>> p_sat_List = new List<KeyValuePair<double,double>>(); //new Methode(): Konstruktoren aufruf
+            List<KeyValuePair<double, double>> p_sat_List = new List<KeyValuePair<double, double>>(); //new Methode(): Konstruktoren aufruf
 
             //Starting from inner side
             double widthPosition = TotalSdWidth;
 
-            for (int i = 0; i<LayerTemps.Count; i++)
-            {     
-                double currentWidthPosition = Math.Round(widthPosition,3);
+            for (int i = 0; i < LayerTemps.Count; i++)
+            {
+                double currentWidthPosition = Math.Round(widthPosition, 3);
                 double currentValue = P_sat(LayerTemps[i].Value);
                 p_sat_List.Add(new KeyValuePair<double, double>(currentWidthPosition, currentValue));
 
@@ -75,14 +75,14 @@ namespace BauphysikToolWPF.ComponentCalculations
                 widthPosition -= Layers[i].Sd_Thickness;
             }
 
-            if (Math.Round(widthPosition,3) == 0)
+            if (Math.Round(widthPosition, 3) == 0)
                 return p_sat_List;
             else throw new ArgumentOutOfRangeException("calculation failed");
         }
         private List<KeyValuePair<double, double>> GetLayerP()
         {
-            double pi = Math.Round((Rel_Fi/100) * P_sat(Ti),1);
-            double pe = Math.Round((Rel_Fe/100) * P_sat(Te),1);
+            double pi = Math.Round((Rel_Fi / 100) * P_sat(Ti), 1);
+            double pe = Math.Round((Rel_Fe / 100) * P_sat(Te), 1);
             List<KeyValuePair<double, double>> p_List = new List<KeyValuePair<double, double>>()
             {
                 new KeyValuePair<double, double>(TotalSdWidth, pi),
@@ -97,7 +97,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             double b = (temperature < 0) ? 1.486 : 1.098;
             double n = (temperature < 0) ? 12.3 : 8.02;
             double p_sat = a * Math.Pow(b + (temperature / 100), n);
-            return Math.Round(p_sat,1);
+            return Math.Round(p_sat, 1);
         }
 
     }

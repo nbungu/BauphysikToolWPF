@@ -17,11 +17,11 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private List<Layer> layers = new List<Layer>();
         public List<Layer> Layers //for Validation
-        {     
-            get { return layers; }  
+        {
+            get { return layers; }
             set
             {
-                if(value == null)
+                if (value == null)
                     throw new ArgumentNullException("null layer list specified");
                 layers = value;
             }
@@ -96,7 +96,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 rLayers += l.R_Value;
             }
-            return Math.Round(rLayers,2);
+            return Math.Round(rLayers, 2);
         }
 
         private double GetRTotal()
@@ -106,7 +106,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetUValue()
         {
-            return Math.Round(Math.Pow(RTotal, -1),3);
+            return Math.Round(Math.Pow(RTotal, -1), 3);
         }
 
         private double GetqValue()
@@ -117,14 +117,14 @@ namespace BauphysikToolWPF.ComponentCalculations
         private List<KeyValuePair<double, double>> GetLayerTemps()
         {
             //Dictionaries are not ordered: Instead use List as ordered collection
-            List<KeyValuePair<double,double>> temp_List = new List<KeyValuePair<double,double>>();
+            List<KeyValuePair<double, double>> temp_List = new List<KeyValuePair<double, double>>();
 
             //Starting from inner side
             double widthPosition = TotalElementWidth;
             double value = Ti - Rsi * QValue; // Tsi
             temp_List.Add(new KeyValuePair<double, double>(widthPosition, value)); // key, value
 
-            for (int i = 0; i<Layers.Count; i++)
+            for (int i = 0; i < Layers.Count; i++)
             {
                 double currentWidthPosition = widthPosition - Layers[i].LayerThickness;
                 double currentValue = temp_List.ElementAt(i).Value - Layers[i].R_Value * QValue;

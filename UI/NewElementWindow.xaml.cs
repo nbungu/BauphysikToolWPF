@@ -35,7 +35,7 @@ namespace BauphysikToolWPF.UI
                 FO0_LandingPage.SelectedElement = element;
                 this.Close();
                 MainWindow.SetPage("Setup");
-            }           
+            }
         }
     }
 }

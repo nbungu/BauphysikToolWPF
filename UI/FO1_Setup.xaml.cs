@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.UI
         // Class Variables - Belongs to the Class-Type itself and stay the same
         public static int ElementId { get; set; } = -1; // Default: no element set
         public static List<Layer> Layers { get; private set; } // for FO1, FO2 & FO3 ViewModel
-        
+
         // Save computation time by avoiding unnecessary new instances
         public static bool RecalculateTemp { get; set; } = false;
         public static bool RecalculateGlaser { get; set; } = false;
@@ -31,7 +31,7 @@ namespace BauphysikToolWPF.UI
         public FO1_Setup()
         {
             // If Element is not set (-1) or has changed, update class variables
-            if(ElementId != FO0_LandingPage.SelectedElement.ElementId)
+            if (ElementId != FO0_LandingPage.SelectedElement.ElementId)
             {
                 ElementId = FO0_LandingPage.SelectedElement.ElementId;
                 Layers = DatabaseAccess.QueryLayersByElementId(ElementId);
@@ -41,7 +41,7 @@ namespace BauphysikToolWPF.UI
 
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent();                              // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
-            
+
             // Drawing
             LoadDropDownSelections();                           // Loads last selection of the dropdown box (Picker)
             new DrawLayerCanvas(Layers, layers_Canvas);         // Initial Draw of the Canvas
@@ -105,7 +105,7 @@ namespace BauphysikToolWPF.UI
                 // If no row is updated ( == 0), create a new one
                 DatabaseAccess.CreateElementEnvVars(elemEnvVars);
         }
-        
+
         // UI Methods
         private void addLayerClicked(object sender, EventArgs e)
         {
@@ -282,5 +282,5 @@ namespace BauphysikToolWPF.UI
             // Redraw to show selected layer 
             new DrawLayerCanvas(layers_ListView.ItemsSource as List<Layer>, layers_Canvas);
         }
-    }   
+    }
 }

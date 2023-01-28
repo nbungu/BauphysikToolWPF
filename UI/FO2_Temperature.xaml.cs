@@ -10,7 +10,7 @@ namespace BauphysikToolWPF.UI
     public partial class FO2_Temperature : UserControl //Page
     {
         public static StationaryTempCalc? StationaryTempCalculation { get; private set; }
-       
+
         public FO2_Temperature()
         {
             // If Layers or EnvVars are not set or have changed, update class variables

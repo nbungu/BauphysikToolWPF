@@ -62,7 +62,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
         public static List<Layer> QueryLayersByElementId(int elementId)
         {
-           return sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId);
+            return sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId);
         }
 
         // Retreive Data from Table "Material"

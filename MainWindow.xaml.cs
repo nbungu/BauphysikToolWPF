@@ -11,7 +11,7 @@ namespace BauphysikToolWPF
         public static ListBox navigationMenuListBox;
 
         public static Window Main;
-        
+
         public MainWindow()
         {
             InitializeComponent();

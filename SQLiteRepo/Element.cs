@@ -5,14 +5,14 @@ using System.Collections.Generic;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     //https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
-    public class Element 
+    public class Element
     {
         //------Variablen-----//
 
 
         //------Eigenschaften-----//
 
-        [PrimaryKey, NotNull, AutoIncrement, Unique] 
+        [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int ElementId { get; set; }
 
         [NotNull]

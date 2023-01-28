@@ -19,7 +19,7 @@ namespace BauphysikToolWPF.UI
 
                 // Reset Recalculate Flag
                 FO1_Setup.RecalculateGlaser = false;
-            }            
+            }
             InitializeComponent();
         }
     }

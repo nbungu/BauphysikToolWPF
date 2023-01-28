@@ -67,7 +67,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             return (double)element.GetValue(SubscriptFontSizeProperty);
         }
 
-        public static readonly DependencyProperty SubscriptFontSizeProperty = DependencyProperty.Register("SubscriptFontSize", typeof(double), typeof(SubscriptLabel), new PropertyMetadata((double)12.0));
+        public static readonly DependencyProperty SubscriptFontSizeProperty = DependencyProperty.Register("SubscriptFontSize", typeof(double), typeof(SubscriptLabel), new PropertyMetadata(12.0));
 
         public static void SetFontSize(UIElement element, double value)
         {
@@ -78,7 +78,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             return (double)element.GetValue(FontSizeProperty);
         }
 
-        public static new readonly DependencyProperty FontSizeProperty = DependencyProperty.Register("FontSize", typeof(double), typeof(SubscriptLabel), new PropertyMetadata((double)14.0));
+        public static new readonly DependencyProperty FontSizeProperty = DependencyProperty.Register("FontSize", typeof(double), typeof(SubscriptLabel), new PropertyMetadata(14.0));
 
     }
 }

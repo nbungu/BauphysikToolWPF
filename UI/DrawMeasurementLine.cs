@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.UI
     public class DrawMeasurementLine
     {
         // custom parameter constructor, with optional parameters "strokeWidth" and "showLabels"
-        public DrawMeasurementLine(Grid container, List<Layer> layers, double strokeWidth = 1, bool showLabels = true) 
+        public DrawMeasurementLine(Grid container, List<Layer> layers, double strokeWidth = 1, bool showLabels = true)
         {
             container.Children.Clear();
             if (layers == null || layers.Count == 0)
@@ -59,9 +59,9 @@ namespace BauphysikToolWPF.UI
                     break; // cancel current loop here when no labels wanted
 
                 // TODO: sauber machen
-                Label label = new Label() { Content = Math.Round(layers[i].LayerThickness,1).ToString(), FontSize = 10, VerticalContentAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center };
-                label.Measure(new Size(56,40)); //https://stackoverflow.com/questions/2928498/label-size-is-always-nan
-                double labelRightMargin = prevLayer + layerWidth/2 - label.DesiredSize.Width/2; //space right of the label
+                Label label = new Label() { Content = Math.Round(layers[i].LayerThickness, 1).ToString(), FontSize = 10, VerticalContentAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center };
+                label.Measure(new Size(56, 40)); //https://stackoverflow.com/questions/2928498/label-size-is-always-nan
+                double labelRightMargin = prevLayer + layerWidth / 2 - label.DesiredSize.Width / 2; //space right of the label
                 double labelLeftMargin = fullWidth_px - label.DesiredSize.Width - labelRightMargin; // space left of the label
                 label.Margin = new Thickness(labelLeftMargin, 0, labelRightMargin, 0);
                 container.Children.Add(label);

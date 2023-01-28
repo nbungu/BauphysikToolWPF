@@ -31,12 +31,12 @@ namespace BauphysikToolWPF.UI
 
         // Brush for Mörtel/Putz
         private static DrawingBrush GetPlasterBrush(double lineThickness)
-        { 
+        {
             // Create a GeometryGroup to contain the hatch lines
-            GeometryGroup hatchContent = new GeometryGroup();            
+            GeometryGroup hatchContent = new GeometryGroup();
 
             //only small ones
-            for (int i=0; i < 40; i++)
+            for (int i = 0; i < 40; i++)
             {
                 EllipseGeometry ellipse = new EllipseGeometry(new Point(new Random().Next(1, 127), new Random().Next(3, 125)), 1, 1);
                 hatchContent.Children.Add(ellipse);
@@ -63,7 +63,7 @@ namespace BauphysikToolWPF.UI
                 Viewbox = new Rect(0, 0, 128, 128),
                 ViewboxUnits = BrushMappingMode.Absolute,
                 Transform = new RotateTransform(15)
-                
+
             };
             return brush;
         }
@@ -128,9 +128,9 @@ namespace BauphysikToolWPF.UI
             {
                 Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
                 TileMode = TileMode.Tile,
-                Viewport = new Rect(0,0,32, 32),
+                Viewport = new Rect(0, 0, 32, 32),
                 ViewportUnits = BrushMappingMode.Absolute,
-                Viewbox = new Rect(0,0,32, 32),
+                Viewbox = new Rect(0, 0, 32, 32),
                 ViewboxUnits = BrushMappingMode.Absolute
             };
             return brush;

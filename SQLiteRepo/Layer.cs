@@ -5,7 +5,7 @@ using System;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     //https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
-    public class Layer 
+    public class Layer
     {
         //------Variablen-----//
 
@@ -41,13 +41,13 @@ namespace BauphysikToolWPF.SQLiteRepo
         [Ignore]
         public double R_Value
         {
-            get { return Math.Round((this.LayerThickness/100) / Material.ThermalConductivity, 3); }
+            get { return Math.Round((this.LayerThickness / 100) / Material.ThermalConductivity, 3); }
         }
 
         [Ignore]
         public double Sd_Thickness // sd thickness in m
         {
-            get { return Math.Round((this.LayerThickness/100) * Material.DiffusionResistance, 3); }
+            get { return Math.Round((this.LayerThickness / 100) * Material.DiffusionResistance, 3); }
         }
 
         //------Konstruktor-----//
@@ -56,7 +56,8 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Methoden-----//
 
-        public Material correspondingMaterial() {
+        public Material correspondingMaterial()
+        {
             return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId);
         }
 
