@@ -37,7 +37,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True">
+            <Border Grid.Row="0" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" CornerRadius="16">
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
                         <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
@@ -56,7 +56,7 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Row="1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0">
+            <Border Grid.Row="1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0" CornerRadius="16">
                 <lvc:CartesianChart
                     Grid.Row="1"
                     ClipToBounds="True"
@@ -70,7 +70,7 @@
                     TooltipTextPaint="{Binding TooltipTextPaint}"
                     TooltipTextSize="14"
                     Background="White"
-                    Margin="8,0,0,8"/>
+                    Margin="8,4,4,8"/>
                         <!--
                     LegendPosition="Left"
                     LegendBackgroundPaint="{Binding LedgendBackgroundPaint}"
@@ -82,29 +82,29 @@
 
         <!--Bottom Right-->
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".5*"/>
-                <ColumnDefinition Width=".5*"/>
-            </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width=".5*"/>
+                    <ColumnDefinition Width=".5*"/>
+                </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Vertical" Grid.Column="0">
+                <StackPanel Orientation="Vertical" Grid.Column="0">
                 <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>                
                 <controls:EquationLabel BaseText="U" Value="{Binding StationaryTempCalculation.UValue}" Unit="W/m²K" Height="28"/>
                 <controls:EquationLabel BaseText="q" Value="{Binding StationaryTempCalculation.QValue}" Unit="W/m²" Height="28"/>
                 <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding StationaryTempCalculation.FRsi}" Height="28"/>
                 <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
-            </StackPanel>
+                </StackPanel>            
 
-            <StackPanel Orientation="Vertical" Grid.Column="1">
+                <StackPanel Orientation="Vertical" Grid.Column="1">
                 <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <Label Content="tbd" FontSize="14" Height="28"/>
-                <Label Content="tbd" FontSize="14" Height="28"/>
-                <Label Content="> 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
-                <Label Content="{Binding StationaryTempCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
-            </StackPanel>
-        </Grid>
+                    <Label Content="tbd" FontSize="14" Height="28"/>
+                    <Label Content="tbd" FontSize="14" Height="28"/>
+                    <Label Content="> 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
+                    <Label Content="{Binding StationaryTempCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
+                </StackPanel>
+            </Grid>
 
         <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
     </Grid>

@@ -37,7 +37,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True">
+            <Border Grid.Row="0" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" CornerRadius="16">
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
                         <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
@@ -56,7 +56,7 @@
                 </Grid>
             </Border>
 
-            <Border Grid.Row="1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0">
+            <Border Grid.Row="1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0" CornerRadius="16">
                 <lvc:CartesianChart
                     Grid.Row="1"
                     ClipToBounds="True"
@@ -70,7 +70,7 @@
                     TooltipTextPaint="{Binding TooltipTextPaint}"
                     TooltipTextSize="14"
                     Background="White"
-                    Margin="8,0,0,8"/>
+                    Margin="8,4,4,8"/>
             </Border>
         </Grid>
 
@@ -82,14 +82,14 @@
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Vertical" Grid.Column="0">
-                <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding GlaserCalculation.FRsi}" Height="28"/>
-                <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding GlaserCalculation.Rel_Fi}" Unit="%" Height="28"/>
+                <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding GlaserCalculation.FRsi}" Height="28" Margin="4,0,0,0"/>
+                <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding GlaserCalculation.Rel_Fi}" Unit="%" Height="28" Margin="4,0,0,0"/>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Grid.Column="1">
-                <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
                 <Label Content="> 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
                 <Label Content="{Binding GlaserCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>

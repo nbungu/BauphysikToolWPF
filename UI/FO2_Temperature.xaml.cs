@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.UI
             // If Layers or EnvVars are not set or have changed, update class variables
             if (FO1_Setup.RecalculateTemp == true)
             {
-                StationaryTempCalculation = new StationaryTempCalc(FO1_Setup.Layers, UserSaved.UserEnvVars); //for FO2_ViewModel
+                StationaryTempCalculation = new StationaryTempCalc(); //for FO2_ViewModel
 
                 // Reset Recalculate Flag
                 FO1_Setup.RecalculateTemp = false;

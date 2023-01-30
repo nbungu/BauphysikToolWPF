@@ -160,6 +160,10 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             return sqlConn.Table<ConstructionType>().ToList();
         }
+        public static ConstructionType QueryConstructionTypeById(int id)
+        {
+            return sqlConn.Get<ConstructionType>(id);
+        }
 
         // Retreive Data from Table "ElementEnvVars"
         public static List<ElementEnvVars> GetElementEnvVars()

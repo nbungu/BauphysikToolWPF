@@ -11,7 +11,8 @@
     <None Remove="Resources\Icons\CL_001x80_climate_menu.png" />
     <None Remove="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
     <None Remove="Resources\Icons\GL_003x80_back.png" />
-    <None Remove="Resources\Icons\GL_010x80_create.png" />
+    <None Remove="Resources\Icons\GL_010x80_create_b.png" />
+    <None Remove="Resources\Icons\GL_010x80_create_w.png" />
     <None Remove="Resources\Icons\GL_011x80_delete.png" />
     <None Remove="Resources\Icons\GL_015x80_edit.png" />
     <None Remove="Resources\Icons\GL_019x80_home.png" />
@@ -30,7 +31,8 @@
     <Resource Include="Resources\Icons\CL_001x80_climate_menu.png" />
     <Resource Include="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
     <Resource Include="Resources\Icons\GL_003x80_back.png" />
-    <Resource Include="Resources\Icons\GL_010x80_create.png" />
+    <Resource Include="Resources\Icons\GL_010x80_create_b.png" />
+    <Resource Include="Resources\Icons\GL_010x80_create_w.png" />
     <Resource Include="Resources\Icons\GL_011x80_delete.png" />
     <Resource Include="Resources\Icons\GL_015x80_edit.png" />
     <Resource Include="Resources\Icons\GL_019x80_home.png" />

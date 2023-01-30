@@ -140,7 +140,7 @@
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="MinHeight" Value="32"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -169,7 +169,7 @@
         <Style x:Key="ButtonStyle02_B" TargetType="{x:Type Button}">
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="MinHeight" Value="32"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>

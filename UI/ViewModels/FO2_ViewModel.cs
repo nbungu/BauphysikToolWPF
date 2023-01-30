@@ -81,11 +81,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
 
             //TODO: is hardcoded
-            /*fRsi frsi = new fRsi(StationaryTempCalculation.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
-            rects[5] = new RectangularSection
+            //fRsi frsi = new fRsi(StationaryTempCalculation.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
+            /*rects[0] = new RectangularSection
             {
-                Yi = fRsi.TsiMin,
-                Yj = fRsi.TsiMin,
+                Yi = StationaryTempCalc.TsiMin,
+                Yj = StationaryTempCalc.TsiMin,
                 Stroke = new SolidColorPaint
                 {
                     Color = SKColors.Red,

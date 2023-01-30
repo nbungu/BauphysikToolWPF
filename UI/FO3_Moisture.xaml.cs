@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI
             // If Layers or EnvVars are not set or have changed, update class variables
             if (FO1_Setup.RecalculateGlaser == true)
             {
-                GlaserCalculation = new GlaserCalc(FO1_Setup.Layers, UserSaved.UserEnvVars); //for FO3_ViewModel
+                GlaserCalculation = new GlaserCalc(); //for FO3_ViewModel
 
                 // Reset Recalculate Flag
                 FO1_Setup.RecalculateGlaser = false;

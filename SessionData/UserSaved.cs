@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.SessionData
             EnvVarsChanged?.Invoke(); // if EnvVarsChanged is not null then call delegate
         }
 
-        // Save all as unordered collection. Key must be unique!
+        // Unordered Collection. Key must be unique!
         private static Dictionary<string, double> userEnvVars = new Dictionary<string, double>()
         {
             {"Ti", 0 },

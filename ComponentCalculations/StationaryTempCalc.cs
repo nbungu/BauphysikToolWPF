@@ -1,4 +1,6 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,15 +9,15 @@ namespace BauphysikToolWPF.ComponentCalculations
 {
     public class StationaryTempCalc
     {
-        //static Class variables
+        // Static Class Variables
 
         public static readonly double FRsiMin = 0.7;
 
         public static readonly double TsiMin = 12.6;
 
-        //(Instance-) Variables and encapsulated properties
+        // (Instance-) Variables and encapsulated properties - Called before Constructor
 
-        private List<Layer> layers = new List<Layer>();
+        private List<Layer> layers = FO1_Setup.Layers;
         public List<Layer> Layers //for Validation
         {
             get { return layers; }
@@ -23,18 +25,9 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 if (value == null)
                     throw new ArgumentNullException("null layer list specified");
+                if (value.Count == 0)
+                    return;
                 layers = value;
-            }
-        }
-        private Dictionary<string, double> envVars = new Dictionary<string, double>();
-        public Dictionary<string, double> EnvVars //for Validation
-        {
-            get { return envVars; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("null envVars dict specified");
-                envVars = value;
             }
         }
         public double TotalElementWidth { get; private set; } = 0;
@@ -45,28 +38,19 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double FRsi { get; private set; } = 0;
         public double PhiMax { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
-        public double Ti { get; private set; } = 0;
-        public double Te { get; private set; } = 0;
-        public double Rsi { get; private set; } = 0;
-        public double Rse { get; private set; } = 0;
-        public double Rel_Fi { get; private set; } = 0;
-        public double Rel_Fe { get; private set; } = 0;
+        public double Ti { get; private set; } = UserSaved.Ti;
+        public double Te { get; private set; } = UserSaved.Te;
+        public double Rsi { get; private set; } = UserSaved.Rsi;
+        public double Rse { get; private set; } = UserSaved.Rse;
+        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi;
+        public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe;
 
         // (Instance-) Constructor
-        public StationaryTempCalc(List<Layer> layers, Dictionary<string, double> envVars)
+        public StationaryTempCalc()
         {
-            if (layers.Count == 0)
+            if (Layers.Count == 0)
                 return;
 
-            //User specified (public setter)
-            Layers = layers;
-            EnvVars = envVars;
-            Ti = envVars["Ti"];
-            Te = envVars["Te"];
-            Rsi = envVars["Rsi"];
-            Rse = envVars["Rse"];
-            Rel_Fi = envVars["Rel_Fi"];
-            Rel_Fe = envVars["Rel_Fe"];
             //Calculated parameters (private setter)
             TotalElementWidth = GetTotalElementWidth();
             SumOfLayersR = GetLayersR();    // Gl. 2-54; S.28

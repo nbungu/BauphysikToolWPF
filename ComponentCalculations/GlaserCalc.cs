@@ -7,39 +7,16 @@ namespace BauphysikToolWPF.ComponentCalculations
     public class GlaserCalc : StationaryTempCalc
     {
         //(Instance-) Variables and encapsulated properties
-
-        private List<Layer> layers = new List<Layer>();
-        public List<Layer> Layers //for Validation
-        {
-            get { return layers; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("null layer list specified");
-                layers = value;
-            }
-        }
-        private Dictionary<string, double> envVars = new Dictionary<string, double>();
-        public Dictionary<string, double> EnvVars //for Validation
-        {
-            get { return envVars; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("null envVars dict specified");
-                envVars = value;
-            }
-        }
         public double TotalSdWidth { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P_sat in Pa
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P in Pa
 
         // (Instance-) Constructor
-        public GlaserCalc(List<Layer> layers, Dictionary<string, double> envVars) : base(layers, envVars) //parameter aus base class mitnehmen
+        public GlaserCalc()
         {
-            //User specified (public setter)
-            Layers = layers;
-            EnvVars = envVars;
+            if (Layers.Count == 0) // inherited class member from StationaryTempCalc
+                return;
+
             //Calculated parameters (private setter)
             TotalSdWidth = GetTotalSdWidth();   // Gl. 5.2; S.246
             LayerPsat = GetLayerPsat();         // Gl. 2.4; S.164
@@ -90,7 +67,6 @@ namespace BauphysikToolWPF.ComponentCalculations
             };
             return p_List;
         }
-
         private double P_sat(double temperature)
         {
             double a = (temperature < 0) ? 4.689 : 288.68;

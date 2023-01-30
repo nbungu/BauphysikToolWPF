@@ -16,13 +16,11 @@ namespace BauphysikToolWPF.UI
     {
         // Class Variables - Belongs to the Class-Type itself and stay the same
         public static int ElementId { get; set; } = -1; // Default: no element set
-        public static List<Layer> Layers { get; private set; } // for FO1, FO2 & FO3 ViewModel
+        public static List<Layer> Layers { get; private set; } = new List<Layer>(); // for FO1, FO2 & FO3 ViewModel
 
         // Save computation time by avoiding unnecessary new instances
         public static bool RecalculateTemp { get; set; } = false;
         public static bool RecalculateGlaser { get; set; } = false;
-        private static DrawLayerCanvas canvas { get; set; }
-        private static DrawLayerCanvas measurementLine { get; set; }
 
         // Instance Variables - only for "MainPage" instances
         //
