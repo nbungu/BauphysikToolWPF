@@ -1,3 +1,3 @@
 # BauphysikToolWPF
 
-## Arne Schunter
+![alt text](FO0_LandingPage.jpg "Title")
