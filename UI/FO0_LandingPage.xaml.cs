@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.UI
         public void DB_ElementsChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
             Elements = DatabaseAccess.GetElements();
-            element_ItemsControl.ItemsSource = Elements;
+            element_ItemsControl.ItemsSource = Elements; // Updates the ItemsSource. Initial object is fetched by XAML via ViewModel
         }
 
         // custom Methods
@@ -44,6 +44,15 @@ namespace BauphysikToolWPF.UI
             MainWindow.SetPage("Setup");
         }
 
+        // Right click on Panel Button opens Context Menu
+        private void Button_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Button button = sender as Button;
+            ContextMenu contextMenu = element_ItemsControl.FindResource("ButtonContextMenu") as ContextMenu;
+            contextMenu.PlacementTarget = button;
+            contextMenu.IsOpen = true;
+        }
+        // Context Menu - Delete
         private void delete_MenuItem_Click(object sender, RoutedEventArgs e)
         {
             MenuItem menuItem = sender as MenuItem;
@@ -52,15 +61,7 @@ namespace BauphysikToolWPF.UI
             int elementId = Convert.ToInt16(button.Content);
             DatabaseAccess.DeleteElementById(elementId);
         }
-
-        private void Button_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            Button button = sender as Button;
-            ContextMenu contextMenu = element_ItemsControl.FindResource("ButtonContextMenu") as ContextMenu;
-            contextMenu.PlacementTarget = button;
-            contextMenu.IsOpen = true;
-        }
-
+        // Context Menu - Rename
         private void rename_MenuItem_Click(object sender, RoutedEventArgs e)
         {
 

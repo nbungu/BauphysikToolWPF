@@ -8,7 +8,7 @@
             xmlns:session="clr-namespace:BauphysikToolWPF.SessionData"
             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
             mc:Ignorable="d"
-            d:DesignHeight="700" d:DesignWidth="1200">
+            d:DesignHeight="700" d:DesignWidth="1200" Unloaded="UserControl_Unloaded">
 
     <UserControl.DataContext>
         <!-- globally sets a reference for Bindings in this xaml-->
@@ -152,13 +152,12 @@
             </Border>
         </DataTemplate>
 
-
     </UserControl.Resources>
 
     <!--Main Grid: 3x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="64"/>
+            <RowDefinition Height="56"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
@@ -168,9 +167,9 @@
         </Grid.ColumnDefinitions>
 
         <!--Top Left -->
-        <Label Grid.Row="0" Grid.Column="0" Content="{Binding ElementName}" ContentStringFormat='Schichtaufbau - {0}' HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
+        <Label Grid.Row="0" Grid.Column="0" Content="{Binding ElementName}" ContentStringFormat='Schichtaufbau - {0}' HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
         <!--Top Right -->
-        <Label Grid.Row="0" Grid.Column="1" Content="Bauteilquerschnitt" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
+        <Label Grid.Row="0" Grid.Column="1" Content="Bauteilquerschnitt" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
         <!--Middle Left -->
         <Grid Grid.Row="1" Grid.Column="0" Margin="16">
             <Grid.RowDefinitions>
@@ -197,6 +196,7 @@
                       ItemTemplate="{StaticResource LVItem_DesignTemplate}"
                       ItemContainerStyle="{StaticResource LVItem_Properties}"
                       ClipToBounds="True"
+                      ScrollViewer.CanContentScroll="False"
                       SelectionChanged="layers_ListView_SelectionChanged"
                       SelectionMode="Single"
                       Background="Transparent"

@@ -15,9 +15,10 @@
         <vm:FO3_ViewModel/>
     </UserControl.DataContext>
 
+    <!--Main Grid 2x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="64" />
+            <RowDefinition Height="56" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -26,9 +27,9 @@
         </Grid.ColumnDefinitions>
 
         <!--Top Left -->
-        <Label Grid.Row="0" Grid.Column="0" Content="Glaser Diagramm" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
+        <Label Grid.Row="0" Grid.Column="0" Content="Glaser Diagramm" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
         <!--Top Right -->
-        <Label Grid.Row="0" Grid.Column="1" Content="Eigenschaften" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16"/>
+        <Label Grid.Row="0" Grid.Column="1" Content="Eigenschaften" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
 
         <!--Bottom Left-->
         <Grid Grid.Row="1" Margin="16">

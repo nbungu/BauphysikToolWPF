@@ -46,7 +46,7 @@ namespace BauphysikToolWPF.UI
             new DrawMeasurementLine(measurement_Grid, Layers);  // Initial Draw of the measurement line
 
             DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with event, when Layers changed
-            UserSaved.EnvVarsChanged += Session_EnvVarsChanged;
+            UserSaved.EnvVarsChanged += Session_EnvVarsChanged; // register with event, when EnvVars changed
         }
 
         // event handlers - subscribers
@@ -54,9 +54,10 @@ namespace BauphysikToolWPF.UI
         {
             Layers = DatabaseAccess.QueryLayersByElementId(ElementId);  // Update Layer variable in this class
             ReorderLayerPosition(Layers);                               // Establish correct LayerPosition 
-            layers_ListView.ItemsSource = Layers;       // Update LVItemsSource
-            new DrawLayerCanvas(Layers, layers_Canvas); // Redraw Canvas
-            new DrawMeasurementLine(measurement_Grid, Layers); // Redraw measurement line
+            layers_ListView.ItemsSource = Layers;                       // Update LVItemsSource
+            new DrawLayerCanvas(Layers, layers_Canvas);                 // Redraw Canvas
+            new DrawMeasurementLine(measurement_Grid, Layers);          // Redraw measurement line
+
             RecalculateTemp = true;
             RecalculateGlaser = true;
         }
@@ -135,48 +136,59 @@ namespace BauphysikToolWPF.UI
         }
         private void Ti_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
+
+            // On custom User Input
+            if ((sender as ComboBox).SelectedIndex == -1)
                 return;
 
+            // On Selection from List
             string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == item);
             Ti_Input.Text = currentEnvVar.Value.ToString();
             UserSaved.Ti = currentEnvVar.Value;
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Rsi_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
+
+            // On custom User Input
+            if ((sender as ComboBox).SelectedIndex == -1)
                 return;
 
+            // On Selection from List
             string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == item);
             Rsi_Input.Text = currentEnvVar.Value.ToString();
             UserSaved.Rsi = currentEnvVar.Value;
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Rel_Fi_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
+            
+            // On custom User Input
+            if ((sender as ComboBox).SelectedIndex == -1)
                 return;
 
+            // On Selection from List
             string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == item);
             Rel_Fi_Input.Text = currentEnvVar.Value.ToString();
             UserSaved.Rel_Fi = currentEnvVar.Value;
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Te_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
+            
             if ((sender as ComboBox).SelectedIndex == -1) // empty selection
                 return;
 
@@ -184,13 +196,14 @@ namespace BauphysikToolWPF.UI
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == item);
             Te_Input.Text = currentEnvVar.Value.ToString();
             UserSaved.Te = currentEnvVar.Value;
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Rse_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
+            
             if ((sender as ComboBox).SelectedIndex == -1) // empty selection
                 return;
 
@@ -198,21 +211,21 @@ namespace BauphysikToolWPF.UI
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == item);
             Rse_Input.Text = currentEnvVar.Value.ToString();
             UserSaved.Rse = currentEnvVar.Value;
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Rel_Fe_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
+            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
+
             if ((sender as ComboBox).SelectedIndex == -1) // empty selection
                 return;
 
             string item = (sender as ComboBox).SelectedItem.ToString();
             EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == item);
             Rel_Fe_Input.Text = currentEnvVar.Value.ToString();
-            UserSaved.Rel_Fe = currentEnvVar.Value;
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex;
+            UserSaved.Rel_Fe = currentEnvVar.Value;            
 
             // Add m:n realtion to Database
             UpdateElementEnvVars(ElementId, currentEnvVar);
@@ -231,31 +244,31 @@ namespace BauphysikToolWPF.UI
             }
 
             //set new value as UserSaved Data
-            switch (((TextBox)sender).Name)
+            switch ((sender as TextBox).Name)
             {
                 case "Ti_Input":
                     UserSaved.Ti = Convert.ToDouble(Ti_Input.Text + userInput);
-                    Ti_ComboBox.SelectedIndex = -1; // empty selection
+                    Ti_ComboBox.SelectedIndex = -1; // set empty selection
                     return;
                 case "Te_Input":
                     UserSaved.Te = Convert.ToDouble(Te_Input.Text + userInput);
-                    Te_ComboBox.SelectedIndex = -1; // empty selection
+                    Te_ComboBox.SelectedIndex = -1; // set empty selection
                     return;
                 case "Rsi_Input":
                     UserSaved.Rsi = Convert.ToDouble(Rsi_Input.Text + userInput);
-                    Rse_ComboBox.SelectedIndex = -1; // empty selection
+                    Rsi_ComboBox.SelectedIndex = -1; // set empty selection
                     return;
                 case "Rse_Input":
                     UserSaved.Rse = Convert.ToDouble(Rse_Input.Text + userInput);
-                    Rse_ComboBox.SelectedIndex = -1; // empty selection
+                    Rse_ComboBox.SelectedIndex = -1; // set empty selection
                     return;
                 case "Rel_Fi_Input":
                     UserSaved.Rel_Fi = Convert.ToDouble(Rel_Fi_Input.Text + userInput);
-                    Rel_Fi_ComboBox.SelectedIndex = -1; // empty selection
+                    Rel_Fi_ComboBox.SelectedIndex = -1; // set empty selection
                     return;
                 case "Rel_Fe_Input":
                     UserSaved.Rel_Fe = Convert.ToDouble(Rel_Fe_Input.Text + userInput);
-                    Rel_Fe_ComboBox.SelectedIndex = -1; // empty selection
+                    Rel_Fe_ComboBox.SelectedIndex = -1; // set empty selection
                     return;
                 default: throw new ArgumentException("Could not assign value");
             }
@@ -279,6 +292,10 @@ namespace BauphysikToolWPF.UI
 
             // Redraw to show selected layer 
             new DrawLayerCanvas(layers_ListView.ItemsSource as List<Layer>, layers_Canvas);
+        }
+        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        {
+            DrawLayerCanvas.SaveAsImg(layers_Canvas);
         }
     }
 }

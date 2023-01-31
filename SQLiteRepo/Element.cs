@@ -32,6 +32,17 @@ namespace BauphysikToolWPF.SQLiteRepo
         [ManyToMany(typeof(ElementEnvVars))] // m:n relationship with EnvVars (ElementEnvVars is intermediate entity)
         public List<EnvVars> EnvVars { get; set; }
 
+        [Ignore] // TODO add as BLOB!! Or save as static Bitmap
+        public string ElementImage
+        {
+            //Image has to be "Resource" as build action
+            get
+            {
+                string imgName = "Element_" + ElementId.ToString()+".png";
+                return "/Resources/ElementImages/"+imgName;
+            }
+        }
+
         //------Konstruktor-----//
 
         // has to be default parameterless constructor when used as DB

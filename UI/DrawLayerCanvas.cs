@@ -1,8 +1,10 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
 namespace BauphysikToolWPF.UI
@@ -71,6 +73,26 @@ namespace BauphysikToolWPF.UI
                     Canvas.SetLeft(label, left);
                 }
                 right -= layerWidth; // Add new layer at left edge of previous layer
+            }
+        }
+        // Save current canvas as image, just before closing FO1_Setup Page
+        public static void SaveAsImg(Canvas canvas)
+        {
+            // Set the Target
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)canvas.RenderSize.Width, (int)canvas.RenderSize.Height, 48d, 48d, PixelFormats.Default); // Default DPI: 96d
+            bitmap.Render(canvas);
+
+            // Set Width, Height and Croppings: Create smaller image
+            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)canvas.RenderSize.Width/2, (int)canvas.RenderSize.Width/2));
+
+            BitmapEncoder pngEncoder = new PngBitmapEncoder();
+            pngEncoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
+            string path = "C:/Users/Admin/source/repos/nbungu/BauphysikToolWPF/Resources/ElementImages/";
+            string imgName = "Element_"+FO0_LandingPage.SelectedElement.ElementId+".png";
+
+            using (var fs = System.IO.File.OpenWrite(path+imgName))
+            {
+                pngEncoder.Save(fs);
             }
         }
     }

@@ -18,14 +18,27 @@
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <Style x:Key="ButtonStyleGridPanel" TargetType="{x:Type Button}">
             <EventSetter Event="MouseRightButtonUp" Handler="Button_MouseRightButtonUp"/>
+            <Setter Property="Content" Value="{Binding ElementId}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="IsEnabled" Value="True"/>
-            <Setter Property="FontSize" Value="10"/>
-            <Setter Property="HorizontalContentAlignment" Value="Right"/>
-            <Setter Property="VerticalContentAlignment" Value="Top"/>
-            <Setter Property="Padding" Value="8,8,12,8"/>
+            <!--TODO-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}">
+                            <Grid Margin="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height=".2*"/>
+                                    <RowDefinition Height=".8*"/>
+                                </Grid.RowDefinitions>
+                                <Label Grid.Row="0" Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
+                                <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>            
             <Setter Property="RenderTransform">
                 <Setter.Value>
                     <ScaleTransform ScaleX="1" ScaleY="1" />
@@ -40,21 +53,16 @@
                     </Setter>
                 </Trigger>
             </Style.Triggers>
-            <Style.Resources>
-                <Style TargetType="Border">
-                    <Setter Property="CornerRadius" Value="16"/>
-                </Style>
-            </Style.Resources>
         </Style>
 
-        <!--Here: Binding (typeof 'Element') from the ItemsSource Property-->
+        <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <DataTemplate x:Key="WrapPanelItem_DesignTemplate">
             <Grid Margin="8">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Button Grid.Row="0" x:Name="openElement_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" ContentStringFormat='ID: {0}' Click="openElement_Button_Click"/>
+                <Button Grid.Row="0" x:Name="openElement_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" Click="openElement_Button_Click"/>
                 <Label Grid.Row="1" x:Name="recentElement_Label" Content="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>
@@ -67,7 +75,7 @@
 
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="64" />
+            <RowDefinition Height="56" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
