@@ -1,3 +1,3 @@
 # BauphysikToolWPF
 
-![alt text](FO0_LandingPage.jpg "Title")
+![alt text](./Resources/MarkdownImages/FO0_LandingPage.jpg "Landing Page")
