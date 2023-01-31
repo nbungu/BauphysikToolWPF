@@ -24,8 +24,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Axis[] YAxes { get; set; }
         public SolidColorPaint TooltipTextPaint { get; set; }
         public SolidColorPaint TooltipBackgroundPaint { get; set; }
-        public SolidColorPaint LegendTextPaint { get; set; }
-        public SolidColorPaint LegendBackgroundPaint { get; set; }
         public double Ti { get; set; } = 0;
         public double Te { get; set; } = 0;
         public double Rel_Fi { get; set; } = 0;

@@ -6,10 +6,10 @@ namespace BauphysikToolWPF.UI
 {
     public static class HatchPattern
     {
-        public static DrawingBrush PlasterBrush { get; private set; }
-        public static DrawingBrush InsulationBrush { get; private set; }
-        public static DrawingBrush BricksBrush { get; private set; }
-        public static DrawingBrush ConcreteBrush { get; private set; }
+        public static DrawingBrush? PlasterBrush { get; private set; }
+        public static DrawingBrush? InsulationBrush { get; private set; }
+        public static DrawingBrush? BricksBrush { get; private set; }
+        public static DrawingBrush? ConcreteBrush { get; private set; }
 
         public static DrawingBrush GetHatchPattern(string category, double lineThickness, double rectWidth, double rectHeight)
         {
@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.UI
             switch (category)
             {
                 case "Wärmedämmung":
-                    return InsulationBrush ??= GetInsulationBrush(rectWidth, rectHeight, lineThickness);
+                    return GetInsulationBrush(rectWidth, rectHeight, lineThickness); // Draw new every time! Updates on every layer change, not only once
                 case "Mauerwerk":
                     return BricksBrush ??= GetBricksBrush(lineThickness);
                 case "Beton":

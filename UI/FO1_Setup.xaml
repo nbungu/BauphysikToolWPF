@@ -93,7 +93,7 @@
         'Binding' source is set by parent Element via 'Content' property
         -->
         <DataTemplate x:Key="LVItem_Mockup_Int">
-            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="1" CornerRadius="16">
+            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="1" CornerRadius="8">
                 <Grid Margin="10,8,10,8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="24" />
@@ -123,7 +123,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="LVItem_Mockup_Ext">
-            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="1" CornerRadius="16">
+            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="1" CornerRadius="8">
                 <Grid Margin="10,8,10,8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="24" />
@@ -181,30 +181,10 @@
             </Grid.RowDefinitions>
 
             <StackPanel Orientation="Horizontal" Grid.Row="0" Margin="0,0,0,16">
-                <Button x:Name="addLayer_Button" Style="{StaticResource ButtonStyle02_A}" Click="addLayerClicked" Margin="0,0,8,0">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="/Resources/Icons/GL_010x80_create_w.png" Stretch="Fill" Width="36" Height="36" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
-                        <TextBlock Text="Hinzufügen" VerticalAlignment="Center" Margin="4,4,16,4"/>
-                    </StackPanel>
-                </Button>
-                <Button x:Name="deleteLayer_Button" Style="{StaticResource ButtonStyle02_B}" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}" Click="deleteLayerClicked" Margin="0,0,8,0">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="/Resources/Icons/GL_011x80_delete.png" Stretch="Fill" Width="36" Height="36" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
-                        <TextBlock Text="Löschen" VerticalAlignment="Center" Margin="4,4,16,4"/>
-                    </StackPanel>
-                </Button>
-                <Button x:Name="editLayer_Button" Style="{StaticResource ButtonStyle02_B}" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}" Click="editLayerClicked" Margin="0,0,8,0">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="/Resources/Icons/GL_015x80_edit.png" Stretch="Fill" Width="36" Height="36" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
-                        <TextBlock Text="Bearbeiten" VerticalAlignment="Center" Margin="4,4,16,4"/>
-                    </StackPanel>
-                </Button>
-                <Button x:Name="deleteAllLayers_Button" Style="{StaticResource ButtonStyle02_B}" Click="deleteAllLayersClicked" Margin="0,0,8,0">
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="/Resources/Icons/GL_011x80_delete.png" Stretch="Fill" Height="36" Width="36" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
-                        <TextBlock Text="Alle löschen" VerticalAlignment="Center" Margin="4,4,16,4"/>
-                    </StackPanel>
-                </Button>
+                <Button x:Name="addLayer_Button" Style="{StaticResource ButtonStyle03_A}" Click="addLayerClicked" DataContext="{StaticResource ButtonIcon_Add_W}" Content="Hinzufügen" Margin="0,0,8,0"/>
+                <Button x:Name="deleteLayer_Button" Style="{StaticResource ButtonStyle03_B}" Click="deleteLayerClicked" DataContext="{StaticResource ButtonIcon_Delete}" Content="Löschen" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button x:Name="editLayer_Button" Style="{StaticResource ButtonStyle03_B}" Click="editLayerClicked" DataContext="{StaticResource ButtonIcon_Edit}" Content="Bearbeiten" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button x:Name="deleteAllLayer_Button" Style="{StaticResource ButtonStyle03_B}" Click="deleteAllLayersClicked" DataContext="{StaticResource ButtonIcon_Delete}" Content="Alle Löschen" Margin="0,0,8,0"/>
             </StackPanel>
 
             <!--Custom UI Element: Border as ListViewItem Mockup-->
@@ -243,7 +223,7 @@
         </Grid>
 
         <!--Bottom-->
-        <Border Grid.Row="2" Grid.ColumnSpan="2" Margin="16" CornerRadius="16" Background="{StaticResource PrimaryMediumBrush}">
+        <Border Grid.Row="2" Grid.ColumnSpan="2" Margin="16" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid Margin="16,8,16,16">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="64" />

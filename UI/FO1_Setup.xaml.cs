@@ -231,7 +231,7 @@ namespace BauphysikToolWPF.UI
             }
 
             //set new value as UserSaved Data
-            /*switch (((TextBox)sender).Name)
+            switch (((TextBox)sender).Name)
             {
                 case "Ti_Input":
                     UserSaved.Ti = Convert.ToDouble(Ti_Input.Text + userInput);
@@ -258,7 +258,7 @@ namespace BauphysikToolWPF.UI
                     Rel_Fe_ComboBox.SelectedIndex = -1; // empty selection
                     return;
                 default: throw new ArgumentException("Could not assign value");
-            }*/
+            }
         }
         private void layers_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

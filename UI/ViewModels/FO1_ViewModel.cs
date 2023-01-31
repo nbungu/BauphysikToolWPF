@@ -11,18 +11,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string Title { get; } = "Setup";
         public string ElementName { get; set; }
         public string NeighbouringEnv { get; set; }
-
-        private List<Layer> layers; //TODO remove new
-        public List<Layer> Layers //for Validation
-        {
-            get { return layers; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("null layer list specified");
-                layers = value;
-            }
-        }
+        public List<Layer> Layers { get; set; }
         public List<string> Ti_Keys { get; set; }
         public List<string> Te_Keys { get; set; }
         public List<string> Rsi_Keys { get; set; }
@@ -34,7 +23,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             //For the ListView
             Layers = FO1_Setup.Layers;
-
             //For the ComboBoxes - Get List entries and set selection 
             Ti_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList();
             Te_Keys = DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList();

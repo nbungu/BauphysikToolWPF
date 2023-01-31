@@ -23,8 +23,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Axis[] YAxes { get; set; }
         public SolidColorPaint TooltipTextPaint { get; set; }
         public SolidColorPaint TooltipBackgroundPaint { get; set; }
-        public SolidColorPaint LegendTextPaint { get; set; }
-        public SolidColorPaint LegendBackgroundPaint { get; set; }
         public FO3_ViewModel() // Called by 'InitializeComponent()' from FO3_Moisture.cs due to Class-Binding in xaml via DataContext
         {
             this.GlaserCalculation = FO3_Moisture.GlaserCalculation;

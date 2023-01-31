@@ -9,7 +9,7 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class FO3_Moisture : UserControl
     {
-        public static GlaserCalc? GlaserCalculation { get; private set; }
+        public static GlaserCalc GlaserCalculation { get; private set; }
         public FO3_Moisture()
         {
             // If Layers or EnvVars are not set or have changed, update class variables
