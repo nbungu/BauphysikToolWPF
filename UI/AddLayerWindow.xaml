@@ -118,6 +118,7 @@
                       ItemsSource="{Binding DistinctCategories}"
                       ItemTemplate="{StaticResource CategoriesListViewTemplate}"
                       SelectionMode="Single"
+                      ScrollViewer.CanContentScroll="False"
                       Grid.Row="1"
                       SelectionChanged="collectionView_Categories_SelectionChanged">
             </ListView>
@@ -132,7 +133,7 @@
 
             <Label Content="Material Auswahl" FontWeight="Bold" FontSize="14" VerticalContentAlignment="Center"/>
 
-            <Grid Grid.Row="1" Margin="0, 0, 0, 8">
+            <Grid Grid.Row="1" Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width=".7*"/>
                     <ColumnDefinition Width=".3*"/>
@@ -143,7 +144,9 @@
             </Grid>
 
             <ListView x:Name="collectionView_Materials"
-                      Grid.Row="2"        
+                      Grid.Row="2"       
+                      ScrollViewer.CanContentScroll="False"
+                      SelectionMode="Single"
                       ItemTemplate="{StaticResource MaterialListViewTemplate}"/>
                   <!--ItemsSource gets set by backend, based on selected category-->
         </Grid>

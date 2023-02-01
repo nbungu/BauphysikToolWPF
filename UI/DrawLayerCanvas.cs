@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
+using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -51,7 +52,7 @@ namespace BauphysikToolWPF.UI
                 // Draw hatch pattern rectangle
                 Rectangle hatchPatternRect = new Rectangle()
                 {
-                    Width = layerWidth - 1,
+                    Width = layerWidth, // -1 to leave small gap between hatching and layer border
                     Height = canvas.Height,
                     Fill = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, layerWidth, canvas.Height),
                     Opacity = 0.6
@@ -87,7 +88,7 @@ namespace BauphysikToolWPF.UI
 
             BitmapEncoder pngEncoder = new PngBitmapEncoder();
             pngEncoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
-            string path = "C:/Users/Admin/source/repos/nbungu/BauphysikToolWPF/Resources/ElementImages/";
+            string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/";
             string imgName = "Element_"+FO0_LandingPage.SelectedElement.ElementId+".png";
 
             using (var fs = System.IO.File.OpenWrite(path+imgName))

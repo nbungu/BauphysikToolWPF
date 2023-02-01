@@ -33,7 +33,7 @@
                                     <RowDefinition Height=".8*"/>
                                 </Grid.RowDefinitions>
                                 <Label Grid.Row="0" Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
-                                <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}"/>
+                                <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -51,6 +51,9 @@
                             <ScaleTransform ScaleX=".96" ScaleY=".96" />
                         </Setter.Value>
                     </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -80,11 +83,13 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="200" MaxWidth="320"/>
-            <ColumnDefinition Width=".8*"/>
+            <ColumnDefinition Width=".8*" MinWidth="320"/>
         </Grid.ColumnDefinitions>
 
-        <Rectangle Grid.Row="0" Grid.ColumnSpan="2" Fill="{StaticResource PrimaryDarkBrush}"/>
-
+        <Rectangle Grid.ColumnSpan="2" Fill="{StaticResource PrimaryDarkBrush}"/>
+        <Label Content="BauphysikTool" FontSize="24" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="White"/>
+        <Image Grid.Column="1" Grid.RowSpan="2" Width="80" Height="80" Source="../Ordner_Icon.ico" Margin="16" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+        
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
             <Button x:Name="createNewElement_Button" Content="Bauteil erstellen" Style="{StaticResource ButtonStyle02_A}" Click="createNewElement_Button_Click" Margin="0,0,0,16"/>
             <Button x:Name="openElement_Button" Content="Öffnen" Style="{StaticResource ButtonStyle02_B}" Margin="0,0,0,16"/>
@@ -123,9 +128,6 @@
                     </ContextMenu>
                 </ItemsControl.Resources>
             </ItemsControl>
-
-            <Button Grid.Row="1" Grid.Column="2" Content="Weiter" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Bottom" Margin="16"/>
         </Grid>
-
     </Grid>
 </UserControl>

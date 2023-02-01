@@ -105,7 +105,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
             //Starting from inner side
             double widthPosition = TotalElementWidth;
-            double value = Ti - Rsi * QValue; // Tsi
+            double value = Math.Round(Ti - Rsi * QValue,2); // Tsi
             temp_List.Add(new KeyValuePair<double, double>(widthPosition, value)); // key, value
 
             for (int i = 0; i < Layers.Count; i++)
@@ -115,10 +115,12 @@ namespace BauphysikToolWPF.ComponentCalculations
                 temp_List.Add(new KeyValuePair<double, double>(currentWidthPosition, currentValue));
                 widthPosition = currentWidthPosition;
             }
+            return temp_List;
 
-            if (widthPosition == 0)
+            // TODO implement 
+            /*if (widthPosition == 0)
                 return temp_List;
-            else throw new ArgumentOutOfRangeException("calculation failed");
+            else throw new ArgumentOutOfRangeException("calculation failed");*/
         }
         private double GetfRsiValue()
         {

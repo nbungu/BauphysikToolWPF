@@ -83,18 +83,20 @@
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Orientation="Vertical" Grid.Column="0">
-                <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <controls:EquationLabel BaseText="R" SubscriptText="T" Value="{Binding StationaryTempCalculation.RTotal}" Unit="m²K/W" Height="28"/>
-                <controls:EquationLabel BaseText="U" Value="{Binding StationaryTempCalculation.UValue}" Unit="W/m²K" Height="28"/>
-                <controls:EquationLabel BaseText="q" Value="{Binding StationaryTempCalculation.QValue}" Unit="W/m²" Height="28"/>
-                <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding StationaryTempCalculation.FRsi}" Height="28"/>
-                <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
+                    <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
+                    <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
+                    <controls:EquationLabel BaseText="R" SubscriptText="T" Value="{Binding StationaryTempCalculation.RTotal}" Unit="m²K/W" Height="28"/>
+                    <controls:EquationLabel BaseText="U" Value="{Binding StationaryTempCalculation.UValue}" Unit="W/m²K" Height="28"/>
+                    <controls:EquationLabel BaseText="q" Value="{Binding StationaryTempCalculation.QValue}" Unit="W/m²" Height="28"/>
+                    <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding StationaryTempCalculation.LayerTemps[0].Value}" Unit="°C" Height="28"/>
+                    <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding StationaryTempCalculation.FRsi}" Height="28"/>
+                    <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
                 </StackPanel>            
 
                 <StackPanel Orientation="Vertical" Grid.Column="1">
                     <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
                     <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
+                    <Label Content="tbd" FontSize="14" Height="28"/>
                     <Label Content="tbd" FontSize="14" Height="28"/>
                     <Label Content="tbd" FontSize="14" Height="28"/>
                     <Label Content="tbd" FontSize="14" Height="28"/>
