@@ -33,7 +33,7 @@
                                     <RowDefinition Height=".8*"/>
                                 </Grid.RowDefinitions>
                                 <Label Grid.Row="0" Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
-                                <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}"/>
+                                <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -52,6 +52,9 @@
                         </Setter.Value>
                     </Setter>
                 </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
             </Style.Triggers>
         </Style>
 
@@ -62,7 +65,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Button Grid.Row="0" x:Name="openElement_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" Click="openElement_Button_Click"/>
+                <Button Grid.Row="0" x:Name="elementPanel_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" Click="elementPanel_Button_Click"/>
                 <Label Grid.Row="1" x:Name="recentElement_Label" Content="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>
@@ -80,14 +83,16 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="200" MaxWidth="320"/>
-            <ColumnDefinition Width=".8*"/>
+            <ColumnDefinition Width=".8*" MinWidth="320"/>
         </Grid.ColumnDefinitions>
 
-        <Rectangle Grid.Row="0" Grid.ColumnSpan="2" Fill="{StaticResource PrimaryDarkBrush}"/>
-
+        <Rectangle Grid.ColumnSpan="2" Fill="{StaticResource PrimaryDarkBrush}"/>
+        <Label Content="BauphysikTool" FontSize="24" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="White"/>
+        <Image Grid.Column="1" Grid.RowSpan="2" Width="80" Height="80" Source="../Ordner_Icon.ico" Margin="16" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+        
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
             <Button x:Name="createNewElement_Button" Content="Bauteil erstellen" Style="{StaticResource ButtonStyle02_A}" Click="createNewElement_Button_Click" Margin="0,0,0,16"/>
-            <Button x:Name="openElement_Button" Content="Öffnen" Style="{StaticResource ButtonStyle02_B}" Margin="0,0,0,16"/>
+            <Button Content="Öffnen" Style="{StaticResource ButtonStyle02_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
@@ -118,14 +123,11 @@
                           BorderThickness="0">
                 <ItemsControl.Resources>
                     <ContextMenu x:Key="ButtonContextMenu" x:Name="ButtonContextMenu">
-                        <MenuItem x:Name="rename_MenuItem" Header="Umbenennen" Click="rename_MenuItem_Click"/>
+                        <MenuItem x:Name="edit_MenuItem" Header="Bearbeiten" Click="edit_MenuItem_Click"/>
                         <MenuItem x:Name="delete_MenuItem" Header="Löschen" Click="delete_MenuItem_Click"/>
                     </ContextMenu>
                 </ItemsControl.Resources>
             </ItemsControl>
-
-            <Button Grid.Row="1" Grid.Column="2" Content="Weiter" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Bottom" Margin="16"/>
         </Grid>
-
     </Grid>
 </UserControl>

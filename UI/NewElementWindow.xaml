@@ -30,7 +30,7 @@
             <ComboBox x:Name="construcitonType_Picker" VerticalContentAlignment="Center" FontSize="14" ItemsSource="{Binding Types}" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
-        <Button x:Name="createElement_Button" Grid.Row="2" Margin="16" Content="Übernehmen" Click="createElement_Button_Click" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Center"/>
+        <Button x:Name="apply_Button" Grid.Row="2" Margin="16" Content="Übernehmen" Click="apply_Button_Click" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Center"/>
 
     </Grid>
 </Window>

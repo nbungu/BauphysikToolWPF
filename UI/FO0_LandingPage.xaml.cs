@@ -37,7 +37,8 @@ namespace BauphysikToolWPF.UI
             //window.Show();       // Open as modeless
         }
 
-        private void openElement_Button_Click(object sender, RoutedEventArgs e)
+        // Click on existing Element from WrapPanel
+        private void elementPanel_Button_Click(object sender, RoutedEventArgs e)
         {
             int elementId = Convert.ToInt32((sender as Button).Content);
             SelectedElement = DatabaseAccess.QueryElementsById(elementId);
@@ -61,11 +62,20 @@ namespace BauphysikToolWPF.UI
             int elementId = Convert.ToInt16(button.Content);
             DatabaseAccess.DeleteElementById(elementId);
         }
-        // Context Menu - Rename
-        private void rename_MenuItem_Click(object sender, RoutedEventArgs e)
+        // Context Menu - Edit
+        private void edit_MenuItem_Click(object sender, RoutedEventArgs e)
         {
+            MenuItem menuItem = sender as MenuItem;
+            ContextMenu contextMenu = menuItem.Parent as ContextMenu;
+            Button button = contextMenu.PlacementTarget as Button;
+            int elementId = Convert.ToInt16(button.Content);
+            Element editSelectedElem = DatabaseAccess.QueryElementsById(elementId);
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            var window = new NewElementWindow(editSelectedElem);
 
+            window.ShowDialog();   // Open as modal (Parent window pauses, waiting for the window to be closed)
         }
+
 
         private void closeApp_Button_Click(object sender, RoutedEventArgs e)
         {
