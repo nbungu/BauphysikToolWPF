@@ -1,6 +1,8 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
@@ -79,8 +81,10 @@ namespace BauphysikToolWPF.UI
 
         // Save current canvas as image, just before closing FO1_Setup Page
         // Optional Parameter Path
-        public static void SaveAsImg(Canvas target, string path = "C:/Users/Admin/source/repos/nbungu/BauphysikToolWPF/Resources/ElementImages/")
+        public static void SaveAsImg(Canvas target, string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/")
         {
+            //string path2 = Environment.CurrentDirectory; //"C:\\Users\\arnes\\source\\repos\\BauphysikToolWPF\\bin\\Debug\\net6.0-windows"
+
             // Set the Bitmap size and target to save
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 48d, 48d, PixelFormats.Default); // Default DPI: 96d
             bitmap.Render(target);

@@ -99,8 +99,8 @@
                     <Label Content="tbd" FontSize="14" Height="28"/>
                     <Label Content="tbd" FontSize="14" Height="28"/>
                     <Label Content="tbd" FontSize="14" Height="28"/>
-                    <Label Content="tbd" FontSize="14" Height="28"/>
-                    <Label Content="> 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
+                    <Label Content="{Binding StationaryTempCalculation.Tsi_min}" ContentStringFormat="≥ {0} °C" FontSize="14" Height="28"/>
+                    <Label Content="≥ 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
                     <Label Content="{Binding StationaryTempCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
                 </StackPanel>
             </Grid>

@@ -55,7 +55,6 @@ namespace BauphysikToolWPF.UI
                 {
                     this.element.Name = elementName;
                     this.element.ConstructionTypeId = constrId;
-
                     DatabaseAccess.UpdateElement(this.element);
                     this.Close();
                 }

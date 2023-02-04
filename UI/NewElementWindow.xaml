@@ -6,7 +6,7 @@
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:local="clr-namespace:BauphysikToolWPF.UI"
         mc:Ignorable="d"
-        Title="NewElementWindow" Height="248" Width="320" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False">
+        Title="Bauteildaten festlegen" Height="248" Width="320" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="ToolWindow">
 
     <Window.DataContext>
         <!-- globally sets a reference for Bindings in this xaml-->

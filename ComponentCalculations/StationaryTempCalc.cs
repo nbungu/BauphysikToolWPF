@@ -37,6 +37,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double QValue { get; private set; } = 0;
         public double FRsi { get; private set; } = 0;
         public double PhiMax { get; private set; } = 0;
+        public double Tsi_min { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
         public double Ti { get; private set; } = UserSaved.Ti;
         public double Te { get; private set; } = UserSaved.Te;
@@ -60,6 +61,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             LayerTemps = GetLayerTemps();   // Bsp. S.33
             FRsi = GetfRsiValue();          // Gl. 3-1; S.36
             PhiMax = GetMaxRelF();          // Gl. 3-3; S.37
+            Tsi_min = GetTsiMin();          // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7
         }
 
         // Methods
@@ -130,15 +132,22 @@ namespace BauphysikToolWPF.ComponentCalculations
 
             return Math.Round((LayerTemps.First().Value - Te) / (Ti - Te), 2);
         }
+        private double GetTsiMin()
+        {
+            return Math.Round(0.7*(Ti-Te)+Te, 2);
+        }
 
         private double GetMaxRelF() //maximal zulässige Raumluftfeuchte
         {
-            if (FRsi * (Ti - Te) >= 0 && FRsi * (Ti - Te) <= 30)
+           /* if (FRsi * (Ti - Te) >= 0 && FRsi * (Ti - Te) <= 30)
             {
                 double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (Ti - Te) + Te) / (109.8 + Ti), 8.02) * 100;
                 return Math.Round(phiMax, 1);
             }
             throw new ArgumentException("Randbedingung zur Berechnung nicht erfüllt."); //TODO Rechnung erlauben, jedoch Hinweis entsprechend einblenden
+           */
+            double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (Ti - Te) + Te) / (109.8 + Ti), 8.02) * 100;
+            return Math.Round(phiMax, 1);
         }
 
         /* Hardcoded example:

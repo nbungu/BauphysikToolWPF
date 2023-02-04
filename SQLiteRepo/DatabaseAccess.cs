@@ -131,7 +131,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void UpdateElement(Element element)
         {
-            sqlConn.UpdateWithChildren(element);
+            sqlConn.Update(element);
             OnElementsChanged();
         }
 
