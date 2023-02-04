@@ -1,6 +1,8 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
@@ -76,24 +78,28 @@ namespace BauphysikToolWPF.UI
                 right -= layerWidth; // Add new layer at left edge of previous layer
             }
         }
+
         // Save current canvas as image, just before closing FO1_Setup Page
-        public static void SaveAsImg(Canvas canvas)
+        // Optional Parameter Path
+        public static void SaveAsImg(Canvas target, string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/")
         {
-            // Set the Target
-            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)canvas.RenderSize.Width, (int)canvas.RenderSize.Height, 48d, 48d, PixelFormats.Default); // Default DPI: 96d
-            bitmap.Render(canvas);
+            //string path2 = Environment.CurrentDirectory; //"C:\\Users\\arnes\\source\\repos\\BauphysikToolWPF\\bin\\Debug\\net6.0-windows"
+
+            // Set the Bitmap size and target to save
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 48d, 48d, PixelFormats.Default); // Default DPI: 96d
+            bitmap.Render(target);
 
             // Set Width, Height and Croppings: Create smaller image
-            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)canvas.RenderSize.Width/2, (int)canvas.RenderSize.Width/2));
+            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)target.RenderSize.Width/2, (int)target.RenderSize.Width/2));
 
             BitmapEncoder pngEncoder = new PngBitmapEncoder();
             pngEncoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
-            string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/";
             string imgName = "Element_"+FO0_LandingPage.SelectedElement.ElementId+".png";
 
-            using (var fs = System.IO.File.OpenWrite(path+imgName))
+            // use using to call Dispose() of unmanaged resources. GC cannot manage this
+            using (var fileStream = System.IO.File.OpenWrite(path+imgName))
             {
-                pngEncoder.Save(fs);
+                pngEncoder.Save(fileStream);
             }
         }
     }

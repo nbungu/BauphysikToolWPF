@@ -65,7 +65,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Button Grid.Row="0" x:Name="openElement_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" Click="openElement_Button_Click"/>
+                <Button Grid.Row="0" x:Name="elementPanel_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" Click="elementPanel_Button_Click"/>
                 <Label Grid.Row="1" x:Name="recentElement_Label" Content="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>
@@ -87,12 +87,12 @@
         </Grid.ColumnDefinitions>
 
         <Rectangle Grid.ColumnSpan="2" Fill="{StaticResource PrimaryDarkBrush}"/>
-        <Label Content="BauphysikTool" FontSize="24" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="White"/>
+        <Label Grid.ColumnSpan="2" Content="Bauteilkatalog" FontSize="24" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="White"/>
         <Image Grid.Column="1" Grid.RowSpan="2" Width="80" Height="80" Source="../Ordner_Icon.ico" Margin="16" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
             <Button x:Name="createNewElement_Button" Content="Bauteil erstellen" Style="{StaticResource ButtonStyle02_A}" Click="createNewElement_Button_Click" Margin="0,0,0,16"/>
-            <Button x:Name="openElement_Button" Content="Öffnen" Style="{StaticResource ButtonStyle02_B}" Margin="0,0,0,16"/>
+            <Button Content="Öffnen" Style="{StaticResource ButtonStyle02_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
@@ -122,9 +122,17 @@
                           Background="Transparent"                          
                           BorderThickness="0">
                 <ItemsControl.Resources>
-                    <ContextMenu x:Key="ButtonContextMenu" x:Name="ButtonContextMenu">
-                        <MenuItem x:Name="rename_MenuItem" Header="Umbenennen" Click="rename_MenuItem_Click"/>
-                        <MenuItem x:Name="delete_MenuItem" Header="Löschen" Click="delete_MenuItem_Click"/>
+                    <ContextMenu x:Key="WrapPanel_ContextMenu" x:Name="WrapPanel_ContextMenu" Style="{StaticResource ContextMenuStyle01}" ItemContainerStyle="{StaticResource ContextMenuItemStyle01}">
+                        <MenuItem x:Name="edit_MenuItem" Header="Bearbeiten" Click="edit_MenuItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource ButtonIcon_Edit}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="delete_MenuItem" Header="Löschen" Click="delete_MenuItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource ButtonIcon_Cancel}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
                     </ContextMenu>
                 </ItemsControl.Resources>
             </ItemsControl>

@@ -37,7 +37,8 @@ namespace BauphysikToolWPF.UI
             //window.Show();       // Open as modeless
         }
 
-        private void openElement_Button_Click(object sender, RoutedEventArgs e)
+        // Click on existing Element from WrapPanel
+        private void elementPanel_Button_Click(object sender, RoutedEventArgs e)
         {
             int elementId = Convert.ToInt32((sender as Button).Content);
             SelectedElement = DatabaseAccess.QueryElementsById(elementId);
@@ -48,7 +49,7 @@ namespace BauphysikToolWPF.UI
         private void Button_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
         {
             Button button = sender as Button;
-            ContextMenu contextMenu = element_ItemsControl.FindResource("ButtonContextMenu") as ContextMenu;
+            ContextMenu contextMenu = element_ItemsControl.FindResource("WrapPanel_ContextMenu") as ContextMenu;
             contextMenu.PlacementTarget = button;
             contextMenu.IsOpen = true;
         }
@@ -61,11 +62,20 @@ namespace BauphysikToolWPF.UI
             int elementId = Convert.ToInt16(button.Content);
             DatabaseAccess.DeleteElementById(elementId);
         }
-        // Context Menu - Rename
-        private void rename_MenuItem_Click(object sender, RoutedEventArgs e)
+        // Context Menu - Edit
+        private void edit_MenuItem_Click(object sender, RoutedEventArgs e)
         {
+            MenuItem menuItem = sender as MenuItem;
+            ContextMenu contextMenu = menuItem.Parent as ContextMenu;
+            Button button = contextMenu.PlacementTarget as Button;
+            int elementId = Convert.ToInt16(button.Content);
+            Element editElement = DatabaseAccess.QueryElementsById(elementId);
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            var window = new NewElementWindow(editElement);
 
+            window.ShowDialog();   // Open as modal (Parent window pauses, waiting for the window to be closed)
         }
+
 
         private void closeApp_Button_Click(object sender, RoutedEventArgs e)
         {

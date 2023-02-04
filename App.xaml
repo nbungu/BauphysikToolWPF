@@ -19,10 +19,12 @@
         <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#BEE6FD"/>
 
         <!--Button Icons source paths-->
-        <system:String x:Key="ButtonIcon_Add_B">/Resources/Icons/GL_010x80_create_b.png</system:String>
-        <system:String x:Key="ButtonIcon_Add_W">/Resources/Icons/GL_010x80_create_w.png</system:String>
-        <system:String x:Key="ButtonIcon_Delete">/Resources/Icons/GL_011x80_delete.png</system:String>
-        <system:String x:Key="ButtonIcon_Edit">/Resources/Icons/GL_015x80_edit.png</system:String>
+        <BitmapImage x:Key="ButtonIcon_Add_B" UriSource="/Resources/Icons/GL_010x80_create_b.png"/>
+        <BitmapImage x:Key="ButtonIcon_Add_W" UriSource="/Resources/Icons/GL_010x80_create_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Delete" UriSource="/Resources/Icons/GL_011x80_delete.png"/>
+        <BitmapImage x:Key="ButtonIcon_Edit" UriSource="/Resources/Icons/GL_015x80_edit.png"/>
+        <BitmapImage x:Key="ButtonIcon_Cancel" UriSource="/Resources/Icons/GL_005x80_cancel.png"/>
+
 
         <!--Custom TextBox for Subscript Text with Equation-->
         <Style TargetType="{x:Type controls:EquationLabel}">
@@ -79,6 +81,73 @@
                 </Setter.Value>
             </Setter>
         </Style>
+        
+        
+        
+        <!--Custom ContextMenu Style: Used in ContextMenu as 'Style'-->
+        <Style x:Key="ContextMenuStyle01" TargetType="{x:Type ContextMenu}">
+            <Setter Property="SnapsToDevicePixels" Value="True" />
+            <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Grid.IsSharedSizeScope" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="{TemplateBinding Background}" Padding="4" CornerRadius="8" BorderThickness="1">
+                            <!--Force MenuItems to set the size of parent. If omitted, ContextMenu has size 0x0-->
+                            <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--ContextMenu entry (MenuItem) appearance and behaviour: Used in ContextMenu as 'ItemContainerStyle' -->
+        <Style x:Key="ContextMenuItemStyle01" TargetType="{x:Type MenuItem}">
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="MinWidth" Value="160"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type MenuItem}">
+                        <Border x:Name="menuItem_Border"
+                            CornerRadius="4"
+                            Padding="{TemplateBinding Padding}"
+                            Background="{TemplateBinding Background}"
+                            SnapsToDevicePixels="true">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter Content="{TemplateBinding Icon}" MaxHeight="{TemplateBinding MinHeight}" MaxWidth="{TemplateBinding MinHeight}"/>
+                                <TextBlock Grid.Column="1" Text="{TemplateBinding Header}" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                            </Grid>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
 
         <!--Custom Button01: Test-->
         <Style x:Key="ButtonStyle01" TargetType="{x:Type Button}">

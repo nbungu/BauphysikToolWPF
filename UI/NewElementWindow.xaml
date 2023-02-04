@@ -6,7 +6,7 @@
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:local="clr-namespace:BauphysikToolWPF.UI"
         mc:Ignorable="d"
-        Title="NewElementWindow" Height="248" Width="320" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False">
+        Title="Bauteildaten festlegen" Height="248" Width="320" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="ToolWindow">
 
     <Window.DataContext>
         <!-- globally sets a reference for Bindings in this xaml-->
@@ -30,7 +30,7 @@
             <ComboBox x:Name="construcitonType_Picker" VerticalContentAlignment="Center" FontSize="14" ItemsSource="{Binding Types}" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
-        <Button x:Name="createElement_Button" Grid.Row="2" Margin="16" Content="Übernehmen" Click="createElement_Button_Click" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Center"/>
+        <Button x:Name="apply_Button" Grid.Row="2" Margin="16" Content="Übernehmen" Click="apply_Button_Click" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Center"/>
 
     </Grid>
 </Window>
