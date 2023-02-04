@@ -39,22 +39,21 @@ namespace BauphysikToolWPF.ComponentCalculations
             List<KeyValuePair<double, double>> p_sat_List = new List<KeyValuePair<double, double>>(); //new Methode(): Konstruktoren aufruf
 
             //Starting from inner side
-            double widthPosition = TotalSdWidth;
-
+            double widthPosition = 0;
             for (int i = 0; i < LayerTemps.Count; i++)
             {
-                double currentWidthPosition = Math.Round(widthPosition, 3);
                 double currentValue = P_sat(LayerTemps[i].Value);
-                p_sat_List.Add(new KeyValuePair<double, double>(currentWidthPosition, currentValue));
+                p_sat_List.Add(new KeyValuePair<double, double>(widthPosition, currentValue));
 
                 if (i == Layers.Count)
                     break; //avoid index out of range exception on Layers[i]: Has 1 less item than in LayerTemps[i]
-                widthPosition -= Layers[i].Sd_Thickness;
+
+                widthPosition += Layers[i].Sd_Thickness;
             }
 
-            if (Math.Round(widthPosition, 3) == 0)
+            if (Math.Round(widthPosition, 3) == TotalSdWidth)
                 return p_sat_List;
-            else throw new ArgumentOutOfRangeException("calculation failed");
+            else throw new ArgumentOutOfRangeException("calculation failed: sd_width doesn't add up!");
         }
         private List<KeyValuePair<double, double>> GetLayerP()
         {
@@ -62,8 +61,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             double pe = Math.Round((Rel_Fe / 100) * P_sat(Te), 1);
             List<KeyValuePair<double, double>> p_List = new List<KeyValuePair<double, double>>()
             {
-                new KeyValuePair<double, double>(TotalSdWidth, pi),
-                new KeyValuePair<double, double>(0, pe)
+                new KeyValuePair<double, double>(0, pi),
+                new KeyValuePair<double, double>(TotalSdWidth, pe)
             };
             return p_List;
         }

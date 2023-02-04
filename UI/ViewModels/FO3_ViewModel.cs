@@ -44,15 +44,13 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             RectangularSection[] rects = new RectangularSection[GlaserCalculation.Layers.Count];
 
-            double fullWidth = GlaserCalculation.TotalSdWidth;
-            double right = fullWidth;
-
             //TODO: Round values of left and right
+            double left = 0;
             foreach (Layer layer in GlaserCalculation.Layers)
             {
                 int position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.Sd_Thickness;
-                double left = right - layerWidth; // start drawing from right side (beginning with INSIDE Layer, which is first list element)
+                double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
 
                 // Set properties of the layer rectangle at the desired position
                 rects[position] = new RectangularSection
@@ -68,7 +66,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     },
                     ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
                 };
-                right -= layerWidth; // Add new layer at left edge of previous layer
+                left = right; // Add new layer at left edge of previous layer
             }
             return rects;
         }

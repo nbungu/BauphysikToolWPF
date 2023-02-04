@@ -52,14 +52,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             RectangularSection[] rects = new RectangularSection[StationaryTempCalculation.Layers.Count];
 
-            double fullWidth = StationaryTempCalculation.TotalElementWidth;
-            double right = fullWidth;
-
+            double left = 0;
             foreach (Layer layer in StationaryTempCalculation.Layers)
             {
                 int position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.LayerThickness;
-                double left = right - layerWidth; // start drawing from right side (beginning with INSIDE Layer, which is first list element)
+                double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
 
                 // Set properties of the layer rectangle at the desired position
                 rects[position] = new RectangularSection
@@ -75,7 +73,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     },
                     ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
                 };
-                right -= layerWidth; // Add new layer at left edge of previous layer
+                left = right; // Add new layer at left edge of previous layer
             }
 
             //TODO: is hardcoded
@@ -104,15 +102,16 @@ namespace BauphysikToolWPF.UI.ViewModels
             double tsi_Pos = StationaryTempCalculation.LayerTemps.First().Key;
             double tsi = StationaryTempCalculation.LayerTemps.First().Value;
             double deltaTi = Math.Abs(Ti - tsi);
+
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
                 {
-                    new ObservablePoint(tsi_Pos+0.8, tsi-0.9*deltaTi),
+                    new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
                     null, // cuts the line between the points
                     new ObservablePoint(tsi_Pos, tsi),
-                    new ObservablePoint(tsi_Pos+0.8, tsi+0.9*deltaTi),
-                    new ObservablePoint(tsi_Pos+2, Ti)
+                    new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
+                    new ObservablePoint(tsi_Pos-2, Ti)
                 },
                 Fill = null,
                 LineSmoothness = 0.8,
@@ -154,12 +153,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 Values = new ObservablePoint[]
                 {
-                    new ObservablePoint(tse_Pos-2, Te),
-                    new ObservablePoint(tse_Pos-0.8, tse-0.9*deltaTe),
+                    new ObservablePoint(tse_Pos+2, Te),
+                    new ObservablePoint(tse_Pos+0.8, tse-0.9*deltaTe),
                     new ObservablePoint(tse_Pos, tse),
                     null, // cuts the line between the points
-                    new ObservablePoint(tse_Pos-0.8, tse+0.9*deltaTe),
-
+                    new ObservablePoint(tse_Pos+0.8, tse+0.9*deltaTe),
                 },
                 Fill = null,
                 LineSmoothness = 0.8,
