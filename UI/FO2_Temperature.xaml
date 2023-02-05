@@ -8,7 +8,7 @@
       xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
       xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800">
+      d:DesignHeight="700" d:DesignWidth="1200">
 
     <!--Main Reference for all Bindings used inside this UserControl-->
     <UserControl.DataContext>
@@ -102,38 +102,38 @@
         <!--Bottom Right-->
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="40"/>
-                <ColumnDefinition Width="120"/>
-                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="48"/>
+                <ColumnDefinition Width="128"/>
+                <ColumnDefinition Width="128"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Vertical" Grid.Column="0">
                 <Label Content="" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/> <!--Placeholder-->
-                <Line X2="40" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
-                <Image x:Name="R_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="28" Height="28"/>
-                <Image x:Name="U_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="28" Height="28"/>
-                <Image x:Name="q_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="28" Height="28"/>
-                <Line X2="40" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
+                <Line X2="48" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
+                <Image x:Name="R_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="32" Margin="-2"/>
+                <Image x:Name="U_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="32" Margin="-2"/>
+                <Image x:Name="q_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="32" Margin="-2"/>
+                <Line X2="48" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
 
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="1">
                 <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X2="120" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
+                <Line X2="128" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
                 <controls:EquationLabel BaseText="R" SubscriptText="T" Value="{Binding StationaryTempCalculation.RTotal}" Unit="m²K/W" Height="28"/>
                 <controls:EquationLabel BaseText="U" Value="{Binding StationaryTempCalculation.UValue}" Unit="W/m²K" Height="28"/>
                 <controls:EquationLabel BaseText="q" Value="{Binding StationaryTempCalculation.QValue}" Unit="W/m²" Height="28"/>
-                <Line X2="120" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
+                <Line X2="128" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
                 <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding StationaryTempCalculation.LayerTemps[0].Value}" Unit="°C" Height="28"/>
                 <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding StationaryTempCalculation.FRsi}" Height="28"/>
                 <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="2">
                 <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X2="120" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
+                <Line X2="128" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
                 <Label Content="tbd" FontSize="14" Height="28"/>
                 <Label Content="tbd" FontSize="14" Height="28"/>
                 <Label Content="tbd" FontSize="14" Height="28"/>
-                <Line X2="120" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
+                <Line X2="128" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
                 <Label Content="{Binding StationaryTempCalculation.Tsi_min}" ContentStringFormat="≥ {0} °C" FontSize="14" Height="28"/>
                 <Label Content="≥ 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
                 <Label Content="{Binding StationaryTempCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
