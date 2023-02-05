@@ -15,6 +15,30 @@
         <vm:FO2_ViewModel/>
     </UserControl.DataContext>
 
+    <UserControl.Resources>
+        <!--Dynamic Image Source-->
+        <Style x:Key="DynamicIconSource" TargetType="{x:Type Image}">
+            <Setter Property="Source" Value="{StaticResource ButtonIcon_Cancel}"/>
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="R_Value_StatusImage" />
+                        <Condition Binding="{Binding IsRValueOK}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Source" Value="{StaticResource ButtonIcon_OK_green}" />
+                </MultiDataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="U_Value_StatusImage" />
+                        <Condition Binding="{Binding IsUValueOK}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Source" Value="{StaticResource ButtonIcon_OK_green}" />
+                </MultiDataTrigger>
+                <!--TODO: Add missing fields-->
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
     <!--Main Grid 2x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
@@ -77,34 +101,44 @@
 
         <!--Bottom Right-->
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width=".5*"/>
-                    <ColumnDefinition Width=".5*"/>
-                </Grid.ColumnDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="120"/>
+                <ColumnDefinition Width="120"/>
+            </Grid.ColumnDefinitions>
 
-                <StackPanel Orientation="Vertical" Grid.Column="0">
-                    <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
-                    <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                    <controls:EquationLabel BaseText="R" SubscriptText="T" Value="{Binding StationaryTempCalculation.RTotal}" Unit="m²K/W" Height="28"/>
-                    <controls:EquationLabel BaseText="U" Value="{Binding StationaryTempCalculation.UValue}" Unit="W/m²K" Height="28"/>
-                    <controls:EquationLabel BaseText="q" Value="{Binding StationaryTempCalculation.QValue}" Unit="W/m²" Height="28"/>
-                    <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding StationaryTempCalculation.LayerTemps[0].Value}" Unit="°C" Height="28"/>
-                    <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding StationaryTempCalculation.FRsi}" Height="28"/>
-                    <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
-                </StackPanel>            
+            <StackPanel Orientation="Vertical" Grid.Column="0">
+                <Label Content="" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/> <!--Placeholder-->
+                <Line X2="40" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
+                <Image x:Name="R_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="28" Height="28"/>
+                <Image x:Name="U_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="28" Height="28"/>
+                <Image x:Name="q_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="28" Height="28"/>
+                <Line X2="40" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
 
-                <StackPanel Orientation="Vertical" Grid.Column="1">
-                    <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
-                    <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                    <Label Content="tbd" FontSize="14" Height="28"/>
-                    <Label Content="tbd" FontSize="14" Height="28"/>
-                    <Label Content="tbd" FontSize="14" Height="28"/>
-                    <Label Content="{Binding StationaryTempCalculation.Tsi_min}" ContentStringFormat="≥ {0} °C" FontSize="14" Height="28"/>
-                    <Label Content="≥ 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
-                    <Label Content="{Binding StationaryTempCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
-                </StackPanel>
-            </Grid>
-
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Grid.Column="1">
+                <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
+                <Line X2="120" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
+                <controls:EquationLabel BaseText="R" SubscriptText="T" Value="{Binding StationaryTempCalculation.RTotal}" Unit="m²K/W" Height="28"/>
+                <controls:EquationLabel BaseText="U" Value="{Binding StationaryTempCalculation.UValue}" Unit="W/m²K" Height="28"/>
+                <controls:EquationLabel BaseText="q" Value="{Binding StationaryTempCalculation.QValue}" Unit="W/m²" Height="28"/>
+                <Line X2="120" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
+                <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding StationaryTempCalculation.LayerTemps[0].Value}" Unit="°C" Height="28"/>
+                <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding StationaryTempCalculation.FRsi}" Height="28"/>
+                <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
+            </StackPanel>
+            <StackPanel Orientation="Vertical" Grid.Column="2">
+                <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
+                <Line X2="120" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
+                <Label Content="tbd" FontSize="14" Height="28"/>
+                <Label Content="tbd" FontSize="14" Height="28"/>
+                <Label Content="tbd" FontSize="14" Height="28"/>
+                <Line X2="120" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
+                <Label Content="{Binding StationaryTempCalculation.Tsi_min}" ContentStringFormat="≥ {0} °C" FontSize="14" Height="28"/>
+                <Label Content="≥ 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
+                <Label Content="{Binding StationaryTempCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
+            </StackPanel>
+        </Grid>
         <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
     </Grid>
 </UserControl>

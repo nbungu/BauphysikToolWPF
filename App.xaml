@@ -24,7 +24,8 @@
         <BitmapImage x:Key="ButtonIcon_Delete" UriSource="/Resources/Icons/GL_011x80_delete.png"/>
         <BitmapImage x:Key="ButtonIcon_Edit" UriSource="/Resources/Icons/GL_015x80_edit.png"/>
         <BitmapImage x:Key="ButtonIcon_Cancel" UriSource="/Resources/Icons/GL_005x80_cancel.png"/>
-
+        <BitmapImage x:Key="ButtonIcon_OK" UriSource="/Resources/Icons/GL_009x80_confirm.png"/>
+        <BitmapImage x:Key="ButtonIcon_OK_green" UriSource="/Resources/Icons/GL_009x80_confirm_g.png"/>
 
         <!--Custom TextBox for Subscript Text with Equation-->
         <Style TargetType="{x:Type controls:EquationLabel}">
@@ -81,9 +82,7 @@
                 </Setter.Value>
             </Setter>
         </Style>
-        
-        
-        
+            
         <!--Custom ContextMenu Style: Used in ContextMenu as 'Style'-->
         <Style x:Key="ContextMenuStyle01" TargetType="{x:Type ContextMenu}">
             <Setter Property="SnapsToDevicePixels" Value="True" />

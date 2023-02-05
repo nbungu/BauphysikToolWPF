@@ -18,6 +18,8 @@
     <None Remove="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
     <None Remove="Resources\Icons\GL_003x80_back.png" />
     <None Remove="Resources\Icons\GL_005x80_cancel.png" />
+    <None Remove="Resources\Icons\GL_009x80_confirm.png" />
+    <None Remove="Resources\Icons\GL_009x80_confirm_g.png" />
     <None Remove="Resources\Icons\GL_010x80_create_b.png" />
     <None Remove="Resources\Icons\GL_010x80_create_w.png" />
     <None Remove="Resources\Icons\GL_011x80_delete.png" />
@@ -44,6 +46,12 @@
     <Resource Include="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
     <Resource Include="Resources\Icons\GL_003x80_back.png" />
     <Resource Include="Resources\Icons\GL_005x80_cancel.png" />
+    <Resource Include="Resources\Icons\GL_009x80_confirm_g.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Resources\Icons\GL_009x80_confirm.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Icons\GL_010x80_create_b.png" />
     <Resource Include="Resources\Icons\GL_010x80_create_w.png" />
     <Resource Include="Resources\Icons\GL_011x80_delete.png" />

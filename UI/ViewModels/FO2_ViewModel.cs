@@ -9,6 +9,8 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Linq;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -27,6 +29,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public double Ti { get; set; } = 0;
         public double Te { get; set; } = 0;
         public double Rel_Fi { get; set; } = 0;
+        public bool IsRValueOK { get; private set; } = false;
+        public bool IsUValueOK { get; private set; } = false;
 
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
@@ -44,6 +48,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
             };
             this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
+            this.IsRValueOK = CheckRequiredRValue(StationaryTempCalculation.RTotal);
+            this.IsUValueOK = CheckRequiredUValue(StationaryTempCalculation.UValue);
         }
         private RectangularSection[] DrawLayerSections()
         {
@@ -231,6 +237,20 @@ namespace BauphysikToolWPF.UI.ViewModels
                 },
                 ShowSeparatorLines = true
             };*/
+        }
+        private bool CheckRequiredUValue(double u_Value)
+        {
+            if (u_Value < 0.3)
+                return true;
+
+            return false;
+        }
+        private bool CheckRequiredRValue(double r_Value)
+        {
+            if (r_Value > 2.0)
+                return true;
+
+            return false;
         }
     }
 }
