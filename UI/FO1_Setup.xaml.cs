@@ -295,7 +295,8 @@ namespace BauphysikToolWPF.UI
         }
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            DrawLayerCanvas.SaveAsImg(layers_Canvas);
+            // TODO fix path problem
+            //DrawLayerCanvas.SaveAsImg(layers_Canvas, "./Resources/ElementImages/");
         }
     }
 }
