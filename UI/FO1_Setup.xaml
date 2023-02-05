@@ -180,7 +180,7 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button x:Name="addLayer_Button" Style="{StaticResource ButtonStyle03_A}" Click="addLayerClicked" DataContext="{StaticResource ButtonIcon_Add_W}" Content="Hinzufügen" Margin="0,0,8,0"/>
+                <Button x:Name="addLayer_Button" Style="{StaticResource ButtonStyle03_A}" Foreground="White" Click="addLayerClicked" DataContext="{StaticResource ButtonIcon_Add_W}" Content="Hinzufügen" Margin="0,0,8,0"/>
                 <Button x:Name="deleteLayer_Button" Style="{StaticResource ButtonStyle03_B}" Click="deleteLayerClicked" DataContext="{StaticResource ButtonIcon_Delete}" Content="Löschen" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
                 <Button x:Name="editLayer_Button" Style="{StaticResource ButtonStyle03_B}" Click="editLayerClicked" DataContext="{StaticResource ButtonIcon_Edit}" Content="Bearbeiten" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
                 <Button x:Name="deleteAllLayer_Button" Style="{StaticResource ButtonStyle03_B}" Click="deleteAllLayersClicked" DataContext="{StaticResource ButtonIcon_Delete}" Content="Alle Löschen" Margin="0,0,8,0"/>
