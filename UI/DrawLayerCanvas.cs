@@ -25,18 +25,18 @@ namespace BauphysikToolWPF.UI
             // check if canvas was already created in frontend
             canvas = canvas ?? throw new ArgumentNullException(nameof(canvas) + " is not initialized or not found");
 
-            double right = canvas.Width;
+            double x = 0;
             double elementWidth = 0;
             foreach (Layer layer in layers)
             {
                 elementWidth += layer.LayerThickness;
             }
-            // Drawing from right to left: first layer in list is inside (= right side)
+
+            // Drawing from left to right: first layer in list is inside
             foreach (Layer layer in layers)
             {
                 double layerWidthScale = layer.LayerThickness / elementWidth; // from  0 ... 1
                 double layerWidth = canvas.Width * layerWidthScale;
-                double left = right - layerWidth; // start drawing from right canvas side (beginning with INSIDE Layer, which is first list element) -> We want Inside layer position on right/inner side. 
 
                 // Draw layer rectangle
                 Rectangle baseRect = new Rectangle()
@@ -49,7 +49,7 @@ namespace BauphysikToolWPF.UI
                 };
                 canvas.Children.Add(baseRect);
                 Canvas.SetTop(baseRect, 0);
-                Canvas.SetLeft(baseRect, left);
+                Canvas.SetLeft(baseRect, x);
 
                 // Draw hatch pattern rectangle
                 Rectangle hatchPatternRect = new Rectangle()
@@ -61,7 +61,7 @@ namespace BauphysikToolWPF.UI
                 };
                 canvas.Children.Add(hatchPatternRect);
                 Canvas.SetTop(hatchPatternRect, 0);
-                Canvas.SetLeft(hatchPatternRect, left + 0.5);
+                Canvas.SetLeft(hatchPatternRect, x + 0.5);
 
                 if (showPositionLabel == true)
                 {
@@ -73,9 +73,9 @@ namespace BauphysikToolWPF.UI
                     };
                     canvas.Children.Add(label);
                     Canvas.SetTop(label, 0);
-                    Canvas.SetLeft(label, left);
+                    Canvas.SetLeft(label, x);
                 }
-                right -= layerWidth; // Add new layer at left edge of previous layer
+                x += layerWidth; // Draw next Layer on right side of previous
             }
         }
 
@@ -84,7 +84,7 @@ namespace BauphysikToolWPF.UI
         public static void SaveAsImg(Canvas target, string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/")
         {
             //string path2 = Environment.CurrentDirectory; //"C:\\Users\\arnes\\source\\repos\\BauphysikToolWPF\\bin\\Debug\\net6.0-windows"
-
+            
             // Set the Bitmap size and target to save
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 48d, 48d, PixelFormats.Default); // Default DPI: 96d
             bitmap.Render(target);

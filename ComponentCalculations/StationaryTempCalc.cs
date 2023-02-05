@@ -105,17 +105,17 @@ namespace BauphysikToolWPF.ComponentCalculations
             //Dictionaries are not ordered: Instead use List as ordered collection
             List<KeyValuePair<double, double>> temp_List = new List<KeyValuePair<double, double>>();
 
-            //Starting from inner side
-            double widthPosition = TotalElementWidth;
-            double value = Math.Round(Ti - Rsi * QValue,2); // Tsi
-            temp_List.Add(new KeyValuePair<double, double>(widthPosition, value)); // key, value
+            // first tempValue (Tsi)
+            double tsi = Math.Round(Ti - Rsi * QValue,2);
+            temp_List.Add(new KeyValuePair<double, double>(0, tsi)); // key, value
 
+            //Starting from inner side
+            double widthPosition = 0; // cm
             for (int i = 0; i < Layers.Count; i++)
             {
-                double currentWidthPosition = widthPosition - Layers[i].LayerThickness;
-                double currentValue = temp_List.ElementAt(i).Value - Layers[i].R_Value * QValue;
-                temp_List.Add(new KeyValuePair<double, double>(currentWidthPosition, currentValue));
-                widthPosition = currentWidthPosition;
+                widthPosition += Layers[i].LayerThickness;
+                double tempValue = temp_List.ElementAt(i).Value - Layers[i].R_Value * QValue;
+                temp_List.Add(new KeyValuePair<double, double>(widthPosition, tempValue));
             }
             return temp_List;
 
