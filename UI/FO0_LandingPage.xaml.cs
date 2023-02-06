@@ -9,12 +9,14 @@ namespace BauphysikToolWPF.UI
 {
     public partial class FO0_LandingPage : UserControl  // publisher of 'ElementSelectionChanged' event
     {
+        public static Project Project { get; private set; }
         public static List<Element> Elements { get; private set; } = new List<Element>(); // avoid null value
         public static Element SelectedElement { get; set; }
 
         public FO0_LandingPage()
         {
-            Elements = DatabaseAccess.GetElements();
+            Project = DatabaseAccess.QueryProjectById(1); //Hardcoded. TODO change
+            Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
             InitializeComponent();
             DatabaseAccess.ElementsChanged += DB_ElementsChanged; // register with an event (when Elements have been changed)
         }
@@ -22,7 +24,7 @@ namespace BauphysikToolWPF.UI
         // event handlers - subscribers
         public void DB_ElementsChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
-            Elements = DatabaseAccess.GetElements();
+            Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
             element_ItemsControl.ItemsSource = Elements; // Updates the ItemsSource. Initial object is fetched by XAML via ViewModel
         }
 
@@ -30,7 +32,7 @@ namespace BauphysikToolWPF.UI
         private void createNewElement_Button_Click(object sender, RoutedEventArgs e)
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow();
+            var window = new NewElementWindow(Project);
 
             //window.Owner = this;
             window.ShowDialog();   // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -41,7 +43,7 @@ namespace BauphysikToolWPF.UI
         private void elementPanel_Button_Click(object sender, RoutedEventArgs e)
         {
             int elementId = Convert.ToInt32((sender as Button).Content);
-            SelectedElement = DatabaseAccess.QueryElementsById(elementId);
+            SelectedElement = DatabaseAccess.QueryElementById(elementId);
             MainWindow.SetPage("Setup");
         }
 
@@ -69,9 +71,9 @@ namespace BauphysikToolWPF.UI
             ContextMenu contextMenu = menuItem.Parent as ContextMenu;
             Button button = contextMenu.PlacementTarget as Button;
             int elementId = Convert.ToInt16(button.Content);
-            Element editElement = DatabaseAccess.QueryElementsById(elementId);
+            Element editElement = DatabaseAccess.QueryElementById(elementId);
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(editElement);
+            var window = new NewElementWindow(Project, editElement);
 
             window.ShowDialog();   // Open as modal (Parent window pauses, waiting for the window to be closed)
         }

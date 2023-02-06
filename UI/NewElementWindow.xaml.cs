@@ -11,9 +11,11 @@ namespace BauphysikToolWPF.UI
     public partial class NewElementWindow : Window
     {
         private Element element;
-        public NewElementWindow(Element element = null)
+        private Project project;
+        public NewElementWindow(Project project, Element element = null)
         {
             this.element = element;
+            this.project = project; 
             InitializeComponent();
 
             // Pre set TextBox and ComboBox to edit existing Element
@@ -42,6 +44,8 @@ namespace BauphysikToolWPF.UI
                         Name = elementName,
                         ConstructionTypeId = constrId,
                         ConstructionType = new ConstructionType() { ConstructionTypeId = constrId, Name = constrName },
+                        ProjectId = project.ProjectId,
+                        Project = project,
                         Layers = new List<Layer>(),
                         EnvVars = new List<EnvVars>()
                     };
@@ -55,6 +59,7 @@ namespace BauphysikToolWPF.UI
                 {
                     this.element.Name = elementName;
                     this.element.ConstructionTypeId = constrId;
+                    this.element.ProjectId = project.ProjectId;  
                     DatabaseAccess.UpdateElement(this.element);
                     this.Close();
                 }

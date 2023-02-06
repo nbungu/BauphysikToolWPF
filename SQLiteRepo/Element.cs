@@ -19,7 +19,10 @@ namespace BauphysikToolWPF.SQLiteRepo
         public string Name { get; set; }
 
         [ForeignKey(typeof(ConstructionType))] // FK for the 1:1 relation
-        public int ConstructionTypeId { get; set; } // This Element is construction type X
+        public int ConstructionTypeId { get; set; }
+
+        [ForeignKey(typeof(Project))] // FK for the n:1 relation
+        public int ProjectId { get; set; }
 
         //------Not part of the Database-----//
 
@@ -31,6 +34,10 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         [ManyToMany(typeof(ElementEnvVars))] // m:n relationship with EnvVars (ElementEnvVars is intermediate entity)
         public List<EnvVars> EnvVars { get; set; }
+
+        [ManyToOne] // n:1 relationship with Project (the parent table)
+        public Project Project { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Project' object itself is not stored in DB!
+
 
         [Ignore] // TODO add as BLOB!! Or save as static Bitmap
         public string ElementImage

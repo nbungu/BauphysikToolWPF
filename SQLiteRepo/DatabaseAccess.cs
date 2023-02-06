@@ -19,6 +19,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static event Notify? LayersChanged; // event
         public static event Notify? ElementsChanged; // event
         public static event Notify? ElementEnvVarsChanged; //event
+        public static event Notify? ProjectsChanged; //event
 
         // event handlers - publisher
         public static void OnLayersChanged() //protected virtual method
@@ -32,6 +33,37 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static void OnElementEnvVarsChanged() //protected virtual method
         {
             ElementEnvVarsChanged?.Invoke(); //if ElementEnvVarsChanged is not null then call delegate
+        }
+        public static void OnProjectsChanged() //protected virtual method
+        {
+            ProjectsChanged?.Invoke(); //if ElementEnvVarsChanged is not null then call delegate
+        }
+
+        // Retreive Data from Table "Project"
+        public static List<Project> GetProjects()
+        {
+            return sqlConn.GetAllWithChildren<Project>();
+        }
+
+        public static void CreateProject(Project project)
+        {
+            sqlConn.InsertWithChildren(project);
+            OnProjectsChanged(); // raises an event
+        }
+
+        public static void UpdateProject(Project project)
+        {
+            sqlConn.UpdateWithChildren(project);
+        }
+
+        public static void DeleteProject(Project project)
+        {
+            sqlConn.Delete(project);
+            OnProjectsChanged();
+        }
+        public static Project QueryProjectById(int projectId)
+        {
+            return sqlConn.GetWithChildren<Project>(projectId);
         }
 
         // Retreive Data from Table "Layer"
@@ -152,9 +184,13 @@ namespace BauphysikToolWPF.SQLiteRepo
             sqlConn.DeleteAll<Element>();
             OnElementsChanged();
         }
-        public static Element QueryElementsById(int id)
+        public static Element QueryElementById(int elementId)
         {
-            return sqlConn.GetWithChildren<Element>(id);
+            return sqlConn.GetWithChildren<Element>(elementId);
+        }
+        public static List<Element> QueryElementsByProjectId(int projectId)
+        {
+            return sqlConn.GetAllWithChildren<Element>(e => e.ProjectId == projectId);
         }
 
         // Retreive Data from Table "ConstructionType"

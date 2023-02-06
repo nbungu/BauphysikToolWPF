@@ -157,10 +157,10 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Grid.ColumnSpan="2" Content="Projektname:" FontSize="14"/>
-                <TextBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="projectName_TextBox" VerticalContentAlignment="Center" FontSize="14" Height="32" Margin="0,4,0,0"/>
+                <TextBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="projectName_TextBox" Text="{Binding ProjectName}" VerticalContentAlignment="Center" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
                 <Label Grid.Row="2" Grid.ColumnSpan="2" Content="Bearbeiter:" FontSize="14" Margin="0,8,0,0"/>
-                <TextBox Grid.Row="3" Grid.ColumnSpan="2" x:Name="projectUser_TextBox" VerticalContentAlignment="Center" FontSize="14" Height="32" Margin="0,4,0,0"/>
+                <TextBox Grid.Row="3" Grid.ColumnSpan="2" x:Name="projectUser_TextBox" Text="{Binding ProjectUserName}" VerticalContentAlignment="Center" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
                 <Label Grid.Row="4" Grid.ColumnSpan="2" Content="Nutzungsart des Gebäudes:" FontSize="14" Margin="0,8,0,0"/>
                 <RadioButton Grid.Row="5" Grid.Column="0" GroupName="BuildingUsage" Content="Wohngebäude" IsChecked="{Binding IsBuildingUsageA}" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0"/>

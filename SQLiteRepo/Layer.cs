@@ -32,7 +32,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [OneToOne] // 1:1 relationship with Material
         public Material Material { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
 
-        [ManyToOne] // 1:n relationship with Element (the parent table)
+        [ManyToOne] // n:1 relationship with Element (the parent table)
         public Element Element { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Element' object itself is not stored in DB!
 
         [Ignore]
