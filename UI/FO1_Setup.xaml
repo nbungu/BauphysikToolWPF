@@ -31,8 +31,8 @@
         <DataTemplate x:Key="LVItem_DesignTemplate">
             <Grid Margin="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="24" />
-                    <RowDefinition Height="24" />
+                    <RowDefinition Height="22" />
+                    <RowDefinition Height="22" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -43,23 +43,15 @@
                 </Grid.ColumnDefinitions>
                 <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
                 <Grid Grid.RowSpan="2">
-                    <Ellipse Fill="{Binding Material.ColorCode}" Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <!--<Ellipse Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <Ellipse.Fill>
-                            <RadialGradientBrush MappingMode="RelativeToBoundingBox" Center="0.5, 0.5" RadiusX="0.3" RadiusY="0.3" >
-                                <GradientStop Color="LightGray" Offset="0.0"/>
-                                <GradientStop Color="{Binding Material.ColorCode}" Offset="1"/>
-                            </RadialGradientBrush>
-                        </Ellipse.Fill>
-                    </Ellipse>-->
-                    <Label Content="{Binding LayerPosition}" Margin="0,0,8,0" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
+                    <Ellipse Fill="{Binding Material.ColorCode}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
+                    <Label Content="{Binding LayerPosition}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold" Margin="0,0,8,0"/>
                 </Grid>
-                <Label Grid.Column="1" Content="{Binding Material.Name}" Height="28" FontWeight="Bold"/>
-                <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.Category}" Height="28" FontStyle="Italic" VerticalAlignment="Bottom"/>
+                <Label Grid.Column="1" Content="{Binding Material.Name}" Height="26" FontWeight="Bold"/>
+                <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.Category}" Height="26" FontStyle="Italic" VerticalAlignment="Bottom"/>
                 <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' VerticalAlignment="Center"/>
-                <Line Grid.Column="2" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
+                <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                 <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="{Binding LayerPosition}" Value="{Binding R_Value}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
-                <Line Grid.Column="3" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
+                <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                 <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="s" SubscriptText="d" Value="{Binding Sd_Thickness}" Unit="m" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
             </Grid>
         </DataTemplate>
@@ -93,11 +85,11 @@
         'Binding' source is set by parent Element via 'Content' property
         -->
         <DataTemplate x:Key="LVItem_Mockup_Int">
-            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="1" CornerRadius="8">
-                <Grid Margin="10,8,10,8">
+            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="0,0,0,2" CornerRadius="0">
+                <Grid Margin="12,6,12,6">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="24" />
-                        <RowDefinition Height="24" />
+                        <RowDefinition Height="22" />
+                        <RowDefinition Height="22" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -108,26 +100,26 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid Grid.RowSpan="2">
-                        <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        <Label Content="i" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
+                        <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
+                        <Label Content="i" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold" Margin="0,0,8,0"/>
                     </Grid>
-                    <Label Grid.Column="1" Content="Innen" Height="28" FontWeight="Bold"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="28" FontStyle="Italic" VerticalAlignment="Bottom"/>
-                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2"  FontSize="12" SubscriptFontSize="10" BaseText="θ" SubscriptText="i" Value="{Binding Source={x:Static session:UserSaved.Ti}}" Unit="°C" VerticalAlignment="Center"/>
-                    <Line Grid.Column="2" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
+                    <Label Grid.Column="1" Content="Innen" Height="26" FontWeight="Bold"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom"/>
+                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="i" Value="{Binding Source={x:Static session:UserSaved.Ti}}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
+                    <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                     <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="si" Value="{Binding Source={x:Static session:UserSaved.Rsi}}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
-                    <Line Grid.Column="3" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
+                    <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                     <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="i" Value="{Binding Source={x:Static session:UserSaved.Rel_Fi}}" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 </Grid>
             </Border>            
         </DataTemplate>
 
         <DataTemplate x:Key="LVItem_Mockup_Ext">
-            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="1" CornerRadius="8">
-                <Grid Margin="10,8,10,8">
+            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="0,2,0,0" CornerRadius="0">
+                <Grid Margin="12,6,12,6">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="24" />
-                        <RowDefinition Height="24" />
+                        <RowDefinition Height="22" />
+                        <RowDefinition Height="22" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
@@ -138,15 +130,15 @@
                     </Grid.ColumnDefinitions>
 
                     <Grid Grid.RowSpan="2">
-                        <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="36" Width="36" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        <Label Content="e" Margin="0,0,8,0" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold"/>
+                        <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
+                        <Label Content="e" Foreground="White"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold" Margin="0,0,8,0"/>
                     </Grid>
-                    <Label Grid.Column="1" Content="Außen" Height="28" FontWeight="Bold"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="28" FontStyle="Italic" VerticalAlignment="Bottom"/>
-                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2"  FontSize="12" SubscriptFontSize="10" BaseText="θ" SubscriptText="e" Value="{Binding Source={x:Static session:UserSaved.Te}}" Unit="°C" VerticalAlignment="Center"/>
-                    <Line Grid.Column="2" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
+                    <Label Grid.Column="1" Content="Außen" Height="26" FontWeight="Bold"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom"/>
+                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="e" Value="{Binding Source={x:Static session:UserSaved.Te}}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
+                    <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                     <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="se" Value="{Binding Source={x:Static session:UserSaved.Rse}}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
-                    <Line Grid.Column="3" Grid.RowSpan="2" Y2="40" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
+                    <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                     <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="e" Value="{Binding Source={x:Static session:UserSaved.Rel_Fe}}" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 </Grid>
             </Border>
@@ -168,6 +160,7 @@
 
         <!--Top Left -->
         <Label Grid.Row="0" Grid.Column="0" Content="{Binding ElementName}" ContentStringFormat='Schichtaufbau - {0}' HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
+        <Label Grid.Row="0" Grid.Column="0" Content="{Binding ElementType}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontStyle="Italic" FontSize="12" Margin="16,0,0,0"/>
         <!--Top Right -->
         <Label Grid.Row="0" Grid.Column="1" Content="Bauteilquerschnitt" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
         <!--Middle Left -->
@@ -248,7 +241,7 @@
                 <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
                     <ComboBox x:Name="Rsi_ComboBox" FontSize="14" ItemsSource="{Binding Rsi_Keys}" SelectedIndex="{Binding Rsi_Selection}" MinWidth="144" SelectionChanged="Rsi_ComboBox_SelectionChanged"/>
                     <TextBox x:Name="Rsi_Input" Style="{StaticResource TextBoxStyle}"/>
-                    <controls:FractionLabel FontSize="14" CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
+                    <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="3" BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
@@ -269,7 +262,7 @@
                 <StackPanel  Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
                     <ComboBox x:Name="Rse_ComboBox" FontSize="14" ItemsSource="{Binding Rse_Keys}" SelectedIndex="{Binding Rse_Selection}" MinWidth="144" SelectionChanged="Rse_ComboBox_SelectionChanged"/>
                     <TextBox x:Name="Rse_Input" Style="{StaticResource TextBoxStyle}"/>
-                    <controls:FractionLabel FontSize="14" CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
+                    <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel  Grid.Row="1" Grid.Column="3" BaseText="Φ" SubscriptText="e" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel  Grid.Row="1" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="28">

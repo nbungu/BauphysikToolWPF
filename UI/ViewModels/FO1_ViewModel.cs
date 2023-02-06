@@ -10,6 +10,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         public string Title { get; } = "Setup";
         public string ElementName { get; set; }
+        public string ElementType { get; set; }
         public string NeighbouringEnv { get; set; }
         public List<Layer> Layers { get; set; }
         public List<string> Ti_Keys { get; set; }
@@ -33,6 +34,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             //For the Page title
             ElementName = FO0_LandingPage.SelectedElement.Name;
+            ElementType = FO0_LandingPage.SelectedElement.ConstructionType.Name;
+
 
             //For ListViewItem Mockup
             NeighbouringEnv = DatabaseAccess.QueryConstructionTypeById(FO0_LandingPage.SelectedElement.ConstructionTypeId).Name;

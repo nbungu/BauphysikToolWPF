@@ -29,6 +29,8 @@
 
         <!--Custom TextBox for Subscript Text with Equation-->
         <Style TargetType="{x:Type controls:EquationLabel}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="SubscriptFontSize" Value="12"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type controls:EquationLabel}">
@@ -51,6 +53,8 @@
 
         <!--Custom Label for Subscript Text-->
         <Style TargetType="{x:Type controls:SubscriptLabel}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="SubscriptFontSize" Value="12"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type controls:SubscriptLabel}">
@@ -70,6 +74,7 @@
 
         <!--Custom TextBox for fractions-->
         <Style TargetType="{x:Type controls:FractionLabel}">
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type controls:FractionLabel}">
