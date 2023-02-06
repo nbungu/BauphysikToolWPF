@@ -10,7 +10,7 @@
 
     <UserControl.DataContext>
         <!-- globally sets a reference for Bindings in this xaml-->
-        <vm:FO0_ViewModel/>
+        <vm:FO0_ViewModel/> 
     </UserControl.DataContext>
 
     <UserControl.Resources>
