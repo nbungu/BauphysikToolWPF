@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public NewElementWindow_ViewModel() // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
         {
             //For the ComboBox
-            Types = DatabaseAccess.GetConstructionTypes().Select(e => e.Name).ToList();
+            Types = DatabaseAccess.GetConstructions().Select(e => e.Type).ToList();
         }
     }
 }

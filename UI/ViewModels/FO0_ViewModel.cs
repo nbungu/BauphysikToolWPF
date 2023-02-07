@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.ComponentCalculations;
+using BauphysikToolWPF.SQLiteRepo;
 using System.Collections.Generic;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -10,15 +11,21 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string ProjectName { get; set; }
         public string ProjectUserName { get; set; }
         public List<Element> Elements { get; private set; }
-        public bool IsBuildingUsageA { get; set; } = false; // Usage A = Wohngebäude
-        public bool IsBuildingUsageB { get; set; } = false; // Usage B = Nicht-Wohngebäude
+        public bool IsBuildingUsage0 { get; set; } // Usage 0 = Nichtwohngebäude
+        public bool IsBuildingUsage1 { get; set; } // Usage 1 = Wohngebäude
+        public bool IsBuildingAge0 { get; set; } // Usage 0 = Bestand
+        public bool IsBuildingAge1 { get; set; } // Usage 1 = Neubau
 
         public FO0_ViewModel() // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
         {
-            ProjectName = FO0_LandingPage.Project.Name;
-            ProjectUserName = FO0_LandingPage.Project.UserName;
-            Elements = FO0_LandingPage.Elements;
-            // TODO Building Usage
+            ProjectName = FO0_LandingPage.Project.Name ?? "";
+            ProjectUserName = FO0_LandingPage.Project.UserName ?? "";
+            Elements = FO0_LandingPage.Elements; 
+
+            IsBuildingUsage1 = FO0_LandingPage.Project.IsResidentialUsage;
+            IsBuildingUsage0 = FO0_LandingPage.Project.IsNonResidentialUsage;
+            IsBuildingAge1 = FO0_LandingPage.Project.IsNewConstruction;
+            IsBuildingAge0 = FO0_LandingPage.Project.IsExistingConstruction;
         }
     }
 }

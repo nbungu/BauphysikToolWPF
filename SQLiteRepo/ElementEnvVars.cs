@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Eigenschaften-----//
 
         [NotNull, PrimaryKey, AutoIncrement, Unique] //SQL Attributes
-        public int ElementEnvVarsId { get; set; }
+        public int Id { get; set; }
 
         [ForeignKey(typeof(EnvVars))] // FK for the x:x relation
         public int EnvVarId { get; set; }

@@ -1,9 +1,11 @@
 ﻿using SQLite;
+using SQLiteNetExtensions.Attributes;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
     //https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
-    public class ConstructionType
+    public class Construction
     {
         //------Variablen-----//
 
@@ -11,13 +13,15 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Eigenschaften-----//
 
         [PrimaryKey, NotNull, AutoIncrement, Unique]
-        public int ConstructionTypeId { get; set; }
+        public int ConstructionId { get; set; }
 
         [NotNull]
-        public string Name { get; set; }
+        public string Type { get; set; }
 
         //------Not part of the Database-----//
 
+        [ManyToMany(typeof(ConstructionRequirement))] // m:n relationship with Requirement (ConstructionRequirement is intermediate entity)
+        public List<Requirement> Requirements { get; set; }
 
         //------Konstruktor-----//
 
@@ -26,7 +30,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Methoden-----//
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return Name + " (Id: " + ConstructionTypeId + ")";
+            return Type + " (Id: " + ConstructionId + ")";
         }
     }
 }

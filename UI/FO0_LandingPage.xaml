@@ -163,15 +163,12 @@
                 <TextBox Grid.Row="3" Grid.ColumnSpan="2" x:Name="projectUser_TextBox" Text="{Binding ProjectUserName}" VerticalContentAlignment="Center" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
                 <Label Grid.Row="4" Grid.ColumnSpan="2" Content="Nutzungsart des Gebäudes:" FontSize="14" Margin="0,8,0,0"/>
-                <RadioButton Grid.Row="5" Grid.Column="0" GroupName="BuildingUsage" Content="Wohngebäude" IsChecked="{Binding IsBuildingUsageA}" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0"/>
-                <RadioButton Grid.Row="5" Grid.Column="1" GroupName="BuildingUsage" Content="Nichtwohngebäude" IsChecked="{Binding IsBuildingUsageB}" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0"/>
+                <RadioButton Grid.Row="5" Grid.Column="0" x:Name="selectUsage1_Button" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0" Click="selectUsage1_Button_Click"/>
+                <RadioButton Grid.Row="5" Grid.Column="1" x:Name="selectUsage0_Button" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0" Click="selectUsage0_Button_Click"/>
 
                 <Label Grid.Row="6" Grid.ColumnSpan="2" Content="Alter des Gebäudes:" FontSize="14" Margin="0,8,0,0"/>
-                <RadioButton Grid.Row="7" Grid.Column="0" GroupName="BuildingAge" Content="Neubau" IsChecked="{Binding IsBuildingAgeA}" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0"/>
-                <RadioButton Grid.Row="7" Grid.Column="1" GroupName="BuildingAge" Content="Bestandsgebäude" IsChecked="{Binding IsBuildingAgeB}" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0"/>
-
-                <Button Grid.Row="8" Grid.Column="0" x:Name="editProjectChanges_Button" Content="Bearbeiten" Style="{StaticResource ButtonStyle02_B}" VerticalAlignment="Bottom" Margin="0,0,4,0"/>
-                <Button Grid.Row="8" Grid.Column="1" x:Name="applyProjectChanges_Button" Content="Übernehmen" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Bottom" Margin="4,0,0,0"/>
+                <RadioButton Grid.Row="7" Grid.Column="0" x:Name="selectAge1_Button" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0" Click="selectAge1_Button_Click"/>
+                <RadioButton Grid.Row="7" Grid.Column="1" x:Name="selectAge0_Button" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0" Click="selectAge0_Button_Click"/>
             </Grid>           
             
         </Grid>

@@ -18,8 +18,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull]
         public string Name { get; set; }
 
-        [ForeignKey(typeof(ConstructionType))] // FK for the 1:1 relation
-        public int ConstructionTypeId { get; set; }
+        [ForeignKey(typeof(Construction))] // FK for the 1:1 relation
+        public int ConstructionId { get; set; }
 
         [ForeignKey(typeof(Project))] // FK for the n:1 relation
         public int ProjectId { get; set; }
@@ -29,8 +29,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         [OneToMany] // 1:n relationship with Layer, ON DELETE CASCADE
         public List<Layer> Layers { get; set; } // the corresp. object/Type for the foreign-key. The 'List<Layer>' object itself is not stored in DB!
 
-        [OneToOne] // 1:1 relationship with ConstructionType
-        public ConstructionType ConstructionType { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
+        [OneToOne] // 1:1 relationship with Construction
+        public Construction Construction { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
 
         [ManyToMany(typeof(ElementEnvVars))] // m:n relationship with EnvVars (ElementEnvVars is intermediate entity)
         public List<EnvVars> EnvVars { get; set; }
@@ -57,7 +57,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Methoden-----//
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return ElementId + "_" + Name + " (" + this.ConstructionType.Name + ")";
+            return ElementId + "_" + Name + " (" + this.Construction.Type + ")";
         }
     }
 }

@@ -19,6 +19,13 @@ namespace BauphysikToolWPF.UI
             Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
             InitializeComponent();
             DatabaseAccess.ElementsChanged += DB_ElementsChanged; // register with an event (when Elements have been changed)
+
+
+            //TODO: XAML Binding on IsChecked doest work somehow. Define here instead
+            selectUsage1_Button.IsChecked = Project.IsResidentialUsage;
+            selectUsage0_Button.IsChecked = Project.IsNonResidentialUsage;
+            selectAge1_Button.IsChecked = Project.IsNewConstruction;
+            selectAge0_Button.IsChecked = Project.IsExistingConstruction;
         }
 
         // event handlers - subscribers
@@ -82,6 +89,38 @@ namespace BauphysikToolWPF.UI
         private void closeApp_Button_Click(object sender, RoutedEventArgs e)
         {
             MainWindow.Main.Close();
+        }
+
+        private void selectUsage1_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as RadioButton).IsChecked == true)
+                Project.IsResidentialUsage = true;
+
+            DatabaseAccess.UpdateProject(Project);
+        }
+
+        private void selectUsage0_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as RadioButton).IsChecked == true)
+                Project.IsNonResidentialUsage = true;
+
+            DatabaseAccess.UpdateProject(Project);
+        }
+
+        private void selectAge1_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as RadioButton).IsChecked == true)
+                Project.IsNewConstruction = true;
+
+            DatabaseAccess.UpdateProject(Project);
+        }
+
+        private void selectAge0_Button_Click(object sender, RoutedEventArgs e)
+        {
+            if ((sender as RadioButton).IsChecked == true)
+                Project.IsExistingConstruction = true;
+
+            DatabaseAccess.UpdateProject(Project);
         }
     }
 }

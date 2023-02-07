@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Eigenschaften-----//
 
-        [NotNull, PrimaryKey, AutoIncrement, Unique, ForeignKey(typeof(Layer))] // FK for the n:1 relation
+        [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int LayerId { get; set; }
 
         [NotNull] //SQL Attributes
@@ -21,7 +21,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [ForeignKey(typeof(Material))] // FK for the 1:1 relation
         public int MaterialId { get; set; } // This Layer is made out of Material X
 
-        [ForeignKey(typeof(Element))] // FK for the 1:n relation
+        [ForeignKey(typeof(Element))] // FK for the n:1 relation
         public int ElementId { get; set; } // To which Parent Element this Layer belongs    
 
         [NotNull]

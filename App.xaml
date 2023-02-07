@@ -376,7 +376,6 @@
         <!--Custom ToggleButton01_A: with icon center top, rounded corners, transparent, click effects-->
         <Style x:Key="ToggleButton01_A" TargetType="{x:Type ToggleButton}">
             <!--Set default properties of the button-->
-            <Setter Property="Content" Value="Placeholder"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
             <Setter Property="Background" Value="Transparent"/>

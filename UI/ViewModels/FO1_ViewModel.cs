@@ -34,11 +34,11 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             //For the Page title
             ElementName = FO0_LandingPage.SelectedElement.Name;
-            ElementType = FO0_LandingPage.SelectedElement.ConstructionType.Name;
+            ElementType = FO0_LandingPage.SelectedElement.Construction.Type;
 
 
             //For ListViewItem Mockup
-            NeighbouringEnv = DatabaseAccess.QueryConstructionTypeById(FO0_LandingPage.SelectedElement.ConstructionTypeId).Name;
+            NeighbouringEnv = DatabaseAccess.QueryConstructionById(FO0_LandingPage.SelectedElement.ConstructionId).Type;
 
             //TODO: TextBox Viewmodel implementieren
 

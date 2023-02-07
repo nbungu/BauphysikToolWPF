@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.UI
             if (element != null)
             {
                 elementName_TextBox.Text = element.Name;
-                construcitonType_Picker.SelectedItem = element.ConstructionType.Name;
+                construcitonType_Picker.SelectedItem = element.Construction.Type;
             }
         }
 
@@ -32,8 +32,8 @@ namespace BauphysikToolWPF.UI
             if (construcitonType_Picker.SelectedIndex != -1 && elementName_TextBox.Text != "")
             {
                 string elementName = elementName_TextBox.Text;
-                string constrName = construcitonType_Picker.SelectedItem.ToString();
-                int constrId = DatabaseAccess.GetConstructionTypes().Find(e => e.Name == constrName).ConstructionTypeId;
+                string constrType = construcitonType_Picker.SelectedItem.ToString();
+                int constrId = DatabaseAccess.GetConstructions().Find(e => e.Type == constrType).ConstructionId;
 
                 // If no Element in Parameter -> Create New
                 if (this.element == null)
@@ -42,8 +42,8 @@ namespace BauphysikToolWPF.UI
                     {
                         //ElementId gets set by SQLite DB (AutoIncrement)
                         Name = elementName,
-                        ConstructionTypeId = constrId,
-                        ConstructionType = new ConstructionType() { ConstructionTypeId = constrId, Name = constrName },
+                        ConstructionId = constrId,
+                        Construction = new Construction() { ConstructionId = constrId, Type = constrType },
                         ProjectId = project.ProjectId,
                         Project = project,
                         Layers = new List<Layer>(),
@@ -58,7 +58,7 @@ namespace BauphysikToolWPF.UI
                 else
                 {
                     this.element.Name = elementName;
-                    this.element.ConstructionTypeId = constrId;
+                    this.element.ConstructionId = constrId;
                     this.element.ProjectId = project.ProjectId;  
                     DatabaseAccess.UpdateElement(this.element);
                     this.Close();

@@ -53,7 +53,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void UpdateProject(Project project)
         {
-            sqlConn.UpdateWithChildren(project);
+            sqlConn.Update(project);
         }
 
         public static void DeleteProject(Project project)
@@ -193,14 +193,14 @@ namespace BauphysikToolWPF.SQLiteRepo
             return sqlConn.GetAllWithChildren<Element>(e => e.ProjectId == projectId);
         }
 
-        // Retreive Data from Table "ConstructionType"
-        public static List<ConstructionType> GetConstructionTypes()
+        // Retreive Data from Table "Construction"
+        public static List<Construction> GetConstructions()
         {
-            return sqlConn.Table<ConstructionType>().ToList();
+            return sqlConn.Table<Construction>().ToList();
         }
-        public static ConstructionType QueryConstructionTypeById(int id)
+        public static Construction QueryConstructionById(int constructionId)
         {
-            return sqlConn.Get<ConstructionType>(id);
+            return sqlConn.Get<Construction>(constructionId);
         }
 
         // Retreive Data from Table "ElementEnvVars"
@@ -231,6 +231,30 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             sqlConn.DeleteAll<ElementEnvVars>();
             OnElementEnvVarsChanged();
+        }
+
+        // Retreive Data from Table "RequirementSource"
+        public static List<RequirementSource> GetRequirementSources()
+        {
+            return sqlConn.GetAllWithChildren<RequirementSource>();
+        }
+        public static RequirementSource QueryRequirementSourceById(int requirementSourceId)
+        {
+            return sqlConn.Get<RequirementSource>(requirementSourceId);
+        }
+
+        // Retreive Data from Table "Requirement"
+        public static List<Requirement> GetRequirements()
+        {
+            return sqlConn.GetAllWithChildren<Requirement>();
+        }
+        public static Requirement QueryRequirementById(int requirementId)
+        {
+            return sqlConn.Get<Requirement>(requirementId);
+        }
+        public static List<Requirement> QueryRequirementsBySourceId(int requirementSourceId)
+        {
+            return sqlConn.GetAllWithChildren<Requirement>(e => e.RequirementSourceId == requirementSourceId);
         }
     }
 }
