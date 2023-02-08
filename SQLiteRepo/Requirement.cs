@@ -27,11 +27,11 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull]
         public double ValueA { get; set; }
 
-        public string ValueACondition { get; set; }
+        public string? ValueACondition { get; set; }
 
-        public double ValueB { get; set; }
+        public double? ValueB { get; set; }
 
-        public string ValueBCondition { get; set; }
+        public string? ValueBCondition { get; set; }
 
         //------Not part of the Database-----//
         

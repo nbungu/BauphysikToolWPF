@@ -29,8 +29,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public double Ti { get; set; } = 0;
         public double Te { get; set; } = 0;
         public double Rel_Fi { get; set; } = 0;
-        public bool IsRValueOK { get; private set; } = false;
         public bool IsUValueOK { get; private set; } = false;
+        public double U_max { get; private set; }
 
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
@@ -48,8 +48,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                 SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
             };
             this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
-            this.IsRValueOK = CheckRequiredRValue(StationaryTempCalculation.RTotal);
-            this.IsUValueOK = CheckRequiredUValue(StationaryTempCalculation.UValue);
+            // TODO !!! Construction cannot be retrieved from parent Element. Must be fetched directly by id so that its children are fetched aswell
+            this.U_max = new CheckRequirements(StationaryTempCalculation.UValue, DatabaseAccess.QueryConstructionById(FO0_LandingPage.SelectedElement.ConstructionId)).U_max;
+
         }
         private RectangularSection[] DrawLayerSections()
         {
@@ -237,20 +238,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                 },
                 ShowSeparatorLines = true
             };*/
-        }
-        private bool CheckRequiredUValue(double u_Value)
-        {
-            if (u_Value < 0.3)
-                return true;
-
-            return false;
-        }
-        private bool CheckRequiredRValue(double r_Value)
-        {
-            if (r_Value > 2.0)
-                return true;
-
-            return false;
         }
     }
 }
