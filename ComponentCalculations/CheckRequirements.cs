@@ -10,18 +10,21 @@ using static BauphysikToolWPF.ComponentCalculations.CheckRequirements;
 
 namespace BauphysikToolWPF.ComponentCalculations
 {
-    // No static Class due to often changing 'Project' and 'Construction'.
-    // Therefore the Calculations will always be up to date when calling Class with 'new'.
-    // Con: Needs computation time on every call even if variables did not change.
+    /*
+     * No static Class due to often changing 'Project' and 'Construction'.
+     * Therefore the Calculations will always be up to date when calling Class with 'new'.
+     * Con: Needs computation time on every call even if variables did not change.
+     */
+
     public class CheckRequirements
     {
         // Always fetch current Project on calling this Class. No need for Notifier or Updater when Project changes
         private Project project = FO0_LandingPage.Project;
 
         // Always fetch current Construction on calling this Class. No need for Notifier or Updater when Construction changes
-        private Construction currentConstruction = DatabaseAccess.QueryConstructionById(FO0_LandingPage.SelectedElement.ConstructionId);
+        private Construction currentConstruction = FO0_LandingPage.SelectedElement.Construction;
 
-        public double U_max ;
+        public double U_max;
 
         public double R_min;
 

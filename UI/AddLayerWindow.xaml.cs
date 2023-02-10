@@ -26,13 +26,6 @@ namespace BauphysikToolWPF.UI
             LoadMaterialsByCategory(); // Update Material List, based on selected Category
         }
 
-        /* protected override void OnAppearing() //default Methode wird überschrieben
-         {
-             // TODO: keeps looping in background
-             base.OnAppearing();
-
-         }*/
-
         private void LoadDistinctCategories()
         {
             //The lambda operator =>, may be read as “goes to” or “becomes”. Lambda function = anonymous function (function without a name)
@@ -83,11 +76,6 @@ namespace BauphysikToolWPF.UI
                 this.Close();
             }
         }
-
-        /*private void searchBar_ButtonPressed(object sender, EventArgs e)
-        {
-            LoadMaterialsFromQuery(searchBar_Materials.Text);
-        }*/
 
         private void searchBar_TextChanged(object sender, TextChangedEventArgs e)
         {

@@ -6,7 +6,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 {
     public class GlaserCalc : StationaryTempCalc
     {
-        //(Instance-) Variables and encapsulated properties
+        // (Instance-) Variables and encapsulated properties
         public double TotalSdWidth { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P_sat in Pa
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P in Pa
@@ -14,25 +14,16 @@ namespace BauphysikToolWPF.ComponentCalculations
         // (Instance-) Constructor
         public GlaserCalc()
         {
-            if (Layers.Count == 0) // inherited class member from StationaryTempCalc
+            if (Element.Layers.Count == 0) // inherited class member from StationaryTempCalc
                 return;
 
-            //Calculated parameters (private setter)
-            TotalSdWidth = GetTotalSdWidth();   // Gl. 5.2; S.246
-            LayerPsat = GetLayerPsat();         // Gl. 2.4; S.164
-            LayerP = GetLayerP();               // Gl. 2.3; S.164
+            // Calculated parameters (private setter)
+            TotalSdWidth = Element.ElementSdThickness;  // Gl. 5.2; S.246
+            LayerPsat = GetLayerPsat();                 // Gl. 2.4; S.164
+            LayerP = GetLayerP();                       // Gl. 2.3; S.164
         }
 
         // Methods
-        private double GetTotalSdWidth()
-        {
-            double width = 0;
-            foreach (Layer l in Layers)
-            {
-                width += l.Sd_Thickness; // sum of sd-values
-            }
-            return Math.Round(width, 3);
-        }
         private List<KeyValuePair<double, double>> GetLayerPsat()
         {
             //Dictionary is not ordered: Instead use List as ordered collection
@@ -45,10 +36,10 @@ namespace BauphysikToolWPF.ComponentCalculations
                 double currentValue = P_sat(LayerTemps[i].Value);
                 p_sat_List.Add(new KeyValuePair<double, double>(widthPosition, currentValue));
 
-                if (i == Layers.Count)
+                if (i == Element.Layers.Count)
                     break; //avoid index out of range exception on Layers[i]: Has 1 less item than in LayerTemps[i]
 
-                widthPosition += Layers[i].Sd_Thickness;
+                widthPosition += Element.Layers[i].Sd_Thickness;
             }
 
             if (Math.Round(widthPosition, 3) == TotalSdWidth)

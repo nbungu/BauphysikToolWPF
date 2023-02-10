@@ -11,14 +11,11 @@ namespace BauphysikToolWPF.UI
     {
         // Initialize with empty List to avoid null value
         public static Project Project { get; private set; } = new Project();
-        public static List<Element> Elements { get; private set; } = new List<Element>();
         public static Element SelectedElement { get; set; } = new Element();
 
         public FO0_LandingPage()
         {
-            // To be able to access the related Children of these Classes, fetch parent of the child directly from DB. 
             Project = DatabaseAccess.QueryProjectById(1); //Hardcoded. TODO change
-            Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId); 
             InitializeComponent();
             DatabaseAccess.ElementsChanged += DB_ElementsChanged; // register with an event (when Elements have been changed)
 
@@ -32,8 +29,8 @@ namespace BauphysikToolWPF.UI
         // event handlers - subscribers
         public void DB_ElementsChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
-            Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
-            element_ItemsControl.ItemsSource = Elements; // Updates the ItemsSource. Initial object is fetched by XAML via ViewModel
+            // Updates the ItemsSource. Initial object is fetched by XAML via ViewModel
+            element_ItemsControl.ItemsSource = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
         }
 
         // custom Methods

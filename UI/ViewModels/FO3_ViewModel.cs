@@ -15,38 +15,40 @@ namespace BauphysikToolWPF.UI.ViewModels
     [ObservableObject]
     public partial class FO3_ViewModel
     {
-        public string Title { get; } = "Moisture"; // Called by 'InitializeComponent()' due to Class-Binding in xaml via DataContext        
-        public GlaserCalc GlaserCalculation { get; set; }
+        public string Title { get; } = "Moisture";      
+        public GlaserCalc GlaserCalculation { get; set; } = FO3_Moisture.GlaserCalculation;
         public RectangularSection[] LayerSections { get; set; }
         public ISeries[] DataPoints { get; set; }
         public Axis[] XAxes { get; set; }
         public Axis[] YAxes { get; set; }
-        public SolidColorPaint TooltipTextPaint { get; set; }
         public SolidColorPaint TooltipBackgroundPaint { get; set; }
-        public FO3_ViewModel() // Called by 'InitializeComponent()' from FO3_Moisture.cs due to Class-Binding in xaml via DataContext
+        public SolidColorPaint TooltipTextPaint { get; set; }
+
+        // Called by 'InitializeComponent()' from FO3_Moisture.cs due to Class-Binding in xaml via DataContext
+        public FO3_ViewModel()
         {
-            this.GlaserCalculation = FO3_Moisture.GlaserCalculation;
+            // For Drawing the Chart
             this.LayerSections = DrawLayerSections();
             this.DataPoints = DrawGlaserCurvePoints();
             this.XAxes = DrawXAxes();
             this.YAxes = DrawYAxes();
+            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
             this.TooltipTextPaint = new SolidColorPaint
             {
                 Color = new SKColor(0, 0, 0),
                 SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
             };
-            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
         }
         private RectangularSection[] DrawLayerSections()
         {
-            if (GlaserCalculation.Layers.Count == 0)
+            if (GlaserCalculation.Element.Layers.Count == 0)
                 return new RectangularSection[0];
 
-            RectangularSection[] rects = new RectangularSection[GlaserCalculation.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[GlaserCalculation.Element.Layers.Count];
 
             //TODO: Round values of left and right
             double left = 0;
-            foreach (Layer layer in GlaserCalculation.Layers)
+            foreach (Layer layer in GlaserCalculation.Element.Layers)
             {
                 int position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.Sd_Thickness;
@@ -72,7 +74,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] DrawGlaserCurvePoints()
         {
-            if (GlaserCalculation.Layers.Count == 0)
+            if (GlaserCalculation.Element.Layers.Count == 0)
                 return new ISeries[0];
 
             ISeries[] series = new ISeries[2];

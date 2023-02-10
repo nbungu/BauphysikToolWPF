@@ -17,19 +17,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         // (Instance-) Variables and encapsulated properties - Called before Constructor
 
-        private List<Layer> layers = FO1_Setup.Layers;
-        public List<Layer> Layers //for Validation
-        {
-            get { return layers; }
-            set
-            {
-                if (value == null)
-                    throw new ArgumentNullException("null layer list specified");
-                if (value.Count == 0)
-                    return;
-                layers = value;
-            }
-        }
+        private protected Element element = FO0_LandingPage.SelectedElement; // Access is limited to the containing class or types derived from the containing class within the current assembly
         public double TotalElementWidth { get; private set; } = 0;
         public double SumOfLayersR { get; private set; } = 0;
         public double RTotal { get; private set; } = 0;
@@ -39,22 +27,22 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double PhiMax { get; private set; } = 0;
         public double Tsi_min { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
-        public double Ti { get; private set; } = UserSaved.Ti;
-        public double Te { get; private set; } = UserSaved.Te;
-        public double Rsi { get; private set; } = UserSaved.Rsi;
-        public double Rse { get; private set; } = UserSaved.Rse;
-        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi;
-        public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe;
+        public double Ti { get; } = UserSaved.Ti;
+        public double Te { get; } = UserSaved.Te;
+        public double Rsi { get; } = UserSaved.Rsi;
+        public double Rse { get; } = UserSaved.Rse;
+        public double Rel_Fi { get; } = UserSaved.Rel_Fi;
+        public double Rel_Fe { get; } = UserSaved.Rel_Fe;
 
         // (Instance-) Constructor
         public StationaryTempCalc()
         {
-            if (Layers.Count == 0)
+            if (element.Layers.Count == 0)
                 return;
 
-            //Calculated parameters (private setter)
-            TotalElementWidth = GetTotalElementWidth();
-            SumOfLayersR = GetLayersR();    // Gl. 2-54; S.28
+            // Calculated parameters (private setter)
+            TotalElementWidth = element.ElementThickness_cm;
+            SumOfLayersR = element.ElementRValue;
             RTotal = GetRTotal();           // Gl. 2-55; S.28
             UValue = GetUValue();           // Gl. 2-57; S.29
             QValue = GetqValue();           // Gl. 2-65; S.31
@@ -65,28 +53,6 @@ namespace BauphysikToolWPF.ComponentCalculations
         }
 
         // Methods
-        private double GetTotalElementWidth()
-        {
-            //TODO get from Element
-            double width = 0;
-            foreach (Layer l in Layers)
-            {
-                width += l.LayerThickness;
-            }
-            return width;
-        }
-
-        private double GetLayersR()
-        {
-            //TODO get from Element
-            double rLayers = 0;
-            foreach (Layer l in Layers)
-            {
-                rLayers += l.R_Value;
-            }
-            return Math.Round(rLayers, 2);
-        }
-
         private double GetRTotal()
         {
             return Math.Round(Rsi + SumOfLayersR + Rse, 2);
@@ -104,19 +70,19 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private List<KeyValuePair<double, double>> GetLayerTemps()
         {
-            //Dictionaries are not ordered: Instead use List as ordered collection
+            // Dictionaries are not ordered: Instead use List as ordered collection
             List<KeyValuePair<double, double>> temp_List = new List<KeyValuePair<double, double>>();
 
             // first tempValue (Tsi)
             double tsi = Math.Round(Ti - Rsi * QValue,2);
             temp_List.Add(new KeyValuePair<double, double>(0, tsi)); // key, value
 
-            //Starting from inner side
+            // Starting from inner side
             double widthPosition = 0; // cm
-            for (int i = 0; i < Layers.Count; i++)
+            for (int i = 0; i < element.Layers.Count; i++)
             {
-                widthPosition += Layers[i].LayerThickness;
-                double tempValue = temp_List.ElementAt(i).Value - Layers[i].R_Value * QValue;
+                widthPosition += element.Layers[i].LayerThickness;
+                double tempValue = temp_List.ElementAt(i).Value - element.Layers[i].R_Value * QValue;
                 temp_List.Add(new KeyValuePair<double, double>(widthPosition, tempValue));
             }
             return temp_List;

@@ -3,9 +3,13 @@ using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 
+/* 
+ * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
+ * https://social.msdn.microsoft.com/Forums/en-US/85b1141b-2144-40c2-b9b3-e1e6cdb0ea02/announcement-cascade-operations-in-sqlitenet-extensions?forum=xamarinlibraries
+ */
+
 namespace BauphysikToolWPF.SQLiteRepo
 {
-    //https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
     public class Element
     {
         //------Variablen-----//
@@ -13,31 +17,36 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Eigenschaften-----//
 
-        [PrimaryKey, NotNull, AutoIncrement, Unique]
+        [PrimaryKey, NotNull, AutoIncrement, Unique] // SQL Attributes
         public int ElementId { get; set; }
 
         [NotNull]
         public string Name { get; set; }
 
-        [ForeignKey(typeof(Construction))] // FK for the 1:1 relation
+        [ForeignKey(typeof(Construction))] // FK for the 1:1 relationship with Construction
         public int ConstructionId { get; set; }
 
-        [ForeignKey(typeof(Project))] // FK for the n:1 relation
+        [ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
         public int ProjectId { get; set; }
 
         //------Not part of the Database-----//
 
-        [OneToMany(CascadeOperations = CascadeOperation.All)] // 1:n relationship with Layer, ON DELETE CASCADE (When a Element is removed: Deletes all Layers linked to this 'Element' aswell)
-        public List<Layer> Layers { get; set; } // the corresp. object/Type for the foreign-key. The 'List<Layer>' object itself is not stored in DB!
+        // n:1 relationship with Project
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public Project Project { get; set; }
 
-        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)] // 1:1 relationship with Construction
-        public Construction Construction { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
+        // 1:n relationship with Layer
+        [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all Layers linked to this 'Element')
+        public List<Layer> Layers { get; set; }
 
-        [ManyToMany(typeof(ElementEnvVars))] // m:n relationship with EnvVars (ElementEnvVars is intermediate entity)
+        // 1:1 relationship with Construction
+        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public Construction Construction { get; set; }
+
+        // m:n relationship with EnvVars
+        [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all EnvVars linked to this 'Element')
         public List<EnvVars> EnvVars { get; set; }
 
-        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)] // n:1 relationship with Project (the parent table)
-        public Project Project { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Project' object itself is not stored in DB!
 
         [Ignore] // TODO add as BLOB!! Or save as static Bitmap
         public string ElementImage

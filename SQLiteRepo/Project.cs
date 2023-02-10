@@ -28,8 +28,9 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Not part of the Database-----//
 
-        [OneToMany(CascadeOperations = CascadeOperation.All)] // 1:n relationship with Element, ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
-        public List<Element> Elements { get; set; } // the corresp. object/Type for the foreign-key. The 'List<Element>' object itself is not stored in DB!
+        // 1:n relationship with Element
+        [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
+        public List<Element> Elements { get; set; }
 
         // Encapsulate/Hide BuildingUsage and BuildingAge to convert to bool
         [Ignore]

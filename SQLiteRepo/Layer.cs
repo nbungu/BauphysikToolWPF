@@ -4,7 +4,6 @@ using System;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
-    //https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
     public class Layer
     {
         //------Variablen-----//
@@ -15,25 +14,27 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int LayerId { get; set; }
 
-        [NotNull] //SQL Attributes
-        public int LayerPosition { get; set; } //Inside = 1 ....
+        [NotNull]
+        public int LayerPosition { get; set; } // Inside = 1
 
-        [ForeignKey(typeof(Material))] // FK for the 1:1 relation
-        public int MaterialId { get; set; } // This Layer is made out of Material X
+        [ForeignKey(typeof(Element))] // FK for the n:1 relationship with Element
+        public int ElementId { get; set; }
 
-        [ForeignKey(typeof(Element))] // FK for the n:1 relation
-        public int ElementId { get; set; } // To which Parent Element this Layer belongs    
+        [ForeignKey(typeof(Material))] // FK for the 1:1 relationship with Material
+        public int MaterialId { get; set; }
 
         [NotNull]
         public double LayerThickness { get; set; } // Layer thickness in cm
 
         //------Not part of the Database-----//
 
-        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)] // 1:1 relationship with Material
-        public Material Material { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
+        // n:1 relationship with Element
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public Element Element { get; set; }
 
-        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)] // n:1 relationship with Element (the parent table)
-        public Element Element { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Element' object itself is not stored in DB!
+        // 1:1 relationship with Material
+        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public Material Material { get; set; }
 
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 

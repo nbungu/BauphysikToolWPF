@@ -34,10 +34,10 @@ namespace BauphysikToolWPF.SQLiteRepo
         public string RequirementUnit { get; set; }
 
         //------Not part of the Database-----//
-        
-        [OneToMany] // 1:n relationship with Requirement (the child table)
-        public List<Requirement> Requirements { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Requirements' object itself is not stored in DB!
 
+        // 1:n relationship with Requirement
+        [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all Requirements linked to this 'RequirementSource')
+        public List<Requirement> Requirements { get; set; }
 
         //------Konstruktor-----//
 
@@ -45,9 +45,9 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Methoden-----//
 
-        /*public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
+        public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return LayerThickness + " cm, "+ Material.Name + " (Pos. " + this.LayerPosition + ")";
-        }*/
+            return Name + " (Id: " + RequirementSourceId + ")";
+        }
     }
 }
