@@ -67,6 +67,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         // Methods
         private double GetTotalElementWidth()
         {
+            //TODO get from Element
             double width = 0;
             foreach (Layer l in Layers)
             {
@@ -77,6 +78,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetLayersR()
         {
+            //TODO get from Element
             double rLayers = 0;
             foreach (Layer l in Layers)
             {

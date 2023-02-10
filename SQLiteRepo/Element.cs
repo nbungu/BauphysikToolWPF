@@ -27,16 +27,16 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Not part of the Database-----//
 
-        [OneToMany] // 1:n relationship with Layer, ON DELETE CASCADE
+        [OneToMany(CascadeOperations = CascadeOperation.All)] // 1:n relationship with Layer, ON DELETE CASCADE (When a Element is removed: Deletes all Layers linked to this 'Element' aswell)
         public List<Layer> Layers { get; set; } // the corresp. object/Type for the foreign-key. The 'List<Layer>' object itself is not stored in DB!
 
-        [OneToOne] // 1:1 relationship with Construction
+        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)] // 1:1 relationship with Construction
         public Construction Construction { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
 
         [ManyToMany(typeof(ElementEnvVars))] // m:n relationship with EnvVars (ElementEnvVars is intermediate entity)
         public List<EnvVars> EnvVars { get; set; }
 
-        [ManyToOne] // n:1 relationship with Project (the parent table)
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)] // n:1 relationship with Project (the parent table)
         public Project Project { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Project' object itself is not stored in DB!
 
         [Ignore] // TODO add as BLOB!! Or save as static Bitmap
@@ -60,7 +60,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 {
                     thickness += layer.LayerThickness;
                 }
-                return thickness;
+                return Math.Round(thickness, 2);
             }
         }
         public double ElementThickness_m // d in m
@@ -72,7 +72,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 {
                     thickness += layer.LayerThickness;
                 }
-                return thickness/100;
+                return Math.Round(thickness/100, 4);
             }
         }
 
@@ -86,7 +86,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 {
                     thickness += layer.Sd_Thickness;
                 }
-                return thickness;
+                return Math.Round(thickness, 2);
             }
         }
 
@@ -100,7 +100,21 @@ namespace BauphysikToolWPF.SQLiteRepo
                 {
                     areaMassDens += layer.AreaMassDensity;
                 }
-                return areaMassDens;
+                return Math.Round(areaMassDens, 2);
+            }
+        }
+
+        [Ignore]
+        public double ElementRValue // R_ges in m²K/W
+        {
+            get
+            {
+                double r_ges = 0;
+                foreach (Layer layer in Layers)
+                {
+                    r_ges += layer.R_Value;
+                }
+                return Math.Round(r_ges, 2);
             }
         }
 

@@ -47,17 +47,19 @@ namespace BauphysikToolWPF.SQLiteRepo
          *  
          *  Construction (child property) can be retrieved from parent 'Element' but then 'Construction' will not hold its Child property 'Requirements'.
          *  Must be fetched directly by id so that its children are fetched aswell.
+         *  
+         *  For an Object to contain the complete entity tree starting from 'Project', specifiy the recursive operations
          */
 
         // Retreive Data from Table "Project"
         public static List<Project> GetProjects()
         {
-            return sqlConn.GetAllWithChildren<Project>();
+            return sqlConn.GetAllWithChildren<Project>(recursive: true); // Fetch the Projects and all the related entities recursively
         }
 
         public static void CreateProject(Project project)
         {
-            sqlConn.InsertWithChildren(project);
+            sqlConn.InsertWithChildren(project, recursive: true); // Inserts the object in the database recursively
             OnProjectsChanged(); // raises an event
         }
 
@@ -73,18 +75,62 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
         public static Project QueryProjectById(int projectId)
         {
-            return sqlConn.GetWithChildren<Project>(projectId);
+            return sqlConn.GetWithChildren<Project>(projectId, recursive: true); // Fetch the Project by ID and all the related entities recursively
+        }
+
+        // Retreive Data from Table "Element"
+        public static List<Element> GetElements()
+        {
+            return sqlConn.GetAllWithChildren<Element>(recursive: true);
+        }
+
+        public static void CreateElement(Element element)
+        {
+            sqlConn.InsertWithChildren(element, recursive: true); //Method from SQLiteExt -> adds a relationship to a child object ('Layers') 
+            OnElementsChanged();
+        }
+
+        public static void UpdateElement(Element element)
+        {
+            sqlConn.Update(element);
+            OnElementsChanged();
+        }
+
+        public static void DeleteElement(Element element)
+        {
+            sqlConn.Delete(element);
+            OnElementsChanged();
+        }
+
+        public static void DeleteElementById(int elementId)
+        {
+            sqlConn.Delete<Element>(elementId);
+            OnElementsChanged();
+            // ON DELETE CASCADE -> deletes corresp. Layers and ElementEnvVars via the foreignkey constraint
+        }
+        public static void DeleteAllElements()
+        {
+            sqlConn.DeleteAll<Element>();
+            OnElementsChanged();
+        }
+        public static Element QueryElementById(int elementId)
+        {
+            return sqlConn.GetWithChildren<Element>(elementId, recursive: true);
+        }
+        public static List<Element> QueryElementsByProjectId(int projectId)
+        {
+            return sqlConn.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
         }
 
         // Retreive Data from Table "Layer"
         public static List<Layer> GetLayers()
         {
-            return sqlConn.GetAllWithChildren<Layer>(); // old Method: List<Layer> layers = sqlConn.Table<Layer>().ToList();
+            return sqlConn.GetAllWithChildren<Layer>(recursive: true); // old Method: List<Layer> layers = sqlConn.Table<Layer>().ToList();
         }
 
         public static void CreateLayer(Layer layer)
         {
-            sqlConn.InsertWithChildren(layer); //Method from SQLiteExt -> adds a relationship to a child object ('Material') 
+            sqlConn.InsertWithChildren(layer, recursive: true); //Method from SQLiteExt -> adds a relationship to a child object ('Material') 
             OnLayersChanged(); // raises an event
         }
 
@@ -106,7 +152,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
         public static List<Layer> QueryLayersByElementId(int elementId)
         {
-            return sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId);
+            return sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
         }
 
         // Retreive Data from Table "Material"
@@ -157,50 +203,6 @@ namespace BauphysikToolWPF.SQLiteRepo
                 return sqlConn.Query<EnvVars>("SELECT * FROM EnvVars");
             else
                 return sqlConn.Query<EnvVars>("SELECT * FROM EnvVars WHERE Symbol == " + "\"" + symbol + "\"");
-        }
-
-        // Retreive Data from Table "Element"
-        public static List<Element> GetElements()
-        {
-            return sqlConn.GetAllWithChildren<Element>();
-        }
-
-        public static void CreateElement(Element element)
-        {
-            sqlConn.InsertWithChildren(element); //Method from SQLiteExt -> adds a relationship to a child object ('Layers') 
-            OnElementsChanged();
-        }
-
-        public static void UpdateElement(Element element)
-        {
-            sqlConn.Update(element);
-            OnElementsChanged();
-        }
-
-        public static void DeleteElement(Element element)
-        {
-            sqlConn.Delete(element);
-            OnElementsChanged();
-        }
-
-        public static void DeleteElementById(int elementId)
-        {
-            sqlConn.Delete<Element>(elementId);
-            OnElementsChanged();
-            // ON DELETE CASCADE -> deletes corresp. Layers and ElementEnvVars via the foreignkey constraint
-        }
-        public static void DeleteAllElements()
-        {
-            sqlConn.DeleteAll<Element>();
-            OnElementsChanged();
-        }
-        public static Element QueryElementById(int elementId)
-        {
-            return sqlConn.GetWithChildren<Element>(elementId);
-        }
-        public static List<Element> QueryElementsByProjectId(int projectId)
-        {
-            return sqlConn.GetAllWithChildren<Element>(e => e.ProjectId == projectId);
         }
 
         // Retreive Data from Table "Construction"

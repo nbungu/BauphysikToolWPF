@@ -29,10 +29,10 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Not part of the Database-----//
 
-        [OneToOne] // 1:1 relationship with Material
+        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)] // 1:1 relationship with Material
         public Material Material { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Material' object itself is not stored in DB!
 
-        [ManyToOne] // n:1 relationship with Element (the parent table)
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)] // n:1 relationship with Element (the parent table)
         public Element Element { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Element' object itself is not stored in DB!
 
         [Ignore]

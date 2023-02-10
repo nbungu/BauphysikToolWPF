@@ -3,8 +3,8 @@ using SQLiteNetExtensions.Attributes;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
-    // Verknüpfungstabelle für n:n Beziehung von 'Element' und 'EnvVars'
-    // This entity is never used directly in the application!
+    // Verknüpfungstabelle für m:n Beziehung von 'Element' und 'EnvVars'
+    // Intermediate class, not used directly anywhere in the code
     public class ElementEnvVars
     {
         //------Variablen-----//

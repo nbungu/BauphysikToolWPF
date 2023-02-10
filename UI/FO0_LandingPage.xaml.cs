@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.UI
         {
             // To be able to access the related Children of these Classes, fetch parent of the child directly from DB. 
             Project = DatabaseAccess.QueryProjectById(1); //Hardcoded. TODO change
-            Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
+            Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId); 
             InitializeComponent();
             DatabaseAccess.ElementsChanged += DB_ElementsChanged; // register with an event (when Elements have been changed)
 
