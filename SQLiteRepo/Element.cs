@@ -1,5 +1,6 @@
 ﻿using SQLite;
 using SQLiteNetExtensions.Attributes;
+using System;
 using System.Collections.Generic;
 
 namespace BauphysikToolWPF.SQLiteRepo
@@ -38,7 +39,6 @@ namespace BauphysikToolWPF.SQLiteRepo
         [ManyToOne] // n:1 relationship with Project (the parent table)
         public Project Project { get; set; } // Gets the corresp. object linked by the foreign-key. The 'Project' object itself is not stored in DB!
 
-
         [Ignore] // TODO add as BLOB!! Or save as static Bitmap
         public string ElementImage
         {
@@ -50,6 +50,60 @@ namespace BauphysikToolWPF.SQLiteRepo
             }
         }
 
+        [Ignore]
+        public double ElementThickness_cm // d in cm
+        {
+            get
+            {
+                double thickness = 0;
+                foreach (Layer layer in Layers)
+                {
+                    thickness += layer.LayerThickness;
+                }
+                return thickness;
+            }
+        }
+        public double ElementThickness_m // d in m
+        {
+            get
+            {
+                double thickness = 0;
+                foreach (Layer layer in Layers)
+                {
+                    thickness += layer.LayerThickness;
+                }
+                return thickness/100;
+            }
+        }
+
+        [Ignore]
+        public double ElementSdThickness // sd in m
+        {
+            get
+            {
+                double thickness = 0;
+                foreach (Layer layer in Layers)
+                {
+                    thickness += layer.Sd_Thickness;
+                }
+                return thickness;
+            }
+        }
+
+        [Ignore]
+        public double ElementAreaMassDens // m' in kg/m²
+        {
+            get
+            {
+                double areaMassDens = 0;
+                foreach (Layer layer in Layers)
+                {
+                    areaMassDens += layer.AreaMassDensity;
+                }
+                return areaMassDens;
+            }
+        }
+
         //------Konstruktor-----//
 
         // has to be default parameterless constructor when used as DB
@@ -57,7 +111,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Methoden-----//
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return ElementId + "_" + Name + " (" + this.Construction.Type + ")";
+            return Name + "_" + Construction.Type + " (Id: " + ElementId + ")";
         }
     }
 }

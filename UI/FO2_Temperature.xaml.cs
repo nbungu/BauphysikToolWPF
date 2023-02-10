@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.SQLiteRepo;
 using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
@@ -13,7 +14,8 @@ namespace BauphysikToolWPF.UI
 
         public FO2_Temperature()
         {
-            // If Layers or EnvVars are not set or have changed, update class variables
+            // Save computation time and only recalculate if needed
+            // Only if Layers or EnvVars are not set or have changed: update class variables.
             if (FO1_Setup.RecalculateTemp == true)
             {
                 StationaryTempCalculation = new StationaryTempCalc(); //for FO2_ViewModel

@@ -130,8 +130,8 @@
             <StackPanel Orientation="Vertical" Grid.Column="2">
                 <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X2="128" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
-                <Label Content="tbd" FontSize="14" Height="28"/>
-                <Label Content="tbd" FontSize="14" Height="28"/>
+                <controls:EquationLabel BaseText="R" SubscriptText="min" Value="{Binding R_min}" Unit="m²K/W" Height="28"/>
+                <controls:EquationLabel BaseText="U" SubscriptText="max" Value="{Binding U_max}" Unit="W/m²K" Height="28"/>
                 <Label Content="tbd" FontSize="14" Height="28"/>
                 <Line X2="128" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
                 <Label Content="{Binding StationaryTempCalculation.Tsi_min}" ContentStringFormat="≥ {0} °C" FontSize="14" Height="28"/>

@@ -10,33 +10,31 @@ using static BauphysikToolWPF.ComponentCalculations.CheckRequirements;
 
 namespace BauphysikToolWPF.ComponentCalculations
 {
+    // No static Class due to often changing 'Project' and 'Construction'.
+    // Therefore the Calculations will always be up to date when calling Class with 'new'.
+    // Con: Needs computation time on every call even if variables did not change.
     public class CheckRequirements
     {
+        // Always fetch current Project on calling this Class. No need for Notifier or Updater when Project changes
         private Project project = FO0_LandingPage.Project;
 
-        private Construction currentConstruction;
+        // Always fetch current Construction on calling this Class. No need for Notifier or Updater when Construction changes
+        private Construction currentConstruction = DatabaseAccess.QueryConstructionById(FO0_LandingPage.SelectedElement.ConstructionId);
 
-        private double U_calculated;
+        public double U_max ;
 
-        //private double R_calculated;
-
-        public double U_max;
-
-        //public double R_min;
+        public double R_min;
 
         public bool IsUValueOK = false;
 
-        //public bool IsRValueOK = false;
+        public bool IsRValueOK = false;
 
-        public CheckRequirements(double u_value, Construction construction)
+        public CheckRequirements(double u_value, double r_value)
         {
-            this.currentConstruction = construction;
-            this.U_calculated = u_value;
-            //this.R_calculated = r_value;
             this.U_max = GetUMax();
-            //this.R_min = GetRMin();
-            this.IsUValueOK = U_calculated <= U_max;
-            //this.IsRValueOK = R_calculated >= R_min;
+            this.R_min = GetRMin();
+            this.IsUValueOK = u_value <= U_max;
+            this.IsRValueOK = r_value >= R_min;
         }
         
         public enum BuildingUsage
@@ -61,41 +59,41 @@ namespace BauphysikToolWPF.ComponentCalculations
             GEG_Anlage7 = 3,
             DIN_4108_2_Tabelle3 = 4
         }
-
         private double GetUMax()
         {
-            double u_max_requirement = 0.0;
-            Requirement specificRequirement = new Requirement();
+            // default (irregular) values
+            double u_max_requirement = -1;
+            int requirementSourceId = -1; 
 
             // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
             // via m:n relation of Construction and Requirement.
-            List<Requirement> allRequirements = currentConstruction.Requirements; // TODO: is null
+            List<Requirement> allRequirements = currentConstruction.Requirements;
+
+            // catch constructions with no requirements
+            if (allRequirements == null || allRequirements.Count == 0)
+                return u_max_requirement;
 
             // b) Select relevant Source based off Building Age and Usage
             if (project.IsNewConstruction)
             {
-                if(project.IsResidentialUsage)
+                if (project.IsResidentialUsage)
                 {
-                    int requirementSourceId = (int)RequirementSource.GEG_Anlage1;
-                    // c) Get specific Requirement from selected RequirementSource
-                    specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
-                    // TODO break;
+                    requirementSourceId = (int)RequirementSource.GEG_Anlage1;
                 }
                 if (project.IsNonResidentialUsage)
                 {
-                    int requirementSourceId = (int)RequirementSource.GEG_Anlage2;
-                    // c) Get specific Requirement from selected RequirementSource
-                    specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+                    requirementSourceId = (int)RequirementSource.GEG_Anlage2;
                 }
             }
             if (project.IsExistingConstruction)
             {
-                int requirementSourceId = (int)RequirementSource.GEG_Anlage7;
-                // c) Get specific Requirement from selected RequirementSource
-                specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+                requirementSourceId = (int)RequirementSource.GEG_Anlage7;
             }
 
-            //TODO: Check for Conditions
+            // c) Get specific Requirement from selected RequirementSource
+            Requirement specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+
+            // Check if conditions have to be met
             if (UserSaved.Ti >= 19)
             {
                 return specificRequirement.ValueA;
@@ -115,7 +113,28 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private double GetRMin()
         {
-            return 2.0;
+            // default (irregular) values
+            double r_min_requirement = -1;
+
+            // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
+            // via m:n relation of Construction and Requirement.
+            List<Requirement> allRequirements = currentConstruction.Requirements;
+
+            // catch constructions with no requirements
+            if (allRequirements == null || allRequirements.Count == 0)
+                return r_min_requirement;
+
+            // b) Select relevant Source
+            int requirementSourceId = (int)RequirementSource.DIN_4108_2_Tabelle3;
+
+            // c) Get specific Requirement from selected RequirementSource
+            Requirement specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            //TODO: Can be null
+
+            // Check if conditions have to be met
+            // TODO m'
+            return specificRequirement.ValueA;
+
         }
     }
 }

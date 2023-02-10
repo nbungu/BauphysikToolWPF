@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LiveChartsCore;
@@ -20,6 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         public string Title { get; } = "Temperature";
         public StationaryTempCalc StationaryTempCalculation { get; set; }
+        public CheckRequirements CheckRequirements { get; set; }
         public RectangularSection[] LayerSections { get; set; }
         public ISeries[] DataPoints { get; set; }
         public Axis[] XAxes { get; set; }
@@ -29,12 +31,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         public double Ti { get; set; } = 0;
         public double Te { get; set; } = 0;
         public double Rel_Fi { get; set; } = 0;
-        public bool IsUValueOK { get; private set; } = false;
-        public double U_max { get; private set; }
+        public bool IsUValueOK { get; private set; }
+        public bool IsRValueOK { get; private set; }
+        public string U_max { get; private set; }
+        public string R_min { get; private set; }
 
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
             this.StationaryTempCalculation = FO2_Temperature.StationaryTempCalculation;
+            this.CheckRequirements = new CheckRequirements(StationaryTempCalculation.UValue, StationaryTempCalculation.RTotal-UserSaved.Rsi-UserSaved.Rse);
             this.Rel_Fi = StationaryTempCalculation.Rel_Fi;
             this.Ti = StationaryTempCalculation.Ti;
             this.Te = StationaryTempCalculation.Te;
@@ -48,8 +53,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
             };
             this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
-            // TODO !!! Construction cannot be retrieved from parent Element. Must be fetched directly by id so that its children are fetched aswell
-            this.U_max = new CheckRequirements(StationaryTempCalculation.UValue, DatabaseAccess.QueryConstructionById(FO0_LandingPage.SelectedElement.ConstructionId)).U_max;
+            this.U_max = CheckRequirements.U_max > 0 ? CheckRequirements.U_max.ToString() : "Keine Anforderung"; 
+            this.IsUValueOK = CheckRequirements.U_max > 0 ? CheckRequirements.IsUValueOK : true;
+
+            this.R_min = CheckRequirements.R_min > 0 ? CheckRequirements.R_min.ToString() : "Keine Anforderung";
+            this.IsRValueOK = CheckRequirements.R_min > 0 ? CheckRequirements.IsRValueOK : true;
 
         }
         private RectangularSection[] DrawLayerSections()

@@ -9,17 +9,18 @@ namespace BauphysikToolWPF.UI
 {
     public partial class FO0_LandingPage : UserControl  // publisher of 'ElementSelectionChanged' event
     {
-        public static Project Project { get; private set; }
-        public static List<Element> Elements { get; private set; } = new List<Element>(); // avoid null value
-        public static Element SelectedElement { get; set; }
+        // Initialize with empty List to avoid null value
+        public static Project Project { get; private set; } = new Project();
+        public static List<Element> Elements { get; private set; } = new List<Element>();
+        public static Element SelectedElement { get; set; } = new Element();
 
         public FO0_LandingPage()
         {
+            // To be able to access the related Children of these Classes, fetch parent of the child directly from DB. 
             Project = DatabaseAccess.QueryProjectById(1); //Hardcoded. TODO change
             Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
             InitializeComponent();
             DatabaseAccess.ElementsChanged += DB_ElementsChanged; // register with an event (when Elements have been changed)
-
 
             //TODO: XAML Binding on IsChecked doest work somehow. Define here instead
             selectUsage1_Button.IsChecked = Project.IsResidentialUsage;
@@ -84,7 +85,6 @@ namespace BauphysikToolWPF.UI
 
             window.ShowDialog();   // Open as modal (Parent window pauses, waiting for the window to be closed)
         }
-
 
         private void closeApp_Button_Click(object sender, RoutedEventArgs e)
         {

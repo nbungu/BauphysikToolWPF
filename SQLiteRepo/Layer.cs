@@ -25,7 +25,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int ElementId { get; set; } // To which Parent Element this Layer belongs    
 
         [NotNull]
-        public double LayerThickness { get; set; }  // Layer thickness in cm
+        public double LayerThickness { get; set; } // Layer thickness in cm
 
         //------Not part of the Database-----//
 
@@ -48,6 +48,12 @@ namespace BauphysikToolWPF.SQLiteRepo
         public double Sd_Thickness // sd thickness in m
         {
             get { return Math.Round((this.LayerThickness / 100) * Material.DiffusionResistance, 3); }
+        }
+
+        [Ignore]
+        public double AreaMassDensity // m' in kg/m²
+        {
+            get { return Math.Round(this.LayerThickness / 100 * Material.BulkDensity, 3); }
         }
 
         //------Konstruktor-----//

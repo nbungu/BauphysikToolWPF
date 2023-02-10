@@ -8,8 +8,8 @@ using System.Linq;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
-    public delegate void Notify(); // delegate (signature: return type void, no input parameters)
-    public class DatabaseAccess // publisher of 'LayersChanged' event
+    public delegate void Notify(); // delegate with signature: return type void, no input parameters
+    public class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
         // TODO: no absolute Path
         private static string dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\SQLiteRepo\\DemoDB.db"));
@@ -17,27 +17,37 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
         public static event Notify? LayersChanged; // event
-        public static event Notify? ElementsChanged; // event
-        public static event Notify? ElementEnvVarsChanged; //event
-        public static event Notify? ProjectsChanged; //event
+        public static event Notify? ElementsChanged;
+        public static event Notify? ElementEnvVarsChanged;
+        public static event Notify? ProjectsChanged;
 
         // event handlers - publisher
         public static void OnLayersChanged() //protected virtual method
         {
             LayersChanged?.Invoke(); //if LayersChanged is not null then call delegate
         }
-        public static void OnElementsChanged() //protected virtual method
+        public static void OnElementsChanged()
         {
-            ElementsChanged?.Invoke(); //if ElementsChanged is not null then call delegate
+            ElementsChanged?.Invoke();
         }
-        public static void OnElementEnvVarsChanged() //protected virtual method
+        public static void OnElementEnvVarsChanged()
         {
-            ElementEnvVarsChanged?.Invoke(); //if ElementEnvVarsChanged is not null then call delegate
+            ElementEnvVarsChanged?.Invoke();
         }
-        public static void OnProjectsChanged() //protected virtual method
+        public static void OnProjectsChanged()
         {
-            ProjectsChanged?.Invoke(); //if ElementEnvVarsChanged is not null then call delegate
+            ProjectsChanged?.Invoke();
         }
+
+        /*
+         *  SQLiteNetExtensions allows direct Access to the related children of a Class (e.g. from 1:n relation).
+         *  
+         *  To Access the Related Children of a SQL Class directly, fetch only the parent Class which Holds the Child!
+         *  Inheritance of the Child property over more than one hierarchy levels dont't work! Otherwise the Child will be null.
+         *  
+         *  Construction (child property) can be retrieved from parent 'Element' but then 'Construction' will not hold its Child property 'Requirements'.
+         *  Must be fetched directly by id so that its children are fetched aswell.
+         */
 
         // Retreive Data from Table "Project"
         public static List<Project> GetProjects()
