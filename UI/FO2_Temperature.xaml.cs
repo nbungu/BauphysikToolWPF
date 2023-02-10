@@ -1,6 +1,4 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
 using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI

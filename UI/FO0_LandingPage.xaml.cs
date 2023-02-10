@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,13 +9,13 @@ namespace BauphysikToolWPF.UI
     public partial class FO0_LandingPage : UserControl  // publisher of 'ElementSelectionChanged' event
     {
         // Initialize with empty List to avoid null value
-        public static Project Project { get; private set; } = new Project();
+        public static Project Project { get; private set; } = DatabaseAccess.QueryProjectById(1); //Hardcoded. TODO change
         public static Element SelectedElement { get; set; } = new Element();
 
         public FO0_LandingPage()
         {
-            Project = DatabaseAccess.QueryProjectById(1); //Hardcoded. TODO change
             InitializeComponent();
+
             DatabaseAccess.ElementsChanged += DB_ElementsChanged; // register with an event (when Elements have been changed)
 
             //TODO: XAML Binding on IsChecked doest work somehow. Define here instead
@@ -31,13 +30,13 @@ namespace BauphysikToolWPF.UI
         {
             // Updates the ItemsSource. Initial object is fetched by XAML via ViewModel
             element_ItemsControl.ItemsSource = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
-        }
+        }        
 
         // custom Methods
         private void createNewElement_Button_Click(object sender, RoutedEventArgs e)
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(Project);
+            var window = new NewElementWindow();
 
             //window.Owner = this;
             window.ShowDialog();   // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -78,7 +77,7 @@ namespace BauphysikToolWPF.UI
             int elementId = Convert.ToInt16(button.Content);
             Element editElement = DatabaseAccess.QueryElementById(elementId);
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(Project, editElement);
+            var window = new NewElementWindow(editElement);
 
             window.ShowDialog();   // Open as modal (Parent window pauses, waiting for the window to be closed)
         }

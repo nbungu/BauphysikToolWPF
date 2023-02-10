@@ -10,12 +10,13 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class NewElementWindow : Window
     {
+        private Project project = FO0_LandingPage.Project;
         private Element element;
-        private Project project;
-        public NewElementWindow(Project project, Element element = null)
+
+        public NewElementWindow(Element element = null)
         {
             this.element = element;
-            this.project = project; 
+
             InitializeComponent();
 
             // Pre set TextBox and ComboBox to edit existing Element
@@ -49,12 +50,12 @@ namespace BauphysikToolWPF.UI
                         Layers = new List<Layer>(),
                         EnvVars = new List<EnvVars>()
                     };
-                    DatabaseAccess.CreateElement(newElem);
                     FO0_LandingPage.SelectedElement = newElem;
+                    DatabaseAccess.CreateElement(newElem);
                     this.Close();
                     MainWindow.SetPage("Setup");
                 }
-                // If Element in Parameter -> Edit existing Element
+                // If Element in Parameter -> Edit existing Element (SelectedElement from FO0_LandingPage)
                 else
                 {
                     this.element.Name = elementName;

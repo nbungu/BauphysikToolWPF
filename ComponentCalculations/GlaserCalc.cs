@@ -41,10 +41,11 @@ namespace BauphysikToolWPF.ComponentCalculations
 
                 widthPosition += Element.Layers[i].Sd_Thickness;
             }
+            return p_sat_List;
 
-            if (Math.Round(widthPosition, 3) == TotalSdWidth)
+            /*if (Math.Round(widthPosition, 3) == TotalSdWidth)
                 return p_sat_List;
-            else throw new ArgumentOutOfRangeException("calculation failed: sd_width doesn't add up!");
+            else throw new ArgumentOutOfRangeException("calculation failed: sd_width doesn't add up!");*/
         }
         private List<KeyValuePair<double, double>> GetLayerP()
         {

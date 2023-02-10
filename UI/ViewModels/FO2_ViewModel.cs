@@ -20,15 +20,16 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO2_ViewModel
     {
         public string Title { get; } = "Temperature";
-        public StationaryTempCalc TempCalc { get; } = FO2_Temperature.StationaryTempCalculation;
-        public double Ti { get; } = UserSaved.Ti;
-        public double Te { get; } = UserSaved.Te;
-        public double Rel_Fi { get; } = UserSaved.Rel_Fi;
+        public StationaryTempCalc TempCalc { get; set; } = FO2_Temperature.StationaryTempCalculation;
+        public double Ti { get; set; } = UserSaved.Ti;
+        public double Te { get; set; } = UserSaved.Te;
+        public double Rel_Fi { get; set; } = UserSaved.Rel_Fi;
         public CheckRequirements CheckRequirements { get; private set; }
         public bool IsUValueOK { get; private set; }
         public bool IsRValueOK { get; private set; }
         public string U_max { get; private set; }
         public string R_min { get; private set; }
+
         public RectangularSection[] LayerSections { get; private set; }
         public ISeries[] DataPoints { get; private set; }
         public Axis[] XAxes { get; private set; }

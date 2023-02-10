@@ -16,8 +16,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public static readonly double TsiMin = 12.6;
 
         // (Instance-) Variables and encapsulated properties - Called before Constructor
-
-        private protected Element element = FO0_LandingPage.SelectedElement; // Access is limited to the containing class or types derived from the containing class within the current assembly
+        public Element Element { get; private set; } = FO0_LandingPage.SelectedElement; // Access is limited to the containing class or types derived from the containing class within the current assembly
         public double TotalElementWidth { get; private set; } = 0;
         public double SumOfLayersR { get; private set; } = 0;
         public double RTotal { get; private set; } = 0;
@@ -37,12 +36,12 @@ namespace BauphysikToolWPF.ComponentCalculations
         // (Instance-) Constructor
         public StationaryTempCalc()
         {
-            if (element.Layers.Count == 0)
+            if (Element.Layers.Count == 0)
                 return;
 
             // Calculated parameters (private setter)
-            TotalElementWidth = element.ElementThickness_cm;
-            SumOfLayersR = element.ElementRValue;
+            TotalElementWidth = Element.ElementThickness_cm;
+            SumOfLayersR = Element.ElementRValue;
             RTotal = GetRTotal();           // Gl. 2-55; S.28
             UValue = GetUValue();           // Gl. 2-57; S.29
             QValue = GetqValue();           // Gl. 2-65; S.31
@@ -79,10 +78,10 @@ namespace BauphysikToolWPF.ComponentCalculations
 
             // Starting from inner side
             double widthPosition = 0; // cm
-            for (int i = 0; i < element.Layers.Count; i++)
+            for (int i = 0; i < Element.Layers.Count; i++)
             {
-                widthPosition += element.Layers[i].LayerThickness;
-                double tempValue = temp_List.ElementAt(i).Value - element.Layers[i].R_Value * QValue;
+                widthPosition += Element.Layers[i].LayerThickness;
+                double tempValue = temp_List.ElementAt(i).Value - Element.Layers[i].R_Value * QValue;
                 temp_List.Add(new KeyValuePair<double, double>(widthPosition, tempValue));
             }
             return temp_List;

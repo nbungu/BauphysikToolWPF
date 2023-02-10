@@ -136,7 +136,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
             // Check if conditions have to be met
             // TODO m'
-            return specificRequirement.ValueA;
+            return 0.0;
 
         }
     }
