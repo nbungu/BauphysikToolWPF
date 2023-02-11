@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     // Verknüpfungstabelle für m:n Beziehung von 'Construction' und 'Requirement'
-    // This entity is never used directly in the application!
+    // Intermediate class, not used directly anywhere in the code
     public class ConstructionRequirement
     {
         //------Variablen-----//

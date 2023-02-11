@@ -16,7 +16,6 @@ namespace BauphysikToolWPF.UI
     {
         // Class Variables - Belongs to the Class-Type itself and stay the same
         public static int ElementId { get; set; } = -1; // Default: no element set
-        public static List<Layer> Layers { get; private set; } = new List<Layer>(); // for FO1, FO2 & FO3 ViewModel
 
         // Recalculate Flags - Save computation time by avoiding unnecessary new instances
         public static bool RecalculateTemp { get; set; } = false;
@@ -32,19 +31,19 @@ namespace BauphysikToolWPF.UI
             if (ElementId != FO0_LandingPage.SelectedElement.ElementId)
             {
                 ElementId = FO0_LandingPage.SelectedElement.ElementId;
-                Layers = DatabaseAccess.QueryLayersByElementId(ElementId);
                 RecalculateTemp = true;
                 RecalculateGlaser = true;
             }
 
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
-            InitializeComponent();                              // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
+            InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
             // Drawing
-            LoadDropDownSelections();                           // Loads last selection of the dropdown box (Picker)
-            new DrawLayerCanvas(Layers, layers_Canvas);         // Initial Draw of the Canvas
-            new DrawMeasurementLine(measurement_Grid, Layers);  // Initial Draw of the measurement line
+            LoadDropDownSelections(); // Loads last selection of the dropdown box (Picker)
+            new DrawLayerCanvas(layers_Canvas, FO0_LandingPage.SelectedElement.Layers);         // Initial Draw of the Canvas
+            new DrawMeasurementLine(measurement_Grid, FO0_LandingPage.SelectedElement.Layers);  // Initial Draw of the measurement line
 
+            // Event Subscription
             DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with event, when Layers changed
             UserSaved.EnvVarsChanged += Session_EnvVarsChanged; // register with event, when EnvVars changed
         }
@@ -52,22 +51,42 @@ namespace BauphysikToolWPF.UI
         // event handlers - subscribers
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
-            Layers = DatabaseAccess.QueryLayersByElementId(ElementId);  // Update Layer variable in this class
-            ReorderLayerPosition(Layers);                               // Establish correct LayerPosition 
-            layers_ListView.ItemsSource = Layers;                       // Update LVItemsSource
-            new DrawLayerCanvas(Layers, layers_Canvas);                 // Redraw Canvas
-            new DrawMeasurementLine(measurement_Grid, Layers);          // Redraw measurement line
+            // Update the SelectedElement Variable for whole Application
+            FO0_LandingPage.SelectedElement = DatabaseAccess.QueryElementById(ElementId);
 
+            // Bring them in correct order again
+            ReorderLayerPosition(FO0_LandingPage.SelectedElement.Layers);        
+
+            // Update UI
+            layers_ListView.ItemsSource = FO0_LandingPage.SelectedElement.Layers;                       // Update LVItemsSource
+            new DrawLayerCanvas(layers_Canvas, FO0_LandingPage.SelectedElement.Layers);                 // Redraw Canvas
+            new DrawMeasurementLine(measurement_Grid, FO0_LandingPage.SelectedElement.Layers);          // Redraw measurement line
+
+            // Update Recalculate Flag
             RecalculateTemp = true;
             RecalculateGlaser = true;
         }
         public void Session_EnvVarsChanged()
         {
+            // Update Recalculate Flag
             RecalculateTemp = true;
             RecalculateGlaser = true;
         }
 
         // custom Methods
+        // Fixes wrong layer Positions in this Element after deleting Layers.
+        private void ReorderLayerPosition(List<Layer> layers)
+        {
+            if (layers.Count > 0)
+            {
+                // Update the Id property of the remaining objects
+                for (int i = 0; i < layers.Count; i++)
+                {
+                    layers[i].LayerPosition = i + 1;
+                    DatabaseAccess.UpdateLayer(layers[i]);
+                }
+            }
+        }
         private void LoadDropDownSelections()
         {
             // TODO implement in xaml
@@ -78,18 +97,7 @@ namespace BauphysikToolWPF.UI
             Rel_Fi_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rel_Fi_ComboBox"];
             Rel_Fe_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rel_Fe_ComboBox"];
         }
-        private void ReorderLayerPosition(List<Layer> layers)
-        {
-            if (layers.Count > 0)
-            {
-                // Update the Id property of the remaining objects
-                for (int i = 0; i < layers.Count; i++)
-                {
-                    layers[i].LayerPosition = i + 1; // TODO: im getter die LayerPosition validieren: Problem PrimaryKeys können nicht verändert werden
-                    DatabaseAccess.UpdateLayer(layers[i]);
-                }
-            }
-        }
+
         public void UpdateElementEnvVars(int elementID, EnvVars envVar)
         {
             // Add m:n realtion to Database
@@ -291,7 +299,7 @@ namespace BauphysikToolWPF.UI
             layer.IsSelected = true;
 
             // Redraw to show selected layer 
-            new DrawLayerCanvas(layers_ListView.ItemsSource as List<Layer>, layers_Canvas);
+            new DrawLayerCanvas(layers_Canvas, layers_ListView.ItemsSource as List<Layer>);
         }
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {

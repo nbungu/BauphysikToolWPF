@@ -20,55 +20,53 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO2_ViewModel
     {
         public string Title { get; } = "Temperature";
-        public StationaryTempCalc StationaryTempCalculation { get; set; }
-        public CheckRequirements CheckRequirements { get; set; }
-        public RectangularSection[] LayerSections { get; set; }
-        public ISeries[] DataPoints { get; set; }
-        public Axis[] XAxes { get; set; }
-        public Axis[] YAxes { get; set; }
-        public SolidColorPaint TooltipTextPaint { get; set; }
-        public SolidColorPaint TooltipBackgroundPaint { get; set; }
-        public double Ti { get; set; } = 0;
-        public double Te { get; set; } = 0;
-        public double Rel_Fi { get; set; } = 0;
+        public StationaryTempCalc TempCalc { get; set; } = FO2_Temperature.StationaryTempCalculation;
+        public double Ti { get; set; } = UserSaved.Ti;
+        public double Te { get; set; } = UserSaved.Te;
+        public double Rel_Fi { get; set; } = UserSaved.Rel_Fi;
+        public CheckRequirements CheckRequirements { get; private set; }
         public bool IsUValueOK { get; private set; }
         public bool IsRValueOK { get; private set; }
         public string U_max { get; private set; }
         public string R_min { get; private set; }
 
+        public RectangularSection[] LayerSections { get; private set; }
+        public ISeries[] DataPoints { get; private set; }
+        public Axis[] XAxes { get; private set; }
+        public Axis[] YAxes { get; private set; }
+        public SolidColorPaint TooltipBackgroundPaint { get; private set; }
+        public SolidColorPaint TooltipTextPaint { get; private set; }
+
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
-            this.StationaryTempCalculation = FO2_Temperature.StationaryTempCalculation;
-            this.CheckRequirements = new CheckRequirements(StationaryTempCalculation.UValue, StationaryTempCalculation.RTotal-UserSaved.Rsi-UserSaved.Rse);
-            this.Rel_Fi = StationaryTempCalculation.Rel_Fi;
-            this.Ti = StationaryTempCalculation.Ti;
-            this.Te = StationaryTempCalculation.Te;
+            // For the Requirement Checks (U-Value, R-Value)
+            this.CheckRequirements = new CheckRequirements(TempCalc.UValue, TempCalc.SumOfLayersR);
+            this.U_max = CheckRequirements.U_max > 0 ? CheckRequirements.U_max.ToString() : "Keine Anforderung";
+            this.IsUValueOK = CheckRequirements.U_max > 0 ? CheckRequirements.IsUValueOK : true;
+            this.R_min = CheckRequirements.R_min > 0 ? CheckRequirements.R_min.ToString() : "Keine Anforderung";
+            this.IsRValueOK = CheckRequirements.R_min > 0 ? CheckRequirements.IsRValueOK : true;
+
+            // For Drawing the Chart
             this.LayerSections = DrawLayerSections();
             this.DataPoints = DrawTempCurvePoints();
             this.XAxes = DrawXAxes();
             this.YAxes = DrawYAxes();
+            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
             this.TooltipTextPaint = new SolidColorPaint
             {
                 Color = new SKColor(0, 0, 0),
                 SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
             };
-            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
-            this.U_max = CheckRequirements.U_max > 0 ? CheckRequirements.U_max.ToString() : "Keine Anforderung"; 
-            this.IsUValueOK = CheckRequirements.U_max > 0 ? CheckRequirements.IsUValueOK : true;
-
-            this.R_min = CheckRequirements.R_min > 0 ? CheckRequirements.R_min.ToString() : "Keine Anforderung";
-            this.IsRValueOK = CheckRequirements.R_min > 0 ? CheckRequirements.IsRValueOK : true;
-
         }
         private RectangularSection[] DrawLayerSections()
         {
-            if (StationaryTempCalculation.Layers.Count == 0)
+            if (TempCalc.Element.Layers.Count == 0)
                 return new RectangularSection[0];
 
-            RectangularSection[] rects = new RectangularSection[StationaryTempCalculation.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
 
             double left = 0;
-            foreach (Layer layer in StationaryTempCalculation.Layers)
+            foreach (Layer layer in TempCalc.Element.Layers)
             {
                 int position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.LayerThickness;
@@ -92,7 +90,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
 
             //TODO: is hardcoded
-            //fRsi frsi = new fRsi(StationaryTempCalculation.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
+            //fRsi frsi = new fRsi(TempCalc.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
             /*rects[0] = new RectangularSection
             {
                 Yi = StationaryTempCalc.TsiMin,
@@ -109,13 +107,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] DrawTempCurvePoints()
         {
-            if (StationaryTempCalculation.Layers.Count == 0)
+            if (TempCalc.Element.Layers.Count == 0)
                 return new ISeries[0];
 
             ISeries[] series = new ISeries[3]; // more than one series possible to draw in the same graph      
 
-            double tsi_Pos = StationaryTempCalculation.LayerTemps.First().Key;
-            double tsi = StationaryTempCalculation.LayerTemps.First().Value;
+            double tsi_Pos = TempCalc.LayerTemps.First().Key;
+            double tsi = TempCalc.LayerTemps.First().Value;
             double deltaTi = Math.Abs(Ti - tsi);
 
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -135,11 +133,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 TooltipLabelFormatter = null
             };
 
-            ObservablePoint[] tempValues = new ObservablePoint[StationaryTempCalculation.LayerTemps.Count()]; // represents the temperature points
-            for (int i = 0; i < StationaryTempCalculation.LayerTemps.Count(); i++)
+            ObservablePoint[] tempValues = new ObservablePoint[TempCalc.LayerTemps.Count()]; // represents the temperature points
+            for (int i = 0; i < TempCalc.LayerTemps.Count(); i++)
             {
-                double x = StationaryTempCalculation.LayerTemps.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(StationaryTempCalculation.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
+                double x = TempCalc.LayerTemps.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(TempCalc.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
                 tempValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             // Set properties & add temperature points to the series
@@ -161,8 +159,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
 
-            double tse_Pos = StationaryTempCalculation.LayerTemps.Last().Key;
-            double tse = StationaryTempCalculation.LayerTemps.Last().Value;
+            double tse_Pos = TempCalc.LayerTemps.Last().Key;
+            double tse = TempCalc.LayerTemps.Last().Value;
             double deltaTe = Math.Abs(Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {

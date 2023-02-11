@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
-    //https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
     public class Construction
     {
         //------Variablen-----//
@@ -20,7 +19,8 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Not part of the Database-----//
 
-        [ManyToMany(typeof(ConstructionRequirement))] // m:n relationship with Requirement (ConstructionRequirement is intermediate entity)
+        // m:n relationship with Requirement
+        [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
         public List<Requirement> Requirements { get; set; }
 
         //------Konstruktor-----//

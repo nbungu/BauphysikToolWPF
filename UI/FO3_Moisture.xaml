@@ -43,14 +43,14 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
                         <Label Content="Innen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding GlaserCalculation.Ti}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding GlCalc.Ti}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding GlaserCalculation.Rel_Fi}" Unit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding GlCalc.Rel_Fi}" Unit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
-                        <controls:EquationLabel BaseText="Φ" SubscriptText="e" Value="{Binding GlaserCalculation.Rel_Fe}" Unit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="Φ" SubscriptText="e" Value="{Binding GlCalc.Rel_Fe}" Unit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding GlaserCalculation.Te}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding GlCalc.Te}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
                     </StackPanel>
@@ -85,15 +85,15 @@
             <StackPanel Orientation="Vertical" Grid.Column="0">
                 <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding GlaserCalculation.FRsi}" Height="28" Margin="4,0,0,0"/>
-                <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding GlaserCalculation.Rel_Fi}" Unit="%" Height="28" Margin="4,0,0,0"/>
+                <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding GlCalc.FRsi}" Height="28" Margin="4,0,0,0"/>
+                <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding GlCalc.Rel_Fi}" Unit="%" Height="28" Margin="4,0,0,0"/>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Grid.Column="1">
                 <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
                 <Label Content="> 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
-                <Label Content="{Binding GlaserCalculation.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
+                <Label Content="{Binding GlCalc.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
             </StackPanel>
         </Grid>
 

@@ -28,8 +28,11 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Not part of the Database-----//
 
-        // Encapsulate/Hide BuildingUsage and BuildingAge to convert to bool
+        // 1:n relationship with Element
+        [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
+        public List<Element> Elements { get; set; }
 
+        // Encapsulate/Hide BuildingUsage and BuildingAge to convert to bool
         [Ignore]
         public bool IsResidentialUsage // = 1
         {
@@ -66,9 +69,6 @@ namespace BauphysikToolWPF.SQLiteRepo
                 BuildingAge = (value) ? 0 : 1;
             }
         }
-
-        [OneToMany] // 1:n relationship with Element, ON DELETE CASCADE
-        public List<Element> Elements { get; set; } // the corresp. object/Type for the foreign-key. The 'List<Element>' object itself is not stored in DB!
 
         //------Konstruktor-----//
 

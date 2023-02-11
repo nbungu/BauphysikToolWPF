@@ -15,38 +15,40 @@ namespace BauphysikToolWPF.UI.ViewModels
     [ObservableObject]
     public partial class FO3_ViewModel
     {
-        public string Title { get; } = "Moisture"; // Called by 'InitializeComponent()' due to Class-Binding in xaml via DataContext        
-        public GlaserCalc GlaserCalculation { get; set; }
+        public string Title { get; } = "Moisture";      
+        public GlaserCalc GlCalc { get; set; } = FO3_Moisture.GlaserCalculation;
         public RectangularSection[] LayerSections { get; set; }
         public ISeries[] DataPoints { get; set; }
         public Axis[] XAxes { get; set; }
         public Axis[] YAxes { get; set; }
-        public SolidColorPaint TooltipTextPaint { get; set; }
         public SolidColorPaint TooltipBackgroundPaint { get; set; }
-        public FO3_ViewModel() // Called by 'InitializeComponent()' from FO3_Moisture.cs due to Class-Binding in xaml via DataContext
+        public SolidColorPaint TooltipTextPaint { get; set; }
+
+        // Called by 'InitializeComponent()' from FO3_Moisture.cs due to Class-Binding in xaml via DataContext
+        public FO3_ViewModel()
         {
-            this.GlaserCalculation = FO3_Moisture.GlaserCalculation;
+            // For Drawing the Chart
             this.LayerSections = DrawLayerSections();
             this.DataPoints = DrawGlaserCurvePoints();
             this.XAxes = DrawXAxes();
             this.YAxes = DrawYAxes();
+            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
             this.TooltipTextPaint = new SolidColorPaint
             {
                 Color = new SKColor(0, 0, 0),
                 SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
             };
-            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
         }
         private RectangularSection[] DrawLayerSections()
         {
-            if (GlaserCalculation.Layers.Count == 0)
+            if (GlCalc.Element.Layers.Count == 0)
                 return new RectangularSection[0];
 
-            RectangularSection[] rects = new RectangularSection[GlaserCalculation.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[GlCalc.Element.Layers.Count];
 
             //TODO: Round values of left and right
             double left = 0;
-            foreach (Layer layer in GlaserCalculation.Layers)
+            foreach (Layer layer in GlCalc.Element.Layers)
             {
                 int position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.Sd_Thickness;
@@ -72,16 +74,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] DrawGlaserCurvePoints()
         {
-            if (GlaserCalculation.Layers.Count == 0)
+            if (GlCalc.Element.Layers.Count == 0)
                 return new ISeries[0];
 
             ISeries[] series = new ISeries[2];
 
-            ObservablePoint[] p_Curve_Values = new ObservablePoint[GlaserCalculation.LayerP.Count()]; // represents the temperature points
-            for (int i = 0; i < GlaserCalculation.LayerP.Count(); i++)
+            ObservablePoint[] p_Curve_Values = new ObservablePoint[GlCalc.LayerP.Count()]; // represents the temperature points
+            for (int i = 0; i < GlCalc.LayerP.Count(); i++)
             {
-                double x = GlaserCalculation.LayerP.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(GlaserCalculation.LayerP.ElementAt(i).Value, 2); // Temperature in °C
+                double x = GlCalc.LayerP.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(GlCalc.LayerP.ElementAt(i).Value, 2); // Temperature in °C
                 p_Curve_Values[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             LineSeries<ObservablePoint> p_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -96,11 +98,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 TooltipLabelFormatter = (chartPoint) => $"pi: {chartPoint.PrimaryValue} Pa",
             };
 
-            ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[GlaserCalculation.LayerPsat.Count()]; // represents the temperature points
-            for (int i = 0; i < GlaserCalculation.LayerPsat.Count(); i++)
+            ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[GlCalc.LayerPsat.Count()]; // represents the temperature points
+            for (int i = 0; i < GlCalc.LayerPsat.Count(); i++)
             {
-                double x = GlaserCalculation.LayerPsat.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(GlaserCalculation.LayerPsat.ElementAt(i).Value, 2); // Temperature in °C
+                double x = GlCalc.LayerPsat.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(GlCalc.LayerPsat.ElementAt(i).Value, 2); // Temperature in °C
                 p_sat_Curve_Values[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             LineSeries<ObservablePoint> p_sat_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series

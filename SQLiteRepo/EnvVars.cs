@@ -12,21 +12,23 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Eigenschaften-----//
 
-        [NotNull, PrimaryKey, AutoIncrement, Unique] //SQL Attributes
+        [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int EnvVarId { get; set; }
 
         [NotNull]
         public string Symbol { get; set; }
+
         [NotNull]
         public double Value { get; set; }
 
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
 
-        public string Unit { get; set; }
+        public string? Unit { get; set; }
 
         //------Not part of the Database-----//
 
-        [ManyToMany(typeof(ElementEnvVars))] // m:n relationship with Element (ElementEnvVars is intermediate entity)
+        // m:n relationship with Element
+        [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.CascadeRead)]
         public List<Element> Elements { get; set; }
 
 

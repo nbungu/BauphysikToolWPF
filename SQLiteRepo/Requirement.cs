@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int RequirementId { get; set; }
 
-        [ForeignKey(typeof(RequirementSource))] // FK for the n:1 relation
+        [ForeignKey(typeof(RequirementSource))] // FK for the n:1 relationship with RequirementSource
         public int RequirementSourceId { get; set; }
 
         [NotNull] 
@@ -34,11 +34,13 @@ namespace BauphysikToolWPF.SQLiteRepo
         public string? ValueBCondition { get; set; }
 
         //------Not part of the Database-----//
-        
-        [ManyToOne] // n:1 relationship with RequirementSource (the parent table)
-        public RequirementSource RequirementSource { get; set; } // Gets the corresp. object linked by the foreign-key. The 'RequirementSource' object itself is not stored in DB!
 
-        [ManyToMany(typeof(ConstructionRequirement))] // m:n relationship with Construction (ConstructionRequirement is intermediate entity)
+        // n:1 relationship with RequirementSource
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public RequirementSource RequirementSource { get; set; }
+
+        // m:n relationship with Construction
+        [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
         public List<Construction> Constructions { get; set; }
 
         //------Konstruktor-----//
@@ -47,9 +49,9 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Methoden-----//
 
-        /*public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
+        public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return LayerThickness + " cm, "+ Material.Name + " (Pos. " + this.LayerPosition + ")";
-        }*/
+            return "(Id: " + RequirementId + ")";
+        }
     }
 }

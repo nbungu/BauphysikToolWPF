@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI
     public class DrawLayerCanvas
     {
         // custom parameter constructor, with optional parameter "showPositionLabel"
-        public DrawLayerCanvas(List<Layer> layers, Canvas canvas, bool showPositionLabel = true)
+        public DrawLayerCanvas(Canvas canvas, List<Layer> layers, bool showPositionLabel = true)
         {
             canvas.Children.Clear();
 

@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -9,19 +8,15 @@ namespace BauphysikToolWPF.UI
 {
     public partial class FO0_LandingPage : UserControl  // publisher of 'ElementSelectionChanged' event
     {
-        // Class Variables
-        // Initialize + Assign empty List to avoid null value
-        public static Project Project { get; private set; } = new Project();
-        public static List<Element> Elements { get; private set; } = new List<Element>();
+        // Initialize with empty List to avoid null value
+        public static Project Project { get; private set; } = DatabaseAccess.QueryProjectById(1); //Hardcoded. TODO change
         public static Element SelectedElement { get; set; } = new Element();
 
         // Constructor
         public FO0_LandingPage()
         {
-            // To be able to access the related Children of these Classes, fetch parent of the child directly from DB. 
-            Project = DatabaseAccess.QueryProjectById(1); //Hardcoded. TODO change
-            Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
             InitializeComponent();
+
             DatabaseAccess.ElementsChanged += DB_ElementsChanged; // register with an event (when Elements have been changed)
 
             //TODO: XAML Binding on IsChecked doest work somehow. Define here instead
@@ -34,17 +29,19 @@ namespace BauphysikToolWPF.UI
         // Event handlers - Subscriber
         public void DB_ElementsChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
-            Elements = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId); // Update Class Variable
-            element_ItemsControl.ItemsSource = Elements; // Updates the ItemsSource. Initial object is fetched by XAML via ViewModel
-        }
+            // Updates the ItemsSource. Initial object is fetched by XAML via ViewModel
+            element_ItemsControl.ItemsSource = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId);
+        }        
 
         // Custom Methods
         private void createNewElement_Button_Click(object sender, RoutedEventArgs e)
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(Project);
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
+            var window = new NewElementWindow();
+
+            //window.Owner = this;
+            window.ShowDialog();   // Open as modal (Parent window pauses, waiting for the window to be closed)
+            //window.Show();       // Open as modeless
         }
 
         // Click on existing Element from WrapPanel
@@ -81,7 +78,7 @@ namespace BauphysikToolWPF.UI
             int elementId = Convert.ToInt16(button.Content);
             Element editElement = DatabaseAccess.QueryElementById(elementId);
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(Project, editElement);
+            var window = new NewElementWindow(editElement);
 
             window.ShowDialog(); // Open as modal (Parent window pauses, waiting for the window to be closed)
         }

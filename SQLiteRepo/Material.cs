@@ -4,20 +4,27 @@ namespace BauphysikToolWPF.SQLiteRepo
 {
     public class Material
     {
-        // Eigenschaften/Kapselung: Steuert Zugriff auf die Variablen von außerhalb der Klasse
-        // Hier: Auto-implemented properties -> without any extra logic
-
-        [NotNull, PrimaryKey, AutoIncrement, Unique] // Wenn eine DB eine Klasse als Basis für neue Tabelle nimmt
+        [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int MaterialId { get; set; }
+
         [NotNull, Unique]
         public string Name { get; set; }
+
+        [NotNull]
         public string Category { get; set; }
-        public string ColorCode { get; set; }
+
+        [NotNull]
         public int BulkDensity { get; set; }
+
+        [NotNull]
         public double ThermalConductivity { get; set; }
-        public double Porosity { get; set; }
-        public int SpecificHeatCapacity { get; set; }
+
+        [NotNull]
         public double DiffusionResistance { get; set; }
+
+        public string? ColorCode { get; set; }
+        public double? Porosity { get; set; }
+        public int? SpecificHeatCapacity { get; set; }
 
         //------Methoden-----//
 

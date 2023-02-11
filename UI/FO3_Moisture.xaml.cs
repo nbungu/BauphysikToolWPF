@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.SessionData;
 using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
