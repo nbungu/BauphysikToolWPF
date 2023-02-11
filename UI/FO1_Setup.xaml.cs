@@ -51,16 +51,16 @@ namespace BauphysikToolWPF.UI
         // event handlers - subscribers
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
-            // Update the SelectedElement Variable for whole Application
+            // Update SelectedElement Class Variable
             FO0_LandingPage.SelectedElement = DatabaseAccess.QueryElementById(ElementId);
 
             // Bring them in correct order again
             ReorderLayerPosition(FO0_LandingPage.SelectedElement.Layers);        
 
             // Update UI
-            layers_ListView.ItemsSource = FO0_LandingPage.SelectedElement.Layers;                       // Update LVItemsSource
-            new DrawLayerCanvas(layers_Canvas, FO0_LandingPage.SelectedElement.Layers);                 // Redraw Canvas
-            new DrawMeasurementLine(measurement_Grid, FO0_LandingPage.SelectedElement.Layers);          // Redraw measurement line
+            layers_ListView.ItemsSource = FO0_LandingPage.SelectedElement.Layers;               // Update LVItemsSource
+            new DrawLayerCanvas(layers_Canvas, FO0_LandingPage.SelectedElement.Layers);         // Redraw Canvas
+            new DrawMeasurementLine(measurement_Grid, FO0_LandingPage.SelectedElement.Layers);  // Redraw measurement line
 
             // Update Recalculate Flag
             RecalculateTemp = true;

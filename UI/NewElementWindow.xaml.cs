@@ -10,7 +10,7 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class NewElementWindow : Window
     {
-        private Project project = FO0_LandingPage.Project;
+        // Instance Variable, when existing Elemenet is being edited and passed as Parameter
         private Element element;
 
         public NewElementWindow(Element element = null)
@@ -41,29 +41,33 @@ namespace BauphysikToolWPF.UI
                 {
                     Element newElem = new Element()
                     {
-                        //ElementId gets set by SQLite DB (AutoIncrement)
+                        // ElementId gets set by SQLite DB (AutoIncrement)
                         Name = elementName,
                         ConstructionId = constrId,
                         Construction = new Construction() { ConstructionId = constrId, Type = constrType },
-                        ProjectId = project.ProjectId,
-                        Project = project,
+                        ProjectId = FO0_LandingPage.Project.ProjectId,
+                        Project = FO0_LandingPage.Project,
                         Layers = new List<Layer>(),
                         EnvVars = new List<EnvVars>()
                     };
-                    DatabaseAccess.CreateElement(newElem); // Update in Database
-                    FO0_LandingPage.SelectedElement = newElem; // Update Class Variable
+                    // Update Class Variable
+                    FO0_LandingPage.SelectedElement = newElem;
+                    // Update in Database
+                    DatabaseAccess.CreateElement(newElem);
+                    // Go to Setup Page (Editor) after creating new Element
                     this.Close();
                     MainWindow.SetPage("Setup");
                 }
                 // If Element in Parameter -> Edit existing Element (SelectedElement from FO0_LandingPage)
                 else
                 {
-                    // Update Class Variable
+                    // Update Class Variable (SelectedElement)
                     this.element.Name = elementName;
                     this.element.ConstructionId = constrId;
-                    this.element.ProjectId = project.ProjectId;
+                    this.element.ProjectId = FO0_LandingPage.Project.ProjectId;
                     // Update in Database
                     DatabaseAccess.UpdateElement(this.element);
+                    // Go to Landing Page (Menu) after editing existing Element
                     this.Close();
                 }
             }

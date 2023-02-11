@@ -46,8 +46,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".7*"/>
-            <ColumnDefinition Width=".3*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="360"/>
         </Grid.ColumnDefinitions>
 
         <!--Top Left -->
@@ -103,8 +103,8 @@
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="48"/>
-                <ColumnDefinition Width="128"/>
-                <ColumnDefinition Width="128"/>
+                <ColumnDefinition Width="136"/>
+                <ColumnDefinition Width="166"/>
             </Grid.ColumnDefinitions>
 
             <StackPanel Orientation="Vertical" Grid.Column="0">
@@ -118,22 +118,22 @@
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="1">
                 <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X2="128" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
-                <controls:EquationLabel BaseText="R" SubscriptText="T" Value="{Binding TempCalc.RTotal}" Unit="m²K/W" Height="28"/>
+                <Line X2="136" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
+                <controls:EquationLabel BaseText="R" SubscriptText="ges" Value="{Binding TempCalc.SumOfLayersR}" Unit="m²K/W" Height="28"/>
                 <controls:EquationLabel BaseText="U" Value="{Binding TempCalc.UValue}" Unit="W/m²K" Height="28"/>
                 <controls:EquationLabel BaseText="q" Value="{Binding TempCalc.QValue}" Unit="W/m²" Height="28"/>
-                <Line X2="128" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
+                <Line X2="136" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
                 <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding TempCalc.LayerTemps[0].Value}" Unit="°C" Height="28"/>
                 <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding TempCalc.FRsi}" Height="28"/>
                 <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="2">
                 <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X2="128" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
+                <Line X2="166" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
                 <controls:EquationLabel BaseText="R" SubscriptText="min" Value="{Binding R_min}" Unit="m²K/W" Height="28"/>
                 <controls:EquationLabel BaseText="U" SubscriptText="max" Value="{Binding U_max}" Unit="W/m²K" Height="28"/>
                 <Label Content="tbd" FontSize="14" Height="28"/>
-                <Line X2="128" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
+                <Line X2="166" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
                 <Label Content="{Binding TempCalc.Tsi_min}" ContentStringFormat="≥ {0} °C" FontSize="14" Height="28"/>
                 <Label Content="≥ 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
                 <Label Content="{Binding TempCalc.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>

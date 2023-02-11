@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         private Project project = FO0_LandingPage.Project;
 
         // Always fetch current Construction on calling this Class. No need for Notifier or Updater when Construction changes
-        private Construction currentConstruction = FO0_LandingPage.SelectedElement.Construction;
+        private Element currentElement = FO0_LandingPage.SelectedElement;
 
         public double U_max;
 
@@ -50,11 +50,6 @@ namespace BauphysikToolWPF.ComponentCalculations
             Existing,       // 0, Bestandsgebäude
             New             // 1, Neubau
         }
-        public enum EnvCondition
-        {
-            TiGreater19,    // 0, ValueA
-            TiBetween12And19// 1, ValueB
-        }
         public enum RequirementSource
         {
             GEG_Anlage1 = 1,
@@ -65,16 +60,15 @@ namespace BauphysikToolWPF.ComponentCalculations
         private double GetUMax()
         {
             // default (irregular) values
-            double u_max_requirement = -1;
             int requirementSourceId = -1; 
 
             // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
             // via m:n relation of Construction and Requirement.
-            List<Requirement> allRequirements = currentConstruction.Requirements;
+            List<Requirement> allRequirements = currentElement.Construction.Requirements;
 
             // catch constructions with no requirements
             if (allRequirements == null || allRequirements.Count == 0)
-                return u_max_requirement;
+                return -1;
 
             // b) Select relevant Source based off Building Age and Usage
             if (project.IsNewConstruction)
@@ -110,22 +104,19 @@ namespace BauphysikToolWPF.ComponentCalculations
                 //TODO
                 // If Room Temperature (inside) is lower than 12 °C it does not specify as 'heated' room. No requirement has to be met!
                 // To be safe: Use lowest requirement from specified source (means high U-Value)
-                return 5.0;
+                return 1.0;
             }
         }
 
         private double GetRMin()
         {
-            // default (irregular) values
-            double r_min_requirement = -1;
-
             // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
             // via m:n relation of Construction and Requirement.
-            List<Requirement> allRequirements = currentConstruction.Requirements;
+            List<Requirement> allRequirements = currentElement.Construction.Requirements;
 
             // catch constructions with no requirements
             if (allRequirements == null || allRequirements.Count == 0)
-                return r_min_requirement;
+                return -1;
 
             // b) Select relevant Source
             int requirementSourceId = (int)RequirementSource.DIN_4108_2_Tabelle3;
@@ -135,9 +126,14 @@ namespace BauphysikToolWPF.ComponentCalculations
             //TODO: Can be null
 
             // Check if conditions have to be met
-            // TODO m'
-            return 0.0;
-
+            if (currentElement.ElementAreaMassDens >= 100)
+            {
+                return specificRequirement.ValueA;
+            }
+            else
+            {
+                return specificRequirement.ValueB ?? specificRequirement.ValueA;
+            }
         }
     }
 }
