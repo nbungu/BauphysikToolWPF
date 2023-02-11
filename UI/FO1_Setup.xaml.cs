@@ -18,17 +18,17 @@ namespace BauphysikToolWPF.UI
         public static int ElementId { get; set; } = -1; // Default: no element set
         public static List<Layer> Layers { get; private set; } = new List<Layer>(); // for FO1, FO2 & FO3 ViewModel
 
-        // Save computation time by avoiding unnecessary new instances
+        // Recalculate Flags - Save computation time by avoiding unnecessary new instances
         public static bool RecalculateTemp { get; set; } = false;
         public static bool RecalculateGlaser { get; set; } = false;
 
-        // Instance Variables - only for "MainPage" instances
+        // Instance Variables - only for "MainPage" Instances
         //
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_Setup()
         {
-            // If Element is not set (-1) or has changed, update class variables
+            // If Element is not set (-1) or has changed, Update Class Variables
             if (ElementId != FO0_LandingPage.SelectedElement.ElementId)
             {
                 ElementId = FO0_LandingPage.SelectedElement.ElementId;

@@ -49,17 +49,19 @@ namespace BauphysikToolWPF.UI
                         Layers = new List<Layer>(),
                         EnvVars = new List<EnvVars>()
                     };
-                    DatabaseAccess.CreateElement(newElem);
-                    FO0_LandingPage.SelectedElement = newElem;
+                    DatabaseAccess.CreateElement(newElem); // Update in Database
+                    FO0_LandingPage.SelectedElement = newElem; // Update Class Variable
                     this.Close();
                     MainWindow.SetPage("Setup");
                 }
                 // If Element in Parameter -> Edit existing Element
                 else
                 {
+                    // Update Class Variable
                     this.element.Name = elementName;
                     this.element.ConstructionId = constrId;
-                    this.element.ProjectId = project.ProjectId;  
+                    this.element.ProjectId = project.ProjectId;
+                    // Update in Database
                     DatabaseAccess.UpdateElement(this.element);
                     this.Close();
                 }
