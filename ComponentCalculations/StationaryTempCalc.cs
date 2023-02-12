@@ -93,7 +93,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         }
         private double GetfRsiValue()
         {
-            //TODO: durch 0 teilen abfangen
+            // Durch 0 teilen abfangen
             if (Ti - Te == 0)
                 return 0;
 

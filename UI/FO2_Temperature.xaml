@@ -16,12 +16,13 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
-        <!--Dynamic Image Source-->
+        <!--Dynamic Icon Source-->
         <Style x:Key="DynamicIconSource" TargetType="{x:Type Image}">
             <Setter Property="Source" Value="{StaticResource ButtonIcon_Cancel}"/>
             <Style.Triggers>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
+                        <!--Read: Get the 'Name' property of the element using this Style and set as Binding-->
                         <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="R_Value_StatusImage" />
                         <Condition Binding="{Binding IsRValueOK}" Value="True" />
                     </MultiDataTrigger.Conditions>
@@ -29,6 +30,7 @@
                 </MultiDataTrigger>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
+                        <!--Read: Get the 'Name' property of the element using this Style and set as Binding-->
                         <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="U_Value_StatusImage" />
                         <Condition Binding="{Binding IsUValueOK}" Value="True" />
                     </MultiDataTrigger.Conditions>

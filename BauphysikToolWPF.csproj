@@ -47,10 +47,10 @@
     <Resource Include="Resources\Icons\GL_003x80_back.png" />
     <Resource Include="Resources\Icons\GL_005x80_cancel.png" />
     <Resource Include="Resources\Icons\GL_009x80_confirm_g.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Icons\GL_009x80_confirm.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Resources\Icons\GL_010x80_create_b.png" />
     <Resource Include="Resources\Icons\GL_010x80_create_w.png" />

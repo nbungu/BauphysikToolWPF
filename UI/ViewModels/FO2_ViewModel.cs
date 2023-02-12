@@ -10,8 +10,6 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Linq;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -63,12 +61,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (TempCalc.Element.Layers.Count == 0)
                 return new RectangularSection[0];
 
-            RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count+1];
 
             double left = 0;
+            int position = 0;
             foreach (Layer layer in TempCalc.Element.Layers)
             {
-                int position = layer.LayerPosition - 1; // change to 0 based index
+                position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.LayerThickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
 
@@ -88,10 +87,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                 };
                 left = right; // Add new layer at left edge of previous layer
             }
-
             //TODO: is hardcoded
             //fRsi frsi = new fRsi(TempCalc.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
-            /*rects[0] = new RectangularSection
+            /*rects[position+1] = new RectangularSection
             {
                 Yi = StationaryTempCalc.TsiMin,
                 Yj = StationaryTempCalc.TsiMin,
@@ -102,6 +100,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     PathEffect = new DashEffect(new float[] { 2, 2 })
                 }
             };*/
+
 
             return rects;
         }

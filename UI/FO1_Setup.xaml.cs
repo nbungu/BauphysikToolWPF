@@ -74,7 +74,8 @@ namespace BauphysikToolWPF.UI
         }
 
         // custom Methods
-        // Fixes wrong layer Positions in this Element after deleting Layers.
+
+        // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
         private void ReorderLayerPosition(List<Layer> layers)
         {
             if (layers.Count > 0)
