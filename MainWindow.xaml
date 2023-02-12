@@ -121,13 +121,13 @@
                     <ColumnDefinition Width="56"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Image x:Name="MenuItemIcon" Grid.Column="0" Source="Resources/Icons/GL_019x80_home.png" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4"/>
+                <Image x:Name="MenuItemIcon" Grid.Column="0" Source="Resources/Icons/GL_110x80_app_grid.png" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4"/>
                 <Label x:Name="MenuItemLabel" Grid.Column="1" VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" Margin="0,4,4,4"/>
             </Grid>
             <!--Binding is ItemsSource from 'NavigationMenuListBox'-->
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding}" Value="LandingPage">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_019x80_home.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_110x80_app_grid.png"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Menü"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Setup">

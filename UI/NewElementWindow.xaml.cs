@@ -67,7 +67,7 @@ namespace BauphysikToolWPF.UI
                     this.element.ProjectId = FO0_LandingPage.Project.ProjectId;
                     // Update in Database
                     DatabaseAccess.UpdateElement(this.element);
-                    // Go to Landing Page (Menu) after editing existing Element
+                    // Just Close this after editing existing Element
                     this.Close();
                 }
             }

@@ -73,7 +73,7 @@
         <ItemsPanelTemplate x:Key="WrapPanel_Template">
             <WrapPanel x:Name="element_WrapPanel" ItemWidth="144" ItemHeight="192" ClipToBounds="True"/>
         </ItemsPanelTemplate>
-      
+
     </UserControl.Resources>
 
     <Grid Background="{StaticResource PrimaryLightBrush}">
@@ -82,7 +82,7 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".2*" MinWidth="200" MaxWidth="320"/>
+            <ColumnDefinition Width=".2*" MinWidth="170" MaxWidth="290"/>
             <ColumnDefinition Width=".8*" MinWidth="320"/>
         </Grid.ColumnDefinitions>
 
@@ -108,7 +108,7 @@
                 <ColumnDefinition Width=".15*"/>
                 <ColumnDefinition Width=".7*"/>
                 <ColumnDefinition Width=".15*"/>
-                <ColumnDefinition MinWidth="240" MaxWidth="320"/>
+                <ColumnDefinition MinWidth="170" MaxWidth="290"/>
             </Grid.ColumnDefinitions>
 
             <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellte Bauteile" FontSize="14" FontWeight="Bold"/>
@@ -124,7 +124,7 @@
                           BorderThickness="0">
                 <ItemsControl.Resources>
                     <ContextMenu x:Key="WrapPanel_ContextMenu" x:Name="WrapPanel_ContextMenu" Style="{StaticResource ContextMenuStyle01}" ItemContainerStyle="{StaticResource ContextMenuItemStyle01}">
-                        <MenuItem x:Name="edit_MenuItem" Header="Bearbeiten" Click="edit_MenuItem_Click">
+                        <MenuItem x:Name="edit_MenuItem" Header="Bearbeiten" Click="edit_MenuItem_Click" >
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Edit}" />
                             </MenuItem.Icon>
@@ -132,6 +132,11 @@
                         <MenuItem x:Name="delete_MenuItem" Header="Löschen" Click="delete_MenuItem_Click">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Cancel}" />
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="lock_MenuItem" Header="Sperren" Click="lock_MenuItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource ButtonIcon_Lock}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>

@@ -1,7 +1,11 @@
-﻿using SQLite;
+﻿using BauphysikToolWPF.ComponentCalculations;
+using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Windows.Media.Imaging;
+using static BauphysikToolWPF.ComponentCalculations.CheckRequirements;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
@@ -29,6 +33,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         [ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
         public int ProjectId { get; set; }
 
+        public byte[]? Image { get; set; }
+
         //------Not part of the Database-----//
 
         // n:1 relationship with Project
@@ -47,15 +53,32 @@ namespace BauphysikToolWPF.SQLiteRepo
         [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all EnvVars linked to this 'Element')
         public List<EnvVars> EnvVars { get; set; }
 
+        [Ignore]
+        public bool IsLocked { get; set; } // For UI Purposes
 
-        [Ignore] // TODO add as BLOB!! Or save as static Bitmap
-        public string ElementImage
+        // Encapsulate 'Image' variable for use in frontend
+        [Ignore]
+        public BitmapImage ElementImage
         {
-            //Image has to be "Resource" as build action
             get
             {
-                string imgName = "Element_" + ElementId.ToString()+".png";
-                return "/Resources/ElementImages/"+imgName;
+                if (Image == null || Image.Length == 0)
+                    return null;
+
+                BitmapImage image = new BitmapImage();
+                // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
+                using (MemoryStream stream = new MemoryStream(Image))
+                {
+                    stream.Position = 0;
+                    image.BeginInit();
+                    image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
+                    image.CacheOption = BitmapCacheOption.OnLoad;
+                    image.UriSource = null;
+                    image.StreamSource = stream;
+                    image.EndInit();
+                }
+                image.Freeze();
+                return image; 
             }
         }
 

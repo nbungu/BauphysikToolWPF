@@ -79,9 +79,7 @@ namespace BauphysikToolWPF.UI
             }
         }
 
-        // Save current canvas as image, just before closing FO1_Setup Page
-        // Optional Parameter Path
-        public static void SaveAsImg(Canvas target, string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/")
+        public static void SaveAsPNG(Canvas target, string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/")
         {
             //string path2 = Environment.CurrentDirectory; //"C:\\Users\\arnes\\source\\repos\\BauphysikToolWPF\\bin\\Debug\\net6.0-windows"
             
@@ -89,18 +87,43 @@ namespace BauphysikToolWPF.UI
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 48d, 48d, PixelFormats.Default); // Default DPI: 96d
             bitmap.Render(target);
 
-            // Set Width, Height and Croppings: Create smaller image
+            // Set Width, Height and Croppings: Create always img of same size, regardless of current canvas dimensions
             var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)target.RenderSize.Width/2, (int)target.RenderSize.Width/2));
 
-            BitmapEncoder pngEncoder = new PngBitmapEncoder();
-            pngEncoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
+
             string imgName = "Element_"+FO0_LandingPage.SelectedElement.ElementId+".png";
 
-            // use using to call Dispose() of unmanaged resources. GC cannot manage this
-            using (var fileStream = System.IO.File.OpenWrite(path+imgName))
+            // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
+            using (var fileStream = File.OpenWrite(path+imgName))
             {
-                pngEncoder.Save(fileStream);
+                encoder.Save(fileStream);
             }
+        }
+
+        public static byte[] SaveAsBLOB(Canvas target)
+        {
+            // Convert the BitmapImage to a byte array
+            byte[] imageBytes;
+
+            // Set the Bitmap size and target to save
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 48d, 48d, PixelFormats.Default); // Default DPI: 96d
+            bitmap.Render(target);
+
+            // Set Width, Height and Croppings: Create always img of same size, regardless of current canvas dimensions
+            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)target.RenderSize.Width / 2, (int)target.RenderSize.Width / 2));
+
+            BitmapEncoder encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
+
+            // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
+            using (MemoryStream stream = new MemoryStream())
+            {
+                encoder.Save(stream);
+                imageBytes = stream.ToArray();
+            }
+            return imageBytes;
         }
     }
 }

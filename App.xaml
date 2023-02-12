@@ -26,6 +26,11 @@
         <BitmapImage x:Key="ButtonIcon_Cancel" UriSource="/Resources/Icons/GL_005x80_cancel.png"/>
         <BitmapImage x:Key="ButtonIcon_OK" UriSource="/Resources/Icons/GL_009x80_confirm.png"/>
         <BitmapImage x:Key="ButtonIcon_OK_green" UriSource="/Resources/Icons/GL_009x80_confirm_g.png"/>
+        <BitmapImage x:Key="ButtonIcon_Home" UriSource="/Resources/Icons/GL_110x80_app_grid.png"/>
+        <BitmapImage x:Key="ButtonIcon_Hide" UriSource="/Resources/Icons/GL_115x80_not_visible.png"/>
+        <BitmapImage x:Key="ButtonIcon_Show" UriSource="/Resources/Icons/GL_114x80_visible.png"/>
+        <BitmapImage x:Key="ButtonIcon_Lock" UriSource="/Resources/Icons/SET_014x80_content_locked.png"/>
+        <BitmapImage x:Key="ButtonIcon_Unlock" UriSource="/Resources/Icons/SET_013x80_content_not_locked.png"/>        
 
         <!--Custom TextBox for Subscript Text with Equation-->
         <Style TargetType="{x:Type controls:EquationLabel}">
@@ -360,7 +365,52 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        
+
+        <!--Custom Button03_Mini: only icon, transparent, rounded corners, click effects -->
+        <Style x:Key="ButtonStyle03_Mini" TargetType="{x:Type Button}">
+            <!--Set default properties of the button-->
+            <Setter Property="Content" Value="Placeholder"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="MinWidth" Value="28"/>
+            <Setter Property="MinHeight" Value="28"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal">
+                                <!--Bind Image via DataContext Property in the Button Element-->
+                                <Image Source="{Binding}" Stretch="Fill" MinWidth="24" MinHeight="24" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <!--Custom RadioButton01_A: ToggleButton with behaviour like RadioButton -> Exclusive Group, Checkstates etc.-->
         <Style x:Key="RadioButton01_A" TargetType="{x:Type RadioButton}">
             <Setter Property="Template">

@@ -29,11 +29,11 @@ namespace BauphysikToolWPF.UI
         // Event handlers - Subscriber
         public void DB_ElementsChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
-            // Update Class Variable
+            // Update Class Variable (Project)
             Project.Elements = DatabaseAccess.QueryElementsByProjectId(1); //TODO: hardcoded
 
             // Update UI
-            element_ItemsControl.ItemsSource = DatabaseAccess.QueryElementsByProjectId(Project.ProjectId); // Initial ItemsSource is fetched by XAML via ViewModel
+            element_ItemsControl.ItemsSource = Project.Elements; // Initial ItemsSource is fetched by XAML via ViewModel
         }        
 
         // Custom Methods
@@ -90,6 +90,11 @@ namespace BauphysikToolWPF.UI
             var window = new NewElementWindow(editElement);
 
             window.ShowDialog(); // Open as modal (Parent window pauses, waiting for the window to be closed)
+        }
+        // Context Menu - Lock
+        private void lock_MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            // TODO
         }
 
         private void closeApp_Button_Click(object sender, RoutedEventArgs e)

@@ -301,10 +301,39 @@ namespace BauphysikToolWPF.UI
             // Redraw to show selected layer 
             new DrawLayerCanvas(layers_Canvas, layers_ListView.ItemsSource as List<Layer>);
         }
+
+        private void editElement_Button_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new NewElementWindow(FO0_LandingPage.SelectedElement);
+            window.ShowDialog(); // Open as modal (Parent window pauses, waiting for the window to be closed)
+
+        }
+
+        private void delete_LVItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void edit_LVItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void hide_LVItem_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        // Save current canvas as image, just before closing FO1_Setup Page
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            // TODO fix path problem
-            //DrawLayerCanvas.SaveAsImg(layers_Canvas, "./Resources/ElementImages/");
+            //TODO: General Workflow on changed object: database access -> event handler updates Class variables + UI !!
+            
+            // Update Class Variable (SelectedElement)
+            FO0_LandingPage.SelectedElement.Image = DrawLayerCanvas.SaveAsBLOB(layers_Canvas);
+
+            // Update in Database
+            DatabaseAccess.UpdateElement(FO0_LandingPage.SelectedElement);
         }
     }
 }

@@ -9,11 +9,7 @@
 
   <ItemGroup>
     <None Remove="Ordner_Icon.ico" />
-    <None Remove="Resources\ElementImages\Element_4.png" />
     <None Remove="Resources\ElementImages\Element_4_AWE1.png" />
-    <None Remove="Resources\ElementImages\Element_7.png" />
-    <None Remove="Resources\ElementImages\Element_8.png" />
-    <None Remove="Resources\ElementImages\Element_9.png" />
     <None Remove="Resources\Icons\CL_001x80_climate_menu.png" />
     <None Remove="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
     <None Remove="Resources\Icons\GL_003x80_back.png" />
@@ -25,6 +21,16 @@
     <None Remove="Resources\Icons\GL_011x80_delete.png" />
     <None Remove="Resources\Icons\GL_015x80_edit.png" />
     <None Remove="Resources\Icons\GL_019x80_home.png" />
+    <None Remove="Resources\Icons\GL_110x80_app_grid.png" />
+    <None Remove="Resources\Icons\GL_114x80_visible.png" />
+    <None Remove="Resources\Icons\GL_115x80_not_visible.png" />
+    <None Remove="Resources\Icons\SET_013x80_content_not_locked.png" />
+    <None Remove="Resources\Icons\SET_014x80_content_locked.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\GL_114x80_visible.png" />
+    <Resource Include="Resources\Icons\GL_115x80_not_visible.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -36,12 +42,6 @@
 
   <ItemGroup>
     <Resource Include="Ordner_Icon.ico" />
-    <Resource Include="Resources\ElementImages\Element_4.png" />
-    <Resource Include="Resources\ElementImages\Element_7.png" />
-    <Resource Include="Resources\ElementImages\Element_8.png" />
-    <Resource Include="Resources\ElementImages\Element_9.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Resources\Icons\CL_001x80_climate_menu.png" />
     <Resource Include="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
     <Resource Include="Resources\Icons\GL_003x80_back.png" />
@@ -57,12 +57,19 @@
     <Resource Include="Resources\Icons\GL_011x80_delete.png" />
     <Resource Include="Resources\Icons\GL_015x80_edit.png" />
     <Resource Include="Resources\Icons\GL_019x80_home.png" />
+    <Resource Include="Resources\Icons\GL_110x80_app_grid.png" />
+    <Resource Include="Resources\Icons\SET_013x80_content_not_locked.png" />
+    <Resource Include="Resources\Icons\SET_014x80_content_locked.png" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="SQLiteRepo\DemoDB.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\ElementImages\" />
   </ItemGroup>
 
 </Project>

@@ -3,7 +3,6 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-            xmlns:local="clr-namespace:BauphysikToolWPF.UI"
             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
             xmlns:session="clr-namespace:BauphysikToolWPF.SessionData"
             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
@@ -27,7 +26,7 @@
         The Bindings are retrieved from the ItemsSource which is set by the backend.
         -->
         <controls:ItemSelectedToEnabledConverter x:Key="ItemSelectedToEnabledConverter"/>
-        
+
         <DataTemplate x:Key="LVItem_DesignTemplate">
             <Grid Margin="4">
                 <Grid.RowDefinitions>
@@ -55,19 +54,6 @@
                 <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="s" SubscriptText="d" Value="{Binding Sd_Thickness}" Unit="m" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
             </Grid>
         </DataTemplate>
-
-        <Style x:Key="LVItem_Properties" TargetType="{x:Type ListViewItem}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
-            <Setter Property="ContextMenu">
-                <Setter.Value>
-                    <ContextMenu>
-                        <MenuItem Name="menuItemClose" Header="Exit"/>
-                        <MenuItem Name="menuItemOpen" Header="Open"/>
-                    </ContextMenu>
-                </Setter.Value>
-            </Setter>
-        </Style>
 
         <Style x:Key="TextBoxStyle" TargetType="TextBox">
             <!--These setters are for the default appearance-->
@@ -159,10 +145,15 @@
         </Grid.ColumnDefinitions>
 
         <!--Top Left -->
-        <Label Grid.Row="0" Grid.Column="0" Content="{Binding ElementName}" ContentStringFormat='Schichtaufbau - {0}' HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
-        <Label Grid.Row="0" Grid.Column="0" Content="{Binding ElementType}" HorizontalAlignment="Left" VerticalAlignment="Bottom" FontStyle="Italic" FontSize="12" Margin="16,0,0,0"/>
+        <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+            <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal">
+                <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
+                <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
+                <Button x:Name="editElement_Button" Style="{StaticResource ButtonStyle03_Mini}" DataContext="{StaticResource ButtonIcon_Edit}" Click="editElement_Button_Click" Margin="8,2,0,2"/>
+            </StackPanel>
+        </Border>
         <!--Top Right -->
-        <Label Grid.Row="0" Grid.Column="1" Content="Bauteilquerschnitt" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
+        
         <!--Middle Left -->
         <Grid Grid.Row="1" Grid.Column="0" Margin="16,16,16,0">
             <Grid.RowDefinitions>
@@ -185,15 +176,40 @@
             <!--ItemsSource gets updated (!) by backend-->
             <ListView x:Name="layers_ListView"
                       Grid.Row="2"
-                      ItemsSource="{Binding Layers, Mode=OneWay}"
+                      ItemsSource="{Binding Layers}"
                       ItemTemplate="{StaticResource LVItem_DesignTemplate}"
-                      ItemContainerStyle="{StaticResource LVItem_Properties}"
                       ClipToBounds="True"
                       ScrollViewer.CanContentScroll="False"
                       SelectionChanged="layers_ListView_SelectionChanged"
                       SelectionMode="Single"
                       Background="Transparent"
-                      BorderBrush="Transparent"/>
+                      BorderBrush="Transparent">
+                <ListView.Resources>
+                    <ContextMenu x:Key="ListView_ContextMenu" Style="{StaticResource ContextMenuStyle01}" ItemContainerStyle="{StaticResource ContextMenuItemStyle01}">
+                        <!-- ClickEvent only works under .Resources. Doesnt work under ItemContainerStyle -->
+                        <MenuItem x:Name="edit_LVItem" Header="Bearbeiten" Click="edit_LVItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource ButtonIcon_Edit}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="hide_LVItem" Header="Ausblenden" Click="hide_LVItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource ButtonIcon_Hide}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="delete_LVItem" Header="Ausblenden" Click="delete_LVItem_Click">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource ButtonIcon_Delete}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                    </ContextMenu>
+                </ListView.Resources>
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="{x:Type ListViewItem}">
+                        <Setter Property="ContextMenu" Value="{StaticResource ListView_ContextMenu}"/>
+                    </Style>
+                </ListView.ItemContainerStyle>               
+            </ListView>
 
             <!--Custom UI Element: Border as ListViewItem Mockup-->
             <ContentControl Grid.Row="3" ContentTemplate="{StaticResource LVItem_Mockup_Ext}" Margin="0,4,0,0"/>
