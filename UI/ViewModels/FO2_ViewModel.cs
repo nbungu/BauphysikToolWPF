@@ -9,6 +9,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
+using System.Drawing;
 using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -19,14 +20,13 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         public string Title { get; } = "Temperature";
         public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
-        public double Ti { get; private set; } = UserSaved.Ti;
-        public double Te { get; private set; } = UserSaved.Te;
-        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi;
         public CheckRequirements CheckRequirements { get; private set; }
         public bool IsUValueOK { get; private set; }
         public bool IsRValueOK { get; private set; }
+        public bool IsQValueOK { get; private set; }
         public string U_max { get; private set; }
         public string R_min { get; private set; }
+        public string Q_max { get; private set; }
 
         public RectangularSection[] LayerSections { get; private set; }
         public ISeries[] DataPoints { get; private set; }
@@ -38,11 +38,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
             // For the Requirement Checks (U-Value, R-Value)
-            this.CheckRequirements = new CheckRequirements(TempCalc.UValue, TempCalc.SumOfLayersR);
+            this.CheckRequirements = new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue);
             this.U_max = CheckRequirements.U_max > 0 ? CheckRequirements.U_max.ToString() : "Keine Anforderung";
             this.IsUValueOK = CheckRequirements.U_max > 0 ? CheckRequirements.IsUValueOK : true;
             this.R_min = CheckRequirements.R_min > 0 ? CheckRequirements.R_min.ToString() : "Keine Anforderung";
             this.IsRValueOK = CheckRequirements.R_min > 0 ? CheckRequirements.IsRValueOK : true;
+            this.Q_max = CheckRequirements.Q_max > 0 ? CheckRequirements.Q_max.ToString() : "Keine Anforderung";
+            this.IsQValueOK = CheckRequirements.Q_max > 0 ? CheckRequirements.IsQValueOK : true;
 
             // For Drawing the Chart
             this.LayerSections = DrawLayerSections();
@@ -61,7 +63,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (TempCalc.Element.Layers.Count == 0)
                 return new RectangularSection[0];
 
-            RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count+1];
+            RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
 
             double left = 0;
             int position = 0;
@@ -113,7 +115,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             double tsi_Pos = TempCalc.LayerTemps.First().Key;
             double tsi = TempCalc.LayerTemps.First().Value;
-            double deltaTi = Math.Abs(Ti - tsi);
+            double deltaTi = Math.Abs(UserSaved.Ti - tsi);
 
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
@@ -123,7 +125,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     null, // cuts the line between the points
                     new ObservablePoint(tsi_Pos, tsi),
                     new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
-                    new ObservablePoint(tsi_Pos-2, Ti)
+                    new ObservablePoint(tsi_Pos-2, UserSaved.Ti)
                 },
                 Fill = null,
                 LineSmoothness = 0.8,
@@ -160,12 +162,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             double tse_Pos = TempCalc.LayerTemps.Last().Key;
             double tse = TempCalc.LayerTemps.Last().Value;
-            double deltaTe = Math.Abs(Te - tse);
+            double deltaTe = Math.Abs(UserSaved.Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
                 {
-                    new ObservablePoint(tse_Pos+2, Te),
+                    new ObservablePoint(tse_Pos+2, UserSaved.Te),
                     new ObservablePoint(tse_Pos+0.8, tse-0.9*deltaTe),
                     new ObservablePoint(tse_Pos, tse),
                     null, // cuts the line between the points

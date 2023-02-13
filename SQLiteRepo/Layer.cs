@@ -68,9 +68,9 @@ namespace BauphysikToolWPF.SQLiteRepo
             return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId);
         }
 
-        /*public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
+        public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return LayerThickness + " cm, "+ Material.Name + " (Pos. " + this.LayerPosition + ")";
-        }*/
+            return LayerThickness + " cm, "+ Material.Name + " (Pos.: " + LayerPosition + ")";
+        }
     }
 }

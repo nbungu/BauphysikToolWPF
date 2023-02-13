@@ -8,11 +8,6 @@
         mc:Ignorable="d"
         Title="Bauteildaten festlegen" Height="248" Width="320" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="ToolWindow">
 
-    <Window.DataContext>
-        <!-- globally sets a reference for Bindings in this xaml-->
-        <vm:NewElementWindow_ViewModel/>
-    </Window.DataContext>
-
     <Grid Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -27,7 +22,7 @@
 
         <StackPanel Grid.Row="1" Orientation="Vertical" Margin="16,0,16,8" VerticalAlignment="Center">
             <Label Content="Typ" FontSize="14"/>
-            <ComboBox x:Name="construcitonType_Picker" VerticalContentAlignment="Center" FontSize="14" ItemsSource="{Binding Types}" Height="32" HorizontalAlignment="Stretch"/>
+            <ComboBox x:Name="constructionType_Picker" VerticalContentAlignment="Center" FontSize="14" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
         <Button x:Name="apply_Button" Grid.Row="2" Margin="16" Content="Übernehmen" Click="apply_Button_Click" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Center"/>

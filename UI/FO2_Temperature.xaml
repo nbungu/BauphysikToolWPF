@@ -10,8 +10,8 @@
       mc:Ignorable="d" 
       d:DesignHeight="700" d:DesignWidth="1200">
 
-    <!--Main Reference for all Bindings used inside this UserControl-->
     <UserControl.DataContext>
+        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
         <vm:FO2_ViewModel/>
     </UserControl.DataContext>
 
@@ -33,6 +33,14 @@
                         <!--Read: Get the 'Name' property of the element using this Style and set as Binding-->
                         <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="U_Value_StatusImage" />
                         <Condition Binding="{Binding IsUValueOK}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Source" Value="{StaticResource ButtonIcon_OK_green}" />
+                </MultiDataTrigger>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <!--Read: Get the 'Name' property of the element using this Style and set as Binding-->
+                        <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="q_Value_StatusImage" />
+                        <Condition Binding="{Binding IsQValueOK}" Value="True" />
                     </MultiDataTrigger.Conditions>
                     <Setter Property="Source" Value="{StaticResource ButtonIcon_OK_green}" />
                 </MultiDataTrigger>
@@ -121,24 +129,22 @@
             <StackPanel Orientation="Vertical" Grid.Column="1">
                 <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X2="136" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
-                <controls:EquationLabel BaseText="R" SubscriptText="ges" Value="{Binding TempCalc.SumOfLayersR}" Unit="m²K/W" Height="28"/>
+                <controls:EquationLabel BaseText="R" SubscriptText="ges" Value="{Binding TempCalc.Element.RValue}" Unit="m²K/W" Height="28"/>
                 <controls:EquationLabel BaseText="U" Value="{Binding TempCalc.UValue}" Unit="W/m²K" Height="28"/>
                 <controls:EquationLabel BaseText="q" Value="{Binding TempCalc.QValue}" Unit="W/m²" Height="28"/>
                 <Line X2="136" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
                 <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding TempCalc.LayerTemps[0].Value}" Unit="°C" Height="28"/>
                 <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding TempCalc.FRsi}" Height="28"/>
-                <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" Unit="%" Height="28"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="2">
                 <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X2="166" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
                 <controls:EquationLabel BaseText="R" SubscriptText="min" Value="{Binding R_min}" Unit="m²K/W" Height="28"/>
                 <controls:EquationLabel BaseText="U" SubscriptText="max" Value="{Binding U_max}" Unit="W/m²K" Height="28"/>
-                <Label Content="tbd" FontSize="14" Height="28"/>
+                <controls:EquationLabel BaseText="q" SubscriptText="max" Value="{Binding Q_max}" Unit="W/m²" Height="28"/>
                 <Line X2="166" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
                 <Label Content="{Binding TempCalc.Tsi_min}" ContentStringFormat="≥ {0} °C" FontSize="14" Height="28"/>
                 <Label Content="≥ 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
-                <Label Content="{Binding TempCalc.PhiMax}" ContentStringFormat="&lt; {0} %" FontSize="14" Height="28"/>
             </StackPanel>
         </Grid>
         <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>

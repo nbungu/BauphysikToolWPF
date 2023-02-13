@@ -72,4 +72,10 @@
     <Folder Include="Resources\ElementImages\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Update="UI\EditLayerWindow.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
 </Project>

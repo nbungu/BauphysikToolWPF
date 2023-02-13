@@ -1,38 +1,42 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
-using System.Windows.Media.Animation;
 
 namespace BauphysikToolWPF.UI
 {
     /// <summary>
     /// Interaktionslogik für NewElementWindow.xaml
     /// </summary>
-    public partial class NewElementWindow : Window
+    public partial class EditLayerWindow : Window
     {
         // Instance Variable, when existing Elemenet is being edited and passed as Parameter
-        private Element element;
+        private Layer layer;
 
-        public NewElementWindow(Element element = null)
+        public EditLayerWindow(Layer layer)
         {
-            this.element = element;
-            constructionType_Picker.ItemsSource = DatabaseAccess.GetConstructions().Select(e => e.Type).ToList();
+            this.layer = layer;
 
             InitializeComponent();
 
-            // Pre set TextBox and ComboBox to edit existing Element
-            if (element != null)
+            // Pre set TextBoxes and Header Label
+            if (layer != null)
             {
-                elementName_TextBox.Text = element.Name;
-                constructionType_Picker.SelectedItem = element.Construction.Type;
+                // Header Label
+                headerLabel_MaterialName.Content = layer.Material.Name;
+                headerLabel_MaterialCategory.Content = layer.Material.Category;
+
+                // TextBoxes
+                layerThickness_TextBox.Text = layer.LayerThickness.ToString();
+                layerLambda_TextBox.Text = layer.Material.ThermalConductivity.ToString();   
+                layerDensity_TextBox.Text = layer.Material.BulkDensity.ToString();
+                layerDiffResistance_TextBox.Text = layer.Material.DiffusionResistance.ToString();   
             }
         }
 
         private void apply_Button_Click(object sender, RoutedEventArgs e)
         {
             // check if name and construction type is set
-            if (constructionType_Picker.SelectedIndex != -1 && elementName_TextBox.Text != "")
+            /*if (constructionType_Picker.SelectedIndex != -1 && elementName_TextBox.Text != "")
             {
                 string elementName = elementName_TextBox.Text;
                 string constrType = constructionType_Picker.SelectedItem.ToString();
@@ -72,7 +76,7 @@ namespace BauphysikToolWPF.UI
                     // Just Close this after editing existing Element
                     this.Close();
                 }
-            }
+            }*/
         }
     }
 }

@@ -10,7 +10,7 @@
             d:DesignHeight="700" d:DesignWidth="1200" Unloaded="UserControl_Unloaded">
 
     <UserControl.DataContext>
-        <!-- globally sets a reference for Bindings in this xaml-->
+        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
         <vm:FO1_ViewModel/>
     </UserControl.DataContext>
     
@@ -147,9 +147,9 @@
         <!--Top Left -->
         <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal">
-                <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
-                <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
-                <Button x:Name="editElement_Button" Style="{StaticResource ButtonStyle03_Mini}" DataContext="{StaticResource ButtonIcon_Edit}" Click="editElement_Button_Click" Margin="8,2,0,2"/>
+                <Label x:Name="headerLabel_Name" Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0" MouseDoubleClick="headerLabel_Clicked"/>
+                <Label x:Name="headerLabel_Type" Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="8,0,0,0" MouseDoubleClick="headerLabel_Clicked"/>
+                <Button x:Name="headerLabel_EditButton" Style="{StaticResource ButtonStyle03_Mini}" DataContext="{StaticResource ButtonIcon_Edit}" Click="headerLabel_Clicked" Margin="8,2,0,2"/>
             </StackPanel>
         </Border>
         <!--Top Right -->
@@ -187,17 +187,22 @@
                 <ListView.Resources>
                     <ContextMenu x:Key="ListView_ContextMenu" Style="{StaticResource ContextMenuStyle01}" ItemContainerStyle="{StaticResource ContextMenuItemStyle01}">
                         <!-- ClickEvent only works under .Resources. Doesnt work under ItemContainerStyle -->
-                        <MenuItem x:Name="edit_LVItem" Header="Bearbeiten" Click="edit_LVItem_Click">
+                        <MenuItem x:Name="edit_LVItem" Header="Werte bearbeiten" Click="editLayerClicked">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Edit}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem x:Name="hide_LVItem" Header="Ausblenden" Click="hide_LVItem_Click">
+                        <MenuItem x:Name="dupe_LVItem" Header="Schicht duplizieren" Click="dupeLayerClicked">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource ButtonIcon_Edit}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <MenuItem x:Name="hide_LVItem" Header="Ausblenden" Click="hideLayerClicked">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Hide}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem x:Name="delete_LVItem" Header="Ausblenden" Click="delete_LVItem_Click">
+                        <MenuItem x:Name="delete_LVItem" Header="Löschen" Click="deleteLayerClicked">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Delete}"/>
                             </MenuItem.Icon>

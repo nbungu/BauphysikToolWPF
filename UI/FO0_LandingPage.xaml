@@ -9,7 +9,7 @@
              d:DesignHeight="700" d:DesignWidth="1200">
 
     <UserControl.DataContext>
-        <!-- globally sets a reference for Bindings in this xaml-->
+        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
         <vm:FO0_ViewModel/> 
     </UserControl.DataContext>
 

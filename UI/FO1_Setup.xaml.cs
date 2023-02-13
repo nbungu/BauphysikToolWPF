@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.UI.Helper;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -135,13 +136,32 @@ namespace BauphysikToolWPF.UI
 
             DatabaseAccess.DeleteLayer(layer);
         }
+        private void editLayerClicked(object sender, RoutedEventArgs e)
+        {
+            if (layers_ListView.SelectedItem is null)
+                return;
+
+            var layer = layers_ListView.SelectedItem as Layer;
+            if (layer is null)
+                return;
+
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            var window = new EditLayerWindow(layer);
+
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            window.ShowDialog();
+        }
+        private void hideLayerClicked(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
+        private void dupeLayerClicked(object sender, RoutedEventArgs e)
+        {
+            //TODO
+        }
         private void deleteAllLayersClicked(object sender, EventArgs e)
         {
             DatabaseAccess.DeleteAllLayers();
-        }
-        private void editLayerClicked(object sender, RoutedEventArgs e)
-        {
-            //TODO
         }
         private void Ti_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -303,26 +323,10 @@ namespace BauphysikToolWPF.UI
             new DrawLayerCanvas(layers_Canvas, layers_ListView.ItemsSource as List<Layer>);
         }
 
-        private void editElement_Button_Click(object sender, RoutedEventArgs e)
+        private void headerLabel_Clicked(object sender, RoutedEventArgs e)
         {
             var window = new NewElementWindow(FO0_LandingPage.SelectedElement);
             window.ShowDialog(); // Open as modal (Parent window pauses, waiting for the window to be closed)
-
-        }
-
-        private void delete_LVItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void edit_LVItem_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void hide_LVItem_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         // Save current canvas as image, just before closing FO1_Setup Page

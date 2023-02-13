@@ -10,8 +10,8 @@
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
 
-    <!--Main Reference for all Bindings used inside this UserControl-->
     <UserControl.DataContext>
+        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
         <vm:FO3_ViewModel/>
     </UserControl.DataContext>
 

@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,16 +29,22 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         public double R_min;
 
-        public bool IsUValueOK = false;
+        public double Q_max;
 
-        public bool IsRValueOK = false;
+        public bool IsUValueOK = false; // GEG Requirements
+
+        public bool IsRValueOK = false; // DIN 4108-2 Requirements
+
+        public bool IsQValueOK = false; // Not mandatory as requirement
 
         public CheckRequirements(double u_value, double r_value)
         {
             this.U_max = GetUMax();
             this.R_min = GetRMin();
+            this.Q_max = GetQMax();
             this.IsUValueOK = u_value <= U_max;
             this.IsRValueOK = r_value >= R_min;
+            this.IsQValueOK = Math.Round(u_value * (UserSaved.Ti - UserSaved.Te), 2) <= Q_max;
         }
         
         public enum BuildingUsage
@@ -103,8 +110,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 //TODO
                 // If Room Temperature (inside) is lower than 12 °C it does not specify as 'heated' room. No requirement has to be met!
-                // To be safe: Use lowest requirement from specified source (means high U-Value)
-                return 1.0;
+                return -1;
             }
         }
 
@@ -126,7 +132,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             //TODO: Can be null
 
             // Check if conditions have to be met
-            if (currentElement.ElementAreaMassDens >= 100)
+            if (currentElement.AreaMassDens >= 100)
             {
                 return specificRequirement.ValueA;
             }
@@ -135,5 +141,12 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return specificRequirement.ValueB ?? specificRequirement.ValueA;
             }
         }
+        private double GetQMax()
+        {
+            if (U_max == -1)
+                return -1;
+
+            return Math.Round(U_max * (UserSaved.Ti - UserSaved.Te), 3);
+        }       
     }
 }

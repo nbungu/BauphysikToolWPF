@@ -83,7 +83,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
 
         [Ignore]
-        public double ElementThickness_cm // d in cm
+        public double Thickness_cm // d in cm
         {
             get
             {
@@ -95,7 +95,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 return Math.Round(thickness, 2);
             }
         }
-        public double ElementThickness_m // d in m
+        public double Thickness_m // d in m
         {
             get
             {
@@ -109,7 +109,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
 
         [Ignore]
-        public double ElementSdThickness // sd in m
+        public double SdThickness // sd in m
         {
             get
             {
@@ -123,7 +123,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
 
         [Ignore]
-        public double ElementAreaMassDens // m' in kg/m²
+        public double AreaMassDens // m' in kg/m²
         {
             get
             {
@@ -137,7 +137,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
 
         [Ignore]
-        public double ElementRValue // R_ges in m²K/W
+        public double RValue // R_ges in m²K/W
         {
             get
             {
@@ -157,7 +157,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Methoden-----//
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return Name + "_" + Construction.Type + " (Id: " + ElementId + ")";
+            return Name + " - " + Construction.Type + " (Id: " + ElementId + ")";
         }
     }
 }
