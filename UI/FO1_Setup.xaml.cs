@@ -165,7 +165,7 @@ namespace BauphysikToolWPF.UI
         }
         private void Ti_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
+           /* UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
 
             // On custom User Input
             if ((sender as ComboBox).SelectedIndex == -1)
@@ -178,7 +178,7 @@ namespace BauphysikToolWPF.UI
             UserSaved.Ti = currentEnvVar.Value;
 
             // Add m:n realtion to Database
-            UpdateElementEnvVars(ElementId, currentEnvVar);
+            UpdateElementEnvVars(ElementId, currentEnvVar);*/
         }
         private void Rsi_ComboBox_SelectionChanged(object sender, EventArgs e)
         {

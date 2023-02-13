@@ -1,27 +1,37 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
-using System;
+﻿using BauphysikToolWPF.SQLiteRepo;
+using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for FO1_Setup.xaml: Used in xaml as "DataContext"
-    public class FO1_ViewModel
+    public partial class FO1_ViewModel : ObservableObject
     {
         // Called by 'InitializeComponent()' from FO1_Setup.cs due to Class-Binding in xaml via DataContext
         public string Title { get; } = "Setup";
         public string ElementName { get; set; } = FO0_LandingPage.SelectedElement.Name;
-        public string ElementType { get; set; } = FO0_LandingPage.SelectedElement.Construction.Type;
-        
-        // Initial List used by 'layers_ListView'
-        public List<Layer> Layers { get; set; } = FO0_LandingPage.SelectedElement.Layers;
+        public string ElementType { get; set; } = FO0_LandingPage.SelectedElement.Construction.Type;   
+        public List<Layer> Layers { get; set; } = FO0_LandingPage.SelectedElement.Layers; // Initial List used by 'layers_ListView'
 
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TiValue))]
+        string ti_selection; 
+
+        public string TiValue
+        {
+            get
+            {
+                if (ti_selection == null)
+                    return "0";
+                return DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_selection).Value.ToString(); }
+            set { }
+        }
         /*
          * If List<string> is null, then get List from Database. If List is already loaded, use existing List.
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
-
         private static List<string>? ti_Keys;
         public List<string> Ti_Keys
         {

@@ -153,10 +153,10 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button x:Name="addLayer_Button" Style="{StaticResource ButtonStyle03_A}" Foreground="White" Click="addLayerClicked" DataContext="{StaticResource ButtonIcon_Add_W}" Content="Hinzufügen" Margin="0,0,8,0"/>
-                <Button x:Name="deleteLayer_Button" Style="{StaticResource ButtonStyle03_B}" Click="deleteLayerClicked" DataContext="{StaticResource ButtonIcon_Delete}" Content="Löschen" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button x:Name="editLayer_Button" Style="{StaticResource ButtonStyle03_B}" Click="editLayerClicked" DataContext="{StaticResource ButtonIcon_Edit}" Content="Bearbeiten" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button x:Name="deleteAllLayer_Button" Style="{StaticResource ButtonStyle03_B}" Click="deleteAllLayersClicked" DataContext="{StaticResource ButtonIcon_Delete}" Content="Alle Löschen" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_A}" Foreground="White" Click="addLayerClicked" DataContext="{StaticResource ButtonIcon_Add_W}" Content="Hinzufügen" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B}" Click="deleteLayerClicked" DataContext="{StaticResource ButtonIcon_Delete}" Content="Löschen" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button Style="{StaticResource ButtonStyle03_B}" Click="editLayerClicked" DataContext="{StaticResource ButtonIcon_Edit}" Content="Bearbeiten" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button Style="{StaticResource ButtonStyle03_B}" Click="deleteAllLayersClicked" DataContext="{StaticResource ButtonIcon_Delete}" Content="Alle Löschen" Margin="0,0,8,0"/>
             </StackPanel>
 
             <!--Custom UI Element: Border as ListViewItem Mockup-->
@@ -176,17 +176,17 @@
                 <ListView.Resources>
                     <ContextMenu x:Key="ListView_ContextMenu">
                         <!-- ClickEvent only works under .Resources. Doesnt work under ItemContainerStyle -->
-                        <MenuItem x:Name="edit_LVItem" Header="Werte bearbeiten" Click="editLayerClicked">
+                        <MenuItem Header="Werte bearbeiten" Click="editLayerClicked">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Edit}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem x:Name="hide_LVItem" Header="Ausblenden" Click="hideLayerClicked">
+                        <MenuItem Header="Ausblenden" Click="hideLayerClicked">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Hide}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem x:Name="delete_LVItem" Header="Löschen" Click="deleteLayerClicked">
+                        <MenuItem Header="Löschen" Click="deleteLayerClicked">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Delete}"/>
                             </MenuItem.Icon>
@@ -206,7 +206,7 @@
 
         <!--Middle Right-->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16,16,16,0">
-            <Viewbox x:Name="layers_Viewbox" ClipToBounds="True" VerticalAlignment="Top">
+            <Viewbox ClipToBounds="True" VerticalAlignment="Top">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -238,8 +238,8 @@
                 <Label Grid.Row="0" Grid.Column="0" Content="Innen" FontSize="14" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center" Height="28"/>
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="1" BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox x:Name="Ti_ComboBox" ItemsSource="{Binding Ti_Keys}" SelectedIndex="{Binding Ti_Selection}" MinWidth="144" SelectionChanged="Ti_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Ti_Input" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                    <ComboBox x:Name="Ti_ComboBox" ItemsSource="{Binding Ti_Keys}" SelectedItem="{Binding Ti_selection}" MinWidth="144" SelectionChanged="Ti_ComboBox_SelectionChanged"/>
+                    <TextBox x:Name="Ti_Input" Text="{Binding TiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <Label Content="°C" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>                                
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="2" BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
