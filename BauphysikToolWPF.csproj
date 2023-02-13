@@ -29,6 +29,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Remove="Resources\Dump.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\Icons\GL_114x80_visible.png" />
     <Resource Include="Resources\Icons\GL_115x80_not_visible.png" />
   </ItemGroup>
@@ -70,6 +74,10 @@
 
   <ItemGroup>
     <Folder Include="Resources\ElementImages\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Resources\Dump.xaml" />
   </ItemGroup>
 
   <ItemGroup>

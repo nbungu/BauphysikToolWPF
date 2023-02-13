@@ -94,9 +94,13 @@
         </Style>
 
         <!-- TEST Custom ComboBox Style: ... -->
-        <Style x:Key="ComboBoxStyle_01" TargetType="{x:Type ComboBox}">
+        <!-- Applies on every ComboBox in this App -->
+        <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
             <Setter Property="SnapsToDevicePixels" Value="true" />
             <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
             <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
@@ -108,44 +112,14 @@
                         <Grid>
                             <ToggleButton x:Name="ToggleButton" Grid.Column="2" Focusable="false" ClickMode="Press" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                                 <ToggleButton.Template>
-
                                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition />
                                                 <ColumnDefinition Width="20" />
                                             </Grid.ColumnDefinitions>
-
-                                            <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="2" BorderThickness="1">
-                                                <Border.BorderBrush>
-                                                    <LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-                                                        <GradientStop Color="#FFCCCCCC" Offset="0" />
-                                                        <GradientStop Color="#FF444444" Offset="1" />
-                                                    </LinearGradientBrush>
-                                                </Border.BorderBrush>
-                                                <Border.Background>
-
-                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
-                                                        <LinearGradientBrush.GradientStops>
-                                                            <GradientStopCollection>
-                                                                <GradientStop Color="White" />
-                                                                <GradientStop Color="#FF7381F9" Offset="1.0" />
-                                                            </GradientStopCollection>
-                                                        </LinearGradientBrush.GradientStops>
-                                                    </LinearGradientBrush>
-
-                                                </Border.Background>
-                                            </Border>
-                                            <Border Grid.Column="0" CornerRadius="2,0,0,2" Margin="1" >
-                                                <Border.Background>
-                                                    <SolidColorBrush Color="#FFE8EDF9"/>
-                                                </Border.Background>
-                                            </Border>
-                                            <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" >
-                                                <Path.Fill>
-                                                    <SolidColorBrush Color="Black"/>
-                                                </Path.Fill>
-                                            </Path>
+                                            <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="4" Background="{TemplateBinding Background}" />
+                                            <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{StaticResource PrimaryDarkBrush}"/>
                                         </Grid>
                                     </ControlTemplate>
                                 </ToggleButton.Template>
@@ -188,6 +162,11 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
 
         <!-- Custom ComboBoxItem Style -->
@@ -198,7 +177,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                        <Border x:Name="Border" Padding="2" SnapsToDevicePixels="true" Background="Red">
+                        <Border x:Name="Border" Padding="2" SnapsToDevicePixels="true" Background="{StaticResource PrimaryLightBrush}">
                             <ContentPresenter />
                         </Border>
                     </ControlTemplate>
@@ -207,11 +186,12 @@
         </Style>
 
         <!-- Custom TextBox Style: Underlined, Transparent BG, small rounded corners -->
-        <!-- Applies on every TextBox in this App  -->
+        <!-- Applies on every TextBox in this App -->
         <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}">
             <!--These setters are for the default appearance-->
             <Setter Property="MinWidth" Value="48"/>
             <Setter Property="MaxHeight" Value="32"/>
+            <Setter Property="MaxLength" Value="80"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
             <Setter Property="FontSize" Value="14"/>
@@ -238,7 +218,7 @@
         </Style>
 
         <!--Custom ContextMenu Style: Used in ContextMenu as 'Style'-->
-        <!-- Applies on every ContextMenu in this App  -->
+        <!-- Applies on every ContextMenu in this App -->
         <Style x:Key="{x:Type ContextMenu}" TargetType="{x:Type ContextMenu}">
             <Setter Property="SnapsToDevicePixels" Value="True" />
             <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
@@ -257,7 +237,7 @@
         </Style>
 
         <!-- ContextMenu entry (MenuItem) appearance and behaviour: Used in ContextMenu as 'ItemContainerStyle' -->
-        <!-- Applies on every (Context) MenuItem in this App  -->
+        <!-- Applies on every (Context) MenuItem in this App -->
         <Style x:Key="{x:Type MenuItem}" TargetType="{x:Type MenuItem}">
             <Setter Property="Padding" Value="4"/>
             <Setter Property="FontSize" Value="14"/>
@@ -302,64 +282,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>        
-
-        <!--Custom Button01: Test-->
-        <Style x:Key="ButtonStyle01" TargetType="{x:Type Button}">
-            <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
-            <Setter Property="Foreground" Value="White"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Padding" Value="1"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Grid x:Name="grid">
-                            <Border x:Name="border" CornerRadius="8" BorderBrush="Black" BorderThickness="2">
-                                <Border.Background>
-                                    <RadialGradientBrush GradientOrigin="0.496,1.052">
-                                        <RadialGradientBrush.RelativeTransform>
-                                            <TransformGroup>
-                                                <ScaleTransform CenterX="0.5" CenterY="0.5" 
-                                                        ScaleX="1.5" ScaleY="1.5"/>
-                                                <TranslateTransform X="0.02" Y="0.3"/>
-                                            </TransformGroup>
-                                        </RadialGradientBrush.RelativeTransform>
-                                        <GradientStop Offset="1" Color="#00000000"/>
-                                        <GradientStop Offset="0.3" Color="#FFFFFFFF"/>
-                                    </RadialGradientBrush>
-                                </Border.Background>
-                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" TextElement.FontWeight="Bold"/>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsPressed" Value="True">
-                                <Setter Property="Background" TargetName="border">
-                                    <Setter.Value>
-                                        <RadialGradientBrush GradientOrigin="0.496,1.052">
-                                            <RadialGradientBrush.RelativeTransform>
-                                                <TransformGroup>
-                                                    <ScaleTransform CenterX="0.5" CenterY="0.5" ScaleX="1.5" ScaleY="1.5"/>
-                                                    <TranslateTransform X="0.02" Y="0.3"/>
-                                                </TransformGroup>
-                                            </RadialGradientBrush.RelativeTransform>
-                                            <GradientStop Color="#00000000" Offset="1"/>
-                                            <GradientStop Color="#FF303030" Offset="0.3"/>
-                                        </RadialGradientBrush>
-                                    </Setter.Value>
-                                </Setter>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="BorderBrush" TargetName="border" Value="#FF33962B"/>
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Opacity" TargetName="grid" Value="0.25"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
 
         <!--Custom Button02_A: full rounded corners, highlighted blue, click effects-->
         <Style x:Key="ButtonStyle02_A" TargetType="{x:Type Button}">
@@ -556,6 +478,28 @@
             </Style.Triggers>
         </Style>
 
+        <!--Custom Button04: rectangular, click effects -->
+        <Style x:Key="ButtonStyle04" TargetType="{x:Type Button}">
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <!--Custom RadioButton01_A: ToggleButton with behaviour like RadioButton: Exclusive Group, Checkstates etc.-->
         <Style x:Key="RadioButton01_A" TargetType="{x:Type RadioButton}">
             <Setter Property="Template">
@@ -600,32 +544,10 @@
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                </Trigger>                
-            </Style.Triggers>
-        </Style>
-
-        <!--Custom Button04: rectangular, click effects -->
-        <Style x:Key="ButtonStyle04" TargetType="{x:Type Button}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
-                        </Setter.Value>
-                    </Setter>
                 </Trigger>
             </Style.Triggers>
         </Style>
-
+        
         <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page-->
         <DataTemplate x:Key="FO0_LandingPage">
             <ui:FO0_LandingPage/>
