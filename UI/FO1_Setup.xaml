@@ -55,17 +55,6 @@
             </Grid>
         </DataTemplate>
 
-        <Style x:Key="TextBoxStyle" TargetType="TextBox">
-            <!--These setters are for the default appearance-->
-            <Setter Property="MinWidth" Value="48"/>
-            <Setter Property="MaxWidth" Value="96"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
-        </Style>
-
         <!--
         Custom ListView Entry Mockup: Interior and Exterior properties as static "LVItems" on top and bottom
         'Binding' source is set by parent Element via 'Content' property
@@ -185,7 +174,7 @@
                       Background="Transparent"
                       BorderBrush="Transparent">
                 <ListView.Resources>
-                    <ContextMenu x:Key="ListView_ContextMenu" Style="{StaticResource ContextMenuStyle01}" ItemContainerStyle="{StaticResource ContextMenuItemStyle01}">
+                    <ContextMenu x:Key="ListView_ContextMenu">
                         <!-- ClickEvent only works under .Resources. Doesnt work under ItemContainerStyle -->
                         <MenuItem x:Name="edit_LVItem" Header="Werte bearbeiten" Click="editLayerClicked">
                             <MenuItem.Icon>
@@ -254,20 +243,20 @@
                 <Label Grid.Row="0" Grid.Column="0" Content="Innen" FontSize="14" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center" Height="28"/>
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="1" BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox x:Name="Ti_ComboBox" FontSize="14" ItemsSource="{Binding Ti_Keys}" SelectedIndex="{Binding Ti_Selection}" MinWidth="144" SelectionChanged="Ti_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Ti_Input" Style="{StaticResource TextBoxStyle}"/>
+                    <ComboBox x:Name="Ti_ComboBox" ItemsSource="{Binding Ti_Keys}" SelectedIndex="{Binding Ti_Selection}" MinWidth="144" SelectionChanged="Ti_ComboBox_SelectionChanged"/>
+                    <TextBox x:Name="Ti_Input" PreviewTextInput="numericData_PreviewTextInput"/>
                     <Label Content="°C" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>                                
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="2" BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
                     <ComboBox x:Name="Rsi_ComboBox" FontSize="14" ItemsSource="{Binding Rsi_Keys}" SelectedIndex="{Binding Rsi_Selection}" MinWidth="144" SelectionChanged="Rsi_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Rsi_Input" Style="{StaticResource TextBoxStyle}"/>
+                    <TextBox x:Name="Rsi_Input" PreviewTextInput="numericData_PreviewTextInput"/>
                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="3" BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
                     <ComboBox x:Name="Rel_Fi_ComboBox" FontSize="14" ItemsSource="{Binding Rel_Fi_Keys}" SelectedIndex="{Binding Rel_Fi_Selection}" MinWidth="144" SelectionChanged="Rel_Fi_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Rel_Fi_Input" Style="{StaticResource TextBoxStyle}"/>
+                    <TextBox x:Name="Rel_Fi_Input" PreviewTextInput="numericData_PreviewTextInput"/>
                     <Label Content="%" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>
 
@@ -276,19 +265,19 @@
                 <controls:SubscriptLabel Grid.Row="1" Grid.Column="1" BaseText="θ" SubscriptText="e" AppendText=" - Außenluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
                     <ComboBox x:Name="Te_ComboBox" FontSize="14" ItemsSource="{Binding Te_Keys}" SelectedIndex="{Binding Te_Selection}" MinWidth="144" SelectionChanged="Te_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Te_Input" Style="{StaticResource TextBoxStyle}"/>
+                    <TextBox x:Name="Te_Input" PreviewTextInput="numericData_PreviewTextInput"/>
                     <Label Content="°C" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="1" Grid.Column="2" BaseText="R" SubscriptText="se" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel  Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
                     <ComboBox x:Name="Rse_ComboBox" FontSize="14" ItemsSource="{Binding Rse_Keys}" SelectedIndex="{Binding Rse_Selection}" MinWidth="144" SelectionChanged="Rse_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Rse_Input" Style="{StaticResource TextBoxStyle}"/>
+                    <TextBox x:Name="Rse_Input" PreviewTextInput="numericData_PreviewTextInput"/>
                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel  Grid.Row="1" Grid.Column="3" BaseText="Φ" SubscriptText="e" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel  Grid.Row="1" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="28">
                     <ComboBox x:Name="Rel_Fe_ComboBox" FontSize="14" ItemsSource="{Binding Rel_Fe_Keys}" SelectedIndex="{Binding Rel_Fe_Selection}" MinWidth="144" SelectionChanged="Rel_Fe_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Rel_Fe_Input" Style="{StaticResource TextBoxStyle}"/>
+                    <TextBox x:Name="Rel_Fe_Input" PreviewTextInput="numericData_PreviewTextInput"/>
                     <Label Content="%" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>
             </Grid>

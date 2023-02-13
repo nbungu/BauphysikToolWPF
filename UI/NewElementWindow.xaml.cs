@@ -17,9 +17,10 @@ namespace BauphysikToolWPF.UI
         public NewElementWindow(Element element = null)
         {
             this.element = element;
-            constructionType_Picker.ItemsSource = DatabaseAccess.GetConstructions().Select(e => e.Type).ToList();
 
             InitializeComponent();
+
+            constructionType_Picker.ItemsSource = DatabaseAccess.GetConstructions().Select(e => e.Type).ToList();
 
             // Pre set TextBox and ComboBox to edit existing Element
             if (element != null)

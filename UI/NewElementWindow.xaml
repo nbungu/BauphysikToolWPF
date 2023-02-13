@@ -17,7 +17,7 @@
 
         <StackPanel Orientation="Vertical" Margin="16,8,16,8" VerticalAlignment="Center">
             <Label Content="Name" FontSize="14"/>
-            <TextBox x:Name="elementName_TextBox" Text="" VerticalContentAlignment="Center" FontSize="14" MaxLength="50" Height="32" HorizontalAlignment="Stretch"/>
+            <TextBox x:Name="elementName_TextBox" Style="{StaticResource TextBoxStyle_01}" Text="" HorizontalContentAlignment="Left" MaxLength="64" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Vertical" Margin="16,0,16,8" VerticalAlignment="Center">

@@ -122,7 +122,7 @@
                           Background="Transparent"                          
                           BorderThickness="0">
                 <ItemsControl.Resources>
-                    <ContextMenu x:Key="WrapPanel_ContextMenu" x:Name="WrapPanel_ContextMenu" Style="{StaticResource ContextMenuStyle01}" ItemContainerStyle="{StaticResource ContextMenuItemStyle01}">
+                    <ContextMenu x:Key="WrapPanel_ContextMenu" x:Name="WrapPanel_ContextMenu">
                         <MenuItem x:Name="edit_MenuItem" Header="Bearbeiten" Click="edit_MenuItem_Click" >
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Edit}" />

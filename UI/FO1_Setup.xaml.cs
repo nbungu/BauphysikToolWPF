@@ -340,5 +340,10 @@ namespace BauphysikToolWPF.UI
             // Update in Database
             DatabaseAccess.UpdateElement(FO0_LandingPage.SelectedElement);
         }
+
+        private void Rel_Fe_Input_GotFocus(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }
