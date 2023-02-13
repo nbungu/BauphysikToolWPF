@@ -40,7 +40,6 @@ namespace BauphysikToolWPF.UI
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
             // Drawing
-            LoadDropDownSelections(); // Loads last selection of the dropdown box (Picker)
             new DrawLayerCanvas(layers_Canvas, FO0_LandingPage.SelectedElement.Layers);         // Initial Draw of the Canvas
             new DrawMeasurementLine(measurement_Grid, FO0_LandingPage.SelectedElement.Layers);  // Initial Draw of the measurement line
 
@@ -88,16 +87,6 @@ namespace BauphysikToolWPF.UI
                     DatabaseAccess.UpdateLayer(layers[i]);
                 }
             }
-        }
-        private void LoadDropDownSelections()
-        {
-            // TODO implement in xaml
-            Ti_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Ti_ComboBox"];
-            Te_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Te_ComboBox"];
-            Rsi_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rsi_ComboBox"];
-            Rse_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rse_ComboBox"];
-            Rel_Fi_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rel_Fi_ComboBox"];
-            Rel_Fe_ComboBox.SelectedIndex = UserSaved.ComboBoxSelection["Rel_Fe_ComboBox"];
         }
 
         public void UpdateElementEnvVars(int elementID, EnvVars envVar)
@@ -165,104 +154,40 @@ namespace BauphysikToolWPF.UI
         }
         private void Ti_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-           /* UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
-
-            // On custom User Input
-            if ((sender as ComboBox).SelectedIndex == -1)
-                return;
-
-            // On Selection from List
-            string item = (sender as ComboBox).SelectedItem.ToString();
-            EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == item);
-            Ti_Input.Text = currentEnvVar.Value.ToString();
-            UserSaved.Ti = currentEnvVar.Value;
-
+            //EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == item);
             // Add m:n realtion to Database
-            UpdateElementEnvVars(ElementId, currentEnvVar);*/
+            //TODO implement again
+            //UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Rsi_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
-
-            // On custom User Input
-            if ((sender as ComboBox).SelectedIndex == -1)
-                return;
-
-            // On Selection from List
-            string item = (sender as ComboBox).SelectedItem.ToString();
-            EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == item);
-            Rsi_Input.Text = currentEnvVar.Value.ToString();
-            UserSaved.Rsi = currentEnvVar.Value;
-
             // Add m:n realtion to Database
-            UpdateElementEnvVars(ElementId, currentEnvVar);
+            //UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Rel_Fi_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
-            
-            // On custom User Input
-            if ((sender as ComboBox).SelectedIndex == -1)
-                return;
-
-            // On Selection from List
-            string item = (sender as ComboBox).SelectedItem.ToString();
-            EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == item);
-            Rel_Fi_Input.Text = currentEnvVar.Value.ToString();
-            UserSaved.Rel_Fi = currentEnvVar.Value;
-
             // Add m:n realtion to Database
-            UpdateElementEnvVars(ElementId, currentEnvVar);
+            //UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Te_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
-            
-            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
-                return;
-
-            string item = (sender as ComboBox).SelectedItem.ToString();
-            EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == item);
-            Te_Input.Text = currentEnvVar.Value.ToString();
-            UserSaved.Te = currentEnvVar.Value;
-
             // Add m:n realtion to Database
-            UpdateElementEnvVars(ElementId, currentEnvVar);
+            //UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Rse_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
-            
-            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
-                return;
-
-            string item = (sender as ComboBox).SelectedItem.ToString();
-            EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == item);
-            Rse_Input.Text = currentEnvVar.Value.ToString();
-            UserSaved.Rse = currentEnvVar.Value;
-
             // Add m:n realtion to Database
-            UpdateElementEnvVars(ElementId, currentEnvVar);
+            //UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void Rel_Fe_ComboBox_SelectionChanged(object sender, EventArgs e)
         {
-            UserSaved.ComboBoxSelection[(sender as ComboBox).Name] = (sender as ComboBox).SelectedIndex; // Save current Selection
-
-            if ((sender as ComboBox).SelectedIndex == -1) // empty selection
-                return;
-
-            string item = (sender as ComboBox).SelectedItem.ToString();
-            EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == item);
-            Rel_Fe_Input.Text = currentEnvVar.Value.ToString();
-            UserSaved.Rel_Fe = currentEnvVar.Value;            
-
             // Add m:n realtion to Database
-            UpdateElementEnvVars(ElementId, currentEnvVar);
+            //UpdateElementEnvVars(ElementId, currentEnvVar);
         }
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             //Handle the input
-            string userInput = e.Text;
+            /*string userInput = e.Text;
             Regex regex = new Regex("[^0-9,-]+"); //regex that matches disallowed text
             e.Handled = regex.IsMatch(e.Text);
 
@@ -300,7 +225,7 @@ namespace BauphysikToolWPF.UI
                     Rel_Fe_ComboBox.SelectedIndex = -1; // set empty selection
                     return;
                 default: throw new ArgumentException("Could not assign value");
-            }
+            }*/
         }
         private void layers_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

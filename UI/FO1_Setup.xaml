@@ -80,9 +80,9 @@
                     </Grid>
                     <Label Grid.Column="1" Content="Innen" Height="26" FontWeight="Bold"/>
                     <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom"/>
-                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="i" Value="{Binding Source={x:Static session:UserSaved.Ti}}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
+                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="i" Value="{Binding TiValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
                     <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="si" Value="{Binding Source={x:Static session:UserSaved.Rsi}}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                    <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="si" Value="{Binding RsiValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                     <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                     <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="i" Value="{Binding Source={x:Static session:UserSaved.Rel_Fi}}" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 </Grid>
@@ -110,11 +110,11 @@
                     </Grid>
                     <Label Grid.Column="1" Content="Außen" Height="26" FontWeight="Bold"/>
                     <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom"/>
-                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="e" Value="{Binding Source={x:Static session:UserSaved.Te}}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
+                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="e" Value="{Binding TeValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
                     <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="se" Value="{Binding Source={x:Static session:UserSaved.Rse}}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                    <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="se" Value="{Binding RseValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                     <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="e" Value="{Binding Source={x:Static session:UserSaved.Rel_Fe}}" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                    <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="e" Value="" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 </Grid>
             </Border>
         </DataTemplate>
@@ -159,8 +159,8 @@
                 <Button Style="{StaticResource ButtonStyle03_B}" Click="deleteAllLayersClicked" DataContext="{StaticResource ButtonIcon_Delete}" Content="Alle Löschen" Margin="0,0,8,0"/>
             </StackPanel>
 
-            <!--Custom UI Element: Border as ListViewItem Mockup-->
-            <ContentControl Grid.Row="1" ContentTemplate="{StaticResource LVItem_Mockup_Int}" Margin="0,16,0,4"/>
+            <!--Custom UI Element: Border as ListViewItem Mockup. Binding is 'FO1_ViewModel' -->
+            <ContentControl Grid.Row="1" ContentTemplate="{StaticResource LVItem_Mockup_Int}" Content="{Binding}" Margin="0,16,0,4"/>
 
             <!--ItemsSource gets updated (!) by backend-->
             <ListView x:Name="layers_ListView"
@@ -200,8 +200,8 @@
                 </ListView.ItemContainerStyle>               
             </ListView>
 
-            <!--Custom UI Element: Border as ListViewItem Mockup-->
-            <ContentControl Grid.Row="3" ContentTemplate="{StaticResource LVItem_Mockup_Ext}" Margin="0,4,0,0"/>
+            <!--Custom UI Element: Border as ListViewItem Mockup. Binding is 'FO1_ViewModel' -->
+            <ContentControl Grid.Row="3" ContentTemplate="{StaticResource LVItem_Mockup_Ext}" Content="{Binding}" Margin="0,4,0,0"/>
         </Grid>
 
         <!--Middle Right-->
@@ -238,20 +238,20 @@
                 <Label Grid.Row="0" Grid.Column="0" Content="Innen" FontSize="14" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center" Height="28"/>
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="1" BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox x:Name="Ti_ComboBox" ItemsSource="{Binding Ti_Keys}" SelectedItem="{Binding Ti_selection}" MinWidth="144" SelectionChanged="Ti_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Ti_Input" Text="{Binding TiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                    <ComboBox ItemsSource="{Binding Ti_Keys}" SelectedItem="{Binding Ti_selection}" MinWidth="144" SelectionChanged="Ti_ComboBox_SelectionChanged"/>
+                    <TextBox Text="{Binding TiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <Label Content="°C" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>                                
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="2" BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox x:Name="Rsi_ComboBox" FontSize="14" ItemsSource="{Binding Rsi_Keys}" SelectedIndex="{Binding Rsi_Selection}" MinWidth="144" SelectionChanged="Rsi_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Rsi_Input" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                    <ComboBox ItemsSource="{Binding Rsi_Keys}" SelectedItem="{Binding Rsi_selection}" MinWidth="144" SelectionChanged="Rsi_ComboBox_SelectionChanged"/>
+                    <TextBox Text="{Binding RsiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="3" BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox x:Name="Rel_Fi_ComboBox" FontSize="14" ItemsSource="{Binding Rel_Fi_Keys}" SelectedIndex="{Binding Rel_Fi_Selection}" MinWidth="144" SelectionChanged="Rel_Fi_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Rel_Fi_Input" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                    <ComboBox ItemsSource="{Binding Rel_Fi_Keys}" SelectedItem="{Binding Rel_fi_selection}" MinWidth="144" SelectionChanged="Rel_Fi_ComboBox_SelectionChanged"/>
+                    <TextBox Text="{Binding RelFiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <Label Content="%" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>
 
@@ -259,20 +259,20 @@
                 <Label Grid.Row="1" Grid.Column="0" Content="Außen" FontSize="14" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" VerticalContentAlignment="Center" Height="28"/>
                 <controls:SubscriptLabel Grid.Row="1" Grid.Column="1" BaseText="θ" SubscriptText="e" AppendText=" - Außenluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox x:Name="Te_ComboBox" FontSize="14" ItemsSource="{Binding Te_Keys}" SelectedIndex="{Binding Te_Selection}" MinWidth="144" SelectionChanged="Te_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Te_Input" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                    <ComboBox ItemsSource="{Binding Te_Keys}" SelectedItem="{Binding Te_selection}" MinWidth="144" SelectionChanged="Te_ComboBox_SelectionChanged"/>
+                    <TextBox Text="{Binding TeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <Label Content="°C" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="1" Grid.Column="2" BaseText="R" SubscriptText="se" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel  Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox x:Name="Rse_ComboBox" FontSize="14" ItemsSource="{Binding Rse_Keys}" SelectedIndex="{Binding Rse_Selection}" MinWidth="144" SelectionChanged="Rse_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Rse_Input" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
+                    <ComboBox ItemsSource="{Binding Rse_Keys}" SelectedItem="{Binding Rse_selection}" MinWidth="144" SelectionChanged="Rse_ComboBox_SelectionChanged"/>
+                    <TextBox Text="{Binding RseValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel  Grid.Row="1" Grid.Column="3" BaseText="Φ" SubscriptText="e" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel  Grid.Row="1" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="28">
-                    <ComboBox x:Name="Rel_Fe_ComboBox" FontSize="14" ItemsSource="{Binding Rel_Fe_Keys}" SelectedIndex="{Binding Rel_Fe_Selection}" MinWidth="144" SelectionChanged="Rel_Fe_ComboBox_SelectionChanged"/>
-                    <TextBox x:Name="Rel_Fe_Input" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="28">
+                    <ComboBox ItemsSource="{Binding Rel_Fe_Keys}" SelectedItem="{Binding Rel_fe_selection}" MinWidth="144" SelectionChanged="Rel_Fe_ComboBox_SelectionChanged"/>
+                    <TextBox Text="{Binding RelFeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <Label Content="%" Height="32" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
                 </StackPanel>
             </Grid>

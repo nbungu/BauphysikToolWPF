@@ -1,7 +1,9 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -14,21 +16,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string ElementType { get; set; } = FO0_LandingPage.SelectedElement.Construction.Type;   
         public List<Layer> Layers { get; set; } = FO0_LandingPage.SelectedElement.Layers; // Initial List used by 'layers_ListView'
 
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(TiValue))]
-        string ti_selection; 
-
-        public string TiValue
-        {
-            get
-            {
-                if (ti_selection == null)
-                    return "0";
-                return DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_selection).Value.ToString(); }
-            set { }
-        }
         /*
+         * Static Class Properties:
+         * 
          * If List<string> is null, then get List from Database. If List is already loaded, use existing List.
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
@@ -79,6 +69,56 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 return rel_Fe_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Select(e => e.Comment).ToList();
             }
+        }
+
+        // Testing MVVM
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TiValue))] // Notify 'TiValue' when this property is changed!
+        private static string ti_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
+        public string TiValue
+        {
+            get
+            {
+                return (ti_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_selection).Value.ToString();
+            }
+            set { }
+        }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TeValue))] // Notify 'TeValue' when this property is changed!
+        private static string te_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
+        public string TeValue
+        {
+            get
+            {
+                return (te_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == te_selection).Value.ToString();
+            }
+            set { }
+        }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RsiValue))] // Notify 'TeValue' when this property is changed!
+        private static string rsi_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
+        public string RsiValue
+        {
+            get
+            {
+                return (rsi_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == rsi_selection).Value.ToString();
+            }
+            set { }
+        }
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RseValue))] // Notify 'TeValue' when this property is changed!
+        private static string rse_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
+        public string RseValue
+        {
+            get
+            {
+                return (rse_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == rse_selection).Value.ToString();
+            }
+            set { }
         }
     }
 
