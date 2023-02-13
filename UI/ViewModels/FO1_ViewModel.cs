@@ -1,9 +1,8 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -12,16 +11,13 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Called by 'InitializeComponent()' from FO1_Setup.cs due to Class-Binding in xaml via DataContext
         public string Title { get; } = "Setup";
-        public string ElementName { get; set; } = FO0_LandingPage.SelectedElement.Name;
-        public string ElementType { get; set; } = FO0_LandingPage.SelectedElement.Construction.Type;   
-        public List<Layer> Layers { get; set; } = FO0_LandingPage.SelectedElement.Layers; // Initial List used by 'layers_ListView'
-
+       
         /*
          * Static Class Properties:
-         * 
          * If List<string> is null, then get List from Database. If List is already loaded, use existing List.
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
+
         private static List<string>? ti_Keys;
         public List<string> Ti_Keys
         {
@@ -71,11 +67,64 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
 
-        // Testing MVVM
+        /*
+         * MVVM Commands - UI Interaction with Commands
+         */
+
+        [RelayCommand]
+        private void LayerChange(Layer? selectedLayer) // Binding in XAML via 'LayerChangeCommand'
+        {
+            Layers = DatabaseAccess.QueryLayersByElementId(FO1_Setup.ElementId);
+        }
+
+        [RelayCommand] 
+        private void ElementChange() // Binding in XAML via 'ElementChangeCommand'
+        {
+            ElementName = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Name;
+            ElementType = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Construction.Type;
+        }
+
+        /*
+         * MVVM Properties
+         */
+
+        [ObservableProperty]
+        private List<Layer> layers = FO0_LandingPage.SelectedElement.Layers; // Initial Value
+
+        [ObservableProperty]
+        private string elementName = FO0_LandingPage.SelectedElement.Name; // Initial Value
+
+        [ObservableProperty]
+        private string elementType = FO0_LandingPage.SelectedElement.Construction.Type; // Initial Value
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))] // Notify 'TiValue' when this property is changed!
         private static string ti_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TeValue))]
+        private static string te_selection = "";
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RsiValue))]
+        private static string rsi_selection = "";
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RseValue))]
+        private static string rse_selection = "";
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RelFiValue))]
+        private static string rel_fi_selection = "";
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RelFeValue))]
+        private static string rel_fe_selection = "";
+
+        /*
+         * MVVM Capsulated Properties + Triggered by other Properties
+         */
+
         public string TiValue
         {
             get
@@ -84,10 +133,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             set { }
         }
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(TeValue))] // Notify 'TeValue' when this property is changed!
-        private static string te_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
         public string TeValue
         {
             get
@@ -96,10 +141,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             set { }
         }
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(RsiValue))] // Notify 'TeValue' when this property is changed!
-        private static string rsi_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
         public string RsiValue
         {
             get
@@ -108,10 +149,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             set { }
         }
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(RseValue))] // Notify 'TeValue' when this property is changed!
-        private static string rse_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
         public string RseValue
         {
             get
@@ -120,6 +157,21 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             set { }
         }
+        public string RelFiValue
+        {
+            get
+            {
+                return (rel_fi_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == rel_fi_selection).Value.ToString();
+            }
+            set { }
+        }
+        public string RelFeValue
+        {
+            get
+            {
+                return (rel_fe_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == rel_fe_selection).Value.ToString();
+            }
+            set { }
+        }
     }
-
 }

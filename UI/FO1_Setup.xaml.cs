@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.Helper;
+using BauphysikToolWPF.UI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -52,17 +53,16 @@ namespace BauphysikToolWPF.UI
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
             // Update SelectedElement Class Variable
-            FO0_LandingPage.SelectedElement = DatabaseAccess.QueryElementById(ElementId);
+            FO0_LandingPage.SelectedElement.Layers = DatabaseAccess.QueryLayersByElementId(ElementId);
 
             // Bring them in correct order again
-            ReorderLayerPosition(FO0_LandingPage.SelectedElement.Layers);        
+            ReorderLayerPosition(FO0_LandingPage.SelectedElement.Layers);  
 
             // Update UI
-            layers_ListView.ItemsSource = FO0_LandingPage.SelectedElement.Layers;               // Update LVItemsSource
             new DrawLayerCanvas(layers_Canvas, FO0_LandingPage.SelectedElement.Layers);         // Redraw Canvas
             new DrawMeasurementLine(measurement_Grid, FO0_LandingPage.SelectedElement.Layers);  // Redraw measurement line
 
-            // Update Recalculate Flag
+            // Update Recalculate Flag5
             RecalculateTemp = true;
             RecalculateGlaser = true;
         }
@@ -112,18 +112,7 @@ namespace BauphysikToolWPF.UI
 
             //window.Owner = this;
             window.ShowDialog();    // Open as modal (Parent window pauses, waiting for the window to be closed)
-            //window.Show();          // Open as modeless
-        }
-        private void deleteLayerClicked(object sender, EventArgs e)
-        {
-            if (layers_ListView.SelectedItem is null)
-                return;
-
-            var layer = layers_ListView.SelectedItem as Layer;
-            if (layer is null)
-                return;
-
-            DatabaseAccess.DeleteLayer(layer);
+            //window.Show();         // Open as modeless
         }
         private void editLayerClicked(object sender, RoutedEventArgs e)
         {
@@ -140,6 +129,21 @@ namespace BauphysikToolWPF.UI
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
         }
+        private void deleteLayerClicked(object sender, EventArgs e)
+        {
+            if (layers_ListView.SelectedItem is null)
+                return;
+
+            var layer = layers_ListView.SelectedItem as Layer;
+            if (layer is null)
+                return;
+
+            DatabaseAccess.DeleteLayer(layer);
+        }
+        private void deleteAllLayersClicked(object sender, EventArgs e)
+        {
+            DatabaseAccess.DeleteAllLayers();
+        }
         private void hideLayerClicked(object sender, RoutedEventArgs e)
         {
             //TODO
@@ -147,10 +151,6 @@ namespace BauphysikToolWPF.UI
         private void dupeLayerClicked(object sender, RoutedEventArgs e)
         {
             //TODO
-        }
-        private void deleteAllLayersClicked(object sender, EventArgs e)
-        {
-            DatabaseAccess.DeleteAllLayers();
         }
         private void Ti_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
