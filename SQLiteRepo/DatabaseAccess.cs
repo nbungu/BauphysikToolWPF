@@ -24,6 +24,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         // event handlers - publisher
         public static void OnLayersChanged() //protected virtual method
         {
+            
             LayersChanged?.Invoke(); //if LayersChanged is not null then call delegate
         }
         public static void OnElementsChanged()
@@ -106,7 +107,6 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             sqlConn.Delete<Element>(elementId);
             OnElementsChanged();
-            // ON DELETE CASCADE -> deletes corresp. Layers and ElementEnvVars via the foreignkey constraint
         }
         public static void DeleteAllElements()
         {
@@ -131,12 +131,17 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static void CreateLayer(Layer layer)
         {
             sqlConn.InsertWithChildren(layer, recursive: true); //Method from SQLiteExt -> adds a relationship to a child object ('Material') 
-            OnLayersChanged(); // raises an event
+            OnLayersChanged();
         }
 
-        public static void UpdateLayer(Layer layer)
+        public static void UpdateLayer(Layer layer, bool triggerUpdateEvent = true)
         {
             sqlConn.UpdateWithChildren(layer);
+
+            if (triggerUpdateEvent == false)
+                return;
+
+            OnLayersChanged();
         }
 
         public static void DeleteLayer(Layer layer)

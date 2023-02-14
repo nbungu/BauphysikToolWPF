@@ -84,7 +84,7 @@
                     <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                     <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="si" Value="{Binding RsiValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                     <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="i" Value="{Binding Source={x:Static session:UserSaved.Rel_Fi}}" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                    <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="i" Value="{Binding RelFiValue}" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 </Grid>
             </Border>            
         </DataTemplate>
@@ -114,7 +114,7 @@
                     <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                     <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="se" Value="{Binding RseValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                     <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="e" Value="" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                    <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="e" Value="{Binding RelFeValue}" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 </Grid>
             </Border>
         </DataTemplate>
@@ -136,9 +136,9 @@
         <!--Top Left -->
         <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal">
-                <Label x:Name="headerLabel_Name" Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0" MouseDoubleClick="headerLabel_Clicked"/>
-                <Label x:Name="headerLabel_Type" Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="8,0,0,0" MouseDoubleClick="headerLabel_Clicked"/>
-                <Button x:Name="headerLabel_EditButton" Style="{StaticResource ButtonStyle03_Mini}" Click="headerLabel_Clicked" Command="{Binding ElementChangeCommand}" Margin="8,2,0,2"/>
+                <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
+                <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
+                <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit}" Margin="8,2,0,2"/>
             </StackPanel>
         </Border>
         <!--Top Right -->
@@ -153,16 +153,17 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Style="{StaticResource ButtonStyle03_A}" Click="addLayerClicked" Content="Hinzufügen" DataContext="{StaticResource ButtonIcon_Add_W}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle03_B}" Click="deleteLayerClicked" Command="{Binding LayerChangeCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Content="Löschen" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button Style="{StaticResource ButtonStyle03_B}" Click="editLayerClicked" Content="Bearbeiten" DataContext="{StaticResource ButtonIcon_Edit}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button Style="{StaticResource ButtonStyle03_B}" Click="deleteAllLayersClicked" Command="{Binding LayerChangeCommand}" Content="Alle Löschen" DataContext="{StaticResource ButtonIcon_Delete}" Margin="0,0,8,0"/>
+                <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding OpenAddLayerWindowCommand}" Tag="{StaticResource ButtonIcon_Add_W}" Margin="0,0,8,0"/>
+                <Button Content="Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding LayerDeleteCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Cancel}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button Content="Bearbeiten" Style="{StaticResource ButtonStyle03_B}" Command="{Binding OpenEditLayerWindowCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button Content="Alle Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding LayerDeleteCommand}" Tag="{StaticResource ButtonIcon_Delete}" Margin="0,0,8,0"/>
             </StackPanel>
 
             <!--Custom UI Element: Border as ListViewItem Mockup. Binding is 'FO1_ViewModel' -->
             <ContentControl Grid.Row="1" ContentTemplate="{StaticResource LVItem_Mockup_Int}" Content="{Binding}" Margin="0,16,0,4"/>
 
             <!--ItemsSource gets updated (!) by backend-->
+            <!-- This is 'PlacementTarget' as seen from ContextMenu -->
             <ListView x:Name="layers_ListView"
                       Grid.Row="2"
                       ItemsSource="{Binding Layers}"
@@ -172,32 +173,32 @@
                       SelectionChanged="layers_ListView_SelectionChanged"
                       SelectionMode="Single"
                       Background="Transparent"
-                      BorderBrush="Transparent">
-                <ListView.Resources>
-                    <ContextMenu x:Key="ListView_ContextMenu">
-                        <!-- ClickEvent only works under .Resources. Doesnt work under ItemContainerStyle -->
-                        <MenuItem Header="Werte bearbeiten" Click="editLayerClicked">
+                      BorderBrush="Transparent"
+                      Tag="{Binding}">
+                <ListView.ContextMenu>
+                    <ContextMenu>
+                        <!--
+                        ClickEvent only works under ListView.Resources or ListView.ContextMenu. Doesnt work under ItemContainerStyle.
+                        As ContextMenu isn't a part of the visual tree you need to pass the data context
+                        in different way, using PlacementTarget and Tag property to expose the DataBinding (FO1_ViewModel).
+                        -->
+                        <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.OpenEditLayerWindowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Edit}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Ausblenden" Click="hideLayerClicked">
+                        <MenuItem Header="Ausblenden">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Hide}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Löschen" Click="deleteLayerClicked">
+                        <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.LayerDeleteCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Delete}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>
-                </ListView.Resources>
-                <ListView.ItemContainerStyle>
-                    <Style TargetType="{x:Type ListViewItem}">
-                        <Setter Property="ContextMenu" Value="{StaticResource ListView_ContextMenu}"/>
-                    </Style>
-                </ListView.ItemContainerStyle>               
+                </ListView.ContextMenu>
             </ListView>
 
             <!--Custom UI Element: Border as ListViewItem Mockup. Binding is 'FO1_ViewModel' -->

@@ -32,7 +32,7 @@ namespace BauphysikToolWPF.UI
             // Update Class Variable (Project)
             Project.Elements = DatabaseAccess.QueryElementsByProjectId(1); //TODO: hardcoded
 
-            // Update UI
+            // Update UI - TODO ViewModel
             element_ItemsControl.ItemsSource = Project.Elements; // Initial ItemsSource is fetched by XAML via ViewModel
         }        
 

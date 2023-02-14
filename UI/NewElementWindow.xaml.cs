@@ -53,6 +53,7 @@ namespace BauphysikToolWPF.UI
                         Layers = new List<Layer>(),
                         EnvVars = new List<EnvVars>()
                     };
+
                     // Update Class Variable
                     FO0_LandingPage.SelectedElement = newElem;
                     // Update in Database
@@ -64,10 +65,12 @@ namespace BauphysikToolWPF.UI
                 // If Element in Parameter -> Edit existing Element (SelectedElement from FO0_LandingPage)
                 else
                 {
-                    // Update Class Variable (SelectedElement)
                     this.element.Name = elementName;
                     this.element.ConstructionId = constrId;
                     this.element.ProjectId = FO0_LandingPage.Project.ProjectId;
+
+                    // Update Class Variable
+                    FO0_LandingPage.SelectedElement = element;
                     // Update in Database
                     DatabaseAccess.UpdateElement(this.element);
                     // Just Close this after editing existing Element

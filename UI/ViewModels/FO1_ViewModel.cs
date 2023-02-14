@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -69,17 +70,67 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         /*
          * MVVM Commands - UI Interaction with Commands
+         * 
+         * Update ONLY UI-Used Values by fetching from Database!
          */
 
         [RelayCommand]
-        private void LayerChange(Layer? selectedLayer) // Binding in XAML via 'LayerChangeCommand'
+        private void OpenAddLayerWindow()
         {
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            var window = new AddLayerWindow();
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            window.ShowDialog();
+
+            // After Window closed:
+            // Update XAML Binding Property by fetching from DB
+            Layers = DatabaseAccess.QueryLayersByElementId(FO1_Setup.ElementId);
+        }
+
+        [RelayCommand]
+        private void LayerDelete(Layer? selectedLayer)
+        {
+            if (selectedLayer is null)
+            {
+                // If no specific Layer is selected, delete All
+                DatabaseAccess.DeleteAllLayers();
+            } else
+            {
+                // Delete selected Layer
+                DatabaseAccess.DeleteLayer(selectedLayer);
+            }
+            // Update XAML Binding Property by fetching from DB
+            Layers = DatabaseAccess.QueryLayersByElementId(FO1_Setup.ElementId);
+        }
+
+        [RelayCommand]
+        private void OpenEditLayerWindow(Layer? selectedLayer)
+        {
+            if (selectedLayer is null)
+                return;
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            var window = new EditLayerWindow(selectedLayer);
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            window.ShowDialog();
+
+            // After Window closed:
+            // Update XAML Binding Property by fetching from DB
             Layers = DatabaseAccess.QueryLayersByElementId(FO1_Setup.ElementId);
         }
 
         [RelayCommand] 
-        private void ElementChange() // Binding in XAML via 'ElementChangeCommand'
+        private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
         {
+            if (selectedElement is null)
+                selectedElement = DatabaseAccess.QueryElementById(FO1_Setup.ElementId);
+
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            var window = new NewElementWindow(selectedElement);
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            window.ShowDialog();
+
+            // After Window closed:
+            // Update XAML Binding Property by fetching from DB
             ElementName = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Name;
             ElementType = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Construction.Type;
         }
@@ -89,16 +140,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private List<Layer> layers = FO0_LandingPage.SelectedElement.Layers; // Initial Value
+        private List<Layer> layers = DatabaseAccess.QueryLayersByElementId(FO1_Setup.ElementId);
 
         [ObservableProperty]
-        private string elementName = FO0_LandingPage.SelectedElement.Name; // Initial Value
+        private string elementName = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Name;
 
         [ObservableProperty]
-        private string elementType = FO0_LandingPage.SelectedElement.Construction.Type; // Initial Value
+        private string elementType = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Construction.Type;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(TiValue))] // Notify 'TiValue' when this property is changed!
+        [NotifyPropertyChangedFor(nameof(TiValue))] // Notifies 'TiValue' when this property is changed!
         private static string ti_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
@@ -123,55 +174,87 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
+         * 
+         * Not Observable, because Triggered and Changed by the _selection Values above
          */
 
         public string TiValue
         {
             get
             {
-                return (ti_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_selection).Value.ToString();
+                double value = (ti_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_selection).Value;
+                UserSaved.Ti = value;
+                return value.ToString();
             }
-            set { }
+            set
+            {
+                //TODO handle input from User
+            }
         }
         public string TeValue
         {
             get
             {
-                return (te_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == te_selection).Value.ToString();
+                double value = (te_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == te_selection).Value;
+                UserSaved.Te = value;
+                return value.ToString();
             }
-            set { }
+            set
+            {
+                //TODO handle input from User
+            }
         }
         public string RsiValue
         {
             get
             {
-                return (rsi_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == rsi_selection).Value.ToString();
+                double value = (rsi_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == rsi_selection).Value;
+                UserSaved.Rsi = value;
+                return value.ToString();
             }
-            set { }
+            set
+            {
+                //TODO handle input from User
+            }
         }
         public string RseValue
         {
             get
             {
-                return (rse_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == rse_selection).Value.ToString();
+                double value = (rse_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == rse_selection).Value;
+                UserSaved.Rse = value;
+                return value.ToString();
             }
-            set { }
+            set
+            {
+                //TODO handle input from User
+            }
         }
         public string RelFiValue
         {
             get
             {
-                return (rel_fi_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == rel_fi_selection).Value.ToString();
+                double value = (rel_fi_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == rel_fi_selection).Value;
+                UserSaved.Rel_Fi = value;
+                return value.ToString();
             }
-            set { }
+            set
+            {
+                //TODO handle input from User
+            }
         }
         public string RelFeValue
         {
             get
             {
-                return (rel_fe_selection == "") ? "" : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == rel_fe_selection).Value.ToString();
+                double value = (rel_fe_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == rel_fe_selection).Value;
+                UserSaved.Rel_Fe = value;
+                return value.ToString();
             }
-            set { }
+            set
+            {
+                //TODO handle input from User
+            }
         }
     }
 }

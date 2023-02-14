@@ -52,17 +52,17 @@ namespace BauphysikToolWPF.UI
         // event handlers - subscribers
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
-            // Update SelectedElement Class Variable
-            FO0_LandingPage.SelectedElement.Layers = DatabaseAccess.QueryLayersByElementId(ElementId);
-
             // Bring them in correct order again
-            ReorderLayerPosition(FO0_LandingPage.SelectedElement.Layers);  
+            ReorderLayerPosition(DatabaseAccess.QueryLayersByElementId(ElementId));
+
+            // Update SelectedElement Class Variable
+            FO0_LandingPage.SelectedElement.Layers = DatabaseAccess.QueryLayersByElementId(ElementId); 
 
             // Update UI
             new DrawLayerCanvas(layers_Canvas, FO0_LandingPage.SelectedElement.Layers);         // Redraw Canvas
             new DrawMeasurementLine(measurement_Grid, FO0_LandingPage.SelectedElement.Layers);  // Redraw measurement line
 
-            // Update Recalculate Flag5
+            // Update Recalculate Flag
             RecalculateTemp = true;
             RecalculateGlaser = true;
         }
@@ -84,7 +84,7 @@ namespace BauphysikToolWPF.UI
                 for (int i = 0; i < layers.Count; i++)
                 {
                     layers[i].LayerPosition = i + 1;
-                    DatabaseAccess.UpdateLayer(layers[i]);
+                    DatabaseAccess.UpdateLayer(layers[i], false);
                 }
             }
         }
@@ -105,53 +105,6 @@ namespace BauphysikToolWPF.UI
         }
 
         // UI Methods
-        private void addLayerClicked(object sender, EventArgs e)
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new AddLayerWindow();
-
-            //window.Owner = this;
-            window.ShowDialog();    // Open as modal (Parent window pauses, waiting for the window to be closed)
-            //window.Show();         // Open as modeless
-        }
-        private void editLayerClicked(object sender, RoutedEventArgs e)
-        {
-            if (layers_ListView.SelectedItem is null)
-                return;
-
-            var layer = layers_ListView.SelectedItem as Layer;
-            if (layer is null)
-                return;
-
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new EditLayerWindow(layer);
-
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
-        }
-        private void deleteLayerClicked(object sender, EventArgs e)
-        {
-            if (layers_ListView.SelectedItem is null)
-                return;
-
-            var layer = layers_ListView.SelectedItem as Layer;
-            if (layer is null)
-                return;
-
-            DatabaseAccess.DeleteLayer(layer);
-        }
-        private void deleteAllLayersClicked(object sender, EventArgs e)
-        {
-            DatabaseAccess.DeleteAllLayers();
-        }
-        private void hideLayerClicked(object sender, RoutedEventArgs e)
-        {
-            //TODO
-        }
-        private void dupeLayerClicked(object sender, RoutedEventArgs e)
-        {
-            //TODO
-        }
         private void Ti_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             //EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == item);
@@ -187,7 +140,7 @@ namespace BauphysikToolWPF.UI
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             //Handle the input
-            /*string userInput = e.Text;
+            string userInput = e.Text;
             Regex regex = new Regex("[^0-9,-]+"); //regex that matches disallowed text
             e.Handled = regex.IsMatch(e.Text);
 
@@ -198,7 +151,7 @@ namespace BauphysikToolWPF.UI
             }
 
             //set new value as UserSaved Data
-            switch ((sender as TextBox).Name)
+            /*switch ((sender as TextBox).Name)
             {
                 case "Ti_Input":
                     UserSaved.Ti = Convert.ToDouble(Ti_Input.Text + userInput);
@@ -227,6 +180,8 @@ namespace BauphysikToolWPF.UI
                 default: throw new ArgumentException("Could not assign value");
             }*/
         }
+
+        // Redraw on every Click on Canvas to show current selected Layer with blue border
         private void layers_ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (layers_ListView.SelectedItem is null)
@@ -248,27 +203,16 @@ namespace BauphysikToolWPF.UI
             new DrawLayerCanvas(layers_Canvas, layers_ListView.ItemsSource as List<Layer>);
         }
 
-        private void headerLabel_Clicked(object sender, RoutedEventArgs e)
-        {
-            var window = new NewElementWindow(FO0_LandingPage.SelectedElement);
-            window.ShowDialog(); // Open as modal (Parent window pauses, waiting for the window to be closed)
-        }
-
         // Save current canvas as image, just before closing FO1_Setup Page
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            //TODO: General Workflow on changed object: database access -> event handler updates Class variables + UI !!
+            //TODO: General Workflow on changed object: database access -> event handler updates Class variables. UI is managed by ViewModel independently !!
             
             // Update Class Variable (SelectedElement)
             FO0_LandingPage.SelectedElement.Image = DrawLayerCanvas.SaveAsBLOB(layers_Canvas);
 
             // Update in Database
             DatabaseAccess.UpdateElement(FO0_LandingPage.SelectedElement);
-        }
-
-        private void Rel_Fe_Input_GotFocus(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }
