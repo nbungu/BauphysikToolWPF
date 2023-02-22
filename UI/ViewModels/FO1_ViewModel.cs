@@ -152,6 +152,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(TiValue))] // Notifies 'TiValue' when this property is changed!
         private static string ti_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
 
+        // Add m:n realtion to Database when new selection is set
+        //TODO implement again
+        //UpdateElementEnvVars(ElementId, currentEnvVar);
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TeValue))]
         private static string te_selection = "";

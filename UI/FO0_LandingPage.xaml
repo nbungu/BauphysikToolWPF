@@ -82,6 +82,58 @@
             <WrapPanel x:Name="element_WrapPanel" ItemWidth="144" ItemHeight="192" ClipToBounds="True"/>
         </ItemsPanelTemplate>
 
+        <!--Custom RadioButton01_A: ToggleButton with behaviour like RadioButton: Exclusive Group, Checkstates etc.-->
+        <Style x:Key="RadioButton01_A" TargetType="{x:Type RadioButton}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <!--Use ToggleButton as UI Element and redirect every propery needed from Parent Element -->
+                        <ToggleButton Style="{DynamicResource ToggleButton01_A}"
+                                      IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Command="{Binding Command, RelativeSource={RelativeSource TemplatedParent}}"
+                                      CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource TemplatedParent}}"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Custom ToggleButton01_A: with icon center top, rounded corners, transparent, click effects-->
+        <Style x:Key="ToggleButton01_A" TargetType="{x:Type ToggleButton}">
+            <!--Set default properties of the button-->
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="MinWidth" Value="56"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="4">
+                            <StackPanel Orientation="Vertical">
+                                <!--Bind Image via DataContext Property in the Button Element-->
+                                <Image Source="{Binding}" Stretch="Fill" Width="56" Height="56" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4"/>
+                                <Label Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
+                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
     </UserControl.Resources>
 
     <Grid Background="{StaticResource PrimaryLightBrush}">
@@ -185,11 +237,11 @@
                 <TextBox Grid.Row="3" Grid.ColumnSpan="2" x:Name="projectUser_TextBox" Text="{Binding ProjectUserName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
                 <Label Grid.Row="4" Grid.ColumnSpan="2" Content="Nutzungsart des Gebäudes:" FontSize="14" Margin="0,8,0,0"/>
-                <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding IsBuildingUsage1}" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0"/>
-                <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsBuildingUsage0}" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0"/>
+                <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding IsBuildingUsage1}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage1" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0"/>
+                <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsBuildingUsage0}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage0" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0"/>
 
                 <Label Grid.Row="6" Grid.ColumnSpan="2" Content="Alter des Gebäudes:" FontSize="14" Margin="0,8,0,0"/>
-                <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding IsBuildingAge1}" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0"/>
+                <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding IsBuildingAge1}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge1" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0"/>
                 <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsBuildingAge0}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge0" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0"/>
             </Grid>           
             

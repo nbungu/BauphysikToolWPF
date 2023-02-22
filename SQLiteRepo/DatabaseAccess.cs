@@ -23,8 +23,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         // event handlers - publisher
         public static void OnLayersChanged() //protected virtual method
-        {
-            
+        { 
             LayersChanged?.Invoke(); //if LayersChanged is not null then call delegate
         }
         public static void OnElementsChanged()

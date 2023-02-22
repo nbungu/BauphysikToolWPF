@@ -1,10 +1,8 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.Helper;
-using BauphysikToolWPF.UI.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -30,7 +28,7 @@ namespace BauphysikToolWPF.UI
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_Setup()
-        {
+        {   
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
@@ -38,9 +36,10 @@ namespace BauphysikToolWPF.UI
             new DrawLayerCanvas(layers_Canvas, DatabaseAccess.QueryLayersByElementId(currentElementId));         // Initial Draw of the Canvas
             new DrawMeasurementLine(measurement_Grid, DatabaseAccess.QueryLayersByElementId(currentElementId));  // Initial Draw of the measurement line
 
-            // Event Subscription
-            DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with event, when Layers changed
-            UserSaved.EnvVarsChanged += Session_EnvVarsChanged; // register with event, when EnvVars changed
+            // Event Subscription - Register with Events
+            DatabaseAccess.LayersChanged += DB_LayersChanged;
+            UserSaved.EnvVarsChanged += Session_EnvVarsChanged;
+            FO0_LandingPage.SelectedElementChanged += Session_SelectedElementChanged;
         }
 
         // event handlers - subscribers
@@ -58,6 +57,13 @@ namespace BauphysikToolWPF.UI
             RecalculateGlaser = true;
         }
         public void Session_EnvVarsChanged()
+        {
+            // Update Recalculate Flag
+            RecalculateTemp = true;
+            RecalculateGlaser = true;
+        }
+
+        public void Session_SelectedElementChanged()
         {
             // Update Recalculate Flag
             RecalculateTemp = true;
@@ -96,38 +102,8 @@ namespace BauphysikToolWPF.UI
         }
 
         // UI Methods
-        private void Ti_ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            //EnvVars currentEnvVar = DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == item);
-            // Add m:n realtion to Database
-            //TODO implement again
-            //UpdateElementEnvVars(ElementId, currentEnvVar);
-        }
-        private void Rsi_ComboBox_SelectionChanged(object sender, EventArgs e)
-        {
-            // Add m:n realtion to Database
-            //UpdateElementEnvVars(ElementId, currentEnvVar);
-        }
-        private void Rel_Fi_ComboBox_SelectionChanged(object sender, EventArgs e)
-        {
-            // Add m:n realtion to Database
-            //UpdateElementEnvVars(ElementId, currentEnvVar);
-        }
-        private void Te_ComboBox_SelectionChanged(object sender, EventArgs e)
-        {
-            // Add m:n realtion to Database
-            //UpdateElementEnvVars(ElementId, currentEnvVar);
-        }
-        private void Rse_ComboBox_SelectionChanged(object sender, EventArgs e)
-        {
-            // Add m:n realtion to Database
-            //UpdateElementEnvVars(ElementId, currentEnvVar);
-        }
-        private void Rel_Fe_ComboBox_SelectionChanged(object sender, EventArgs e)
-        {
-            // Add m:n realtion to Database
-            //UpdateElementEnvVars(ElementId, currentEnvVar);
-        }
+
+        // When User sets Custom Value for EnvVars
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             //Handle the input
@@ -195,8 +171,13 @@ namespace BauphysikToolWPF.UI
         }
 
         // Save current canvas as image, just before closing FO1_Setup Page
-        private void UserControl_Unloaded(object sender, RoutedEventArgs e)
+        // 'Unloaded' event was called after FO0 Initialize();
+        private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            // Only save if leaving this page
+            if (this.IsVisible)
+                return;
+
             Element currentElement = DatabaseAccess.QueryElementById(currentElementId);
             currentElement.Image = DrawLayerCanvas.SaveAsBLOB(layers_Canvas);
 
