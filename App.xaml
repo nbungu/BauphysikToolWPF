@@ -509,8 +509,12 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <!--Use ToggleButton as UI Element-->
-                        <ToggleButton Style="{DynamicResource ToggleButton01_A}" IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}" Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"/>
+                        <!--Use ToggleButton as UI Element and redirect every propery needed from Parent Element -->
+                        <ToggleButton Style="{DynamicResource ToggleButton01_A}"
+                                      IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Command="{Binding Command, RelativeSource={RelativeSource TemplatedParent}}"
+                                      CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource TemplatedParent}}"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>

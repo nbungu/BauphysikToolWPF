@@ -47,13 +47,7 @@ namespace BauphysikToolWPF.UI
                         // ElementId gets set by SQLite DB (AutoIncrement)
                         Name = elementName,
                         ConstructionId = constrId,
-                        Construction = new Construction() { ConstructionId = constrId, Type = constrType },
                         ProjectId = FO0_LandingPage.ProjectId,
-
-                        //TODO: add children needed?
-                        //Project = FO0_LandingPage.Project,
-                        //Layers = new List<Layer>(),
-                        //EnvVars = new List<EnvVars>()
                     };
                     // TODO: set directly as selectedElement via ID
                     // TODO: Link with FO0_ViewModel to updateElements

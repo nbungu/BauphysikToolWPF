@@ -68,10 +68,7 @@ namespace BauphysikToolWPF.UI
                     LayerPosition = 1,
                     LayerThickness = Convert.ToDouble(thickness_TextBox.Text),
                     MaterialId = material.MaterialId,
-                    // TODO: add children here necessary?
-                    //Material = material,
                     ElementId = FO0_LandingPage.SelectedElementId,
-                    //Element = FO0_LandingPage.SelectedElement
                 };
                 DatabaseAccess.CreateLayer(layer);
                 this.Close();
@@ -85,6 +82,7 @@ namespace BauphysikToolWPF.UI
 
         private void button_CreateMaterial_Clicked(object sender, EventArgs e)
         {
+            // TODO
             //this.ShowPopup(new CreateMaterialPopup(distinctCategories));
         }
 

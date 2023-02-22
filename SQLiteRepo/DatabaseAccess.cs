@@ -60,7 +60,8 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void CreateProject(Project project)
         {
-            sqlConn.InsertWithChildren(project, recursive: true); // Inserts the object in the database recursively
+            // No need to 'InsertWithChildren', since on 'GetProjects' any Children will be added via FK by SQLiteExtension package
+            sqlConn.Insert(project); // Inserts the object in the database recursively
             OnProjectsChanged(); // raises an event
         }
 
@@ -87,7 +88,8 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void CreateElement(Element element)
         {
-            sqlConn.InsertWithChildren(element, recursive: true); //Method from SQLiteExt -> adds a relationship to a child object ('Layers') 
+            // No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
+            sqlConn.Insert(element);
             OnElementsChanged();
         }
 
@@ -125,12 +127,13 @@ namespace BauphysikToolWPF.SQLiteRepo
         // Retreive Data from Table "Layer"
         public static List<Layer> GetLayers()
         {
-            return sqlConn.GetAllWithChildren<Layer>(recursive: true); // old Method: List<Layer> layers = sqlConn.Table<Layer>().ToList();
+            return sqlConn.GetAllWithChildren<Layer>(recursive: true);
         }
 
         public static void CreateLayer(Layer layer)
         {
-            sqlConn.InsertWithChildren(layer, recursive: true); //Method from SQLiteExt -> adds a relationship to a child object ('Material') 
+            // No need to 'InsertWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
+            sqlConn.Insert(layer);
             OnLayersChanged();
         }
 

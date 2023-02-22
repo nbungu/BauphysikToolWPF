@@ -4,6 +4,7 @@ using BauphysikToolWPF.UI.Helper;
 using BauphysikToolWPF.UI.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -17,32 +18,25 @@ namespace BauphysikToolWPF.UI
     public partial class FO1_Setup : UserControl
     {
         // Class Variables - Belongs to the Class-Type itself and stay the same
-        private static int currentElementId { get; set; } = -1; 
 
         // Recalculate Flags - Save computation time by avoiding unnecessary new instances
         public static bool RecalculateTemp { get; set; } = false;
         public static bool RecalculateGlaser { get; set; } = false;
 
-        // Instance Variables - only for "MainPage" Instances
-        private List<Layer> currentLayers = DatabaseAccess.QueryLayersByElementId(currentElementId);
+        // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call.
+
+        // For use in current Instance only
+        private int currentElementId { get; } = FO0_LandingPage.SelectedElementId;
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_Setup()
         {
-            // If Element is not set (-1) or has changed, Update Class Variables
-            if (currentElementId != FO0_LandingPage.SelectedElementId)
-            {
-                currentElementId = FO0_LandingPage.SelectedElementId;
-                RecalculateTemp = true;
-                RecalculateGlaser = true;
-            }
-
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
             // Drawing
-            new DrawLayerCanvas(layers_Canvas, currentLayers);         // Initial Draw of the Canvas
-            new DrawMeasurementLine(measurement_Grid, currentLayers);  // Initial Draw of the measurement line
+            new DrawLayerCanvas(layers_Canvas, DatabaseAccess.QueryLayersByElementId(currentElementId));         // Initial Draw of the Canvas
+            new DrawMeasurementLine(measurement_Grid, DatabaseAccess.QueryLayersByElementId(currentElementId));  // Initial Draw of the measurement line
 
             // Event Subscription
             DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with event, when Layers changed
@@ -56,8 +50,8 @@ namespace BauphysikToolWPF.UI
             ReorderLayerPosition(DatabaseAccess.QueryLayersByElementId(currentElementId));
 
             // Update UI
-            new DrawLayerCanvas(layers_Canvas, currentLayers);         // Redraw Canvas
-            new DrawMeasurementLine(measurement_Grid, currentLayers);  // Redraw measurement line
+            new DrawLayerCanvas(layers_Canvas, DatabaseAccess.QueryLayersByElementId(currentElementId));         // Redraw Canvas
+            new DrawMeasurementLine(measurement_Grid, DatabaseAccess.QueryLayersByElementId(currentElementId));  // Redraw measurement line
 
             // Update Recalculate Flag
             RecalculateTemp = true;
