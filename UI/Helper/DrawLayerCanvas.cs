@@ -93,7 +93,7 @@ namespace BauphysikToolWPF.UI.Helper
             BitmapEncoder encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
 
-            string imgName = "Element_"+FO0_LandingPage.SelectedElement.ElementId+".png";
+            string imgName = "Element_"+FO0_LandingPage.SelectedElementId+".png";
 
             // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
             using (var fileStream = File.OpenWrite(path+imgName))

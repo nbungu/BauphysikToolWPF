@@ -64,8 +64,12 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Button Grid.Row="0" x:Name="elementPanel_Button" Content="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}" Click="elementPanel_Button_Click"/>
-                <Label Grid.Row="1" x:Name="recentElement_Label" Content="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                <!--
+                'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
+                Switch to correct DataContext.
+                -->
+                <Button Grid.Row="0" Content="{Binding ElementId}" Command="{Binding Path=Tag.SelectElementCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" CommandParameter="{Binding ElementId}" Style="{StaticResource ButtonStyleGridPanel}"/>
+                <Label Grid.Row="1" Content="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>
 
@@ -90,7 +94,7 @@
         <Image Grid.Column="1" Grid.RowSpan="2" Width="80" Height="80" Source="../Ordner_Icon.ico" Margin="16" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
-            <Button x:Name="createNewElement_Button" Content="Bauteil erstellen" Style="{StaticResource ButtonStyle02_A}" Click="createNewElement_Button_Click" Margin="0,0,0,16"/>
+            <Button Content="Bauteil erstellen" Command="{Binding OpenNewElementWindowCommand}" Style="{StaticResource ButtonStyle02_A}" Margin="0,0,0,16"/>
             <Button Content="Öffnen" Style="{StaticResource ButtonStyle02_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
         </StackPanel>
@@ -120,20 +124,29 @@
                           ItemsPanel="{StaticResource WrapPanel_Template}"
                           ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
                           Background="Transparent"                          
-                          BorderThickness="0">
+                          BorderThickness="0"
+                          Tag="{Binding}">
                 <ItemsControl.Resources>
+                    <!--
+                    ClickEvent only works under ItemsControl.Resources or ItemsControl.ContextMenu. Doesnt work under ItemContainerStyle.
+                    As ContextMenu isn't a part of the visual tree you need to pass the data context
+                    in different way, using PlacementTarget and the Tag property to expose the DataBinding (FO0_ViewModel).
+                    The Tag Property can be used to hold any kind of user specified Data.
+                    -->
+
                     <ContextMenu x:Key="WrapPanel_ContextMenu" x:Name="WrapPanel_ContextMenu">
-                        <MenuItem x:Name="edit_MenuItem" Header="Bearbeiten" Click="edit_MenuItem_Click" >
+                        <!-- AncestorType = ContextMenu: PlacementTarget of ContextMenu is 'Button'-->
+                        <MenuItem Header="Bearbeiten">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Edit}" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem x:Name="delete_MenuItem" Header="Löschen" Click="delete_MenuItem_Click">
+                        <MenuItem Header="Löschen">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Cancel}" />
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem x:Name="lock_MenuItem" Header="Sperren" Click="lock_MenuItem_Click">
+                        <MenuItem Header="Sperren">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Lock}"/>
                             </MenuItem.Icon>
@@ -167,12 +180,12 @@
                 <TextBox Grid.Row="3" Grid.ColumnSpan="2" x:Name="projectUser_TextBox" Text="{Binding ProjectUserName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
                 <Label Grid.Row="4" Grid.ColumnSpan="2" Content="Nutzungsart des Gebäudes:" FontSize="14" Margin="0,8,0,0"/>
-                <RadioButton Grid.Row="5" Grid.Column="0" x:Name="selectUsage1_Button" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0" Click="selectUsage1_Button_Click"/>
-                <RadioButton Grid.Row="5" Grid.Column="1" x:Name="selectUsage0_Button" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0" Click="selectUsage0_Button_Click"/>
+                <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding IsBuildingUsage1}" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0" Click="selectUsage1_Button_Click"/>
+                <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsBuildingUsage0}" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0" Click="selectUsage0_Button_Click"/>
 
                 <Label Grid.Row="6" Grid.ColumnSpan="2" Content="Alter des Gebäudes:" FontSize="14" Margin="0,8,0,0"/>
-                <RadioButton Grid.Row="7" Grid.Column="0" x:Name="selectAge1_Button" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0" Click="selectAge1_Button_Click"/>
-                <RadioButton Grid.Row="7" Grid.Column="1" x:Name="selectAge0_Button" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" DataContext="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0" Click="selectAge0_Button_Click"/>
+                <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding IsBuildingAge1}" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="0,4,4,0" Click="selectAge1_Button_Click"/>
+                <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsBuildingAge0}" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_OK}" Margin="4,4,0,0" Click="selectAge0_Button_Click"/>
             </Grid>           
             
         </Grid>

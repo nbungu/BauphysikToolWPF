@@ -12,7 +12,10 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Called by 'InitializeComponent()' from FO1_Setup.cs due to Class-Binding in xaml via DataContext
         public string Title { get; } = "Setup";
-       
+
+        // For shortening
+        private static int currentElement = FO0_LandingPage.SelectedElementId;
+
         /*
          * Static Class Properties:
          * If List<string> is null, then get List from Database. If List is already loaded, use existing List.
@@ -84,7 +87,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO1_Setup.ElementId);
+            Layers = DatabaseAccess.QueryLayersByElementId(currentElement);
         }
 
         [RelayCommand]
@@ -100,7 +103,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 DatabaseAccess.DeleteLayer(selectedLayer);
             }
             // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO1_Setup.ElementId);
+            Layers = DatabaseAccess.QueryLayersByElementId(currentElement);
         }
 
         [RelayCommand]
@@ -115,14 +118,14 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO1_Setup.ElementId);
+            Layers = DatabaseAccess.QueryLayersByElementId(currentElement);
         }
 
         [RelayCommand] 
         private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
         {
             if (selectedElement is null)
-                selectedElement = DatabaseAccess.QueryElementById(FO1_Setup.ElementId);
+                selectedElement = DatabaseAccess.QueryElementById(currentElement);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
             var window = new NewElementWindow(selectedElement);
@@ -131,8 +134,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            ElementName = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Name;
-            ElementType = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Construction.Type;
+            ElementName = DatabaseAccess.QueryElementById(currentElement).Name;
+            ElementType = DatabaseAccess.QueryElementById(currentElement).Construction.Type;
         }
 
         /*
@@ -140,13 +143,13 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private List<Layer> layers = DatabaseAccess.QueryLayersByElementId(FO1_Setup.ElementId);
+        private List<Layer> layers = DatabaseAccess.QueryLayersByElementId(currentElement);
 
         [ObservableProperty]
-        private string elementName = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Name;
+        private string elementName = DatabaseAccess.QueryElementById(currentElement).Name;
 
         [ObservableProperty]
-        private string elementType = DatabaseAccess.QueryElementById(FO1_Setup.ElementId).Construction.Type;
+        private string elementType = DatabaseAccess.QueryElementById(currentElement).Construction.Type;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))] // Notifies 'TiValue' when this property is changed!

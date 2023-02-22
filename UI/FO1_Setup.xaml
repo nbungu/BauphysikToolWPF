@@ -180,7 +180,8 @@
                         <!--
                         ClickEvent only works under ListView.Resources or ListView.ContextMenu. Doesnt work under ItemContainerStyle.
                         As ContextMenu isn't a part of the visual tree you need to pass the data context
-                        in different way, using PlacementTarget and Tag property to expose the DataBinding (FO1_ViewModel).
+                        in different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
+                        The Tag Property can be used to hold any kind of user specified Data.
                         -->
                         <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.OpenEditLayerWindowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>

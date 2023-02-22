@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public static readonly double TsiMin = 12.6;
 
         // (Instance-) Variables and encapsulated properties - Called before Constructor
-        public Element Element { get; private set; } = FO0_LandingPage.SelectedElement; // Access is limited to the containing class or types derived from the containing class within the current assembly
+        public Element Element { get; private set; } = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId); // Access is limited to the containing class or types derived from the containing class within the current assembly
         public double RTotal { get; private set; } = 0;
         public double UValue { get; private set; } = 0;
         public double QValue { get; private set; } = 0;

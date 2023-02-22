@@ -17,22 +17,22 @@ namespace BauphysikToolWPF.UI
     public partial class FO1_Setup : UserControl
     {
         // Class Variables - Belongs to the Class-Type itself and stay the same
-        public static int ElementId { get; set; } = -1; // Default: no element set
+        private static int currentElementId { get; set; } = -1; 
 
         // Recalculate Flags - Save computation time by avoiding unnecessary new instances
         public static bool RecalculateTemp { get; set; } = false;
         public static bool RecalculateGlaser { get; set; } = false;
 
         // Instance Variables - only for "MainPage" Instances
-        //
+        private List<Layer> currentLayers = DatabaseAccess.QueryLayersByElementId(currentElementId);
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_Setup()
         {
             // If Element is not set (-1) or has changed, Update Class Variables
-            if (ElementId != FO0_LandingPage.SelectedElement.ElementId)
+            if (currentElementId != FO0_LandingPage.SelectedElementId)
             {
-                ElementId = FO0_LandingPage.SelectedElement.ElementId;
+                currentElementId = FO0_LandingPage.SelectedElementId;
                 RecalculateTemp = true;
                 RecalculateGlaser = true;
             }
@@ -41,8 +41,8 @@ namespace BauphysikToolWPF.UI
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
             // Drawing
-            new DrawLayerCanvas(layers_Canvas, FO0_LandingPage.SelectedElement.Layers);         // Initial Draw of the Canvas
-            new DrawMeasurementLine(measurement_Grid, FO0_LandingPage.SelectedElement.Layers);  // Initial Draw of the measurement line
+            new DrawLayerCanvas(layers_Canvas, currentLayers);         // Initial Draw of the Canvas
+            new DrawMeasurementLine(measurement_Grid, currentLayers);  // Initial Draw of the measurement line
 
             // Event Subscription
             DatabaseAccess.LayersChanged += DB_LayersChanged;   // register with event, when Layers changed
@@ -53,14 +53,11 @@ namespace BauphysikToolWPF.UI
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
             // Bring them in correct order again
-            ReorderLayerPosition(DatabaseAccess.QueryLayersByElementId(ElementId));
-
-            // Update SelectedElement Class Variable
-            FO0_LandingPage.SelectedElement.Layers = DatabaseAccess.QueryLayersByElementId(ElementId); 
+            ReorderLayerPosition(DatabaseAccess.QueryLayersByElementId(currentElementId));
 
             // Update UI
-            new DrawLayerCanvas(layers_Canvas, FO0_LandingPage.SelectedElement.Layers);         // Redraw Canvas
-            new DrawMeasurementLine(measurement_Grid, FO0_LandingPage.SelectedElement.Layers);  // Redraw measurement line
+            new DrawLayerCanvas(layers_Canvas, currentLayers);         // Redraw Canvas
+            new DrawMeasurementLine(measurement_Grid, currentLayers);  // Redraw measurement line
 
             // Update Recalculate Flag
             RecalculateTemp = true;
@@ -199,20 +196,18 @@ namespace BauphysikToolWPF.UI
             // select only one at a time
             layer.IsSelected = true;
 
-            // Redraw to show selected layer 
+            // Redraw to show selected layer, but take Layers from ItemsSource to keep the IsSelected Property
             new DrawLayerCanvas(layers_Canvas, layers_ListView.ItemsSource as List<Layer>);
         }
 
         // Save current canvas as image, just before closing FO1_Setup Page
         private void UserControl_Unloaded(object sender, RoutedEventArgs e)
         {
-            //TODO: General Workflow on changed object: database access -> event handler updates Class variables. UI is managed by ViewModel independently !!
-            
-            // Update Class Variable (SelectedElement)
-            FO0_LandingPage.SelectedElement.Image = DrawLayerCanvas.SaveAsBLOB(layers_Canvas);
+            Element currentElement = DatabaseAccess.QueryElementById(currentElementId);
+            currentElement.Image = DrawLayerCanvas.SaveAsBLOB(layers_Canvas);
 
             // Update in Database
-            DatabaseAccess.UpdateElement(FO0_LandingPage.SelectedElement);
+            DatabaseAccess.UpdateElement(currentElement);
         }
     }
 }

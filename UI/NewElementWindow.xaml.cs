@@ -12,21 +12,21 @@ namespace BauphysikToolWPF.UI
     public partial class NewElementWindow : Window
     {
         // Instance Variable, when existing Elemenet is being edited and passed as Parameter
-        private Element element;
+        private Element? selectedElement;
 
-        public NewElementWindow(Element element = null)
+        public NewElementWindow(Element selectedElement = null)
         {
-            this.element = element;
+            this.selectedElement = selectedElement;
 
             InitializeComponent();
 
             constructionType_Picker.ItemsSource = DatabaseAccess.GetConstructions().Select(e => e.Type).ToList();
 
             // Pre set TextBox and ComboBox to edit existing Element
-            if (element != null)
+            if (selectedElement != null)
             {
-                elementName_TextBox.Text = element.Name;
-                constructionType_Picker.SelectedItem = element.Construction.Type;
+                elementName_TextBox.Text = selectedElement.Name;
+                constructionType_Picker.SelectedItem = selectedElement.Construction.Type;
             }
         }
 
@@ -40,7 +40,7 @@ namespace BauphysikToolWPF.UI
                 int constrId = DatabaseAccess.GetConstructions().Find(e => e.Type == constrType).ConstructionId;
 
                 // If no Element in Parameter -> Create New
-                if (this.element == null)
+                if (this.selectedElement == null)
                 {
                     Element newElem = new Element()
                     {
@@ -48,31 +48,31 @@ namespace BauphysikToolWPF.UI
                         Name = elementName,
                         ConstructionId = constrId,
                         Construction = new Construction() { ConstructionId = constrId, Type = constrType },
-                        ProjectId = FO0_LandingPage.Project.ProjectId,
-                        Project = FO0_LandingPage.Project,
-                        Layers = new List<Layer>(),
-                        EnvVars = new List<EnvVars>()
-                    };
+                        ProjectId = FO0_LandingPage.ProjectId,
 
-                    // Update Class Variable
-                    FO0_LandingPage.SelectedElement = newElem;
+                        //TODO: add children needed?
+                        //Project = FO0_LandingPage.Project,
+                        //Layers = new List<Layer>(),
+                        //EnvVars = new List<EnvVars>()
+                    };
+                    // TODO: set directly as selectedElement via ID
+                    // TODO: Link with FO0_ViewModel to updateElements
+
                     // Update in Database
                     DatabaseAccess.CreateElement(newElem);
                     // Go to Setup Page (Editor) after creating new Element
                     this.Close();
-                    MainWindow.SetPage("Setup");
+                    //MainWindow.SetPage("Setup");
                 }
                 // If Element in Parameter -> Edit existing Element (SelectedElement from FO0_LandingPage)
                 else
                 {
-                    this.element.Name = elementName;
-                    this.element.ConstructionId = constrId;
-                    this.element.ProjectId = FO0_LandingPage.Project.ProjectId;
+                    this.selectedElement.Name = elementName;
+                    this.selectedElement.ConstructionId = constrId;
+                    this.selectedElement.ProjectId = FO0_LandingPage.ProjectId;
 
-                    // Update Class Variable
-                    FO0_LandingPage.SelectedElement = element;
                     // Update in Database
-                    DatabaseAccess.UpdateElement(this.element);
+                    DatabaseAccess.UpdateElement(this.selectedElement);
                     // Just Close this after editing existing Element
                     this.Close();
                 }

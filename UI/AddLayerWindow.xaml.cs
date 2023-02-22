@@ -68,9 +68,10 @@ namespace BauphysikToolWPF.UI
                     LayerPosition = 1,
                     LayerThickness = Convert.ToDouble(thickness_TextBox.Text),
                     MaterialId = material.MaterialId,
-                    Material = material,
-                    ElementId = FO0_LandingPage.SelectedElement.ElementId,
-                    Element = FO0_LandingPage.SelectedElement
+                    // TODO: add children here necessary?
+                    //Material = material,
+                    ElementId = FO0_LandingPage.SelectedElementId,
+                    //Element = FO0_LandingPage.SelectedElement
                 };
                 DatabaseAccess.CreateLayer(layer);
                 this.Close();

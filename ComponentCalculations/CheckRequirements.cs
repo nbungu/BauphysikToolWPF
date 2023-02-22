@@ -1,13 +1,8 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static BauphysikToolWPF.ComponentCalculations.CheckRequirements;
 
 namespace BauphysikToolWPF.ComponentCalculations
 {
@@ -20,10 +15,10 @@ namespace BauphysikToolWPF.ComponentCalculations
     public class CheckRequirements
     {
         // Always fetch current Project on calling this Class. No need for Notifier or Updater when Project changes
-        private Project project = FO0_LandingPage.Project;
+        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_LandingPage.ProjectId);
 
         // Always fetch current Construction on calling this Class. No need for Notifier or Updater when Construction changes
-        private Element currentElement = FO0_LandingPage.SelectedElement;
+        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         public double U_max;
 
@@ -78,18 +73,18 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return -1;
 
             // b) Select relevant Source based off Building Age and Usage
-            if (project.IsNewConstruction)
+            if (currentProject.IsNewConstruction)
             {
-                if (project.IsResidentialUsage)
+                if (currentProject.IsResidentialUsage)
                 {
                     requirementSourceId = (int)RequirementSource.GEG_Anlage1;
                 }
-                if (project.IsNonResidentialUsage)
+                if (currentProject.IsNonResidentialUsage)
                 {
                     requirementSourceId = (int)RequirementSource.GEG_Anlage2;
                 }
             }
-            if (project.IsExistingConstruction)
+            if (currentProject.IsExistingConstruction)
             {
                 requirementSourceId = (int)RequirementSource.GEG_Anlage7;
             }
