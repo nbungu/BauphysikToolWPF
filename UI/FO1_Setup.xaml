@@ -7,7 +7,7 @@
             xmlns:session="clr-namespace:BauphysikToolWPF.SessionData"
             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
             mc:Ignorable="d"
-            d:DesignHeight="700" d:DesignWidth="1200" IsVisibleChanged="UserControl_IsVisibleChanged" >
+            d:DesignHeight="700" d:DesignWidth="1200" IsVisibleChanged="UserControl_IsVisibleChanged">
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->

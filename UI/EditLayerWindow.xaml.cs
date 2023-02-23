@@ -40,11 +40,14 @@ namespace BauphysikToolWPF.UI
             if (layerThickness_TextBox.Text != "" && layerLambda_TextBox.Text != "" && layerDensity_TextBox.Text != "" && layerDiffResistance_TextBox.Text != "")
             {
                 // TODO: validate values
-                this.layer.LayerThickness = Convert.ToDouble(layerThickness_TextBox.Text);
-                // TODO Add changing of corresponding Material values
+                layer.LayerThickness = Convert.ToDouble(layerThickness_TextBox.Text);
+                layer.Material.ThermalConductivity = Convert.ToDouble(layerLambda_TextBox.Text);
+                layer.Material.BulkDensity = Convert.ToInt32(layerDensity_TextBox.Text);
+                layer.Material.DiffusionResistance = Convert.ToDouble(layerDiffResistance_TextBox.Text);
+                // TODO: Flag in Layer Mowdel hen Material was modded and add new "custom" MaterialId
 
                 // Update in Database
-                DatabaseAccess.UpdateLayer(this.layer);
+                DatabaseAccess.UpdateLayer(layer);
                 // Just Close this after editing existing Element
                 this.Close();
             }

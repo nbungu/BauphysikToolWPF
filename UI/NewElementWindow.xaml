@@ -6,7 +6,13 @@
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:local="clr-namespace:BauphysikToolWPF.UI"
         mc:Ignorable="d"
-        Title="Bauteildaten festlegen" Height="248" Width="320" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" ShowInTaskbar="False" WindowStyle="ToolWindow">
+        Title="Bauteildaten festlegen"
+        Height="248"
+        Width="320"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        ShowInTaskbar="False"
+        WindowStyle="ToolWindow">
 
     <Grid Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
