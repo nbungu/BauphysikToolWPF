@@ -1,7 +1,6 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.Helper;
-using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -18,8 +17,8 @@ namespace BauphysikToolWPF.UI
         // Class Variables - Belongs to the Class-Type itself and stay the same
 
         // Recalculate Flags - Save computation time by avoiding unnecessary new instances
-        public static bool RecalculateTemp { get; set; } = false;
-        public static bool RecalculateGlaser { get; set; } = false;
+        public static bool RecalculateTemp { get; set; } = true;
+        public static bool RecalculateGlaser { get; set; } = true;
 
         // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call.
 

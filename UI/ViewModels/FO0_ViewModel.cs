@@ -19,6 +19,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Update ONLY UI-Used Values by fetching from Database!
          */
 
+        // Create New Element / Edit Existing Element
         [RelayCommand]
         private void OpenNewElementWindow(string? selectedElementId) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
@@ -33,7 +34,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void ElementDelete(string? selectedElementId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
+        private void DeleteElement(string? selectedElementId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
         {
             if (selectedElementId is null)
                 return;
@@ -94,7 +95,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
-
 
         [ObservableProperty]
         private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_LandingPage.ProjectId) ?? new List<Element>();

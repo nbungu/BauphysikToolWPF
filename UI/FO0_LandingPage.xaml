@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF.UI"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
-             xmlns:building="clr-namespace:BauphysikToolWPF.ComponentCalculations"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
 
@@ -18,7 +17,6 @@
 
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <Style x:Key="ButtonStyleGridPanel" TargetType="{x:Type Button}">
-            <EventSetter Event="MouseRightButtonUp" Handler="Button_MouseRightButtonUp"/>
             <Setter Property="Content" Value="{Binding ElementId}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
@@ -67,13 +65,39 @@
                 </Grid.RowDefinitions>
                 <!--
                 'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
-                Switch to correct DataContext.
+                Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.
                 -->
                 <Button Grid.Row="0"
                         Content="{Binding ElementId}"
-                        Command="{Binding Path=Tag.SelectElementCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                        Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding ElementId}"
-                        Style="{StaticResource ButtonStyleGridPanel}"/>
+                        Style="{StaticResource ButtonStyleGridPanel}"
+                        Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+                    <Button.ContextMenu>
+                        <!--
+                        ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
+                        You need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO0_ViewModel).
+                        The Tag Property can be used to hold any kind of user specified Data.
+                        -->
+                        <ContextMenu x:Name="WrapPanel_ContextMenu">
+                            <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.OpenNewElementWindowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Edit}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Cancel}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Sperren">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Lock}"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
                 <Label Grid.Row="1" Content="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>
@@ -87,12 +111,13 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <!--Use ToggleButton as UI Element and redirect every propery needed from Parent Element -->
+                        <!--Use ToggleButton as UI Element and redirect every propery needed from Parent Element (RadioButton) to the ToggleButton -->
                         <ToggleButton Style="{DynamicResource ToggleButton01_A}"
                                       IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}"
                                       Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
                                       Command="{Binding Command, RelativeSource={RelativeSource TemplatedParent}}"
-                                      CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource TemplatedParent}}"/>
+                                      CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource TemplatedParent}}"
+                                      Tag="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"/>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -114,7 +139,7 @@
                         <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="4">
                             <StackPanel Orientation="Vertical">
                                 <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{Binding}" Stretch="Fill" Width="56" Height="56" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4"/>
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="56" Height="56" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4"/>
                                 <Label Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14"/>
                             </StackPanel>
                         </Border>
@@ -182,35 +207,7 @@
                           ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
                           Background="Transparent"                          
                           BorderThickness="0"
-                          Tag="{Binding}">
-                <ItemsControl.Resources>
-                    <!--
-                    ClickEvent only works under ItemsControl.Resources or ItemsControl.ContextMenu. Doesnt work under ItemContainerStyle.
-                    As ContextMenu isn't a part of the visual tree you need to pass the data context
-                    in different way, using PlacementTarget and the Tag property to expose the DataBinding (FO0_ViewModel).
-                    The Tag Property can be used to hold any kind of user specified Data.
-                    -->
-
-                    <ContextMenu x:Key="WrapPanel_ContextMenu" x:Name="WrapPanel_ContextMenu">
-                        <!-- AncestorType = ContextMenu: PlacementTarget of ContextMenu is 'Button'-->
-                        <MenuItem Header="Bearbeiten">
-                            <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_Edit}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Löschen">
-                            <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_Cancel}" />
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Sperren">
-                            <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_Lock}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </ContextMenu>
-                </ItemsControl.Resources>
-            </ItemsControl>
+                          Tag="{Binding}"/>
 
             <Label Grid.Row="0" Grid.Column="3" Content="Projektdaten" FontSize="14" FontWeight="Bold"/>
             <Grid Grid.Row="1" Grid.Column="3">
