@@ -1,17 +1,17 @@
 ﻿<Application x:Class="BauphysikToolWPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:BauphysikToolWPF"
              xmlns:ui="clr-namespace:BauphysikToolWPF.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
-             xmlns:system="clr-namespace:System;assembly=System.Runtime"
              StartupUri="MainWindow.xaml">
     
     <!--Sets Resources available for entire Application-->
     <Application.Resources>
 
         <!--Application Color Palette-->
-        <SolidColorBrush x:Key="PrimaryDarkBrush" Color="LightSlateGray"/>
+        <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#253858"/>
+        <SolidColorBrush x:Key="PrimaryDarkHighlightBrush" Color="#1d2c46"/>        
+        <SolidColorBrush x:Key="PrimaryDarkMediumBrush" Color="#6e7a8f"/>
         <SolidColorBrush x:Key="PrimaryMediumBrush" Color="LightGray"/>
         <SolidColorBrush x:Key="PrimaryLightBrush" Color="#EDEDED"/>
         <SolidColorBrush x:Key="PrimaryHighlightBrush" Color="#1473e6"/>
@@ -27,6 +27,7 @@
         <BitmapImage x:Key="ButtonIcon_OK" UriSource="/Resources/Icons/GL_009x80_confirm.png"/>
         <BitmapImage x:Key="ButtonIcon_OK_green" UriSource="/Resources/Icons/GL_009x80_confirm_g.png"/>
         <BitmapImage x:Key="ButtonIcon_Home" UriSource="/Resources/Icons/GL_110x80_app_grid.png"/>
+        <BitmapImage x:Key="ButtonIcon_Home_W" UriSource="/Resources/Icons/GL_110x80_app_grid_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Hide" UriSource="/Resources/Icons/GL_115x80_not_visible.png"/>
         <BitmapImage x:Key="ButtonIcon_Show" UriSource="/Resources/Icons/GL_114x80_visible.png"/>
         <BitmapImage x:Key="ButtonIcon_Lock" UriSource="/Resources/Icons/SET_014x80_content_locked.png"/>
@@ -508,8 +509,11 @@
         <DataTemplate x:Key="FO0_LandingPage">
             <ui:FO0_LandingPage/>
         </DataTemplate>
-        <DataTemplate x:Key="FO1_Setup">
-            <ui:FO1_Setup/>
+        <DataTemplate x:Key="FO1_SetupLayer">
+            <ui:FO1_SetupLayer/>
+        </DataTemplate>
+        <DataTemplate x:Key="FO1_SetupEnv">
+            <ui:FO1_SetupEnv/>
         </DataTemplate>
         <DataTemplate x:Key="FO2_Temperature">
             <ui:FO2_Temperature/>

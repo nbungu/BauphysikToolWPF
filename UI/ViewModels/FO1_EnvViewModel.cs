@@ -1,17 +1,16 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for FO1_Setup.xaml: Used in xaml as "DataContext"
-    public partial class FO1_ViewModel : ObservableObject
+    // ViewModel for FO1_SetupEnv.xaml: Used in xaml as "DataContext"
+    public partial class FO1_EnvViewModel : ObservableObject
     {
-        // Called by 'InitializeComponent()' from FO1_Setup.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "Setup";
+        // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
+        public string Title { get; } = "Setup Env Vars";
 
         /*
          * Static Class Properties:
@@ -22,50 +21,32 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static List<string>? ti_Keys;
         public List<string> Ti_Keys
         {
-            get
-            {
-                return ti_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList();
-            }
+            get { return ti_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList(); }
         }
         private static List<string>? te_Keys;
         public List<string> Te_Keys
         {
-            get
-            {
-                return te_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList();
-            }
+            get { return te_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList(); }
         }
         private static List<string>? rsi_Keys;
         public List<string> Rsi_Keys
         {
-            get
-            {
-                return rsi_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Select(e => e.Comment).ToList();
-            }
+            get { return rsi_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Select(e => e.Comment).ToList(); }
         }
         private static List<string>? rse_Keys;
         public List<string> Rse_Keys
         {
-            get
-            {
-                return rse_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rse").Select(e => e.Comment).ToList();
-            }
+            get { return rse_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rse").Select(e => e.Comment).ToList(); }
         }
         private static List<string>? rel_Fi_Keys;
         public List<string> Rel_Fi_Keys
         {
-            get
-            {
-                return rel_Fi_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Select(e => e.Comment).ToList();
-            }
+            get { return rel_Fi_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Select(e => e.Comment).ToList(); }
         }
         private static List<string>? rel_Fe_Keys;
         public List<string> Rel_Fe_Keys
         {
-            get
-            {
-                return rel_Fe_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Select(e => e.Comment).ToList();
-            }
+            get { return rel_Fe_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Select(e => e.Comment).ToList(); }
         }
 
         /*
@@ -74,79 +55,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Update ONLY UI-Used Values by fetching from Database!
          */
 
-        [RelayCommand]
-        private void OpenAddLayerWindow()
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new AddLayerWindow();
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
 
-            // After Window closed:
-            // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
-        }
-
-        [RelayCommand]
-        private void LayerDelete(Layer? selectedLayer)
-        {
-            if (selectedLayer is null)
-            {
-                // If no specific Layer is selected, delete All
-                DatabaseAccess.DeleteAllLayers();
-            } else
-            {
-                // Delete selected Layer
-                DatabaseAccess.DeleteLayer(selectedLayer);
-            }
-            // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
-        }
-
-        [RelayCommand]
-        private void OpenEditLayerWindow(Layer? selectedLayer)
-        {
-            if (selectedLayer is null)
-                return;
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new EditLayerWindow(selectedLayer);
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
-
-            // After Window closed:
-            // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
-        }
-
-        [RelayCommand] 
-        private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
-        {
-            if (selectedElement is null)
-                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
-
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(selectedElement);
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
-
-            // After Window closed:
-            // Update XAML Binding Property by fetching from DB
-            ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-            ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
-        }
 
         /*
          * MVVM Properties
          */
-
-        [ObservableProperty]
-        private List<Layer> layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
-
-        [ObservableProperty]
-        private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-
-        [ObservableProperty]
-        private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))] // Notifies 'TiValue' when this property is changed!

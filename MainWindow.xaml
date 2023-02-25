@@ -4,12 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF"
+        xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200" Background="{StaticResource PrimaryLightBrush}" WindowStartupLocation="CenterScreen">
     
     <!-- https://www.codeproject.com/Articles/5275552/WPF-Compact-Navigation-Menu -->
-    <Window.Resources>        
+    <Window.Resources>
+        
+        <!-- Checks if an ListBoxItem from ItemsSource is a Header or not-->
+        <controls:IsHeaderConverter x:Key="IsHeaderConverter"/>
+
         <!--Content Pages on right side-->
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
             <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
@@ -18,8 +23,11 @@
             Item value comes from 'ItemsSource' (typepf ListBoxItem)
             -->
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Setup">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_Setup}"/>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupLayer">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_SetupLayer}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupEnv">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_SetupEnv}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Temperature">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO2_Temperature}"/>
@@ -30,10 +38,18 @@
             </Style.Triggers>
         </Style>
 
-        <!--ListBox item values: Used in MainWindow.xaml ListBox as ItemsSource-->
+        <!--
+        ListBoxItem values: Used in MainWindow.xaml ListBox as ItemsSource
+        Used as Binding Values within the NavigationMenu to toggle between the pages
+        and set corresponding style of the ListBoxItem
+        -->
         <x:Array x:Key="NavigationMenuItems" Type="system:String">
+            <system:String>Header1</system:String>
             <system:String>LandingPage</system:String>
-            <system:String>Setup</system:String>
+            <system:String>Header2</system:String>
+            <system:String>SetupLayer</system:String>
+            <system:String>SetupEnv</system:String>
+            <system:String>Header3</system:String>
             <system:String>Temperature</system:String>
             <system:String>Moisture</system:String>
         </x:Array>
@@ -60,15 +76,18 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <!--Don't show ListBox when on the LandingPage -->
+            <!--Don't show ListBox when on the LandingPage and the first Header entry (acts like ListBoxItem) -->
             <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Header1">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="LandingPage">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
 
-        <!--ListBox entry appearance and behaviour: Used in MainWindow.xaml ListBox as ItemContainerStyle -->
+        <!--ListBox entry appearance and behaviour: Used in MainWindow.xaml ListBox as ItemContainerStyle-->
         <Style x:Key="NavigationListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{StaticResource PrimaryLightBrush}"/>
@@ -76,70 +95,106 @@
             <Setter Property="ToolTip" Value="{Binding}"/>
             <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
             <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <Border x:Name="listBox_Border"
-                            BorderBrush="{TemplateBinding BorderBrush}"
-                            BorderThickness="{TemplateBinding BorderThickness}" 
-                            Background="{TemplateBinding Background}"
-                            Padding="{TemplateBinding Padding}"
-                            CornerRadius="8"
-                            SnapsToDevicePixels="true">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <!--When a ListBox entry is Selected-->
-                            <Trigger Property="IsSelected" Value="true">
-                                <Setter TargetName="listBox_Border" Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
-                            </Trigger>                            
-                            <!--When a ListBox entry is Selected & Selection not active
-                            <MultiTrigger>
-                                <MultiTrigger.Conditions>
-                                    <Condition Property="IsSelected" Value="true"/>
-                                    <Condition Property="Selector.IsSelectionActive" Value="false"/>
-                                </MultiTrigger.Conditions>
-                                <Setter Property="Background" TargetName="listBox_Border" Value="{StaticResource PrimaryLightBrush}"/>
-                                <Setter Property="Foreground" Value="White"/>
-                            </MultiTrigger>-->
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
             <!--Triggers & Effects-->
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                </Trigger>
+                <!--When a ListBox entry is NOT a Header, apply the Template-->
+                <DataTrigger Binding="{Binding Converter={StaticResource IsHeaderConverter}}" Value="False">
+                    <!-- Template for the Button-like entries-->
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <Border x:Name="listBox_Border"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}" 
+                                    Background="{TemplateBinding Background}"
+                                    Padding="{TemplateBinding Padding}"
+                                    CornerRadius="8"
+                                    SnapsToDevicePixels="true">
+                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                </Border>
+                                <!-- Triggers ONLY usable in this Template -->
+                                <ControlTemplate.Triggers>
+                                    <!--When a ListBox entry is Selected-->
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter TargetName="listBox_Border" Property="Background" Value="{StaticResource PrimaryDarkHighlightBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Converter={StaticResource IsHeaderConverter}}" Value="True">
+                    <!-- Template for Headers-->
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                    <Setter Property="IsTabStop" Value="False"/>
+                    <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 
-        <!--ListBox entry content: Used in MainWindow.xaml ListBox as ItemTemplate -->
+        <!--
+        ListBox entry content: Used in MainWindow.xaml ListBox as ItemTemplate
+        The Content Located inside of 'NavigationListBoxItemStyle'
+        -->
         <DataTemplate x:Key="NavigationDataTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="56"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Image x:Name="MenuItemIcon" Grid.Column="0" Source="Resources/Icons/GL_110x80_app_grid.png" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4"/>
-                <Label x:Name="MenuItemLabel" Grid.Column="1" VerticalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14" Margin="0,4,4,4"/>
+                <Image x:Name="MenuItemIcon" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4" MaxWidth="36"/>
+                <Label x:Name="MenuItemLabel" Grid.Column="1" VerticalAlignment="Center" HorizontalContentAlignment="Center" Foreground="White" FontSize="14" Margin="0,4,4,4"/>
             </Grid>
-            <!--Binding is ItemsSource from 'NavigationMenuListBox'-->
+            <!--
+            Binding is ItemsSource from 'NavigationMenuListBox'
+            Changes the Icon and Text of the entry based on the ItemsSource Values
+            -->
             <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding}" Value="LandingPage">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_110x80_app_grid.png"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Menü"/>
+                <DataTrigger Binding="{Binding}" Value="Header1">
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="BAUTEIL ÜBERSICHT"/>
+                    <Setter TargetName="MenuItemLabel" Property="Foreground" Value="{StaticResource PrimaryMediumBrush}"/>
+                    <Setter TargetName="MenuItemLabel" Property="FontWeight" Value="Bold"/>
+                    <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="Setup">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_015x80_edit.png"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Editor"/>
+                <DataTrigger Binding="{Binding}" Value="LandingPage">
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_110x80_app_grid_w.png"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Bauteile"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="Header2">
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="BAUTEIL ERSTELLEN"/>
+                    <Setter TargetName="MenuItemLabel" Property="Foreground" Value="{StaticResource PrimaryMediumBrush}"/>
+                    <Setter TargetName="MenuItemLabel" Property="FontWeight" Value="Bold"/>
+                    <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="SetupLayer">
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_015x80_edit_w.png"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Schichtaufbau"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="SetupEnv">
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_015x80_edit_w.png"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Umgebung"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="Header3">
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="ERGEBNISSE"/>
+                    <Setter TargetName="MenuItemLabel" Property="Foreground" Value="{StaticResource PrimaryMediumBrush}"/>
+                    <Setter TargetName="MenuItemLabel" Property="FontWeight" Value="Bold"/>
+                    <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Temperature">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/CL_001x80_climate_menu.png"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Temperaturverlauf"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/CL_001x80_climate_menu_w.png"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Temperaturkurve"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Moisture">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/CL_025x80_air_quality_inside_air.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/CL_025x80_air_quality_inside_air_w.png"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Glaser-Diagramm"/>
                 </DataTrigger>
             </DataTemplate.Triggers>

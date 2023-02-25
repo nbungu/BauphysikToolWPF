@@ -11,7 +11,8 @@
     <None Remove="Ordner_Icon.ico" />
     <None Remove="Resources\ElementImages\Element_4_AWE1.png" />
     <None Remove="Resources\Icons\CL_001x80_climate_menu.png" />
-    <None Remove="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
+    <None Remove="Resources\Icons\CL_001x80_climate_menu_w.png" />
+    <None Remove="Resources\Icons\CL_025x80_air_quality_inside_air_w.png" />
     <None Remove="Resources\Icons\GL_003x80_back.png" />
     <None Remove="Resources\Icons\GL_005x80_cancel.png" />
     <None Remove="Resources\Icons\GL_009x80_confirm.png" />
@@ -20,8 +21,10 @@
     <None Remove="Resources\Icons\GL_010x80_create_w.png" />
     <None Remove="Resources\Icons\GL_011x80_delete.png" />
     <None Remove="Resources\Icons\GL_015x80_edit.png" />
+    <None Remove="Resources\Icons\GL_015x80_edit_w.png" />
     <None Remove="Resources\Icons\GL_019x80_home.png" />
     <None Remove="Resources\Icons\GL_110x80_app_grid.png" />
+    <None Remove="Resources\Icons\GL_110x80_app_grid_w.png" />
     <None Remove="Resources\Icons\GL_114x80_visible.png" />
     <None Remove="Resources\Icons\GL_115x80_not_visible.png" />
     <None Remove="Resources\Icons\SET_013x80_content_not_locked.png" />
@@ -33,6 +36,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Icons\CL_001x80_climate_menu_w.png" />
+    <Resource Include="Resources\Icons\CL_025x80_air_quality_inside_air_w.png" />
+    <Resource Include="Resources\Icons\GL_015x80_edit_w.png" />
+    <Resource Include="Resources\Icons\GL_110x80_app_grid_w.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Icons\GL_114x80_visible.png" />
     <Resource Include="Resources\Icons\GL_115x80_not_visible.png" />
   </ItemGroup>
@@ -47,7 +56,6 @@
   <ItemGroup>
     <Resource Include="Ordner_Icon.ico" />
     <Resource Include="Resources\Icons\CL_001x80_climate_menu.png" />
-    <Resource Include="Resources\Icons\CL_025x80_air_quality_inside_air.png" />
     <Resource Include="Resources\Icons\GL_003x80_back.png" />
     <Resource Include="Resources\Icons\GL_005x80_cancel.png" />
     <Resource Include="Resources\Icons\GL_009x80_confirm_g.png">

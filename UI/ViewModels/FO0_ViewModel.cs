@@ -53,7 +53,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return;
 
             FO0_LandingPage.SelectedElementId = selectedElementId;
-            MainWindow.SetPage("Setup");
+            MainWindow.SetPage("SetupLayer");
         }
 
         // TODO use Enums as parameter
