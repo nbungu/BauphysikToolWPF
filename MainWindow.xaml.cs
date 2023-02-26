@@ -6,6 +6,19 @@ namespace BauphysikToolWPF
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
+
+    // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF
+    // accessible from whole application
+    public enum NavigationContent 
+    {
+        // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
+        LandingPage = 1,
+        SetupLayer = 3,
+        SetupEnv = 4,
+        TemperatureCurve = 6,
+        GlaserCurve = 7,
+        Default = LandingPage
+    }
     public partial class MainWindow : Window
     {
         public static ListBox navigationMenuListBox;
@@ -20,20 +33,9 @@ namespace BauphysikToolWPF
             Main = this;
         }
         
-        // The Pages a user can inteact with
-        public enum NavigationContent
+        public static void SetPage(NavigationContent page)
         {
-            LandingPage,
-            SetupLayer,
-            SetupEnv,
-            TemperatureCurve,
-            GlaserCurve,
-            Default = LandingPage
-        }
-        public static void SetPage(string page)
-        {
-            
-            navigationMenuListBox.SelectedItem = page; // MainWindow.xaml Binding changes the ContentPage based on the SelectedItem string
+            navigationMenuListBox.SelectedIndex = (int)page; // MainWindow.xaml Binding changes the ContentPage based on the SelectedItem string
         }
     }
 }

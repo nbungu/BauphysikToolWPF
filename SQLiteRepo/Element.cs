@@ -87,6 +87,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
+                if (Layers == null )
+                    return 0;
+
                 double thickness = 0;
                 foreach (Layer layer in Layers)
                 {
@@ -99,6 +102,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
+                if (Layers == null)
+                    return 0;
+
                 double thickness = 0;
                 foreach (Layer layer in Layers)
                 {
@@ -113,6 +119,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
+                if (Layers == null)
+                    return 0;
+
                 double thickness = 0;
                 foreach (Layer layer in Layers)
                 {
@@ -127,6 +136,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
+                if (Layers == null)
+                    return 0;
+
                 double areaMassDens = 0;
                 foreach (Layer layer in Layers)
                 {
@@ -141,6 +153,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
+                if (Layers == null)
+                    return 0;
+
                 double r_ges = 0;
                 foreach (Layer layer in Layers)
                 {

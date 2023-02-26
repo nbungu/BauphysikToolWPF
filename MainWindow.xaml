@@ -45,13 +45,13 @@
         -->
         <x:Array x:Key="NavigationMenuItems" Type="system:String">
             <system:String>Header1</system:String>
-            <system:String>LandingPage</system:String>
+            <system:String>LandingPage</system:String> <!--SelectedIndex: 1-->
             <system:String>Header2</system:String>
-            <system:String>SetupLayer</system:String>
-            <system:String>SetupEnv</system:String>
+            <system:String>SetupLayer</system:String>  <!--SelectedIndex: 3-->
+            <system:String>SetupEnv</system:String>    <!--SelectedIndex: 4-->
             <system:String>Header3</system:String>
-            <system:String>Temperature</system:String>
-            <system:String>Moisture</system:String>
+            <system:String>Temperature</system:String> <!--SelectedIndex: 6-->
+            <system:String>Moisture</system:String>    <!--SelectedIndex: 7-->
         </x:Array>
 
         <!--ListBox appearance: Used in MainWindow.xaml ListBox as Style -->
@@ -151,7 +151,7 @@
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Image x:Name="MenuItemIcon" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4" MaxWidth="36"/>
+                <Image x:Name="MenuItemIcon" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4" MaxWidth="24"/>
                 <Label x:Name="MenuItemLabel" Grid.Column="1" VerticalAlignment="Center" HorizontalContentAlignment="Center" Foreground="White" FontSize="14" Margin="0,4,4,4"/>
             </Grid>
             <!--
@@ -166,7 +166,7 @@
                     <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="LandingPage">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_110x80_app_grid_w.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Elements_W}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Bauteile"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Header2">
@@ -176,11 +176,11 @@
                     <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="SetupLayer">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_015x80_edit_w.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Layer_W}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Schichtaufbau"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="SetupEnv">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/GL_015x80_edit_w.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_EnvVar_W}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Umgebung"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Header3">
@@ -190,11 +190,11 @@
                     <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Temperature">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/CL_001x80_climate_menu_w.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Temperature_W}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Temperaturkurve"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Moisture">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="Resources/Icons/CL_025x80_air_quality_inside_air_w.png"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Moisture_W}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Glaser-Diagramm"/>
                 </DataTrigger>
             </DataTemplate.Triggers>

@@ -134,14 +134,16 @@
         <!--Top Left -->
         <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
-                <Label Content="Schichtaufbau des Bauteils bearbeiten" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0" HorizontalAlignment="Left"/>
-                <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
-                    <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit}" Margin="8,2,8,2"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding NextPageCommand}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
                 </StackPanel>
-            </Grid>
-            
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
+                    <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="4,0,0,0"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                </StackPanel>
+            </Grid>            
         </Border>
         
         <!--Top Right -->
@@ -156,10 +158,10 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding OpenAddLayerWindowCommand}" Tag="{StaticResource ButtonIcon_Add_W}" Margin="0,0,8,0"/>
-                <Button Content="Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding LayerDeleteCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Cancel}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button Content="Bearbeiten" Style="{StaticResource ButtonStyle03_B}" Command="{Binding OpenEditLayerWindowCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button Content="Alle Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding LayerDeleteCommand}" Tag="{StaticResource ButtonIcon_Delete}" Margin="0,0,8,0"/>
+                <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding OpenAddLayerWindowCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
+                <Button Content="Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding LayerDeleteCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_DeleteLayer_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button Content="Bearbeiten" Style="{StaticResource ButtonStyle03_B}" Command="{Binding OpenEditLayerWindowCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button Content="Alle Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding LayerDeleteCommand}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0"/>
             </StackPanel>
 
             <!--Custom UI Element: Border as ListViewItem Mockup. Binding is 'FO1_ViewModel' -->
@@ -187,17 +189,17 @@
                         -->
                         <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.OpenEditLayerWindowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_Edit}"/>
+                                <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Ausblenden">
                             <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_Hide}"/>
+                                <Image Source="{StaticResource ButtonIcon_Hide_B}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                         <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.LayerDeleteCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_Delete}"/>
+                                <Image Source="{StaticResource ButtonIcon_DeleteLayer_B}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>
@@ -221,7 +223,7 @@
                     <Canvas x:Name="layers_Canvas" Grid.Row="0" Width="320" Height="400" SnapsToDevicePixels="True"/>
                     <Grid Grid.Row="1" x:Name="measurement_Grid" Width="{Binding ElementName=layers_Canvas, Path=Width}" Margin="0,0,0,-16"/>
                 </Grid>
-            </Viewbox>            
+            </Viewbox>
         </Grid>
 
         <!--Bottom-->

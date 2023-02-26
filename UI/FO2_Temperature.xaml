@@ -18,7 +18,7 @@
     <UserControl.Resources>
         <!--Dynamic Icon Source-->
         <Style x:Key="DynamicIconSource" TargetType="{x:Type Image}">
-            <Setter Property="Source" Value="{StaticResource ButtonIcon_Cancel}"/>
+            <Setter Property="Source" Value="{StaticResource ButtonIcon_Cancel_B}"/>
             <Style.Triggers>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
@@ -26,7 +26,7 @@
                         <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="R_Value_StatusImage" />
                         <Condition Binding="{Binding IsRValueOK}" Value="True" />
                     </MultiDataTrigger.Conditions>
-                    <Setter Property="Source" Value="{StaticResource ButtonIcon_OK_green}" />
+                    <Setter Property="Source" Value="{StaticResource ButtonIcon_Accepted_B}" />
                 </MultiDataTrigger>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
@@ -34,7 +34,7 @@
                         <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="U_Value_StatusImage" />
                         <Condition Binding="{Binding IsUValueOK}" Value="True" />
                     </MultiDataTrigger.Conditions>
-                    <Setter Property="Source" Value="{StaticResource ButtonIcon_OK_green}" />
+                    <Setter Property="Source" Value="{StaticResource ButtonIcon_Accepted_B}" />
                 </MultiDataTrigger>
                 <MultiDataTrigger>
                     <MultiDataTrigger.Conditions>
@@ -42,7 +42,7 @@
                         <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="q_Value_StatusImage" />
                         <Condition Binding="{Binding IsQValueOK}" Value="True" />
                     </MultiDataTrigger.Conditions>
-                    <Setter Property="Source" Value="{StaticResource ButtonIcon_OK_green}" />
+                    <Setter Property="Source" Value="{StaticResource ButtonIcon_Accepted_B}" />
                 </MultiDataTrigger>
                 <!--TODO: Add missing fields-->
             </Style.Triggers>
@@ -61,10 +61,17 @@
         </Grid.ColumnDefinitions>
 
         <!--Top Left -->
-        <Label Grid.Row="0" Grid.Column="0" Content="Stationärer Temperaturverlauf" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
-        <!--Top Right -->
-        <Label Grid.Row="0" Grid.Column="1" Content="Eigenschaften" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
-
+        <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+            <Grid>
+                <Label Content="Stationärer Temperaturverlauf" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0" HorizontalAlignment="Left"/>
+                <StackPanel Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
+                    <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="4,0,0,0"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
         <!--Bottom Left-->
         <Grid Grid.Row="1" Margin="16">
             <Grid.RowDefinitions>
@@ -117,12 +124,13 @@
                 <ColumnDefinition Width="166"/>
             </Grid.ColumnDefinitions>
 
+            <!--TODO: Rework as Grid--> 
             <StackPanel Orientation="Vertical" Grid.Column="0">
                 <Label Content="" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/> <!--Placeholder-->
                 <Line X2="48" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
-                <Image x:Name="R_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="32" Margin="-2"/>
-                <Image x:Name="U_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="32" Margin="-2"/>
-                <Image x:Name="q_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="32" Margin="-2"/>
+                <Image x:Name="R_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
+                <Image x:Name="U_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
+                <Image x:Name="q_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
                 <Line X2="48" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
 
             </StackPanel>

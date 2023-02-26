@@ -48,9 +48,13 @@ namespace BauphysikToolWPF.UI
                     };
                     // Update in Database
                     DatabaseAccess.CreateElement(newElem);
+
+                    //Set as selected Element
+                    FO0_LandingPage.SelectedElementId = newElem.ElementId;
+
                     // Go to Setup Page (Editor) after creating new Element
                     this.Close();
-                    MainWindow.SetPage("Setup");
+                    MainWindow.SetPage(NavigationContent.SetupLayer);
                 }
                 // If Element in Parameter -> Edit existing Element (SelectedElement from FO0_LandingPage)
                 else

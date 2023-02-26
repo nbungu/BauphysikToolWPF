@@ -19,19 +19,54 @@
         <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#BEE6FD"/>
 
         <!--Button Icons source paths-->
-        <BitmapImage x:Key="ButtonIcon_Add_B" UriSource="/Resources/Icons/GL_010x80_create_b.png"/>
-        <BitmapImage x:Key="ButtonIcon_Add_W" UriSource="/Resources/Icons/GL_010x80_create_w.png"/>
-        <BitmapImage x:Key="ButtonIcon_Delete" UriSource="/Resources/Icons/GL_011x80_delete.png"/>
-        <BitmapImage x:Key="ButtonIcon_Edit" UriSource="/Resources/Icons/GL_015x80_edit.png"/>
-        <BitmapImage x:Key="ButtonIcon_Cancel" UriSource="/Resources/Icons/GL_005x80_cancel.png"/>
-        <BitmapImage x:Key="ButtonIcon_OK" UriSource="/Resources/Icons/GL_009x80_confirm.png"/>
-        <BitmapImage x:Key="ButtonIcon_OK_green" UriSource="/Resources/Icons/GL_009x80_confirm_g.png"/>
-        <BitmapImage x:Key="ButtonIcon_Home" UriSource="/Resources/Icons/GL_110x80_app_grid.png"/>
-        <BitmapImage x:Key="ButtonIcon_Home_W" UriSource="/Resources/Icons/GL_110x80_app_grid_w.png"/>
-        <BitmapImage x:Key="ButtonIcon_Hide" UriSource="/Resources/Icons/GL_115x80_not_visible.png"/>
-        <BitmapImage x:Key="ButtonIcon_Show" UriSource="/Resources/Icons/GL_114x80_visible.png"/>
-        <BitmapImage x:Key="ButtonIcon_Lock" UriSource="/Resources/Icons/SET_014x80_content_locked.png"/>
-        <BitmapImage x:Key="ButtonIcon_Unlock" UriSource="/Resources/Icons/SET_013x80_content_not_locked.png"/>        
+        <BitmapImage x:Key="ButtonIcon_Add_B" UriSource="/Resources/Icons/plus.png"/>
+        <BitmapImage x:Key="ButtonIcon_Add_W" UriSource="/Resources/Icons/plus_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_AddLayer_B" UriSource="/Resources/Icons/add_layer.png"/>
+        <BitmapImage x:Key="ButtonIcon_AddLayer_W" UriSource="/Resources/Icons/add_layer_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Delete_B" UriSource="/Resources/Icons/delete.png"/>
+        <BitmapImage x:Key="ButtonIcon_Delete_W" UriSource="/Resources/Icons/delete_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_DeleteLayer_B" UriSource="/Resources/Icons/delete_layer.png"/>
+        <BitmapImage x:Key="ButtonIcon_DeleteLayer_W" UriSource="/Resources/Icons/delete_layer_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_DeleteElement_B" UriSource="/Resources/Icons/delete_element.png"/>
+        <BitmapImage x:Key="ButtonIcon_DeleteElement_W" UriSource="/Resources/Icons/delete_element_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Edit_B" UriSource="/Resources/Icons/bleistift.png"/>
+        <BitmapImage x:Key="ButtonIcon_Edit_W" UriSource="/Resources/Icons/bleistift_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Cancel_B" UriSource="/Resources/Icons/kreuzkreis.png"/>
+        <BitmapImage x:Key="ButtonIcon_Cancel_W" UriSource="/Resources/Icons/kreuzkreis_w.png"/>        
+        <BitmapImage x:Key="ButtonIcon_OK_B" UriSource="/Resources/Icons/haken.png"/>
+        <BitmapImage x:Key="ButtonIcon_OK_W" UriSource="/Resources/Icons/haken_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_OK_Green" UriSource="/Resources/Icons/haken_g.png"/>
+        <BitmapImage x:Key="ButtonIcon_Elements_B" UriSource="/Resources/Icons/elemente.png"/>
+        <BitmapImage x:Key="ButtonIcon_Elements_W" UriSource="/Resources/Icons/elemente_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Layer_B" UriSource="/Resources/Icons/layer.png"/>
+        <BitmapImage x:Key="ButtonIcon_Layer_W" UriSource="/Resources/Icons/layer_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_EnvVar_B" UriSource="/Resources/Icons/einstellungen-schieberegler.png"/>
+        <BitmapImage x:Key="ButtonIcon_EnvVar_W" UriSource="/Resources/Icons/einstellungen-schieberegler_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Show_B" UriSource="/Resources/Icons/auge.png"/>
+        <BitmapImage x:Key="ButtonIcon_Show_W" UriSource="/Resources/Icons/auge_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Hide_B" UriSource="/Resources/Icons/auge_zu.png"/>
+        <BitmapImage x:Key="ButtonIcon_Hide_W" UriSource="/Resources/Icons/auge_zu_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Lock_B" UriSource="/Resources/Icons/schloss_zu.png"/>
+        <BitmapImage x:Key="ButtonIcon_Lock_W" UriSource="/Resources/Icons/schloss_zu_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Moisture_B" UriSource="/Resources/Icons/moisture.png"/>
+        <BitmapImage x:Key="ButtonIcon_Moisture_W" UriSource="/Resources/Icons/moisture_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Temperature_B" UriSource="/Resources/Icons/chart.png"/>
+        <BitmapImage x:Key="ButtonIcon_Temperature_W" UriSource="/Resources/Icons/chart_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_House_B" UriSource="/Resources/Icons/house.png"/>
+        <BitmapImage x:Key="ButtonIcon_House_W" UriSource="/Resources/Icons/house_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_ExistingHouse_B" UriSource="/Resources/Icons/existing_home.png"/>
+        <BitmapImage x:Key="ButtonIcon_ExistingHouse_W" UriSource="/Resources/Icons/existing_home_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Office_B" UriSource="/Resources/Icons/office.png"/>
+        <BitmapImage x:Key="ButtonIcon_Office_W" UriSource="/Resources/Icons/office_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_New_B" UriSource="/Resources/Icons/new.png"/>
+        <BitmapImage x:Key="ButtonIcon_New_W" UriSource="/Resources/Icons/new_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Accepted_B" UriSource="/Resources/Icons/akzeptiert.png"/>
+        <BitmapImage x:Key="ButtonIcon_Accepted_W" UriSource="/Resources/Icons/akzeptiert_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Prev_B" UriSource="/Resources/Icons/prev.png"/>
+        <BitmapImage x:Key="ButtonIcon_Prev_W" UriSource="/Resources/Icons/prev_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Next_B" UriSource="/Resources/Icons/next.png"/>
+        <BitmapImage x:Key="ButtonIcon_Next_W" UriSource="/Resources/Icons/next_w.png"/>
+
 
         <!--Custom TextBox for Subscript Text with Equation-->
         <Style TargetType="{x:Type controls:EquationLabel}">
@@ -243,7 +278,7 @@
             <Setter Property="Padding" Value="4"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="MinWidth" Value="160"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -255,11 +290,11 @@
                             SnapsToDevicePixels="true">
                             <Grid>
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <ContentPresenter Content="{TemplateBinding Icon}" MaxHeight="{TemplateBinding MinHeight}" MaxWidth="{TemplateBinding MinHeight}"/>
-                                <TextBlock Grid.Column="1" Text="{TemplateBinding Header}" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding Icon}" Margin="2,2,16,2" MaxHeight="{TemplateBinding Height}" MaxWidth="{TemplateBinding Height}"/>
+                                <TextBlock Grid.Column="1" Text="{TemplateBinding Header}" VerticalAlignment="Center"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>
@@ -366,7 +401,7 @@
                         <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image x:Name="ButtonIcon" Source="{TemplateBinding Tag}" Stretch="Fill" Width="36" Height="36" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4"/>
+                                <Image x:Name="ButtonIcon" Source="{TemplateBinding Tag}" Stretch="Fill" Width="20" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10"/>
                                 <TextBlock x:Name="ButtonLabel" Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Margin="4,4,16,4" FontWeight="Bold" FontSize="14"/>
                             </StackPanel>
                         </Border>
@@ -411,7 +446,7 @@
                         <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="36" Height="36" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4"/>
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
                                 <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Margin="4,4,16,4" FontWeight="Bold" FontSize="14"/>
                             </StackPanel>
                         </Border>
@@ -457,7 +492,7 @@
                         <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="24" MinHeight="24" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="2"/>
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>

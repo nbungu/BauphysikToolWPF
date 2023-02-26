@@ -10,40 +10,70 @@
   <ItemGroup>
     <None Remove="Ordner_Icon.ico" />
     <None Remove="Resources\ElementImages\Element_4_AWE1.png" />
-    <None Remove="Resources\Icons\CL_001x80_climate_menu.png" />
-    <None Remove="Resources\Icons\CL_001x80_climate_menu_w.png" />
-    <None Remove="Resources\Icons\CL_025x80_air_quality_inside_air_w.png" />
-    <None Remove="Resources\Icons\GL_003x80_back.png" />
-    <None Remove="Resources\Icons\GL_005x80_cancel.png" />
-    <None Remove="Resources\Icons\GL_009x80_confirm.png" />
-    <None Remove="Resources\Icons\GL_009x80_confirm_g.png" />
-    <None Remove="Resources\Icons\GL_010x80_create_b.png" />
-    <None Remove="Resources\Icons\GL_010x80_create_w.png" />
-    <None Remove="Resources\Icons\GL_011x80_delete.png" />
-    <None Remove="Resources\Icons\GL_015x80_edit.png" />
-    <None Remove="Resources\Icons\GL_015x80_edit_w.png" />
-    <None Remove="Resources\Icons\GL_019x80_home.png" />
-    <None Remove="Resources\Icons\GL_110x80_app_grid.png" />
-    <None Remove="Resources\Icons\GL_110x80_app_grid_w.png" />
-    <None Remove="Resources\Icons\GL_114x80_visible.png" />
-    <None Remove="Resources\Icons\GL_115x80_not_visible.png" />
-    <None Remove="Resources\Icons\SET_013x80_content_not_locked.png" />
-    <None Remove="Resources\Icons\SET_014x80_content_locked.png" />
+    <None Remove="Resources\Icons\add_element.png" />
+    <None Remove="Resources\Icons\add_element_w.png" />
+    <None Remove="Resources\Icons\add_layer.png" />
+    <None Remove="Resources\Icons\add_layer_w.png" />
+    <None Remove="Resources\Icons\akzeptiert.png" />
+    <None Remove="Resources\Icons\akzeptiert_w.png" />
+    <None Remove="Resources\Icons\auge.png" />
+    <None Remove="Resources\Icons\auge_w.png" />
+    <None Remove="Resources\Icons\auge_zu.png" />
+    <None Remove="Resources\Icons\auge_zu_w.png" />
+    <None Remove="Resources\Icons\ausruf.png" />
+    <None Remove="Resources\Icons\ausruf_w.png" />
+    <None Remove="Resources\Icons\bleistift.png" />
+    <None Remove="Resources\Icons\bleistift_w.png" />
+    <None Remove="Resources\Icons\chart.png" />
+    <None Remove="Resources\Icons\chart_w.png" />
+    <None Remove="Resources\Icons\delete.png" />
+    <None Remove="Resources\Icons\delete_element.png" />
+    <None Remove="Resources\Icons\delete_element_w.png" />
+    <None Remove="Resources\Icons\delete_layer.png" />
+    <None Remove="Resources\Icons\delete_layer_w.png" />
+    <None Remove="Resources\Icons\delete_w.png" />
+    <None Remove="Resources\Icons\dokumentieren.png" />
+    <None Remove="Resources\Icons\dokumentieren_w.png" />
+    <None Remove="Resources\Icons\download.png" />
+    <None Remove="Resources\Icons\download_w.png" />
+    <None Remove="Resources\Icons\einstellungen-schieberegler.png" />
+    <None Remove="Resources\Icons\einstellungen-schieberegler_w.png" />
+    <None Remove="Resources\Icons\elemente.png" />
+    <None Remove="Resources\Icons\elemente_w.png" />
+    <None Remove="Resources\Icons\existing_home.png" />
+    <None Remove="Resources\Icons\existing_home_w.png" />
+    <None Remove="Resources\Icons\grid.png" />
+    <None Remove="Resources\Icons\grid_w.png" />
+    <None Remove="Resources\Icons\haken.png" />
+    <None Remove="Resources\Icons\haken_g.png" />
+    <None Remove="Resources\Icons\haken_w.png" />
+    <None Remove="Resources\Icons\house.png" />
+    <None Remove="Resources\Icons\house_w.png" />
+    <None Remove="Resources\Icons\kreuz.png" />
+    <None Remove="Resources\Icons\kreuzkreis.png" />
+    <None Remove="Resources\Icons\kreuzkreis_w.png" />
+    <None Remove="Resources\Icons\kreuz_w.png" />
+    <None Remove="Resources\Icons\layer.png" />
+    <None Remove="Resources\Icons\layer_w.png" />
+    <None Remove="Resources\Icons\loeschen.png" />
+    <None Remove="Resources\Icons\moisture.png" />
+    <None Remove="Resources\Icons\moisture_w.png" />
+    <None Remove="Resources\Icons\new.png" />
+    <None Remove="Resources\Icons\new_w.png" />
+    <None Remove="Resources\Icons\next.png" />
+    <None Remove="Resources\Icons\next_w.png" />
+    <None Remove="Resources\Icons\office.png" />
+    <None Remove="Resources\Icons\office_w.png" />
+    <None Remove="Resources\Icons\plus.png" />
+    <None Remove="Resources\Icons\plus_w.png" />
+    <None Remove="Resources\Icons\prev.png" />
+    <None Remove="Resources\Icons\prev_w.png" />
+    <None Remove="Resources\Icons\schloss_zu.png" />
+    <None Remove="Resources\Icons\schloss_zu_w.png" />
   </ItemGroup>
 
   <ItemGroup>
     <Page Remove="Resources\Dump.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="Resources\Icons\CL_001x80_climate_menu_w.png" />
-    <Resource Include="Resources\Icons\CL_025x80_air_quality_inside_air_w.png" />
-    <Resource Include="Resources\Icons\GL_015x80_edit_w.png" />
-    <Resource Include="Resources\Icons\GL_110x80_app_grid_w.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\GL_114x80_visible.png" />
-    <Resource Include="Resources\Icons\GL_115x80_not_visible.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -55,23 +85,65 @@
 
   <ItemGroup>
     <Resource Include="Ordner_Icon.ico" />
-    <Resource Include="Resources\Icons\CL_001x80_climate_menu.png" />
-    <Resource Include="Resources\Icons\GL_003x80_back.png" />
-    <Resource Include="Resources\Icons\GL_005x80_cancel.png" />
-    <Resource Include="Resources\Icons\GL_009x80_confirm_g.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\GL_009x80_confirm.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="Resources\Icons\GL_010x80_create_b.png" />
-    <Resource Include="Resources\Icons\GL_010x80_create_w.png" />
-    <Resource Include="Resources\Icons\GL_011x80_delete.png" />
-    <Resource Include="Resources\Icons\GL_015x80_edit.png" />
-    <Resource Include="Resources\Icons\GL_019x80_home.png" />
-    <Resource Include="Resources\Icons\GL_110x80_app_grid.png" />
-    <Resource Include="Resources\Icons\SET_013x80_content_not_locked.png" />
-    <Resource Include="Resources\Icons\SET_014x80_content_locked.png" />
+    <Resource Include="Resources\Icons\add_element.png" />
+    <Resource Include="Resources\Icons\add_element_w.png" />
+    <Resource Include="Resources\Icons\add_layer.png" />
+    <Resource Include="Resources\Icons\add_layer_w.png" />
+    <Resource Include="Resources\Icons\akzeptiert.png" />
+    <Resource Include="Resources\Icons\akzeptiert_w.png" />
+    <Resource Include="Resources\Icons\auge.png" />
+    <Resource Include="Resources\Icons\auge_w.png" />
+    <Resource Include="Resources\Icons\auge_zu.png" />
+    <Resource Include="Resources\Icons\auge_zu_w.png" />
+    <Resource Include="Resources\Icons\ausruf.png" />
+    <Resource Include="Resources\Icons\ausruf_w.png" />
+    <Resource Include="Resources\Icons\bleistift.png" />
+    <Resource Include="Resources\Icons\bleistift_w.png" />
+    <Resource Include="Resources\Icons\chart.png" />
+    <Resource Include="Resources\Icons\chart_w.png" />
+    <Resource Include="Resources\Icons\delete.png" />
+    <Resource Include="Resources\Icons\delete_element.png" />
+    <Resource Include="Resources\Icons\delete_element_w.png" />
+    <Resource Include="Resources\Icons\delete_layer.png" />
+    <Resource Include="Resources\Icons\delete_layer_w.png" />
+    <Resource Include="Resources\Icons\delete_w.png" />
+    <Resource Include="Resources\Icons\dokumentieren.png" />
+    <Resource Include="Resources\Icons\dokumentieren_w.png" />
+    <Resource Include="Resources\Icons\download.png" />
+    <Resource Include="Resources\Icons\download_w.png" />
+    <Resource Include="Resources\Icons\einstellungen-schieberegler.png" />
+    <Resource Include="Resources\Icons\einstellungen-schieberegler_w.png" />
+    <Resource Include="Resources\Icons\elemente.png" />
+    <Resource Include="Resources\Icons\elemente_w.png" />
+    <Resource Include="Resources\Icons\existing_home.png" />
+    <Resource Include="Resources\Icons\existing_home_w.png" />
+    <Resource Include="Resources\Icons\grid.png" />
+    <Resource Include="Resources\Icons\grid_w.png" />
+    <Resource Include="Resources\Icons\house.png" />
+    <Resource Include="Resources\Icons\house_w.png" />
+    <Resource Include="Resources\Icons\kreuz.png" />
+    <Resource Include="Resources\Icons\kreuzkreis.png" />
+    <Resource Include="Resources\Icons\kreuzkreis_w.png" />
+    <Resource Include="Resources\Icons\kreuz_w.png" />
+    <Resource Include="Resources\Icons\moisture.png" />
+    <Resource Include="Resources\Icons\new.png" />
+    <Resource Include="Resources\Icons\new_w.png" />
+    <Resource Include="Resources\Icons\next.png" />
+    <Resource Include="Resources\Icons\next_w.png" />
+    <Resource Include="Resources\Icons\office.png" />
+    <Resource Include="Resources\Icons\office_w.png" />
+    <Resource Include="Resources\Icons\plus.png" />
+    <Resource Include="Resources\Icons\plus_w.png" />
+    <Resource Include="Resources\Icons\haken.png" />
+    <Resource Include="Resources\Icons\haken_g.png" />
+    <Resource Include="Resources\Icons\haken_w.png" />
+    <Resource Include="Resources\Icons\layer.png" />
+    <Resource Include="Resources\Icons\layer_w.png" />
+    <Resource Include="Resources\Icons\prev.png" />
+    <Resource Include="Resources\Icons\prev_w.png" />
+    <Resource Include="Resources\Icons\schloss_zu.png" />
+    <Resource Include="Resources\Icons\schloss_zu_w.png" />
+    <Resource Include="Resources\Icons\moisture_w.png" />
   </ItemGroup>
 
   <ItemGroup>

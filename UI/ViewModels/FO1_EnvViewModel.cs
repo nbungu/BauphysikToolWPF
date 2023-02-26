@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -55,11 +56,44 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Update ONLY UI-Used Values by fetching from Database!
          */
 
+        [RelayCommand]
+        private void NextPage()
+        {
+            MainWindow.SetPage(NavigationContent.TemperatureCurve);
+        }
 
+        [RelayCommand]
+        private void PrevPage()
+        {
+            MainWindow.SetPage(NavigationContent.SetupLayer);
+        }
+
+        [RelayCommand]
+        private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        {
+            if (selectedElement is null)
+                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            var window = new NewElementWindow(selectedElement);
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            window.ShowDialog();
+
+            // After Window closed:
+            // Update XAML Binding Property by fetching from DB
+            ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
+            ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+        }
 
         /*
          * MVVM Properties
          */
+
+        [ObservableProperty]
+        private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
+
+        [ObservableProperty]
+        private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))] // Notifies 'TiValue' when this property is changed!

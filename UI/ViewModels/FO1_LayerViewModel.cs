@@ -3,8 +3,6 @@ using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Documents;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -19,6 +17,18 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Update ONLY UI-Used Values by fetching from Database!
          */
+
+        [RelayCommand]
+        private void NextPage()
+        {
+            MainWindow.SetPage(NavigationContent.SetupEnv);
+        }
+
+        [RelayCommand]
+        private void PrevPage()
+        {
+            MainWindow.SetPage(NavigationContent.LandingPage);
+        }
 
         [RelayCommand]
         private void OpenAddLayerWindow()
