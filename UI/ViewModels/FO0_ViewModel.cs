@@ -19,9 +19,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Update ONLY UI-Used Values by fetching from Database!
          */
 
+        [RelayCommand]
+        private void PrevPage()
+        {
+            if (FO0_LandingPage.SelectedElementId != -1)
+                MainWindow.SetPage(NavigationContent.SetupLayer);
+        }
+
         // Create New Element / Edit Existing Element
         [RelayCommand]
-        private void OpenNewElementWindow(string? selectedElementId) // CommandParameter is the Content Property of the Button which holds the ElementId
+        private void OpenNewElementWindow(int? selectedElementId) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
             var window = (selectedElementId is null) ? new NewElementWindow() : new NewElementWindow(DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId)));
 
@@ -34,7 +41,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DeleteElement(string? selectedElementId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
+        private void DeleteElement(int? selectedElementId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
         {
             if (selectedElementId is null)
                 return;
@@ -47,12 +54,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void SelectElement(int selectedElementId = -1) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        private void SelectElement(int? selectedElementId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
-            if (selectedElementId == -1)
+            if (selectedElementId is null)
                 return;
 
-            FO0_LandingPage.SelectedElementId = selectedElementId;
+            FO0_LandingPage.SelectedElementId = Convert.ToInt32(selectedElementId);
             MainWindow.SetPage(NavigationContent.SetupLayer);
         }
 

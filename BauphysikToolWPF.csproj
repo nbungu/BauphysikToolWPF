@@ -64,10 +64,20 @@
     <None Remove="Resources\Icons\next_w.png" />
     <None Remove="Resources\Icons\office.png" />
     <None Remove="Resources\Icons\office_w.png" />
+    <None Remove="Resources\Icons\open_project.png" />
+    <None Remove="Resources\Icons\open_project_w.png" />
     <None Remove="Resources\Icons\plus.png" />
     <None Remove="Resources\Icons\plus_w.png" />
     <None Remove="Resources\Icons\prev.png" />
     <None Remove="Resources\Icons\prev_w.png" />
+    <None Remove="Resources\Icons\project-2.png" />
+    <None Remove="Resources\Icons\project-2_w.png" />
+    <None Remove="Resources\Icons\project.png" />
+    <None Remove="Resources\Icons\projects.png" />
+    <None Remove="Resources\Icons\projects_w.png" />
+    <None Remove="Resources\Icons\project_w.png" />
+    <None Remove="Resources\Icons\save.png" />
+    <None Remove="Resources\Icons\save_w.png" />
     <None Remove="Resources\Icons\schloss_zu.png" />
     <None Remove="Resources\Icons\schloss_zu_w.png" />
   </ItemGroup>
@@ -132,6 +142,8 @@
     <Resource Include="Resources\Icons\next_w.png" />
     <Resource Include="Resources\Icons\office.png" />
     <Resource Include="Resources\Icons\office_w.png" />
+    <Resource Include="Resources\Icons\open_project.png" />
+    <Resource Include="Resources\Icons\open_project_w.png" />
     <Resource Include="Resources\Icons\plus.png" />
     <Resource Include="Resources\Icons\plus_w.png" />
     <Resource Include="Resources\Icons\haken.png" />
@@ -141,6 +153,14 @@
     <Resource Include="Resources\Icons\layer_w.png" />
     <Resource Include="Resources\Icons\prev.png" />
     <Resource Include="Resources\Icons\prev_w.png" />
+    <Resource Include="Resources\Icons\project-2.png" />
+    <Resource Include="Resources\Icons\project-2_w.png" />
+    <Resource Include="Resources\Icons\project.png" />
+    <Resource Include="Resources\Icons\projects.png" />
+    <Resource Include="Resources\Icons\projects_w.png" />
+    <Resource Include="Resources\Icons\project_w.png" />
+    <Resource Include="Resources\Icons\save.png" />
+    <Resource Include="Resources\Icons\save_w.png" />
     <Resource Include="Resources\Icons\schloss_zu.png" />
     <Resource Include="Resources\Icons\schloss_zu_w.png" />
     <Resource Include="Resources\Icons\moisture_w.png" />

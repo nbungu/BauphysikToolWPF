@@ -131,23 +131,22 @@
             <ColumnDefinition Width=".4*"/>
         </Grid.ColumnDefinitions>
 
-        <!--Top Left -->
+        <!--Top -->
         <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding NextPageCommand}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <Label Content="Schichtaufbau"  FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center" VerticalContentAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
                     <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="4,0,0,0"/>
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
-            </Grid>            
+            </Grid>
         </Border>
-        
-        <!--Top Right -->
-        
+
         <!--Middle Left -->
         <Grid Grid.Row="1" Grid.Column="0" Margin="16">
             <Grid.RowDefinitions>
@@ -212,6 +211,10 @@
 
         <!--Middle Right-->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".8*"/>
+                <RowDefinition Height=".2*"/>
+            </Grid.RowDefinitions>
             <Viewbox ClipToBounds="True" VerticalAlignment="Top">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -224,6 +227,8 @@
                     <Grid Grid.Row="1" x:Name="measurement_Grid" Width="{Binding ElementName=layers_Canvas, Path=Width}" Margin="0,0,0,-16"/>
                 </Grid>
             </Viewbox>
+            <Label Grid.Row="1" Content="Kommentar:" FontSize="14"/>
+            <TextBox Grid.Row="1" Background="White" TextWrapping="Wrap" AcceptsReturn="True" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" MaxHeight="240" MaxLength="1000" MaxLines="20" Margin="0,32,0,0"/>
         </Grid>
 
         <!--Bottom-->

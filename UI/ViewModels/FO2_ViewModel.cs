@@ -28,6 +28,18 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
+        private void NextPage()
+        {
+            MainWindow.SetPage(NavigationContent.GlaserCurve);
+        }
+
+        [RelayCommand]
+        private void PrevPage()
+        {
+            MainWindow.SetPage(NavigationContent.SetupEnv);
+        }
+
+        [RelayCommand]
         private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
         {
             if (selectedElement is null)

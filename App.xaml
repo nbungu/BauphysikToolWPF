@@ -23,6 +23,8 @@
         <BitmapImage x:Key="ButtonIcon_Add_W" UriSource="/Resources/Icons/plus_w.png"/>
         <BitmapImage x:Key="ButtonIcon_AddLayer_B" UriSource="/Resources/Icons/add_layer.png"/>
         <BitmapImage x:Key="ButtonIcon_AddLayer_W" UriSource="/Resources/Icons/add_layer_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_AddElement_B" UriSource="/Resources/Icons/add_element.png"/>
+        <BitmapImage x:Key="ButtonIcon_AddElement_W" UriSource="/Resources/Icons/add_element_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Delete_B" UriSource="/Resources/Icons/delete.png"/>
         <BitmapImage x:Key="ButtonIcon_Delete_W" UriSource="/Resources/Icons/delete_w.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteLayer_B" UriSource="/Resources/Icons/delete_layer.png"/>
@@ -32,12 +34,14 @@
         <BitmapImage x:Key="ButtonIcon_Edit_B" UriSource="/Resources/Icons/bleistift.png"/>
         <BitmapImage x:Key="ButtonIcon_Edit_W" UriSource="/Resources/Icons/bleistift_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Cancel_B" UriSource="/Resources/Icons/kreuzkreis.png"/>
-        <BitmapImage x:Key="ButtonIcon_Cancel_W" UriSource="/Resources/Icons/kreuzkreis_w.png"/>        
+        <BitmapImage x:Key="ButtonIcon_Cancel_W" UriSource="/Resources/Icons/kreuzkreis_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Exit_B" UriSource="/Resources/Icons/kreuz.png"/>
+        <BitmapImage x:Key="ButtonIcon_Exit_W" UriSource="/Resources/Icons/kreuz_w.png"/>
         <BitmapImage x:Key="ButtonIcon_OK_B" UriSource="/Resources/Icons/haken.png"/>
         <BitmapImage x:Key="ButtonIcon_OK_W" UriSource="/Resources/Icons/haken_w.png"/>
         <BitmapImage x:Key="ButtonIcon_OK_Green" UriSource="/Resources/Icons/haken_g.png"/>
-        <BitmapImage x:Key="ButtonIcon_Elements_B" UriSource="/Resources/Icons/elemente.png"/>
-        <BitmapImage x:Key="ButtonIcon_Elements_W" UriSource="/Resources/Icons/elemente_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Elements_B" UriSource="/Resources/Icons/grid.png"/>
+        <BitmapImage x:Key="ButtonIcon_Elements_W" UriSource="/Resources/Icons/grid_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Layer_B" UriSource="/Resources/Icons/layer.png"/>
         <BitmapImage x:Key="ButtonIcon_Layer_W" UriSource="/Resources/Icons/layer_w.png"/>
         <BitmapImage x:Key="ButtonIcon_EnvVar_B" UriSource="/Resources/Icons/einstellungen-schieberegler.png"/>
@@ -66,6 +70,13 @@
         <BitmapImage x:Key="ButtonIcon_Prev_W" UriSource="/Resources/Icons/prev_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Next_B" UriSource="/Resources/Icons/next.png"/>
         <BitmapImage x:Key="ButtonIcon_Next_W" UriSource="/Resources/Icons/next_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Project_B" UriSource="/Resources/Icons/project.png"/>
+        <BitmapImage x:Key="ButtonIcon_Project_W" UriSource="/Resources/Icons/project_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Projects_B" UriSource="/Resources/Icons/projects.png"/>
+        <BitmapImage x:Key="ButtonIcon_Save_B" UriSource="/Resources/Icons/save.png"/>
+        <BitmapImage x:Key="ButtonIcon_Save_W" UriSource="/Resources/Icons/save_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_OpenProject_B" UriSource="/Resources/Icons/open_project.png"/>
+        <BitmapImage x:Key="ButtonIcon_OpenProject_W" UriSource="/Resources/Icons/open_project_w.png"/>
 
 
         <!--Custom TextBox for Subscript Text with Equation-->
@@ -293,7 +304,7 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding Icon}" Margin="2,2,16,2" MaxHeight="{TemplateBinding Height}" MaxWidth="{TemplateBinding Height}"/>
+                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding Icon}" Margin="4,4,16,4" MaxHeight="{TemplateBinding Height}" MaxWidth="{TemplateBinding Height}"/>
                                 <TextBlock Grid.Column="1" Text="{TemplateBinding Header}" VerticalAlignment="Center"/>
                             </Grid>
                         </Border>

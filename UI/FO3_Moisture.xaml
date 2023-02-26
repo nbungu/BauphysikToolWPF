@@ -27,9 +27,19 @@
         </Grid.ColumnDefinitions>
 
         <!--Top Left -->
-        <Label Grid.Row="0" Grid.Column="0" Content="Glaser Diagramm" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
-        <!--Top Right -->
-        <Label Grid.Row="0" Grid.Column="1" Content="Eigenschaften" HorizontalAlignment="Left" VerticalAlignment="Center" FontWeight="Bold" FontSize="16" Margin="16,0,0,0"/>
+        <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
+                </StackPanel>
+                <Label Content="Glaser-Diagramm"  FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center" VerticalContentAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
+                    <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="4,0,0,0"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                </StackPanel>
+            </Grid>
+        </Border>
 
         <!--Bottom Left-->
         <Grid Grid.Row="1" Margin="16">
