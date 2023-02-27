@@ -8,6 +8,7 @@ using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
+using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using System;
 using System.Drawing;
@@ -20,6 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO2_ViewModel
     {
         public string Title { get; } = "Temperature";
+        public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -63,20 +65,51 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
 
+        // TODO notifier doesnt work        
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RequirementValues))]
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
+        [ObservableProperty]
+        private string u_max;
+
+        [ObservableProperty]
+        private string r_min;
+
+        [ObservableProperty]
+        private string q_max;
+
+        [ObservableProperty]
+        private bool isUValueOK;
+
+        [ObservableProperty]
+        private bool isRValueOK;
+
+        [ObservableProperty]
+        private bool isQValueOK;
+
+        /*
+         * MVVM Capsulated Properties + Triggered by other Properties
+         * 
+         * Not Observable, because Triggered and Changed by the elementType Value above
+         */
+
+        public CheckRequirements RequirementValues
+        {
+            get { return new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue); }
+            private set
+            {
+                U_max = value.U_max > 0 ? value.U_max.ToString() : "Keine Anforderung";
+                R_min = value.R_min > 0 ? value.R_min.ToString() : "Keine Anforderung";
+                Q_max = value.Q_max > 0 ? value.Q_max.ToString() : "Keine Anforderung";
+
+                IsUValueOK = value.U_max > 0 ? value.IsUValueOK : true;
+                IsRValueOK = value.R_min > 0 ? value.IsRValueOK : true;
+                IsQValueOK = value.Q_max > 0 ? value.IsQValueOK : true;
+            }
+        }
 
         // TODO: Rework as MVVM
-
-        public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
-        public CheckRequirements CheckRequirements { get; private set; }
-        public bool IsUValueOK { get; private set; }
-        public bool IsRValueOK { get; private set; }
-        public bool IsQValueOK { get; private set; }
-        public string U_max { get; private set; }
-        public string R_min { get; private set; }
-        public string Q_max { get; private set; }
 
         public RectangularSection[] LayerSections { get; private set; }
         public ISeries[] DataPoints { get; private set; }
@@ -88,13 +121,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
             // For the Requirement Checks (U-Value, R-Value)
-            this.CheckRequirements = new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue);
-            this.U_max = CheckRequirements.U_max > 0 ? CheckRequirements.U_max.ToString() : "Keine Anforderung";
-            this.IsUValueOK = CheckRequirements.U_max > 0 ? CheckRequirements.IsUValueOK : true;
-            this.R_min = CheckRequirements.R_min > 0 ? CheckRequirements.R_min.ToString() : "Keine Anforderung";
-            this.IsRValueOK = CheckRequirements.R_min > 0 ? CheckRequirements.IsRValueOK : true;
-            this.Q_max = CheckRequirements.Q_max > 0 ? CheckRequirements.Q_max.ToString() : "Keine Anforderung";
-            this.IsQValueOK = CheckRequirements.Q_max > 0 ? CheckRequirements.IsQValueOK : true;
+            this.RequirementValues = new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue);
 
             // For Drawing the Chart
             this.LayerSections = DrawLayerSections();
