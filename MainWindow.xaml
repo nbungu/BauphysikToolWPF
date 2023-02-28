@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF"
+        xmlns:ui="clr-namespace:BauphysikToolWPF.UI"
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
@@ -15,6 +16,23 @@
         <!-- Checks if an ListBoxItem from ItemsSource is a Header or not-->
         <controls:IsHeaderConverter x:Key="IsHeaderConverter"/>
 
+        <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page-->
+        <DataTemplate x:Key="FO0_LandingPage">
+            <ui:FO0_LandingPage/>
+        </DataTemplate>
+        <DataTemplate x:Key="FO1_SetupLayer">
+            <ui:FO1_SetupLayer/>
+        </DataTemplate>
+        <DataTemplate x:Key="FO1_SetupEnv">
+            <ui:FO1_SetupEnv/>
+        </DataTemplate>
+        <DataTemplate x:Key="FO2_Temperature">
+            <ui:FO2_Temperature/>
+        </DataTemplate>
+        <DataTemplate x:Key="FO3_Moisture">
+            <ui:FO3_Moisture/>
+        </DataTemplate>
+
         <!--Content Pages on right side-->
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
             <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
@@ -23,6 +41,9 @@
             Item value comes from 'ItemsSource' (typepf ListBoxItem)
             -->
             <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=MainWindow_Content, Path=Tag}" Value="LandingPage">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
+                </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupLayer">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO1_SetupLayer}"/>
                 </DataTrigger>
@@ -39,30 +60,17 @@
         </Style>
 
         <!--
-        ProjectMenu ListBoxItem values: Used in ProjectMenuListBox as ItemsSource
-        Used as Binding Values within the ProjectMenu to toggle between the pages
-        and set corresponding style of the ListBoxItem
-        -->
-        <x:Array x:Key="ProjectMenuItems" Type="system:String">
-            <system:String>Project</system:String>
-            <system:String>Settings</system:String>
-            <system:String>Save</system:String>
-        </x:Array>
-
-        <!--
         NavigationMenu ListBoxItem values: Used in NavigationMenuListBox as ItemsSource
         Used as Binding Values within the NavigationMenu to toggle between the pages
         and set corresponding style of the ListBoxItem
         -->
         <x:Array x:Key="NavigationMenuItems" Type="system:String">
             <system:String>Header1</system:String>
-            <system:String>LandingPage</system:String> <!--SelectedIndex: 1-->
+            <system:String>SetupLayer</system:String>  <!--SelectedIndex: 1-->
+            <system:String>SetupEnv</system:String>    <!--SelectedIndex: 2-->
             <system:String>Header2</system:String>
-            <system:String>SetupLayer</system:String>  <!--SelectedIndex: 3-->
-            <system:String>SetupEnv</system:String>    <!--SelectedIndex: 4-->
-            <system:String>Header3</system:String>
-            <system:String>Temperature</system:String> <!--SelectedIndex: 6-->
-            <system:String>Moisture</system:String>    <!--SelectedIndex: 7-->
+            <system:String>Temperature</system:String> <!--SelectedIndex: 4-->
+            <system:String>Moisture</system:String>    <!--SelectedIndex: 5-->
         </x:Array>
 
         <!--NavigationMenu ListBox appearance: Used in ListBox as Style -->
@@ -73,7 +81,8 @@
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Visibility" Value="Visible"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="SelectedIndex" Value="1"/>
+            <!-- Nothing selected by default -->
+            <Setter Property="SelectedIndex" Value="-1"/>
             <Setter Property="Padding" Value="8"/>
             <Setter Property="Width" Value="Auto"/>
             <Setter Property="Template">
@@ -88,37 +97,14 @@
                 </Setter.Value>
             </Setter>
             <!--Don't show ListBox when on the LandingPage and the first Header entry (acts like ListBoxItem) -->
-            <Style.Triggers>
+            <!--<Style.Triggers>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Header1">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="LandingPage">
                     <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <!--ProjectMenu ListBox appearance: Used in ListBox as Style -->
-        <Style x:Key="ProjectListBoxStyle" TargetType="{x:Type ListBox}">
-            <Setter Property="Background" Value="{StaticResource PrimaryDarkHighlightBrush}"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="SelectedIndex" Value="0"/>
-            <Setter Property="Padding" Value="8"/>
-            <Setter Property="Width" Value="Auto"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListBox}">
-                        <Border Background="{TemplateBinding Background}" BorderThickness="0" Padding="0" SnapsToDevicePixels="true">
-                            <ScrollViewer Padding="{TemplateBinding Padding}" Focusable="false">
-                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                            </ScrollViewer>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            </Style.Triggers>-->
         </Style>
 
         <!--NavigationMenu ListBox entry appearance and behaviour: Used in ListBox as ItemContainerStyle-->
@@ -175,38 +161,6 @@
             </Style.Triggers>
         </Style>
 
-        <!--ProjectMenu ListBox entry appearance and behaviour: Used in ListBox as ItemContainerStyle-->
-        <Style x:Key="ProjectListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource PrimaryLightBrush}"/>
-            <Setter Property="Margin" Value="0,0,0,8"/>
-            <Setter Property="ToolTip" Value="{Binding}"/>
-            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
-                        <Border x:Name="listBox_Border"
-                                    BorderBrush="{TemplateBinding BorderBrush}"
-                                    BorderThickness="{TemplateBinding BorderThickness}" 
-                                    Background="{TemplateBinding Background}"
-                                    Padding="{TemplateBinding Padding}"
-                                    CornerRadius="8"
-                                    SnapsToDevicePixels="true">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                        </Border>
-                        <!-- Triggers ONLY usable in this Template -->
-                        <ControlTemplate.Triggers>
-                            <!--When a ListBox entry is Selected-->
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
         <!--
         ListBox entry content: Used in ListBox as ItemTemplate
         The Content Located inside of 'NavigationListBoxItemStyle'
@@ -226,16 +180,6 @@
             -->
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding}" Value="Header1">
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="BAUTEILKATALOG"/>
-                    <Setter TargetName="MenuItemLabel" Property="Foreground" Value="{StaticResource PrimaryMediumBrush}"/>
-                    <Setter TargetName="MenuItemLabel" Property="FontWeight" Value="Bold"/>
-                    <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="LandingPage">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Elements_W}"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Übersicht"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="Header2">
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="BAUTEIL ERSTELLEN"/>
                     <Setter TargetName="MenuItemLabel" Property="Foreground" Value="{StaticResource PrimaryMediumBrush}"/>
                     <Setter TargetName="MenuItemLabel" Property="FontWeight" Value="Bold"/>
@@ -249,7 +193,7 @@
                     <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_EnvVar_W}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Umgebung"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="Header3">
+                <DataTrigger Binding="{Binding}" Value="Header2">
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="ERGEBNISSE"/>
                     <Setter TargetName="MenuItemLabel" Property="Foreground" Value="{StaticResource PrimaryMediumBrush}"/>
                     <Setter TargetName="MenuItemLabel" Property="FontWeight" Value="Bold"/>
@@ -265,31 +209,6 @@
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
-
-        <!--
-        ListBox entry content: Used in ListBox as ItemTemplate
-        The Content Located inside of 'ProjectListBoxItemStyle'
-        -->
-        <DataTemplate x:Key="ProjectDataTemplate">
-            <Grid>
-                <Image x:Name="MenuItemIcon" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4" MaxWidth="24"/>
-            </Grid>
-            <!--
-            Binding is ItemsSource from 'ProjectMenuListBox'
-            Changes the Icon and Text of the entry based on the ItemsSource Values
-            -->
-            <DataTemplate.Triggers>
-                <DataTrigger Binding="{Binding}" Value="Project">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Project_W}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="Settings">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_OpenProject_W}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="Save">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Save_W}"/>
-                </DataTrigger>
-            </DataTemplate.Triggers>
-        </DataTemplate>
         
     </Window.Resources>
 
@@ -299,23 +218,40 @@
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        
 
-        <!--The Icons Selection Box on the left side-->
-        <ListBox x:Name="ProjectMenuListBox" 
-                 Style="{StaticResource ProjectListBoxStyle}"
-                 ItemsSource="{StaticResource ProjectMenuItems}"
-                 ItemContainerStyle="{DynamicResource ProjectListBoxItemStyle}"
-                 ItemTemplate="{DynamicResource ProjectDataTemplate}"/>
+        <Border x:Name="ProjectBoxHeader" Grid.Column="1" Grid.Row="0" Background="{StaticResource PrimaryDarkHighlightBrush}" BorderThickness="0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="56"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Vertical" Margin="16,16,16,0">
+                    <Label Content="Projekt:" Foreground="White" Margin="-4"/>
+                    <Label Content="Wohnhaus 1" FontSize="14" FontWeight="Bold" Foreground="White" Margin="-4"/>
+                </StackPanel>
+                <Button Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Edit_W}" MaxHeight="32" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,16,0"/>
+
+                <Button Grid.Row="1" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Elements_W}" Margin="16" Click="Button_Click"/>
+
+            </Grid>
+        </Border>
 
         <!--The Selection Box on the left side-->
         <ListBox x:Name="NavigationMenuListBox"
                  Grid.Column="1"
+                 Grid.Row="1"                 
                  Style="{StaticResource NavigationListBoxStyle}"
                  ItemsSource="{StaticResource NavigationMenuItems}"
                  ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
                  ItemTemplate="{DynamicResource NavigationDataTemplate}"/>
 
         <!--The Actual Pages shown here-->
-        <ContentControl x:Name="mainWindow_Content" Grid.Column="2" Style="{StaticResource NavigationContentStyle}"/>
+        <ContentControl x:Name="MainWindow_Content" Grid.Column="2" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
     </Grid>
 </Window>

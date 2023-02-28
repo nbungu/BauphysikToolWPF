@@ -162,4 +162,104 @@
         </Setter>
     </Style>
 
+
+    <!--The Icons Selection Box on the left side-->
+    <!--<ListBox x:Name="ProjectMenuListBox" 
+                 Grid.RowSpan="2"
+                 Style="{StaticResource ProjectListBoxStyle}"
+                 ItemsSource="{StaticResource ProjectMenuItems}"
+                 ItemContainerStyle="{DynamicResource ProjectListBoxItemStyle}"
+                 ItemTemplate="{DynamicResource ProjectDataTemplate}"/>-->
+
+    <!--
+        ListBox entry content: Used in ListBox as ItemTemplate
+        The Content Located inside of 'ProjectListBoxItemStyle'
+        -->
+    <DataTemplate x:Key="ProjectDataTemplate">
+        <Grid>
+            <Image x:Name="MenuItemIcon" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4" MaxWidth="24"/>
+        </Grid>
+        <!--
+            Binding is ItemsSource from 'ProjectMenuListBox'
+            Changes the Icon and Text of the entry based on the ItemsSource Values
+            -->
+        <DataTemplate.Triggers>
+            <DataTrigger Binding="{Binding}" Value="Project">
+                <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Projects_W}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="Settings">
+                <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_OpenProject_W}"/>
+            </DataTrigger>
+            <DataTrigger Binding="{Binding}" Value="Save">
+                <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Save_W}"/>
+            </DataTrigger>
+        </DataTemplate.Triggers>
+    </DataTemplate>
+
+    <!--ProjectMenu ListBox entry appearance and behaviour: Used in ListBox as ItemContainerStyle-->
+    <Style x:Key="ProjectListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{StaticResource PrimaryLightBrush}"/>
+        <Setter Property="Margin" Value="0,0,0,8"/>
+        <Setter Property="ToolTip" Value="{Binding}"/>
+        <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+        <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <Border x:Name="listBox_Border"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="8"
+                                SnapsToDevicePixels="true">
+                        <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                    </Border>
+                    <!-- Triggers ONLY usable in this Template -->
+                    <ControlTemplate.Triggers>
+                        <!--When a ListBox entry is Selected-->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--ProjectMenu ListBox appearance: Used in ListBox as Style -->
+    <Style x:Key="ProjectListBoxStyle" TargetType="{x:Type ListBox}">
+        <Setter Property="Background" Value="{StaticResource PrimaryDarkHighlightBrush}"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        <Setter Property="SelectedIndex" Value="0"/>
+        <Setter Property="Padding" Value="8"/>
+        <Setter Property="Width" Value="Auto"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ListBox}">
+                    <Border Background="{TemplateBinding Background}" BorderThickness="0" Padding="0" SnapsToDevicePixels="true">
+                        <ScrollViewer Padding="{TemplateBinding Padding}" Focusable="false">
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!--
+        ProjectMenu ListBoxItem values: Used in ProjectMenuListBox as ItemsSource
+        Used as Binding Values within the ProjectMenu to toggle between the pages
+        and set corresponding style of the ListBoxItem
+        -->
+    <x:Array x:Key="ProjectMenuItems" Type="system:String">
+        <system:String>Project</system:String>
+        <system:String>Settings</system:String>
+        <system:String>Save</system:String>
+    </x:Array>
+    
 </ResourceDictionary>

@@ -1,7 +1,6 @@
 ﻿<Application x:Class="BauphysikToolWPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ui="clr-namespace:BauphysikToolWPF.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              StartupUri="MainWindow.xaml">
     
@@ -73,10 +72,13 @@
         <BitmapImage x:Key="ButtonIcon_Project_B" UriSource="/Resources/Icons/project.png"/>
         <BitmapImage x:Key="ButtonIcon_Project_W" UriSource="/Resources/Icons/project_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Projects_B" UriSource="/Resources/Icons/projects.png"/>
+        <BitmapImage x:Key="ButtonIcon_Projects_W" UriSource="/Resources/Icons/projects_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Save_B" UriSource="/Resources/Icons/save.png"/>
         <BitmapImage x:Key="ButtonIcon_Save_W" UriSource="/Resources/Icons/save_w.png"/>
         <BitmapImage x:Key="ButtonIcon_OpenProject_B" UriSource="/Resources/Icons/open_project.png"/>
         <BitmapImage x:Key="ButtonIcon_OpenProject_W" UriSource="/Resources/Icons/open_project_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Settings_B" UriSource="/Resources/Icons/settings.png"/>
+        <BitmapImage x:Key="ButtonIcon_Settings_W" UriSource="/Resources/Icons/settings_w.png"/>
 
 
         <!--Custom TextBox for Subscript Text with Equation-->
@@ -493,6 +495,8 @@
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="MinWidth" Value="28"/>
             <Setter Property="MinHeight" Value="28"/>
+            <Setter Property="MaxWidth" Value="64"/>
+            <Setter Property="MaxHeight" Value="64"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--Set appearance of the element-->
@@ -550,23 +554,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
-        <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page-->
-        <DataTemplate x:Key="FO0_LandingPage">
-            <ui:FO0_LandingPage/>
-        </DataTemplate>
-        <DataTemplate x:Key="FO1_SetupLayer">
-            <ui:FO1_SetupLayer/>
-        </DataTemplate>
-        <DataTemplate x:Key="FO1_SetupEnv">
-            <ui:FO1_SetupEnv/>
-        </DataTemplate>
-        <DataTemplate x:Key="FO2_Temperature">
-            <ui:FO2_Temperature/>
-        </DataTemplate>
-        <DataTemplate x:Key="FO3_Moisture">
-            <ui:FO3_Moisture/>
-        </DataTemplate>
 
     </Application.Resources>
 </Application>
