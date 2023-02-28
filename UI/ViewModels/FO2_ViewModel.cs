@@ -179,8 +179,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                     PathEffect = new DashEffect(new float[] { 2, 2 })
                 }
             };*/
-
-
             return rects;
         }
         private ISeries[] DrawTempCurvePoints()

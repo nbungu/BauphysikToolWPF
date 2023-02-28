@@ -79,6 +79,8 @@
         <BitmapImage x:Key="ButtonIcon_OpenProject_W" UriSource="/Resources/Icons/open_project_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Settings_B" UriSource="/Resources/Icons/settings.png"/>
         <BitmapImage x:Key="ButtonIcon_Settings_W" UriSource="/Resources/Icons/settings_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Download_B" UriSource="/Resources/Icons/download.png"/>
+        <BitmapImage x:Key="ButtonIcon_Download_W" UriSource="/Resources/Icons/download_w.png"/>
 
 
         <!--Custom TextBox for Subscript Text with Equation-->

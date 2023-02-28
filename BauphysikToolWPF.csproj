@@ -185,6 +185,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="UI\FO0_ProjectPage.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="UI\EditLayerWindow.xaml">
       <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
     </Page>

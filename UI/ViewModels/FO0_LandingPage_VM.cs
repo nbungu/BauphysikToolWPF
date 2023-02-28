@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for FO0_LandingPage.xaml: Used in xaml as "DataContext"
-    public partial class FO0_ViewModel : ObservableObject
+    public partial class FO0_LandingPage_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
         public string Title { get; } = "LandingPage";
@@ -19,7 +19,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void PrevPage()
+        private void NextPage()
         {
             if (FO0_LandingPage.SelectedElementId != -1)
                 MainWindow.SetPage(NavigationContent.SetupLayer);

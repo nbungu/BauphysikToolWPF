@@ -46,7 +46,7 @@
                 </Grid>
                 <Label Grid.Column="1" Content="{Binding Material.Name}" Height="26" FontWeight="Bold" FontSize="12" HorizontalAlignment="Left"/>
                 <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.Category}" Height="26" FontStyle="Italic" VerticalAlignment="Bottom" FontSize="12" HorizontalAlignment="Left"/>
-                <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' FontSize="12"/>
+                <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' FontSize="12" HorizontalAlignment="Left"/>
                 <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                 <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="{Binding LayerPosition}" Value="{Binding R_Value}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
@@ -59,61 +59,49 @@
         'Binding' source is set by parent Element via 'Content' property
         -->
         <DataTemplate x:Key="LVItem_Mockup_Int">
-            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="0,0,0,2" CornerRadius="0">
+            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="0,0,0,1" CornerRadius="0">
                 <Grid Margin="12,6,12,6">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="22" />
-                        <RowDefinition Height="22" />
+                        <RowDefinition Height="44" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="190"/>
                         <ColumnDefinition Width="72"/>
-                        <ColumnDefinition Width="112"/>
-                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-
                     <Grid Grid.RowSpan="2">
                         <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
                         <Label Content="i" Foreground="White" FontWeight="Bold" Margin="0,0,8,0"/>
                     </Grid>
                     <Label Grid.Column="1" Content="Innen" Height="26" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="12"/>
-                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="i" Value="{Binding TiValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
-                    <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="si" Value="{Binding RsiValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
-                    <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="i" Value="{Binding RelFiValue}" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                    <controls:EquationLabel Grid.Column="2" BaseText="θ" SubscriptText="i" Value="{Binding TiValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
+                    <Line Grid.Column="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
+                    <controls:EquationLabel Grid.Column="3" BaseText="R" SubscriptText="si" Value="{Binding RsiValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 </Grid>
             </Border>            
         </DataTemplate>
 
         <DataTemplate x:Key="LVItem_Mockup_Ext">
-            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="0,2,0,0" CornerRadius="0">
+            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="0,1,0,0" CornerRadius="0">
                 <Grid Margin="12,6,12,6">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="22" />
-                        <RowDefinition Height="22" />
+                        <RowDefinition Height="44" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="190"/>
                         <ColumnDefinition Width="72"/>
-                        <ColumnDefinition Width="112"/>
-                        <ColumnDefinition Width="80"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-
                     <Grid Grid.RowSpan="2">
                         <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
                         <Label Content="e" Foreground="White" FontWeight="Bold" Margin="0,0,8,0"/>
                     </Grid>
                     <Label Grid.Column="1" Content="Außen" Height="26" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="12"/>
-                    <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="e" Value="{Binding TeValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
-                    <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="se" Value="{Binding RseValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
-                    <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="Φ" SubscriptText="e" Value="{Binding RelFeValue}" Unit="%" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                    <controls:EquationLabel Grid.Column="2" BaseText="θ" SubscriptText="e" Value="{Binding TeValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
+                    <Line Grid.Column="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
+                    <controls:EquationLabel Grid.Column="3" BaseText="R" SubscriptText="se" Value="{Binding RseValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 </Grid>
             </Border>
         </DataTemplate>
@@ -143,13 +131,11 @@
                     <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
-
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding NextPageCommand}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
                 </StackPanel>
             </Grid>
-
         </Border>
 
         <!--Middle Left -->
@@ -167,6 +153,10 @@
                 <Button Content="Bearbeiten" Style="{StaticResource ButtonStyle03_B}" Command="{Binding OpenEditLayerWindowCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
                 <Button Content="Alle Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding LayerDeleteCommand}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0"/>
             </StackPanel>
+
+            <Border Grid.Row="1" Grid.RowSpan="3" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,16,0,0">
+                
+            </Border>
 
             <!--Custom UI Element: Border as ListViewItem Mockup. Binding is 'FO1_ViewModel' -->
             <ContentControl Grid.Row="1" ContentTemplate="{StaticResource LVItem_Mockup_Int}" Content="{Binding}" Margin="0,16,0,4"/>
@@ -216,18 +206,33 @@
 
         <!--Middle Right-->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".75*"/>
+                <RowDefinition Height=".25*"/>
+            </Grid.RowDefinitions>
             <Viewbox ClipToBounds="True" VerticalAlignment="Top">
                 <Grid>
                     <Grid.RowDefinitions>
+                        <RowDefinition Height="32"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="48"/>
                     </Grid.RowDefinitions>
+                    <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
+                    <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12"/>
                     <!--Canvas inside of ViewBox makes it dynamically sizable-->
                     <!--Canvas Children defined in backend-->
-                    <Canvas x:Name="layers_Canvas" Grid.Row="0" Width="320" Height="400" SnapsToDevicePixels="True"/>
-                    <Grid Grid.Row="1" x:Name="measurement_Grid" Width="{Binding ElementName=layers_Canvas, Path=Width}"/>
+                    <Canvas Grid.Row="1" x:Name="layers_Canvas" Width="320" Height="400" SnapsToDevicePixels="True"/>
+                    <Grid Grid.Row="2" x:Name="measurement_Grid" Width="{Binding ElementName=layers_Canvas, Path=Width}"/>
                 </Grid>
             </Viewbox>
+            <Border Grid.Row="1" CornerRadius="8" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" Margin="0,16,0,0">
+                <!--Placeholder
+                Einstellungen wie:
+                Ansicht drehen links, rechts usw.
+                Ansicht spiegeln
+                Gesamtwerte des Bauteils einblenden (dicke, R, U, sd etc.)
+                -->
+            </Border>
         </Grid>
 
         <!--Bottom-->

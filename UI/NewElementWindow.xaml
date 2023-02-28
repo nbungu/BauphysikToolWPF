@@ -22,12 +22,12 @@
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Vertical" Margin="16,8,16,8" VerticalAlignment="Center">
-            <Label Content="Name" FontSize="14"/>
+            <Label Content="Name" HorizontalAlignment="Left"/>
             <TextBox x:Name="elementName_TextBox" Text="" HorizontalContentAlignment="Left" MaxLength="64" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Vertical" Margin="16,0,16,8" VerticalAlignment="Center">
-            <Label Content="Typ" FontSize="14"/>
+            <Label Content="Typ" HorizontalAlignment="Left"/>
             <ComboBox x:Name="constructionType_Picker" VerticalContentAlignment="Center" FontSize="14" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
 

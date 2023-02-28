@@ -17,6 +17,9 @@
         <controls:IsHeaderConverter x:Key="IsHeaderConverter"/>
 
         <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page-->
+        <DataTemplate x:Key="FO0_ProjectPage">
+            <ui:FO0_ProjectPage/>
+        </DataTemplate>
         <DataTemplate x:Key="FO0_LandingPage">
             <ui:FO0_LandingPage/>
         </DataTemplate>
@@ -35,13 +38,17 @@
 
         <!--Content Pages on right side-->
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
+            <!--Default First Page-->
             <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
             <!--
             Switch between Pages based on 'SelectedItem' of 'NavigationMenuListBox'
             Item value comes from 'ItemsSource' (typepf ListBoxItem), or via 'Tag'
             -->
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedIndex}" Value="-1">
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=Tag}" Value="ProjectPage">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO0_ProjectPage}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=Tag}" Value="LandingPage">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupLayer">
@@ -241,7 +248,7 @@
                     <Label Content="Wohnhaus 1" FontSize="14" FontWeight="Bold" Foreground="White" Margin="-4"/>
                 </StackPanel>
                 <Button Grid.Row="1" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Elements_W}" Margin="16" Click="Button_Click"/>
-                <Button Grid.Row="2" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Project_B}" Margin="16,0,16,16"/>
+                <Button Grid.Row="2" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Project_B}" Margin="16,0,16,16" Click="Button2_Click"/>
 
             </Grid>
         </Border>
@@ -256,6 +263,6 @@
                  ItemTemplate="{DynamicResource NavigationDataTemplate}"/>
 
         <!--The Actual Pages shown here-->
-        <ContentControl x:Name="MainWindow_Content" Grid.Column="2" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
+        <ContentControl x:Name="MainWindowContent" Grid.Column="2" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
     </Grid>
 </Window>

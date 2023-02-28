@@ -11,7 +11,7 @@
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
-        <vm:FO0_ViewModel/> 
+        <vm:FO0_LandingPage_VM/> 
     </UserControl.DataContext>
 
     <UserControl.Resources>
@@ -85,7 +85,7 @@
                     <Button.ContextMenu>
                         <!--
                         ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
-                        You need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO0_ViewModel).
+                        You need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
                         The Tag Property can be used to hold any kind of user specified Data.
                         -->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">
@@ -188,10 +188,11 @@
         <!--Top Left -->
         <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
-                </StackPanel>
                 <Label Content="Bauteilkatalog" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Weiter"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding NextPageCommand}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
+                </StackPanel>
             </Grid>
         </Border>
 
@@ -201,10 +202,10 @@
         <Image Grid.Column="1" Grid.RowSpan="2" Width="80" Height="80" Source="../Ordner_Icon.ico" Margin="16" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         -->
         
-        
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
             <Button Content="Bauteil erstellen" Command="{Binding OpenNewElementWindowCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Aus Bauteilbibliothek" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Projects_B}"  Margin="0,0,0,16"/>
+            <Button Content="Bauteilbibliothek" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Projects_B}"  Margin="0,0,0,16"/>
+            <Button Content="Importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}"  Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">

@@ -12,6 +12,7 @@ namespace BauphysikToolWPF
     public enum NavigationContent 
     {
         // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
+        ProjectPage,
         LandingPage,
         SetupLayer,
         SetupEnv,
@@ -22,6 +23,8 @@ namespace BauphysikToolWPF
     {
         public static ListBox navigationMenuListBox;
 
+        public static ContentControl mainWindowContent;
+
         // Saves MainWindow Instance here
         public static Window Main;
 
@@ -29,6 +32,7 @@ namespace BauphysikToolWPF
         {
             InitializeComponent();
             navigationMenuListBox = this.NavigationMenuListBox;
+            mainWindowContent = this.MainWindowContent;
             Main = this;
         }
         
@@ -38,13 +42,18 @@ namespace BauphysikToolWPF
              * MainWindow.xaml changes the ContentPage based on the 'SelectedItem' string when toggled from 'NavigationListBox'
              * The string values of the SelectedItem are defined at 'NavigationMenuItems'
              * 
-             * MainWindow.xaml changes the ContentPage based on the 'Tag' string when NOT toggled from 'NavigationListBox'
-             * Set 'SelectedItem' to null before!
+             * Alternatively: MainWindow.xaml changes the ContentPage based on the 'Tag' string when NOT toggled from 'NavigationListBox'
+             * Set 'SelectedItem' or 'SelectedIndex' to null / -1 before!
              */
             switch (page)
             {
+                case NavigationContent.ProjectPage:
+                    navigationMenuListBox.SelectedIndex = -1;
+                    navigationMenuListBox.Tag = "ProjectPage";
+                    break;
                 case NavigationContent.LandingPage:
                     navigationMenuListBox.SelectedIndex = -1;
+                    navigationMenuListBox.Tag = "LandingPage";
                     break;
                 case NavigationContent.SetupLayer:
                     navigationMenuListBox.SelectedItem = "SetupLayer";
@@ -67,6 +76,10 @@ namespace BauphysikToolWPF
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             SetPage(NavigationContent.LandingPage);
+        }
+        private void Button2_Click(object sender, RoutedEventArgs e)
+        {
+            SetPage(NavigationContent.ProjectPage);
         }
     }
 }
