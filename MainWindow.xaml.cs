@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.UI;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace BauphysikToolWPF
@@ -22,7 +21,6 @@ namespace BauphysikToolWPF
     public partial class MainWindow : Window
     {
         public static ListBox navigationMenuListBox;
-        public static ContentControl mainWindow_Content;
 
         // Saves MainWindow Instance here
         public static Window Main;
@@ -31,18 +29,22 @@ namespace BauphysikToolWPF
         {
             InitializeComponent();
             navigationMenuListBox = this.NavigationMenuListBox;
-            mainWindow_Content = this.MainWindow_Content;
             Main = this;
         }
         
         public static void SetPage(NavigationContent page)
         {
-            // MainWindow.xaml changes the ContentPage based on the SelectedItem string
-            // The string values of the SelectedItem are defined at 'NavigationMenuItems'
+            /*
+             * MainWindow.xaml changes the ContentPage based on the 'SelectedItem' string when toggled from 'NavigationListBox'
+             * The string values of the SelectedItem are defined at 'NavigationMenuItems'
+             * 
+             * MainWindow.xaml changes the ContentPage based on the 'Tag' string when NOT toggled from 'NavigationListBox'
+             * Set 'SelectedItem' to null before!
+             */
             switch (page)
             {
                 case NavigationContent.LandingPage:
-                    mainWindow_Content.Tag = "LandingPage"; // TODO
+                    navigationMenuListBox.SelectedIndex = -1;
                     break;
                 case NavigationContent.SetupLayer:
                     navigationMenuListBox.SelectedItem = "SetupLayer";
@@ -61,6 +63,7 @@ namespace BauphysikToolWPF
                     break;
             }
         }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             SetPage(NavigationContent.LandingPage);

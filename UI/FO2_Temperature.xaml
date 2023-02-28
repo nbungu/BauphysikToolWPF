@@ -67,10 +67,9 @@
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding NextPageCommand}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
                 </StackPanel>
-                <Label Content="Stationärer Temperaturverlauf" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center" VerticalContentAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
-                    <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="4,0,0,0"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" Margin="8,0,0,0"/>
+                    <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
@@ -86,7 +85,7 @@
             <Border Grid.Row="0" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" CornerRadius="8">
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
-                        <Label Content="Innen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                        <Label Content="Innen" FontWeight="Bold"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding TempCalc.Ti}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
@@ -97,7 +96,7 @@
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding TempCalc.Te}" Unit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <Label Content="Außen" VerticalContentAlignment="Center" FontWeight="Bold" FontSize="14"/>
+                        <Label Content="Außen" FontWeight="Bold"/>
                     </StackPanel>
                 </Grid>
             </Border>
@@ -130,7 +129,7 @@
 
             <!--TODO: Rework as Grid--> 
             <StackPanel Orientation="Vertical" Grid.Column="0">
-                <Label Content="" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/> <!--Placeholder-->
+                <Label Content="" FontWeight="Bold" HorizontalAlignment="Left"/> <!--Placeholder-->
                 <Line X2="48" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
                 <Image x:Name="R_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
                 <Image x:Name="U_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
@@ -139,7 +138,7 @@
 
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="1">
-                <Label Content="Ist-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
+                <Label Content="Ist-Werte" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X2="136" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
                 <controls:EquationLabel BaseText="R" SubscriptText="ges" Value="{Binding TempCalc.Element.RValue}" Unit="m²K/W" Height="28"/>
                 <controls:EquationLabel BaseText="U" Value="{Binding TempCalc.UValue}" Unit="W/m²K" Height="28"/>
@@ -149,14 +148,14 @@
                 <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding TempCalc.FRsi}" Height="28"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="2">
-                <Label Content="Soll-Werte" FontSize="14" FontWeight="Bold" HorizontalAlignment="Left"/>
+                <Label Content="Soll-Werte" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X2="166" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
                 <controls:EquationLabel BaseText="R" SubscriptText="min" Value="{Binding R_min}" Unit="m²K/W" Height="28"/>
                 <controls:EquationLabel BaseText="U" SubscriptText="max" Value="{Binding U_max}" Unit="W/m²K" Height="28"/>
                 <controls:EquationLabel BaseText="q" SubscriptText="max" Value="{Binding Q_max}" Unit="W/m²" Height="28"/>
                 <Line X2="166" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
-                <Label Content="{Binding TempCalc.Tsi_min}" ContentStringFormat="≥ {0} °C" FontSize="14" Height="28"/>
-                <Label Content="≥ 0.7" FontSize="14" FontStyle="Italic" Height="28"/>
+                <Label Content="{Binding TempCalc.Tsi_min}" ContentStringFormat="≥ {0} °C" Height="28"/>
+                <Label Content="≥ 0.7" FontStyle="Italic" Height="28"/>
             </StackPanel>
         </Grid>
         <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>

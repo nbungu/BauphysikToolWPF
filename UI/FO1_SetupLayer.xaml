@@ -42,11 +42,11 @@
                 <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
                 <Grid Grid.RowSpan="2">
                     <Ellipse Fill="{Binding Material.ColorCode}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
-                    <Label Content="{Binding LayerPosition}" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold" Margin="0,0,8,0"/>
+                    <Label Content="{Binding LayerPosition}" Foreground="White" FontWeight="Bold" Margin="0,0,8,0"/>
                 </Grid>
-                <Label Grid.Column="1" Content="{Binding Material.Name}" Height="26" FontWeight="Bold"/>
-                <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.Category}" Height="26" FontStyle="Italic" VerticalAlignment="Bottom"/>
-                <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' VerticalAlignment="Center"/>
+                <Label Grid.Column="1" Content="{Binding Material.Name}" Height="26" FontWeight="Bold" FontSize="12" HorizontalAlignment="Left"/>
+                <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.Category}" Height="26" FontStyle="Italic" VerticalAlignment="Bottom" FontSize="12" HorizontalAlignment="Left"/>
+                <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' FontSize="12"/>
                 <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                 <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="{Binding LayerPosition}" Value="{Binding R_Value}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
@@ -75,10 +75,10 @@
 
                     <Grid Grid.RowSpan="2">
                         <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
-                        <Label Content="i" Foreground="White" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold" Margin="0,0,8,0"/>
+                        <Label Content="i" Foreground="White" FontWeight="Bold" Margin="0,0,8,0"/>
                     </Grid>
-                    <Label Grid.Column="1" Content="Innen" Height="26" FontWeight="Bold"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom"/>
+                    <Label Grid.Column="1" Content="Innen" Height="26" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="12"/>
                     <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="i" Value="{Binding TiValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
                     <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                     <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="si" Value="{Binding RsiValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
@@ -105,10 +105,10 @@
 
                     <Grid Grid.RowSpan="2">
                         <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
-                        <Label Content="e" Foreground="White"  VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" FontWeight="Bold" Margin="0,0,8,0"/>
+                        <Label Content="e" Foreground="White" FontWeight="Bold" Margin="0,0,8,0"/>
                     </Grid>
-                    <Label Grid.Column="1" Content="Außen" Height="26" FontWeight="Bold"/>
-                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom"/>
+                    <Label Grid.Column="1" Content="Außen" Height="26" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="gegen XX" Height="26" FontStyle="Italic" VerticalAlignment="Bottom" HorizontalAlignment="Left" FontSize="12"/>
                     <controls:EquationLabel Grid.Column="2" Grid.RowSpan="2" BaseText="θ" SubscriptText="e" Value="{Binding TeValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
                     <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                     <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="se" Value="{Binding RseValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
@@ -136,15 +136,20 @@
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding NextPageCommand}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
+                    <Label Content="Zurück"/>
                 </StackPanel>
-                <Label Content="Schichtaufbau"  FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center" VerticalContentAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" VerticalContentAlignment="Center" Margin="8,0,0,0"/>
-                    <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" VerticalContentAlignment="Center" Margin="4,0,0,0"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" Margin="8,0,0,0"/>
+                    <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Weiter"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding NextPageCommand}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
+                </StackPanel>
             </Grid>
+
         </Border>
 
         <!--Middle Left -->
@@ -211,24 +216,18 @@
 
         <!--Middle Right-->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height=".8*"/>
-                <RowDefinition Height=".2*"/>
-            </Grid.RowDefinitions>
             <Viewbox ClipToBounds="True" VerticalAlignment="Top">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="48"/>
                     </Grid.RowDefinitions>
                     <!--Canvas inside of ViewBox makes it dynamically sizable-->
                     <!--Canvas Children defined in backend-->
                     <Canvas x:Name="layers_Canvas" Grid.Row="0" Width="320" Height="400" SnapsToDevicePixels="True"/>
-                    <Grid Grid.Row="1" x:Name="measurement_Grid" Width="{Binding ElementName=layers_Canvas, Path=Width}" Margin="0,0,0,-16"/>
+                    <Grid Grid.Row="1" x:Name="measurement_Grid" Width="{Binding ElementName=layers_Canvas, Path=Width}"/>
                 </Grid>
             </Viewbox>
-            <Label Grid.Row="1" Content="Kommentar:" FontSize="14"/>
-            <TextBox Grid.Row="1" Background="White" TextWrapping="Wrap" AcceptsReturn="True" HorizontalContentAlignment="Left" VerticalContentAlignment="Top" MaxHeight="240" MaxLength="1000" MaxLines="20" Margin="0,32,0,0"/>
         </Grid>
 
         <!--Bottom-->

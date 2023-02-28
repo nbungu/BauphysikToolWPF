@@ -12,7 +12,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
         public string Title { get; } = "LandingPage";
 
-
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -48,6 +47,10 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // Delete selected Layer
             DatabaseAccess.DeleteElement(DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId)));
+
+            // When deleting the Element which was currently SelectedElement
+            if (Convert.ToInt32(selectedElementId) == FO0_LandingPage.SelectedElementId)
+                FO0_LandingPage.SelectedElementId = -1;
 
             // Update XAML Binding Property by fetching from DB
             Elements = DatabaseAccess.QueryElementsByProjectId(FO0_LandingPage.ProjectId);

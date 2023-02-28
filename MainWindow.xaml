@@ -38,10 +38,10 @@
             <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
             <!--
             Switch between Pages based on 'SelectedItem' of 'NavigationMenuListBox'
-            Item value comes from 'ItemsSource' (typepf ListBoxItem)
+            Item value comes from 'ItemsSource' (typepf ListBoxItem), or via 'Tag'
             -->
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=MainWindow_Content, Path=Tag}" Value="LandingPage">
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedIndex}" Value="-1">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupLayer">
@@ -113,11 +113,12 @@
             <Setter Property="Foreground" Value="{StaticResource PrimaryLightBrush}"/>
             <Setter Property="Margin" Value="0,0,0,8"/>
             <Setter Property="ToolTip" Value="{Binding}"/>
+            <Setter Property="Visibility" Value="Visible"/>
             <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
             <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
             <!--Triggers & Effects-->
             <Style.Triggers>
-                <!--When a ListBox entry is NOT a Header, apply the Template-->
+                <!--When a ListBox entry is NOT a Header, apply this Template-->
                 <DataTrigger Binding="{Binding Converter={StaticResource IsHeaderConverter}}" Value="False">
                     <!-- Template for the Button-like entries-->
                     <Setter Property="Template">
@@ -146,8 +147,8 @@
                         </Setter.Value>
                     </Setter>
                 </DataTrigger>
+                <!--When a ListBox entry IS a Header, apply this Template-->
                 <DataTrigger Binding="{Binding Converter={StaticResource IsHeaderConverter}}" Value="True">
-                    <!-- Template for Headers-->
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="{x:Type ListBoxItem}">
@@ -157,6 +158,9 @@
                     </Setter>
                     <Setter Property="IsTabStop" Value="False"/>
                     <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedIndex}" Value="-1">
+                    <Setter Property="Visibility" Value="Collapsed"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -229,15 +233,15 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="56"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <StackPanel Orientation="Vertical" Margin="16,16,16,0">
                     <Label Content="Projekt:" Foreground="White" Margin="-4"/>
                     <Label Content="Wohnhaus 1" FontSize="14" FontWeight="Bold" Foreground="White" Margin="-4"/>
                 </StackPanel>
-                <Button Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Edit_W}" MaxHeight="32" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,16,0"/>
-
                 <Button Grid.Row="1" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Elements_W}" Margin="16" Click="Button_Click"/>
+                <Button Grid.Row="2" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Project_B}" Margin="16,0,16,16"/>
 
             </Grid>
         </Border>

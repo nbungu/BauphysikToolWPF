@@ -39,8 +39,8 @@
         <BitmapImage x:Key="ButtonIcon_OK_B" UriSource="/Resources/Icons/haken.png"/>
         <BitmapImage x:Key="ButtonIcon_OK_W" UriSource="/Resources/Icons/haken_w.png"/>
         <BitmapImage x:Key="ButtonIcon_OK_Green" UriSource="/Resources/Icons/haken_g.png"/>
-        <BitmapImage x:Key="ButtonIcon_Elements_B" UriSource="/Resources/Icons/grid.png"/>
-        <BitmapImage x:Key="ButtonIcon_Elements_W" UriSource="/Resources/Icons/grid_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Elements_B" UriSource="/Resources/Icons/elements.png"/>
+        <BitmapImage x:Key="ButtonIcon_Elements_W" UriSource="/Resources/Icons/elements_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Layer_B" UriSource="/Resources/Icons/layer.png"/>
         <BitmapImage x:Key="ButtonIcon_Layer_W" UriSource="/Resources/Icons/layer_w.png"/>
         <BitmapImage x:Key="ButtonIcon_EnvVar_B" UriSource="/Resources/Icons/einstellungen-schieberegler.png"/>
@@ -69,8 +69,8 @@
         <BitmapImage x:Key="ButtonIcon_Prev_W" UriSource="/Resources/Icons/prev_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Next_B" UriSource="/Resources/Icons/next.png"/>
         <BitmapImage x:Key="ButtonIcon_Next_W" UriSource="/Resources/Icons/next_w.png"/>
-        <BitmapImage x:Key="ButtonIcon_Project_B" UriSource="/Resources/Icons/project.png"/>
-        <BitmapImage x:Key="ButtonIcon_Project_W" UriSource="/Resources/Icons/project_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Project_B" UriSource="/Resources/Icons/project-2.png"/>
+        <BitmapImage x:Key="ButtonIcon_Project_W" UriSource="/Resources/Icons/project-2_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Projects_B" UriSource="/Resources/Icons/projects.png"/>
         <BitmapImage x:Key="ButtonIcon_Projects_W" UriSource="/Resources/Icons/projects_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Save_B" UriSource="/Resources/Icons/save.png"/>
@@ -140,6 +140,15 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <!-- Custom Label Style -->
+        <!-- Applies on every Label in this App -->
+        <Style x:Key="{x:Type Label}" TargetType="{x:Type Label}">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
 
         <!-- TEST Custom ComboBox Style: ... -->

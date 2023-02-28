@@ -52,12 +52,12 @@ namespace BauphysikToolWPF.UI.Helper
 
                 if (showLabels == true)
                 {
-                    Label label = new Label() { Content = Math.Round(layers[i].LayerThickness, 1).ToString(), FontSize = 10, VerticalContentAlignment = VerticalAlignment.Top, HorizontalContentAlignment = HorizontalAlignment.Center };
-                    label.Measure(new Size(40, 40));
+                    Label label = new Label() { Content = Math.Round(layers[i].LayerThickness, 1).ToString(), FontSize = 12 };
+                    label.Measure(new Size(32, 32));
 
                     double labelLeftMargin = x - label.DesiredSize.Width / 2 - layerWidth / 2; // space right of the label
                     double labelRightMargin = container.Width - label.DesiredSize.Width - labelLeftMargin; // space left of the label
-                    label.Margin = new Thickness(labelLeftMargin, 0, labelRightMargin, 0);
+                    label.Margin = new Thickness(labelLeftMargin, 24, labelRightMargin, 0);
                     container.Children.Add(label);
                 }
             }

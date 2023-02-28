@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF.UI"
+             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
@@ -15,16 +16,20 @@
 
     <UserControl.Resources>
 
+        <!-- Checks if Element of WrapPanel is currently SelectedElement -->
+        <controls:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
+
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <Style x:Key="ButtonStyleGridPanel" TargetType="{x:Type Button}">
             <Setter Property="Content" Value="{Binding ElementId}"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}">
+                        <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                             <Grid Margin="8">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height=".2*"/>
@@ -43,6 +48,10 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
+                <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
+                <DataTrigger Binding="{Binding ElementId, Converter={StaticResource IsSelectedElementConverter}}" Value="True">
+                    <Setter Property="BorderThickness" Value="2"/>
+                </DataTrigger>
                 <Trigger Property="IsPressed" Value="True">
                     <Setter Property="RenderTransform">
                         <Setter.Value>
@@ -103,7 +112,7 @@
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
-                <Label Grid.Row="1" Content="{Binding Name}" FontSize="14" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                <Label Grid.Row="1" Content="{Binding Name}" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>
 
@@ -145,7 +154,7 @@
                             <StackPanel Orientation="Vertical">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16"/>
-                                <Label Content="{TemplateBinding Content}" VerticalAlignment="Center" HorizontalAlignment="Center" HorizontalContentAlignment="Center" FontSize="14"/>
+                                <Label Content="{TemplateBinding Content}"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>
@@ -182,7 +191,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
                 </StackPanel>
-                <Label Content="Bauteilkatalog"  FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center" VerticalContentAlignment="Center"/>
+                <Label Content="Bauteilkatalog" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
             </Grid>
         </Border>
 
@@ -214,7 +223,7 @@
                 <ColumnDefinition MinWidth="170" MaxWidth="290"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellte Bauteile" FontSize="14" FontWeight="Bold"/>
+            <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" FontWeight="Bold"/>
 
             <!--"WrapPanel inside a ListBox does pick up the DataTemplate you define .. so you have complete liberty to bind any list to your WrapPanel"-->
             <ItemsControl x:Name="element_ItemsControl"
@@ -227,7 +236,7 @@
                           BorderThickness="0"
                           Tag="{Binding}"/>
 
-            <Label Grid.Row="0" Grid.Column="3" Content="Projektdaten" FontSize="14" FontWeight="Bold"/>
+            <Label Grid.Row="0" Grid.Column="3" Content="Projektdaten" HorizontalAlignment="Left" FontWeight="Bold"/>
             <Grid Grid.Row="1" Grid.Column="3">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -245,17 +254,17 @@
                     <ColumnDefinition Width=".5*" MinWidth="64"/>
                 </Grid.ColumnDefinitions>
 
-                <Label Grid.ColumnSpan="2" Content="Projektname:" FontSize="14"/>
+                <Label Grid.ColumnSpan="2" Content="Projektname:" HorizontalAlignment="Left"/>
                 <TextBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="projectName_TextBox" Text="{Binding ProjectName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
-                <Label Grid.Row="2" Grid.ColumnSpan="2" Content="Bearbeiter:" FontSize="14" Margin="0,8,0,0"/>
+                <Label Grid.Row="2" Grid.ColumnSpan="2" Content="Bearbeiter:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
                 <TextBox Grid.Row="3" Grid.ColumnSpan="2" x:Name="projectUser_TextBox" Text="{Binding ProjectUserName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
-                <Label Grid.Row="4" Grid.ColumnSpan="2" Content="Nutzungsart des Gebäudes:" FontSize="14" Margin="0,8,0,0"/>
+                <Label Grid.Row="4" Grid.ColumnSpan="2" Content="Nutzungsart des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
                 <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding IsBuildingUsage1}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage1" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,4,4,0"/>
                 <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsBuildingUsage0}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage0" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_Office_B}" Margin="4,4,0,0"/>
 
-                <Label Grid.Row="6" Grid.ColumnSpan="2" Content="Alter des Gebäudes:" FontSize="14" Margin="0,8,0,0"/>
+                <Label Grid.Row="6" Grid.ColumnSpan="2" Content="Alter des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
                 <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding IsBuildingAge1}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge1" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
                 <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsBuildingAge0}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge0" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
             </Grid>           
