@@ -2,16 +2,17 @@
 using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
+using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using System;
+using System.Drawing;
 using System.Linq;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -21,14 +22,94 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         public string Title { get; } = "Temperature";
         public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
-        public double Ti { get; private set; } = UserSaved.Ti;
-        public double Te { get; private set; } = UserSaved.Te;
-        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi;
-        public CheckRequirements CheckRequirements { get; private set; }
-        public bool IsUValueOK { get; private set; }
-        public bool IsRValueOK { get; private set; }
-        public string U_max { get; private set; }
-        public string R_min { get; private set; }
+
+        /*
+         * MVVM Commands - UI Interaction with Commands
+         * 
+         * Update ONLY UI-Used Values by fetching from Database!
+         */
+
+        [RelayCommand]
+        private void NextPage()
+        {
+            MainWindow.SetPage(NavigationContent.GlaserCurve);
+        }
+
+        [RelayCommand]
+        private void PrevPage()
+        {
+            MainWindow.SetPage(NavigationContent.SetupEnv);
+        }
+
+        [RelayCommand]
+        private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        {
+            if (selectedElement is null)
+                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            var window = new NewElementWindow(selectedElement);
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            window.ShowDialog();
+
+            // After Window closed:
+            // Update XAML Binding Property by fetching from DB
+            ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
+            ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+        }
+
+        /*
+         * MVVM Properties
+         */
+
+        [ObservableProperty]
+        private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
+
+        // TODO notifier doesnt work        
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(RequirementValues))]
+        private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+
+        [ObservableProperty]
+        private string u_max;
+
+        [ObservableProperty]
+        private string r_min;
+
+        [ObservableProperty]
+        private string q_max;
+
+        [ObservableProperty]
+        private bool isUValueOK;
+
+        [ObservableProperty]
+        private bool isRValueOK;
+
+        [ObservableProperty]
+        private bool isQValueOK;
+
+        /*
+         * MVVM Capsulated Properties + Triggered by other Properties
+         * 
+         * Not Observable, because Triggered and Changed by the elementType Value above
+         */
+
+        public CheckRequirements RequirementValues
+        {
+            get { return new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue); }
+            private set
+            {
+                U_max = value.U_max > 0 ? value.U_max.ToString() : "Keine Anforderung";
+                R_min = value.R_min > 0 ? value.R_min.ToString() : "Keine Anforderung";
+                Q_max = value.Q_max > 0 ? value.Q_max.ToString() : "Keine Anforderung";
+
+                IsUValueOK = value.U_max > 0 ? value.IsUValueOK : true;
+                IsRValueOK = value.R_min > 0 ? value.IsRValueOK : true;
+                IsQValueOK = value.Q_max > 0 ? value.IsQValueOK : true;
+            }
+        }
+
+        // TODO: Rework as MVVM
 
         public RectangularSection[] LayerSections { get; private set; }
         public ISeries[] DataPoints { get; private set; }
@@ -40,11 +121,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
             // For the Requirement Checks (U-Value, R-Value)
-            this.CheckRequirements = new CheckRequirements(TempCalc.UValue, TempCalc.SumOfLayersR);
-            this.U_max = CheckRequirements.U_max > 0 ? CheckRequirements.U_max.ToString() : "Keine Anforderung";
-            this.IsUValueOK = CheckRequirements.U_max > 0 ? CheckRequirements.IsUValueOK : true;
-            this.R_min = CheckRequirements.R_min > 0 ? CheckRequirements.R_min.ToString() : "Keine Anforderung";
-            this.IsRValueOK = CheckRequirements.R_min > 0 ? CheckRequirements.IsRValueOK : true;
+            this.RequirementValues = new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue);
 
             // For Drawing the Chart
             this.LayerSections = DrawLayerSections();
@@ -66,9 +143,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
 
             double left = 0;
+            int position = 0;
             foreach (Layer layer in TempCalc.Element.Layers)
             {
-                int position = layer.LayerPosition - 1; // change to 0 based index
+                position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.LayerThickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
 
@@ -88,10 +166,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                 };
                 left = right; // Add new layer at left edge of previous layer
             }
-
             //TODO: is hardcoded
             //fRsi frsi = new fRsi(TempCalc.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
-            /*rects[0] = new RectangularSection
+            /*rects[position+1] = new RectangularSection
             {
                 Yi = StationaryTempCalc.TsiMin,
                 Yj = StationaryTempCalc.TsiMin,
@@ -102,6 +179,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     PathEffect = new DashEffect(new float[] { 2, 2 })
                 }
             };*/
+
 
             return rects;
         }
@@ -114,7 +192,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             double tsi_Pos = TempCalc.LayerTemps.First().Key;
             double tsi = TempCalc.LayerTemps.First().Value;
-            double deltaTi = Math.Abs(Ti - tsi);
+            double deltaTi = Math.Abs(UserSaved.Ti - tsi);
 
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
@@ -124,7 +202,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     null, // cuts the line between the points
                     new ObservablePoint(tsi_Pos, tsi),
                     new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
-                    new ObservablePoint(tsi_Pos-2, Ti)
+                    new ObservablePoint(tsi_Pos-2, UserSaved.Ti)
                 },
                 Fill = null,
                 LineSmoothness = 0.8,
@@ -161,12 +239,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             double tse_Pos = TempCalc.LayerTemps.Last().Key;
             double tse = TempCalc.LayerTemps.Last().Value;
-            double deltaTe = Math.Abs(Te - tse);
+            double deltaTe = Math.Abs(UserSaved.Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
                 {
-                    new ObservablePoint(tse_Pos+2, Te),
+                    new ObservablePoint(tse_Pos+2, UserSaved.Te),
                     new ObservablePoint(tse_Pos+0.8, tse-0.9*deltaTe),
                     new ObservablePoint(tse_Pos, tse),
                     null, // cuts the line between the points

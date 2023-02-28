@@ -42,19 +42,34 @@ namespace BauphysikToolWPF.SQLiteRepo
         [Ignore]
         public double R_Value
         {
-            get { return Math.Round((this.LayerThickness / 100) / Material.ThermalConductivity, 3); }
+            get
+            {
+                if (Material == null)
+                    return 0;
+                return Math.Round((this.LayerThickness / 100) / Material.ThermalConductivity, 3);
+            }
         }
 
         [Ignore]
         public double Sd_Thickness // sd thickness in m
         {
-            get { return Math.Round((this.LayerThickness / 100) * Material.DiffusionResistance, 3); }
+            get
+            {
+                if (Material == null)
+                    return 0;
+                return Math.Round((this.LayerThickness / 100) * Material.DiffusionResistance, 3);
+            }
         }
 
         [Ignore]
         public double AreaMassDensity // m' in kg/m²
         {
-            get { return Math.Round(this.LayerThickness / 100 * Material.BulkDensity, 3); }
+            get
+            {
+                if (Material == null)
+                    return 0;
+                return Math.Round(this.LayerThickness / 100 * Material.BulkDensity, 3);
+            }
         }
 
         //------Konstruktor-----//
@@ -68,9 +83,9 @@ namespace BauphysikToolWPF.SQLiteRepo
             return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId);
         }
 
-        /*public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
+        public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return LayerThickness + " cm, "+ Material.Name + " (Pos. " + this.LayerPosition + ")";
-        }*/
+            return LayerThickness + " cm, "+ Material.Name + " (Pos.: " + LayerPosition + ")";
+        }
     }
 }

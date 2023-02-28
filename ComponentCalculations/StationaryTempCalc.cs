@@ -16,14 +16,11 @@ namespace BauphysikToolWPF.ComponentCalculations
         public static readonly double TsiMin = 12.6;
 
         // (Instance-) Variables and encapsulated properties - Called before Constructor
-        public Element Element { get; private set; } = FO0_LandingPage.SelectedElement; // Access is limited to the containing class or types derived from the containing class within the current assembly
-        public double TotalElementWidth { get; private set; } = 0;
-        public double SumOfLayersR { get; private set; } = 0;
+        public Element Element { get; private set; } = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId); // Access is limited to the containing class or types derived from the containing class within the current assembly
         public double RTotal { get; private set; } = 0;
         public double UValue { get; private set; } = 0;
         public double QValue { get; private set; } = 0;
         public double FRsi { get; private set; } = 0;
-        public double PhiMax { get; private set; } = 0;
         public double Tsi_min { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
         public double Ti { get; } = UserSaved.Ti;
@@ -40,21 +37,18 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return;
 
             // Calculated parameters (private setter)
-            TotalElementWidth = Element.ElementThickness_cm;
-            SumOfLayersR = Element.ElementRValue;
             RTotal = GetRTotal();           // Gl. 2-55; S.28
             UValue = GetUValue();           // Gl. 2-57; S.29
             QValue = GetqValue();           // Gl. 2-65; S.31
             LayerTemps = GetLayerTemps();   // Bsp. S.33
             FRsi = GetfRsiValue();          // Gl. 3-1; S.36
-            PhiMax = GetMaxRelF();          // Gl. 3-3; S.37
             Tsi_min = GetTsiMin();          // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7
         }
 
         // Methods
         private double GetRTotal()
         {
-            return Math.Round(Rsi + SumOfLayersR + Rse, 2);
+            return Math.Round(Rsi + Element.RValue + Rse, 2);
         }
 
         private double GetUValue()
@@ -93,7 +87,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         }
         private double GetfRsiValue()
         {
-            //TODO: durch 0 teilen abfangen
+            // Durch 0 teilen abfangen
             if (Ti - Te == 0)
                 return 0;
 
@@ -102,19 +96,6 @@ namespace BauphysikToolWPF.ComponentCalculations
         private double GetTsiMin()
         {
             return Math.Round(0.7*(Ti-Te)+Te, 2);
-        }
-
-        private double GetMaxRelF() //maximal zulässige Raumluftfeuchte
-        {
-           /* if (FRsi * (Ti - Te) >= 0 && FRsi * (Ti - Te) <= 30)
-            {
-                double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (Ti - Te) + Te) / (109.8 + Ti), 8.02) * 100;
-                return Math.Round(phiMax, 1);
-            }
-            throw new ArgumentException("Randbedingung zur Berechnung nicht erfüllt."); //TODO Rechnung erlauben, jedoch Hinweis entsprechend einblenden
-           */
-            double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (Ti - Te) + Te) / (109.8 + Ti), 8.02) * 100;
-            return Math.Round(phiMax, 1);
         }
 
         /* Hardcoded example:

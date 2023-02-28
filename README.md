@@ -8,7 +8,7 @@
 ## Setup Page
 - Build and edit the building element
 - Set environment variables
-![alt text](./Resources/MarkdownImages/FO1_Setup.jpg "Edit Element & Environment Variables")
+![alt text](./Resources/MarkdownImages/FO1_SetupLayer.jpg "Edit Element & Environment Variables")
 
 ## Stationary Temparature Curve
 ![alt text](./Resources/MarkdownImages/FO2_Temperature.jpg "Temperature Curve")

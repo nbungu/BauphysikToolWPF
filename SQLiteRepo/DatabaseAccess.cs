@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         // event handlers - publisher
         public static void OnLayersChanged() //protected virtual method
-        {
+        { 
             LayersChanged?.Invoke(); //if LayersChanged is not null then call delegate
         }
         public static void OnElementsChanged()
@@ -59,7 +59,8 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void CreateProject(Project project)
         {
-            sqlConn.InsertWithChildren(project, recursive: true); // Inserts the object in the database recursively
+            // No need to 'InsertWithChildren', since on 'GetProjects' any Children will be added via FK by SQLiteExtension package
+            sqlConn.Insert(project); // Inserts the object in the database recursively
             OnProjectsChanged(); // raises an event
         }
 
@@ -86,7 +87,8 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void CreateElement(Element element)
         {
-            sqlConn.InsertWithChildren(element, recursive: true); //Method from SQLiteExt -> adds a relationship to a child object ('Layers') 
+            // No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
+            sqlConn.Insert(element);
             OnElementsChanged();
         }
 
@@ -106,7 +108,6 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             sqlConn.Delete<Element>(elementId);
             OnElementsChanged();
-            // ON DELETE CASCADE -> deletes corresp. Layers and ElementEnvVars via the foreignkey constraint
         }
         public static void DeleteAllElements()
         {
@@ -125,18 +126,24 @@ namespace BauphysikToolWPF.SQLiteRepo
         // Retreive Data from Table "Layer"
         public static List<Layer> GetLayers()
         {
-            return sqlConn.GetAllWithChildren<Layer>(recursive: true); // old Method: List<Layer> layers = sqlConn.Table<Layer>().ToList();
+            return sqlConn.GetAllWithChildren<Layer>(recursive: true);
         }
 
         public static void CreateLayer(Layer layer)
         {
-            sqlConn.InsertWithChildren(layer, recursive: true); //Method from SQLiteExt -> adds a relationship to a child object ('Material') 
-            OnLayersChanged(); // raises an event
+            // No need to 'InsertWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
+            sqlConn.Insert(layer);
+            OnLayersChanged();
         }
 
-        public static void UpdateLayer(Layer layer)
+        public static void UpdateLayer(Layer layer, bool triggerUpdateEvent = true)
         {
             sqlConn.UpdateWithChildren(layer);
+
+            if (triggerUpdateEvent == false)
+                return;
+
+            OnLayersChanged();
         }
 
         public static void DeleteLayer(Layer layer)

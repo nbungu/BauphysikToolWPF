@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
 using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
@@ -15,7 +16,49 @@ namespace BauphysikToolWPF.UI.ViewModels
     [ObservableObject]
     public partial class FO3_ViewModel
     {
-        public string Title { get; } = "Moisture";      
+        public string Title { get; } = "Moisture";
+
+        /*
+         * MVVM Commands - UI Interaction with Commands
+         * 
+         * Update ONLY UI-Used Values by fetching from Database!
+         */
+
+        [RelayCommand]
+        private void PrevPage()
+        {
+            MainWindow.SetPage(NavigationContent.TemperatureCurve);
+        }
+
+        [RelayCommand]
+        private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        {
+            if (selectedElement is null)
+                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            var window = new NewElementWindow(selectedElement);
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            window.ShowDialog();
+
+            // After Window closed:
+            // Update XAML Binding Property by fetching from DB
+            ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
+            ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+        }
+
+        /*
+         * MVVM Properties
+         */
+
+        [ObservableProperty]
+        private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
+
+        [ObservableProperty]
+        private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+
+        // TODO: Rework as MVVM
+
         public GlaserCalc GlCalc { get; set; } = FO3_Moisture.GlaserCalculation;
         public RectangularSection[] LayerSections { get; set; }
         public ISeries[] DataPoints { get; set; }

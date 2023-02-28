@@ -28,21 +28,6 @@ namespace BauphysikToolWPF.SessionData
             get { return userEnvVars; }
         }
 
-        // Saves the last SelectedIndex of the combo boxes
-        private static Dictionary<string, int> comboBoxSelection = new Dictionary<string, int>()
-        {
-            {"Ti_ComboBox", -1 },
-            {"Te_ComboBox", -1 },
-            {"Rsi_ComboBox", -1 },
-            {"Rse_ComboBox", -1 },
-            {"Rel_Fi_ComboBox", -1 },
-            {"Rel_Fe_ComboBox", -1 },
-        };
-        public static Dictionary<string, int> ComboBoxSelection
-        {
-            get { return comboBoxSelection; }
-        }
-
         //------Eigenschaften-----//
         // Kapselung von userEnvVars
         public static double Ti

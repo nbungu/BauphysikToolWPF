@@ -7,7 +7,8 @@ namespace BauphysikToolWPF.ComponentCalculations
     public class GlaserCalc : StationaryTempCalc
     {
         // (Instance-) Variables and encapsulated properties
-        public double TotalSdWidth { get; private set; } = 0;
+        public double PhiMax { get; private set; } = 0;
+        public double TaupunktMax_i { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P_sat in Pa
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding P in Pa
 
@@ -18,9 +19,10 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return;
 
             // Calculated parameters (private setter)
-            TotalSdWidth = Element.ElementSdThickness;  // Gl. 5.2; S.246
-            LayerPsat = GetLayerPsat();                 // Gl. 2.4; S.164
-            LayerP = GetLayerP();                       // Gl. 2.3; S.164
+            PhiMax = GetMaxRelFi(Ti, Te, FRsi);             // Gl. 3-3; S.37
+            TaupunktMax_i = GetMaxTaupunkt_i(Ti, Rel_Fi);   // Gl. 2.21; S.365
+            LayerPsat = GetLayerPsat();                     // Gl. 2.4; S.164
+            LayerP = GetLayerP();                           // Gl. 2.3; S.164
         }
 
         // Methods
@@ -54,7 +56,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             List<KeyValuePair<double, double>> p_List = new List<KeyValuePair<double, double>>()
             {
                 new KeyValuePair<double, double>(0, pi),
-                new KeyValuePair<double, double>(TotalSdWidth, pe)
+                new KeyValuePair<double, double>(Element.SdThickness, pe)
             };
             return p_List;
         }
@@ -67,5 +69,29 @@ namespace BauphysikToolWPF.ComponentCalculations
             return Math.Round(p_sat, 1);
         }
 
+        //maximal zulässige Raumluftfeuchte
+        private double GetMaxRelFi(double ti, double te, double fRsi) 
+        {
+            /* if (FRsi * (Ti - Te) >= 0 && FRsi * (Ti - Te) <= 30)
+             {
+                 double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (Ti - Te) + Te) / (109.8 + Ti), 8.02) * 100;
+                 return Math.Round(phiMax, 1);
+             }
+             throw new ArgumentException("Randbedingung zur Berechnung nicht erfüllt."); //TODO Rechnung erlauben, jedoch Hinweis entsprechend einblenden
+            */
+            double phiMax = 0.8 * Math.Pow((109.8 + fRsi * (ti - te) + te) / (109.8 + ti), 8.02) * 100;
+            return Math.Round(phiMax, 1);
+        }
+
+        // Taupunkttemperatur Luft innenseite
+        private double GetMaxTaupunkt_i(double ti, double rel_fi)
+        {
+            if (ti < 0)
+            {
+                // Sublimationskurve 
+            }
+            double theta_T_i = Math.Pow(rel_fi/100, 0.1247) * (109.8 + ti) - 109.8;
+            return Math.Round(theta_T_i,2);
+        }
     }
 }
