@@ -3,10 +3,12 @@ using System.Windows.Controls;
 
 namespace BauphysikToolWPF
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-
+    /*
+     * THIS IS THE MAIN WINDOW WHICH CONTAINS ALL PAGES AND CONTENT
+     * 
+     * Contains the Navigation Box on the left and the Content Pages on the right side
+     */    
+    
     // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF
     // accessible from whole application
     public enum NavigationContent 
@@ -21,19 +23,22 @@ namespace BauphysikToolWPF
     }
     public partial class MainWindow : Window
     {
+        // TODO add back button based on previously used page
+        public static NavigationContent lastRoutedPage;
+
         public static ListBox navigationMenuListBox;
 
-        public static ContentControl mainWindowContent;
+        public static Border projectBoxHeader;
 
-        // Saves MainWindow Instance here
         public static Window Main;
 
         public MainWindow()
         {
             InitializeComponent();
-            navigationMenuListBox = this.NavigationMenuListBox;
-            mainWindowContent = this.MainWindowContent;
+            // Saves MainWindow Instance here
             Main = this;
+            navigationMenuListBox = this.NavigationMenuListBox;
+            projectBoxHeader = this.ProjectBoxHeader;
         }
         
         public static void SetPage(NavigationContent page)
@@ -49,12 +54,13 @@ namespace BauphysikToolWPF
             {
                 case NavigationContent.ProjectPage:
                     navigationMenuListBox.SelectedIndex = -1;
-                    navigationMenuListBox.Tag = "ProjectPage";
+                    projectBoxHeader.Tag = "ProjectPage";
                     break;
                 case NavigationContent.LandingPage:
                     navigationMenuListBox.SelectedIndex = -1;
-                    navigationMenuListBox.Tag = "LandingPage";
+                    projectBoxHeader.Tag = "LandingPage";
                     break;
+                    //
                 case NavigationContent.SetupLayer:
                     navigationMenuListBox.SelectedItem = "SetupLayer";
                     break;
@@ -71,15 +77,6 @@ namespace BauphysikToolWPF
                     navigationMenuListBox.SelectedItem = "LandingPage";
                     break;
             }
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            SetPage(NavigationContent.LandingPage);
-        }
-        private void Button2_Click(object sender, RoutedEventArgs e)
-        {
-            SetPage(NavigationContent.ProjectPage);
         }
     }
 }

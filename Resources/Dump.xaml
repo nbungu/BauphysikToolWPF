@@ -6,6 +6,14 @@
     Just for Storage Purposes
     
     -->
+    <!--Bind Command to Events-->
+    <Button>
+        <i:Interaction.Triggers>
+            <i:EventTrigger EventName="MouseDoubleClick">
+                <i:InvokeCommandAction Command="{Binding Path=DoSomethingCommand}"/>
+            </i:EventTrigger>
+        </i:Interaction.Triggers>
+    </Button>
 
     <!-- TEST Custom ComboBox Style: ... -->
     <Style x:Key="ComboBoxStyle_TEST" TargetType="{x:Type ComboBox}">

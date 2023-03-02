@@ -19,10 +19,10 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void NextPage()
+        private void SwitchPage(NavigationContent desiredPage)
         {
             if (FO0_LandingPage.SelectedElementId != -1)
-                MainWindow.SetPage(NavigationContent.SetupLayer);
+                MainWindow.SetPage(desiredPage);
         }
 
         // Create New Element / Edit Existing Element
@@ -36,7 +36,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_LandingPage.ProjectId);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId);
         }
 
         [RelayCommand]
@@ -53,7 +53,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 FO0_LandingPage.SelectedElementId = -1;
 
             // Update XAML Binding Property by fetching from DB
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_LandingPage.ProjectId);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId);
         }
 
         [RelayCommand]
@@ -66,40 +66,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             MainWindow.SetPage(NavigationContent.SetupLayer);
         }
 
-        // TODO use Enums as parameter
-        [RelayCommand]
-        private void ChangeBuildingStats(string property)
-        {
-            if (property is null)
-                return;
-
-            var proj = DatabaseAccess.QueryProjectById(FO0_LandingPage.ProjectId);
-            switch (property)
-            {
-                case "BuildingUsage0":
-                    proj.IsNonResidentialUsage = true;
-                    break;
-                case "BuildingUsage1":
-                    proj.IsResidentialUsage = true;
-                    break;
-                case "BuildingAge0":
-                    proj.IsExistingConstruction = true;
-                    break;
-                case "BuildingAge1":
-                    proj.IsNewConstruction = true;
-                    break;
-                default:
-                    return;
-            }
-            DatabaseAccess.UpdateProject(proj);
-        }
-
-        [RelayCommand]
-        private void Close()
-        {
-            MainWindow.Main.Close();
-        }
-
         /*
          * MVVM Properties
          * 
@@ -107,24 +73,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_LandingPage.ProjectId) ?? new List<Element>();
-
-        [ObservableProperty]
-        private string projectName = DatabaseAccess.QueryProjectById(FO0_LandingPage.ProjectId).Name ?? "";
-
-        [ObservableProperty]
-        private string projectUserName = DatabaseAccess.QueryProjectById(FO0_LandingPage.ProjectId).UserName ?? "";
-
-        [ObservableProperty]
-        private bool isBuildingUsage0 = DatabaseAccess.QueryProjectById(FO0_LandingPage.ProjectId).IsNonResidentialUsage;   // Usage 0 = Nichtwohngebäude
-
-        [ObservableProperty]
-        private bool isBuildingUsage1 = DatabaseAccess.QueryProjectById(FO0_LandingPage.ProjectId).IsResidentialUsage;      // Usage 1 = Wohngebäude
-
-        [ObservableProperty]
-        private bool isBuildingAge0 = DatabaseAccess.QueryProjectById(FO0_LandingPage.ProjectId).IsExistingConstruction;    // Usage 0 = Bestand
-
-        [ObservableProperty]
-        private bool isBuildingAge1 = DatabaseAccess.QueryProjectById(FO0_LandingPage.ProjectId).IsNewConstruction;         // Usage 1 = Neubau      
+        private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId) ?? new List<Element>();
+        
     }
 }

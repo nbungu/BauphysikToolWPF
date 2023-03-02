@@ -8,10 +8,8 @@ using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
-using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using System;
-using System.Drawing;
 using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -30,15 +28,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void NextPage()
+        private void SwitchPage(NavigationContent desiredPage)
         {
-            MainWindow.SetPage(NavigationContent.GlaserCurve);
-        }
-
-        [RelayCommand]
-        private void PrevPage()
-        {
-            MainWindow.SetPage(NavigationContent.SetupEnv);
+            MainWindow.SetPage(desiredPage);
         }
 
         [RelayCommand]

@@ -44,7 +44,7 @@ namespace BauphysikToolWPF.UI
                         // ElementId gets set by SQLite DB (AutoIncrement)
                         Name = elementName_TextBox.Text,
                         ConstructionId = constrId,
-                        ProjectId = FO0_LandingPage.ProjectId,
+                        ProjectId = FO0_ProjectPage.ProjectId,
                     };
                     // Update in Database
                     DatabaseAccess.CreateElement(newElem);
@@ -61,7 +61,7 @@ namespace BauphysikToolWPF.UI
                 {
                     selectedElement.Name = elementName_TextBox.Text;
                     selectedElement.ConstructionId = constrId;
-                    selectedElement.ProjectId = FO0_LandingPage.ProjectId;
+                    selectedElement.ProjectId = FO0_ProjectPage.ProjectId;
 
                     // Update in Database
                     DatabaseAccess.UpdateElement(selectedElement);

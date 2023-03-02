@@ -6,8 +6,8 @@ namespace BauphysikToolWPF.UI
     {
         // Class Variables
         // Initialize + Assign Default Values to Avoid null Values.s
-       
 
+        public static int ProjectId { get; private set; } = 1; // TODO change Hardcoded value
 
         // Constructor
         public FO0_ProjectPage()

@@ -11,7 +11,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO1_EnvViewModel : ObservableObject
     {
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "Setup Env Vars";
+        public string Title { get; } = "SetupEnv";
 
         /*
          * Static Class Properties:
@@ -57,15 +57,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void NextPage()
+        private void SwitchPage(NavigationContent desiredPage)
         {
-            MainWindow.SetPage(NavigationContent.TemperatureCurve);
-        }
-
-        [RelayCommand]
-        private void PrevPage()
-        {
-            MainWindow.SetPage(NavigationContent.SetupLayer);
+            MainWindow.SetPage(desiredPage);
         }
 
         [RelayCommand]

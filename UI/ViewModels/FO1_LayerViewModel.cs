@@ -10,7 +10,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO1_LayerViewModel : ObservableObject
     {
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "Setup Layers";
+        public string Title { get; } = "SetupLayer";
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -19,15 +19,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void NextPage()
+        private void SwitchPage(NavigationContent desiredPage)
         {
-            MainWindow.SetPage(NavigationContent.SetupEnv);
-        }
-
-        [RelayCommand]
-        private void PrevPage()
-        {
-            MainWindow.SetPage(NavigationContent.LandingPage);
+            MainWindow.SetPage(desiredPage);
         }
 
         [RelayCommand]

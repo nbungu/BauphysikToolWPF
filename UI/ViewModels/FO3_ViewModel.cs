@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -26,9 +25,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void PrevPage()
+        private void SwitchPage(NavigationContent desiredPage)
         {
-            MainWindow.SetPage(NavigationContent.TemperatureCurve);
+            MainWindow.SetPage(desiredPage);
         }
 
         [RelayCommand]
