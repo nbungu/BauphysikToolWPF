@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:BauphysikToolWPF"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             xmlns:local1="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
 
@@ -20,6 +21,7 @@
         <controls:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
 
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
+        <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <Style x:Key="ButtonStyleGridPanel" TargetType="{x:Type Button}">
             <Setter Property="Content" Value="{Binding ElementId}"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -41,28 +43,26 @@
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
-            </Setter>            
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
-                <DataTrigger Binding="{Binding ElementId, Converter={StaticResource IsSelectedElementConverter}}" Value="True">
+                <!--
+                Converter checks if currentElementId equals selectedElementId,
+                where selectedElementId is MVVM ObservableProperty for Notification when Selected Element changes
+                -->
+                <DataTrigger Value="True">
+                    <DataTrigger.Binding>
+                        <MultiBinding Converter="{StaticResource IsSelectedElementConverter}">
+                            <Binding RelativeSource="{RelativeSource Self}" Path="DataContext.ElementId" Mode="OneWay"/>
+                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" Path="Tag.SelectedElementId" Mode="OneWay"/>
+                        </MultiBinding>
+                    </DataTrigger.Binding>
                     <Setter Property="BorderThickness" Value="2"/>
                 </DataTrigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
             </Style.Triggers>
+
         </Style>
 
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
@@ -77,11 +77,11 @@
                 Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.
                 -->
                 <Button Grid.Row="0"
+                        Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                         Content="{Binding ElementId}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding ElementId}"
-                        Style="{StaticResource ButtonStyleGridPanel}"
-                        Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+                        Style="{StaticResource ButtonStyleGridPanel}">
                     <Button.ContextMenu>
                         <!--
                         ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
@@ -128,38 +128,29 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".2*" MinWidth="170" MaxWidth="290"/>
-            <ColumnDefinition Width=".8*" MinWidth="320"/>
+            <ColumnDefinition Width=".2*" MinWidth="180" MaxWidth="320"/>
+            <ColumnDefinition Width=".6*" MinWidth="320"/>
+            <ColumnDefinition Width=".2*" MinWidth="180" MaxWidth="320"/>
         </Grid.ColumnDefinitions>
 
-        <!--Top Left -->
-        <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
-            <Grid>
-                <Label Content="Bauteilkatalog" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
-                </StackPanel>
-            </Grid>
+        <!-- Top -->
+        <Border Grid.ColumnSpan="3" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+            <Label Content="Bauteilkatalog" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
         </Border>
 
-        <!--
-        <Rectangle Grid.ColumnSpan="2" Fill="{StaticResource PrimaryDarkBrush}"/>
-        <Label Grid.ColumnSpan="2" Content="Bauteilkatalog" FontSize="24" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="White"/>
-        <Image Grid.Column="1" Grid.RowSpan="2" Width="80" Height="80" Source="../Ordner_Icon.ico" Margin="16" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-        -->
-
+        <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
             <Button Content="Bauteil erstellen" Command="{Binding OpenNewElementWindowCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Bauteilbibliothek" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Projects_B}"  Margin="0,0,0,16"/>
             <Button Content="Importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}"  Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
         </StackPanel>
 
+        <!-- Middle -->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
-                <RowDefinition Height="48" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="160"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".15*"/>
@@ -167,7 +158,7 @@
                 <ColumnDefinition Width=".15*"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" FontWeight="Bold"/>
+            <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
             <!--"WrapPanel inside a ListBox does pick up the DataTemplate you define .. so you have complete liberty to bind any list to your WrapPanel"-->
             <ItemsControl x:Name="element_ItemsControl"
@@ -179,6 +170,31 @@
                           Background="Transparent"                          
                           BorderThickness="0"
                           Tag="{Binding}"/>
+
+            <Border Grid.Row="2" Grid.Column="1" CornerRadius="8" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" Margin="0,16,0,0">
+                <!--
+                Placeholder
+                -->
+                <local1:CommandBehaviorCollection.Behaviors>
+
+                    <local1:BehaviorBinding Event="MouseRightButtonDown" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}"/>
+
+                </local1:CommandBehaviorCollection.Behaviors>
+            </Border>
         </Grid>
+        
+        <!-- Right -->
+        <!-- Element "Toolbar" Buttons -->
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="16">
+            <Button Content="Bearbeiten" Command="{Binding OpenNewElementWindowCommand}" CommandParameter="{Binding SelectedElementId}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Edit_B}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,0,16"/>
+            <Button Content="Kopieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Copy_B}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,0,16"/>
+            <Button Content="Exportieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Export_B}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,0,16"/>
+            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+            <Button Content="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_DeleteElement_B}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,0,16"/>
+            <Button Content="Alle Löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="16">
+            <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}" IsEnabled="{Binding ElementToolsAvailable}" />
+        </StackPanel>
     </Grid>
 </UserControl>

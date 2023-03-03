@@ -8,11 +8,11 @@
     -->
     <!--Bind Command to Events-->
     <Button>
-        <i:Interaction.Triggers>
-            <i:EventTrigger EventName="MouseDoubleClick">
-                <i:InvokeCommandAction Command="{Binding Path=DoSomethingCommand}"/>
-            </i:EventTrigger>
-        </i:Interaction.Triggers>
+        <Interaction.Triggers>
+            <EventTrigger EventName="MouseDoubleClick">
+                <InvokeCommandAction Command="{Binding Path=DoSomethingCommand}"/>
+            </EventTrigger>
+        </Interaction.Triggers>
     </Button>
 
     <!-- TEST Custom ComboBox Style: ... -->

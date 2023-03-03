@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
+using BauphysikToolWPF.UI;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
@@ -54,7 +55,10 @@ namespace BauphysikToolWPF.SQLiteRepo
         public List<EnvVars> EnvVars { get; set; }
 
         [Ignore]
-        public bool IsLocked { get; set; } // For UI Purposes
+        public bool IsSelectedElement // For UI Purposes
+        {
+            get { return ElementId == FO0_LandingPage.SelectedElementId; }
+        }
 
         // Encapsulate 'Image' variable for use in frontend
         [Ignore]

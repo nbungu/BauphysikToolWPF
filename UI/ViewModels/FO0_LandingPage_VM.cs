@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using AttachedCommandBehavior;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -57,13 +58,30 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
+        private void DeleteAllElements()
+        {
+            // Delete selected Layer
+            DatabaseAccess.DeleteAllElements();
+
+            // Reset Selected Layer
+            FO0_LandingPage.SelectedElementId = -1;
+
+            // Update XAML Binding Property by fetching from DB
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId);
+        }
+
+        [RelayCommand]
         private void SelectElement(int? selectedElementId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
             if (selectedElementId is null)
                 return;
 
+            // Set the currently selected Element
             FO0_LandingPage.SelectedElementId = Convert.ToInt32(selectedElementId);
-            MainWindow.SetPage(NavigationContent.SetupLayer);
+
+            // Update XAML Binding Property
+            SelectedElementId = Convert.ToInt32(selectedElementId);
+            ElementToolsAvailable = true;
         }
 
         /*
@@ -74,6 +92,11 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId) ?? new List<Element>();
-        
+
+        [ObservableProperty]
+        private int selectedElementId = FO0_LandingPage.SelectedElementId;
+
+        [ObservableProperty]
+        private bool elementToolsAvailable = FO0_LandingPage.SelectedElementId != -1;
     }
 }

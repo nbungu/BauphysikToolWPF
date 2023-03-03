@@ -76,23 +76,18 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".8*"/>
+            <ColumnDefinition Width=".2*"/>
+            <ColumnDefinition Width=".6*"/>
             <ColumnDefinition Width=".2*" MinWidth="170" MaxWidth="290"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
-        <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
-            <Grid>
-                <Label Content="Projektdaten" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
-                </StackPanel>
-            </Grid>
+        <Border Grid.ColumnSpan="3" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+            <Label Content="Projektdaten" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
         </Border>
 
-        <!-- Left Right -->
-        <Grid Grid.Row="1" Grid.Column="0" Margin="16">
+        <!-- Middle -->
+        <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -123,15 +118,16 @@
             <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding IsBuildingAge1}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge1" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
             <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsBuildingAge0}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge0" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
         </Grid>
-        
-        <!-- Right Side -->
-        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="16">
-            <Button Content="Neues Projekt" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Projekt importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Projects_B}"  Margin="0,0,0,16"/>
-            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
+
+        <!-- Right -->
+        <!-- Project "Toolbar" Buttons -->
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="16">
+            <Button Content="Exportieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Export_B}" Margin="0,0,0,16"/>
+            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+            <Button Content="Zurücksetzen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_DeleteElement_B}" Margin="0,0,0,16"/>
         </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
-            <Button Content="Schließen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding CloseCommand}" Tag="{StaticResource ButtonIcon_Exit_B}"/>
+        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="16">
+            <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}"/>
         </StackPanel>
 
     </Grid>

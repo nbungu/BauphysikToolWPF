@@ -24,14 +24,12 @@
         <BitmapImage x:Key="ButtonIcon_AddLayer_W" UriSource="/Resources/Icons/add_layer_w.png"/>
         <BitmapImage x:Key="ButtonIcon_AddElement_B" UriSource="/Resources/Icons/add_element.png"/>
         <BitmapImage x:Key="ButtonIcon_AddElement_W" UriSource="/Resources/Icons/add_element_w.png"/>
-        <BitmapImage x:Key="ButtonIcon_Delete_B" UriSource="/Resources/Icons/delete.png"/>
-        <BitmapImage x:Key="ButtonIcon_Delete_W" UriSource="/Resources/Icons/delete_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Delete_B" UriSource="/Resources/Icons/delete-2.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteLayer_B" UriSource="/Resources/Icons/delete_layer.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteLayer_W" UriSource="/Resources/Icons/delete_layer_w.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteElement_B" UriSource="/Resources/Icons/delete_element.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteElement_W" UriSource="/Resources/Icons/delete_element_w.png"/>
-        <BitmapImage x:Key="ButtonIcon_Edit_B" UriSource="/Resources/Icons/bleistift.png"/>
-        <BitmapImage x:Key="ButtonIcon_Edit_W" UriSource="/Resources/Icons/bleistift_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Edit_B" UriSource="/Resources/Icons/edit-2.png"/>
         <BitmapImage x:Key="ButtonIcon_Cancel_B" UriSource="/Resources/Icons/kreuzkreis.png"/>
         <BitmapImage x:Key="ButtonIcon_Cancel_W" UriSource="/Resources/Icons/kreuzkreis_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Exit_B" UriSource="/Resources/Icons/kreuz.png"/>
@@ -81,6 +79,10 @@
         <BitmapImage x:Key="ButtonIcon_Settings_W" UriSource="/Resources/Icons/settings_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Download_B" UriSource="/Resources/Icons/download.png"/>
         <BitmapImage x:Key="ButtonIcon_Download_W" UriSource="/Resources/Icons/download_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Copy_B" UriSource="/Resources/Icons/copy.png"/>
+        <BitmapImage x:Key="ButtonIcon_Copy_W" UriSource="/Resources/Icons/copy_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Export_B" UriSource="/Resources/Icons/export.png"/>
+        <BitmapImage x:Key="ButtonIcon_Export_W" UriSource="/Resources/Icons/export_w.png"/>
 
 
         <!--Custom TextBox for Subscript Text with Equation-->
@@ -449,6 +451,9 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
             </Style.Triggers>
         </Style>
 
@@ -493,6 +498,9 @@
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -541,14 +549,32 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
             </Style.Triggers>
         </Style>
 
-        <!--Custom Button04: rectangular, click effects -->
+        <!--Custom Button04: rounded corners, click effects, materialUI -->
         <Style x:Key="ButtonStyle04" TargetType="{x:Type Button}">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="MinHeight" Value="32"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".6"/>
+                </Setter.Value>
+            </Setter>
             <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
             <Setter Property="RenderTransform">
                 <Setter.Value>
@@ -556,10 +582,21 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF6DD46D"/>
+                </Trigger>
                 <Trigger Property="IsPressed" Value="True">
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="Gray"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".2"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>

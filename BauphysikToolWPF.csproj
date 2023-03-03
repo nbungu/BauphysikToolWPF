@@ -22,10 +22,11 @@
     <None Remove="Resources\Icons\auge_zu_w.png" />
     <None Remove="Resources\Icons\ausruf.png" />
     <None Remove="Resources\Icons\ausruf_w.png" />
-    <None Remove="Resources\Icons\bleistift.png" />
-    <None Remove="Resources\Icons\bleistift_w.png" />
     <None Remove="Resources\Icons\chart.png" />
     <None Remove="Resources\Icons\chart_w.png" />
+    <None Remove="Resources\Icons\copy.png" />
+    <None Remove="Resources\Icons\copy_w.png" />
+    <None Remove="Resources\Icons\delete-2.png" />
     <None Remove="Resources\Icons\delete.png" />
     <None Remove="Resources\Icons\delete_element.png" />
     <None Remove="Resources\Icons\delete_element_w.png" />
@@ -36,12 +37,17 @@
     <None Remove="Resources\Icons\dokumentieren_w.png" />
     <None Remove="Resources\Icons\download.png" />
     <None Remove="Resources\Icons\download_w.png" />
+    <None Remove="Resources\Icons\edit-2.png" />
+    <None Remove="Resources\Icons\edit.png" />
+    <None Remove="Resources\Icons\edit_w.png" />
     <None Remove="Resources\Icons\einstellungen-schieberegler.png" />
     <None Remove="Resources\Icons\einstellungen-schieberegler_w.png" />
     <None Remove="Resources\Icons\elements.png" />
     <None Remove="Resources\Icons\elements_w.png" />
     <None Remove="Resources\Icons\existing_home.png" />
     <None Remove="Resources\Icons\existing_home_w.png" />
+    <None Remove="Resources\Icons\export.png" />
+    <None Remove="Resources\Icons\export_w.png" />
     <None Remove="Resources\Icons\grid.png" />
     <None Remove="Resources\Icons\grid_w.png" />
     <None Remove="Resources\Icons\haken.png" />
@@ -89,6 +95,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AttachedCommandBehavior" Version="2.0.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.1.0" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-beta.700" />
     <PackageReference Include="sqlite-net-pcl" Version="1.8.116" />
@@ -109,10 +116,13 @@
     <Resource Include="Resources\Icons\auge_zu_w.png" />
     <Resource Include="Resources\Icons\ausruf.png" />
     <Resource Include="Resources\Icons\ausruf_w.png" />
-    <Resource Include="Resources\Icons\bleistift.png" />
-    <Resource Include="Resources\Icons\bleistift_w.png" />
+    <Resource Include="Resources\Icons\delete-2.png" />
+    <Resource Include="Resources\Icons\edit.png" />
+    <Resource Include="Resources\Icons\edit_w.png" />
     <Resource Include="Resources\Icons\chart.png" />
     <Resource Include="Resources\Icons\chart_w.png" />
+    <Resource Include="Resources\Icons\copy.png" />
+    <Resource Include="Resources\Icons\copy_w.png" />
     <Resource Include="Resources\Icons\delete.png" />
     <Resource Include="Resources\Icons\delete_element.png" />
     <Resource Include="Resources\Icons\delete_element_w.png" />
@@ -123,12 +133,15 @@
     <Resource Include="Resources\Icons\dokumentieren_w.png" />
     <Resource Include="Resources\Icons\download.png" />
     <Resource Include="Resources\Icons\download_w.png" />
+    <Resource Include="Resources\Icons\edit-2.png" />
     <Resource Include="Resources\Icons\einstellungen-schieberegler.png" />
     <Resource Include="Resources\Icons\einstellungen-schieberegler_w.png" />
     <Resource Include="Resources\Icons\elements.png" />
     <Resource Include="Resources\Icons\elements_w.png" />
     <Resource Include="Resources\Icons\existing_home.png" />
     <Resource Include="Resources\Icons\existing_home_w.png" />
+    <Resource Include="Resources\Icons\export.png" />
+    <Resource Include="Resources\Icons\export_w.png" />
     <Resource Include="Resources\Icons\grid.png" />
     <Resource Include="Resources\Icons\grid_w.png" />
     <Resource Include="Resources\Icons\house.png" />

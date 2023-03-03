@@ -48,7 +48,7 @@
             <Setter Property="ContentTemplate" Value="{StaticResource FO0_ProjectPage}"/>
             <!--
             Switch between Pages based on 'SelectedItem' of 'NavigationMenuListBox'
-            Item value comes from 'ItemsSource' (typepf ListBoxItem), or via 'Tag'
+            Item value comes from 'ItemsSource' (type of ListBoxItem), or via 'Tag'
             -->
             <Style.Triggers>
                 <DataTrigger Binding="{Binding ElementName=ProjectBoxHeader, Path=Tag}" Value="ProjectPage">
