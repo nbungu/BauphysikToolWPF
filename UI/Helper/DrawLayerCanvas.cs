@@ -108,11 +108,11 @@ namespace BauphysikToolWPF.UI.Helper
             byte[] imageBytes;
 
             // Set the Bitmap size and target to save
-            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 48d, 48d, PixelFormats.Default); // Default DPI: 96d
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 96d, 96d, PixelFormats.Default); // Default DPI: 96d -> Adapt cropping (48d -> Width / 2)
             bitmap.Render(target);
 
             // Set Width, Height and Croppings: Create always img of same size, regardless of current canvas dimensions
-            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)target.RenderSize.Width / 2, (int)target.RenderSize.Width / 2));
+            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)target.RenderSize.Width, (int)target.RenderSize.Width));
 
             BitmapEncoder encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));

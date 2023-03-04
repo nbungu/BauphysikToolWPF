@@ -83,6 +83,7 @@
         <BitmapImage x:Key="ButtonIcon_Copy_W" UriSource="/Resources/Icons/copy_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Export_B" UriSource="/Resources/Icons/export.png"/>
         <BitmapImage x:Key="ButtonIcon_Export_W" UriSource="/Resources/Icons/export_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
 
 
         <!--Custom TextBox for Subscript Text with Equation-->
@@ -514,8 +515,8 @@
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="MinWidth" Value="28"/>
             <Setter Property="MinHeight" Value="28"/>
-            <Setter Property="MaxWidth" Value="64"/>
-            <Setter Property="MaxHeight" Value="64"/>
+            <Setter Property="MaxWidth" Value="48"/>
+            <Setter Property="MaxHeight" Value="48"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--Set appearance of the element-->
@@ -527,6 +528,52 @@
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--Custom Button03_B_Icon: like Button03_B but only icon -->
+        <Style x:Key="ButtonStyle03_B_Icon" TargetType="{x:Type Button}">
+            <!--Set default properties of the button-->
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="MinWidth" Value="32"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal">
+                                <!--Bind Image via DataContext Property in the Button Element-->
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>

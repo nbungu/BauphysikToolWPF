@@ -62,7 +62,6 @@
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
             </Style.Triggers>
-
         </Style>
 
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
@@ -89,9 +88,19 @@
                         The Tag Property can be used to hold any kind of user specified Data.
                         -->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">
-                            <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.OpenNewElementWindowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Umbenennen" Command="{Binding Path=PlacementTarget.Tag.OpenNewElementWindowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Edit_B}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Kopieren">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Copy_B}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Exportieren">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Export_B}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
@@ -99,18 +108,15 @@
                                     <Image Source="{StaticResource ButtonIcon_Delete_B}" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Speichern">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Save_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Sperren">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Lock_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
                         </ContextMenu>
                     </Button.ContextMenu>
+                    <!--
+                    <local1:CommandBehaviorCollection.Behaviors>
+
+                        <local1:BehaviorBinding Event="MouseDoubleClick" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}"/>
+
+                    </local1:CommandBehaviorCollection.Behaviors>
+                    -->
                 </Button>
                 <Label Grid.Row="1" Content="{Binding Name}" Margin="0,4,0,0"/>
             </Grid>
@@ -130,7 +136,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="180" MaxWidth="320"/>
             <ColumnDefinition Width=".6*" MinWidth="320"/>
-            <ColumnDefinition Width=".2*" MinWidth="180" MaxWidth="320"/>
+            <ColumnDefinition Width=".2*" MinWidth="180" MaxWidth="400"/>
         </Grid.ColumnDefinitions>
 
         <!-- Top -->
@@ -141,8 +147,9 @@
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
             <Button Content="Bauteil erstellen" Command="{Binding OpenNewElementWindowCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}"  Margin="0,0,0,16"/>
-            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
+            <Button Content="Importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
+            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+            <Button Content="Katalog Löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,0,16"/>
         </StackPanel>
 
         <!-- Middle -->
@@ -150,7 +157,6 @@
             <Grid.RowDefinitions>
                 <RowDefinition Height="48"/>
                 <RowDefinition Height="*"/>
-                <RowDefinition Height="160"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".15*"/>
@@ -170,31 +176,64 @@
                           Background="Transparent"                          
                           BorderThickness="0"
                           Tag="{Binding}"/>
-
-            <Border Grid.Row="2" Grid.Column="1" CornerRadius="8" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" Margin="0,16,0,0">
-                <!--
-                Placeholder
-                -->
-                <local1:CommandBehaviorCollection.Behaviors>
-
-                    <local1:BehaviorBinding Event="MouseRightButtonDown" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}"/>
-
-                </local1:CommandBehaviorCollection.Behaviors>
-            </Border>
         </Grid>
         
         <!-- Right -->
-        <!-- Element "Toolbar" Buttons -->
-        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="16">
-            <Button Content="Bearbeiten" Command="{Binding OpenNewElementWindowCommand}" CommandParameter="{Binding SelectedElementId}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Edit_B}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,0,16"/>
-            <Button Content="Kopieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Copy_B}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,0,16"/>
-            <Button Content="Exportieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Export_B}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,0,16"/>
-            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            <Button Content="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_DeleteElement_B}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,0,16"/>
-            <Button Content="Alle Löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="16">
-            <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}" IsEnabled="{Binding ElementToolsAvailable}" />
-        </StackPanel>
+        <Grid Grid.Row="1" Grid.Column="2" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Content="Ausgewähltes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding OpenNewElementWindowCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Export_B}" ToolTip="Exportieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_DeleteElement_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+            </StackPanel>
+            
+            <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderBrush="{StaticResource PrimaryHighlightBrush}" BorderThickness="0">
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width=".3*"/>
+                        <ColumnDefinition Width=".7*"/>
+                    </Grid.ColumnDefinitions>
+                    <Image Grid.Row="0" Grid.ColumnSpan="2" SnapsToDevicePixels="True" Source="{Binding SelectedElementImage}" VerticalAlignment="Top" Margin="0,0,0,16"/>
+                    <Label Grid.Row="1" Content="Name:" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="2" Content="Typ:" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="3" Content="R-Wert:" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="4" Content="Sd-Wert:" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="5" Content="m':" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="1" Grid.Column="1" Content="{Binding SelectedElementName}" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{StaticResource PrimaryHighlightBrush}"/>
+                    <Label Grid.Row="2" Grid.Column="1" Content="{Binding SelectedElementType}" HorizontalAlignment="Left"/>
+                    <!--
+                    Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.
+                    Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string
+                    -->
+                    <Label Grid.Row="3" Grid.Column="1" Content="{Binding SelectedElementRValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                    <Label Grid.Row="4" Grid.Column="1" Content="{Binding SelectedElementSdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
+                    <Label Grid.Row="5" Grid.Column="1" Content="{Binding SelectedElementAreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Bottom">
+                <Button Content="Bauteil bearbeiten" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}" IsEnabled="{Binding ElementToolsAvailable}" />
+            </StackPanel>
+        </Grid>
+        
+        
+        
+        
     </Grid>
 </UserControl>

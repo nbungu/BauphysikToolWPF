@@ -72,6 +72,8 @@
     <None Remove="Resources\Icons\office_w.png" />
     <None Remove="Resources\Icons\open_project.png" />
     <None Remove="Resources\Icons\open_project_w.png" />
+    <None Remove="Resources\Icons\placeholder_256px.png" />
+    <None Remove="Resources\Icons\placeholder_256px_light.png" />
     <None Remove="Resources\Icons\plus.png" />
     <None Remove="Resources\Icons\plus_w.png" />
     <None Remove="Resources\Icons\prev.png" />
@@ -92,6 +94,10 @@
 
   <ItemGroup>
     <Page Remove="Resources\Dump.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Resources\Icons\placeholder_256px_light.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -116,6 +122,7 @@
     <Resource Include="Resources\Icons\auge_zu_w.png" />
     <Resource Include="Resources\Icons\ausruf.png" />
     <Resource Include="Resources\Icons\ausruf_w.png" />
+    <Resource Include="Resources\Icons\placeholder_256px.png" />
     <Resource Include="Resources\Icons\delete-2.png" />
     <Resource Include="Resources\Icons\edit.png" />
     <Resource Include="Resources\Icons\edit_w.png" />
