@@ -130,7 +130,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" Margin="8,0,0,0"/>
                     <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
@@ -149,10 +149,10 @@
             </Grid.RowDefinitions>
 
             <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding OpenAddLayerWindowCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
-                <Button Content="Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding LayerDeleteCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_DeleteLayer_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button Content="Bearbeiten" Style="{StaticResource ButtonStyle03_B}" Command="{Binding OpenEditLayerWindowCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button Content="Alle Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding LayerDeleteCommand}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0"/>
+                <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding AddLayerCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
+                <Button Content="Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding DeleteLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_DeleteLayer_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button Content="Bearbeiten" Style="{StaticResource ButtonStyle03_B}" Command="{Binding EditLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                <Button Content="Alle Löschen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding DeleteLayerCommand}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0"/>
             </StackPanel>
 
             <Border Grid.Row="1" Grid.RowSpan="3" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,16,0,0">
@@ -182,7 +182,7 @@
                         You need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
                         The Tag Property can be used to hold any kind of user specified Data.
                         -->
-                        <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.OpenEditLayerWindowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
                             </MenuItem.Icon>
@@ -192,7 +192,7 @@
                                 <Image Source="{StaticResource ButtonIcon_Hide_B}"/>
                             </MenuItem.Icon>
                         </MenuItem>
-                        <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.LayerDeleteCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_DeleteLayer_B}"/>
                             </MenuItem.Icon>

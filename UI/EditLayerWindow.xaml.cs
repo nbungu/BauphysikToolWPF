@@ -1,12 +1,11 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 
 namespace BauphysikToolWPF.UI
 {
     /// <summary>
-    /// Interaktionslogik für NewElementWindow.xaml
+    /// Interaktionslogik für EditLayerWindow.xaml
     /// </summary>
     public partial class EditLayerWindow : Window
     {

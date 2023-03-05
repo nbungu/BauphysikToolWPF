@@ -222,6 +222,16 @@ namespace BauphysikToolWPF.SQLiteRepo
             return sqlConn.GetWithChildren<Construction>(constructionId);
         }
 
+        // Retreive Data from Table "Orientation"
+        public static List<Orientation> GetOrientations()
+        {
+            return sqlConn.Table<Orientation>().ToList();
+        }
+        public static Orientation QueryOrientationById(int orientationId)
+        {
+            return sqlConn.Get<Orientation>(orientationId);
+        }
+
         // Retreive Data from Table "ElementEnvVars"
         public static List<ElementEnvVars> GetElementEnvVars()
         {

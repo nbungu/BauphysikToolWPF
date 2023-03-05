@@ -63,13 +63,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
             if (selectedElement is null)
                 selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(selectedElement);
+            var window = new EditElementWindow(selectedElement);
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
 

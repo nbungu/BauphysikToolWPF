@@ -5,36 +5,41 @@ using System.Windows;
 namespace BauphysikToolWPF.UI
 {
     /// <summary>
-    /// Interaktionslogik für NewElementWindow.xaml
+    /// Interaktionslogik für EditElementWindow.xaml
     /// </summary>
-    public partial class NewElementWindow : Window
+    public partial class EditElementWindow : Window
     {
         // Instance Variable, when existing Elemenet is being edited and passed as Parameter
         private Element? selectedElement;
 
-        public NewElementWindow(Element selectedElement = null)
+        public EditElementWindow(Element selectedElement = null)
         {
             this.selectedElement = selectedElement;
 
             InitializeComponent();
 
-            constructionType_Picker.ItemsSource = DatabaseAccess.GetConstructions().Select(e => e.Type).ToList();
+            construction_Picker.ItemsSource = DatabaseAccess.GetConstructions().Select(e => e.Type).ToList();
+            orientation_Picker.ItemsSource = DatabaseAccess.GetOrientations().Select(e => e.Type).ToList();
 
             // Pre set TextBox and ComboBox to edit existing Element
             if (selectedElement != null)
             {
                 elementName_TextBox.Text = selectedElement.Name;
-                constructionType_Picker.SelectedItem = selectedElement.Construction.Type;
+                construction_Picker.SelectedItem = selectedElement.Construction.Type;
+                orientation_Picker.SelectedItem = selectedElement.Orientation.Type;
             }
         }
 
         private void apply_Button_Click(object sender, RoutedEventArgs e)
         {
-            // check if name and construction type is set
-            if (constructionType_Picker.SelectedIndex != -1 && elementName_TextBox.Text != string.Empty)
+            // Avoid empty Input fields
+            if (construction_Picker.SelectedIndex != -1 && orientation_Picker.SelectedIndex != -1 && elementName_TextBox.Text != string.Empty)
             {
-                string constrType = constructionType_Picker.SelectedItem.ToString();
+                string constrType = construction_Picker.SelectedItem.ToString();
                 int constrId = DatabaseAccess.GetConstructions().Find(e => e.Type == constrType).ConstructionId;
+
+                string orientationType = orientation_Picker.SelectedItem.ToString();
+                int orientationId = DatabaseAccess.GetOrientations().Find(e => e.Type == orientationType).OrientationId;
 
                 // If no Element in Parameter -> Create New
                 if (this.selectedElement == null)
@@ -44,6 +49,7 @@ namespace BauphysikToolWPF.UI
                         // ElementId gets set by SQLite DB (AutoIncrement)
                         Name = elementName_TextBox.Text,
                         ConstructionId = constrId,
+                        OrientationId = orientationId,
                         ProjectId = FO0_ProjectPage.ProjectId,
                     };
                     // Update in Database
@@ -61,6 +67,7 @@ namespace BauphysikToolWPF.UI
                 {
                     selectedElement.Name = elementName_TextBox.Text;
                     selectedElement.ConstructionId = constrId;
+                    selectedElement.OrientationId = orientationId;
                     selectedElement.ProjectId = FO0_ProjectPage.ProjectId;
 
                     // Update in Database

@@ -31,9 +31,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Create New Element / Edit Existing Element
         [RelayCommand]
-        private void OpenNewElementWindow(int? selectedElementId) // CommandParameter is the Content Property of the Button which holds the ElementId
+        private void EditElement(int? selectedElementId) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
-            var window = (selectedElementId is null) ? new NewElementWindow() : new NewElementWindow(DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId)));
+            var window = (selectedElementId is null) ? new EditElementWindow() : new EditElementWindow(DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId)));
 
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
@@ -92,6 +92,23 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedElementId = FO0_LandingPage.SelectedElementId;
         }
 
+        [RelayCommand]
+        private void CopyElement(int? selectedElementId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        {
+            if (selectedElementId is null)
+                return;
+
+            // Create copy of selected Element and add to DB
+            Element dupe = DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId));
+            dupe.Name += "_Copy"; 
+            DatabaseAccess.CreateElement(dupe);
+            //TODO: Add Layers to DB aswell
+
+
+            // Update XAML Binding Property by fetching from DB
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId);
+        }
+
         /*
          * MVVM Properties
          * 
@@ -99,12 +116,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SelectedElementName))] // Notifies 'SelectedElementName' when this property is changed!
+        [NotifyPropertyChangedFor(nameof(SelectedElementType))]
+        [NotifyPropertyChangedFor(nameof(SelectedElementOrientation))]
         private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId) ?? new List<Element>();
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElementName))] // Notifies 'SelectedElementName' when this property is changed!
         [NotifyPropertyChangedFor(nameof(SelectedElementImage))]
         [NotifyPropertyChangedFor(nameof(SelectedElementType))]
+        [NotifyPropertyChangedFor(nameof(SelectedElementOrientation))]
         [NotifyPropertyChangedFor(nameof(SelectedElementRValue))]
         [NotifyPropertyChangedFor(nameof(SelectedElementSdThickness))]
         [NotifyPropertyChangedFor(nameof(SelectedElementAreaMassDens))]
@@ -128,7 +149,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                return (selectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(selectedElementId).Name;
+                return (selectedElementId == -1) ? String.Empty : DatabaseAccess.QueryElementById(selectedElementId).Name;
             }
         }
         public BitmapImage? SelectedElementImage
@@ -145,25 +166,32 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return (selectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(selectedElementId).Construction.Type;
             }
         }
+        public string SelectedElementOrientation
+        {
+            get
+            {
+                return (selectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(selectedElementId).Orientation.Type;
+            }
+        }
         public string SelectedElementRValue
         {
             get
             {
-                return (selectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(selectedElementId).RValue.ToString();
+                return (selectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(selectedElementId).RValue.ToString();
             }
         }
         public string SelectedElementSdThickness
         {
             get
             {
-                return (selectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(selectedElementId).SdThickness.ToString();
+                return (selectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(selectedElementId).SdThickness.ToString();
             }
         }
         public string SelectedElementAreaMassDens
         {
             get
             {
-                return (selectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(selectedElementId).AreaMassDens.ToString();
+                return (selectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(selectedElementId).AreaMassDens.ToString();
             }
         }
     }

@@ -102,8 +102,11 @@ namespace BauphysikToolWPF.UI.Helper
             }
         }
 
-        public static byte[] SaveAsBLOB(Canvas target)
+        public static byte[]? SaveAsBLOB(Canvas target)
         {
+            if (target.Children.Count == 0)
+                return null;
+            
             // Convert the BitmapImage to a byte array
             byte[] imageBytes;
 
@@ -111,7 +114,7 @@ namespace BauphysikToolWPF.UI.Helper
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 96d, 96d, PixelFormats.Default); // Default DPI: 96d -> Adapt cropping (48d -> Width / 2)
             bitmap.Render(target);
 
-            // Set Width, Height and Croppings: Create always img of same size, regardless of current canvas dimensions
+            // Set Width, Height and Croppings: Create always rectangular img of same size, regardless of current canvas dimensions
             var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)target.RenderSize.Width, (int)target.RenderSize.Width));
 
             BitmapEncoder encoder = new PngBitmapEncoder();

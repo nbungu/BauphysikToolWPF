@@ -6,7 +6,6 @@
              xmlns:local="clr-namespace:BauphysikToolWPF"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
-             xmlns:local1="clr-namespace:AttachedCommandBehavior;assembly=AttachedCommandBehavior"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
 
@@ -88,7 +87,7 @@
                         The Tag Property can be used to hold any kind of user specified Data.
                         -->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">
-                            <MenuItem Header="Umbenennen" Command="{Binding Path=PlacementTarget.Tag.OpenNewElementWindowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Umbenennen" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Edit_B}" />
                                 </MenuItem.Icon>
@@ -110,13 +109,6 @@
                             </MenuItem>
                         </ContextMenu>
                     </Button.ContextMenu>
-                    <!--
-                    <local1:CommandBehaviorCollection.Behaviors>
-
-                        <local1:BehaviorBinding Event="MouseDoubleClick" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}"/>
-
-                    </local1:CommandBehaviorCollection.Behaviors>
-                    -->
                 </Button>
                 <Label Grid.Row="1" Content="{Binding Name}" Margin="0,4,0,0"/>
             </Grid>
@@ -134,9 +126,9 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".2*" MinWidth="180" MaxWidth="320"/>
-            <ColumnDefinition Width=".6*" MinWidth="320"/>
-            <ColumnDefinition Width=".2*" MinWidth="180" MaxWidth="400"/>
+            <ColumnDefinition Width=".2*" MinWidth="200" MaxWidth="320"/>
+            <ColumnDefinition Width=".6*" MinWidth="448"/>
+            <ColumnDefinition Width=".2*" MinWidth="240" MaxWidth="360"/>
         </Grid.ColumnDefinitions>
 
         <!-- Top -->
@@ -146,7 +138,7 @@
 
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
-            <Button Content="Bauteil erstellen" Command="{Binding OpenNewElementWindowCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
+            <Button Content="Bauteil erstellen" Command="{Binding EditElementCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
             <Button Content="Importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
             <Button Content="Katalog Löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,0,16"/>
@@ -189,10 +181,10 @@
             <Label Grid.Row="0" Content="Ausgewähltes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding OpenNewElementWindowCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Export_B}" ToolTip="Exportieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_DeleteElement_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
             
             <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderBrush="{StaticResource PrimaryHighlightBrush}" BorderThickness="0">
@@ -204,26 +196,31 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=".3*"/>
-                        <ColumnDefinition Width=".7*"/>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
-                    <Image Grid.Row="0" Grid.ColumnSpan="2" SnapsToDevicePixels="True" Source="{Binding SelectedElementImage}" VerticalAlignment="Top" Margin="0,0,0,16"/>
-                    <Label Grid.Row="1" Content="Name:" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="2" Content="Typ:" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="3" Content="R-Wert:" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="4" Content="Sd-Wert:" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="5" Content="m':" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="1" Grid.Column="1" Content="{Binding SelectedElementName}" HorizontalAlignment="Left" FontWeight="Bold" Foreground="{StaticResource PrimaryHighlightBrush}"/>
-                    <Label Grid.Row="2" Grid.Column="1" Content="{Binding SelectedElementType}" HorizontalAlignment="Left"/>
+                    <!--Top-->
+                    <Label Grid.Row="0" Grid.ColumnSpan="2" Content="{Binding SelectedElementName}" FontWeight="Bold" Foreground="{StaticResource PrimaryHighlightBrush}"/>
+                    <Image Grid.Row="1" Grid.ColumnSpan="2" SnapsToDevicePixels="True" Source="{Binding SelectedElementImage}" VerticalAlignment="Top" Margin="0,0,0,16"/>
+                    <!--Left-->
+                    <Label Grid.Row="2" Content="Typ:" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="3" Content="Ausrichtung:" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="4" Content="R-Wert:" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="5" Content="Sd-Wert:" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="6" Content="m':" HorizontalAlignment="Right"/>
+                    <!--Right-->
                     <!--
                     Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.
                     Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string
                     -->
-                    <Label Grid.Row="3" Grid.Column="1" Content="{Binding SelectedElementRValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
-                    <Label Grid.Row="4" Grid.Column="1" Content="{Binding SelectedElementSdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
-                    <Label Grid.Row="5" Grid.Column="1" Content="{Binding SelectedElementAreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
+                    <Label Grid.Row="2" Grid.Column="1" Content="{Binding SelectedElementType}" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="3" Grid.Column="1" Content="{Binding SelectedElementOrientation}" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="4" Grid.Column="1" Content="{Binding SelectedElementRValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                    <Label Grid.Row="5" Grid.Column="1" Content="{Binding SelectedElementSdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
+                    <Label Grid.Row="6" Grid.Column="1" Content="{Binding SelectedElementAreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
                 </Grid>
             </Border>
 
