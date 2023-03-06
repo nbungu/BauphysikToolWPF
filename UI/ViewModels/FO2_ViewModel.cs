@@ -15,8 +15,7 @@ using System.Linq;
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for FO2_Temperature.cs: Used in xaml as "DataContext"
-    [ObservableObject]
-    public partial class FO2_ViewModel
+    public partial class FO2_ViewModel : ObservableObject
     {
         public string Title { get; } = "Temperature";
         public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
@@ -63,22 +62,22 @@ namespace BauphysikToolWPF.UI.ViewModels
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
         [ObservableProperty]
-        private string u_max;
+        private string u_max = String.Empty;
 
         [ObservableProperty]
-        private string r_min;
+        private string r_min = String.Empty;
 
         [ObservableProperty]
-        private string q_max;
+        private string q_max = String.Empty;
 
         [ObservableProperty]
-        private bool isUValueOK;
+        private bool isUValueOK = false;
 
         [ObservableProperty]
-        private bool isRValueOK;
+        private bool isRValueOK = false;
 
         [ObservableProperty]
-        private bool isQValueOK;
+        private bool isQValueOK = false;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties

@@ -7,9 +7,6 @@ using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
 {
-    /// <summary>
-    /// Interaktionslogik für FO1_SetupLayer.xaml
-    /// </summary>
     public partial class FO1_SetupLayer : UserControl
     {
         // Class Variables - Belongs to the Class-Type itself and stay the same
@@ -26,8 +23,6 @@ namespace BauphysikToolWPF.UI
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_SetupLayer()
         {   
-            // TODO catch SelectedElementId -1
-            
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
@@ -80,7 +75,7 @@ namespace BauphysikToolWPF.UI
                 for (int i = 0; i < layers.Count; i++)
                 {
                     layers[i].LayerPosition = i + 1;
-                    DatabaseAccess.UpdateLayer(layers[i], false);
+                    DatabaseAccess.UpdateLayer(layers[i], triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
                 }
             }
         }

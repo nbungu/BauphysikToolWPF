@@ -9,13 +9,10 @@ using System.Windows.Input;
 
 namespace BauphysikToolWPF.UI
 {
-    /// <summary>
-    /// Interaktionslogik für AddLayerWindow.xaml
-    /// </summary>
     public partial class AddLayerWindow : Window
     {
-        private List<string> distinctCategories;
-        private string selectedCategory;
+        private List<string>? distinctCategories;
+        private string? selectedCategory;
         public AddLayerWindow()
         {
             InitializeComponent();
@@ -35,9 +32,12 @@ namespace BauphysikToolWPF.UI
 
         private void LoadCategoriesList()
         {
-            List<string> categoryList = new List<string>(distinctCategories);
-            categoryList.Insert(0, "Alle anzeigen");
-            collectionView_Categories.ItemsSource = categoryList;
+            if (distinctCategories != null)
+            {
+                List<string> categoryList = new List<string>(distinctCategories);
+                categoryList.Insert(0, "Alle anzeigen");
+                collectionView_Categories.ItemsSource = categoryList;
+            }
         }
         private void LoadMaterialsByCategory(string category = "*")
         {

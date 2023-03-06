@@ -9,6 +9,7 @@ namespace BauphysikToolWPF.UI
     public partial class FO3_Moisture : UserControl
     {
         public static GlaserCalc GlaserCalculation { get; private set; }
+
         public FO3_Moisture()
         {
             // Save computation time and only recalculate if needed

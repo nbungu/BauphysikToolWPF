@@ -19,33 +19,33 @@ namespace BauphysikToolWPF.UI.ViewModels
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
 
-        private static List<string>? ti_Keys;
-        public List<string> Ti_Keys
+        private static List<string?>? ti_Keys;
+        public List<string?> Ti_Keys
         {
             get { return ti_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? te_Keys;
-        public List<string> Te_Keys
+        private static List<string?>? te_Keys;
+        public List<string?> Te_Keys
         {
             get { return te_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? rsi_Keys;
-        public List<string> Rsi_Keys
+        private static List<string?>? rsi_Keys;
+        public List<string?> Rsi_Keys
         {
             get { return rsi_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? rse_Keys;
-        public List<string> Rse_Keys
+        private static List<string?>? rse_Keys;
+        public List<string?> Rse_Keys
         {
             get { return rse_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rse").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? rel_Fi_Keys;
-        public List<string> Rel_Fi_Keys
+        private static List<string?>? rel_Fi_Keys;
+        public List<string?> Rel_Fi_Keys
         {
             get { return rel_Fi_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? rel_Fe_Keys;
-        public List<string> Rel_Fe_Keys
+        private static List<string?>? rel_Fe_Keys;
+        public List<string?> Rel_Fe_Keys
         {
             get { return rel_Fe_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Select(e => e.Comment).ToList(); }
         }
@@ -127,9 +127,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double value = (ti_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_selection).Value;
-                UserSaved.Ti = value;
-                return value.ToString();
+                double? value = (ti_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_selection)?.Value;
+                UserSaved.Ti = value ?? 0;
+                return UserSaved.Ti.ToString();
             }
             set
             {
@@ -140,9 +140,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double value = (te_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == te_selection).Value;
-                UserSaved.Te = value;
-                return value.ToString();
+                double? value = (te_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == te_selection)?.Value;
+                UserSaved.Te = value ?? 0;
+                return UserSaved.Te.ToString();
             }
             set
             {
@@ -153,9 +153,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double value = (rsi_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == rsi_selection).Value;
-                UserSaved.Rsi = value;
-                return value.ToString();
+                double? value = (rsi_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == rsi_selection)?.Value;
+                UserSaved.Rsi = value ?? 0;
+                return UserSaved.Rsi.ToString();
             }
             set
             {
@@ -166,9 +166,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double value = (rse_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == rse_selection).Value;
-                UserSaved.Rse = value;
-                return value.ToString();
+                double? value = (rse_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == rse_selection)?.Value;
+                UserSaved.Rse = value ?? 0;
+                return UserSaved.Rse.ToString();
             }
             set
             {
@@ -179,9 +179,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double value = (rel_fi_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == rel_fi_selection).Value;
-                UserSaved.Rel_Fi = value;
-                return value.ToString();
+                double? value = (rel_fi_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == rel_fi_selection)?.Value;
+                UserSaved.Rel_Fi = value ?? 0;
+                return UserSaved.Rel_Fi.ToString();
             }
             set
             {
@@ -192,9 +192,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double value = (rel_fe_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == rel_fe_selection).Value;
-                UserSaved.Rel_Fe = value;
-                return value.ToString();
+                double? value = (rel_fe_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == rel_fe_selection)?.Value;
+                UserSaved.Rel_Fe = value ?? 0;
+                return UserSaved.Rel_Fe.ToString();
             }
             set
             {

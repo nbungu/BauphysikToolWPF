@@ -90,7 +90,9 @@ namespace BauphysikToolWPF.ComponentCalculations
             }
 
             // c) Get specific Requirement from selected RequirementSource
-            Requirement specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            Requirement? specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            if (specificRequirement is null)
+                return -1;
 
             // Check if conditions have to be met
             if (UserSaved.Ti >= 19)
@@ -123,8 +125,9 @@ namespace BauphysikToolWPF.ComponentCalculations
             int requirementSourceId = (int)RequirementSource.DIN_4108_2_Tabelle3;
 
             // c) Get specific Requirement from selected RequirementSource
-            Requirement specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
-            //TODO: Can be null
+            Requirement? specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            if (specificRequirement is null)
+                return -1;
 
             // Check if conditions have to be met
             if (currentElement.AreaMassDens >= 100)

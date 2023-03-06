@@ -80,7 +80,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public Material correspondingMaterial()
         {
-            return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId);
+            return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId) ?? new Material();
         }
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 

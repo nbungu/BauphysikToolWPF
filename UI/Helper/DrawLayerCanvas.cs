@@ -1,9 +1,6 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,15 +12,12 @@ namespace BauphysikToolWPF.UI.Helper
     public class DrawLayerCanvas
     {
         // custom parameter constructor, with optional parameter "showPositionLabel"
-        public DrawLayerCanvas(Canvas canvas, List<Layer> layers, bool showPositionLabel = true)
+        public DrawLayerCanvas(Canvas? canvas, List<Layer>? layers, bool showPositionLabel = true)
         {
-            canvas.Children.Clear();
-
-            if (layers == null || layers.Count == 0)
+            if (layers is null || canvas is null)
                 return;
 
-            // check if canvas was already created in frontend
-            canvas = canvas ?? throw new ArgumentNullException(nameof(canvas) + " is not initialized or not found");
+            canvas.Children.Clear();
 
             double x = 0;
             double elementWidth = 0;

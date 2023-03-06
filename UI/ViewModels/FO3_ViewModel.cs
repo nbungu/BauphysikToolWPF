@@ -13,8 +13,7 @@ using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    [ObservableObject]
-    public partial class FO3_ViewModel
+    public partial class FO3_ViewModel : ObservableObject
     {
         public string Title { get; } = "Moisture";
 

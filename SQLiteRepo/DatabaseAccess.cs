@@ -85,10 +85,12 @@ namespace BauphysikToolWPF.SQLiteRepo
             return sqlConn.GetAllWithChildren<Element>(recursive: true);
         }
 
-        public static void CreateElement(Element element)
+        public static void CreateElement(Element element, bool withChildren = false)
         {
-            // No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
-            sqlConn.Insert(element);
+            if (withChildren)                           // When copying an Element: Insert with children
+                sqlConn.InsertWithChildren(element);    
+            else sqlConn.Insert(element);               // Default case: Create/Edit a Element: No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
+
             OnElementsChanged();
         }
 

@@ -1,11 +1,8 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -99,11 +96,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return;
 
             // Create copy of selected Element and add to DB
-            Element dupe = DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId));
-            dupe.Name += "_Copy"; 
-            DatabaseAccess.CreateElement(dupe);
-            //TODO: Add Layers to DB aswell
-
+            Element elementCopy = DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId));
+            elementCopy.Name += "-Copy"; 
+            DatabaseAccess.CreateElement(elementCopy, withChildren: true);
 
             // Update XAML Binding Property by fetching from DB
             Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId);
@@ -142,56 +137,56 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                return selectedElementId != -1;
+                return SelectedElementId != -1;
             }
         }
         public string SelectedElementName
         {
             get
             {
-                return (selectedElementId == -1) ? String.Empty : DatabaseAccess.QueryElementById(selectedElementId).Name;
+                return (SelectedElementId == -1) ? String.Empty : DatabaseAccess.QueryElementById(SelectedElementId).Name;
             }
         }
         public BitmapImage? SelectedElementImage
         {
             get
             {
-                return (selectedElementId == -1) ? new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png")) : DatabaseAccess.QueryElementById(selectedElementId).ElementImage;
+                return (SelectedElementId == -1) ? new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png")) : DatabaseAccess.QueryElementById(SelectedElementId).ElementImage;
             }
         }
         public string SelectedElementType
         {
             get
             {
-                return (selectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(selectedElementId).Construction.Type;
+                return (SelectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(SelectedElementId).Construction.Type;
             }
         }
         public string SelectedElementOrientation
         {
             get
             {
-                return (selectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(selectedElementId).Orientation.Type;
+                return (SelectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(SelectedElementId).Orientation.Type;
             }
         }
         public string SelectedElementRValue
         {
             get
             {
-                return (selectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(selectedElementId).RValue.ToString();
+                return (SelectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(SelectedElementId).RValue.ToString();
             }
         }
         public string SelectedElementSdThickness
         {
             get
             {
-                return (selectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(selectedElementId).SdThickness.ToString();
+                return (SelectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(SelectedElementId).SdThickness.ToString();
             }
         }
         public string SelectedElementAreaMassDens
         {
             get
             {
-                return (selectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(selectedElementId).AreaMassDens.ToString();
+                return (SelectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(SelectedElementId).AreaMassDens.ToString();
             }
         }
     }

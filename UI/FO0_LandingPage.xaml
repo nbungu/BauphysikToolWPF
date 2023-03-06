@@ -92,7 +92,7 @@
                                     <Image Source="{StaticResource ButtonIcon_Edit_B}" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Kopieren">
+                            <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Copy_B}" />
                                 </MenuItem.Icon>

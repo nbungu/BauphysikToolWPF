@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.UI
         // Instance Variable, when existing Elemenet is being edited and passed as Parameter
         private Element? selectedElement;
 
-        public EditElementWindow(Element selectedElement = null)
+        public EditElementWindow(Element? selectedElement = null)
         {
             this.selectedElement = selectedElement;
 
@@ -35,14 +35,17 @@ namespace BauphysikToolWPF.UI
             // Avoid empty Input fields
             if (construction_Picker.SelectedIndex != -1 && orientation_Picker.SelectedIndex != -1 && elementName_TextBox.Text != string.Empty)
             {
-                string constrType = construction_Picker.SelectedItem.ToString();
-                int constrId = DatabaseAccess.GetConstructions().Find(e => e.Type == constrType).ConstructionId;
+                string constrType = construction_Picker.SelectedItem.ToString() ?? "";
+                int constrId = DatabaseAccess.GetConstructions().Find(e => e.Type == constrType)?.ConstructionId ?? -1;
 
-                string orientationType = orientation_Picker.SelectedItem.ToString();
-                int orientationId = DatabaseAccess.GetOrientations().Find(e => e.Type == orientationType).OrientationId;
+                string orientationType = orientation_Picker.SelectedItem.ToString() ?? "";
+                int orientationId = DatabaseAccess.GetOrientations().Find(e => e.Type == orientationType)?.OrientationId ?? -1;
+                
+                if (constrId == -1 || orientationId == -1)
+                    return;
 
                 // If no Element in Parameter -> Create New
-                if (this.selectedElement == null)
+                if (selectedElement is null)
                 {
                     Element newElem = new Element()
                     {

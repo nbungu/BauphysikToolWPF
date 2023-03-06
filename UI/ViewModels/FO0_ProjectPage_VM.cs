@@ -53,7 +53,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void Close()
         {
-            MainWindow.Main.Close();
+            MainWindow.Close();
         }
 
         /*

@@ -7,10 +7,9 @@ namespace BauphysikToolWPF
      * THIS IS THE MAIN WINDOW WHICH CONTAINS ALL PAGES AND CONTENT
      * 
      * Contains the Navigation Box on the left and the Content Pages on the right side
-     */    
-    
-    // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF
-    // accessible from whole application
+     */
+
+    // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF. Accessible from whole application
     public enum NavigationContent 
     {
         // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
@@ -26,23 +25,21 @@ namespace BauphysikToolWPF
         // TODO add back button based on previously used page
         public static NavigationContent lastRoutedPage;
 
-        public static ListBox navigationMenuListBox;
+        public static ListBox? navigationMenuListBox;
 
-        public static Border projectBoxHeader;
-
-        public static Window Main;
+        public static Border? projectBoxHeader;
 
         public MainWindow()
         {
             InitializeComponent();
-            // Saves MainWindow Instance here
-            Main = this;
             navigationMenuListBox = this.NavigationMenuListBox;
             projectBoxHeader = this.ProjectBoxHeader;
         }
         
         public static void SetPage(NavigationContent page)
         {
+            if (navigationMenuListBox is null || projectBoxHeader is null)
+                return;
             /*
              * MainWindow.xaml changes the ContentPage based on the 'SelectedItem' string when toggled from 'NavigationListBox'
              * The string values of the SelectedItem are defined at 'NavigationMenuItems'
@@ -50,6 +47,7 @@ namespace BauphysikToolWPF
              * Alternatively: MainWindow.xaml changes the ContentPage based on the 'Tag' string when NOT toggled from 'NavigationListBox'
              * Set 'SelectedItem' or 'SelectedIndex' to null / -1 before!
              */
+
             switch (page)
             {
                 case NavigationContent.ProjectPage:
@@ -77,6 +75,11 @@ namespace BauphysikToolWPF
                     navigationMenuListBox.SelectedItem = "LandingPage";
                     break;
             }
+        }
+        // Exposes default Close() Method as static Method
+        public static new void Close()
+        {
+            Close();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             if (value is null)
                 return false;
 
-            string itemsSourceValue = value.ToString();
+            string itemsSourceValue = value.ToString() ?? "";
             Regex regex = new Regex("(H|h)eader[0-9]?"); // regex that matches disallowed text
             
             // return true if Item is a header

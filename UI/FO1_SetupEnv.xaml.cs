@@ -4,9 +4,6 @@ using System.Windows.Input;
 
 namespace BauphysikToolWPF.UI
 {
-    /// <summary>
-    /// Interaktionslogik für FO1_SetupEnv.xaml
-    /// </summary>
     public partial class FO1_SetupEnv : UserControl
     {
         // Class Variables - Belongs to the Class-Type itself and stay the same
@@ -32,13 +29,18 @@ namespace BauphysikToolWPF.UI
         // When User sets Custom Value for EnvVars
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            TextBox textBox;
+            if (sender is TextBox)
+                textBox = (TextBox)sender;
+            else return;
+
             //Handle the input
             string userInput = e.Text;
             Regex regex = new Regex("[^0-9,-]+"); //regex that matches disallowed text
-            e.Handled = regex.IsMatch(e.Text);
+            e.Handled = regex.IsMatch(userInput);
 
             // only allow one decimal point
-            if (userInput == "." && (sender as TextBox).Text.IndexOf('.') > -1)
+            if (userInput == "." && textBox.Text.IndexOf('.') > -1)
             {
                 e.Handled = true;
             }
