@@ -190,7 +190,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             if (category == "*")
                 return sqlConn.Query<Material>("SELECT * FROM Material");
             else
-                return sqlConn.Query<Material>("SELECT * FROM Material WHERE Category == " + "\"" + category + "\"");
+                return sqlConn.Query<Material>("SELECT * FROM Material WHERE CategoryName == " + "\"" + category + "\"");
         }
         public static List<Material> QueryMaterialBySearchString(string searchString)
         {

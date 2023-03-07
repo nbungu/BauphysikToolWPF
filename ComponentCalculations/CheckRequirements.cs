@@ -69,7 +69,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             List<Requirement> allRequirements = currentElement.Construction.Requirements;
 
             // catch constructions with no requirements
-            if (allRequirements == null || allRequirements.Count == 0)
+            if (allRequirements is null || allRequirements.Count == 0)
                 return -1;
 
             // b) Select relevant Source based off Building Age and Usage
@@ -118,7 +118,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             List<Requirement> allRequirements = currentElement.Construction.Requirements;
 
             // catch constructions with no requirements
-            if (allRequirements == null || allRequirements.Count == 0)
+            if (allRequirements is null || allRequirements.Count == 0)
                 return -1;
 
             // b) Select relevant Source

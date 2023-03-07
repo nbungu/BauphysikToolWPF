@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI.Helper
         public DrawMeasurementLine(Grid container, List<Layer> layers, double strokeWidth = 1, bool showLabels = true)
         {
             container.Children.Clear();
-            if (layers == null || layers.Count == 0)
+            if (layers is null || layers.Count == 0)
                 return;
 
             // check if container was already created in frontend

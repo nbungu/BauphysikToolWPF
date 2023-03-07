@@ -89,7 +89,7 @@ namespace BauphysikToolWPF.UI
                 ElementId = elementID,
                 EnvVarId = envVar.EnvVarId,
             };
-            // Only insert every envVar once!            
+            // Only insert every envVar once! 
             if (DatabaseAccess.UpdateElementEnvVars(elemEnvVars) == 0)
                 // If no row is updated ( == 0), create a new one
                 DatabaseAccess.CreateElementEnvVars(elemEnvVars);

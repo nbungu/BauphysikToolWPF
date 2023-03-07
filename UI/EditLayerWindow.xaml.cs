@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.UI
             // Pre set TextBoxes and Header Label
             // Header Label
             headerLabel_MaterialName.Content = layer.Material.Name;
-            headerLabel_MaterialCategory.Content = layer.Material.Category;
+            headerLabel_MaterialCategory.Content = layer.Material.CategoryName;
 
             // TextBoxes
             layerThickness_TextBox.Text = layer.LayerThickness.ToString();

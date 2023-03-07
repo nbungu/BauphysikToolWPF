@@ -66,7 +66,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-
+                <!--Here Binding is from: ItemsSource="{Binding DistinctCategories}" -->
                 <Label Content="{Binding}" Height="28"/>
             </Grid>
         </DataTemplate>

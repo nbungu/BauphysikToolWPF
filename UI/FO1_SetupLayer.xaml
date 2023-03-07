@@ -46,7 +46,7 @@
                     <Label Content="{Binding LayerPosition}" Foreground="White" FontWeight="Bold" Margin="0,0,8,0"/>
                 </Grid>
                 <Label Grid.Column="1" Content="{Binding Material.Name}" Height="26" FontWeight="Bold" FontSize="12" HorizontalAlignment="Left"/>
-                <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.Category}" Height="26" FontStyle="Italic" VerticalAlignment="Bottom" FontSize="12" HorizontalAlignment="Left"/>
+                <Label Grid.Column="1" Grid.Row="1" Content="{Binding Material.CategoryName}" Height="26" FontStyle="Italic" VerticalAlignment="Bottom" FontSize="12" HorizontalAlignment="Left"/>
                 <Label Grid.Column="2" Grid.RowSpan="2" Content="{Binding LayerThickness}" ContentStringFormat='d = {0} cm' FontSize="12" HorizontalAlignment="Left"/>
                 <Line Grid.Column="2" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                 <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="{Binding LayerPosition}" Value="{Binding R_Value}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
@@ -219,6 +219,7 @@
                         <RowDefinition Height="48"/>
                     </Grid.RowDefinitions>
                     <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
+                    <Label Content="Vertikalschnit" FontSize="12"/>
                     <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12"/>
                     <!--Canvas inside of ViewBox makes it dynamically sizable-->
                     <!--Canvas Children defined in backend-->

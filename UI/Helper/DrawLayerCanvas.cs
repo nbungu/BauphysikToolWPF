@@ -39,7 +39,7 @@ namespace BauphysikToolWPF.UI.Helper
                     Height = canvas.Height,
                     Stroke = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
                     StrokeThickness = layer.IsSelected ? 2 : 0.2,
-                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(layer.correspondingMaterial().ColorCode)),
+                    Fill = new SolidColorBrush(layer.Material.Color),
                 };
                 canvas.Children.Add(baseRect);
                 Canvas.SetTop(baseRect, 0);
@@ -51,7 +51,7 @@ namespace BauphysikToolWPF.UI.Helper
                     Width = layerWidth, // -1 to leave small gap between hatching and layer border
                     Height = canvas.Height,
                     Fill = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, layerWidth, canvas.Height),
-                    Opacity = 0.6
+                    Opacity = 1 // 0.6
                 };
                 canvas.Children.Add(hatchPatternRect);
                 Canvas.SetTop(hatchPatternRect, 0);

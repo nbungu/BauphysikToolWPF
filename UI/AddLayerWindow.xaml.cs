@@ -26,7 +26,7 @@ namespace BauphysikToolWPF.UI
         private void LoadDistinctCategories()
         {
             //The lambda operator =>, may be read as “goes to” or “becomes”. Lambda function = anonymous function (function without a name)
-            List<string> allCategories = DatabaseAccess.GetMaterials().Select(m => m.Category).ToList();
+            List<string> allCategories = DatabaseAccess.GetMaterials().Select(m => m.CategoryName).ToList();
             distinctCategories = allCategories.Distinct().ToList();
         }
 
