@@ -3,6 +3,7 @@ using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -50,7 +51,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 DatabaseAccess.DeleteLayer(selectedLayer);
             }
             // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, removeGaps: true);
         }
 
         [RelayCommand]
@@ -69,7 +70,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand] 
-        private void EditElement(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
             if (selectedElement is null)
                 selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
@@ -83,6 +84,52 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Update XAML Binding Property by fetching from DB
             ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
             ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+        }
+
+        [RelayCommand]
+        private void MoveLayerDown(Layer? selectedLayer)
+        {
+            if (selectedLayer is null)
+                return;
+
+            // When Layer is already at the bottom of the List (last in the List)
+            if (selectedLayer.LayerPosition == DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId).Count - 1)
+                return;
+
+            // Change Position of Layer below
+            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId).Where(e => e.LayerPosition == selectedLayer.LayerPosition + 1).First();            
+            neighbour.LayerPosition -= 1;
+            // Change Position of selected Layer
+            selectedLayer.LayerPosition += 1;
+            // Update both
+            DatabaseAccess.UpdateLayer(selectedLayer, triggerUpdateEvent: false);
+            DatabaseAccess.UpdateLayer(neighbour);
+
+            // Update XAML Binding Property by fetching from DB
+            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+        }
+
+        [RelayCommand]
+        private void MoveLayerUp(Layer? selectedLayer)
+        {
+            if (selectedLayer is null)
+                return;
+
+            // When Layer is already at the top of the List (first in the List)
+            if (selectedLayer.LayerPosition == 0)
+                return;
+
+            // Change Position of Layer above
+            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId).Where(e => e.LayerPosition == selectedLayer.LayerPosition - 1).First();
+            neighbour.LayerPosition += 1;
+            // Change Position of selected Layer
+            selectedLayer.LayerPosition -= 1;
+            // Update both
+            DatabaseAccess.UpdateLayer(selectedLayer, triggerUpdateEvent: false);
+            DatabaseAccess.UpdateLayer(neighbour);
+
+            // Update XAML Binding Property by fetching from DB
+            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
         }
 
         /*

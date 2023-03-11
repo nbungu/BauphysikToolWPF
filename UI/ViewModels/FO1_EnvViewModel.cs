@@ -96,27 +96,27 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))]
-        private static int ti_Index = -1; // As Static Class Variable to Save the Selection after Switching Pages!
+        private static int ti_Index; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TeValue))]
-        private static int te_Index = -1;
+        private static int te_Index;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RsiValue))]
-        private static int rsi_Index = -1;
+        private static int rsi_Index;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RseValue))]
-        private static int rse_Index = -1;
+        private static int rse_Index;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RelFiValue))]
-        private static int rel_fi_Index = -1;
+        private static int rel_fi_Index;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RelFeValue))]
-        private static int rel_fe_Index = -1;
+        private static int rel_fe_Index;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -142,7 +142,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             set
             {
                 // Save custom user input
-                UserSaved.Ti = Convert.ToDouble(value);
+                UserSaved.Ti = Convert.ToDouble(value);              
                 // Changing ti_Index Triggers TiValue getter due to NotifyProperty
                 Ti_Index = -1;
             }
@@ -151,7 +151,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (te_Index == -1) ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == te_Keys[te_Index])?.Value;
+                double? value = (te_Index == -1) ? UserSaved.Te : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == te_Keys[te_Index])?.Value;
                 UserSaved.Te = value ?? 0;
                 return value.ToString() ?? String.Empty;
             }
@@ -165,7 +165,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (rsi_Index == -1) ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == rsi_Keys[rsi_Index])?.Value;
+                double? value = (rsi_Index == -1) ? UserSaved.Rsi : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == rsi_Keys[rsi_Index])?.Value;
                 UserSaved.Rsi = value ?? 0;
                 return value.ToString() ?? String.Empty;
             }
@@ -179,7 +179,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (rse_Index == -1) ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == rse_Keys[rse_Index])?.Value;
+                double? value = (rse_Index == -1) ? UserSaved.Rse : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == rse_Keys[rse_Index])?.Value;
                 UserSaved.Rse = value ?? 0;
                 return value.ToString() ?? String.Empty;
             }
@@ -193,7 +193,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (rel_fi_Index == -1) ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == rel_Fi_Keys[rel_fi_Index])?.Value;
+                double? value = (rel_fi_Index == -1) ? UserSaved.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == rel_Fi_Keys[rel_fi_Index])?.Value;
                 UserSaved.Rel_Fi = value ?? 0;
                 return value.ToString() ?? String.Empty;
             }
@@ -207,7 +207,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (rel_fe_Index == -1) ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == rel_Fe_Keys[rel_fe_Index])?.Value;
+                double? value = (rel_fe_Index == -1) ? UserSaved.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == rel_Fe_Keys[rel_fe_Index])?.Value;
                 UserSaved.Rel_Fe = value ?? 0;
                 return value.ToString() ?? String.Empty;
             }

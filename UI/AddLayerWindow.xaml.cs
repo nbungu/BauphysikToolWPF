@@ -49,7 +49,7 @@ namespace BauphysikToolWPF.UI
             collectionView_Materials.ItemsSource = DatabaseAccess.QueryMaterialBySearchString(searchQuery);
         }
 
-        private void AddMaterial_Clicked(object sender, EventArgs e)
+        private void AddLayer_Clicked(object sender, EventArgs e)
         {
             if (collectionView_Materials.SelectedItem is null)
                 return;
@@ -62,10 +62,13 @@ namespace BauphysikToolWPF.UI
             }
             else
             {
+                // LayerPosition is always at end of List 
+                int layerCount = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId).Count;
+
                 Layer layer = new Layer()
                 {
                     //LayerId gets set by SQLite DB (AutoIncrement)
-                    LayerPosition = 1,
+                    LayerPosition = layerCount,
                     LayerThickness = Convert.ToDouble(thickness_TextBox.Text),
                     MaterialId = material.MaterialId,
                     ElementId = FO0_LandingPage.SelectedElementId,

@@ -35,6 +35,7 @@
     <None Remove="Resources\Icons\delete_w.png" />
     <None Remove="Resources\Icons\dokumentieren.png" />
     <None Remove="Resources\Icons\dokumentieren_w.png" />
+    <None Remove="Resources\Icons\down.png" />
     <None Remove="Resources\Icons\download.png" />
     <None Remove="Resources\Icons\download_w.png" />
     <None Remove="Resources\Icons\edit-2.png" />
@@ -90,6 +91,7 @@
     <None Remove="Resources\Icons\schloss_zu_w.png" />
     <None Remove="Resources\Icons\settings.png" />
     <None Remove="Resources\Icons\settings_w.png" />
+    <None Remove="Resources\Icons\up.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -97,6 +99,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\Icons\down.png" />
     <Resource Include="Resources\Icons\placeholder_256px_light.png" />
   </ItemGroup>
 
@@ -187,6 +190,7 @@
     <Resource Include="Resources\Icons\moisture_w.png" />
     <Resource Include="Resources\Icons\settings.png" />
     <Resource Include="Resources\Icons\settings_w.png" />
+    <Resource Include="Resources\Icons\up.png" />
   </ItemGroup>
 
   <ItemGroup>

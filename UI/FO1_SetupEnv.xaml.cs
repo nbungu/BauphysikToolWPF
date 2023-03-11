@@ -20,12 +20,6 @@ namespace BauphysikToolWPF.UI
 
         }
 
-        // event handlers - subscribers
-
-        // Custom Methods        
-
-        // UI Methods
-
         // Handle Custom User Input - Regex Check
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
@@ -39,12 +33,16 @@ namespace BauphysikToolWPF.UI
 
                 //Handle the input
                 string userInput = e.Text;
-                string tb_Content = userInput + tb.Text;
                 Regex regex = new Regex("[^0-9,-]+"); //regex that matches disallowed text
-                e.Handled = regex.IsMatch(tb_Content);
+                e.Handled = regex.IsMatch(userInput);
 
                 // only allow one decimal point
-                if (userInput == "." && tb.Text.IndexOf('.') > -1)
+                if (userInput == "," && tb.Text.IndexOf(',') > -1)
+                {
+                    e.Handled = true;
+                }
+                // only allow one minus char
+                if (userInput == "-" && tb.Text.IndexOf('-') > -1)
                 {
                     e.Handled = true;
                 }

@@ -83,6 +83,8 @@
         <BitmapImage x:Key="ButtonIcon_Copy_W" UriSource="/Resources/Icons/copy_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Export_B" UriSource="/Resources/Icons/export.png"/>
         <BitmapImage x:Key="ButtonIcon_Export_W" UriSource="/Resources/Icons/export_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Up_B" UriSource="/Resources/Icons/up.png"/>
+        <BitmapImage x:Key="ButtonIcon_Down_B" UriSource="/Resources/Icons/down.png"/>
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
 
 

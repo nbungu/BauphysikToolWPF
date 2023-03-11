@@ -79,7 +79,8 @@
                         Content="{Binding ElementId}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding ElementId}"
-                        Style="{StaticResource ButtonStyleGridPanel}">
+                        Style="{StaticResource ButtonStyleGridPanel}"
+                        MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>
                         <!--
                         ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.

@@ -158,7 +158,7 @@
         </StackPanel>
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="8">
-            <Button Content="Schicht dem Bauteil hinzufügen" Click="AddMaterial_Clicked" Style="{StaticResource ButtonStyle04}"/>
+            <Button Content="Schicht dem Bauteil hinzufügen" Click="AddLayer_Clicked" Style="{StaticResource ButtonStyle04}"/>
         </Grid>
 
     </Grid>

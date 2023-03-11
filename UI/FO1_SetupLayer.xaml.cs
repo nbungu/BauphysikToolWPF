@@ -27,7 +27,7 @@ namespace BauphysikToolWPF.UI
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
             // Drawing
-            new DrawLayerCanvas(layers_Canvas, DatabaseAccess.QueryLayersByElementId(currentElementId));         // Initial Draw of the Canvas
+            new DrawLayerCanvas(layers_Canvas, DatabaseAccess.QueryLayersByElementId(currentElementId, returnSorted: true));         // Initial Draw of the Canvas
             new DrawMeasurementLine(measurement_Grid, DatabaseAccess.QueryLayersByElementId(currentElementId));  // Initial Draw of the measurement line
 
             // Event Subscription - Register with Events
@@ -39,9 +39,6 @@ namespace BauphysikToolWPF.UI
         // event handlers - subscribers
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
-            // Bring them in correct order again
-            ReorderLayerPosition(DatabaseAccess.QueryLayersByElementId(currentElementId));
-
             // Update UI
             new DrawLayerCanvas(layers_Canvas, DatabaseAccess.QueryLayersByElementId(currentElementId));         // Redraw Canvas
             new DrawMeasurementLine(measurement_Grid, DatabaseAccess.QueryLayersByElementId(currentElementId));  // Redraw measurement line
@@ -67,18 +64,18 @@ namespace BauphysikToolWPF.UI
         // custom Methods
 
         // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
-        private void ReorderLayerPosition(List<Layer> layers)
+        /*private void FillGaps(List<Layer> layers)
         {
             if (layers.Count > 0)
             {
                 // Update the Id property of the remaining objects
                 for (int i = 0; i < layers.Count; i++)
                 {
-                    layers[i].LayerPosition = i + 1;
+                    layers[i].LayerPosition = i;
                     DatabaseAccess.UpdateLayer(layers[i], triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
                 }
             }
-        }
+        }*/
 
         public void UpdateElementEnvVars(int elementID, EnvVars envVar)
         {
