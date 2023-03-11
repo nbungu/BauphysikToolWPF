@@ -26,54 +26,29 @@ namespace BauphysikToolWPF.UI
 
         // UI Methods
 
-        // When User sets Custom Value for EnvVars
+        // Handle Custom User Input - Regex Check
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            TextBox textBox;
             if (sender is TextBox)
-                textBox = (TextBox)sender;
-            else return;
-
-            //Handle the input
-            string userInput = e.Text;
-            Regex regex = new Regex("[^0-9,-]+"); //regex that matches disallowed text
-            e.Handled = regex.IsMatch(userInput);
-
-            // only allow one decimal point
-            if (userInput == "." && textBox.Text.IndexOf('.') > -1)
             {
-                e.Handled = true;
+                TextBox tb = (TextBox)sender;
+                
+                // If typed input over a selected Text, delete the old value in the TB
+                if (tb.SelectedText != "")
+                    tb.Text = "";
+
+                //Handle the input
+                string userInput = e.Text;
+                string tb_Content = userInput + tb.Text;
+                Regex regex = new Regex("[^0-9,-]+"); //regex that matches disallowed text
+                e.Handled = regex.IsMatch(tb_Content);
+
+                // only allow one decimal point
+                if (userInput == "." && tb.Text.IndexOf('.') > -1)
+                {
+                    e.Handled = true;
+                }
             }
-
-            //set new value as UserSaved Data
-            /*switch ((sender as TextBox).Name)
-            {
-                case "Ti_Input":
-                    UserSaved.Ti = Convert.ToDouble(Ti_Input.Text + userInput);
-                    Ti_ComboBox.SelectedIndex = -1; // set empty selection
-                    return;
-                case "Te_Input":
-                    UserSaved.Te = Convert.ToDouble(Te_Input.Text + userInput);
-                    Te_ComboBox.SelectedIndex = -1; // set empty selection
-                    return;
-                case "Rsi_Input":
-                    UserSaved.Rsi = Convert.ToDouble(Rsi_Input.Text + userInput);
-                    Rsi_ComboBox.SelectedIndex = -1; // set empty selection
-                    return;
-                case "Rse_Input":
-                    UserSaved.Rse = Convert.ToDouble(Rse_Input.Text + userInput);
-                    Rse_ComboBox.SelectedIndex = -1; // set empty selection
-                    return;
-                case "Rel_Fi_Input":
-                    UserSaved.Rel_Fi = Convert.ToDouble(Rel_Fi_Input.Text + userInput);
-                    Rel_Fi_ComboBox.SelectedIndex = -1; // set empty selection
-                    return;
-                case "Rel_Fe_Input":
-                    UserSaved.Rel_Fe = Convert.ToDouble(Rel_Fe_Input.Text + userInput);
-                    Rel_Fe_ComboBox.SelectedIndex = -1; // set empty selection
-                    return;
-                default: throw new ArgumentException("Could not assign value");
-            }*/
         }
 
     }

@@ -148,7 +148,8 @@
                 <controls:EquationLabel BaseText="U" Value="{Binding TempCalc.UValue}" Unit="W/m²K" Height="28"/>
                 <controls:EquationLabel BaseText="q" Value="{Binding TempCalc.QValue}" Unit="W/m²" Height="28"/>
                 <Line X2="136" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
-                <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding TempCalc.LayerTemps[0].Value}" Unit="°C" Height="28"/>
+                <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding TempCalc.Tsi}" Unit="°C" Height="28"/>
+                <controls:EquationLabel BaseText="θ" SubscriptText="se" Value="{Binding TempCalc.Tse}" Unit="°C" Height="28"/>
                 <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding TempCalc.FRsi}" Height="28"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="2">
@@ -159,6 +160,7 @@
                 <controls:EquationLabel BaseText="q" SubscriptText="max" Value="{Binding Q_max}" Unit="W/m²" Height="28"/>
                 <Line X2="166" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
                 <Label Content="{Binding TempCalc.Tsi_min}" ContentStringFormat="≥ {0} °C" Height="28"/>
+                <Label Content="" Height="28"/>
                 <Label Content="≥ 0.7" FontStyle="Italic" Height="28"/>
             </StackPanel>
         </Grid>
