@@ -2,6 +2,18 @@
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
+    public enum OrientationType
+    {
+        North,
+        NorthEast,
+        East,
+        SouthEast,
+        South,
+        SouthWest,
+        West,
+        NorthWest,
+        Default = North
+    }
     public class Orientation
     {
         //------Variablen-----//
@@ -11,12 +23,42 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int OrientationId { get; set; }
-
         [NotNull]
-        public string Type { get; set; }
+        public string TypeName { get; set; }
 
         //------Not part of the Database-----//
 
+        [Ignore]
+        public OrientationType Type
+        {
+            get
+            {
+                if (TypeName == null)
+                    return OrientationType.Default;
+
+                switch (TypeName)
+                {
+                    case "North":
+                        return OrientationType.North;
+                    case "North-East":
+                        return OrientationType.NorthEast;
+                    case "East":
+                        return OrientationType.East;
+                    case "South-East":
+                        return OrientationType.SouthEast;
+                    case "South":
+                        return OrientationType.South;
+                    case "South-West":
+                        return OrientationType.SouthWest;
+                    case "West":
+                        return OrientationType.West;
+                    case "North-West":
+                        return OrientationType.NorthWest;
+                    default:
+                        return OrientationType.Default;
+                }
+            }
+        }
 
         //------Konstruktor-----//
 
@@ -25,7 +67,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Methoden-----//
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return Type + " (Id: " + OrientationId + ")";
+            return TypeName + " (Id: " + OrientationId + ")";
         }
     }
 }

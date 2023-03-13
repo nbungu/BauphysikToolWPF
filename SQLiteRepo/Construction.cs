@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
+    // TODO add enum for ConstructionTypes
+    
     public class Construction
     {
         //------Variablen-----//

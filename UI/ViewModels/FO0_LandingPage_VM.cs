@@ -165,7 +165,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                return (SelectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(SelectedElementId).Orientation.Type;
+                return (SelectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(SelectedElementId).Orientation.TypeName;
             }
         }
         public string SelectedElementRValue

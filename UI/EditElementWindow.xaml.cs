@@ -19,14 +19,14 @@ namespace BauphysikToolWPF.UI
             InitializeComponent();
 
             construction_Picker.ItemsSource = DatabaseAccess.GetConstructions().Select(e => e.Type).ToList();
-            orientation_Picker.ItemsSource = DatabaseAccess.GetOrientations().Select(e => e.Type).ToList();
+            orientation_Picker.ItemsSource = DatabaseAccess.GetOrientations().Select(e => e.TypeName).ToList();
 
             // Pre set TextBox and ComboBox to edit existing Element
             if (selectedElement != null)
             {
                 elementName_TextBox.Text = selectedElement.Name;
                 construction_Picker.SelectedItem = selectedElement.Construction.Type;
-                orientation_Picker.SelectedItem = selectedElement.Orientation.Type;
+                orientation_Picker.SelectedItem = selectedElement.Orientation.TypeName;
             }
         }
 
@@ -39,7 +39,7 @@ namespace BauphysikToolWPF.UI
                 int constrId = DatabaseAccess.GetConstructions().Find(e => e.Type == constrType)?.ConstructionId ?? -1;
 
                 string orientationType = orientation_Picker.SelectedItem.ToString() ?? "";
-                int orientationId = DatabaseAccess.GetOrientations().Find(e => e.Type == orientationType)?.OrientationId ?? -1;
+                int orientationId = DatabaseAccess.GetOrientations().Find(e => e.TypeName == orientationType)?.OrientationId ?? -1;
                 
                 if (constrId == -1 || orientationId == -1)
                     return;

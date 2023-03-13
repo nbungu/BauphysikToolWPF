@@ -135,15 +135,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
 
             double left = 0;
-            int position = 0;
             foreach (Layer layer in TempCalc.Element.Layers)
             {
-                position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.LayerThickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
 
                 // Set properties of the layer rectangle at the desired position
-                rects[position] = new RectangularSection
+                rects[layer.LayerPosition] = new RectangularSection
                 {
                     Xi = left,
                     Xj = right,
