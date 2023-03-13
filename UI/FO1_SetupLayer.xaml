@@ -210,7 +210,7 @@
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height=".75*"/>
-                <RowDefinition Height=".25*"/>
+                <!--<RowDefinition Height=".25*"/>-->
             </Grid.RowDefinitions>
             <Viewbox ClipToBounds="True" VerticalAlignment="Top">
                 <Grid>
@@ -220,7 +220,7 @@
                         <RowDefinition Height="48"/>
                     </Grid.RowDefinitions>
                     <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
-                    <Label Content="Vertikalschnit" FontSize="12"/>
+                    <Label Content="Vertikalschnitt" FontSize="12"/>
                     <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12"/>
                     <!--Canvas inside of ViewBox makes it dynamically sizable-->
                     <!--Canvas Children defined in backend-->
@@ -228,14 +228,16 @@
                     <Grid Grid.Row="2" x:Name="measurement_Grid" Width="{Binding ElementName=layers_Canvas, Path=Width}"/>
                 </Grid>
             </Viewbox>
+            <!--
+
             <Border Grid.Row="1" CornerRadius="8" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" Margin="0,16,0,0">
-                <!--Placeholder
+                Placeholder
                 Einstellungen wie:
                 Ansicht drehen links, rechts usw.
                 Ansicht spiegeln
                 Gesamtwerte des Bauteils einblenden (dicke, R, U, sd etc.)
-                -->
-            </Border>
+                
+            </Border> -->
         </Grid>
 
         <!--Bottom-->
