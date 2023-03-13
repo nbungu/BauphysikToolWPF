@@ -24,7 +24,9 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double Tsi_min { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
         public double Ti { get; } = UserSaved.Ti;
+        public double Tsi { get; private set; } = 0;
         public double Te { get; } = UserSaved.Te;
+        public double Tse { get; private set; } = 0;
         public double Rsi { get; } = UserSaved.Rsi;
         public double Rse { get; } = UserSaved.Rse;
         public double Rel_Fi { get; } = UserSaved.Rel_Fi;
@@ -43,6 +45,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             LayerTemps = GetLayerTemps();   // Bsp. S.33
             FRsi = GetfRsiValue();          // Gl. 3-1; S.36
             Tsi_min = GetTsiMin();          // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7
+            Tsi = LayerTemps.FirstOrDefault().Value;
+            Tse = LayerTemps.LastOrDefault().Value;
         }
 
         // Methods
@@ -67,7 +71,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             List<KeyValuePair<double, double>> temp_List = new List<KeyValuePair<double, double>>();
 
             // first tempValue (Tsi)
-            double tsi = Math.Round(Ti - Rsi * QValue,2);
+            double tsi = Math.Round(Ti - Rsi * QValue, 2);
             temp_List.Add(new KeyValuePair<double, double>(0, tsi)); // key, value
 
             // Starting from inner side
@@ -75,7 +79,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             for (int i = 0; i < Element.Layers.Count; i++)
             {
                 widthPosition += Element.Layers[i].LayerThickness;
-                double tempValue = temp_List.ElementAt(i).Value - Element.Layers[i].R_Value * QValue;
+                double tempValue = Math.Round(temp_List.ElementAt(i).Value - Element.Layers[i].R_Value * QValue, 2);
                 temp_List.Add(new KeyValuePair<double, double>(widthPosition, tempValue));
             }
             return temp_List;

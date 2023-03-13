@@ -5,11 +5,17 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF"
         xmlns:ui="clr-namespace:BauphysikToolWPF.UI"
+        xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         Title="MainWindow" Height="700" Width="1200" Background="{StaticResource PrimaryLightBrush}" WindowStartupLocation="CenterScreen">
-    
+
+    <Window.DataContext>
+        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
+        <vm:MainWindow_VM/>
+    </Window.DataContext>
+
     <!-- https://www.codeproject.com/Articles/5275552/WPF-Compact-Navigation-Menu -->
     <Window.Resources>
         
@@ -17,6 +23,9 @@
         <controls:IsHeaderConverter x:Key="IsHeaderConverter"/>
 
         <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page-->
+        <DataTemplate x:Key="FO0_ProjectPage">
+            <ui:FO0_ProjectPage/>
+        </DataTemplate>
         <DataTemplate x:Key="FO0_LandingPage">
             <ui:FO0_LandingPage/>
         </DataTemplate>
@@ -35,13 +44,17 @@
 
         <!--Content Pages on right side-->
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
-            <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
+            <!--Default First Page-->
+            <Setter Property="ContentTemplate" Value="{StaticResource FO0_ProjectPage}"/>
             <!--
             Switch between Pages based on 'SelectedItem' of 'NavigationMenuListBox'
-            Item value comes from 'ItemsSource' (typepf ListBoxItem), or via 'Tag'
+            Item value comes from 'ItemsSource' (type of ListBoxItem), or via 'Tag'
             -->
             <Style.Triggers>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedIndex}" Value="-1">
+                <DataTrigger Binding="{Binding ElementName=ProjectBoxHeader, Path=Tag}" Value="ProjectPage">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO0_ProjectPage}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=ProjectBoxHeader, Path=Tag}" Value="LandingPage">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupLayer">
@@ -240,9 +253,8 @@
                     <Label Content="Projekt:" Foreground="White" Margin="-4"/>
                     <Label Content="Wohnhaus 1" FontSize="14" FontWeight="Bold" Foreground="White" Margin="-4"/>
                 </StackPanel>
-                <Button Grid.Row="1" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Elements_W}" Margin="16" Click="Button_Click"/>
-                <Button Grid.Row="2" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Project_B}" Margin="16,0,16,16"/>
-
+                <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Project_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
+                <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
             </Grid>
         </Border>
 
@@ -256,6 +268,6 @@
                  ItemTemplate="{DynamicResource NavigationDataTemplate}"/>
 
         <!--The Actual Pages shown here-->
-        <ContentControl x:Name="MainWindow_Content" Grid.Column="2" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
+        <ContentControl x:Name="MainWindowContent" Grid.Column="2" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
     </Grid>
 </Window>

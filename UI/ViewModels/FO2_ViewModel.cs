@@ -8,17 +8,14 @@ using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
-using Newtonsoft.Json.Linq;
 using SkiaSharp;
 using System;
-using System.Drawing;
 using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for FO2_Temperature.cs: Used in xaml as "DataContext"
-    [ObservableObject]
-    public partial class FO2_ViewModel
+    public partial class FO2_ViewModel : ObservableObject
     {
         public string Title { get; } = "Temperature";
         public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
@@ -30,25 +27,20 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void NextPage()
+        private void SwitchPage(NavigationContent desiredPage)
         {
-            MainWindow.SetPage(NavigationContent.GlaserCurve);
+            MainWindow.SetPage(desiredPage);
+            var x = TempCalc.LayerTemps.LastOrDefault();
         }
 
         [RelayCommand]
-        private void PrevPage()
-        {
-            MainWindow.SetPage(NavigationContent.SetupEnv);
-        }
-
-        [RelayCommand]
-        private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        private void EditElement(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
         {
             if (selectedElement is null)
                 selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(selectedElement);
+            var window = new EditElementWindow(selectedElement);
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
 
@@ -71,22 +63,22 @@ namespace BauphysikToolWPF.UI.ViewModels
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
         [ObservableProperty]
-        private string u_max;
+        private string u_max = String.Empty;
 
         [ObservableProperty]
-        private string r_min;
+        private string r_min = String.Empty;
 
         [ObservableProperty]
-        private string q_max;
+        private string q_max = String.Empty;
 
         [ObservableProperty]
-        private bool isUValueOK;
+        private bool isUValueOK = false;
 
         [ObservableProperty]
-        private bool isRValueOK;
+        private bool isRValueOK = false;
 
         [ObservableProperty]
-        private bool isQValueOK;
+        private bool isQValueOK = false;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -143,15 +135,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
 
             double left = 0;
-            int position = 0;
             foreach (Layer layer in TempCalc.Element.Layers)
             {
-                position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.LayerThickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
 
                 // Set properties of the layer rectangle at the desired position
-                rects[position] = new RectangularSection
+                rects[layer.LayerPosition] = new RectangularSection
                 {
                     Xi = left,
                     Xj = right,
@@ -179,8 +169,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                     PathEffect = new DashEffect(new float[] { 2, 2 })
                 }
             };*/
-
-
             return rects;
         }
         private ISeries[] DrawTempCurvePoints()

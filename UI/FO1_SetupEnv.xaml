@@ -3,6 +3,7 @@
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:local="clr-namespace:BauphysikToolWPF"
             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
             mc:Ignorable="d"
@@ -31,23 +32,25 @@
             <ColumnDefinition Width=".4*"/>
         </Grid.ColumnDefinitions>
 
-        <!--Top Left -->
+        <!--Top -->
         <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding NextPageCommand}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" Margin="8,0,0,0"/>
                     <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Weiter"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>
 
-        <!--Top Right -->
-        
         <!--Middle Left -->
         
         <!--Middle Right-->
@@ -67,45 +70,45 @@
                 </Grid.ColumnDefinitions>
 
                 <!--Innenseitige Randbedingungen-->
-                <Label Grid.Row="0" Grid.Column="0" Content="Innen" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" Height="28"/>
+                <Label Grid.Row="0" Grid.Column="0" Content="Innen" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" />
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="1" BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox ItemsSource="{Binding Ti_Keys}" SelectedItem="{Binding Ti_selection}" MinWidth="144"/>
-                    <TextBox Text="{Binding TiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
-                    <Label Content="°C" Height="32"/>
+                <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                    <ComboBox ItemsSource="{Binding Ti_Keys}" SelectedIndex="{Binding Ti_Index}"/>
+                    <TextBox Text="{Binding TiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                    <Label Content="°C"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="2" BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox ItemsSource="{Binding Rsi_Keys}" SelectedItem="{Binding Rsi_selection}" MinWidth="144"/>
+                <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom">
+                    <ComboBox ItemsSource="{Binding Rsi_Keys}" SelectedIndex="{Binding Rsi_Index}"/>
                     <TextBox Text="{Binding RsiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="0" Grid.Column="3" BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox ItemsSource="{Binding Rel_Fi_Keys}" SelectedItem="{Binding Rel_fi_selection}" MinWidth="144"/>
-                    <TextBox Text="{Binding RelFiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
-                    <Label Content="%" Height="32"/>
+                <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                    <ComboBox ItemsSource="{Binding Rel_Fi_Keys}" SelectedIndex="{Binding Rel_fi_Index}"/>
+                    <TextBox Text="{Binding RelFiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                    <Label Content="%"/>
                 </StackPanel>
 
                 <!--Außenseitige Randbedingungen-->
-                <Label Grid.Row="1" Grid.Column="0" Content="Außen" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" Height="28"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="Außen" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" />
                 <controls:SubscriptLabel Grid.Row="1" Grid.Column="1" BaseText="θ" SubscriptText="e" AppendText=" - Außenluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox ItemsSource="{Binding Te_Keys}" SelectedItem="{Binding Te_selection}" MinWidth="144"/>
-                    <TextBox Text="{Binding TeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
-                    <Label Content="°C" Height="32"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                    <ComboBox ItemsSource="{Binding Te_Keys}" SelectedIndex="{Binding Te_Index}"/>
+                    <TextBox Text="{Binding TeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                    <Label Content="°C"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="1" Grid.Column="2" BaseText="R" SubscriptText="se" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Height="28">
-                    <ComboBox ItemsSource="{Binding Rse_Keys}" SelectedItem="{Binding Rse_selection}" MinWidth="144"/>
+                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                    <ComboBox ItemsSource="{Binding Rse_Keys}" SelectedIndex="{Binding Rse_Index}"/>
                     <TextBox Text="{Binding RseValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel  Grid.Row="1" Grid.Column="3" BaseText="Φ" SubscriptText="e" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Height="28">
-                    <ComboBox ItemsSource="{Binding Rel_Fe_Keys}" SelectedItem="{Binding Rel_fe_selection}" MinWidth="144"/>
-                    <TextBox Text="{Binding RelFeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
-                    <Label Content="%" Height="32" />
+                <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" >
+                    <ComboBox ItemsSource="{Binding Rel_Fe_Keys}" SelectedIndex="{Binding Rel_fe_Index}"/>
+                    <TextBox Text="{Binding RelFeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                    <Label Content="%"/>
                 </StackPanel>
             </Grid>
         </Border>

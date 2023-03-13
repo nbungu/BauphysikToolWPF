@@ -13,8 +13,7 @@ using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    [ObservableObject]
-    public partial class FO3_ViewModel
+    public partial class FO3_ViewModel : ObservableObject
     {
         public string Title { get; } = "Moisture";
 
@@ -25,19 +24,19 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void PrevPage()
+        private void SwitchPage(NavigationContent desiredPage)
         {
-            MainWindow.SetPage(NavigationContent.TemperatureCurve);
+            MainWindow.SetPage(desiredPage);
         }
 
         [RelayCommand]
-        private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        private void EditElement(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
         {
             if (selectedElement is null)
                 selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(selectedElement);
+            var window = new EditElementWindow(selectedElement);
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
 
@@ -59,7 +58,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // TODO: Rework as MVVM
 
-        public GlaserCalc GlCalc { get; set; } = FO3_Moisture.GlaserCalculation;
+        public GlaserCalc Glaser { get; set; } = FO3_Moisture.GlaserCalculation;
         public RectangularSection[] LayerSections { get; set; }
         public ISeries[] DataPoints { get; set; }
         public Axis[] XAxes { get; set; }
@@ -84,21 +83,20 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private RectangularSection[] DrawLayerSections()
         {
-            if (GlCalc.Element.Layers.Count == 0)
+            if (Glaser.Element.Layers.Count == 0)
                 return new RectangularSection[0];
 
-            RectangularSection[] rects = new RectangularSection[GlCalc.Element.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[Glaser.Element.Layers.Count];
 
             //TODO: Round values of left and right
             double left = 0;
-            foreach (Layer layer in GlCalc.Element.Layers)
+            foreach (Layer layer in Glaser.Element.Layers)
             {
-                int position = layer.LayerPosition - 1; // change to 0 based index
                 double layerWidth = layer.Sd_Thickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
 
                 // Set properties of the layer rectangle at the desired position
-                rects[position] = new RectangularSection
+                rects[layer.LayerPosition] = new RectangularSection
                 {
                     Xi = left,
                     Xj = right,
@@ -117,16 +115,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] DrawGlaserCurvePoints()
         {
-            if (GlCalc.Element.Layers.Count == 0)
+            if (Glaser.Element.Layers.Count == 0)
                 return new ISeries[0];
 
             ISeries[] series = new ISeries[2];
 
-            ObservablePoint[] p_Curve_Values = new ObservablePoint[GlCalc.LayerP.Count()]; // represents the temperature points
-            for (int i = 0; i < GlCalc.LayerP.Count(); i++)
+            ObservablePoint[] p_Curve_Values = new ObservablePoint[Glaser.LayerP.Count()]; // represents the temperature points
+            for (int i = 0; i < Glaser.LayerP.Count(); i++)
             {
-                double x = GlCalc.LayerP.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(GlCalc.LayerP.ElementAt(i).Value, 2); // Temperature in °C
+                double x = Glaser.LayerP.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(Glaser.LayerP.ElementAt(i).Value, 2); // Temperature in °C
                 p_Curve_Values[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             LineSeries<ObservablePoint> p_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -140,12 +138,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 6,
                 TooltipLabelFormatter = (chartPoint) => $"pi: {chartPoint.PrimaryValue} Pa",
             };
-
-            ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[GlCalc.LayerPsat.Count()]; // represents the temperature points
-            for (int i = 0; i < GlCalc.LayerPsat.Count(); i++)
+            ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[Glaser.LayerPsat.Count()]; // represents the temperature points
+            for (int i = 0; i < Glaser.LayerPsat.Count(); i++)
             {
-                double x = GlCalc.LayerPsat.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(GlCalc.LayerPsat.ElementAt(i).Value, 2); // Temperature in °C
+                double x = Glaser.LayerPsat.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(Glaser.LayerPsat.ElementAt(i).Value, 2); // Temperature in °C
                 p_sat_Curve_Values[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             LineSeries<ObservablePoint> p_sat_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -160,7 +157,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 TooltipLabelFormatter = (chartPoint) => $"p_sat_i: {chartPoint.PrimaryValue} Pa",
             };
 
-            series[0] = p_Curve;
+            series[0] = p_Curve; 
             series[1] = p_sat_Curve;
 
             return series;

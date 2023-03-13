@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BauphysikToolWPF.UI"
+             xmlns:local="clr-namespace:BauphysikToolWPF"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
@@ -11,7 +11,7 @@
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
-        <vm:FO0_ViewModel/> 
+        <vm:FO0_LandingPage_VM/> 
     </UserControl.DataContext>
 
     <UserControl.Resources>
@@ -20,6 +20,7 @@
         <controls:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
 
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
+        <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <Style x:Key="ButtonStyleGridPanel" TargetType="{x:Type Button}">
             <Setter Property="Content" Value="{Binding ElementId}"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -41,24 +42,21 @@
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
-            </Setter>            
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
-                <DataTrigger Binding="{Binding ElementId, Converter={StaticResource IsSelectedElementConverter}}" Value="True">
+                <!--
+                Converter checks if currentElementId equals selectedElementId,
+                where selectedElementId is MVVM ObservableProperty for Notification when Selected Element changes
+                -->
+                <DataTrigger Value="True">
+                    <DataTrigger.Binding>
+                        <MultiBinding Converter="{StaticResource IsSelectedElementConverter}">
+                            <Binding RelativeSource="{RelativeSource Self}" Path="DataContext.ElementId" Mode="OneWay"/>
+                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" Path="Tag.SelectedElementId" Mode="OneWay"/>
+                        </MultiBinding>
+                    </DataTrigger.Binding>
                     <Setter Property="BorderThickness" Value="2"/>
                 </DataTrigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
@@ -77,36 +75,37 @@
                 Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.
                 -->
                 <Button Grid.Row="0"
+                        Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                         Content="{Binding ElementId}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding ElementId}"
                         Style="{StaticResource ButtonStyleGridPanel}"
-                        Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}">
+                        MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>
                         <!--
                         ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
-                        You need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO0_ViewModel).
+                        You need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
                         The Tag Property can be used to hold any kind of user specified Data.
                         -->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">
-                            <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.OpenNewElementWindowCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Umbenennen" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Edit_B}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Copy_B}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Exportieren">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Export_B}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Delete_B}" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Speichern">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Save_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Sperren">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Lock_B}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
                         </ContextMenu>
@@ -120,59 +119,6 @@
             <WrapPanel x:Name="element_WrapPanel" ItemWidth="144" ItemHeight="192" ClipToBounds="True"/>
         </ItemsPanelTemplate>
 
-        <!--Custom RadioButton01_A: ToggleButton with behaviour like RadioButton: Exclusive Group, Checkstates etc.-->
-        <Style x:Key="RadioButton01_A" TargetType="{x:Type RadioButton}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <!--Use ToggleButton as UI Element and redirect every propery needed from Parent Element (RadioButton) to the ToggleButton -->
-                        <ToggleButton Style="{DynamicResource ToggleButton01_A}"
-                                      IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}"
-                                      Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
-                                      Command="{Binding Command, RelativeSource={RelativeSource TemplatedParent}}"
-                                      CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource TemplatedParent}}"
-                                      Tag="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"/>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--Custom ToggleButton01_A: with icon center top, rounded corners, transparent, click effects-->
-        <Style x:Key="ToggleButton01_A" TargetType="{x:Type ToggleButton}">
-            <!--Set default properties of the button-->
-            <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="MinHeight" Value="40"/>
-            <Setter Property="MinWidth" Value="56"/>
-            <!--Set appearance of the element-->
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="4">
-                            <StackPanel Orientation="Vertical">
-                                <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16"/>
-                                <Label Content="{TemplateBinding Content}"/>
-                            </StackPanel>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <!--Set Triggers and Effects-->
-            <Style.Triggers>
-                <Trigger Property="IsChecked" Value="True">
-                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
-                    <Setter Property="BorderThickness" Value="2"/>
-                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
     </UserControl.Resources>
 
     <Grid Background="{StaticResource PrimaryLightBrush}">
@@ -181,49 +127,37 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".2*" MinWidth="170" MaxWidth="290"/>
-            <ColumnDefinition Width=".8*" MinWidth="320"/>
+            <ColumnDefinition Width=".2*" MinWidth="200" MaxWidth="320"/>
+            <ColumnDefinition Width=".6*" MinWidth="448"/>
+            <ColumnDefinition Width=".2*" MinWidth="240" MaxWidth="360"/>
         </Grid.ColumnDefinitions>
 
-        <!--Top Left -->
-        <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
-            <Grid>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
-                </StackPanel>
-                <Label Content="Bauteilkatalog" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
-            </Grid>
+        <!-- Top -->
+        <Border Grid.ColumnSpan="3" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+            <Label Content="Bauteilkatalog" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
         </Border>
 
-        <!--
-        <Rectangle Grid.ColumnSpan="2" Fill="{StaticResource PrimaryDarkBrush}"/>
-        <Label Grid.ColumnSpan="2" Content="Bauteilkatalog" FontSize="24" FontWeight="Bold" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Foreground="White"/>
-        <Image Grid.Column="1" Grid.RowSpan="2" Width="80" Height="80" Source="../Ordner_Icon.ico" Margin="16" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-        -->
-        
-        
+        <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
-            <Button Content="Bauteil erstellen" Command="{Binding OpenNewElementWindowCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Aus Bauteilbibliothek" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Projects_B}"  Margin="0,0,0,16"/>
-            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center"/>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
-            <Button Content="Schließen" Style="{StaticResource ButtonStyle03_B}" Command="{Binding CloseCommand}" Tag="{StaticResource ButtonIcon_Exit_B}"/>
+            <Button Content="Bauteil erstellen" Command="{Binding EditElementCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
+            <Button Content="Importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
+            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+            <Button Content="Katalog Löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,0,16"/>
         </StackPanel>
 
+        <!-- Middle -->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
-                <RowDefinition Height="48" />
-                <RowDefinition Height="*" />
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".15*"/>
                 <ColumnDefinition Width=".7*"/>
                 <ColumnDefinition Width=".15*"/>
-                <ColumnDefinition MinWidth="170" MaxWidth="290"/>
             </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" FontWeight="Bold"/>
+            <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
             <!--"WrapPanel inside a ListBox does pick up the DataTemplate you define .. so you have complete liberty to bind any list to your WrapPanel"-->
             <ItemsControl x:Name="element_ItemsControl"
@@ -235,40 +169,69 @@
                           Background="Transparent"                          
                           BorderThickness="0"
                           Tag="{Binding}"/>
-
-            <Label Grid.Row="0" Grid.Column="3" Content="Projektdaten" HorizontalAlignment="Left" FontWeight="Bold"/>
-            <Grid Grid.Row="1" Grid.Column="3">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width=".5*" MinWidth="64"/>
-                    <ColumnDefinition Width=".5*" MinWidth="64"/>
-                </Grid.ColumnDefinitions>
-
-                <Label Grid.ColumnSpan="2" Content="Projektname:" HorizontalAlignment="Left"/>
-                <TextBox Grid.Row="1" Grid.ColumnSpan="2" x:Name="projectName_TextBox" Text="{Binding ProjectName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
-
-                <Label Grid.Row="2" Grid.ColumnSpan="2" Content="Bearbeiter:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-                <TextBox Grid.Row="3" Grid.ColumnSpan="2" x:Name="projectUser_TextBox" Text="{Binding ProjectUserName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
-
-                <Label Grid.Row="4" Grid.ColumnSpan="2" Content="Nutzungsart des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-                <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding IsBuildingUsage1}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage1" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,4,4,0"/>
-                <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsBuildingUsage0}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage0" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_Office_B}" Margin="4,4,0,0"/>
-
-                <Label Grid.Row="6" Grid.ColumnSpan="2" Content="Alter des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-                <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding IsBuildingAge1}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge1" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
-                <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsBuildingAge0}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge0" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
-            </Grid>           
-            
         </Grid>
+        
+        <!-- Right -->
+        <Grid Grid.Row="1" Grid.Column="2" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Content="Ausgewähltes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Export_B}" ToolTip="Exportieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+            </StackPanel>
+            
+            <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderBrush="{StaticResource PrimaryHighlightBrush}" BorderThickness="0">
+                <Grid Margin="16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!--Top-->
+                    <Label Grid.Row="0" Grid.ColumnSpan="2" Content="{Binding SelectedElementName}" FontWeight="Bold" Foreground="{StaticResource PrimaryHighlightBrush}"/>
+                    <Image Grid.Row="1" Grid.ColumnSpan="2" SnapsToDevicePixels="True" Source="{Binding SelectedElementImage}" VerticalAlignment="Top" Margin="0,0,0,16"/>
+                    <!--Left-->
+                    <Label Grid.Row="2" Content="Typ:" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="3" Content="Ausrichtung:" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="4" Content="R-Wert:" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="5" Content="Sd-Wert:" HorizontalAlignment="Right"/>
+                    <Label Grid.Row="6" Content="m':" HorizontalAlignment="Right"/>
+                    <!--Right-->
+                    <!--
+                    Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.
+                    Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string
+                    -->
+                    <Label Grid.Row="2" Grid.Column="1" Content="{Binding SelectedElementType}" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="3" Grid.Column="1" Content="{Binding SelectedElementOrientation}" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="4" Grid.Column="1" Content="{Binding SelectedElementRValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                    <Label Grid.Row="5" Grid.Column="1" Content="{Binding SelectedElementSdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
+                    <Label Grid.Row="6" Grid.Column="1" Content="{Binding SelectedElementAreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
+                </Grid>
+            </Border>
+
+            <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Bottom">
+                <Button Content="Bauteil bearbeiten" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}" IsEnabled="{Binding ElementToolsAvailable}" />
+            </StackPanel>
+        </Grid>
+        
+        
+        
+        
     </Grid>
 </UserControl>

@@ -24,14 +24,12 @@
         <BitmapImage x:Key="ButtonIcon_AddLayer_W" UriSource="/Resources/Icons/add_layer_w.png"/>
         <BitmapImage x:Key="ButtonIcon_AddElement_B" UriSource="/Resources/Icons/add_element.png"/>
         <BitmapImage x:Key="ButtonIcon_AddElement_W" UriSource="/Resources/Icons/add_element_w.png"/>
-        <BitmapImage x:Key="ButtonIcon_Delete_B" UriSource="/Resources/Icons/delete.png"/>
-        <BitmapImage x:Key="ButtonIcon_Delete_W" UriSource="/Resources/Icons/delete_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Delete_B" UriSource="/Resources/Icons/delete-2.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteLayer_B" UriSource="/Resources/Icons/delete_layer.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteLayer_W" UriSource="/Resources/Icons/delete_layer_w.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteElement_B" UriSource="/Resources/Icons/delete_element.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteElement_W" UriSource="/Resources/Icons/delete_element_w.png"/>
-        <BitmapImage x:Key="ButtonIcon_Edit_B" UriSource="/Resources/Icons/bleistift.png"/>
-        <BitmapImage x:Key="ButtonIcon_Edit_W" UriSource="/Resources/Icons/bleistift_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Edit_B" UriSource="/Resources/Icons/edit-2.png"/>
         <BitmapImage x:Key="ButtonIcon_Cancel_B" UriSource="/Resources/Icons/kreuzkreis.png"/>
         <BitmapImage x:Key="ButtonIcon_Cancel_W" UriSource="/Resources/Icons/kreuzkreis_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Exit_B" UriSource="/Resources/Icons/kreuz.png"/>
@@ -79,6 +77,15 @@
         <BitmapImage x:Key="ButtonIcon_OpenProject_W" UriSource="/Resources/Icons/open_project_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Settings_B" UriSource="/Resources/Icons/settings.png"/>
         <BitmapImage x:Key="ButtonIcon_Settings_W" UriSource="/Resources/Icons/settings_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Download_B" UriSource="/Resources/Icons/download.png"/>
+        <BitmapImage x:Key="ButtonIcon_Download_W" UriSource="/Resources/Icons/download_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Copy_B" UriSource="/Resources/Icons/copy.png"/>
+        <BitmapImage x:Key="ButtonIcon_Copy_W" UriSource="/Resources/Icons/copy_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Export_B" UriSource="/Resources/Icons/export.png"/>
+        <BitmapImage x:Key="ButtonIcon_Export_W" UriSource="/Resources/Icons/export_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_Up_B" UriSource="/Resources/Icons/up.png"/>
+        <BitmapImage x:Key="ButtonIcon_Down_B" UriSource="/Resources/Icons/down.png"/>
+        <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
 
 
         <!--Custom TextBox for Subscript Text with Equation-->
@@ -156,18 +163,20 @@
         <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
             <Setter Property="SnapsToDevicePixels" Value="true" />
             <Setter Property="OverridesDefaultStyle" Value="true" />
-            <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
-            <Setter Property="MinWidth" Value="120" />
-            <Setter Property="MinHeight" Value="20" />
+            <!-- CanContentScroll = false for smooth scrolling -->
+            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+            <Setter Property="MinWidth" Value="144"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="MaxDropDownHeight" Value="320"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBox}">
                         <Grid>
+                            <!--The DropDownButton when closed-->
                             <ToggleButton x:Name="ToggleButton" Grid.Column="2" Focusable="false" ClickMode="Press" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                                 <ToggleButton.Template>
                                     <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -179,27 +188,36 @@
                                             <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="4" Background="{TemplateBinding Background}" />
                                             <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{StaticResource PrimaryDarkBrush}"/>
                                         </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </ToggleButton.Template>
                             </ToggleButton>
+                            <!--Content inside of closed DropDownButton -->
                             <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
                                             Content="{TemplateBinding SelectionBoxItem}"
                                             ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                             ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                            Margin="3,3,23,3"
+                                            Margin="6,6,26,6"
                                             VerticalAlignment="Stretch"
                                             HorizontalAlignment="Left"/>
-                            <TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="3,3,23,3" Focusable="True" Background="Transparent" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}">
+                            <!--Invisible Element of closed DropDownButton
+                            <TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" HorizontalAlignment="Left" VerticalAlignment="Center" VerticalContentAlignment="Center" Margin="6,6,26,6" Focusable="True" Background="Transparent" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}">
                                 <TextBox.Template>
                                     <ControlTemplate TargetType="{x:Type TextBox}">
-                                        <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
+                                        <Border x:Name="PART_ContentHost" Focusable="False"/>
                                     </ControlTemplate>
                                 </TextBox.Template>
-                            </TextBox>
+                            </TextBox>-->
+                            <!-- DropDown Menu / Popup -->
                             <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
                                 <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                    <Border x:Name="DropDownBorder" BorderThickness="1" Background="Aqua" BorderBrush="Beige"/>
-                                    <ScrollViewer Margin="4,6,4,6" SnapsToDevicePixels="True">
+                                    <Border x:Name="DropDownBorder" BorderThickness="1" Background="{StaticResource PrimaryLightBrush}" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
+                                    <!-- Margin includes 4px Gap between Popup and DropDownButton -->
+                                    <ScrollViewer Margin="4,8,4,4" SnapsToDevicePixels="True">
                                         <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
                                 </Grid>
@@ -214,30 +232,37 @@
                             </Trigger>
                             <Trigger SourceName="Popup" Property="AllowsTransparency" Value="true">
                                 <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="4" />
-                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,2,0,0" />
+                                <!-- 4px Gap between Popup and DropDownButton -->
+                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,4,0,0" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
         <!-- Custom ComboBoxItem Style -->
         <!-- Applies on every ComboBoxItem in this App -->
         <Style x:Key="{x:Type ComboBoxItem}" TargetType="{x:Type ComboBoxItem}">
             <Setter Property="SnapsToDevicePixels" Value="true" />
-            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true"/>
+            <Setter Property="Padding" Value="4"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                        <Border x:Name="Border" Padding="2" SnapsToDevicePixels="true" Background="{StaticResource PrimaryLightBrush}">
-                            <ContentPresenter />
+                        <Border CornerRadius="4"
+                                Padding="{TemplateBinding Padding}"
+                                Background="{TemplateBinding Background}"
+                                SnapsToDevicePixels="true">
+                            <ContentPresenter VerticalAlignment="Center" Margin="4,0,0,0"/>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -248,7 +273,7 @@
         <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}">
             <!--These setters are for the default appearance-->
             <Setter Property="MinWidth" Value="48"/>
-            <Setter Property="MaxHeight" Value="32"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="MaxLength" Value="80"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -282,6 +307,7 @@
             <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
             <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Grid.IsSharedSizeScope" Value="True" />
+            <Setter Property="MinWidth" Value="120"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
@@ -401,8 +427,7 @@
             </Style.Resources>
         </Style>
 
-        <!--Custom Button03_A: with icon, highlighted, rounded corners, click effects -->
-        <!--
+        <!--Custom Button03_A: with icon, highlighted, rounded corners, click effects
         Icon gets passed by the 'Tag' Property: 
         Tag: "Gets or sets an arbitrary object value that can be used to store custom information about this element."
         -->        
@@ -446,6 +471,9 @@
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -492,6 +520,9 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
             </Style.Triggers>
         </Style>
 
@@ -502,10 +533,10 @@
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="MinWidth" Value="28"/>
-            <Setter Property="MinHeight" Value="28"/>
-            <Setter Property="MaxWidth" Value="64"/>
-            <Setter Property="MaxHeight" Value="64"/>
+            <Setter Property="MinWidth" Value="24"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="MaxWidth" Value="48"/>
+            <Setter Property="MaxHeight" Value="48"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--Set appearance of the element-->
@@ -539,14 +570,78 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
             </Style.Triggers>
         </Style>
 
-        <!--Custom Button04: rectangular, click effects -->
+        <!--Custom Button03_B_Icon: like Button03_B but only icon -->
+        <Style x:Key="ButtonStyle03_B_Icon" TargetType="{x:Type Button}">
+            <!--Set default properties of the button-->
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="MinWidth" Value="32"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal">
+                                <!--Bind Image via DataContext Property in the Button Element-->
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--Custom Button04: rounded corners, click effects, materialUI -->
         <Style x:Key="ButtonStyle04" TargetType="{x:Type Button}">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="MinHeight" Value="32"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".6"/>
+                </Setter.Value>
+            </Setter>
             <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
             <Setter Property="RenderTransform">
                 <Setter.Value>
@@ -554,10 +649,21 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FF6DD46D"/>
+                </Trigger>
                 <Trigger Property="IsPressed" Value="True">
                     <Setter Property="RenderTransform">
                         <Setter.Value>
                             <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="Gray"/>
+                    <Setter Property="Effect">
+                        <Setter.Value>
+                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".2"/>
                         </Setter.Value>
                     </Setter>
                 </Trigger>

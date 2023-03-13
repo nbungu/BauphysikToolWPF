@@ -66,7 +66,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-
+                <!--Here Binding is from: ItemsSource="{Binding DistinctCategories}" -->
                 <Label Content="{Binding}" Height="28"/>
             </Grid>
         </DataTemplate>
@@ -84,11 +84,11 @@
                     <ColumnDefinition Width="116"/>
                 </Grid.ColumnDefinitions>
                 <!--Binding reference are the ListViewItems-->
-                <Label Content="{Binding Name}" Height="28" FontWeight="Bold"/>
-                <Label Grid.Column="1" Content="{Binding BulkDensity}" ContentStringFormat='ρ = {0} kg/m³' Height="28" VerticalAlignment="Center"/>
-                <Label Grid.Column="2" Content="{Binding ThermalConductivity}" ContentStringFormat='λ = {0} W/(m·K)' Height="28" VerticalAlignment="Center"/>
-                <Label Grid.Column="3" Content="{Binding SpecificHeatCapacity}" ContentStringFormat='c = {0} J/(kg·K)' Height="28" VerticalAlignment="Center"/>
-                <Label Grid.Column="4" Content="{Binding DiffusionResistance}" ContentStringFormat='µ = {0}' Height="28" VerticalAlignment="Center"/>
+                <Label Content="{Binding Name}" Height="28" FontWeight="Bold" HorizontalAlignment="Left"/>
+                <Label Grid.Column="1" Content="{Binding BulkDensity}" ContentStringFormat='ρ = {0} kg/m³' Height="28" HorizontalAlignment="Left"/>
+                <Label Grid.Column="2" Content="{Binding ThermalConductivity}" ContentStringFormat='λ = {0} W/(m·K)' Height="28" HorizontalAlignment="Left"/>
+                <Label Grid.Column="3" Content="{Binding SpecificHeatCapacity}" ContentStringFormat='c = {0} J/(kg·K)' Height="28" HorizontalAlignment="Left"/>
+                <Label Grid.Column="4" Content="{Binding DiffusionResistance}" ContentStringFormat='µ = {0}' Height="28" HorizontalAlignment="Left"/>
             </Grid>
         </DataTemplate>
 
@@ -112,7 +112,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Label Content="Kategorie Auswahl" FontWeight="Bold" FontSize="14" VerticalContentAlignment="Center"/>
+            <Label Content="Kategorie Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
             <ListView x:Name="collectionView_Categories"
                       ItemsSource="{Binding DistinctCategories}"
@@ -131,7 +131,7 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Label Content="Material Auswahl" FontWeight="Bold" FontSize="14" VerticalContentAlignment="Center"/>
+            <Label Content="Material Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
             <Grid Grid.Row="1" Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
@@ -152,13 +152,13 @@
         </Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="8">
-            <Label Content="Schichtdicke angeben: " FontSize="14" FontWeight="Bold" VerticalAlignment="Center"/>
+            <Label Content="Schichtdicke angeben: " FontWeight="Bold" HorizontalAlignment="Left"/>
             <TextBox x:Name="thickness_TextBox" Text="" VerticalContentAlignment="Center" FontSize="14" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput" Height="32" Width="56"/>
-            <Label Content="cm" FontWeight="SemiBold" FontSize="14" VerticalAlignment="Center" VerticalContentAlignment="Center"/>
+            <Label Content="cm" FontWeight="SemiBold"/>
         </StackPanel>
 
         <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="8">
-            <Button Content="Schicht dem Bauteil hinzufügen" Click="AddMaterial_Clicked" Style="{StaticResource ButtonStyle04}"/>
+            <Button Content="Schicht dem Bauteil hinzufügen" Click="AddLayer_Clicked" Style="{StaticResource ButtonStyle04}"/>
         </Grid>
 
     </Grid>

@@ -1,13 +1,12 @@
-﻿<Window x:Class="BauphysikToolWPF.UI.NewElementWindow"
+﻿<Window x:Class="BauphysikToolWPF.UI.EditElementWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
-        xmlns:local="clr-namespace:BauphysikToolWPF.UI"
+        xmlns:local="clr-namespace:BauphysikToolWPF"
         mc:Ignorable="d"
         Title="Bauteildaten festlegen"
-        Height="248"
+        Height="320"
         Width="320"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
@@ -18,20 +17,26 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
 
         <StackPanel Orientation="Vertical" Margin="16,8,16,8" VerticalAlignment="Center">
-            <Label Content="Name" FontSize="14"/>
+            <Label Content="Name" HorizontalAlignment="Left"/>
             <TextBox x:Name="elementName_TextBox" Text="" HorizontalContentAlignment="Left" MaxLength="64" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
 
         <StackPanel Grid.Row="1" Orientation="Vertical" Margin="16,0,16,8" VerticalAlignment="Center">
-            <Label Content="Typ" FontSize="14"/>
-            <ComboBox x:Name="constructionType_Picker" VerticalContentAlignment="Center" FontSize="14" Height="32" HorizontalAlignment="Stretch"/>
+            <Label Content="Typ" HorizontalAlignment="Left"/>
+            <ComboBox x:Name="construction_Picker"/>
         </StackPanel>
 
-        <Button x:Name="apply_Button" Grid.Row="2" Margin="16" Content="Übernehmen" Click="apply_Button_Click" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Center"/>
+        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="16,0,16,8" VerticalAlignment="Center">
+            <Label Content="Ausrichtung" HorizontalAlignment="Left"/>
+            <ComboBox x:Name="orientation_Picker"/>
+        </StackPanel>
+
+        <Button x:Name="apply_Button" Grid.Row="3" Margin="16" Content="Übernehmen" Click="apply_Button_Click" Style="{StaticResource ButtonStyle02_A}" VerticalAlignment="Center"/>
 
     </Grid>
 </Window>

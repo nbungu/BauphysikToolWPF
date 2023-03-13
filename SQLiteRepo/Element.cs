@@ -1,11 +1,10 @@
-﻿using BauphysikToolWPF.ComponentCalculations;
+﻿using BauphysikToolWPF.UI;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media.Imaging;
-using static BauphysikToolWPF.ComponentCalculations.CheckRequirements;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
@@ -30,6 +29,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         [ForeignKey(typeof(Construction))] // FK for the 1:1 relationship with Construction
         public int ConstructionId { get; set; }
 
+        [ForeignKey(typeof(Orientation))] // FK for the 1:1 relationship with Orientation
+        public int OrientationId { get; set; }
+
         [ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
         public int ProjectId { get; set; }
 
@@ -49,12 +51,19 @@ namespace BauphysikToolWPF.SQLiteRepo
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Construction Construction { get; set; }
 
+        // 1:1 relationship with Orientation
+        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public Orientation Orientation { get; set; }
+
         // m:n relationship with EnvVars
         [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all EnvVars linked to this 'Element')
         public List<EnvVars> EnvVars { get; set; }
 
         [Ignore]
-        public bool IsLocked { get; set; } // For UI Purposes
+        public bool IsSelectedElement // For UI Purposes
+        {
+            get { return ElementId == FO0_LandingPage.SelectedElementId; }
+        }
 
         // Encapsulate 'Image' variable for use in frontend
         [Ignore]
@@ -62,8 +71,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Image == null || Image.Length == 0)
-                    return null;
+                if (Image is null)
+                    return new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png"));
 
                 BitmapImage image = new BitmapImage();
                 // use using to call Dispose() after use of unmanaged resources. GC cannot manage this

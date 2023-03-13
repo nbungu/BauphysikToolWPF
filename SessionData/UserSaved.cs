@@ -5,7 +5,7 @@ namespace BauphysikToolWPF.SessionData
     public delegate void Notify(); // delegate (signature: return type void, no input parameters)
     public static class UserSaved // publisher of 'EnvVarsChanged' event
     {
-        public static event Notify EnvVarsChanged; // event
+        public static event Notify? EnvVarsChanged; // event
 
         // event handlers - publisher
         public static void OnEnvVarsChanged() //protected virtual method

@@ -3,15 +3,17 @@ using System.Windows.Controls;
 
 namespace BauphysikToolWPF
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
+    /*
+     * THIS IS THE MAIN WINDOW WHICH CONTAINS ALL PAGES AND CONTENT
+     * 
+     * Contains the Navigation Box on the left and the Content Pages on the right side
+     */
 
-    // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF
-    // accessible from whole application
+    // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF. Accessible from whole application
     public enum NavigationContent 
     {
         // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
+        ProjectPage,
         LandingPage,
         SetupLayer,
         SetupEnv,
@@ -20,32 +22,43 @@ namespace BauphysikToolWPF
     }
     public partial class MainWindow : Window
     {
-        public static ListBox navigationMenuListBox;
+        // TODO add back button based on previously used page
+        public static NavigationContent lastRoutedPage;
 
-        // Saves MainWindow Instance here
-        public static Window Main;
+        public static ListBox? navigationMenuListBox;
+
+        public static Border? projectBoxHeader;
 
         public MainWindow()
         {
             InitializeComponent();
             navigationMenuListBox = this.NavigationMenuListBox;
-            Main = this;
+            projectBoxHeader = this.ProjectBoxHeader;
         }
         
         public static void SetPage(NavigationContent page)
         {
+            if (navigationMenuListBox is null || projectBoxHeader is null)
+                return;
             /*
              * MainWindow.xaml changes the ContentPage based on the 'SelectedItem' string when toggled from 'NavigationListBox'
              * The string values of the SelectedItem are defined at 'NavigationMenuItems'
              * 
-             * MainWindow.xaml changes the ContentPage based on the 'Tag' string when NOT toggled from 'NavigationListBox'
-             * Set 'SelectedItem' to null before!
+             * Alternatively: MainWindow.xaml changes the ContentPage based on the 'Tag' string when NOT toggled from 'NavigationListBox'
+             * Set 'SelectedItem' or 'SelectedIndex' to null / -1 before!
              */
+
             switch (page)
             {
+                case NavigationContent.ProjectPage:
+                    navigationMenuListBox.SelectedIndex = -1;
+                    projectBoxHeader.Tag = "ProjectPage";
+                    break;
                 case NavigationContent.LandingPage:
                     navigationMenuListBox.SelectedIndex = -1;
+                    projectBoxHeader.Tag = "LandingPage";
                     break;
+                    //
                 case NavigationContent.SetupLayer:
                     navigationMenuListBox.SelectedItem = "SetupLayer";
                     break;
@@ -63,10 +76,10 @@ namespace BauphysikToolWPF
                     break;
             }
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        // Exposes default Close() Method as static Method
+        public static new void Close()
         {
-            SetPage(NavigationContent.LandingPage);
+            Close();
         }
     }
 }

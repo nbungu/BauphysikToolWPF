@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.ComponentCalculations
     public class CheckRequirements
     {
         // Always fetch current Project on calling this Class. No need for Notifier or Updater when Project changes
-        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_LandingPage.ProjectId);
+        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId);
 
         // Always fetch current Construction on calling this Class. No need for Notifier or Updater when Construction changes
         private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
@@ -69,7 +69,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             List<Requirement> allRequirements = currentElement.Construction.Requirements;
 
             // catch constructions with no requirements
-            if (allRequirements == null || allRequirements.Count == 0)
+            if (allRequirements is null || allRequirements.Count == 0)
                 return -1;
 
             // b) Select relevant Source based off Building Age and Usage
@@ -90,7 +90,9 @@ namespace BauphysikToolWPF.ComponentCalculations
             }
 
             // c) Get specific Requirement from selected RequirementSource
-            Requirement specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            Requirement? specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            if (specificRequirement is null)
+                return -1;
 
             // Check if conditions have to be met
             if (UserSaved.Ti >= 19)
@@ -116,15 +118,16 @@ namespace BauphysikToolWPF.ComponentCalculations
             List<Requirement> allRequirements = currentElement.Construction.Requirements;
 
             // catch constructions with no requirements
-            if (allRequirements == null || allRequirements.Count == 0)
+            if (allRequirements is null || allRequirements.Count == 0)
                 return -1;
 
             // b) Select relevant Source
             int requirementSourceId = (int)RequirementSource.DIN_4108_2_Tabelle3;
 
             // c) Get specific Requirement from selected RequirementSource
-            Requirement specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
-            //TODO: Can be null
+            Requirement? specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            if (specificRequirement is null)
+                return -1;
 
             // Check if conditions have to be met
             if (currentElement.AreaMassDens >= 100)

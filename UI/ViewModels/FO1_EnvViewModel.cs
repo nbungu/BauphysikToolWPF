@@ -2,6 +2,7 @@
 using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +12,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO1_EnvViewModel : ObservableObject
     {
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "Setup Env Vars";
+        public string Title { get; } = "SetupEnv";
 
         /*
          * Static Class Properties:
@@ -19,33 +20,33 @@ namespace BauphysikToolWPF.UI.ViewModels
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
 
-        private static List<string>? ti_Keys;
-        public List<string> Ti_Keys
+        private static List<string?>? ti_Keys;
+        public List<string?> Ti_Keys
         {
             get { return ti_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? te_Keys;
-        public List<string> Te_Keys
+        private static List<string?>? te_Keys;
+        public List<string?> Te_Keys
         {
             get { return te_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? rsi_Keys;
-        public List<string> Rsi_Keys
+        private static List<string?>? rsi_Keys;
+        public List<string?> Rsi_Keys
         {
             get { return rsi_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? rse_Keys;
-        public List<string> Rse_Keys
+        private static List<string?>? rse_Keys;
+        public List<string?> Rse_Keys
         {
             get { return rse_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rse").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? rel_Fi_Keys;
-        public List<string> Rel_Fi_Keys
+        private static List<string?>? rel_Fi_Keys;
+        public List<string?> Rel_Fi_Keys
         {
             get { return rel_Fi_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Select(e => e.Comment).ToList(); }
         }
-        private static List<string>? rel_Fe_Keys;
-        public List<string> Rel_Fe_Keys
+        private static List<string?>? rel_Fe_Keys;
+        public List<string?> Rel_Fe_Keys
         {
             get { return rel_Fe_Keys ??= DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Select(e => e.Comment).ToList(); }
         }
@@ -57,25 +58,19 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void NextPage()
+        private void SwitchPage(NavigationContent desiredPage)
         {
-            MainWindow.SetPage(NavigationContent.TemperatureCurve);
+            MainWindow.SetPage(desiredPage);
         }
 
         [RelayCommand]
-        private void PrevPage()
-        {
-            MainWindow.SetPage(NavigationContent.SetupLayer);
-        }
-
-        [RelayCommand]
-        private void OpenEditElementWindow(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
             if (selectedElement is null)
                 selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new NewElementWindow(selectedElement);
+            var window = new EditElementWindow(selectedElement);
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
 
@@ -95,33 +90,33 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(TiValue))] // Notifies 'TiValue' when this property is changed!
-        private static string ti_selection = ""; // As Static Class Variable to Save the Selection after Switching Pages!
-
         // Add m:n realtion to Database when new selection is set
         //TODO implement again
         //UpdateElementEnvVars(ElementId, currentEnvVar);
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(TiValue))]
+        private static int ti_Index; // As Static Class Variable to Save the Selection after Switching Pages!
+
+        [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TeValue))]
-        private static string te_selection = "";
+        private static int te_Index;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RsiValue))]
-        private static string rsi_selection = "";
+        private static int rsi_Index;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RseValue))]
-        private static string rse_selection = "";
+        private static int rse_Index;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RelFiValue))]
-        private static string rel_fi_selection = "";
+        private static int rel_fi_Index;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RelFeValue))]
-        private static string rel_fe_selection = "";
+        private static int rel_fe_Index;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -133,78 +128,93 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double value = (ti_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_selection).Value;
-                UserSaved.Ti = value;
-                return value.ToString();
+                // Index is -1:
+                // a) On Initial Startup
+                // b) On custom user input
+
+                //Get corresp Value
+                double? value = (ti_Index == -1) ? UserSaved.Ti : DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_Keys[ti_Index])?.Value;
+                // Save SessionData
+                UserSaved.Ti = value ?? 0;
+                // Return value to UIElement
+                return value.ToString() ?? String.Empty;
             }
             set
             {
-                //TODO handle input from User
+                // Save custom user input
+                UserSaved.Ti = Convert.ToDouble(value);              
+                // Changing ti_Index Triggers TiValue getter due to NotifyProperty
+                Ti_Index = -1;
             }
         }
         public string TeValue
         {
             get
             {
-                double value = (te_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == te_selection).Value;
-                UserSaved.Te = value;
-                return value.ToString();
+                double? value = (te_Index == -1) ? UserSaved.Te : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == te_Keys[te_Index])?.Value;
+                UserSaved.Te = value ?? 0;
+                return value.ToString() ?? String.Empty;
             }
             set
             {
-                //TODO handle input from User
+                UserSaved.Te = Convert.ToDouble(value);
+                Te_Index = -1;
             }
         }
         public string RsiValue
         {
             get
             {
-                double value = (rsi_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == rsi_selection).Value;
-                UserSaved.Rsi = value;
-                return value.ToString();
+                double? value = (rsi_Index == -1) ? UserSaved.Rsi : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == rsi_Keys[rsi_Index])?.Value;
+                UserSaved.Rsi = value ?? 0;
+                return value.ToString() ?? String.Empty;
             }
             set
             {
-                //TODO handle input from User
+                UserSaved.Rsi = Convert.ToDouble(value);
+                Rsi_Index = -1;
             }
         }
         public string RseValue
         {
             get
             {
-                double value = (rse_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == rse_selection).Value;
-                UserSaved.Rse = value;
-                return value.ToString();
+                double? value = (rse_Index == -1) ? UserSaved.Rse : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == rse_Keys[rse_Index])?.Value;
+                UserSaved.Rse = value ?? 0;
+                return value.ToString() ?? String.Empty;
             }
             set
             {
-                //TODO handle input from User
+                UserSaved.Rse = Convert.ToDouble(value);
+                Rse_Index = -1;
             }
         }
         public string RelFiValue
         {
             get
             {
-                double value = (rel_fi_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == rel_fi_selection).Value;
-                UserSaved.Rel_Fi = value;
-                return value.ToString();
+                double? value = (rel_fi_Index == -1) ? UserSaved.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == rel_Fi_Keys[rel_fi_Index])?.Value;
+                UserSaved.Rel_Fi = value ?? 0;
+                return value.ToString() ?? String.Empty;
             }
             set
             {
-                //TODO handle input from User
+                UserSaved.Rel_Fi = Convert.ToDouble(value);
+                Rel_fi_Index = -1;
             }
         }
         public string RelFeValue
         {
             get
             {
-                double value = (rel_fe_selection == "") ? 0 : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == rel_fe_selection).Value;
-                UserSaved.Rel_Fe = value;
-                return value.ToString();
+                double? value = (rel_fe_Index == -1) ? UserSaved.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == rel_Fe_Keys[rel_fe_Index])?.Value;
+                UserSaved.Rel_Fe = value ?? 0;
+                return value.ToString() ?? String.Empty;
             }
             set
             {
-                //TODO handle input from User
+                UserSaved.Rel_Fe = Convert.ToDouble(value);
+                Rel_fe_Index = -1;
             }
         }
     }

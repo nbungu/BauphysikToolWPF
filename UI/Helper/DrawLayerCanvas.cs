@@ -1,9 +1,6 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Resources;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,15 +12,12 @@ namespace BauphysikToolWPF.UI.Helper
     public class DrawLayerCanvas
     {
         // custom parameter constructor, with optional parameter "showPositionLabel"
-        public DrawLayerCanvas(Canvas canvas, List<Layer> layers, bool showPositionLabel = true)
+        public DrawLayerCanvas(Canvas? canvas, List<Layer>? layers, bool showPositionLabel = true)
         {
-            canvas.Children.Clear();
-
-            if (layers == null || layers.Count == 0)
+            if (layers is null || canvas is null)
                 return;
 
-            // check if canvas was already created in frontend
-            canvas = canvas ?? throw new ArgumentNullException(nameof(canvas) + " is not initialized or not found");
+            canvas.Children.Clear();
 
             double x = 0;
             double elementWidth = 0;
@@ -45,7 +39,7 @@ namespace BauphysikToolWPF.UI.Helper
                     Height = canvas.Height,
                     Stroke = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
                     StrokeThickness = layer.IsSelected ? 2 : 0.2,
-                    Fill = new SolidColorBrush((Color)ColorConverter.ConvertFromString(layer.correspondingMaterial().ColorCode)),
+                    Fill = new SolidColorBrush(layer.Material.Color),
                 };
                 canvas.Children.Add(baseRect);
                 Canvas.SetTop(baseRect, 0);
@@ -57,7 +51,7 @@ namespace BauphysikToolWPF.UI.Helper
                     Width = layerWidth, // -1 to leave small gap between hatching and layer border
                     Height = canvas.Height,
                     Fill = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, layerWidth, canvas.Height),
-                    Opacity = 0.6
+                    Opacity = 1 // 0.6
                 };
                 canvas.Children.Add(hatchPatternRect);
                 Canvas.SetTop(hatchPatternRect, 0);
@@ -102,17 +96,20 @@ namespace BauphysikToolWPF.UI.Helper
             }
         }
 
-        public static byte[] SaveAsBLOB(Canvas target)
+        public static byte[]? SaveAsBLOB(Canvas target)
         {
+            if (target.Children.Count == 0)
+                return null;
+            
             // Convert the BitmapImage to a byte array
             byte[] imageBytes;
 
             // Set the Bitmap size and target to save
-            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 48d, 48d, PixelFormats.Default); // Default DPI: 96d
+            RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 96d, 96d, PixelFormats.Default); // Default DPI: 96d -> Adapt cropping (48d -> Width / 2)
             bitmap.Render(target);
 
-            // Set Width, Height and Croppings: Create always img of same size, regardless of current canvas dimensions
-            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)target.RenderSize.Width / 2, (int)target.RenderSize.Width / 2));
+            // Set Width, Height and Croppings: Create always rectangular img of same size, regardless of current canvas dimensions
+            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, 0, (int)target.RenderSize.Width, (int)target.RenderSize.Width));
 
             BitmapEncoder encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));

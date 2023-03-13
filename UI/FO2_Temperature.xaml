@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:BauphysikToolWPF.UI"
+      xmlns:local="clr-namespace:BauphysikToolWPF"
       xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
       xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
       xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
@@ -60,17 +60,21 @@
             <ColumnDefinition Width="360"/>
         </Grid.ColumnDefinitions>
 
-        <!--Top Left -->
+        <!--Top -->
         <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding PrevPageCommand}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding NextPageCommand}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupEnv}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" Margin="8,0,0,0"/>
                     <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding OpenEditElementWindowCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Weiter"/>
+                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -144,7 +148,8 @@
                 <controls:EquationLabel BaseText="U" Value="{Binding TempCalc.UValue}" Unit="W/m²K" Height="28"/>
                 <controls:EquationLabel BaseText="q" Value="{Binding TempCalc.QValue}" Unit="W/m²" Height="28"/>
                 <Line X2="136" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
-                <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding TempCalc.LayerTemps[0].Value}" Unit="°C" Height="28"/>
+                <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding TempCalc.Tsi}" Unit="°C" Height="28"/>
+                <controls:EquationLabel BaseText="θ" SubscriptText="se" Value="{Binding TempCalc.Tse}" Unit="°C" Height="28"/>
                 <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding TempCalc.FRsi}" Height="28"/>
             </StackPanel>
             <StackPanel Orientation="Vertical" Grid.Column="2">
@@ -155,6 +160,7 @@
                 <controls:EquationLabel BaseText="q" SubscriptText="max" Value="{Binding Q_max}" Unit="W/m²" Height="28"/>
                 <Line X2="166" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
                 <Label Content="{Binding TempCalc.Tsi_min}" ContentStringFormat="≥ {0} °C" Height="28"/>
+                <Label Content="" Height="28"/>
                 <Label Content="≥ 0.7" FontStyle="Italic" Height="28"/>
             </StackPanel>
         </Grid>

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BauphysikToolWPF.SQLiteRepo;
+using System;
 using System.Windows;
 using System.Windows.Media;
 
@@ -8,22 +9,31 @@ namespace BauphysikToolWPF.UI.Helper
     {
         public static DrawingBrush? PlasterBrush { get; private set; }
         public static DrawingBrush? InsulationBrush { get; private set; }
-        public static DrawingBrush? BricksBrush { get; private set; }
+        public static DrawingBrush? WoodBrush { get; private set; }
+        public static DrawingBrush? MasonryBrush { get; private set; }
         public static DrawingBrush? ConcreteBrush { get; private set; }
+        public static DrawingBrush? AirLayerBrush { get; private set; }
+        public static DrawingBrush? SealantBrush { get; private set; }
 
-        public static DrawingBrush GetHatchPattern(string category, double lineThickness, double rectWidth, double rectHeight)
+        public static DrawingBrush GetHatchPattern(MaterialCategory category, double lineThickness, double rectWidth, double rectHeight)
         {
             // return corresp. class variable if already set, otherwise draw new Brush
             switch (category)
             {
-                case "Wärmedämmung":
+                case MaterialCategory.Insulation:
                     return GetInsulationBrush(rectWidth, rectHeight, lineThickness); // Draw new every time! Updates on every layer change, not only once
-                case "Mauerwerk":
-                    return BricksBrush ??= GetBricksBrush(lineThickness);
-                case "Beton":
+                case MaterialCategory.Concrete:
                     return ConcreteBrush ??= GetConcreteBrush(lineThickness);
-                case "Mörtel und Putze":
+                //case MaterialCategory.Wood:
+                //    return WoodBrush ??= GetWoodBrush(lineThickness);
+                case MaterialCategory.Masonry:
+                    return MasonryBrush ??= GetMasonryBrush(lineThickness);
+                case MaterialCategory.Plasters:
                     return PlasterBrush ??= GetPlasterBrush(lineThickness);
+                case MaterialCategory.Sealant:
+                    return SealantBrush ??= GetSealantBrush();
+                case MaterialCategory.Air:
+                    return AirLayerBrush ??= GetAirLayerBrush(lineThickness);
                 default:
                     return new DrawingBrush();
             }
@@ -93,29 +103,31 @@ namespace BauphysikToolWPF.UI.Helper
         }
 
         // Brush for Dichtstoffe
-        private static DrawingBrush GetXXBrush(double lineThickness)
+        private static DrawingBrush GetSealantBrush()
         {
             // Create a GeometryGroup to contain the hatch lines
             GeometryGroup hatchContent = new GeometryGroup();
 
-            LineGeometry line = new LineGeometry() { StartPoint = new Point(0, 0), EndPoint = new Point(32, 32) };
-            hatchContent.Children.Add(line);
+            // Create Rectangle in a 16x40 Tile (0.5* total height of the brush (16x80))
+            // Base BG-Color is black. Top Half of brush will be this Rectangle colored in white
+            RectangleGeometry rect = new RectangleGeometry() { Rect = new Rect(0, 0, 16, 40) };
+            hatchContent.Children.Add(rect);
 
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush()
             {
-                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
-                TileMode = TileMode.FlipXY,
-                Viewport = new Rect(0, 0, 32, 32),
+                Drawing = new GeometryDrawing(new SolidColorBrush(Colors.White), null, hatchContent),
+                TileMode = TileMode.Tile,
+                Viewport = new Rect(0, 0, 16, 80),
                 ViewportUnits = BrushMappingMode.Absolute,
-                Viewbox = new Rect(0, 0, 32, 32),
+                Viewbox = new Rect(0, 0, 16, 80),
                 ViewboxUnits = BrushMappingMode.Absolute
             };
             return brush;
         }
 
         //Brush for Mauerwerk
-        private static DrawingBrush GetBricksBrush(double lineThickness)
+        private static DrawingBrush GetMasonryBrush(double lineThickness)
         {
             // Create a GeometryGroup to contain the hatch lines
             GeometryGroup hatchContent = new GeometryGroup();
@@ -202,6 +214,34 @@ namespace BauphysikToolWPF.UI.Helper
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent) };
 
+            return brush;
+        }
+
+        // Brush for Luftschicht
+        private static DrawingBrush GetAirLayerBrush(double lineThickness)
+        {
+            // Create a GeometryGroup to contain the hatch lines
+            GeometryGroup hatchContent = new GeometryGroup();
+
+            // Create 3 vertically stacked circles in a 16x40 Tile
+            int y = 20;
+            for (int i = 0; i < 3; i++)
+            {
+                EllipseGeometry ellipse = new EllipseGeometry(new Point(8,y),3,3);
+                hatchContent.Children.Add(ellipse);
+                y += 20;
+            }
+            // Use the hatch lines as the Drawing's content
+            DrawingBrush brush = new DrawingBrush()
+            {
+                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
+                TileMode = TileMode.Tile, 
+                Viewport = new Rect(0, 0, 16, 80),
+                ViewportUnits = BrushMappingMode.Absolute,
+                Viewbox = new Rect(0, 0, 16, 80),
+                ViewboxUnits = BrushMappingMode.Absolute,
+
+            };
             return brush;
         }
     }

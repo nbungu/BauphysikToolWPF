@@ -7,7 +7,6 @@ namespace BauphysikToolWPF.UI
     {
         // Class Variables
         // Initialize + Assign Default Values to Avoid null Values.s
-        public static int ProjectId { get; private set; } = 1; // TODO change Hardcoded value
 
         private static int selectedElementId = -1;
         public static int SelectedElementId
@@ -35,6 +34,12 @@ namespace BauphysikToolWPF.UI
         {
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
+        }
+
+        // Not in ViewModel due to the lack of Command Bindings to ButtonEvents
+        private void Button_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            MainWindow.SetPage(NavigationContent.SetupLayer);
         }
     }
 }

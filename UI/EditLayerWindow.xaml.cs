@@ -1,12 +1,11 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
-using System.Collections.Generic;
 using System.Windows;
 
 namespace BauphysikToolWPF.UI
 {
     /// <summary>
-    /// Interaktionslogik für NewElementWindow.xaml
+    /// Interaktionslogik für EditLayerWindow.xaml
     /// </summary>
     public partial class EditLayerWindow : Window
     {
@@ -25,7 +24,7 @@ namespace BauphysikToolWPF.UI
             // Pre set TextBoxes and Header Label
             // Header Label
             headerLabel_MaterialName.Content = layer.Material.Name;
-            headerLabel_MaterialCategory.Content = layer.Material.Category;
+            headerLabel_MaterialCategory.Content = layer.Material.CategoryName;
 
             // TextBoxes
             layerThickness_TextBox.Text = layer.LayerThickness.ToString();

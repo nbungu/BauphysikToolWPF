@@ -9,6 +9,34 @@ using System.Linq;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     public delegate void Notify(); // delegate with signature: return type void, no input parameters
+    class PositionSort : IComparer<Layer>
+    {
+        // Sorts the Layer List based off their LayerPosition Property
+        public int Compare(Layer x, Layer y) // Interface Method
+        {
+            /*if (x.LayerPosition == 0 || y.LayerPosition == 0)
+            {
+                return 0;
+            }*/
+
+            // CompareTo() method
+            return x.LayerPosition.CompareTo(y.LayerPosition);
+        }
+        // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
+        public static void FillGaps(List<Layer> layers)
+        {
+            if (layers.Count > 0)
+            {
+                // Update the Id property of the remaining objects
+                for (int i = 0; i < layers.Count; i++)
+                {
+                    layers[i].LayerPosition = i;
+                    DatabaseAccess.UpdateLayer(layers[i], triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
+                }
+            }
+        }
+    }
+
     public class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
         // TODO: no absolute Path
@@ -85,10 +113,12 @@ namespace BauphysikToolWPF.SQLiteRepo
             return sqlConn.GetAllWithChildren<Element>(recursive: true);
         }
 
-        public static void CreateElement(Element element)
+        public static void CreateElement(Element element, bool withChildren = false)
         {
-            // No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
-            sqlConn.Insert(element);
+            if (withChildren)                           // When copying an Element: Insert with children
+                sqlConn.InsertWithChildren(element);    
+            else sqlConn.Insert(element);               // Default case: Create/Edit a Element: No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
+
             OnElementsChanged();
         }
 
@@ -129,10 +159,14 @@ namespace BauphysikToolWPF.SQLiteRepo
             return sqlConn.GetAllWithChildren<Layer>(recursive: true);
         }
 
-        public static void CreateLayer(Layer layer)
+        public static void CreateLayer(Layer layer, bool triggerUpdateEvent = true)
         {
             // No need to 'InsertWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
             sqlConn.Insert(layer);
+
+            if (triggerUpdateEvent == false)
+                return;
+
             OnLayersChanged();
         }
 
@@ -146,20 +180,38 @@ namespace BauphysikToolWPF.SQLiteRepo
             OnLayersChanged();
         }
 
-        public static void DeleteLayer(Layer layer)
+        public static void DeleteLayer(Layer layer, bool triggerUpdateEvent = true)
         {
             sqlConn.Delete(layer);
+
+            if (triggerUpdateEvent == false)
+                return;
+
             OnLayersChanged();
         }
 
-        public static void DeleteAllLayers()
+        public static void DeleteAllLayers(bool triggerUpdateEvent = true)
         {
             sqlConn.DeleteAll<Layer>();
+
+            if (triggerUpdateEvent == false)
+                return;
+
             OnLayersChanged();
         }
-        public static List<Layer> QueryLayersByElementId(int elementId)
+        public static List<Layer> QueryLayersByElementId(int elementId, bool returnSorted = true, bool removeGaps = false)
         {
-            return sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
+            List<Layer> layers = sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
+
+            // Needed after changing Layer Positions (leaving an unsorted list)
+            if (returnSorted)
+                layers.Sort(new PositionSort()); // use of List<T>.Sort(IComparer<T>) method
+
+            // Needed after deleting Layers (leaving Position Gaps)
+            if (removeGaps)
+                PositionSort.FillGaps(layers);
+
+            return layers;
         }
 
         // Retreive Data from Table "Material"
@@ -188,7 +240,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             if (category == "*")
                 return sqlConn.Query<Material>("SELECT * FROM Material");
             else
-                return sqlConn.Query<Material>("SELECT * FROM Material WHERE Category == " + "\"" + category + "\"");
+                return sqlConn.Query<Material>("SELECT * FROM Material WHERE CategoryName == " + "\"" + category + "\"");
         }
         public static List<Material> QueryMaterialBySearchString(string searchString)
         {
@@ -220,6 +272,16 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static Construction QueryConstructionById(int constructionId)
         {
             return sqlConn.GetWithChildren<Construction>(constructionId);
+        }
+
+        // Retreive Data from Table "Orientation"
+        public static List<Orientation> GetOrientations()
+        {
+            return sqlConn.Table<Orientation>().ToList();
+        }
+        public static Orientation QueryOrientationById(int orientationId)
+        {
+            return sqlConn.Get<Orientation>(orientationId);
         }
 
         // Retreive Data from Table "ElementEnvVars"
