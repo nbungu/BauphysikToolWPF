@@ -6,9 +6,8 @@ namespace BauphysikToolWPF.UI
     public partial class FO0_LandingPage : UserControl  // publisher of 'ElementSelectionChanged' event
     {
         // Class Variables
-        // Initialize + Assign Default Values to Avoid null Values.s
 
-        private static int selectedElementId = -1;
+        private static int selectedElementId = -1; // Initialize + Assign Default Values to Avoid null Values
         public static int SelectedElementId
         {
             get { return selectedElementId; }

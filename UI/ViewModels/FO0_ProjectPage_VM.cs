@@ -62,6 +62,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Initialized and Assigned with Default Values
          */
 
+        // TODO only call Project from DB once
+
         [ObservableProperty]
         private string projectName = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId).Name ?? "";
 

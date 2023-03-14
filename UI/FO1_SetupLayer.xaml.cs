@@ -9,13 +9,15 @@ namespace BauphysikToolWPF.UI
 {
     public partial class FO1_SetupLayer : UserControl
     {
+        // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call.
+
+        private List<Layer>? layers;
+
         // Class Variables - Belongs to the Class-Type itself and stay the same
 
         // Recalculate Flags - Save computation time by avoiding unnecessary new instances
         public static bool RecalculateTemp { get; set; } = true;
         public static bool RecalculateGlaser { get; set; } = true;
-
-        // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call.
 
         // For use in current Instance only
         private int currentElementId { get; } = FO0_LandingPage.SelectedElementId;
@@ -27,8 +29,9 @@ namespace BauphysikToolWPF.UI
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
             // Drawing
-            new DrawLayerCanvas(layers_Canvas, DatabaseAccess.QueryLayersByElementId(currentElementId));         // Initial Draw of the Canvas
-            new DrawMeasurementLine(measurement_Grid, DatabaseAccess.QueryLayersByElementId(currentElementId));  // Initial Draw of the measurement line
+            layers = DatabaseAccess.QueryLayersByElementId(currentElementId);
+            new DrawLayerCanvas(layers_Canvas, layers);         // Initial Draw of the Canvas
+            new DrawMeasurementLine(measurement_Grid, layers);  // Initial Draw of the measurement line
 
             // Event Subscription - Register with Events
             DatabaseAccess.LayersChanged += DB_LayersChanged;
@@ -40,8 +43,9 @@ namespace BauphysikToolWPF.UI
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
             // Update UI
-            new DrawLayerCanvas(layers_Canvas, DatabaseAccess.QueryLayersByElementId(currentElementId));         // Redraw Canvas
-            new DrawMeasurementLine(measurement_Grid, DatabaseAccess.QueryLayersByElementId(currentElementId));  // Redraw measurement line
+            layers = DatabaseAccess.QueryLayersByElementId(currentElementId);
+            new DrawLayerCanvas(layers_Canvas, layers);         // Redraw Canvas
+            new DrawMeasurementLine(measurement_Grid, layers);  // Redraw measurement line
 
             // Update Recalculate Flag
             RecalculateTemp = true;
