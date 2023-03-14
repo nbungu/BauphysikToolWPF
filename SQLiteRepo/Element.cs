@@ -17,6 +17,7 @@ namespace BauphysikToolWPF.SQLiteRepo
     {
         //------Variablen-----//
 
+        private bool layersSorted = false;
 
         //------Eigenschaften-----//
 
@@ -44,8 +45,22 @@ namespace BauphysikToolWPF.SQLiteRepo
         public Project Project { get; set; }
 
         // 1:n relationship with Layer
+        private List<Layer> layers;
+
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all Layers linked to this 'Element')
-        public List<Layer> Layers { get; set; }
+        public List<Layer> Layers
+        {
+            get // Always sort List by LayerPosition - ascending
+            {
+                if (layersSorted)
+                    return layers;
+
+                layers.Sort(new PositionSort());
+                layersSorted = true;
+                return layers;
+            }
+            set { layers = value; }
+        }
 
         // 1:1 relationship with Construction
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
@@ -99,12 +114,12 @@ namespace BauphysikToolWPF.SQLiteRepo
                 if (Layers == null )
                     return 0;
 
-                double thickness = 0;
+                double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    thickness += layer.LayerThickness;
+                    val += layer.LayerThickness;
                 }
-                return Math.Round(thickness, 2);
+                return Math.Round(val, 2);
             }
         }
         public double Thickness_m // d in m
@@ -114,12 +129,12 @@ namespace BauphysikToolWPF.SQLiteRepo
                 if (Layers == null)
                     return 0;
 
-                double thickness = 0;
+                double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    thickness += layer.LayerThickness;
+                    val += layer.LayerThickness;
                 }
-                return Math.Round(thickness/100, 4);
+                return Math.Round(val/100, 4);
             }
         }
 
@@ -131,12 +146,12 @@ namespace BauphysikToolWPF.SQLiteRepo
                 if (Layers == null)
                     return 0;
 
-                double thickness = 0;
+                double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    thickness += layer.Sd_Thickness;
+                    val += layer.Sd_Thickness;
                 }
-                return Math.Round(thickness, 2);
+                return Math.Round(val, 2);
             }
         }
 
@@ -148,12 +163,12 @@ namespace BauphysikToolWPF.SQLiteRepo
                 if (Layers == null)
                     return 0;
 
-                double areaMassDens = 0;
+                double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    areaMassDens += layer.AreaMassDensity;
+                    val += layer.AreaMassDensity;
                 }
-                return Math.Round(areaMassDens, 2);
+                return Math.Round(val, 2);
             }
         }
 
@@ -165,12 +180,14 @@ namespace BauphysikToolWPF.SQLiteRepo
                 if (Layers == null)
                     return 0;
 
-                double r_ges = 0;
+                double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    r_ges += layer.R_Value;
+                    if (!layer.IsEffective) // cut after Air Layer -> Remaining Layer don't add to RValue
+                        break; 
+                    val += layer.R_Value;
                 }
-                return Math.Round(r_ges, 2);
+                return Math.Round(val, 2);
             }
         }
 

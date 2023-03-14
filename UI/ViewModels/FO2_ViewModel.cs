@@ -30,7 +30,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void SwitchPage(NavigationContent desiredPage)
         {
             MainWindow.SetPage(desiredPage);
-            var x = TempCalc.LayerTemps.LastOrDefault();
         }
 
         [RelayCommand]

@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
-using BauphysikToolWPF.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +15,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public static readonly double TsiMin = 12.6;
 
         // (Instance-) Variables and encapsulated properties - Called before Constructor
-        public Element Element { get; private set; } = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId); // Access is limited to the containing class or types derived from the containing class within the current assembly
+        public Element Element { get; private set; } // Access is limited to the containing class or types derived from the containing class within the current assembly
         public double RTotal { get; private set; } = 0;
         public double UValue { get; private set; } = 0;
         public double QValue { get; private set; } = 0;
@@ -33,10 +32,11 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double Rel_Fe { get; } = UserSaved.Rel_Fe;
 
         // (Instance-) Constructor
-        public StationaryTempCalc()
+        public StationaryTempCalc(Element element)
         {
-            if (Element.Layers.Count == 0)
+            if (element is null || element.Layers.Count == 0)
                 return;
+            Element = element;
 
             // Calculated parameters (private setter)
             RTotal = GetRTotal();           // Gl. 2-55; S.28
@@ -78,6 +78,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             double widthPosition = 0; // cm
             for (int i = 0; i < Element.Layers.Count; i++)
             {
+                if (!Element.Layers[i].IsEffective)
+                    break;
                 widthPosition += Element.Layers[i].LayerThickness;
                 double tempValue = Math.Round(temp_List.ElementAt(i).Value - Element.Layers[i].R_Value * QValue, 2);
                 temp_List.Add(new KeyValuePair<double, double>(widthPosition, tempValue));

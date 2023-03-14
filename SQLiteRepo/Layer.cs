@@ -40,15 +40,23 @@ namespace BauphysikToolWPF.SQLiteRepo
         public bool IsSelected { get; set; } // For UI Purposes 
 
         [Ignore]
-        public double R_Value
+        public bool IsEffective // For Calculation Purposes - Whether a Layer is considered in the Calculations or not
         {
             get
             {
                 if (Material == null)
-                    return 0;
-                if (Material.MaterialId == 31) // Luftschicht (belüftet)
-                    return 0;
-                    
+                    return false;
+                return Material.Category != MaterialCategory.Air; // Wenn Luftschicht (belüftet)
+            }
+        }
+
+        [Ignore]
+        public double R_Value
+        {
+            get
+            {
+                if (Material == null || !IsEffective)
+                    return 0;                    
                 return Math.Round((this.LayerThickness / 100) / Material.ThermalConductivity, 3);
             }
         }
@@ -69,11 +77,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Material == null)
+                if (Material == null || !IsEffective)
                     return 0;
-                if (Material.MaterialId == 31) // Luftschicht (belüftet)
-                    return 0;
-
                 return Math.Round(this.LayerThickness / 100 * Material.BulkDensity, 3);
             }
         }
@@ -89,7 +94,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId) ?? new Material();
         }
 
-        public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
+        public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
             return LayerThickness + " cm, "+ Material.Name + " (Pos.: " + LayerPosition + ")";
         }

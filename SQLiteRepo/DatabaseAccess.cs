@@ -9,7 +9,7 @@ using System.Linq;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     public delegate void Notify(); // delegate with signature: return type void, no input parameters
-    class PositionSort : IComparer<Layer>
+    public class PositionSort : IComparer<Layer>
     {
         // Sorts the Layer List based off their LayerPosition Property
         public int Compare(Layer x, Layer y) // Interface Method
@@ -180,12 +180,15 @@ namespace BauphysikToolWPF.SQLiteRepo
             OnLayersChanged();
         }
 
-        public static void DeleteLayer(Layer layer, bool triggerUpdateEvent = true)
+        public static void DeleteLayer(Layer layer, bool triggerUpdateEvent = true, bool fillLayerGaps = true)
         {
             sqlConn.Delete(layer);
 
             if (triggerUpdateEvent == false)
                 return;
+
+            if (fillLayerGaps)                
+                PositionSort.FillGaps(QueryLayersByElementId(layer.Element.ElementId)); // Remove gaps in the LayerPosition property of current Element
 
             OnLayersChanged();
         }
@@ -199,17 +202,13 @@ namespace BauphysikToolWPF.SQLiteRepo
 
             OnLayersChanged();
         }
-        public static List<Layer> QueryLayersByElementId(int elementId, bool returnSorted = true, bool removeGaps = false)
+        public static List<Layer> QueryLayersByElementId(int elementId, bool returnSorted = true)
         {
             List<Layer> layers = sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
 
             // Needed after changing Layer Positions (leaving an unsorted list)
             if (returnSorted)
                 layers.Sort(new PositionSort()); // use of List<T>.Sort(IComparer<T>) method
-
-            // Needed after deleting Layers (leaving Position Gaps)
-            if (removeGaps)
-                PositionSort.FillGaps(layers);
 
             return layers;
         }

@@ -48,10 +48,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             } else
             {
                 // Delete selected Layer
-                DatabaseAccess.DeleteLayer(selectedLayer);
+                DatabaseAccess.DeleteLayer(selectedLayer, fillLayerGaps: true);
             }
             // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, removeGaps: true);
+            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
         }
 
         [RelayCommand]

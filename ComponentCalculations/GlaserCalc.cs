@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
 
@@ -16,9 +15,9 @@ namespace BauphysikToolWPF.ComponentCalculations
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
 
         // (Instance-) Constructor
-        public GlaserCalc()
+        public GlaserCalc(Element element) : base(element)
         {
-            if (Element.Layers.Count == 0) // inherited class member from StationaryTempCalc
+            if (element is null || element.Layers.Count == 0)
                 return;
 
             // Calculated parameters (private setter)
@@ -26,8 +25,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             TaupunktMax_i = GetMaxTaupunkt_i(Ti, Rel_Fi);   // Gl. 2.21; S.365
             LayerPsat = GetLayerPsat();                     // Gl. 2.4; S.164
             LayerP = GetLayerP();                           // Gl. 2.3; S.164
-            P_sat_i = P_sat(UserSaved.Ti);                  // Gl. 2.4; S.164
-            P_sat_e = P_sat(UserSaved.Te);                  // Gl. 2.4; S.164
+            P_sat_i = P_sat(Ti);                            // Gl. 2.4; S.164
+            P_sat_e = P_sat(Te);                            // Gl. 2.4; S.164
         }
 
         // Methods

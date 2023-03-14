@@ -38,7 +38,8 @@
                     <ColumnDefinition Width="190"/>
                     <ColumnDefinition Width="72"/>
                     <ColumnDefinition Width="112"/>
-                    <ColumnDefinition Width="80"/>
+                    <ColumnDefinition Width="88"/>
+                    <ColumnDefinition Width="112"/>
                 </Grid.ColumnDefinitions>
                 <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
                 <Grid Grid.RowSpan="2">
@@ -52,6 +53,8 @@
                 <controls:EquationLabel Grid.Column="3" Grid.RowSpan="2" BaseText="R" SubscriptText="{Binding LayerPosition}" Value="{Binding R_Value}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
                 <Line Grid.Column="3" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
                 <controls:EquationLabel Grid.Column="4" Grid.RowSpan="2" BaseText="s" SubscriptText="d" Value="{Binding Sd_Thickness}" Unit="m" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                <Line Grid.Column="4" Grid.RowSpan="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
+                <controls:EquationLabel Grid.Column="5" Grid.RowSpan="2" BaseText="m'" Value="{Binding AreaMassDensity}" Unit="kg/m²" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
             </Grid>
         </DataTemplate>
 
@@ -59,54 +62,32 @@
         Custom ListView Entry Mockup: Interior and Exterior properties as static "LVItems" on top and bottom
         'Binding' source is set by parent Element via 'Content' property
         -->
-        <DataTemplate x:Key="LVItem_Mockup_Int">
-            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="0,0,0,1" CornerRadius="0">
+        <DataTemplate x:Key="LVItem_Mockup">
+            <Border x:Name="MainBorder" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="0,0,0,1">
                 <Grid Margin="12,6,12,6">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="44" />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="190"/>
-                        <ColumnDefinition Width="72"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid Grid.RowSpan="2">
-                        <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
-                        <Label Content="i" Foreground="White" FontWeight="Bold" Margin="0,0,8,0"/>
-                    </Grid>
-                    <Label Grid.Column="1" Content="Innen" Height="26" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
-                    <controls:EquationLabel Grid.Column="2" BaseText="θ" SubscriptText="i" Value="{Binding TiValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
-                    <Line Grid.Column="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="3" BaseText="R" SubscriptText="si" Value="{Binding RsiValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
-                </Grid>
-            </Border>            
-        </DataTemplate>
-
-        <DataTemplate x:Key="LVItem_Mockup_Ext">
-            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent" SnapsToDevicePixels="True" BorderThickness="0,1,0,0" CornerRadius="0">
-                <Grid Margin="12,6,12,6">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="44" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="190"/>
-                        <ColumnDefinition Width="72"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
                     <Grid Grid.RowSpan="2">
                         <Ellipse Fill="{StaticResource PrimaryMediumBrush}" Height="34" Width="34" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,0,8,0"/>
-                        <Label Content="e" Foreground="White" FontWeight="Bold" Margin="0,0,8,0"/>
+                        <Label x:Name="EllipseLabel" Content="i" Foreground="White" FontWeight="Bold" Margin="0,0,8,0"/>
                     </Grid>
-                    <Label Grid.Column="1" Content="Außen" Height="26" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
-                    <controls:EquationLabel Grid.Column="2" BaseText="θ" SubscriptText="e" Value="{Binding TeValue}" Unit="°C" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10"/>
-                    <Line Grid.Column="2" Y2="38" VerticalAlignment="Center" HorizontalAlignment="Right" Stroke="LightGray" StrokeThickness="1"/>
-                    <controls:EquationLabel Grid.Column="3" BaseText="R" SubscriptText="se" Value="{Binding RseValue}" Unit="m²K/W" VerticalAlignment="Center" FontSize="12" SubscriptFontSize="10" Margin="8,0,0,0"/>
+                    <Label Grid.Column="1" Content="{Binding}" Height="26" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
+                    <Button Grid.Column="2" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4" ToolTip="Umgebungsbedingungen 'Innen' ändern"/>
                 </Grid>
             </Border>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding}" Value="Außen">
+                    <Setter TargetName="EllipseLabel" Property="Content" Value="e"/>
+                    <Setter TargetName="MainBorder" Property="BorderThickness" Value="0,1,0,0"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
         </DataTemplate>
-
     </UserControl.Resources>
 
     <!--Main Grid: 2x2-->
@@ -156,14 +137,12 @@
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DeleteLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
             </StackPanel>
 
-            <Border Grid.Row="1" Grid.RowSpan="3" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,16,0,0">
-                
-            </Border>
+            <Border Grid.Row="1" Grid.RowSpan="3" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" CornerRadius="8" Margin="0,16,0,0"/>
 
             <!--Custom UI Element: Border as ListViewItem Mockup. Binding is 'FO1_ViewModel' -->
-            <ContentControl Grid.Row="1" ContentTemplate="{StaticResource LVItem_Mockup_Int}" Content="{Binding}" Margin="0,16,0,4"/>
+            <ContentControl Grid.Row="1" Content="Innen" ContentTemplate="{StaticResource LVItem_Mockup}" Margin="0,16,0,4"/>
 
-            <!--ItemsSource gets updated (!) by backend-->
+            <!-- ItemsSource gets updated by backend -->
             <!-- This is 'PlacementTarget' as seen from ContextMenu -->
             <ListView x:Name="layers_ListView"
                       Grid.Row="2"
@@ -203,7 +182,7 @@
             </ListView>
 
             <!--Custom UI Element: Border as ListViewItem Mockup. Binding is 'FO1_ViewModel' -->
-            <ContentControl Grid.Row="3" ContentTemplate="{StaticResource LVItem_Mockup_Ext}" Content="{Binding}" Margin="0,4,0,0"/>
+            <ContentControl Grid.Row="3" Content="Außen" ContentTemplate="{StaticResource LVItem_Mockup}" Margin="0,4,0,0"/>
         </Grid>
 
         <!--Middle Right-->

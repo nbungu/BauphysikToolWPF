@@ -133,6 +133,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the _selection Values above
          */
 
+        //TODO Rework, so that only one Element changes
+
         public bool ElementToolsAvailable
         {
             get
