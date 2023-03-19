@@ -9,7 +9,6 @@
 
   <ItemGroup>
     <None Remove="Ordner_Icon.ico" />
-    <None Remove="Resources\ElementImages\Element_4_AWE1.png" />
     <None Remove="Resources\Icons\add_element.png" />
     <None Remove="Resources\Icons\add_element_w.png" />
     <None Remove="Resources\Icons\add_layer.png" />
@@ -47,6 +46,8 @@
     <None Remove="Resources\Icons\elements_w.png" />
     <None Remove="Resources\Icons\existing_home.png" />
     <None Remove="Resources\Icons\existing_home_w.png" />
+    <None Remove="Resources\Icons\export-pdf.png" />
+    <None Remove="Resources\Icons\export-pdf_w.png" />
     <None Remove="Resources\Icons\export.png" />
     <None Remove="Resources\Icons\export_w.png" />
     <None Remove="Resources\Icons\grid.png" />
@@ -62,6 +63,8 @@
     <None Remove="Resources\Icons\kreuz_w.png" />
     <None Remove="Resources\Icons\layer.png" />
     <None Remove="Resources\Icons\layer_w.png" />
+    <None Remove="Resources\Icons\List.png" />
+    <None Remove="Resources\Icons\List_w.png" />
     <None Remove="Resources\Icons\loeschen.png" />
     <None Remove="Resources\Icons\moisture.png" />
     <None Remove="Resources\Icons\moisture_w.png" />
@@ -99,8 +102,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\Icons\down.png" />
-    <Resource Include="Resources\Icons\placeholder_256px_light.png" />
+    <None Include="Resources\Dump.xaml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -191,32 +193,18 @@
     <Resource Include="Resources\Icons\settings.png" />
     <Resource Include="Resources\Icons\settings_w.png" />
     <Resource Include="Resources\Icons\up.png" />
+    <Resource Include="Resources\Icons\down.png" />
+    <Resource Include="Resources\Icons\export-pdf.png" />
+    <Resource Include="Resources\Icons\export-pdf_w.png" />
+    <Resource Include="Resources\Icons\list.png" />
+    <Resource Include="Resources\Icons\list_w.png" />
+    <Resource Include="Resources\Icons\placeholder_256px_light.png" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="SQLiteRepo\DemoDB.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Resources\ElementImages\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Resources\Dump.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="UI\FO0_ProjectPage.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="UI\EditLayerWindow.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-    </Page>
   </ItemGroup>
 
 </Project>

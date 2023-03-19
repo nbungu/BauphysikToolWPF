@@ -81,7 +81,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         /*
-         * MVVM Properties
+         * MVVM Properties: Observable, if user triggers the change of these properties via frontend
+         * 
+         * Initialized and Assigned with Default Values (int default = 0)
          */
 
         [ObservableProperty]
@@ -128,9 +130,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
+                // Index is 0:
+                // On Initial Startup (default value for not assigned int)
                 // Index is -1:
-                // a) On Initial Startup
-                // b) On custom user input
+                // On custom user input
 
                 //Get corresp Value
                 double? value = (ti_Index == -1) ? UserSaved.Ti : DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == ti_Keys[ti_Index])?.Value;

@@ -133,7 +133,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         /*
-         * MVVM Properties
+         * MVVM Properties: Observable, if user triggers the change of these properties via frontend
+         * 
+         * Initialized and Assigned with Default Values
          */
 
         [ObservableProperty]

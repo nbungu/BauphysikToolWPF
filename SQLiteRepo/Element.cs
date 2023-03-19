@@ -55,7 +55,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 if (layersSorted)
                     return layers;
 
-                layers.Sort(new PositionSort());
+                layers.Sort(new LayerSorting());
                 layersSorted = true;
                 return layers;
             }
@@ -149,6 +149,8 @@ namespace BauphysikToolWPF.SQLiteRepo
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
+                    if (!layer.IsEffective) // cut after Air Layer -> Remaining Layer don't add to Sd_Thickness
+                        break;
                     val += layer.Sd_Thickness;
                 }
                 return Math.Round(val, 2);

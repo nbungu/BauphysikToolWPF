@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.ComponentCalculations
 
             // Calculated parameters (private setter)
             PhiMax = GetMaxRelFi(Ti, Te, FRsi);             // Gl. 3-3; S.37
-            TaupunktMax_i = GetMaxTaupunkt_i(Ti, Rel_Fi);   // Gl. 2.21; S.365
+            TaupunktMax_i = GetMaxTaupunkt_i(Ti, Rel_Fi);   // Gl. 2.21; S.365. Taupunkttemperatur
             LayerPsat = GetLayerPsat();                     // Gl. 2.4; S.164
             LayerP = GetLayerP();                           // Gl. 2.3; S.164
             P_sat_i = P_sat(Ti);                            // Gl. 2.4; S.164

@@ -1,8 +1,5 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -25,12 +22,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         /*
-         * MVVM Properties
+         * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
          * Initialized and Assigned with Default Values
          */
-
-
-
     }
 }

@@ -9,18 +9,26 @@ using System.Linq;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     public delegate void Notify(); // delegate with signature: return type void, no input parameters
-    public class PositionSort : IComparer<Layer>
+    public class LayerSorting : IComparer<Layer>
     {
-        // Sorts the Layer List based off their LayerPosition Property
+        private LayerSortingType SortingType { get; set; }
+        public LayerSorting(LayerSortingType sortingType = LayerSortingType.Default)
+        {
+            SortingType = sortingType;
+        }
         public int Compare(Layer x, Layer y) // Interface Method
         {
-            /*if (x.LayerPosition == 0 || y.LayerPosition == 0)
+            switch (SortingType)
             {
-                return 0;
-            }*/
-
-            // CompareTo() method
-            return x.LayerPosition.CompareTo(y.LayerPosition);
+                case LayerSortingType.Date:
+                    return x.LayerId.CompareTo(y.LayerId);
+                case LayerSortingType.Name:
+                    return x.Material.Name.CompareTo(y.Material.Name);
+                case LayerSortingType.LayerPosition:
+                    return x.LayerPosition.CompareTo(y.LayerPosition);
+                default:
+                    return x.LayerPosition.CompareTo(y.LayerPosition);
+            }
         }
         // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
         public static void FillGaps(List<Layer> layers)
@@ -35,6 +43,47 @@ namespace BauphysikToolWPF.SQLiteRepo
                 }
             }
         }
+    }
+    public class ElementSorting : IComparer<Element>
+    {
+        private ElementSortingType SortingType { get; set; }
+        public ElementSorting(ElementSortingType sortingType = ElementSortingType.Default)
+        {
+            SortingType = sortingType;
+        }
+        public int Compare(Element x, Element y) // Interface Method
+        {
+            switch (SortingType)
+            {
+                case ElementSortingType.Date:
+                    return x.ElementId.CompareTo(y.ElementId);
+                case ElementSortingType.Name:
+                    return x.Name.CompareTo(y.Name);
+                case ElementSortingType.Type:
+                    return x.Construction.Type.CompareTo(y.Construction.Type);
+                case ElementSortingType.RValue:
+                    return x.RValue.CompareTo(y.RValue);
+                default:
+                    return x.ElementId.CompareTo(y.ElementId);
+            }
+        }
+    }
+    public enum ElementSortingType
+    {
+        Date,
+        Name,
+        Type,
+        Orientation,
+        RValue,
+        SdValue,
+        Default = Date
+    }
+    public enum LayerSortingType
+    {
+        Date,
+        Name,
+        LayerPosition,
+        Default = LayerPosition
     }
 
     public class DatabaseAccess // publisher of e.g. 'LayersChanged' event
@@ -148,9 +197,15 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             return sqlConn.GetWithChildren<Element>(elementId, recursive: true);
         }
-        public static List<Element> QueryElementsByProjectId(int projectId)
+        public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.Default, bool ascending = true)
         {
-            return sqlConn.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
+            List<Element> elements = sqlConn.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
+
+            if (sortingType == ElementSortingType.Default)
+                return ascending ? elements : elements.Reverse<Element>().ToList();
+
+            elements.Sort(new ElementSorting(sortingType)); // use of List<T>.Sort(IComparer<T>) method
+            return ascending ? elements : elements.Reverse<Element>().ToList();
         }
 
         // Retreive Data from Table "Layer"
@@ -188,7 +243,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 return;
 
             if (fillLayerGaps)                
-                PositionSort.FillGaps(QueryLayersByElementId(layer.Element.ElementId)); // Remove gaps in the LayerPosition property of current Element
+                LayerSorting.FillGaps(QueryLayersByElementId(layer.Element.ElementId)); // Remove gaps in the LayerPosition property of current Element
 
             OnLayersChanged();
         }
@@ -202,14 +257,14 @@ namespace BauphysikToolWPF.SQLiteRepo
 
             OnLayersChanged();
         }
-        public static List<Layer> QueryLayersByElementId(int elementId, bool returnSorted = true)
+        public static List<Layer> QueryLayersByElementId(int elementId, LayerSortingType sortingType = LayerSortingType.Default)
         {
             List<Layer> layers = sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
 
-            // Needed after changing Layer Positions (leaving an unsorted list)
-            if (returnSorted)
-                layers.Sort(new PositionSort()); // use of List<T>.Sort(IComparer<T>) method
+            if (sortingType == LayerSortingType.Date)
+                return layers;
 
+            layers.Sort(new LayerSorting(sortingType)); // use of List<T>.Sort(IComparer<T>) method
             return layers;
         }
 

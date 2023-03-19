@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -12,6 +13,19 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
         public string Title { get; } = "LandingPage";
+
+        /*
+         * Static Class Properties:
+         * If List is already loaded, use existing - static - List.
+         * To only load Propery once. Every other getter request then uses the static class variable.
+         */
+
+        private static List<string?>? sorting_Keys;
+        public List<string?> Sorting_Keys
+        {
+            // Has to match ElementSortingType enum values (+Order)
+            get { return sorting_Keys ??= new List<string?>() { "Änderungsdatum", "Name", "Typ", "Ausrichtung", "R-Wert", "sd-Wert" }; }
+        }
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -36,8 +50,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             window.ShowDialog();
 
             // After Window closed:
-            // Update XAML Binding Property by fetching from DB
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId);
+            if (selectedElementId is null)
+                return;
+
+            // Update XAML Binding Property
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sorting_Index, isAscending);
         }
 
         [RelayCommand]
@@ -56,10 +73,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                 FO0_LandingPage.SelectedElementId = -1;
                 // Update XAML Binding Property
                 SelectedElementId = FO0_LandingPage.SelectedElementId;
-            }                
+            }
 
-            // Update XAML Binding Property by fetching from DB
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId);
+            // Update XAML Binding Property
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sorting_Index, isAscending);
         }
 
         [RelayCommand]
@@ -100,21 +117,44 @@ namespace BauphysikToolWPF.UI.ViewModels
             elementCopy.Name += "-Copy"; 
             DatabaseAccess.CreateElement(elementCopy, withChildren: true);
 
-            // Update XAML Binding Property by fetching from DB
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId);
+            // Update XAML Binding Property
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sorting_Index, isAscending);
+        }
+
+        [RelayCommand]
+        private void ApplySorting() // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        {
+            // Update XAML Binding Property
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sorting_Index, isAscending);
+        }
+
+        [RelayCommand]
+        private void ChangeSortingOrder()
+        {
+            // Change sorting order
+            IsAscending = !IsAscending;
+
+            // Update XAML Binding Property
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sorting_Index, isAscending);
         }
 
         /*
-         * MVVM Properties
+         * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
          * Initialized and Assigned with Default Values
          */
 
         [ObservableProperty]
+        private static int sorting_Index = 0; // As Static Class Variable to Save the Selection after Switching Pages!
+
+        [ObservableProperty]
+        private static bool isAscending = true; // As Static Class Variable to Save the Selection after Switching Pages!
+
+        [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElementName))] // Notifies 'SelectedElementName' when this property is changed!
         [NotifyPropertyChangedFor(nameof(SelectedElementType))]
         [NotifyPropertyChangedFor(nameof(SelectedElementOrientation))]
-        private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId) ?? new List<Element>();
+        private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sorting_Index, isAscending) ?? new List<Element>();
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElementName))] // Notifies 'SelectedElementName' when this property is changed!

@@ -44,7 +44,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             QValue = GetqValue();           // Gl. 2-65; S.31
             LayerTemps = GetLayerTemps();   // Bsp. S.33
             FRsi = GetfRsiValue();          // Gl. 3-1; S.36
-            Tsi_min = GetTsiMin();          // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7
+            Tsi_min = GetTsiMin();          // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7. Schimmelwahrscheinlichkeit
             Tsi = LayerTemps.FirstOrDefault().Value;
             Tse = LayerTemps.LastOrDefault().Value;
         }

@@ -19,6 +19,62 @@
         <!-- Checks if Element of WrapPanel is currently SelectedElement -->
         <controls:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
 
+        <!--Custom SortingButtonStyle based on Button03_Mini: changing icon, transparent, rounded corners, click effects -->
+        <Style x:Key="SortingButtonStyle" TargetType="{x:Type Button}">
+            <!--Set default properties of the button-->
+            <Setter Property="Content" Value="Placeholder"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="MinWidth" Value="24"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="MaxWidth" Value="48"/>
+            <Setter Property="MaxHeight" Value="48"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal">
+                                <!--Bind Image via DataContext Property in the Button Element-->
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+                <DataTrigger Binding="{Binding IsAscending}" Value="True">
+                    <Setter Property="Tag" Value="{StaticResource ButtonIcon_Up_B}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsAscending}" Value="False">
+                    <Setter Property="Tag" Value="{StaticResource ButtonIcon_Down_B}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <Style x:Key="ButtonStyleGridPanel" TargetType="{x:Type Button}">
@@ -138,16 +194,20 @@
         </Border>
 
         <!-- Left -->
-        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16">
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
             <Button Content="Bauteil erstellen" Command="{Binding EditElementCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
+            <Button Content="Bauteil importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            <Button Content="Katalog Löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,0,16"/>
+            <Button Content="Katalog exportieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
+            <Button Content="Katalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
         </StackPanel>
 
         <!-- Middle -->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
+                <RowDefinition Height="48"/>
                 <RowDefinition Height="48"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
@@ -159,16 +219,29 @@
 
             <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
+            <!-- Sorting functions, Button Row -->
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                <Label Content="Sortieren nach" Margin="0,0,8,0"/>
+                <ComboBox Background="Transparent" ItemsSource="{Binding Sorting_Keys}" SelectedIndex="{Binding Sorting_Index}" Margin="0,0,8,0"/>
+                <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource SortingButtonStyle}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,8,8"/>
+            </StackPanel>
+            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_List_B}" Margin="0,8,8,8"/>
+                <Button Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Elements_B}" Margin="0,8,0,8"/>
+            </StackPanel>
+
             <!--"WrapPanel inside a ListBox does pick up the DataTemplate you define .. so you have complete liberty to bind any list to your WrapPanel"-->
             <ItemsControl x:Name="element_ItemsControl"
-                          Grid.Row="1"
+                          Grid.Row="2"
                           Grid.Column="1"
                           ItemsSource="{Binding Elements}"
                           ItemsPanel="{StaticResource WrapPanel_Template}"
                           ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
                           Background="Transparent"                          
                           BorderThickness="0"
-                          Tag="{Binding}"/>
+                          Tag="{Binding}"
+                          Margin="0,16,0,0"/>
         </Grid>
         
         <!-- Right -->
@@ -226,7 +299,7 @@
             </Border>
 
             <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Bottom">
-                <Button Content="Bauteil bearbeiten" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}" IsEnabled="{Binding ElementToolsAvailable}" />
+                <Button Content="Schichtaufbau" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Layer_W}" IsEnabled="{Binding ElementToolsAvailable}" />
             </StackPanel>
         </Grid>
         

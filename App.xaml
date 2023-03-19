@@ -83,9 +83,14 @@
         <BitmapImage x:Key="ButtonIcon_Copy_W" UriSource="/Resources/Icons/copy_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Export_B" UriSource="/Resources/Icons/export.png"/>
         <BitmapImage x:Key="ButtonIcon_Export_W" UriSource="/Resources/Icons/export_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_ExportPDF_B" UriSource="/Resources/Icons/export-pdf.png"/>
+        <BitmapImage x:Key="ButtonIcon_ExportPDF_W" UriSource="/Resources/Icons/export-pdf_w.png"/>
+        <BitmapImage x:Key="ButtonIcon_List_B" UriSource="/Resources/Icons/list.png"/>
+        <BitmapImage x:Key="ButtonIcon_List_W" UriSource="/Resources/Icons/list_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Up_B" UriSource="/Resources/Icons/up.png"/>
         <BitmapImage x:Key="ButtonIcon_Down_B" UriSource="/Resources/Icons/down.png"/>
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
+        
 
 
         <!--Custom TextBox for Subscript Text with Equation-->
@@ -177,7 +182,7 @@
                     <ControlTemplate TargetType="{x:Type ComboBox}">
                         <Grid>
                             <!--The DropDownButton when closed-->
-                            <ToggleButton x:Name="ToggleButton" Grid.Column="2" Focusable="false" ClickMode="Press" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <ToggleButton x:Name="ToggleButton" Grid.Column="2" Focusable="false" ClickMode="Press" Background="{TemplateBinding Background}" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                                 <ToggleButton.Template>
                                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                                         <Grid>
@@ -185,14 +190,9 @@
                                                 <ColumnDefinition />
                                                 <ColumnDefinition Width="20" />
                                             </Grid.ColumnDefinitions>
-                                            <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="4" Background="{TemplateBinding Background}" />
+                                            <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="4" Background="{TemplateBinding Background}"/>
                                             <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{StaticResource PrimaryDarkBrush}"/>
                                         </Grid>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </ToggleButton.Template>
                             </ToggleButton>
@@ -224,6 +224,9 @@
                             </Popup>
                         </Grid>
                         <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ToggleButton" Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                            </Trigger>
                             <Trigger Property="HasItems" Value="false">
                                 <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
                             </Trigger>
@@ -438,6 +441,7 @@
             <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--Set appearance of the element-->
@@ -486,6 +490,7 @@
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--Set appearance of the element-->
@@ -526,17 +531,14 @@
             </Style.Triggers>
         </Style>
 
-        <!--Custom Button03_Mini: only icon, transparent, rounded corners, click effects -->
-        <Style x:Key="ButtonStyle03_Mini" TargetType="{x:Type Button}">
+        <!--Custom Button03_B_Icon: like Button03_B but only icon -->
+        <Style x:Key="ButtonStyle03_B_Icon" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
-            <Setter Property="Content" Value="Placeholder"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="MinWidth" Value="24"/>
-            <Setter Property="MinHeight" Value="24"/>
-            <Setter Property="MaxWidth" Value="48"/>
-            <Setter Property="MaxHeight" Value="48"/>
+            <Setter Property="MinWidth" Value="32"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--Set appearance of the element-->
@@ -547,7 +549,7 @@
                         <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>
@@ -576,13 +578,18 @@
             </Style.Triggers>
         </Style>
 
-        <!--Custom Button03_B_Icon: like Button03_B but only icon -->
-        <Style x:Key="ButtonStyle03_B_Icon" TargetType="{x:Type Button}">
+        <!--Custom Button03_Mini: only icon, transparent, rounded corners, click effects -->
+        <Style x:Key="ButtonStyle03_Mini" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
-            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
+            <Setter Property="Content" Value="Placeholder"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="MinWidth" Value="32"/>
-            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="MinWidth" Value="24"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="MaxWidth" Value="48"/>
+            <Setter Property="MaxHeight" Value="48"/>
+            <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--Set appearance of the element-->
@@ -593,7 +600,7 @@
                         <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>
