@@ -227,7 +227,8 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void UpdateLayer(Layer layer, bool triggerUpdateEvent = true)
         {
-            sqlConn.UpdateWithChildren(layer);
+            // No need to 'UpdateWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
+            sqlConn.Update(layer);
 
             if (triggerUpdateEvent == false)
                 return;
@@ -276,6 +277,10 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void CreateMaterial(Material material)
         {
+            //Only allow adding user defined materials to DB
+            if (material.Category != MaterialCategory.UserDefined)
+                return;
+
             sqlConn.Insert(material);
         }
 

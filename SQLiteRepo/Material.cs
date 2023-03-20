@@ -12,7 +12,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         Masonry,
         Plasters,
         Sealant,
-        Air
+        Air,
+        UserDefined
     }
     public class Material
     {
@@ -29,7 +30,6 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull]
         public double DiffusionResistance { get; set; }
         public string? ColorCode { get; set; }
-        public double? Porosity { get; set; }
         public int? SpecificHeatCapacity { get; set; }
 
         //------Not part of the Database-----//
@@ -69,6 +69,8 @@ namespace BauphysikToolWPF.SQLiteRepo
                         return MaterialCategory.Air;
                     case "Mauerwerk":
                         return MaterialCategory.Masonry;
+                    case "Benutzerdefiniert":
+                        return MaterialCategory.UserDefined;
                     default:
                         return MaterialCategory.None;
                 }

@@ -79,8 +79,8 @@
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <Style x:Key="ButtonStyleGridPanel" TargetType="{x:Type Button}">
             <Setter Property="Content" Value="{Binding ElementId}"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -111,7 +111,7 @@
                             <Binding RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" Path="Tag.SelectedElementId" Mode="OneWay"/>
                         </MultiBinding>
                     </DataTrigger.Binding>
-                    <Setter Property="BorderThickness" Value="2"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
                 </DataTrigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
@@ -130,8 +130,7 @@
                 'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
                 Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.
                 -->
-                <Button Grid.Row="0"
-                        Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                         Content="{Binding ElementId}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding ElementId}"
@@ -222,7 +221,7 @@
             <!-- Sorting functions, Button Row -->
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                 <Label Content="Sortieren nach" Margin="0,0,8,0"/>
-                <ComboBox Background="Transparent" ItemsSource="{Binding Sorting_Keys}" SelectedIndex="{Binding Sorting_Index}" Margin="0,0,8,0"/>
+                <ComboBox Background="Transparent" ItemsSource="{Binding SortingListItems}" SelectedIndex="{Binding SelectedSortingIndex}" Margin="0,0,8,0"/>
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource SortingButtonStyle}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,8,8"/>
             </StackPanel>
