@@ -28,4 +28,23 @@ namespace BauphysikToolWPF.UI
             // -> e.g. Calls the FO1_ViewModel constructor & LiveChartsViewModel constructor
         }
     }
+    public class OverviewItem
+    {
+        public string SymbolBase { get; set; }
+        public string SymbolSubscript { get; set; }
+        public double Value { get; set; }
+        public double RequirementValue { get; set; }
+
+        private int rating;
+        public int Rating
+        {
+            get { return rating; }
+            set
+            {
+                if (value >= 0 && value < 100)
+                    rating = value;
+                rating = 0;
+            }
+        }
+    }
 }

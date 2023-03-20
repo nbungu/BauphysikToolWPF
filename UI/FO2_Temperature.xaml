@@ -16,6 +16,7 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
+        
         <!--Dynamic Icon Source-->
         <Style x:Key="DynamicIconSource" TargetType="{x:Type Image}">
             <Setter Property="Source" Value="{StaticResource ButtonIcon_Cancel_B}"/>
@@ -47,6 +48,26 @@
                 <!--TODO: Add missing fields-->
             </Style.Triggers>
         </Style>
+
+        <DataTemplate x:Key="LBItem_DesignTemplate">
+            <Grid Margin="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <!--Here: Binding source are Items from the ItemsSource Property-->
+                <Ellipse Fill="{Binding ColorCode}" Height="16" Width="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}"/>
+                <TextBlock Grid.Column="2" Text="{Binding Value}"/>
+                <TextBlock Grid.Column="3" Text="{Binding RequirementValue}"/>
+                <ProgressBar Grid.Column="4" Minimum="0" Maximum="100" Value="{Binding Rating}"/>
+
+            </Grid>
+        </DataTemplate>
+
     </UserControl.Resources>
 
     <!--Main Grid 2x2-->
@@ -123,17 +144,18 @@
             </Border>
         </Grid>
 
-        <!--Bottom Right-->
+        <!--Bottom Right-->       
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="48"/>
-                <ColumnDefinition Width="136"/>
-                <ColumnDefinition Width="166"/>
-            </Grid.ColumnDefinitions>
+            <ListBox ItemsSource="{Binding OverviewItemList}"
+                     ItemTemplate="{StaticResource LBItem_DesignTemplate}"
+                     ClipToBounds="True"
+                     ScrollViewer.CanContentScroll="False"
+                     Background="Transparent"
+                     BorderBrush="Transparent"/>
 
-            <!--TODO: Rework as Grid--> 
+            <!--TODO: Rework as Grid 
             <StackPanel Orientation="Vertical" Grid.Column="0">
-                <Label Content="" FontWeight="Bold" HorizontalAlignment="Left"/> <!--Placeholder-->
+                <Label Content="" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <Line X2="48" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
                 <Image x:Name="R_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
                 <Image x:Name="U_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
@@ -162,7 +184,7 @@
                 <Label Content="{Binding TempCalc.Tsi_min}" ContentStringFormat="≥ {0} °C" Height="28"/>
                 <Label Content="" Height="28"/>
                 <Label Content="≥ 0.7" FontStyle="Italic" Height="28"/>
-            </StackPanel>
+            </StackPanel>-->
         </Grid>
         <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
     </Grid>

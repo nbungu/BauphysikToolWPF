@@ -10,6 +10,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -63,24 +64,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(RequirementValues))]
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
-        [ObservableProperty]
-        private string u_max = String.Empty;
-
-        [ObservableProperty]
-        private string r_min = String.Empty;
-
-        [ObservableProperty]
-        private string q_max = String.Empty;
-
-        [ObservableProperty]
-        private bool isUValueOK = false;
-
-        [ObservableProperty]
-        private bool isRValueOK = false;
-
-        [ObservableProperty]
-        private bool isQValueOK = false;
-
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
@@ -102,6 +85,16 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
 
+
+        private List<OverviewItem> overviewItems = new List<OverviewItem>();
+        public List<OverviewItem> OverviewItemList
+        {
+            get
+            {
+                overviewItems.Add(new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue});
+            }
+        }
+
         // TODO: Rework as MVVM
 
         public RectangularSection[] LayerSections { get; private set; }
@@ -114,7 +107,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
             // For the Requirement Checks (U-Value, R-Value)
-            this.RequirementValues = new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue);
+            //this.RequirementValues = new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue);
+
 
             // For Drawing the Chart
             this.LayerSections = DrawLayerSections();
