@@ -280,12 +280,14 @@ namespace BauphysikToolWPF.SQLiteRepo
             //Only allow adding user defined materials to DB
             if (material.Category != MaterialCategory.UserDefined)
                 return;
-
             sqlConn.Insert(material);
         }
 
         public static void UpdateMaterial(Material material)
         {
+            //Only allow updating user defined materials to DB
+            if (material.Category != MaterialCategory.UserDefined)
+                return;
             sqlConn.Update(material);
         }
 

@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Windows;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -51,9 +52,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void Close()
+        private void Close(Window window)
         {
-            MainWindow.Close();
+            if (window is null)
+                return;
+            window.Close();
         }
 
         /*

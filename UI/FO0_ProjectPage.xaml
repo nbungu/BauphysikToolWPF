@@ -35,7 +35,7 @@
         <!--Custom ToggleButton01_A: with icon center top, rounded corners, transparent, click effects-->
         <Style x:Key="ToggleButton01_A" TargetType="{x:Type ToggleButton}">
             <!--Set default properties of the button-->
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="MinHeight" Value="40"/>
@@ -59,7 +59,6 @@
             <Style.Triggers>
                 <Trigger Property="IsChecked" Value="True">
                     <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
-                    <Setter Property="BorderThickness" Value="2"/>
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">

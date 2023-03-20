@@ -22,9 +22,6 @@ namespace BauphysikToolWPF
     }
     public partial class MainWindow : Window
     {
-        // TODO add back button based on previously used page
-        public static NavigationContent lastRoutedPage;
-
         public static ListBox? navigationMenuListBox;
 
         public static Border? projectBoxHeader;
@@ -75,11 +72,6 @@ namespace BauphysikToolWPF
                     navigationMenuListBox.SelectedItem = "LandingPage";
                     break;
             }
-        }
-        // Exposes default Close() Method as static Method
-        public static new void Close()
-        {
-            Close();
         }
     }
 }
