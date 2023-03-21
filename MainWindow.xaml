@@ -87,7 +87,7 @@
         </x:Array>
 
         <!--NavigationMenu ListBox appearance: Used in ListBox as Style -->
-        <Style x:Key="NavigationListBoxStyle" TargetType="{x:Type ListBox}">
+        <Style x:Key="NavigationMenuListBoxStyle" TargetType="{x:Type ListBox}">
             <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
@@ -121,7 +121,7 @@
         </Style>
 
         <!--NavigationMenu ListBox entry appearance and behaviour: Used in ListBox as ItemContainerStyle-->
-        <Style x:Key="NavigationListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Style x:Key="NavigationMenuItemStyle" TargetType="{x:Type ListBoxItem}">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{StaticResource PrimaryLightBrush}"/>
             <Setter Property="Margin" Value="0,0,0,8"/>
@@ -180,16 +180,16 @@
 
         <!--
         ListBox entry content: Used in ListBox as ItemTemplate
-        The Content Located inside of 'NavigationListBoxItemStyle'
+        The Content Located inside of 'NavigationMenuItemStyle'
         -->
-        <DataTemplate x:Key="NavigationDataTemplate">
+        <DataTemplate x:Key="NavigationMenuItemTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Image x:Name="MenuItemIcon" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4" MaxWidth="24"/>
-                <Label x:Name="MenuItemLabel" Grid.Column="1" VerticalAlignment="Center" HorizontalContentAlignment="Center" Foreground="White" FontSize="14" Margin="0,4,4,4"/>
+                <Label x:Name="MenuItemLabel" Grid.Column="1" HorizontalContentAlignment="Center" Foreground="White" FontSize="14" Margin="0,4,4,4"/>
             </Grid>
             <!--
             Binding is ItemsSource from 'NavigationMenuListBox'
@@ -262,10 +262,10 @@
         <ListBox x:Name="NavigationMenuListBox"
                  Grid.Column="1"
                  Grid.Row="1"                 
-                 Style="{StaticResource NavigationListBoxStyle}"
+                 Style="{StaticResource NavigationMenuListBoxStyle}"
                  ItemsSource="{StaticResource NavigationMenuItems}"
-                 ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
-                 ItemTemplate="{DynamicResource NavigationDataTemplate}"/>
+                 ItemContainerStyle="{DynamicResource NavigationMenuItemStyle}"
+                 ItemTemplate="{DynamicResource NavigationMenuItemTemplate}"/>
 
         <!--The Actual Pages shown here-->
         <ContentControl x:Name="MainWindowContent" Grid.Column="2" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>

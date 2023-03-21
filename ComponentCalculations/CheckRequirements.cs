@@ -37,28 +37,11 @@ namespace BauphysikToolWPF.ComponentCalculations
             this.U_max = GetUMax();
             this.R_min = GetRMin();
             this.Q_max = GetQMax();
-            this.IsUValueOK = u_value <= U_max;
-            this.IsRValueOK = r_value >= R_min;
-            this.IsQValueOK = Math.Round(u_value * (UserSaved.Ti - UserSaved.Te), 2) <= Q_max;
+            this.IsUValueOK = (U_max == -1) ? true : u_value <= U_max;
+            this.IsRValueOK = (R_min == -1) ? true : r_value >= R_min;
+            this.IsQValueOK = (Q_max == -1) ? true : Math.Round(u_value * (UserSaved.Ti - UserSaved.Te), 2) <= Q_max;
         }
-        
-        public enum BuildingUsage
-        {
-            NonResidential, // 0, Nichtwohngebäude
-            Residential     // 1, Wohngebäude
-        }
-        public enum BuildingAge
-        {
-            Existing,       // 0, Bestandsgebäude
-            New             // 1, Neubau
-        }
-        public enum RequirementSource
-        {
-            GEG_Anlage1 = 1,
-            GEG_Anlage2 = 2,
-            GEG_Anlage7 = 3,
-            DIN_4108_2_Tabelle3 = 4
-        }
+       
         private double GetUMax()
         {
             // default (irregular) values
@@ -68,7 +51,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             // via m:n relation of Construction and Requirement.
             List<Requirement> allRequirements = currentElement.Construction.Requirements;
 
-            // catch constructions with no requirements
+            // catch constructions with no requirements (e.g. Innenwand)
             if (allRequirements is null || allRequirements.Count == 0)
                 return -1;
 
@@ -77,16 +60,16 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 if (currentProject.IsResidentialUsage)
                 {
-                    requirementSourceId = (int)RequirementSource.GEG_Anlage1;
+                    requirementSourceId = (int)RequirementSourceType.GEG_Anlage1;
                 }
                 if (currentProject.IsNonResidentialUsage)
                 {
-                    requirementSourceId = (int)RequirementSource.GEG_Anlage2;
+                    requirementSourceId = (int)RequirementSourceType.GEG_Anlage2;
                 }
             }
             if (currentProject.IsExistingConstruction)
             {
-                requirementSourceId = (int)RequirementSource.GEG_Anlage7;
+                requirementSourceId = (int)RequirementSourceType.GEG_Anlage7;
             }
 
             // c) Get specific Requirement from selected RequirementSource
@@ -122,7 +105,7 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return -1;
 
             // b) Select relevant Source
-            int requirementSourceId = (int)RequirementSource.DIN_4108_2_Tabelle3;
+            int requirementSourceId = (int)RequirementSourceType.DIN_4108_2_Tabelle3;
 
             // c) Get specific Requirement from selected RequirementSource
             Requirement? specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);

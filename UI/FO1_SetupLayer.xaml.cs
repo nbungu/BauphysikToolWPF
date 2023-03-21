@@ -114,6 +114,8 @@ namespace BauphysikToolWPF.UI
             if (this.IsVisible)
                 return;
 
+            //TODO: Deselect every Layer to remove blue Border around Layer
+
             Element currentElement = DatabaseAccess.QueryElementById(currentElementId);
             currentElement.Image = DrawLayerCanvas.SaveAsBLOB(layers_Canvas);
 

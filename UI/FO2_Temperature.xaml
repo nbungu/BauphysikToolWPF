@@ -17,20 +17,56 @@
 
     <UserControl.Resources>
 
-        <DataTemplate x:Key="LBItem_DesignTemplate">
-            <Grid Margin="4">
+        <!--OverviewListBox appearance: Used in ListBox as Style -->
+        <Style x:Key="OverviewListBoxStyle" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <!-- Creates Column Headers for the Items-->
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <DockPanel LastChildFill="True">
+                            <Grid DockPanel.Dock="Top" Height="40">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition MinWidth="32"/>
+                                    <ColumnDefinition MinWidth="40"/>
+                                    <ColumnDefinition MinWidth="56"/>
+                                    <ColumnDefinition MinWidth="64"/>
+                                    <ColumnDefinition MinWidth="136"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.ColumnSpan="5" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="0,0,0,2"/>
+                                <Label Grid.Column="2" Grid.ColumnSpan="2">Ist-Wert</Label>
+                                <Label Grid.Column="4">Soll-Wert</Label>
+                            </Grid>
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style and behaviour of the ListBoxItem Container, NOT the Data inside!-->
+        <Style x:Key="OverviewItemContainerStyle" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+
+        <!-- ListBoxItem Data Template for ItemsSource: 'OverviewItems'-->
+        <DataTemplate x:Key="OverviewItemDataTemplate">
+            <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="32"/>
-                    <ColumnDefinition Width="32"/>
-                    <ColumnDefinition Width="48"/>
-                    <ColumnDefinition Width="48"/>
+                    <ColumnDefinition MinWidth="32"/>
+                    <ColumnDefinition MinWidth="40"/>
+                    <ColumnDefinition MinWidth="56"/>
+                    <ColumnDefinition MinWidth="64"/>
+                    <ColumnDefinition MinWidth="136"/>
                 </Grid.ColumnDefinitions>
                 <!--Here: Binding source are Items from the ItemsSource Property-->
-                <Ellipse Fill="{Binding Color}" Height="8" Width="8" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Ellipse Fill="{Binding Color}" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}"/>
                 <Label Grid.Column="2" Content="{Binding Value}"/>
-                <Label Grid.Column="3" Content="{Binding RequirementValue}"/>
-
+                <Label Grid.Column="3" Content="{Binding Unit}" HorizontalAlignment="Left"/>
+                <Label Grid.Column="4" Content="{Binding RequirementStatement}"/>
             </Grid>
         </DataTemplate>
 
@@ -112,34 +148,11 @@
 
         <!--Bottom Right-->       
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
-            <ListBox ItemsSource="{Binding OverviewItems}"
-                     ItemTemplate="{StaticResource LBItem_DesignTemplate}"
-                     ClipToBounds="True"
-                     ScrollViewer.CanContentScroll="False"
-                     Background="Transparent"
-                     BorderBrush="Transparent">
-
-                <ListBox.Template>
-                    <ControlTemplate>
-                        <DockPanel LastChildFill="True">
-                            <Grid DockPanel.Dock="Top" Height="30">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="32"></ColumnDefinition>
-                                    <ColumnDefinition Width="32"></ColumnDefinition>
-                                    <ColumnDefinition Width="48"></ColumnDefinition>
-                                    <ColumnDefinition Width="48"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0">Column 1</Label>
-                                <Label Grid.Column="1">Column 2</Label>
-                                <Label Grid.Column="2">Column 3</Label>
-                                <Label Grid.Column="3">Column 4</Label>
-                            </Grid>
-                            <ItemsPresenter></ItemsPresenter>
-                        </DockPanel>
-                    </ControlTemplate>
-                </ListBox.Template>
-            </ListBox>
-
+            <ListBox Style="{StaticResource OverviewListBoxStyle}"
+                     ItemsSource="{Binding OverviewItems}"
+                     ItemTemplate="{StaticResource OverviewItemDataTemplate}"
+                     ItemContainerStyle="{StaticResource OverviewItemContainerStyle}"
+                     SnapsToDevicePixels="True"/>
         </Grid>
         <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
     </Grid>

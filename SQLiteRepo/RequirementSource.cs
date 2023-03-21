@@ -1,13 +1,17 @@
 ﻿using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
+    public enum RequirementSourceType
+    {
+        // enum values have to match the RequirementSourceId in DB
+        GEG_Anlage1 = 1,
+        GEG_Anlage2 = 2,
+        GEG_Anlage7 = 3,
+        DIN_4108_2_Tabelle3 = 4
+    }
     public class RequirementSource
     {
         //------Variablen-----//
@@ -38,6 +42,16 @@ namespace BauphysikToolWPF.SQLiteRepo
         // 1:n relationship with Requirement
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all Requirements linked to this 'RequirementSource')
         public List<Requirement> Requirements { get; set; }
+
+        [Ignore]
+        public RequirementSourceType SourceType
+        {
+            get
+            {
+                // Returns the enum by its number value (via RequirementSourceId)
+                return (RequirementSourceType)RequirementSourceId;
+            }
+        }
 
         //------Konstruktor-----//
 

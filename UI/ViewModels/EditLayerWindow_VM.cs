@@ -11,8 +11,6 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Called by 'InitializeComponent()' from EditLayerWindow.cs due to Class-Binding in xaml via DataContext
         public string Title { get; } = "EditLayerWindow";
-        public string MaterialName { get; } = EditLayerWindow.SelectedLayer.Material.Name;
-        public string MaterialCategoryName { get; } = EditLayerWindow.SelectedLayer.Material.CategoryName;
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -27,12 +25,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (window is null)
                 return;
 
-            // When Material values have changed 
+            // When Material values or Name has changed 
             if (IsCustomMaterial)
             {
                 if (EditLayerWindow.SelectedLayer.Material.Category == MaterialCategory.UserDefined)
                 {
                     // Update exisiting Material if already 'UserDefined'
+                    EditLayerWindow.SelectedLayer.Material.Name = Name;
                     EditLayerWindow.SelectedLayer.Material.ThermalConductivity = Convert.ToDouble(ThermalConductivity);
                     EditLayerWindow.SelectedLayer.Material.BulkDensity = Convert.ToInt32(BulkDensity);
                     EditLayerWindow.SelectedLayer.Material.DiffusionResistance = Convert.ToDouble(DiffusionResistance);
@@ -46,7 +45,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     // Create new Material
                     Material usedDefinedMaterial = new Material()
                     {
-                        Name = MaterialName + "-Edited",
+                        Name = Name == EditLayerWindow.SelectedLayer.Material.Name ? Name+"-Edited" : Name,
                         CategoryName = "Benutzerdefiniert",
                         ThermalConductivity = Convert.ToDouble(ThermalConductivity),
                         BulkDensity = Convert.ToInt32(BulkDensity),
@@ -76,6 +75,10 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsDataValid))]
+        private string name = EditLayerWindow.SelectedLayer.Material.Name.ToString();
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]
@@ -109,7 +112,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                return (ThermalConductivity != EditLayerWindow.SelectedLayer.Material.ThermalConductivity.ToString() || BulkDensity != EditLayerWindow.SelectedLayer.Material.BulkDensity.ToString() || DiffusionResistance != EditLayerWindow.SelectedLayer.Material.DiffusionResistance.ToString() || HeatCapacity != EditLayerWindow.SelectedLayer.Material.SpecificHeatCapacity.ToString());
+                return Name != EditLayerWindow.SelectedLayer.Material.Name.ToString() ||
+                    ThermalConductivity != EditLayerWindow.SelectedLayer.Material.ThermalConductivity.ToString() ||
+                    BulkDensity != EditLayerWindow.SelectedLayer.Material.BulkDensity.ToString() ||
+                    DiffusionResistance != EditLayerWindow.SelectedLayer.Material.DiffusionResistance.ToString() ||
+                    HeatCapacity != EditLayerWindow.SelectedLayer.Material.SpecificHeatCapacity.ToString();
             }
         }
         public bool IsDataValid
@@ -117,7 +124,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             get
             {
                 // Check if all TextBoxes have non-empty Values
-                return (Thickness != "" && ThermalConductivity != "" && BulkDensity != "" && DiffusionResistance != "" && HeatCapacity != "");
+                return (Name != "" && Thickness != "" && ThermalConductivity != "" && BulkDensity != "" && DiffusionResistance != "" && HeatCapacity != "");
             }
         }
     }

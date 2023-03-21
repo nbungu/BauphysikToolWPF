@@ -1,11 +1,19 @@
-﻿using BauphysikToolWPF.ComponentCalculations;
-using SQLite;
+﻿using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System;
 using System.Collections.Generic;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
+    public enum BuildingUsageType
+    {
+        NonResidential, // 0, Nichtwohngebäude
+        Residential     // 1, Wohngebäude
+    }
+    public enum BuildingAgeType
+    {
+        Existing,       // 0, Bestandsgebäude
+        New             // 1, Neubau
+    }
     public class Project
     {
         //------Variablen-----//
@@ -36,7 +44,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [Ignore]
         public bool IsResidentialUsage // = 1
         {
-            get { return BuildingUsage == (int)CheckRequirements.BuildingUsage.Residential; }
+            get { return BuildingUsage == (int)BuildingUsageType.Residential; }
             set
             {
                 BuildingUsage = (value) ? 1 : 0;
@@ -45,7 +53,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [Ignore]
         public bool IsNonResidentialUsage // = 0
         {
-            get { return BuildingUsage == (int)CheckRequirements.BuildingUsage.NonResidential; }
+            get { return BuildingUsage == (int)BuildingUsageType.NonResidential; }
             set
             {
                 BuildingUsage = (value) ? 0 : 1;
@@ -54,7 +62,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [Ignore]
         public bool IsNewConstruction // = 1
         {
-            get { return BuildingAge == (int)CheckRequirements.BuildingAge.New; }
+            get { return BuildingAge == (int)BuildingAgeType.New; }
             set
             {
                 BuildingAge = (value) ? 1 : 0;
@@ -63,7 +71,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [Ignore]
         public bool IsExistingConstruction // = 0
         {
-            get { return BuildingAge == (int)CheckRequirements.BuildingAge.Existing; }
+            get { return BuildingAge == (int)BuildingAgeType.Existing; }
             set
             {
                 BuildingAge = (value) ? 0 : 1;

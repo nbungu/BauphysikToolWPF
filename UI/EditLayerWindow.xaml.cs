@@ -3,12 +3,9 @@ using System.Windows;
 
 namespace BauphysikToolWPF.UI
 {
-    /// <summary>
-    /// Interaktionslogik für EditLayerWindow.xaml
-    /// </summary>
     public partial class EditLayerWindow : Window
     {
-        // Class Variable, make SelectedLayer accessible for ViewModel
+        // Class Variable, make SelectedLayer from parent Window (FO1_Layer) accessible for ViewModel
         public static Layer? SelectedLayer { get; private set; }
 
         public EditLayerWindow(Layer layer)

@@ -4,9 +4,6 @@ using System.Windows;
 
 namespace BauphysikToolWPF.UI
 {
-    /// <summary>
-    /// Interaktionslogik für EditElementWindow.xaml
-    /// </summary>
     public partial class EditElementWindow : Window
     {
         // Instance Variable, when existing Elemenet is being edited and passed as Parameter

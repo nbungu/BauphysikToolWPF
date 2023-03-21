@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
 using BauphysikToolWPF.SQLiteRepo;
-using System.Drawing.Imaging;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -32,11 +31,22 @@ namespace BauphysikToolWPF.UI
     }
     public class OverviewItem
     {
-        public string SymbolBase { get; set; }
-        public string SymbolSubscript { get; set; }
+        public string SymbolBase { get; set; } = string.Empty;
+        public string SymbolSubscript { get; set; } = string.Empty;
         public double Value { get; set; }
-        public double? RequirementValue { get; set; }
-        public Color Color { get; set; }
-
+        public double? RequirementValue { private get; set; }
+        public string RequirementStatement
+        {
+            get { return (RequirementValue is null || RequirementValue == -1) ? "keine Anforderung" : RequirementValue.ToString(); }
+        }
+        public string Unit { get; set; } = string.Empty;
+        public bool IsRequirementMet { get; set; } = false; 
+        public Brush Color
+        {
+            get
+            {
+                return IsRequirementMet ? new SolidColorBrush(Colors.Green) : new SolidColorBrush(Colors.Red);
+            }
+        }
     }
 }

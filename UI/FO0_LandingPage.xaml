@@ -225,8 +225,10 @@
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource SortingButtonStyle}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,8,8"/>
             </StackPanel>
+            <!-- Switch between ListView and Panels, Button Row -->
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
                 <Button Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_List_B}" Margin="0,8,8,8"/>
+                <!--https://wpf-tutorial.com/listview-control/listview-grouping/-->
                 <Button Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Elements_B}" Margin="0,8,0,8"/>
             </StackPanel>
 
