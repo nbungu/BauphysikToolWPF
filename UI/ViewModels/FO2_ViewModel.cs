@@ -12,6 +12,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -19,7 +20,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO2_ViewModel : ObservableObject
     {
         public string Title { get; } = "Temperature";
-        public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
+        public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;          
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -58,10 +59,10 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-
-        // TODO notifier doesnt work        
+       
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RequirementValues))]
+        [NotifyPropertyChangedFor(nameof(OverviewItems))]
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
         /*
@@ -73,25 +74,20 @@ namespace BauphysikToolWPF.UI.ViewModels
         public CheckRequirements RequirementValues
         {
             get { return new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue); }
-            private set
-            {
-                U_max = value.U_max > 0 ? value.U_max.ToString() : "Keine Anforderung";
-                R_min = value.R_min > 0 ? value.R_min.ToString() : "Keine Anforderung";
-                Q_max = value.Q_max > 0 ? value.Q_max.ToString() : "Keine Anforderung";
-
-                IsUValueOK = value.U_max > 0 ? value.IsUValueOK : true;
-                IsRValueOK = value.R_min > 0 ? value.IsRValueOK : true;
-                IsQValueOK = value.Q_max > 0 ? value.IsQValueOK : true;
-            }
         }
 
-
-        private List<OverviewItem> overviewItems = new List<OverviewItem>();
-        public List<OverviewItem> OverviewItemList
+        public List<OverviewItem> OverviewItems
         {
             get
             {
-                overviewItems.Add(new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue});
+                List<OverviewItem> list = new List<OverviewItem>();
+                list.Add(new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, Color = RequirementValues.IsRValueOK ? Colors.Green : Colors.Red});
+                list.Add(new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = TempCalc.UValue, RequirementValue = RequirementValues.U_max });
+                list.Add(new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = TempCalc.QValue, RequirementValue = RequirementValues.Q_max });
+                list.Add(new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = TempCalc.Tsi, RequirementValue = TempCalc.Tsi_min });
+                list.Add(new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null});
+                list.Add(new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7 });
+                return list;
             }
         }
 
@@ -106,10 +102,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
-            // For the Requirement Checks (U-Value, R-Value)
-            //this.RequirementValues = new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue);
-
-
             // For Drawing the Chart
             this.LayerSections = DrawLayerSections();
             this.DataPoints = DrawTempCurvePoints();
@@ -122,6 +114,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
             };
         }
+
         private RectangularSection[] DrawLayerSections()
         {
             if (TempCalc.Element.Layers.Count == 0)

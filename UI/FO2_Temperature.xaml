@@ -16,54 +16,20 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
-        
-        <!--Dynamic Icon Source-->
-        <Style x:Key="DynamicIconSource" TargetType="{x:Type Image}">
-            <Setter Property="Source" Value="{StaticResource ButtonIcon_Cancel_B}"/>
-            <Style.Triggers>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <!--Read: Get the 'Name' property of the element using this Style and set as Binding-->
-                        <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="R_Value_StatusImage" />
-                        <Condition Binding="{Binding IsRValueOK}" Value="True" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Source" Value="{StaticResource ButtonIcon_Accepted_B}" />
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <!--Read: Get the 'Name' property of the element using this Style and set as Binding-->
-                        <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="U_Value_StatusImage" />
-                        <Condition Binding="{Binding IsUValueOK}" Value="True" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Source" Value="{StaticResource ButtonIcon_Accepted_B}" />
-                </MultiDataTrigger>
-                <MultiDataTrigger>
-                    <MultiDataTrigger.Conditions>
-                        <!--Read: Get the 'Name' property of the element using this Style and set as Binding-->
-                        <Condition Binding="{Binding Name, RelativeSource={RelativeSource Self}}" Value="q_Value_StatusImage" />
-                        <Condition Binding="{Binding IsQValueOK}" Value="True" />
-                    </MultiDataTrigger.Conditions>
-                    <Setter Property="Source" Value="{StaticResource ButtonIcon_Accepted_B}" />
-                </MultiDataTrigger>
-                <!--TODO: Add missing fields-->
-            </Style.Triggers>
-        </Style>
 
         <DataTemplate x:Key="LBItem_DesignTemplate">
             <Grid Margin="4">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="48"/>
+                    <ColumnDefinition Width="48"/>
                 </Grid.ColumnDefinitions>
                 <!--Here: Binding source are Items from the ItemsSource Property-->
-                <Ellipse Fill="{Binding ColorCode}" Height="16" Width="16" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <Ellipse Fill="{Binding Color}" Height="8" Width="8" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}"/>
-                <TextBlock Grid.Column="2" Text="{Binding Value}"/>
-                <TextBlock Grid.Column="3" Text="{Binding RequirementValue}"/>
-                <ProgressBar Grid.Column="4" Minimum="0" Maximum="100" Value="{Binding Rating}"/>
+                <Label Grid.Column="2" Content="{Binding Value}"/>
+                <Label Grid.Column="3" Content="{Binding RequirementValue}"/>
 
             </Grid>
         </DataTemplate>
@@ -146,45 +112,34 @@
 
         <!--Bottom Right-->       
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
-            <ListBox ItemsSource="{Binding OverviewItemList}"
+            <ListBox ItemsSource="{Binding OverviewItems}"
                      ItemTemplate="{StaticResource LBItem_DesignTemplate}"
                      ClipToBounds="True"
                      ScrollViewer.CanContentScroll="False"
                      Background="Transparent"
-                     BorderBrush="Transparent"/>
+                     BorderBrush="Transparent">
 
-            <!--TODO: Rework as Grid 
-            <StackPanel Orientation="Vertical" Grid.Column="0">
-                <Label Content="" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X2="48" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
-                <Image x:Name="R_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
-                <Image x:Name="U_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
-                <Image x:Name="q_Value_StatusImage" Style="{StaticResource DynamicIconSource}" Width="32" Height="28"/>
-                <Line X2="48" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
+                <ListBox.Template>
+                    <ControlTemplate>
+                        <DockPanel LastChildFill="True">
+                            <Grid DockPanel.Dock="Top" Height="30">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="32"></ColumnDefinition>
+                                    <ColumnDefinition Width="32"></ColumnDefinition>
+                                    <ColumnDefinition Width="48"></ColumnDefinition>
+                                    <ColumnDefinition Width="48"></ColumnDefinition>
+                                </Grid.ColumnDefinitions>
+                                <Label Grid.Column="0">Column 1</Label>
+                                <Label Grid.Column="1">Column 2</Label>
+                                <Label Grid.Column="2">Column 3</Label>
+                                <Label Grid.Column="3">Column 4</Label>
+                            </Grid>
+                            <ItemsPresenter></ItemsPresenter>
+                        </DockPanel>
+                    </ControlTemplate>
+                </ListBox.Template>
+            </ListBox>
 
-            </StackPanel>
-            <StackPanel Orientation="Vertical" Grid.Column="1">
-                <Label Content="Ist-Werte" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X2="136" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
-                <controls:EquationLabel BaseText="R" SubscriptText="ges" Value="{Binding TempCalc.Element.RValue}" Unit="m²K/W" Height="28"/>
-                <controls:EquationLabel BaseText="U" Value="{Binding TempCalc.UValue}" Unit="W/m²K" Height="28"/>
-                <controls:EquationLabel BaseText="q" Value="{Binding TempCalc.QValue}" Unit="W/m²" Height="28"/>
-                <Line X2="136" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
-                <controls:EquationLabel BaseText="θ" SubscriptText="si" Value="{Binding TempCalc.Tsi}" Unit="°C" Height="28"/>
-                <controls:EquationLabel BaseText="θ" SubscriptText="se" Value="{Binding TempCalc.Tse}" Unit="°C" Height="28"/>
-                <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding TempCalc.FRsi}" Height="28"/>
-            </StackPanel>
-            <StackPanel Orientation="Vertical" Grid.Column="2">
-                <Label Content="Soll-Werte" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X2="166" Stroke="Black" HorizontalAlignment="Left" StrokeThickness="2" Margin="0,4,0,4"/>
-                <controls:EquationLabel BaseText="R" SubscriptText="min" Value="{Binding R_min}" Unit="m²K/W" Height="28"/>
-                <controls:EquationLabel BaseText="U" SubscriptText="max" Value="{Binding U_max}" Unit="W/m²K" Height="28"/>
-                <controls:EquationLabel BaseText="q" SubscriptText="max" Value="{Binding Q_max}" Unit="W/m²" Height="28"/>
-                <Line X2="166" Stroke="Black" HorizontalAlignment="Center" StrokeThickness="1" Margin="0,4,0,4"/>
-                <Label Content="{Binding TempCalc.Tsi_min}" ContentStringFormat="≥ {0} °C" Height="28"/>
-                <Label Content="" Height="28"/>
-                <Label Content="≥ 0.7" FontStyle="Italic" Height="28"/>
-            </StackPanel>-->
         </Grid>
         <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
     </Grid>

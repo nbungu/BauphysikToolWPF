@@ -1,6 +1,8 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
 using BauphysikToolWPF.SQLiteRepo;
+using System.Drawing.Imaging;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI
 {
@@ -33,18 +35,8 @@ namespace BauphysikToolWPF.UI
         public string SymbolBase { get; set; }
         public string SymbolSubscript { get; set; }
         public double Value { get; set; }
-        public double RequirementValue { get; set; }
+        public double? RequirementValue { get; set; }
+        public Color Color { get; set; }
 
-        private int rating;
-        public int Rating
-        {
-            get { return rating; }
-            set
-            {
-                if (value >= 0 && value < 100)
-                    rating = value;
-                rating = 0;
-            }
-        }
     }
 }
