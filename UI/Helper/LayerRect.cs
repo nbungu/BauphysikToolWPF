@@ -1,0 +1,42 @@
+﻿using BauphysikToolWPF.SQLiteRepo;
+using System.Windows.Media;
+
+namespace BauphysikToolWPF.UI.Helper
+{
+    public class LayerRect
+    {
+        // Rectangle x,y Coordinates on 2D Canvas. Drawing Origin (0,0) is top left corner.
+        public double Top { get; set; } = 0;
+        public double Left { get; set; } = 0;
+
+        // Dimensions of the Layer as a 2D Rectangle
+        public double RectWidth { get; set; } = 0;
+        public double RectHeight { get; set; } = 0;
+        public string RectPosition { get; set; } = string.Empty;  
+
+        // Appearance of the Layer as a 2D Rectangle
+        public Brush RectFill { get; set; }
+        public Brush RectHatchPattern { get; set; }
+        public Brush RectStroke { get; set; }
+        public double RectStrokeThickness { get; set; }
+
+        public LayerRect(double elementWidth, double canvasWidth, double canvasHeight, Layer layer, LayerRect? previousLayerRect)
+        {
+            if (previousLayerRect != null)
+                Left = previousLayerRect.Left + previousLayerRect.RectWidth;
+
+            double scalingFactor = layer.LayerThickness / elementWidth; // from  0 ... 1
+            double rectangleWidth = canvasWidth * scalingFactor;
+
+            RectWidth = rectangleWidth;
+            RectHeight = canvasHeight;
+            RectPosition = layer.LayerPosition.ToString();
+            RectFill = new SolidColorBrush(layer.Material.Color);
+            RectHatchPattern = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, rectangleWidth, canvasHeight);
+            RectStroke = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            RectStrokeThickness = layer.IsSelected ? 2 : 0.2;
+        }
+
+        // TODO add ToString()
+    }
+}

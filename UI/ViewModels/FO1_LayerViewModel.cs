@@ -1,9 +1,11 @@
 ﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Documents;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -139,6 +141,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(LayerRects))]
         private List<Layer> layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
 
         [ObservableProperty]
@@ -147,17 +150,41 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(LayerRects))]
+        private int selectedLayer = -1;
+
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
-         * Not Observable, because Triggered and Changed by the _selection Values above
+         * Not Observable, because Triggered and Changed by 'layers' above
          */
 
-        public string TiValue { get; } = UserSaved.Ti.ToString();
-        public string TeValue { get; } = UserSaved.Te.ToString();
-        public string RsiValue { get; } = UserSaved.Rsi.ToString();
-        public string RseValue { get; } = UserSaved.Rse.ToString();
-        public string RelFiValue { get; } = UserSaved.Rel_Fi.ToString();
-        public string RelFeValue { get; } = UserSaved.Rel_Fe.ToString();
+        public List<LayerRect> LayerRects // Draws new Layers on Canvas
+        {
+            get
+            {
+                List<LayerRect> rectangles = new List<LayerRect>();
+                foreach (Layer layer in Layers)
+                {
+                    layer.IsSelected = layer.LayerPosition == SelectedLayer ? true : false;
+                    rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
+                }
+                return rectangles;
+            }
+        }
+
+        public double ElementWidth
+        {
+            get
+            {
+                double fullWidth = 0;
+                foreach (Layer layer in Layers)
+                {
+                    fullWidth += layer.LayerThickness;
+                }
+                return fullWidth;
+            }
+        }
     }
 }

@@ -27,6 +27,26 @@
         -->
         <controls:ItemSelectedToEnabledConverter x:Key="ItemSelectedToEnabledConverter"/>
 
+        <!-- Defines the type of UIElement used in the ItemsPanel-->
+        <ItemsPanelTemplate x:Key="Canvas">
+            <Canvas Width="320" Height="400" SnapsToDevicePixels="True"/>
+        </ItemsPanelTemplate>
+
+        <!-- Properties of a CanvasItem (Layer Rectangle). Sets the Drawing Coordinates of the container holding a CanvasItem -->
+        <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
+            <Setter Property="Canvas.Left" Value="{Binding Left}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+        </Style>
+
+        <!-- Content and Styling of a CanvasItem (Layer Rectangle) -->
+        <DataTemplate x:Key="CanvasItemStyle">
+            <Grid Width="{Binding RectWidth}" Height="{Binding RectHeight}" Background="{Binding RectFill}">
+                <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}"/>
+                <Ellipse Fill="White" Width="20" Height="20" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Margin="-10"/>
+                <Label Content="{Binding RectPosition}" VerticalAlignment="Top" Height="32" Margin="-16"/>
+            </Grid>
+        </DataTemplate>
+
         <!--
         https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
         https://github.com/mochan-b/GridViewCellFormatting
@@ -111,7 +131,7 @@
                       Style="{StaticResource ListViewStyle}"
                       ItemsSource="{Binding Layers}"                      
                       ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
-                      SelectionChanged="layers_ListView_SelectionChanged"
+                      SelectedIndex="{Binding SelectedLayer}"
                       Tag="{Binding}"
                       Margin="0,16,0,0">
                 <!--TODO Add Style-->
@@ -141,8 +161,10 @@
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height=".75*"/>
-                <!--<RowDefinition Height=".25*"/>-->
+                <RowDefinition Height=".25*"/>
             </Grid.RowDefinitions>
+            
+            <!-- Elements inside of ViewBox are dynamically sizable-->
             <Viewbox ClipToBounds="True" VerticalAlignment="Top">
                 <Grid>
                     <Grid.RowDefinitions>
@@ -153,22 +175,26 @@
                     <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
                     <Label Content="Vertikalschnitt" FontSize="12"/>
                     <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12"/>
-                    <!--Canvas inside of ViewBox makes it dynamically sizable-->
-                    <!--Canvas Children defined in backend-->
-                    <Canvas Grid.Row="1" x:Name="layers_Canvas" Width="320" Height="400" SnapsToDevicePixels="True"/>
-                    <Grid Grid.Row="2" x:Name="measurement_Grid" Width="{Binding ElementName=layers_Canvas, Path=Width}"/>
+
+                    <!-- "LayersCanvas" -->
+                    <ItemsControl x:Name="layers_ItemsControl"
+                                  Grid.Row="1"
+                                  ItemsSource="{Binding LayerRects}"
+                                  ItemsPanel="{StaticResource Canvas}"
+                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                  ItemTemplate="{StaticResource CanvasItemStyle}"/>
+
+                    <Grid Grid.Row="2" x:Name="measurement_Grid" Width="{Binding ElementName=layers_ItemsControl, Path=Width}"/>
                 </Grid>
             </Viewbox>
-            <!--
 
             <Border Grid.Row="1" CornerRadius="8" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" Margin="0,16,0,0">
-                Placeholder
+                <!--
                 Einstellungen wie:
                 Ansicht drehen links, rechts usw.
                 Ansicht spiegeln
-                Gesamtwerte des Bauteils einblenden (dicke, R, U, sd etc.)
-                
-            </Border> -->
+                Gesamtwerte des Bauteils einblenden (dicke, R, U, sd etc.)-->
+            </Border>
         </Grid>
 
         <!--Bottom-->

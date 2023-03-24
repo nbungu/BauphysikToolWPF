@@ -14,12 +14,10 @@ namespace BauphysikToolWPF.UI.Helper
         // custom parameter constructor, with optional parameters "strokeWidth" and "showLabels"
         public DrawMeasurementLine(Grid container, List<Layer> layers, double strokeWidth = 1, bool showLabels = true)
         {
-            container.Children.Clear();
-            if (layers is null || layers.Count == 0)
+            if (layers is null || container is null)
                 return;
 
-            // check if container was already created in frontend
-            container = container ?? throw new ArgumentNullException(nameof(container));
+            container.Children.Clear();
 
             // Horizontal base line
             Line baseLine = new Line() { X2 = container.Width, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = strokeWidth, VerticalAlignment = VerticalAlignment.Center };
@@ -50,16 +48,15 @@ namespace BauphysikToolWPF.UI.Helper
                 Line line = new Line() { Y2 = 12, X1 = x, X2 = x, Stroke = new SolidColorBrush(Colors.Black), StrokeThickness = strokeWidth, VerticalAlignment = VerticalAlignment.Center };
                 container.Children.Add(line);
 
-                if (showLabels == true)
-                {
-                    Label label = new Label() { Content = Math.Round(layers[i].LayerThickness, 1).ToString(), FontSize = 12 };
-                    label.Measure(new Size(32, 32));
+                // Add Label with thickness of the Layer
+                Label label = new Label() { Content = Math.Round(layers[i].LayerThickness, 1).ToString(), FontSize = 12 };
+                label.Measure(new Size(32, 32));
 
-                    double labelLeftMargin = x - label.DesiredSize.Width / 2 - layerWidth / 2; // space right of the label
-                    double labelRightMargin = container.Width - label.DesiredSize.Width - labelLeftMargin; // space left of the label
-                    label.Margin = new Thickness(labelLeftMargin, 24, labelRightMargin, 0);
-                    container.Children.Add(label);
-                }
+                double labelLeftMargin = x - label.DesiredSize.Width / 2 - layerWidth / 2; // space right of the label
+                double labelRightMargin = container.Width - label.DesiredSize.Width - labelLeftMargin; // space left of the label
+                label.Margin = new Thickness(labelLeftMargin, 24, labelRightMargin, 0);
+                container.Children.Add(label);
+                
             }
         }
     }
