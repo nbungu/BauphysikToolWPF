@@ -16,8 +16,10 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             SortingType = sortingType;
         }
-        public int Compare(Layer x, Layer y) // Interface Method
+        public int Compare(Layer? x, Layer? y) // Interface Method
         {
+            if (x is null || y is null)
+                return 0;
             switch (SortingType)
             {
                 case LayerSortingType.Date:
@@ -51,8 +53,10 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             SortingType = sortingType;
         }
-        public int Compare(Element x, Element y) // Interface Method
+        public int Compare(Element? x, Element? y) // Interface Method
         {
+            if (x is null || y is null)
+                return 0;
             switch (SortingType)
             {
                 case ElementSortingType.Date:
@@ -89,8 +93,8 @@ namespace BauphysikToolWPF.SQLiteRepo
     public class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
         // TODO: no absolute Path
-        private static string dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\SQLiteRepo\\DemoDB.db"));
-        private static SQLiteConnection sqlConn = new SQLiteConnection(dbPath);
+        private static readonly string dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\SQLiteRepo\\DemoDB.db"));
+        private static readonly SQLiteConnection sqlConn = new SQLiteConnection(dbPath);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
         public static event Notify? LayersChanged; // event

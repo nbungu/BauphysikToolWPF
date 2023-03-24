@@ -14,6 +14,18 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
         public string Title { get; } = "SetupLayer";
+        public double ElementWidth
+        {
+            get
+            {
+                double fullWidth = 0;
+                foreach (Layer layer in Layers)
+                {
+                    fullWidth += layer.LayerThickness;
+                }
+                return fullWidth;
+            }
+        }
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -171,19 +183,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                     rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
                 }
                 return rectangles;
-            }
-        }
-
-        public double ElementWidth
-        {
-            get
-            {
-                double fullWidth = 0;
-                foreach (Layer layer in Layers)
-                {
-                    fullWidth += layer.LayerThickness;
-                }
-                return fullWidth;
             }
         }
     }

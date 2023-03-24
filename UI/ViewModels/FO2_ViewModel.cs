@@ -37,8 +37,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void EditElement(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
         {
-            if (selectedElement is null)
-                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
             var window = new EditElementWindow(selectedElement);
@@ -80,13 +79,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                List<OverviewItem> list = new List<OverviewItem>();
-                list.Add(new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" });
-                list.Add(new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = TempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOK, Unit = "W/m²K" });
-                list.Add(new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = TempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOK, Unit = "W/m²" });
-                list.Add(new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = TempCalc.Tsi, RequirementValue = TempCalc.Tsi_min, IsRequirementMet = TempCalc.Tsi >= TempCalc.Tsi_min, Unit = "°C" });
-                list.Add(new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" });
-                list.Add(new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 });
+                List<OverviewItem> list = new List<OverviewItem>
+                {
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = TempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOK, Unit = "W/m²K" },
+                    new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = TempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOK, Unit = "W/m²" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = TempCalc.Tsi, RequirementValue = TempCalc.Tsi_min, IsRequirementMet = TempCalc.Tsi >= TempCalc.Tsi_min, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 }
+                };
                 return list;
             }
         }
@@ -118,7 +119,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private RectangularSection[] DrawLayerSections()
         {
             if (TempCalc.Element.Layers.Count == 0)
-                return new RectangularSection[0];
+                return Array.Empty<RectangularSection>();
 
             RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
 
@@ -162,7 +163,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private ISeries[] DrawTempCurvePoints()
         {
             if (TempCalc.Element.Layers.Count == 0)
-                return new ISeries[0];
+                return Array.Empty<ISeries>();
 
             ISeries[] series = new ISeries[3]; // more than one series possible to draw in the same graph      
 
@@ -187,8 +188,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 TooltipLabelFormatter = null
             };
 
-            ObservablePoint[] tempValues = new ObservablePoint[TempCalc.LayerTemps.Count()]; // represents the temperature points
-            for (int i = 0; i < TempCalc.LayerTemps.Count(); i++)
+            ObservablePoint[] tempValues = new ObservablePoint[TempCalc.LayerTemps.Count]; // represents the temperature points
+            for (int i = 0; i < TempCalc.LayerTemps.Count; i++)
             {
                 double x = TempCalc.LayerTemps.ElementAt(i).Key; // Position in cm
                 double y = Math.Round(TempCalc.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
