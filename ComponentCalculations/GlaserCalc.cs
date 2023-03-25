@@ -15,9 +15,11 @@ namespace BauphysikToolWPF.ComponentCalculations
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
 
         // (Instance-) Constructor
-        public GlaserCalc(Element element) : base(element)
+        public GlaserCalc(Element element, Dictionary<string, double> userEnvVars) : base(element, userEnvVars)
         {
             if (element is null || element.Layers.Count == 0)
+                return;
+            if (userEnvVars is null)
                 return;
 
             // Calculated parameters (private setter)

@@ -29,7 +29,8 @@
 
         <!-- Defines the type of UIElement used in the ItemsPanel-->
         <ItemsPanelTemplate x:Key="Canvas">
-            <Canvas Width="320" Height="400" SnapsToDevicePixels="True"/>
+            <!--Takes the Width and Height from TemplatedParent-->
+            <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
 
         <!-- Properties of a CanvasItem (Layer Rectangle). Sets the Drawing Coordinates of the container holding a CanvasItem -->
@@ -38,21 +39,49 @@
             <Setter Property="Canvas.Top" Value="{Binding Top}"/>
         </Style>
 
-        <!-- Content and Styling of a CanvasItem (Layer Rectangle) -->
-        <DataTemplate x:Key="CanvasItemStyle">
+        <!-- Content and Styling of a Canvas Item (Layer Rectangle) -->
+        <DataTemplate x:Key="LayerItemStyle">
             <Grid Width="{Binding RectWidth}" Height="{Binding RectHeight}" Background="{Binding RectFill}">
                 <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}"/>
-                <Ellipse Fill="White" Width="20" Height="20" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Margin="-10"/>
-                <Label Content="{Binding RectPosition}" VerticalAlignment="Top" Height="32" Margin="-16"/>
+                <Ellipse Fill="White" Width="20" Height="20" Stroke="Black" StrokeThickness="1"/>
+                <Label Content="{Binding RectPosition}" Height="32"/>
             </Grid>
         </DataTemplate>
+
+        <!-- Content and Styling of a Canvas Item (Measurement Marker Line) -->
+        <DataTemplate x:Key="MeasurementItemStyle">
+            <!-- DataContext is LayerRects from ItemSource-->
+            <Grid Width="{Binding RectWidth}" Height="48">
+                <!-- X1="0.5" X2="0.5" Adds 0.5 Offset to the Left, to avoid clipping of first marker line-->
+                <Line x:Name="MarkerLine" Y2="12" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
+                <Label Content="{Binding RectWidth_cm}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="MeasurementCanvasStyle" TargetType="{x:Type ItemsControl}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ItemsControl}">
+                        <Grid>
+                            <!-- Adds a static UIElement to the ItemsSource-->
+                            <!-- DataContext is FO1_Layer_VM-->
+                            <Label Content="{Binding ElementWidth}" VerticalAlignment="Bottom" Margin="0,0,0,-8"/>
+                            <Line x:Name="staticBaseLine" X1="0" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
+                            <Line x:Name="staticEndLine" Y2="12" X1="{TemplateBinding Width}" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
+                            <!-- ItemsPresenter is where the (dynamic) Content of the Canvas Items are shown (from ItemsSource) -->
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Grid>                        
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
         <!--
         https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
         https://github.com/mochan-b/GridViewCellFormatting
         Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD of ItemTemplate
         -->
-        <GridView x:Key="LayerViewMode" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle}">
+        <GridView x:Key="LayerGridViewColumns" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
             <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
             <GridViewColumn Header="Pos." Width="Auto">
                 <!--Custom Column Style for Column 0-->
@@ -73,6 +102,44 @@
             <GridViewColumn DisplayMemberBinding="{Binding AreaMassDensity}" Header="m' [kg/m²]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Material.DiffusionResistance}" Header="µ [-]" Width="Auto"/>
         </GridView>
+        
+        <!-- Custom Layer ListViewItem appearance. Style of the Row Container -->
+        <Style x:Key="LayerItemContainerStyle" TargetType="{x:Type ListViewItem}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="ToolTip" Value="{Binding}"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ListViewItem}">
+                        <Border x:Name="listView_Border"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                CornerRadius="8"
+                                Height="56"
+                                SnapsToDevicePixels="true">
+                            <StackPanel Orientation="Vertical">
+                                <!--GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->
+                                <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                                <!-- TODO: Balken Lage INFOS hier...-->
+                                <TextBlock Text="Balkenlage hinzufügen"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!--When a ListBox entry is Selected-->
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter TargetName="listView_Border" Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
+                                <Setter Property="Foreground" Value="White"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>        
         
     </UserControl.Resources>
 
@@ -127,11 +194,11 @@
             <!-- This is 'PlacementTarget' as seen from ContextMenu -->
             <ListView x:Name="layers_ListView"
                       Grid.Row="2"
-                      View="{StaticResource LayerViewMode}"
-                      Style="{StaticResource ListViewStyle}"
-                      ItemsSource="{Binding Layers}"                      
-                      ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"
-                      SelectedIndex="{Binding SelectedLayer}"
+                      ItemsSource="{Binding Layers}" 
+                      View="{StaticResource LayerGridViewColumns}"
+                      ItemContainerStyle="{StaticResource LayerItemContainerStyle}"
+                      SelectedIndex="{Binding SelectedLayer}"                      
+                      Style="{StaticResource ListViewStyle01}"
                       Tag="{Binding}"
                       Margin="0,16,0,0">
                 <!--TODO Add Style-->
@@ -168,7 +235,7 @@
             <Viewbox ClipToBounds="True" VerticalAlignment="Top">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="32"/>
+                        <RowDefinition Height="40"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="48"/>
                     </Grid.RowDefinitions>
@@ -176,15 +243,25 @@
                     <Label Content="Vertikalschnitt" FontSize="12"/>
                     <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12"/>
 
-                    <!-- "LayersCanvas" -->
+                    <!-- "Layers Canvas" -->
                     <ItemsControl x:Name="layers_ItemsControl"
                                   Grid.Row="1"
+                                  Width="320"
+                                  Height="400"                                 
                                   ItemsSource="{Binding LayerRects}"
                                   ItemsPanel="{StaticResource Canvas}"
                                   ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                                  ItemTemplate="{StaticResource CanvasItemStyle}"/>
+                                  ItemTemplate="{StaticResource LayerItemStyle}"/>
 
-                    <Grid Grid.Row="2" x:Name="measurement_Grid" Width="{Binding ElementName=layers_ItemsControl, Path=Width}"/>
+                    <!-- "Measurement Grid" -->
+                    <ItemsControl x:Name="measurement_Grid"
+                                  Grid.Row="2"
+                                  Style="{StaticResource MeasurementCanvasStyle}"
+                                  Width="{Binding ElementName=layers_ItemsControl, Path=Width}"
+                                  ItemsSource="{Binding LayerRects}"
+                                  ItemsPanel="{StaticResource Canvas}"
+                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                  ItemTemplate="{StaticResource MeasurementItemStyle}"/>
                 </Grid>
             </Viewbox>
 

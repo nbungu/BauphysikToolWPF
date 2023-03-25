@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
 using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -9,6 +10,7 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -57,6 +59,27 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+
+        /*
+         * MVVM Capsulated Properties + Triggered by other Properties
+         * 
+         * Not Observable, because Triggered and Changed by the elementType Value above
+         */
+
+        public List<OverviewItem> OverviewItems
+        {
+            get
+            {
+                List<OverviewItem> list = new List<OverviewItem>
+                {
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = Glaser.Tsi, RequirementValue = Glaser.TaupunktMax_i, IsRequirementMet = Glaser.Tsi >= Glaser.TaupunktMax_i, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = Glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = Glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = Glaser.FRsi >= 0.7 },
+                    new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = Glaser.Rel_Fi, RequirementValue = Glaser.PhiMax, IsRequirementMet = Glaser.Rel_Fi < Glaser.PhiMax, Unit = "%" }
+                };
+                return list;
+            }
+        }
 
         // TODO: Rework as MVVM
 

@@ -13,19 +13,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO1_LayerViewModel : ObservableObject
     {
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "SetupLayer";
-        public double ElementWidth
-        {
-            get
-            {
-                double fullWidth = 0;
-                foreach (Layer layer in Layers)
-                {
-                    fullWidth += layer.LayerThickness;
-                }
-                return fullWidth;
-            }
-        }
+        public string Title { get; } = "SetupLayer";        
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -154,6 +142,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerRects))]
+        [NotifyPropertyChangedFor(nameof(ElementWidth))]
         private List<Layer> layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
 
         [ObservableProperty]
@@ -172,7 +161,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by 'layers' above
          */
 
-        public List<LayerRect> LayerRects // Draws new Layers on Canvas
+        public List<LayerRect> LayerRects // When accessed via get: Draws new Layers on Canvas
         {
             get
             {
@@ -183,6 +172,18 @@ namespace BauphysikToolWPF.UI.ViewModels
                     rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
                 }
                 return rectangles;
+            }
+        }
+        public double ElementWidth
+        {
+            get
+            {
+                double fullWidth = 0;
+                foreach (Layer layer in Layers)
+                {
+                    fullWidth += layer.LayerThickness;
+                }
+                return fullWidth;
             }
         }
     }

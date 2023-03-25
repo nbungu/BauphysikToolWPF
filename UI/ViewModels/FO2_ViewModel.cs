@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
 using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -12,7 +13,6 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -82,16 +82,16 @@ namespace BauphysikToolWPF.UI.ViewModels
                 List<OverviewItem> list = new List<OverviewItem>
                 {
                     new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = TempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
                     new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = TempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOK, Unit = "W/m²K" },
                     new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = TempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOK, Unit = "W/m²" },
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = TempCalc.Tsi, RequirementValue = TempCalc.Tsi_min, IsRequirementMet = TempCalc.Tsi >= TempCalc.Tsi_min, Unit = "°C" },
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 }
+                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 },
                 };
                 return list;
             }
         }
-
         // TODO: Rework as MVVM
 
         public RectangularSection[] LayerSections { get; private set; }

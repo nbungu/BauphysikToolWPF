@@ -26,19 +26,21 @@
                 <Setter.Value>
                     <!-- Creates Column Headers for the Items-->
                     <ControlTemplate TargetType="{x:Type ListBox}">
-                        <DockPanel LastChildFill="True">
-                            <Grid DockPanel.Dock="Top" Height="40">
+                        <DockPanel>
+                            <!-- Define SharedSizeScope in Parent Element which contains the shared sizing objects-->
+                            <!--Shared Sizing object 1: Header-->
+                            <Grid DockPanel.Dock="Top" Height="40" Margin="6,0,0,0">
                                 <Grid.ColumnDefinitions>
-                                    <ColumnDefinition MinWidth="32"/>
-                                    <ColumnDefinition MinWidth="40"/>
-                                    <ColumnDefinition MinWidth="56"/>
-                                    <ColumnDefinition MinWidth="64"/>
-                                    <ColumnDefinition MinWidth="136"/>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition MinWidth="96"/>
+                                    <ColumnDefinition MinWidth="96"/>
                                 </Grid.ColumnDefinitions>
-                                <Border Grid.ColumnSpan="5" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="0,0,0,2"/>
-                                <Label Grid.Column="2" Grid.ColumnSpan="2">Ist-Wert</Label>
-                                <Label Grid.Column="4">Soll-Wert</Label>
+                                <Border Grid.ColumnSpan="4" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="0,0,0,2"/>
+                                <Label Grid.Column="2" Content="Ist-Wert" HorizontalAlignment="Left"/>
+                                <Label Grid.Column="3" Content="Soll-Wert" HorizontalAlignment="Left"/>
                             </Grid>
+                            <!--Shared Sizing object 2: The Items of the List-->
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
                         </DockPanel>
                     </ControlTemplate>
@@ -55,18 +57,22 @@
         <DataTemplate x:Key="OverviewItemDataTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="32"/>
-                    <ColumnDefinition MinWidth="40"/>
-                    <ColumnDefinition MinWidth="56"/>
-                    <ColumnDefinition MinWidth="64"/>
-                    <ColumnDefinition MinWidth="136"/>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition MinWidth="96"/>
+                    <ColumnDefinition MinWidth="96"/>
                 </Grid.ColumnDefinitions>
                 <!--Here: Binding source are Items from the ItemsSource Property-->
                 <Ellipse Fill="{Binding Color}" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}"/>
-                <Label Grid.Column="2" Content="{Binding Value}"/>
-                <Label Grid.Column="3" Content="{Binding Unit}" HorizontalAlignment="Left"/>
-                <Label Grid.Column="4" Content="{Binding RequirementStatement}"/>
+                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}" HorizontalAlignment="Right"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Label Content="{Binding Value}" ContentStringFormat="= {0}" FontWeight="Bold"/>
+                    <Label Content="{Binding Unit}" HorizontalAlignment="Left" Margin="-4,0,0,0" FontWeight="Bold"/>
+                </StackPanel>
+                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                    <Label Content="{Binding RequirementStatement}"/>
+                    <Label Content="{Binding Unit}" HorizontalAlignment="Left"/>
+                </StackPanel>
             </Grid>
         </DataTemplate>
 

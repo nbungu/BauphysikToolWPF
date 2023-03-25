@@ -80,7 +80,7 @@
         https://github.com/mochan-b/GridViewCellFormatting
         Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD of ItemTemplate
         -->
-        <GridView x:Key="MaterialViewMode" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle}">
+        <GridView x:Key="MaterialGridViewColumns" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
             <!--Here: Binding source are Items (typeof 'Material') from the ItemsSource Property-->
             <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Materialname" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding BulkDensity}" Header="ρ [kg/m³]" Width="Auto"/>
@@ -141,10 +141,10 @@
 
             <ListView x:Name="materials_ListView"
                       Grid.Row="2"
-                      View="{StaticResource MaterialViewMode}"
-                      Style="{StaticResource ListViewStyle}"
                       ItemsSource="{Binding Materials}"
-                      ItemContainerStyle="{StaticResource ListViewItemContainerStyle}"/>
+                      View="{StaticResource MaterialGridViewColumns}"
+                      ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
+                      Style="{StaticResource ListViewStyle01}"/>
         </Grid>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="8">

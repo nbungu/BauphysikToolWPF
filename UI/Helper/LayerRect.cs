@@ -10,8 +10,9 @@ namespace BauphysikToolWPF.UI.Helper
         public double Left { get; set; } = 0;
 
         // Dimensions of the Layer as a 2D Rectangle
-        public double RectWidth { get; set; } = 0;
-        public double RectHeight { get; set; } = 0;
+        public double RectWidth { get; set; } = 0; // [px]
+        public double RectWidth_cm { get; set; } = 0; // [cm]
+        public double RectHeight { get; set; } = 0; // [px]
         public string RectPosition { get; set; } = string.Empty;  
 
         // Appearance of the Layer as a 2D Rectangle
@@ -29,6 +30,7 @@ namespace BauphysikToolWPF.UI.Helper
             double rectangleWidth = canvasWidth * scalingFactor;
 
             RectWidth = rectangleWidth;
+            RectWidth_cm = layer.LayerThickness;
             RectHeight = canvasHeight;
             RectPosition = layer.LayerPosition.ToString();
             RectFill = new SolidColorBrush(layer.Material.Color);

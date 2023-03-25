@@ -15,6 +15,66 @@
         <vm:FO3_ViewModel/>
     </UserControl.DataContext>
 
+    <UserControl.Resources>
+        <!--OverviewListBox appearance: Used in ListBox as Style -->
+        <Style x:Key="OverviewListBoxStyle" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <!-- Creates Column Headers for the Items-->
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <DockPanel> <!-- Define SharedSizeScope in Parent Element which contains the shared sizing objects-->
+                            <!--Shared Sizing object 1: Header-->
+                            <Grid DockPanel.Dock="Top" Height="40" Margin="6,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition MinWidth="96"/>
+                                    <ColumnDefinition MinWidth="96"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.ColumnSpan="4" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="0,0,0,2"/>
+                                <Label Grid.Column="2" Content="Ist-Wert" HorizontalAlignment="Left"/>
+                                <Label Grid.Column="3" Content="Soll-Wert" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <!--Shared Sizing object 2: The Items of the List-->
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style and behaviour of the ListBoxItem Container, NOT the Data inside!-->
+        <Style x:Key="OverviewItemContainerStyle" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+
+        <!-- ListBoxItem Data Template for ItemsSource: 'OverviewItems'-->
+        <DataTemplate x:Key="OverviewItemDataTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition MinWidth="96"/>
+                    <ColumnDefinition MinWidth="96"/>
+                </Grid.ColumnDefinitions>
+                <!--Here: Binding source are Items from the ItemsSource Property-->
+                <Ellipse Fill="{Binding Color}" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}" HorizontalAlignment="Right"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Label Content="{Binding Value}" ContentStringFormat="= {0}" FontWeight="Bold"/>
+                    <Label Content="{Binding Unit}" HorizontalAlignment="Left" Margin="-4,0,0,0" FontWeight="Bold"/>
+                </StackPanel>
+                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                    <Label Content="{Binding RequirementStatement}"/>
+                    <Label Content="{Binding Unit}" HorizontalAlignment="Left"/>
+                </StackPanel>                
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
     <!--Main Grid 2x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
@@ -87,24 +147,11 @@
 
         <!--Bottom Right-->
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".5*"/>
-                <ColumnDefinition Width=".5*"/>
-            </Grid.ColumnDefinitions>
-
-            <StackPanel Orientation="Vertical" Grid.Column="0">
-                <Label Content="Ist-Werte" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <controls:EquationLabel BaseText="f" FontStyle="Italic" SubscriptText="Rsi" Value="{Binding GlCalc.FRsi}" Height="28" Margin="4,0,0,0"/>
-                <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding GlCalc.Rel_Fi}" Unit="%" Height="28" Margin="4,0,0,0"/>
-            </StackPanel>
-
-            <StackPanel Orientation="Vertical" Grid.Column="1">
-                <Label Content="Soll-Werte" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Line X1="200" Stroke="LightGray" HorizontalAlignment="Center" Margin="4" StrokeThickness="2"/>
-                <Label Content="> 0.7" FontStyle="Italic" Height="28"/>
-                <Label Content="{Binding GlCalc.PhiMax}" ContentStringFormat="&lt; {0} %" Height="28"/>
-            </StackPanel>
+            <ListBox Style="{StaticResource OverviewListBoxStyle}"
+                     ItemsSource="{Binding OverviewItems}"
+                     ItemTemplate="{StaticResource OverviewItemDataTemplate}"
+                     ItemContainerStyle="{StaticResource OverviewItemContainerStyle}"
+                     SnapsToDevicePixels="True"/>
         </Grid>
 
         <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
