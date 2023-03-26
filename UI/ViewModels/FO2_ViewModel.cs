@@ -20,8 +20,9 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO2_ViewModel : ObservableObject
     {
         public string Title { get; } = "Temperature";
-        public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;          
+        public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
 
+        public DynamicTempCalc DynamicTempCalc { get; private set; } = new DynamicTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId));
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -88,6 +89,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = TempCalc.Tsi, RequirementValue = TempCalc.Tsi_min, IsRequirementMet = TempCalc.Tsi >= TempCalc.Tsi_min, Unit = "°C" },
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
                     new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 },
+                    new OverviewItem { SymbolBase = "TAD", SymbolSubscript = "", Value = DynamicTempCalc.TAD, RequirementValue = null, IsRequirementMet = true },
+                    new OverviewItem { SymbolBase = "TAV", SymbolSubscript = "", Value = DynamicTempCalc.TAV, RequirementValue = null, IsRequirementMet = true },
+                    new OverviewItem { SymbolBase = "P-V", SymbolSubscript = "", Value = DynamicTempCalc.PhaseDelay, RequirementValue = null, IsRequirementMet = true },
+                    new OverviewItem { SymbolBase = "K", SymbolSubscript = "", Value = DynamicTempCalc.AreaHeatCapacity, RequirementValue = null, IsRequirementMet = true }
                 };
                 return list;
             }

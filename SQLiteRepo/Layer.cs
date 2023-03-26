@@ -83,6 +83,19 @@ namespace BauphysikToolWPF.SQLiteRepo
             }
         }
 
+        // Temperaturleitfähigkeit a gibt das Mass für die Geschwindigkeit an,
+        // mit der sich eine Temperaturänderung im Material ausbreitet:
+        [Ignore]
+        public double TemperatureConductivity // a in m²/s
+        {
+            get
+            {
+                if (Material == null || !IsEffective)
+                    return 0;
+                return Math.Round(Material.ThermalConductivity / Convert.ToDouble(Material.BulkDensity / Material.SpecificHeatCapacity), 2);
+            }
+        }
+
         //------Konstruktor-----//
 
         // has to be default parameterless constructor when used as DB
