@@ -95,12 +95,15 @@
                 </GridViewColumn.CellTemplate>
             </GridViewColumn>
             <GridViewColumn DisplayMemberBinding="{Binding Material.Name}" Header="Material" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.CategoryName}" Header="Kategorie" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding LayerThickness}" Header="Dicke [cm]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding LayerThickness}" Header="d [cm]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding Material.ThermalConductivity}" Header="λ [W/(mK)]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding Material.BulkDensity}" Header="ρ [kg/m³]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="R [m²K/W]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding Material.SpecificHeatCapacity}" Header="c [J/(kgK)]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding Material.DiffusionResistance}" Header="µ [-]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Sd_Thickness}" Header="sd [m]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding AreaMassDensity}" Header="m' [kg/m²]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.DiffusionResistance}" Header="µ [-]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding Material.CategoryName}" Header="Kategorie" Width="Auto"/>
         </GridView>
         
         <!-- Custom Layer ListViewItem appearance. Style of the Row Container -->

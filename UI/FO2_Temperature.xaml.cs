@@ -11,6 +11,7 @@ namespace BauphysikToolWPF.UI
     public partial class FO2_Temperature : UserControl
     {
         public static StationaryTempCalc? StationaryTempCalculation { get; private set; }
+        public static DynamicTempCalc? DynamicTempCalculation { get; private set; }
 
         public FO2_Temperature()
         {
@@ -19,6 +20,7 @@ namespace BauphysikToolWPF.UI
             if (FO1_SetupLayer.RecalculateTemp == true)
             {
                 StationaryTempCalculation = new StationaryTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId), UserSaved.UserEnvVars); //for FO2_ViewModel
+                DynamicTempCalculation = new DynamicTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId));
 
                 // Reset Recalculate Flag
                 FO1_SetupLayer.RecalculateTemp = false;

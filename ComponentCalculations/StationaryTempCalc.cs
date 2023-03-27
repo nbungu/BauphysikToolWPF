@@ -7,12 +7,6 @@ namespace BauphysikToolWPF.ComponentCalculations
 {
     public class StationaryTempCalc
     {
-        // Static Class Variables
-
-        public static readonly double FRsiMin = 0.7;
-
-        public static readonly double TsiMin = 12.6;
-
         // (Instance-) Variables and encapsulated properties - Called before Constructor
         public Element Element { get; private set; } // Access is limited to the containing class or types derived from the containing class within the current assembly
         public double RTotal { get; private set; } = 0;

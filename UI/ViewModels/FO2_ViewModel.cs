@@ -21,8 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         public string Title { get; } = "Temperature";
         public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
-
-        public DynamicTempCalc DynamicTempCalc { get; private set; } = new DynamicTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId));
+        public DynamicTempCalc DynamicTempCalc { get; private set; } = FO2_Temperature.DynamicTempCalculation;
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -89,10 +88,12 @@ namespace BauphysikToolWPF.UI.ViewModels
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = TempCalc.Tsi, RequirementValue = TempCalc.Tsi_min, IsRequirementMet = TempCalc.Tsi >= TempCalc.Tsi_min, Unit = "°C" },
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
                     new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 },
-                    new OverviewItem { SymbolBase = "TAD", SymbolSubscript = "", Value = DynamicTempCalc.TAD, RequirementValue = null, IsRequirementMet = true },
+                    new OverviewItem { SymbolBase = "ν", SymbolSubscript = "H", Value = DynamicTempCalc.TAD, RequirementValue = null, IsRequirementMet = true },
                     new OverviewItem { SymbolBase = "TAV", SymbolSubscript = "", Value = DynamicTempCalc.TAV, RequirementValue = null, IsRequirementMet = true },
-                    new OverviewItem { SymbolBase = "P-V", SymbolSubscript = "", Value = DynamicTempCalc.PhaseDelay, RequirementValue = null, IsRequirementMet = true },
-                    new OverviewItem { SymbolBase = "K", SymbolSubscript = "", Value = DynamicTempCalc.AreaHeatCapacity, RequirementValue = null, IsRequirementMet = true }
+                    new OverviewItem { SymbolBase = "η", SymbolSubscript = "H", Value = DynamicTempCalc.PhaseDelay, RequirementValue = null, IsRequirementMet = true, Unit = "h" },
+                    new OverviewItem { SymbolBase = "ẟ", SymbolSubscript = "", Value = DynamicTempCalc.PenetrationDepth, RequirementValue = null, IsRequirementMet = true, Unit = "m" },
+                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "1", Value = DynamicTempCalc.ArealHeatCapacity_i, RequirementValue = null, IsRequirementMet = true, Unit = "kJ/(m²K)" },
+                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "2", Value = DynamicTempCalc.ArealHeatCapacity_e, RequirementValue = null, IsRequirementMet = true, Unit = "kJ/(m²K)" }
                 };
                 return list;
             }
