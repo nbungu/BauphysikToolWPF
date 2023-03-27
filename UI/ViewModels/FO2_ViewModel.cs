@@ -88,13 +88,18 @@ namespace BauphysikToolWPF.UI.ViewModels
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = TempCalc.Tsi, RequirementValue = TempCalc.Tsi_min, IsRequirementMet = TempCalc.Tsi >= TempCalc.Tsi_min, Unit = "°C" },
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
                     new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicRValue, RequirementValue = null, IsRequirementMet = true, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicUValue, RequirementValue = null, IsRequirementMet = true, Unit = "W/m²K" },
                     new OverviewItem { SymbolBase = "ν", SymbolSubscript = "H", Value = DynamicTempCalc.TAD, RequirementValue = null, IsRequirementMet = true },
                     new OverviewItem { SymbolBase = "TAV", SymbolSubscript = "", Value = DynamicTempCalc.TAV, RequirementValue = null, IsRequirementMet = true },
                     new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "f", Value = DynamicTempCalc.TimeShift, RequirementValue = null, IsRequirementMet = true, Unit = "h" },
                     new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = DynamicTempCalc.TimeShift_i, RequirementValue = null, IsRequirementMet = true, Unit = "h" },
                     new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = DynamicTempCalc.TimeShift_e, RequirementValue = null, IsRequirementMet = true, Unit = "h" },
                     new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "1", Value = DynamicTempCalc.ArealHeatCapacity_i, RequirementValue = null, IsRequirementMet = true, Unit = "kJ/(m²K)" },
-                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "2", Value = DynamicTempCalc.ArealHeatCapacity_e, RequirementValue = null, IsRequirementMet = true, Unit = "kJ/(m²K)" }
+                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "2", Value = DynamicTempCalc.ArealHeatCapacity_e, RequirementValue = null, IsRequirementMet = true, Unit = "kJ/(m²K)" },
+                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "", Value = DynamicTempCalc.Test, RequirementValue = null, IsRequirementMet = true, Unit = "kJ/(m²K)" },
+                    new OverviewItem { SymbolBase = "M", SymbolSubscript = "", Value = DynamicTempCalc.EffectiveThermalMass, RequirementValue = null, IsRequirementMet = true, Unit = "kg/m²" },
+                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "", Value = DynamicTempCalc.DecrementFactor, RequirementValue = null, IsRequirementMet = true }
                 };
                 return list;
             }
