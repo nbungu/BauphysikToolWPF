@@ -9,6 +9,7 @@ namespace BauphysikToolWPF.ComponentCalculations
     // Berechnungen nach DIN EN ISO 13786:2018-04
     // https://enbau-online.ch/bauphysik/2-2-waermespeicherung/
     // https://www.htflux.com/de/u-wert-und-dynamisch-thermische-kenngroessen-eines-inhomogenen-wandaufbaus-holzrahmen/
+    // https://www.htflux.com/en/free-calculation-tool-for-thermal-mass-of-building-components-iso-13786/
     public class DynamicTempCalc
     {
         // Variables for Calculation
@@ -22,10 +23,14 @@ namespace BauphysikToolWPF.ComponentCalculations
         // Calculated Results
         public double TAD { get; set; } // [-]
         public double TAV { get; set; } // [-]
-        public double PenetrationDepth { get; set; } // [m]
-        public double PhaseDelay { get; set; } // [h]
-        public double ArealHeatCapacity_i { get; set; } // [kJ/(m²K)]
-        public double ArealHeatCapacity_e { get; set; } // [kJ/(m²K)]
+        public double PenetrationDepth { get; set; } // δ [m] periodische Eindringtiefe 
+        public double TimeShift { get; set; } // [h] - Phasenverschiebung: Zeitverschiebung des Wärmedurchgangs durch das Bauteil
+        public double TimeShift_i { get; set; } // [h] - Zeitverschiebung der Wärmeaufnahme innen
+        public double TimeShift_e { get; set; } // [h] - Zeitverschiebung der Wärmeaufnahme außen
+        public double ThermalAdmittance_i { get; set; } // [W/m²K] - describes the ability of a surface to absorb and release heat (energy) upon a periodic sinusoidal temperature swing with a period of 24h. 
+        public double ThermalAdmittance_e { get; set; } // [W/m²K] - describes the ability to buffer heat upon external temperature swings. Again, it is assumed that the temperature on the opposite side is held constant.
+        public double ArealHeatCapacity_i { get; set; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
+        public double ArealHeatCapacity_e { get; set; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
 
         public DynamicTempCalc(Element element)
         {
@@ -35,21 +40,11 @@ namespace BauphysikToolWPF.ComponentCalculations
             ElementMatrix = GetElementMatrix(LayerHeatTransferMatrices, Rsi, Rse);
             TAD = GetTAD(ElementMatrix);
             TAV = GetTAV(TAD);
-            PenetrationDepth = GetPenetrationDepth(Element.Layers, PeriodDuration);
-            PhaseDelay = GetPhaseDelay(ElementMatrix, PeriodDuration);
+            TimeShift = GetTimeShift(ElementMatrix, PeriodDuration);
+            TimeShift_i = GetTimeShift(ElementMatrix, PeriodDuration, "i");
+            TimeShift_e = GetTimeShift(ElementMatrix, PeriodDuration, "e");
             ArealHeatCapacity_i = GetArealHeatCapacity(ElementMatrix, PeriodDuration, "i");
             ArealHeatCapacity_e = GetArealHeatCapacity(ElementMatrix, PeriodDuration, "e");
-        }
-
-        private double GetPenetrationDepth(List<Layer> layers, int periodDuration)
-        {
-            double delta = 0; 
-            foreach (Layer layer in layers)
-            {
-                // Eindringtiefe δ [m]: Delta ist diejenige Tiefe in einem halbunendlichen Baustoff, bei der die Temperaturschwankung auf 1/e des Wertes der Oberflächentemperaturschwankung abgeklungen ist:
-                delta += Math.Sqrt((layer.Material.ThermalConductivity * periodDuration) / Convert.ToDouble(layer.Material.BulkDensity * layer.Material.SpecificHeatCapacity * Math.PI));
-            }
-            return Math.Round(delta, 2);
         }
 
         private List<HeatTransferMatrix> GetLayerMatrices(List<Layer> layers, int periodDuration)
@@ -80,11 +75,10 @@ namespace BauphysikToolWPF.ComponentCalculations
             // Multiply Last Layer Matrix with exterior environment Matrix
             HeatTransferMatrix envMatrix_e = HeatTransferMatrix.CreateEnvironmentMatrix(rse);
 
-            return MultiplyMatrices(elementMatrix, envMatrix_e); ;
+            return MultiplyMatrices(elementMatrix, envMatrix_e);
         }
         private HeatTransferMatrix MultiplyMatrices(HeatTransferMatrix Z1, HeatTransferMatrix Z2)
         {
-            // TODO multiplikation mit Rsi Rse werten funktioniert nicht
             HeatTransferMatrix result = new HeatTransferMatrix()
             {
                 Z11 = Complex.Add(Complex.Multiply(Z1.Z11, Z2.Z11), Complex.Multiply(Z1.Z12, Z2.Z21)),
@@ -99,7 +93,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         // Verhältnis zwischen den Amplituden der Aussenlufttemperatur und denjenigen der inneren Wandoberflächentemperatur
         private double GetTAD(HeatTransferMatrix elementMatrix)
         {
-            return Math.Round(elementMatrix.Z11.Magnitude, 3);
+            return Math.Round(Complex.Abs(elementMatrix.Z22),1);
         }
 
         private double GetTAV(double tad)
@@ -107,11 +101,33 @@ namespace BauphysikToolWPF.ComponentCalculations
             return Math.Round(1 / tad, 3);
         }
 
-        private double GetPhaseDelay(HeatTransferMatrix elementMatrix, int periodDuration)
+        private double GetTimeShift(HeatTransferMatrix elementMatrix, int periodDuration, string? side = null)
         {
-            double result_s = (periodDuration * elementMatrix.Z11.Phase) / (2 * Math.PI);
-            double result_h = result_s / 3600;
-            return Math.Round(result_h,1);
+            if (side == null)
+            {
+                Complex Y12 = Complex.Divide(1, elementMatrix.Z12);
+                double result_s = (periodDuration * Y12.Phase) / (2 * Math.PI) - (periodDuration/2);
+                double result_h = result_s / 3600;
+                return Math.Round(result_h, 1);
+            }
+            else if (side == "i")
+            {
+                Complex Y11 = -1 * Complex.Divide(elementMatrix.Z11, elementMatrix.Z12);
+                double result_s = (periodDuration * Y11.Phase) / (2 * Math.PI);
+                double result_h = result_s / 3600;
+                return Math.Round(result_h, 1);
+            }
+            else if (side == "e")
+            {
+                Complex Y22 = -1 * Complex.Divide(elementMatrix.Z22, elementMatrix.Z12);
+                double result_s = (periodDuration * Y22.Phase) / (2 * Math.PI);
+                double result_h = result_s / 3600;
+                return Math.Round(result_h, 1);
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         // flächenbezogene Wärmekapazitäten κ
@@ -139,8 +155,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 Z11 = new Complex(Math.Cosh(xi) * Math.Cos(xi), Math.Sinh(xi) * Math.Sin(xi)),
                 Z22 = new Complex(Math.Cosh(xi) * Math.Cos(xi), Math.Sinh(xi) * Math.Sin(xi)),
-                Z12 = new Complex(factorZ12 * (Math.Sinh(xi) * Math.Cos(xi) + Math.Cosh(xi) * Math.Sin(xi)), factorZ12 * (Math.Cosh(xi) * Math.Sin(xi) - Math.Sinh(xi) * Math.Cos(xi))),
-                Z21 = new Complex(factorZ21 * (Math.Sinh(xi) * Math.Cos(xi) - Math.Cosh(xi) * Math.Sin(xi)), factorZ21 * (Math.Sinh(xi) * Math.Cos(xi) + Math.Cosh(xi) * Math.Sin(xi)))
+                Z12 = factorZ12 * new Complex(Math.Sinh(xi) * Math.Cos(xi) + Math.Cosh(xi) * Math.Sin(xi), Math.Cosh(xi) * Math.Sin(xi) - Math.Sinh(xi) * Math.Cos(xi)),
+                Z21 = factorZ21 * new Complex(Math.Sinh(xi) * Math.Cos(xi) - Math.Cosh(xi) * Math.Sin(xi), Math.Sinh(xi) * Math.Cos(xi) + Math.Cosh(xi) * Math.Sin(xi))
             };
             return matrix;
         }

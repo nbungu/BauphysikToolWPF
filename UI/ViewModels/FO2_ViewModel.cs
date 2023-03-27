@@ -90,8 +90,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                     new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 },
                     new OverviewItem { SymbolBase = "ν", SymbolSubscript = "H", Value = DynamicTempCalc.TAD, RequirementValue = null, IsRequirementMet = true },
                     new OverviewItem { SymbolBase = "TAV", SymbolSubscript = "", Value = DynamicTempCalc.TAV, RequirementValue = null, IsRequirementMet = true },
-                    new OverviewItem { SymbolBase = "η", SymbolSubscript = "H", Value = DynamicTempCalc.PhaseDelay, RequirementValue = null, IsRequirementMet = true, Unit = "h" },
-                    new OverviewItem { SymbolBase = "ẟ", SymbolSubscript = "", Value = DynamicTempCalc.PenetrationDepth, RequirementValue = null, IsRequirementMet = true, Unit = "m" },
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "f", Value = DynamicTempCalc.TimeShift, RequirementValue = null, IsRequirementMet = true, Unit = "h" },
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = DynamicTempCalc.TimeShift_i, RequirementValue = null, IsRequirementMet = true, Unit = "h" },
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = DynamicTempCalc.TimeShift_e, RequirementValue = null, IsRequirementMet = true, Unit = "h" },
                     new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "1", Value = DynamicTempCalc.ArealHeatCapacity_i, RequirementValue = null, IsRequirementMet = true, Unit = "kJ/(m²K)" },
                     new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "2", Value = DynamicTempCalc.ArealHeatCapacity_e, RequirementValue = null, IsRequirementMet = true, Unit = "kJ/(m²K)" }
                 };
