@@ -73,19 +73,17 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         private HeatTransferMatrix GetElementMatrix(List<HeatTransferMatrix> layerMatrices, double rsi, double rse)
         {
-            // Add interior environment Matrix to the element
-            HeatTransferMatrix elementMatrix = HeatTransferMatrix.CreateEnvironmentMatrix(rsi);
+            // Add exterior environment Matrix to the element
+            HeatTransferMatrix elementMatrix = HeatTransferMatrix.CreateEnvironmentMatrix(rse);
 
-            // Mulitply every Layer HeatTransferMatrix Z1*Z2*Z3*....
-            for (int i = 0; i < layerMatrices.Count; i++)
+            // Mulitply every Layer HeatTransferMatrix: From Outside to Inside! Z_n * Z_n-1 * ... * Z2 * Z1
+            for (int i = layerMatrices.Count - 1; i >= 0; i--)
             {
                 elementMatrix = MultiplyMatrices(elementMatrix, layerMatrices[i]);
             }
 
-            // Multiply Last Layer Matrix with exterior environment Matrix
-            HeatTransferMatrix envMatrix_e = HeatTransferMatrix.CreateEnvironmentMatrix(rse);
-
-            return MultiplyMatrices(elementMatrix, envMatrix_e);
+            // Multiply inner most Layer Matrix with interior environment Matrix
+            return MultiplyMatrices(elementMatrix, HeatTransferMatrix.CreateEnvironmentMatrix(rsi));
         }
         private HeatTransferMatrix MultiplyMatrices(HeatTransferMatrix Z1, HeatTransferMatrix Z2)
         {
