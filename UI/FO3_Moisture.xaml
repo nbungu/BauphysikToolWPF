@@ -141,6 +141,7 @@
                     TooltipTextPaint="{Binding TooltipTextPaint}"
                     TooltipTextSize="14"
                     Background="White"
+                    ZoomMode="Both"
                     Margin="8,4,4,8"/>
             </Border>
         </Grid>

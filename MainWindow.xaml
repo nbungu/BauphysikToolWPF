@@ -41,6 +41,9 @@
         <DataTemplate x:Key="FO3_Moisture">
             <ui:FO3_Moisture/>
         </DataTemplate>
+        <DataTemplate x:Key="FO4_Dynamic">
+            <ui:FO4_Dynamic/>
+        </DataTemplate>
 
         <!--Content Pages on right side-->
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
@@ -69,6 +72,9 @@
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Moisture">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO3_Moisture}"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Dynamic">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO4_Dynamic}"/>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -84,6 +90,7 @@
             <system:String>Header2</system:String>
             <system:String>Temperature</system:String> <!--SelectedIndex: 4-->
             <system:String>Moisture</system:String>    <!--SelectedIndex: 5-->
+            <system:String>Dynamic</system:String>    <!--SelectedIndex: 6-->
         </x:Array>
 
         <!--NavigationMenu ListBox appearance: Used in ListBox as Style -->
@@ -223,6 +230,10 @@
                 <DataTrigger Binding="{Binding}" Value="Moisture">
                     <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Moisture_W}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Glaser-Diagramm"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="Dynamic">
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Moisture_W}"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Dynamic"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>

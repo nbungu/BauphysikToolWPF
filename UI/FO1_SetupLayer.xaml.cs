@@ -13,6 +13,7 @@ namespace BauphysikToolWPF.UI
 
         // Class Variables - Belongs to the Class-Type itself and stay the same
         public static bool RecalculateTemp { get; set; } = true;
+        public static bool RecalculateDynTemp { get; set; } = true;
         public static bool RecalculateGlaser { get; set; } = true;
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
@@ -32,12 +33,14 @@ namespace BauphysikToolWPF.UI
         {
             // Update Recalculate Flag
             RecalculateTemp = true;
+            RecalculateDynTemp = true;
             RecalculateGlaser = true;
         }
         public void Session_EnvVarsChanged()
         {
             // Update Recalculate Flag
             RecalculateTemp = true;
+            RecalculateDynTemp = true;
             RecalculateGlaser = true;
         }
 
@@ -45,6 +48,7 @@ namespace BauphysikToolWPF.UI
         {
             // Update Recalculate Flag
             RecalculateTemp = true;
+            RecalculateDynTemp = true;
             RecalculateGlaser = true;
         }
 

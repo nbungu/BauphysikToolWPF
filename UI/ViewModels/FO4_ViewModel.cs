@@ -4,23 +4,21 @@ using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LiveChartsCore;
 using LiveChartsCore.Defaults;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
+using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for FO2_Temperature.cs: Used in xaml as "DataContext"
-    public partial class FO2_ViewModel : ObservableObject
+    public partial class FO4_ViewModel : ObservableObject
     {
-        public string Title { get; } = "Temperature";
-        public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
+        public string Title { get; } = "Dynamic";
+        public DynamicTempCalc DynamicTempCalc { get; private set; } = FO4_Dynamic.DynamicTempCalculation;
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -36,7 +34,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void EditElement(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
         {
-            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            if (selectedElement is null)
+                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
             var window = new EditElementWindow(selectedElement);
@@ -57,10 +56,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-       
+
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(RequirementValues))]
-        [NotifyPropertyChangedFor(nameof(OverviewItems))]
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
         /*
@@ -69,28 +66,51 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the elementType Value above
          */
 
-        public CheckRequirements RequirementValues
-        {
-            get { return new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue); }
-        }
-
-        public List<OverviewItem> OverviewItems
+        public List<OverviewItem> DynamicThermalValues
         {
             get
             {
                 List<OverviewItem> list = new List<OverviewItem>
                 {
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = TempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = TempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOK, Unit = "W/m²K" },
-                    new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = TempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOK, Unit = "W/m²" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = TempCalc.Tsi, RequirementValue = TempCalc.Tsi_min, IsRequirementMet = TempCalc.Tsi >= TempCalc.Tsi_min, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicRValue, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicUValue, Unit = "W/m²K" },
+                    new OverviewItem { SymbolBase = "TAD", SymbolSubscript = "", Value = DynamicTempCalc.TAD },
+                    new OverviewItem { SymbolBase = "TAV", SymbolSubscript = "", Value = DynamicTempCalc.TAV },
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "f", Value = DynamicTempCalc.TimeShift, Unit = "h" },
+                    new OverviewItem { SymbolBase = "M", SymbolSubscript = "", Value = DynamicTempCalc.EffectiveThermalMass, Unit = "kg/m²" },
+                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "", Value = DynamicTempCalc.DecrementFactor }
                 };
                 return list;
             }
         }
+
+        public List<OverviewItem> DynamicThermalValues_i
+        {
+            get
+            {
+                List<OverviewItem> list = new List<OverviewItem>
+                {
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = DynamicTempCalc.TimeShift_i, Unit = "h" },
+                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "1", Value = DynamicTempCalc.ArealHeatCapacity_i, Unit = "kJ/(m²K)" },
+                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "1", Value = DynamicTempCalc.ThermalAdmittance_i, Unit = "W/(m²K)" }
+                };
+                return list;
+            }
+        }
+        public List<OverviewItem> DynamicThermalValues_e
+        {
+            get
+            {
+                List<OverviewItem> list = new List<OverviewItem>
+                {
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = DynamicTempCalc.TimeShift_e, Unit = "h" },
+                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "2", Value = DynamicTempCalc.ArealHeatCapacity_e, Unit = "kJ/(m²K)" },
+                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "2", Value = DynamicTempCalc.ThermalAdmittance_e, Unit = "W/(m²K)" }
+                };
+                return list;
+            }
+        }
+
         // TODO: Rework as MVVM
 
         public RectangularSection[] LayerSections { get; private set; }
@@ -100,11 +120,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipBackgroundPaint { get; private set; }
         public SolidColorPaint TooltipTextPaint { get; private set; }
 
-        public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
+        public FO4_ViewModel() // Called by 'InitializeComponent()' from FO4_Dynamic.cs due to Class-Binding in xaml via DataContext
         {
             // For Drawing the Chart
-            this.LayerSections = DrawLayerSections();
-            this.DataPoints = DrawTempCurvePoints();
+            this.DataPoints = GetDataPoints();
             this.XAxes = DrawXAxes();
             this.YAxes = DrawYAxes();
             this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
@@ -115,71 +134,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             };
         }
 
-        private RectangularSection[] DrawLayerSections()
+        private ISeries[] GetDataPoints()
         {
-            if (TempCalc.Element.Layers.Count == 0)
-                return Array.Empty<RectangularSection>();
-
-            RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
-
-            double left = 0;
-            foreach (Layer layer in TempCalc.Element.Layers)
-            {
-                double layerWidth = layer.LayerThickness;
-                double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
-
-                // Set properties of the layer rectangle at the desired position
-                rects[layer.LayerPosition] = new RectangularSection
-                {
-                    Xi = left,
-                    Xj = right,
-                    Fill = new SolidColorPaint(SKColor.Parse(layer.Material.ColorCode)),
-                    Stroke = new SolidColorPaint
-                    {
-                        Color = SKColors.Black,
-                        StrokeThickness = 1,
-                        //PathEffect = new DashEffect(new float[] { 6, 6 })
-                    },
-                    ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
-                };
-                left = right; // Add new layer at left edge of previous layer
-            }
-            //TODO: is hardcoded
-            //fRsi frsi = new fRsi(TempCalc.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
-            /*rects[position+1] = new RectangularSection
-            {
-                Yi = StationaryTempCalc.TsiMin,
-                Yj = StationaryTempCalc.TsiMin,
-                Stroke = new SolidColorPaint
-                {
-                    Color = SKColors.Red,
-                    StrokeThickness = 1,
-                    PathEffect = new DashEffect(new float[] { 2, 2 })
-                }
-            };*/
-            return rects;
-        }
-        private ISeries[] DrawTempCurvePoints()
-        {
-            if (TempCalc.Element.Layers.Count == 0)
+            if (DynamicTempCalc.Element.Layers.Count == 0)
                 return Array.Empty<ISeries>();
 
             ISeries[] series = new ISeries[3]; // more than one series possible to draw in the same graph      
 
-            double tsi_Pos = TempCalc.LayerTemps.First().Key;
-            double tsi = TempCalc.LayerTemps.First().Value;
-            double deltaTi = Math.Abs(UserSaved.Ti - tsi);
+            
 
-            LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            LineSeries<ObservablePoint> surfaceTemp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
-                Values = new ObservablePoint[]
-                {
-                    new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
-                    null, // cuts the line between the points
-                    new ObservablePoint(tsi_Pos, tsi),
-                    new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
-                    new ObservablePoint(tsi_Pos-2, UserSaved.Ti)
-                },
+                Values = new ObservablePoint[1],
                 Fill = null,
                 LineSmoothness = 0.8,
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
@@ -187,7 +153,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 TooltipLabelFormatter = null
             };
 
-            ObservablePoint[] tempValues = new ObservablePoint[TempCalc.LayerTemps.Count]; // represents the temperature points
+            ObservablePoint[] surfaceTempValues = new ObservablePoint[TempCalc.LayerTemps.Count]; // represents the temperature points
             for (int i = 0; i < TempCalc.LayerTemps.Count; i++)
             {
                 double x = TempCalc.LayerTemps.ElementAt(i).Key; // Position in cm
@@ -195,7 +161,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 tempValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             // Set properties & add temperature points to the series
-            LineSeries<ObservablePoint> tempCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            LineSeries<ObservablePoint> airTemp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = tempValues,
                 Fill = null,
@@ -213,10 +179,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
 
-            double tse_Pos = TempCalc.LayerTemps.Last().Key;
-            double tse = TempCalc.LayerTemps.Last().Value;
-            double deltaTe = Math.Abs(UserSaved.Te - tse);
-            LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            LineSeries<ObservablePoint> surfaceHeatFlux_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
                 {
@@ -232,9 +195,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 0,
                 TooltipLabelFormatter = null
             };
-            series[0] = rsiCurveSeries;
-            series[1] = tempCurveSeries;
-            series[2] = rseCurveSeries;
+            series[0] = surfaceTemp_e;
+            series[1] = airTemp_e;
+            series[2] = surfaceHeatFlux_e;
 
             return series;
         }
@@ -252,15 +215,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                 TextSize = 14,
                 SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 }
             };
-            /*axes[1] = new Axis
-            {
-                Name = "Layer Nr.",
-                NameTextSize = 16,
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                Labels = new string[] { "1", "2", "3", "4" },
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14
-            };*/
             return axes;
         }
         private Axis[] DrawYAxes()
@@ -282,22 +236,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                 }
             };
             return axes;
-            /*
-            axes[1] = new Axis
-            {
-                Name = "test",
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14,
-                NameTextSize = 16,
-                Position = LiveChartsCore.Measure.AxisPosition.End,
-                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
-                {
-                    StrokeThickness = 1,
-                    PathEffect = new DashEffect(new float[] { 3, 3 })
-                },
-                ShowSeparatorLines = true
-            };*/
         }
     }
 }
