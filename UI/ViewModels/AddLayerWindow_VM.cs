@@ -49,7 +49,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void CreatMaterial()
+        private void CreateMaterial()
         {
             return;
             //TODO

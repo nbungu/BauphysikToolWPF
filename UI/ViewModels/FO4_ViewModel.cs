@@ -60,6 +60,18 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
+        [ObservableProperty]
+        private double ti_Mean = UserSaved.Ti;
+
+        [ObservableProperty]
+        private double te_Mean = UserSaved.Te;
+
+        [ObservableProperty]
+        private double ti_Amplitude = 5.0;
+
+        [ObservableProperty]
+        private double te_Amplitude = 5.0;
+
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
@@ -81,6 +93,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     new OverviewItem { SymbolBase = "f", SymbolSubscript = "", Value = DynamicTempCalc.DecrementFactor }
                 };
                 return list;
+
             }
         }
 
@@ -113,7 +126,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // TODO: Rework as MVVM
 
-        public RectangularSection[] LayerSections { get; private set; }
         public ISeries[] DataPoints { get; private set; }
         public Axis[] XAxes { get; private set; }
         public Axis[] YAxes { get; private set; }
@@ -139,38 +151,28 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (DynamicTempCalc.Element.Layers.Count == 0)
                 return Array.Empty<ISeries>();
 
-            ISeries[] series = new ISeries[3]; // more than one series possible to draw in the same graph      
+            ISeries[] series = new ISeries[2]; // more than one series possible to draw in the same graph      
+            int iterations = DynamicTempCalc.PeriodDuration / DynamicTempCalc.IntervallSteps;
 
-            
-
+            // θse(t) Data Points
+            ObservablePoint[] surfaceTemp_e_Points = new ObservablePoint[iterations];
+            for (int i = 0; i < iterations; i++)
+            {
+                int timePoint = i * DynamicTempCalc.IntervallSteps; // time axis [s]
+                double x = timePoint;
+                double y = DynamicTempCalc.SurfaceTemp_e_Function(timePoint, Te_Mean, Ti_Amplitude, Te_Amplitude); // temperature axis [°C]
+                surfaceTemp_e_Points[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+            }
             LineSeries<ObservablePoint> surfaceTemp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
-                Values = new ObservablePoint[1],
-                Fill = null,
-                LineSmoothness = 0.8,
-                Stroke = new SolidColorPaint(SKColors.Red, 2),
-                GeometrySize = 0,
-                TooltipLabelFormatter = null
-            };
-
-            ObservablePoint[] surfaceTempValues = new ObservablePoint[TempCalc.LayerTemps.Count]; // represents the temperature points
-            for (int i = 0; i < TempCalc.LayerTemps.Count; i++)
-            {
-                double x = TempCalc.LayerTemps.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(TempCalc.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
-                tempValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
-            }
-            // Set properties & add temperature points to the series
-            LineSeries<ObservablePoint> airTemp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
-            {
-                Values = tempValues,
+                Values = surfaceTemp_e_Points,
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
-                Stroke = new SolidColorPaint(SKColors.Red, 2),
+                Stroke = new SolidColorPaint(SKColors.Red, 1),
                 //properties of the connecting dots  
                 GeometryFill = new SolidColorPaint(SKColors.Red),
                 GeometryStroke = new SolidColorPaint(SKColors.Red),
-                GeometrySize = 6,
+                GeometrySize = 1.5,
                 //Stroke = new LinearGradientPaint(new[] { new SKColor(), new SKColor(255, 212, 96) }) { StrokeThickness = 3 },
                 //GeometryStroke = new LinearGradientPaint(new[] { new SKColor(45, 64, 89), new SKColor(255, 212, 96) }) { StrokeThickness = 3 }
                 TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
@@ -179,25 +181,36 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
 
-            LineSeries<ObservablePoint> surfaceHeatFlux_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            // θe(t) Data Points
+            ObservablePoint[] temp_e_Points = new ObservablePoint[iterations];
+            for (int i = 0; i < iterations; i++)
             {
-                Values = new ObservablePoint[]
-                {
-                    new ObservablePoint(tse_Pos+2, UserSaved.Te),
-                    new ObservablePoint(tse_Pos+0.8, tse-0.9*deltaTe),
-                    new ObservablePoint(tse_Pos, tse),
-                    null, // cuts the line between the points
-                    new ObservablePoint(tse_Pos+0.8, tse+0.9*deltaTe),
-                },
+                int timePoint = i * DynamicTempCalc.IntervallSteps; // time axis [s]
+                double x = timePoint;
+                double y = DynamicTempCalc.AirTemp_Function(timePoint, Te_Mean, Te_Amplitude); // temperature axis [°C]
+                temp_e_Points[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+            }
+            LineSeries<ObservablePoint> temp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            {
+                Values = temp_e_Points,
                 Fill = null,
-                LineSmoothness = 0.8,
-                Stroke = new SolidColorPaint(SKColors.Red, 2),
-                GeometrySize = 0,
-                TooltipLabelFormatter = null
+                LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
+                Stroke = new SolidColorPaint(SKColors.Blue, 1),
+                //properties of the connecting dots  
+                GeometryFill = new SolidColorPaint(SKColors.Blue),
+                GeometryStroke = new SolidColorPaint(SKColors.Blue),
+                GeometrySize = 1.5,
+                //Stroke = new LinearGradientPaint(new[] { new SKColor(), new SKColor(255, 212, 96) }) { StrokeThickness = 3 },
+                //GeometryStroke = new LinearGradientPaint(new[] { new SKColor(45, 64, 89), new SKColor(255, 212, 96) }) { StrokeThickness = 3 }
+                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
+                //When multiple axes:
+                ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
+                ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
-            series[0] = surfaceTemp_e;
-            series[1] = airTemp_e;
-            series[2] = surfaceHeatFlux_e;
+
+            series[0] = temp_e;
+            series[1] = surfaceTemp_e;
+            //series[2] = surfaceHeatFlux_e;
 
             return series;
         }
@@ -207,7 +220,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             axes[0] = new Axis
             {
-                Name = "Element thickness [cm]",
+                Name = "Time [s]",
                 NameTextSize = 14,
                 NamePaint = new SolidColorPaint(SKColors.Black),
                 //Labels = new string[] { "Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5" },

@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using System.Windows.Controls;
 
@@ -17,7 +18,7 @@ namespace BauphysikToolWPF.UI
             // Only if Element, Layers or EnvVars are not set or have changed: update class variables.
             if (FO1_SetupLayer.RecalculateDynTemp == true)
             {
-                DynamicTempCalculation = new DynamicTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId));
+                DynamicTempCalculation = new DynamicTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId), UserSaved.UserEnvVars);
 
                 // Reset Recalculate Flag
                 FO1_SetupLayer.RecalculateDynTemp = false;

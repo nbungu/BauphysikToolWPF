@@ -84,12 +84,23 @@
         </Grid>
 
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
-            <ListBox ItemsSource="{Binding DynamicThermalValues}"
-                 ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
-                 ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
-                 SnapsToDevicePixels="True"/>
-            <!--
-            <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0" CornerRadius="8">
+            <Grid.RowDefinitions>
+                <RowDefinition Height=".2*"/>
+                <RowDefinition Height=".55*"/>
+                <RowDefinition Height=".25*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".5*"/>
+                <ColumnDefinition Width=".5*"/>
+            </Grid.ColumnDefinitions>
+            
+            <ListBox Grid.ColumnSpan="2"
+                ItemsSource="{Binding DynamicThermalValues}"
+                ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
+                ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
+                SnapsToDevicePixels="True"/>
+
+            <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0" CornerRadius="8">
                 <lvc:CartesianChart
                     Grid.Row="1"
                     ClipToBounds="True"
@@ -105,8 +116,32 @@
                     ZoomMode="Both"
                     Margin="8,4,4,8"/>
             </Border>
-            -->
             
+            <StackPanel Grid.Row="2" Orientation="Vertical">
+                <controls:SubscriptLabel BaseText="Ø θ" SubscriptText="i" AppendText=" - Raumluft, Mittelwert" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Text="{Binding Ti_Mean}" MaxLength="4" Margin="8,0,0,0"/>
+                    <Label Content="°C"/>
+                </StackPanel>
+                <controls:SubscriptLabel BaseText="Δθ" SubscriptText="i" AppendText=" - Temperaturschwankung" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox Text="{Binding Ti_Amplitude}" MaxLength="3" Margin="8,0,0,0"/>
+                    <Label Content="K"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
+                <controls:SubscriptLabel BaseText="Ø θ" SubscriptText="e" AppendText=" - Außenluft, Mittelwert" VerticalAlignment="Top" HorizontalAlignment="Right" Height="36"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBox Text="{Binding Te_Mean}" MaxLength="4" Margin="8,0,0,0"/>
+                    <Label Content="°C"/>
+                </StackPanel>
+                <controls:SubscriptLabel BaseText="Δθ" SubscriptText="e" AppendText=" - Temperaturschwankung" VerticalAlignment="Top" HorizontalAlignment="Right" Height="36"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBox Text="{Binding Te_Amplitude}" MaxLength="3" Margin="8,0,0,0"/>
+                    <Label Content="K"/>
+                </StackPanel>
+            </StackPanel>
+
         </Grid>        
 
         <Grid Grid.Column="2" Grid.Row="1" Margin="16">

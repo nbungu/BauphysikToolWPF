@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -13,17 +12,17 @@ namespace BauphysikToolWPF.ComponentCalculations
     public class DynamicTempCalc
     {
         // Constant Values
-        private const int PeriodDuration = 86400; // [s] = 24 h
-        private const int CalcIntervall = 600; // [s] = 10 min
-        private const int NormHeatCap = 1080; // Normspeicherkapazität = 0,3 Wh/(kgK) = 1080 J/(kgK) = 1080 Ws/(kgK)
+        public const int PeriodDuration = 86400; // [s] = 24 h
+        public const int IntervallSteps = 600; // [s] = 10 min
+        public const int NormHeatCap = 1080; // Normspeicherkapazität = 0,3 Wh/(kgK) = 1080 J/(kgK) = 1080 Ws/(kgK)
 
         // Variables for Calculation
         public Element Element { get; set; }
         private List<HeatTransferMatrix> Z_Layers { get; set; }
         private HeatTransferMatrix Z_Element { get; set; }
         private ThermalAdmittanceMatrix Y_Element { get; set; }
-        private double Rsi { get; } = UserSaved.Rsi;
-        private double Rse { get; } = UserSaved.Rse;
+        private double Rsi { get; }
+        private double Rse { get; }
 
         // Calculated Results
         public double DynamicRValue { get; set; } // R_dyn [m²K/W]
@@ -41,9 +40,20 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double ArealHeatCapacity_e { get; set; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
         public double EffectiveThermalMass { get; set; } // M [kg/m²]
 
-        public DynamicTempCalc(Element element)
+        public DynamicTempCalc(Element element, Dictionary<string, double> userEnvVars)
         {
+            if (element is null || element.Layers.Count == 0)
+                return;
+
+            if (userEnvVars is null)
+                return;
+
+            // Assign constuctor parameter values
             Element = element;
+            Rsi = userEnvVars["Rsi"];
+            Rse = userEnvVars["Rse"];
+
+            // Calculated parameters (private setter)
             Z_Layers = CreateLayerMatrices(Element.Layers);
             Z_Element = CreateElementMatrix(Z_Layers, Rsi, Rse);
             Y_Element = new ThermalAdmittanceMatrix(Z_Element);
@@ -62,40 +72,48 @@ namespace BauphysikToolWPF.ComponentCalculations
             EffectiveThermalMass = GetThermalMass(Y_Element);
         }
 
+
         // Non-static because method accesses intance variables
-        public double TimeFunction_Ti(int t, double meanTemp, double amplitude)
+
+        // θsi(t)
+        public double SurfaceTemp_i_Function(int t, double meanTemp_i, double amplitude_i, double amplitude_e)
         {
-            return meanTemp + amplitude * Math.Cos(t * 2 * Math.PI);
+            double airTemp_i = AirTemp_Function(t, meanTemp_i, amplitude_i);
+            double totalHeatFlux_i = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, "i");
+            return airTemp_i + totalHeatFlux_i * Rsi;
         }
-        public double TimeFunction_Tsi(int t, double totalHeatFlux, double rValue, double meanTemp, double amplitude, ThermalAdmittanceMatrix Y, int timeShift)
+        
+        // θse(t)
+        public double SurfaceTemp_e_Function(int t, double meanTemp_e, double amplitude_i, double amplitude_e)
         {
-            double airTemp_i = TimeFunction_Ti(t, meanTemp, amplitude);
-            double totalHeatFlux_i = TimeFunction_TotalHeatFlux_i(t, Y, timeShift);
-            return airTemp_i + totalHeatFlux * rValue;
+            double airTemp_e = AirTemp_Function(t, meanTemp_e, amplitude_e);
+            double totalHeatFlux_e = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, "e");
+            return airTemp_e - totalHeatFlux_e * Rse;
         }
 
-        public double TimeFunction_Te(int t, double meanTemp, double amplitude)
+        // Creates time function θi(t) or θe(t) which represents the sinusodial curve of interior/exterior air temperature change
+        public double AirTemp_Function(int t, double meanTemp, double amplitude)
         {
-            return meanTemp + amplitude * Math.Cos(t * 2 * Math.PI);
+            return meanTemp + amplitude * Math.Cos(t * (2 * Math.PI)/PeriodDuration);
         }
-        public double TimeFunction_Tse(int t, double totalHeatFlux ,double rValue, double meanTemp, double amplitude)
-        {
-            return TimeFunction_Te(t, meanTemp, amplitude) - totalHeatFlux * rValue;
-        }
-        public double TimeFunction_TotalHeatFlux_i(int t, ThermalAdmittanceMatrix Y, int timeShift, int timeShift_i, double amplitude_i, double amplitude_e)
+
+        public double TotalHeatFlux_Function(int t, double amplitude_i, double amplitude_e, string side)
         {
             // timeshift in Seconds!!
-            double q_static;
-            double q_11 = -1 * Y.Y11.Magnitude * amplitude_i * Math.Cos((t+timeShift_i/PeriodDuration)*2*Math.PI);
-            double q_21 = Y.Y12.Magnitude * amplitude_e * Math.Cos((t+timeShift/PeriodDuration)*2*Math.PI);
-            return 0;
-        }
-        public double TimeFunction_TotalHeatFlux_e(int t, ThermalAdmittanceMatrix Y, int timeShift, int timeShift_e, double amplitude_i, double amplitude_e)
-        {
-            double q_static;
-            double q_12 = -1 * Y.Y12.Magnitude * amplitude_i * Math.Cos((t+timeShift/PeriodDuration)*2*Math.PI);
-            double q_22 = Y.Y22.Magnitude * amplitude_e * Math.Cos((t+timeShift_e/PeriodDuration)*2*Math.PI);
-            return 0;
+            double totalHeatFlux = 0;
+            double q_static = 0;
+            double q_11 = -1 * Y_Element.Y11.Magnitude * amplitude_i * Math.Cos((t + TimeShift_i / PeriodDuration) * (2 * Math.PI) / PeriodDuration);
+            double q_12 = -1 * Y_Element.Y12.Magnitude * amplitude_i * Math.Cos((t + TimeShift / PeriodDuration) * (2 * Math.PI) / PeriodDuration);
+            double q_21 = Y_Element.Y12.Magnitude * amplitude_e * Math.Cos((t + TimeShift / PeriodDuration) * (2 * Math.PI) / PeriodDuration);
+            double q_22 = Y_Element.Y22.Magnitude * amplitude_e * Math.Cos((t + TimeShift_e / PeriodDuration) * (2 * Math.PI) / PeriodDuration);
+            
+            if (side == "i")
+                totalHeatFlux = q_static + q_11 + q_21;
+
+            if (side == "e")
+                totalHeatFlux = q_static + q_12 + q_22;
+
+            return totalHeatFlux;
         }
 
         private List<HeatTransferMatrix> CreateLayerMatrices(List<Layer> layers)
