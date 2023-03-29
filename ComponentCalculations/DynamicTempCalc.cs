@@ -67,9 +67,11 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             return meanTemp + amplitude * Math.Cos(t * 2 * Math.PI);
         }
-        public double TimeFunction_Tsi(int t, double totalHeatFlux, double rValue, double meanTemp, double amplitude)
+        public double TimeFunction_Tsi(int t, double totalHeatFlux, double rValue, double meanTemp, double amplitude, ThermalAdmittanceMatrix Y, int timeShift)
         {
-            return TimeFunction_Ti(t, meanTemp, amplitude) - totalHeatFlux * rValue;
+            double airTemp_i = TimeFunction_Ti(t, meanTemp, amplitude);
+            double totalHeatFlux_i = TimeFunction_TotalHeatFlux_i(t, Y, timeShift);
+            return airTemp_i + totalHeatFlux * rValue;
         }
 
         public double TimeFunction_Te(int t, double meanTemp, double amplitude)
@@ -79,6 +81,21 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double TimeFunction_Tse(int t, double totalHeatFlux ,double rValue, double meanTemp, double amplitude)
         {
             return TimeFunction_Te(t, meanTemp, amplitude) - totalHeatFlux * rValue;
+        }
+        public double TimeFunction_TotalHeatFlux_i(int t, ThermalAdmittanceMatrix Y, int timeShift, int timeShift_i, double amplitude_i, double amplitude_e)
+        {
+            // timeshift in Seconds!!
+            double q_static;
+            double q_11 = -1 * Y.Y11.Magnitude * amplitude_i * Math.Cos((t+timeShift_i/PeriodDuration)*2*Math.PI);
+            double q_21 = Y.Y12.Magnitude * amplitude_e * Math.Cos((t+timeShift/PeriodDuration)*2*Math.PI);
+            return 0;
+        }
+        public double TimeFunction_TotalHeatFlux_e(int t, ThermalAdmittanceMatrix Y, int timeShift, int timeShift_e, double amplitude_i, double amplitude_e)
+        {
+            double q_static;
+            double q_12 = -1 * Y.Y12.Magnitude * amplitude_i * Math.Cos((t+timeShift/PeriodDuration)*2*Math.PI);
+            double q_22 = Y.Y22.Magnitude * amplitude_e * Math.Cos((t+timeShift_e/PeriodDuration)*2*Math.PI);
+            return 0;
         }
 
         private List<HeatTransferMatrix> CreateLayerMatrices(List<Layer> layers)
