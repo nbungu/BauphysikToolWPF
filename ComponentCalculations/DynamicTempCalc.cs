@@ -18,8 +18,8 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         // Variables for Calculation
         public Element Element { get; set; }
-        private List<HeatTransferMatrix> Z_Layers { get; set; }
         private HeatTransferMatrix Z_Element { get; set; }
+        private List<HeatTransferMatrix> Z_Layers { get; set; }
         private ThermalAdmittanceMatrix Y_Element { get; set; }
         private double Rsi { get; }
         private double Rse { get; }
@@ -80,7 +80,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             double airTemp_i = AirTemp_Function(t, meanTemp_i, amplitude_i);
             double totalHeatFlux_i = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, "i");
-            return airTemp_i + totalHeatFlux_i * Rsi;
+            return Math.Round(airTemp_i + totalHeatFlux_i * Rsi, 2);
         }
         
         // θse(t)
@@ -88,13 +88,14 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             double airTemp_e = AirTemp_Function(t, meanTemp_e, amplitude_e);
             double totalHeatFlux_e = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, "e");
-            return airTemp_e - totalHeatFlux_e * Rse;
+            return Math.Round(airTemp_e - totalHeatFlux_e * Rse, 2);
         }
 
         // Creates time function θi(t) or θe(t) which represents the sinusodial curve of interior/exterior air temperature change
         public double AirTemp_Function(int t, double meanTemp, double amplitude)
         {
-            return meanTemp + amplitude * Math.Cos(t * (2 * Math.PI)/PeriodDuration);
+            double airTemp = meanTemp + amplitude * Math.Cos(t * (2 * Math.PI) / PeriodDuration);
+            return Math.Round(airTemp, 2);
         }
 
         public double TotalHeatFlux_Function(int t, double amplitude_i, double amplitude_e, string side)

@@ -40,7 +40,22 @@
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
 
-
+        <!-- Defines the type of UIElement used in the ItemsPanel-->
+        <ItemsPanelTemplate x:Key="Canvas">
+            <!--Takes the Width and Height from TemplatedParent-->
+            <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
+        </ItemsPanelTemplate>
+        <!-- Properties of a CanvasItem (Layer Rectangle). Sets the Drawing Coordinates of the container holding a CanvasItem -->
+        <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
+            <Setter Property="Canvas.Left" Value="{Binding Left}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+        </Style>
+        <!-- Content and Styling of a Canvas Item (Layer Rectangle) -->
+        <DataTemplate x:Key="LayerItemStyle">
+            <Grid Width="{Binding RectWidth}" Height="{Binding RectHeight}" Background="{Binding RectFill}">
+                <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}"/>
+            </Grid>
+        </DataTemplate>
     </UserControl.Resources>
 
     <!--Main Grid 2x2-->
@@ -49,14 +64,9 @@
             <RowDefinition Height="56" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="360"/>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="360"/>
-        </Grid.ColumnDefinitions>
 
         <!--Top -->
-        <Border Grid.ColumnSpan="3" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+        <Border Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
@@ -76,35 +86,43 @@
             </Grid>
         </Border>
 
-        <Grid Grid.Column="0" Grid.Row="1" Margin="16">
-            <ListBox ItemsSource="{Binding DynamicThermalValues_i}"
-                 ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
-                 ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
-                 SnapsToDevicePixels="True"/>
-        </Grid>
-
-        <Grid Grid.Column="1" Grid.Row="1" Margin="16">
+        <Grid Grid.Row="1" Margin="16">
             <Grid.RowDefinitions>
-                <RowDefinition Height=".2*"/>
-                <RowDefinition Height=".55*"/>
-                <RowDefinition Height=".25*"/>
+                <RowDefinition Height=".3*" />
+                <RowDefinition Height="400" />
+                <RowDefinition Height=".2*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".5*"/>
-                <ColumnDefinition Width=".5*"/>
+                <ColumnDefinition Width=".3*"/>
+                <ColumnDefinition Width="320"/>
+                <ColumnDefinition Width=".3*"/>
             </Grid.ColumnDefinitions>
-            
-            <ListBox Grid.ColumnSpan="2"
+
+            <ListBox ItemsSource="{Binding DynamicThermalValues_i}"
+                ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
+                ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
+                SnapsToDevicePixels="True"
+                Margin="0,0,0,8"/>
+
+            <ListBox Grid.Column="1"
                 ItemsSource="{Binding DynamicThermalValues}"
                 ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
                 ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
-                SnapsToDevicePixels="True"/>
+                SnapsToDevicePixels="True"
+                Margin="8,0,8,8"/>
 
-            <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0" CornerRadius="8">
+            <ListBox Grid.Column="2"
+                 ItemsSource="{Binding DynamicThermalValues_e}"
+                 ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
+                 ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
+                 SnapsToDevicePixels="True"
+                 Margin="0,0,0,8"/>
+
+            <Border Grid.Column="0" Grid.Row="1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True">
                 <lvc:CartesianChart
                     Grid.Row="1"
                     ClipToBounds="True"
-                    Series="{Binding DataPoints}"
+                    Series="{Binding DataPoints_i}"
                     XAxes="{Binding XAxes}"
                     YAxes="{Binding YAxes}"   
                     EasingFunction="{x:Null}"
@@ -116,39 +134,75 @@
                     ZoomMode="Both"
                     Margin="8,4,4,8"/>
             </Border>
+
+            <!-- "Layers Canvas" -->
+            <ItemsControl Grid.Column="1"
+                Grid.Row="1"
+                x:Name="layers_ItemsControl"
+                Width="320"
+                Height="400"                                 
+                ItemsSource="{Binding LayerRects}"
+                ItemsPanel="{StaticResource Canvas}"
+                ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                ItemTemplate="{StaticResource LayerItemStyle}"/>
+
+            <Border Grid.Column="2" Grid.Row="1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True">
+                <lvc:CartesianChart
+                    Grid.Row="1"
+                    ClipToBounds="True"
+                    Series="{Binding DataPoints_e}"
+                    XAxes="{Binding XAxes}"
+                    YAxes="{Binding YAxes}"   
+                    EasingFunction="{x:Null}"
+                    TooltipPosition="Top"
+                    TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
+                    TooltipTextPaint="{Binding TooltipTextPaint}"
+                    TooltipTextSize="14"
+                    Background="White"
+                    ZoomMode="Both"
+                    Margin="8,4,4,8"/>
+            </Border>
+
+            <Grid Grid.Row="2" Grid.ColumnSpan="3">
+                <StackPanel Orientation="Horizontal" >
+                    <StackPanel Margin="0,0,16,0">
+                        <controls:SubscriptLabel BaseText="Ø θ" SubscriptText="i" AppendText=" - Raumluft, Mittelwert" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding Ti_Mean}" MaxLength="4" Margin="8,0,0,0"/>
+                            <Label Content="°C"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel Margin="0,0,16,0">
+                        <controls:SubscriptLabel BaseText="Δθ" SubscriptText="i" AppendText=" - Temperaturschwankung" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox Text="{Binding Ti_Amplitude}" MaxLength="3" Margin="8,0,0,0"/>
+                            <Label Content="K"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <StackPanel HorizontalAlignment="Right" Margin="16,0,0,0">
+                        <controls:SubscriptLabel BaseText="Ø θ" SubscriptText="e" AppendText=" - Außenluft, Mittelwert" VerticalAlignment="Top" HorizontalAlignment="Right" Height="36"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBox Text="{Binding Te_Mean}" MaxLength="4" Margin="8,0,0,0"/>
+                            <Label Content="°C"/>
+                        </StackPanel>
+                    </StackPanel>
+                    <StackPanel HorizontalAlignment="Right" Margin="16,0,0,0">
+                        <controls:SubscriptLabel BaseText="Δθ" SubscriptText="e" AppendText=" - Temperaturschwankung" VerticalAlignment="Top" HorizontalAlignment="Right" Height="36"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBox Text="{Binding Te_Amplitude}" MaxLength="3" Margin="8,0,0,0"/>
+                            <Label Content="K"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+                
+
+            </Grid>
+           
             
-            <StackPanel Grid.Row="2" Orientation="Vertical">
-                <controls:SubscriptLabel BaseText="Ø θ" SubscriptText="i" AppendText=" - Raumluft, Mittelwert" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Text="{Binding Ti_Mean}" MaxLength="4" Margin="8,0,0,0"/>
-                    <Label Content="°C"/>
-                </StackPanel>
-                <controls:SubscriptLabel BaseText="Δθ" SubscriptText="i" AppendText=" - Temperaturschwankung" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
-                <StackPanel Orientation="Horizontal">
-                    <TextBox Text="{Binding Ti_Amplitude}" MaxLength="3" Margin="8,0,0,0"/>
-                    <Label Content="K"/>
-                </StackPanel>
-            </StackPanel>
-            <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
-                <controls:SubscriptLabel BaseText="Ø θ" SubscriptText="e" AppendText=" - Außenluft, Mittelwert" VerticalAlignment="Top" HorizontalAlignment="Right" Height="36"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBox Text="{Binding Te_Mean}" MaxLength="4" Margin="8,0,0,0"/>
-                    <Label Content="°C"/>
-                </StackPanel>
-                <controls:SubscriptLabel BaseText="Δθ" SubscriptText="e" AppendText=" - Temperaturschwankung" VerticalAlignment="Top" HorizontalAlignment="Right" Height="36"/>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBox Text="{Binding Te_Amplitude}" MaxLength="3" Margin="8,0,0,0"/>
-                    <Label Content="K"/>
-                </StackPanel>
-            </StackPanel>
 
-        </Grid>        
 
-        <Grid Grid.Column="2" Grid.Row="1" Margin="16">
-            <ListBox ItemsSource="{Binding DynamicThermalValues_e}"
-                 ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
-                 ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
-                 SnapsToDevicePixels="True"/>
         </Grid>
     </Grid>
 

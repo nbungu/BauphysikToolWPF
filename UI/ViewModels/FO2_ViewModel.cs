@@ -103,12 +103,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
         {
             // For Drawing the Chart
-            this.LayerSections = DrawLayerSections();
-            this.DataPoints = DrawTempCurvePoints();
-            this.XAxes = DrawXAxes();
-            this.YAxes = DrawYAxes();
-            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
-            this.TooltipTextPaint = new SolidColorPaint
+            LayerSections = DrawLayerSections();
+            DataPoints = DrawTempCurvePoints();
+            XAxes = DrawXAxes();
+            YAxes = DrawYAxes();
+            TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
+            TooltipTextPaint = new SolidColorPaint
             {
                 Color = new SKColor(0, 0, 0),
                 SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),

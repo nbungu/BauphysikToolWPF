@@ -12,13 +12,118 @@ using LiveChartsCore;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class FO4_ViewModel : ObservableObject
     {
+        /*
+         * Regular Instance Variables
+         * 
+         * Not depending on UI changes. No Observable function. 
+         * 
+         */
+
         public string Title { get; } = "Dynamic";
         public DynamicTempCalc DynamicTempCalc { get; private set; } = FO4_Dynamic.DynamicTempCalculation;
+        public List<OverviewItem> DynamicThermalValues
+        {
+            get
+            {
+                List<OverviewItem> list = new List<OverviewItem>
+                {
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicRValue, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicUValue, Unit = "W/m²K" },
+                    new OverviewItem { SymbolBase = "TAD", SymbolSubscript = "", Value = DynamicTempCalc.TAD },
+                    new OverviewItem { SymbolBase = "TAV", SymbolSubscript = "", Value = DynamicTempCalc.TAV },
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "f", Value = DynamicTempCalc.TimeShift, Unit = "h" },
+                    new OverviewItem { SymbolBase = "M", SymbolSubscript = "", Value = DynamicTempCalc.EffectiveThermalMass, Unit = "kg/m²" },
+                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "", Value = DynamicTempCalc.DecrementFactor }
+                };
+                return list;
+
+            }
+        }
+        public List<OverviewItem> DynamicThermalValues_i
+        {
+            get
+            {
+                List<OverviewItem> list = new List<OverviewItem>
+                {
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = DynamicTempCalc.TimeShift_i, Unit = "h" },
+                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "1", Value = DynamicTempCalc.ArealHeatCapacity_i, Unit = "kJ/(m²K)" },
+                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "1", Value = DynamicTempCalc.ThermalAdmittance_i, Unit = "W/(m²K)" }
+                };
+                return list;
+            }
+        }
+        public List<OverviewItem> DynamicThermalValues_e
+        {
+            get
+            {
+                List<OverviewItem> list = new List<OverviewItem>
+                {
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = DynamicTempCalc.TimeShift_e, Unit = "h" },
+                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "2", Value = DynamicTempCalc.ArealHeatCapacity_e, Unit = "kJ/(m²K)" },
+                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "2", Value = DynamicTempCalc.ThermalAdmittance_e, Unit = "W/(m²K)" }
+                };
+                return list;
+            }
+        }
+        // TOD0 Make cleaner
+        public List<LayerRect> LayerRects // When accessed via get: Draws new Layers on Canvas
+        {
+            get
+            {
+                List<LayerRect> rectangles = new List<LayerRect>();
+                foreach (Layer layer in DynamicTempCalc.Element.Layers)
+                {
+                    layer.IsSelected = false;
+                    rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
+                }
+                return rectangles;
+            }
+        }
+        public double ElementWidth
+        {
+            get
+            {
+                double fullWidth = 0;
+                foreach (Layer layer in DynamicTempCalc.Element.Layers)
+                {
+                    fullWidth += layer.LayerThickness;
+                }
+                return fullWidth;
+            }
+        }
+        public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
+        public SolidColorPaint TooltipTextPaint
+        {
+            get
+            {
+                return new SolidColorPaint
+                {
+                    Color = new SKColor(0, 0, 0),
+                    SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
+                };
+            }
+        }
+        public Axis[] XAxes
+        {
+            get
+            {
+                return DrawXAxes();
+            }
+        }
+        public Axis[] YAxes
+        {
+            get
+            {
+                return DrawYAxes();
+            }
+        }
+
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -61,92 +166,53 @@ namespace BauphysikToolWPF.UI.ViewModels
         private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(DataPoints_i))]
+        [NotifyPropertyChangedFor(nameof(DataPoints_e))]
         private double ti_Mean = UserSaved.Ti;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(DataPoints_i))]
+        [NotifyPropertyChangedFor(nameof(DataPoints_e))]
         private double te_Mean = UserSaved.Te;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(DataPoints_i))]
+        [NotifyPropertyChangedFor(nameof(DataPoints_e))]
         private double ti_Amplitude = 5.0;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(DataPoints_i))]
+        [NotifyPropertyChangedFor(nameof(DataPoints_e))]
         private double te_Amplitude = 5.0;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
-         * Not Observable, because Triggered and Changed by the elementType Value above
+         * Not Observable, because Triggered and Changed by the Values above
          */
 
-        public List<OverviewItem> DynamicThermalValues
+        public ISeries[] DataPoints_i
         {
             get
             {
-                List<OverviewItem> list = new List<OverviewItem>
-                {
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicRValue, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicUValue, Unit = "W/m²K" },
-                    new OverviewItem { SymbolBase = "TAD", SymbolSubscript = "", Value = DynamicTempCalc.TAD },
-                    new OverviewItem { SymbolBase = "TAV", SymbolSubscript = "", Value = DynamicTempCalc.TAV },
-                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "f", Value = DynamicTempCalc.TimeShift, Unit = "h" },
-                    new OverviewItem { SymbolBase = "M", SymbolSubscript = "", Value = DynamicTempCalc.EffectiveThermalMass, Unit = "kg/m²" },
-                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "", Value = DynamicTempCalc.DecrementFactor }
-                };
-                return list;
-
+                return GetDataPoints_i();
             }
         }
-
-        public List<OverviewItem> DynamicThermalValues_i
+        public ISeries[] DataPoints_e
         {
             get
             {
-                List<OverviewItem> list = new List<OverviewItem>
-                {
-                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = DynamicTempCalc.TimeShift_i, Unit = "h" },
-                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "1", Value = DynamicTempCalc.ArealHeatCapacity_i, Unit = "kJ/(m²K)" },
-                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "1", Value = DynamicTempCalc.ThermalAdmittance_i, Unit = "W/(m²K)" }
-                };
-                return list;
-            }
-        }
-        public List<OverviewItem> DynamicThermalValues_e
-        {
-            get
-            {
-                List<OverviewItem> list = new List<OverviewItem>
-                {
-                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = DynamicTempCalc.TimeShift_e, Unit = "h" },
-                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "2", Value = DynamicTempCalc.ArealHeatCapacity_e, Unit = "kJ/(m²K)" },
-                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "2", Value = DynamicTempCalc.ThermalAdmittance_e, Unit = "W/(m²K)" }
-                };
-                return list;
+                return GetDataPoints_e();
             }
         }
 
-        // TODO: Rework as MVVM
-
-        public ISeries[] DataPoints { get; private set; }
-        public Axis[] XAxes { get; private set; }
-        public Axis[] YAxes { get; private set; }
-        public SolidColorPaint TooltipBackgroundPaint { get; private set; }
-        public SolidColorPaint TooltipTextPaint { get; private set; }
 
         public FO4_ViewModel() // Called by 'InitializeComponent()' from FO4_Dynamic.cs due to Class-Binding in xaml via DataContext
         {
-            // For Drawing the Chart
-            this.DataPoints = GetDataPoints();
-            this.XAxes = DrawXAxes();
-            this.YAxes = DrawYAxes();
-            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
-            this.TooltipTextPaint = new SolidColorPaint
-            {
-                Color = new SKColor(0, 0, 0),
-                SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
-            };
+            //
         }
 
-        private ISeries[] GetDataPoints()
+        private ISeries[] GetDataPoints_e()
         {
             if (DynamicTempCalc.Element.Layers.Count == 0)
                 return Array.Empty<ISeries>();
@@ -180,7 +246,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
-
             // θe(t) Data Points
             ObservablePoint[] temp_e_Points = new ObservablePoint[iterations];
             for (int i = 0; i < iterations; i++)
@@ -211,6 +276,73 @@ namespace BauphysikToolWPF.UI.ViewModels
             series[0] = temp_e;
             series[1] = surfaceTemp_e;
             //series[2] = surfaceHeatFlux_e;
+
+            return series;
+        }
+        private ISeries[] GetDataPoints_i()
+        {
+            if (DynamicTempCalc.Element.Layers.Count == 0)
+                return Array.Empty<ISeries>();
+
+            ISeries[] series = new ISeries[2]; // more than one series possible to draw in the same graph      
+            int iterations = DynamicTempCalc.PeriodDuration / DynamicTempCalc.IntervallSteps;
+
+            // θse(t) Data Points
+            ObservablePoint[] surfaceTemp_i_Points = new ObservablePoint[iterations];
+            for (int i = 0; i < iterations; i++)
+            {
+                int timePoint = i * DynamicTempCalc.IntervallSteps; // time axis [s]
+                double x = timePoint;
+                double y = DynamicTempCalc.SurfaceTemp_i_Function(timePoint, Ti_Mean, Ti_Amplitude, Te_Amplitude); // temperature axis [°C]
+                surfaceTemp_i_Points[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+            }
+            LineSeries<ObservablePoint> surfaceTemp_i = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            {
+                Values = surfaceTemp_i_Points,
+                Fill = null,
+                LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
+                Stroke = new SolidColorPaint(SKColors.Red, 1),
+                //properties of the connecting dots  
+                GeometryFill = new SolidColorPaint(SKColors.Red),
+                GeometryStroke = new SolidColorPaint(SKColors.Red),
+                GeometrySize = 1.5,
+                //Stroke = new LinearGradientPaint(new[] { new SKColor(), new SKColor(255, 212, 96) }) { StrokeThickness = 3 },
+                //GeometryStroke = new LinearGradientPaint(new[] { new SKColor(45, 64, 89), new SKColor(255, 212, 96) }) { StrokeThickness = 3 }
+                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
+                //When multiple axes:
+                ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
+                ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
+            };
+            // θe(t) Data Points
+            ObservablePoint[] temp_i_Points = new ObservablePoint[iterations];
+            for (int i = 0; i < iterations; i++)
+            {
+                int timePoint = i * DynamicTempCalc.IntervallSteps; // time axis [s]
+                double x = timePoint;
+                double y = DynamicTempCalc.AirTemp_Function(timePoint, Ti_Mean, Ti_Amplitude); // temperature axis [°C]
+                temp_i_Points[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+            }
+            LineSeries<ObservablePoint> temp_i = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            {
+                Values = temp_i_Points,
+                Fill = null,
+                LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
+                Stroke = new SolidColorPaint(SKColors.Blue, 1),
+                //properties of the connecting dots  
+                GeometryFill = new SolidColorPaint(SKColors.Blue),
+                GeometryStroke = new SolidColorPaint(SKColors.Blue),
+                GeometrySize = 1.5,
+                //Stroke = new LinearGradientPaint(new[] { new SKColor(), new SKColor(255, 212, 96) }) { StrokeThickness = 3 },
+                //GeometryStroke = new LinearGradientPaint(new[] { new SKColor(45, 64, 89), new SKColor(255, 212, 96) }) { StrokeThickness = 3 }
+                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
+                //When multiple axes:
+                ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
+                ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
+            };
+
+            series[0] = temp_i;
+            series[1] = surfaceTemp_i;
+            //series[2] = surfaceHeatFlux_i;
 
             return series;
         }
