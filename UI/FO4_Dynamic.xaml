@@ -23,7 +23,8 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="28"/>
                     <ColumnDefinition Width="48"/>
-                    <ColumnDefinition MinWidth="96"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="240"/>
                 </Grid.ColumnDefinitions>
                 <!--Here: Binding source are Items from the ItemsSource Property-->
                 <Ellipse Fill="{Binding Color}" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -32,6 +33,7 @@
                     <Label Content="{Binding Value}" ContentStringFormat="= {0}" FontWeight="Bold"/>
                     <Label Content="{Binding Unit}" HorizontalAlignment="Left" Margin="-4,0,0,0" FontWeight="Bold"/>
                 </StackPanel>
+                <Label Grid.Column="3" Content="{Binding Comment}" HorizontalAlignment="Left"/>
             </Grid>
         </DataTemplate>
 
@@ -124,28 +126,31 @@
                 ClipToBounds="True"
                 Series="{Binding DataPoints_i}"
                 XAxes="{Binding XAxes}"
-                YAxes="{Binding YAxes}"   
+                YAxes="{Binding YAxes_i}"   
                 EasingFunction="{x:Null}"
                 TooltipPosition="Top"
                 TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
                 TooltipTextPaint="{Binding TooltipTextPaint}"
                 TooltipTextSize="14"
+                LegendPosition="Top"
+                LegendTextSize="14"
+                LegendTextPaint="{Binding LegendTextPaint}"
                 Background="Transparent"
                 SnapsToDevicePixels="true"
-                Margin="0,0,-32,0"/>
+                DrawMargin="{Binding ChartMargin_i}"/>
 
 
             <!-- Elements inside of ViewBox are dynamically sizable-->
-            <Viewbox Grid.Column="1" Grid.Row="1" ClipToBounds="True" VerticalAlignment="Top">
+            <Viewbox Grid.Column="1" Grid.Row="1" ClipToBounds="True">
                 <!-- "Layers Canvas" -->
                 <ItemsControl 
-                x:Name="layers_ItemsControl"
-                MinWidth="320"
-                MinHeight="400"                                 
-                ItemsSource="{Binding LayerRects}"
-                ItemsPanel="{StaticResource Canvas}"
-                ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                ItemTemplate="{StaticResource LayerItemStyle}"/>
+                    x:Name="layers_ItemsControl"
+                    MinWidth="320"
+                    MinHeight="400"                                 
+                    ItemsSource="{Binding LayerRects}"
+                    ItemsPanel="{StaticResource Canvas}"
+                    ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                    ItemTemplate="{StaticResource LayerItemStyle}"/>
             </Viewbox>
 
             <lvc:CartesianChart
@@ -160,8 +165,11 @@
                 TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
                 TooltipTextPaint="{Binding TooltipTextPaint}"
                 TooltipTextSize="14"
+                LegendPosition="Top"
+                LegendTextSize="14"
+                LegendTextPaint="{Binding LegendTextPaint}"
                 SnapsToDevicePixels="true"
-                Margin="-32,0,0,0"
+                DrawMargin="{Binding ChartMargin_e}"   
                 Background="Transparent"/>
 
 

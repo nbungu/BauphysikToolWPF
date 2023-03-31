@@ -212,7 +212,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             double kappa1 = (PeriodDuration / (2 * Math.PI)) * Complex.Abs(Complex.Divide(Complex.Subtract(elementMatrix.Z11, 1), elementMatrix.Z12)); // Ws/(m²K) = J/(m²K) 
             double kappa2 = (PeriodDuration / (2 * Math.PI)) * Complex.Abs(Complex.Divide(Complex.Subtract(elementMatrix.Z22, 1), elementMatrix.Z12)); // Ws/(m²K) = J/(m²K)
-            return side == "e" ? Math.Round(kappa2/1000, 3) : Math.Round(kappa1/1000, 3); // kJ/(m²K)
+            return side == "e" ? Math.Round(kappa2/1000, 2) : Math.Round(kappa1/1000, 2); // kJ/(m²K)
         }
         private double GetThermalMass(ThermalAdmittanceMatrix matrix)
         {
