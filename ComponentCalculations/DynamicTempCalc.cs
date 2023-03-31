@@ -31,9 +31,9 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double TAD { get; set; } // υ [-] - Temperaturamplitudendämpfung: Verhältnis zwischen den Amplituden der Aussenlufttemperatur und denjenigen der inneren Wandoberflächentemperatur 
         public double TAV { get; set; } // [-] - Kehrwert der TAD: multipliziert mit 100 enpricht es dem %-Wert der Wärmeamplitude welche innen noch ankommt, aufgrund einer Schwankung außen.
         public double PenetrationDepth { get; set; } // δ [m] periodische Eindringtiefe 
-        public double TimeShift { get; set; } // [h] - Phasenverschiebung: Zeitverschiebung des Wärmedurchgangs durch das Bauteil
-        public double TimeShift_i { get; set; } // [h] - Zeitverschiebung der Wärmeaufnahme innen
-        public double TimeShift_e { get; set; } // [h] - Zeitverschiebung der Wärmeaufnahme außen
+        public int TimeShift { get; set; } // [s] - Phasenverschiebung: Zeitverschiebung des Wärmedurchgangs durch das Bauteil
+        public int TimeShift_i { get; set; } // [s] - Zeitverschiebung der Wärmeaufnahme innen
+        public int TimeShift_e { get; set; } // [s] - Zeitverschiebung der Wärmeaufnahme außen
         public double ThermalAdmittance_i { get; set; } // [W/m²K] - describes the ability of a surface to absorb and release heat (energy) upon a periodic sinusoidal temperature swing with a period of 24h. 
         public double ThermalAdmittance_e { get; set; } // [W/m²K] - describes the ability to buffer heat upon external temperature swings. Again, it is assumed that the temperature on the opposite side is held constant.
         public double ArealHeatCapacity_i { get; set; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
@@ -100,13 +100,13 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         public double TotalHeatFlux_Function(int t, double amplitude_i, double amplitude_e, string side)
         {
-            // timeshift in Seconds!!
+            // t and timeshift in Seconds!!
             double totalHeatFlux = 0;
-            double q_static = 0;
-            double q_11 = -1 * Y_Element.Y11.Magnitude * amplitude_i * Math.Cos((t + TimeShift_i / PeriodDuration) * (2 * Math.PI) / PeriodDuration);
-            double q_12 = -1 * Y_Element.Y12.Magnitude * amplitude_i * Math.Cos((t + TimeShift / PeriodDuration) * (2 * Math.PI) / PeriodDuration);
-            double q_21 = Y_Element.Y12.Magnitude * amplitude_e * Math.Cos((t + TimeShift / PeriodDuration) * (2 * Math.PI) / PeriodDuration);
-            double q_22 = Y_Element.Y22.Magnitude * amplitude_e * Math.Cos((t + TimeShift_e / PeriodDuration) * (2 * Math.PI) / PeriodDuration);
+            double q_static = 0; // TODO
+            double q_11 = -1 * Y_Element.Y11.Magnitude * amplitude_i * Math.Cos((t + TimeShift_i) * (2 * Math.PI) / PeriodDuration);
+            double q_12 = -1 * Y_Element.Y12.Magnitude * amplitude_i * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
+            double q_21 = Y_Element.Y12.Magnitude * amplitude_e * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
+            double q_22 = Y_Element.Y22.Magnitude * amplitude_e * Math.Cos((t + TimeShift_e) * (2 * Math.PI) / PeriodDuration);
             
             if (side == "i")
                 totalHeatFlux = q_static + q_11 + q_21;
@@ -176,30 +176,22 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             return Math.Round(1 / tad, 3);
         }
-        private double GetTimeShift(ThermalAdmittanceMatrix matrix, string? side = null)
+        private int GetTimeShift(ThermalAdmittanceMatrix matrix, string? side = null)
         {
+            double seconds = 0;
             if (side == null)
             {
-                double result_s = (PeriodDuration * matrix.Y12.Phase) / (2 * Math.PI) - (PeriodDuration/2);
-                double result_h = result_s / 3600;
-                return Math.Round(result_h, 2);
+                seconds = (PeriodDuration * matrix.Y12.Phase) / (2 * Math.PI) - (PeriodDuration/2);
             }
-            else if (side == "i")
+            if (side == "i")
             {
-                double result_s = (PeriodDuration * matrix.Y11.Phase) / (2 * Math.PI);
-                double result_h = result_s / 3600;
-                return Math.Round(result_h, 2);
+                seconds = (PeriodDuration * matrix.Y11.Phase) / (2 * Math.PI);
             }
-            else if (side == "e")
+            if (side == "e")
             {
-                double result_s = (PeriodDuration * matrix.Y22.Phase) / (2 * Math.PI);
-                double result_h = result_s / 3600;
-                return Math.Round(result_h, 2);
+                seconds = (PeriodDuration * matrix.Y22.Phase) / (2 * Math.PI);
             }
-            else
-            {
-                return 0;
-            }
+            return Convert.ToInt32(seconds);
         }
         private double GetThermalAdmittance(ThermalAdmittanceMatrix matrix, string side)
         {

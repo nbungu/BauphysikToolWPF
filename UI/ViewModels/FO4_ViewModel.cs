@@ -31,13 +31,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                List<OverviewItem> list = new List<OverviewItem>
+                double convertedTimeShift = Math.Round(Convert.ToDouble(DynamicTempCalc.TimeShift) / 3600, 2);
+                List<OverviewItem> list = new List<OverviewItem>(7)
                 {
                     new OverviewItem { SymbolBase = "R", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicRValue, Unit = "m²K/W" },
                     new OverviewItem { SymbolBase = "U", SymbolSubscript = "dyn", Value = DynamicTempCalc.DynamicUValue, Unit = "W/m²K" },
                     new OverviewItem { SymbolBase = "TAD", SymbolSubscript = "", Value = DynamicTempCalc.TAD },
                     new OverviewItem { SymbolBase = "TAV", SymbolSubscript = "", Value = DynamicTempCalc.TAV },
-                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "f", Value = DynamicTempCalc.TimeShift, Unit = "h" },
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "f", Value = convertedTimeShift, Unit = "h" },
                     new OverviewItem { SymbolBase = "M", SymbolSubscript = "", Value = DynamicTempCalc.EffectiveThermalMass, Unit = "kg/m²" },
                     new OverviewItem { SymbolBase = "f", SymbolSubscript = "", Value = DynamicTempCalc.DecrementFactor }
                 };
@@ -49,11 +50,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                List<OverviewItem> list = new List<OverviewItem>
+                double convertedTimeShift = Math.Round(Convert.ToDouble(DynamicTempCalc.TimeShift_i) / 3600, 2);
+                List<OverviewItem> list = new List<OverviewItem>(6)
                 {
-                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = DynamicTempCalc.TimeShift_i, Unit = "h" },
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = convertedTimeShift, Unit = "h" },
                     new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "1", Value = DynamicTempCalc.ArealHeatCapacity_i, Unit = "kJ/(m²K)" },
-                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "1", Value = DynamicTempCalc.ThermalAdmittance_i, Unit = "W/(m²K)" }
+                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "1", Value = DynamicTempCalc.ThermalAdmittance_i, Unit = "W/(m²K)" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si,max", Value = 0, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si,min", Value = 0, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "Δθ", SymbolSubscript = "si", Value = 0, Unit = "K" }
                 };
                 return list;
             }
@@ -62,11 +67,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                List<OverviewItem> list = new List<OverviewItem>
+                double convertedTimeShift = Math.Round(Convert.ToDouble(DynamicTempCalc.TimeShift_e) / 3600, 2);
+                List<OverviewItem> list = new List<OverviewItem>(6)
                 {
-                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = DynamicTempCalc.TimeShift_e, Unit = "h" },
+                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = convertedTimeShift, Unit = "h" },
                     new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "2", Value = DynamicTempCalc.ArealHeatCapacity_e, Unit = "kJ/(m²K)" },
-                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "2", Value = DynamicTempCalc.ThermalAdmittance_e, Unit = "W/(m²K)" }
+                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "2", Value = DynamicTempCalc.ThermalAdmittance_e, Unit = "W/(m²K)" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se,max", Value = 0, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se,min", Value = 0, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "Δθ", SymbolSubscript = "se", Value = 0, Unit = "K" }
                 };
                 return list;
             }
@@ -123,6 +132,13 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return DrawYAxes();
             }
         }
+        public Axis[] YAxes_e
+        {
+            get
+            {
+                return DrawYAxes("right");
+            }
+        }
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -173,12 +189,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DataPoints_i))]
         [NotifyPropertyChangedFor(nameof(DataPoints_e))]
-        private double te_Mean = UserSaved.Te;
+        private double te_Mean = UserSaved.Ti;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DataPoints_i))]
         [NotifyPropertyChangedFor(nameof(DataPoints_e))]
-        private double ti_Amplitude = 5.0;
+        private double ti_Amplitude = 0;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DataPoints_i))]
@@ -206,12 +222,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
 
-
-        public FO4_ViewModel() // Called by 'InitializeComponent()' from FO4_Dynamic.cs due to Class-Binding in xaml via DataContext
-        {
-            //
-        }
-
         private ISeries[] GetDataPoints_e()
         {
             if (DynamicTempCalc.Element.Layers.Count == 0)
@@ -234,13 +244,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Values = surfaceTemp_e_Points,
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
-                Stroke = new SolidColorPaint(SKColors.Red, 1),
+                Stroke = new SolidColorPaint(SKColors.Red, 2),
                 //properties of the connecting dots  
-                GeometryFill = new SolidColorPaint(SKColors.Red),
-                GeometryStroke = new SolidColorPaint(SKColors.Red),
-                GeometrySize = 1.5,
-                //Stroke = new LinearGradientPaint(new[] { new SKColor(), new SKColor(255, 212, 96) }) { StrokeThickness = 3 },
-                //GeometryStroke = new LinearGradientPaint(new[] { new SKColor(45, 64, 89), new SKColor(255, 212, 96) }) { StrokeThickness = 3 }
+                GeometrySize = 4,
+                GeometryFill= null,
+                GeometryStroke= null,
                 TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
                 //When multiple axes:
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
@@ -260,14 +268,14 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Values = temp_e_Points,
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
-                Stroke = new SolidColorPaint(SKColors.Blue, 1),
+                Stroke = new SolidColorPaint(SKColors.Blue)
+                {
+                    StrokeThickness = 2,
+                    PathEffect = new DashEffect(new float[] { 3, 3 })
+                },
                 //properties of the connecting dots  
-                GeometryFill = new SolidColorPaint(SKColors.Blue),
-                GeometryStroke = new SolidColorPaint(SKColors.Blue),
-                GeometrySize = 1.5,
-                //Stroke = new LinearGradientPaint(new[] { new SKColor(), new SKColor(255, 212, 96) }) { StrokeThickness = 3 },
-                //GeometryStroke = new LinearGradientPaint(new[] { new SKColor(45, 64, 89), new SKColor(255, 212, 96) }) { StrokeThickness = 3 }
-                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
+                GeometrySize = 0,
+                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C ({chartPoint.SecondaryValue} s)",
                 //When multiple axes:
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
@@ -275,7 +283,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             series[0] = temp_e;
             series[1] = surfaceTemp_e;
-            //series[2] = surfaceHeatFlux_e;
 
             return series;
         }
@@ -287,7 +294,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             ISeries[] series = new ISeries[2]; // more than one series possible to draw in the same graph      
             int iterations = DynamicTempCalc.PeriodDuration / DynamicTempCalc.IntervallSteps;
 
-            // θse(t) Data Points
+            // θsi(t) Data Points
             ObservablePoint[] surfaceTemp_i_Points = new ObservablePoint[iterations];
             for (int i = 0; i < iterations; i++)
             {
@@ -301,19 +308,17 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Values = surfaceTemp_i_Points,
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
-                Stroke = new SolidColorPaint(SKColors.Red, 1),
+                Stroke = new SolidColorPaint(SKColors.Red, 2),
                 //properties of the connecting dots  
-                GeometryFill = new SolidColorPaint(SKColors.Red),
-                GeometryStroke = new SolidColorPaint(SKColors.Red),
-                GeometrySize = 1.5,
-                //Stroke = new LinearGradientPaint(new[] { new SKColor(), new SKColor(255, 212, 96) }) { StrokeThickness = 3 },
-                //GeometryStroke = new LinearGradientPaint(new[] { new SKColor(45, 64, 89), new SKColor(255, 212, 96) }) { StrokeThickness = 3 }
-                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
+                GeometrySize = 4,
+                GeometryFill = null,
+                GeometryStroke = null,
+                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C ({chartPoint.SecondaryValue} s)",
                 //When multiple axes:
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
-            // θe(t) Data Points
+            // θi(t) Data Points
             ObservablePoint[] temp_i_Points = new ObservablePoint[iterations];
             for (int i = 0; i < iterations; i++)
             {
@@ -327,58 +332,59 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Values = temp_i_Points,
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
-                Stroke = new SolidColorPaint(SKColors.Blue, 1),
+                Stroke = new SolidColorPaint(SKColors.Blue)
+                {
+                    StrokeThickness = 2,
+                    PathEffect = new DashEffect(new float[] { 3, 3 })
+                },
                 //properties of the connecting dots  
-                GeometryFill = new SolidColorPaint(SKColors.Blue),
-                GeometryStroke = new SolidColorPaint(SKColors.Blue),
-                GeometrySize = 1.5,
-                //Stroke = new LinearGradientPaint(new[] { new SKColor(), new SKColor(255, 212, 96) }) { StrokeThickness = 3 },
-                //GeometryStroke = new LinearGradientPaint(new[] { new SKColor(45, 64, 89), new SKColor(255, 212, 96) }) { StrokeThickness = 3 }
+                GeometrySize = 0,
                 TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
                 //When multiple axes:
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
-
             series[0] = temp_i;
             series[1] = surfaceTemp_i;
             //series[2] = surfaceHeatFlux_i;
 
             return series;
         }
-        private Axis[] DrawXAxes()
+        private Axis[] DrawXAxes(string side = "bottom")
         {
             Axis[] axes = new Axis[1];
-
             axes[0] = new Axis
             {
                 Name = "Time [s]",
                 NameTextSize = 14,
+                Position = (side == "bottom") ? LiveChartsCore.Measure.AxisPosition.Start : LiveChartsCore.Measure.AxisPosition.End,
                 NamePaint = new SolidColorPaint(SKColors.Black),
                 //Labels = new string[] { "Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5" },
                 LabelsPaint = new SolidColorPaint(SKColors.Black),
                 TextSize = 14,
-                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 }
+                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 },
             };
             return axes;
         }
-        private Axis[] DrawYAxes()
+        private Axis[] DrawYAxes(string side = "left")
         {
             Axis[] axes = new Axis[1];
-
             axes[0] = new Axis
             {
                 Name = "Temperature curve [°C]",
+                Position = (side == "left") ? LiveChartsCore.Measure.AxisPosition.Start : LiveChartsCore.Measure.AxisPosition.End,
                 NamePaint = new SolidColorPaint(SKColors.Black),
                 LabelsPaint = new SolidColorPaint(SKColors.Black),
                 TextSize = 14,
                 NameTextSize = 14,
-                Position = LiveChartsCore.Measure.AxisPosition.Start,
                 SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
                 {
                     StrokeThickness = 1,
                     PathEffect = new DashEffect(new float[] { 3, 3 })
-                }
+                },
+                // Force both Charts to have the same axis scale (To make them comparable). Use Scale of the chart with highest amplitudes. (+/- 1 as padding)
+                MinLimit = Math.Min(Ti_Mean - Ti_Amplitude, Te_Mean - Te_Amplitude) - 1,
+                MaxLimit = Math.Max(Ti_Mean + Ti_Amplitude, Te_Mean + Te_Amplitude) +1 
             };
             return axes;
         }
