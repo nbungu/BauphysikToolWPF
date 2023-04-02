@@ -1,11 +1,9 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Documents;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -50,7 +48,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             } else
             {
                 // Delete selected Layer
-                DatabaseAccess.DeleteLayer(selectedLayer, fillLayerGaps: true);
+                DatabaseAccess.DeleteLayer(selectedLayer);
             }
             // Update XAML Binding Property by fetching from DB
             Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
@@ -71,11 +69,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
         }
 
-        [RelayCommand] 
+        [RelayCommand]
         private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
-            if (selectedElement is null)
-                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
             var window = new EditElementWindow(selectedElement);
@@ -84,8 +81,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-            ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+            CurrentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
         }
 
         [RelayCommand]
@@ -95,17 +91,17 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return;
 
             // When Layer is already at the bottom of the List (last in the List)
-            if (selectedLayer.LayerPosition == DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId).Count - 1)
+            if (selectedLayer.LayerPosition == DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Count - 1)
                 return;
 
             // Change Position of Layer below
-            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId).Where(e => e.LayerPosition == selectedLayer.LayerPosition + 1).First();            
+            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Where(e => e.LayerPosition == selectedLayer.LayerPosition + 1).First();            
             neighbour.LayerPosition -= 1;
             // Change Position of selected Layer
             selectedLayer.LayerPosition += 1;
             // Update both
             DatabaseAccess.UpdateLayer(selectedLayer, triggerUpdateEvent: false);
-            DatabaseAccess.UpdateLayer(neighbour);
+            DatabaseAccess.UpdateLayer(neighbour, assignEffectiveLayers: true); // Assign Effective Layers, after last Layer has been moved and updated in DB
 
             // Update XAML Binding Property by fetching from DB
             Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
@@ -122,13 +118,13 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return;
 
             // Change Position of Layer above
-            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId).Where(e => e.LayerPosition == selectedLayer.LayerPosition - 1).First();
+            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Where(e => e.LayerPosition == selectedLayer.LayerPosition - 1).First();
             neighbour.LayerPosition += 1;
             // Change Position of selected Layer
             selectedLayer.LayerPosition -= 1;
             // Update both
             DatabaseAccess.UpdateLayer(selectedLayer, triggerUpdateEvent: false);
-            DatabaseAccess.UpdateLayer(neighbour);
+            DatabaseAccess.UpdateLayer(neighbour, assignEffectiveLayers: true); // Assign Effective Layers, after last Layer has been moved and updated in DB
 
             // Update XAML Binding Property by fetching from DB
             Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
@@ -140,16 +136,15 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Initialized and Assigned with Default Values
          */
 
+        //TODO layers und element zusammenfassen
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerRects))]
         [NotifyPropertyChangedFor(nameof(ElementWidth))]
         private List<Layer> layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
 
         [ObservableProperty]
-        private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-
-        [ObservableProperty]
-        private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerRects))]
@@ -168,12 +163,14 @@ namespace BauphysikToolWPF.UI.ViewModels
                 List<LayerRect> rectangles = new List<LayerRect>();
                 foreach (Layer layer in Layers)
                 {
-                    layer.IsSelected = layer.LayerPosition == SelectedLayer ? true : false;
+                    layer.IsSelected = layer.LayerPosition == SelectedLayer;
                     rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
                 }
                 return rectangles;
             }
         }
+
+        // TODO remove this property and retreive ElementWidth from 'currentElement'
         public double ElementWidth
         {
             get

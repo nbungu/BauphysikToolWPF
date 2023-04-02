@@ -3,7 +3,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
-using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -19,11 +18,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
 
-        private static List<string?>? sortingListItems;
+        private static List<string?>? _sortingListItems;
         public List<string?> SortingListItems
         {
             // Has to match ElementSortingType enum values (+Order)
-            get { return sortingListItems ??= new List<string?>() { "Änderungsdatum", "Name", "Typ", "Ausrichtung", "R-Wert", "sd-Wert" }; }
+            get { return _sortingListItems ??= new List<string?>() { "Änderungsdatum", "Name", "Typ", "Ausrichtung", "R-Wert", "sd-Wert" }; }
         }
 
         /*
@@ -62,13 +61,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (selectedElementId is null)
                 return;
 
-            // Delete selected Layer
-            DatabaseAccess.DeleteElement(DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId)));
+            // Delete selected Element
+            DatabaseAccess.DeleteElementById(Convert.ToInt32(selectedElementId));
 
             // When deleting the Element which was currently SelectedElement
             if (selectedElementId == FO0_LandingPage.SelectedElementId)
             {
-                // Reset Selected Layer
+                // Reset Selected Element
                 FO0_LandingPage.SelectedElementId = -1;
                 // Update XAML Binding Property
                 SelectedElementId = FO0_LandingPage.SelectedElementId;
@@ -143,19 +142,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static bool isAscending = true; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(SelectedElementName))] // Notifies 'SelectedElementName' when this property is changed!
-        [NotifyPropertyChangedFor(nameof(SelectedElementType))]
-        [NotifyPropertyChangedFor(nameof(SelectedElementOrientation))]
+        [NotifyPropertyChangedFor(nameof(SelectedElement))]
         private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)selectedSortingIndex, isAscending) ?? new List<Element>();
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(SelectedElementName))]
-        [NotifyPropertyChangedFor(nameof(SelectedElementImage))]
-        [NotifyPropertyChangedFor(nameof(SelectedElementType))]
-        [NotifyPropertyChangedFor(nameof(SelectedElementOrientation))]
-        [NotifyPropertyChangedFor(nameof(SelectedElementRValue))]
-        [NotifyPropertyChangedFor(nameof(SelectedElementSdThickness))]
-        [NotifyPropertyChangedFor(nameof(SelectedElementAreaMassDens))]
+        [NotifyPropertyChangedFor(nameof(SelectedElement))]
         [NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
         private int selectedElementId = FO0_LandingPage.SelectedElementId;
 
@@ -165,63 +156,14 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the _selection Values above
          */
 
-        //TODO call Element from DB only once!
-
+        public Element? SelectedElement
+        {
+            // TODO: layersSorted: false -> viel schnellere reaktion
+            get { return (SelectedElementId != -1) ? DatabaseAccess.QueryElementById(SelectedElementId, layersSorted: true) : null; }
+        }
         public bool ElementToolsAvailable
         {
-            get
-            {
-                return SelectedElementId != -1;
-            }
-        }
-        public string SelectedElementName
-        {
-            get
-            {
-                return (SelectedElementId == -1) ? String.Empty : DatabaseAccess.QueryElementById(SelectedElementId).Name;
-            }
-        }
-        public BitmapImage? SelectedElementImage
-        {
-            get
-            {
-                return (SelectedElementId == -1) ? new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png")) : DatabaseAccess.QueryElementById(SelectedElementId).ElementImage;
-            }
-        }
-        public string SelectedElementType
-        {
-            get
-            {
-                return (SelectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(SelectedElementId).Construction.Type;
-            }
-        }
-        public string SelectedElementOrientation
-        {
-            get
-            {
-                return (SelectedElementId == -1) ? "-" : DatabaseAccess.QueryElementById(SelectedElementId).Orientation.TypeName;
-            }
-        }
-        public string SelectedElementRValue
-        {
-            get
-            {
-                return (SelectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(SelectedElementId).RValue.ToString();
-            }
-        }
-        public string SelectedElementSdThickness
-        {
-            get
-            {
-                return (SelectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(SelectedElementId).SdThickness.ToString();
-            }
-        }
-        public string SelectedElementAreaMassDens
-        {
-            get
-            {
-                return (SelectedElementId == -1) ? "0" : DatabaseAccess.QueryElementById(SelectedElementId).AreaMassDens.ToString();
-            }
+            get { return SelectedElementId != -1; }
         }
     }
 }

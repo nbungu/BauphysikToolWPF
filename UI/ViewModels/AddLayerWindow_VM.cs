@@ -35,13 +35,14 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return;
 
             // LayerPosition is always at end of List 
-            int layerCount = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId).Count;
+            int layerCount = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Count;
 
             Layer layer = new Layer()
             {
                 //LayerId gets set by SQLite DB (AutoIncrement)
                 LayerPosition = layerCount,
                 LayerThickness = Convert.ToDouble(Thickness),
+                IsEffective = true,
                 MaterialId = selectedMaterial.MaterialId,
                 ElementId = FO0_LandingPage.SelectedElementId,
             };
@@ -81,11 +82,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public List<Material> Materials
         {
-            get
-            {
-                // Sort Materials by Selected Category
-                return SelectedCategory == "Alle anzeigen" ? DatabaseAccess.QueryMaterialByCategory("*") : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
-            }
+            get { return SelectedCategory == "Alle anzeigen" ? DatabaseAccess.QueryMaterialByCategory("*") : DatabaseAccess.QueryMaterialByCategory(SelectedCategory); }
         }
         public bool IsThicknessValid
         {

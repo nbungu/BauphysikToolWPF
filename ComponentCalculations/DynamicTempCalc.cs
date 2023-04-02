@@ -1,4 +1,6 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.SQLiteRepo;
+using LiveChartsCore.Defaults;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -11,84 +13,90 @@ namespace BauphysikToolWPF.ComponentCalculations
     // https://www.htflux.com/en/free-calculation-tool-for-thermal-mass-of-building-components-iso-13786/
     public class DynamicTempCalc
     {
+        // The Type of functions you can get from DIN EN ISO 13786:2018-04
+        public enum FunctionType
+        {
+            ExteriorTemp,
+            InteriorTemp,
+            ExteriorSurfaceTemp,
+            InteriorSurfaceTemp
+        }
+        
         // Constant Values
         public const int PeriodDuration = 86400; // [s] = 24 h
         public const int IntervallSteps = 600; // [s] = 10 min
         public const int NormHeatCap = 1080; // Normspeicherkapazität = 0,3 Wh/(kgK) = 1080 J/(kgK) = 1080 Ws/(kgK)
 
-        // Variables for Calculation
-        public Element Element { get; set; }
-        private HeatTransferMatrix Z_Element { get; set; }
-        private List<HeatTransferMatrix> Z_Layers { get; set; }
-        private ThermalAdmittanceMatrix Y_Element { get; set; }
-        private double Rsi { get; }
-        private double Rse { get; }
+        // private Instance Variables
+        private HeatTransferMatrix _z_Element;
+        private List<HeatTransferMatrix> _z_Layers;
+        private ThermalAdmittanceMatrix _y_Element;
+        private double _rsi = UserSaved.Rsi;
+        private double _rse = UserSaved.Rse;
 
-        // Calculated Results
-        public double DynamicRValue { get; set; } // R_dyn [m²K/W]
-        public double DynamicUValue { get; set; } // U_dyn [W/m²K]
-        public double DecrementFactor { get; set; } // f [-] - Abminderungsfaktor
-        public double TAD { get; set; } // υ [-] - Temperaturamplitudendämpfung: Verhältnis zwischen den Amplituden der Aussenlufttemperatur und denjenigen der inneren Wandoberflächentemperatur 
-        public double TAV { get; set; } // [-] - Kehrwert der TAD: multipliziert mit 100 enpricht es dem %-Wert der Wärmeamplitude welche innen noch ankommt, aufgrund einer Schwankung außen.
-        public double PenetrationDepth { get; set; } // δ [m] periodische Eindringtiefe 
-        public int TimeShift { get; set; } // [s] - Phasenverschiebung: Zeitverschiebung des Wärmedurchgangs durch das Bauteil
-        public int TimeShift_i { get; set; } // [s] - Zeitverschiebung der Wärmeaufnahme innen
-        public int TimeShift_e { get; set; } // [s] - Zeitverschiebung der Wärmeaufnahme außen
-        public double ThermalAdmittance_i { get; set; } // [W/m²K] - describes the ability of a surface to absorb and release heat (energy) upon a periodic sinusoidal temperature swing with a period of 24h. 
-        public double ThermalAdmittance_e { get; set; } // [W/m²K] - describes the ability to buffer heat upon external temperature swings. Again, it is assumed that the temperature on the opposite side is held constant.
-        public double ArealHeatCapacity_i { get; set; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
-        public double ArealHeatCapacity_e { get; set; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
-        public double EffectiveThermalMass { get; set; } // M [kg/m²]
+        // public fields as Properties
+        public Element Element { get; private set; }
+        public double DynamicRValue { get; private set; } // R_dyn [m²K/W]
+        public double DynamicUValue { get; private set; } // U_dyn [W/m²K]
+        public double DecrementFactor { get; private set; } // f [-] - Abminderungsfaktor
+        public double TAD { get; private set; } // υ [-] - Temperaturamplitudendämpfung: Verhältnis zwischen den Amplituden der Aussenlufttemperatur und denjenigen der inneren Wandoberflächentemperatur 
+        public double TAV { get; private set; } // [-] - Kehrwert der TAD: multipliziert mit 100 enpricht es dem %-Wert der Wärmeamplitude welche innen noch ankommt, aufgrund einer Schwankung außen.
+        public double PenetrationDepth { get; private set; } // δ [m] periodische Eindringtiefe 
+        public int TimeShift { get; private set; } // [s] - Phasenverschiebung: Zeitverschiebung des Wärmedurchgangs durch das Bauteil
+        public int TimeShift_i { get; private set; } // [s] - Zeitverschiebung der Wärmeaufnahme innen
+        public int TimeShift_e { get; private set; } // [s] - Zeitverschiebung der Wärmeaufnahme außen
+        public double ThermalAdmittance_i { get; private set; } // [W/m²K] - describes the ability of a surface to absorb and release heat (energy) upon a periodic sinusoidal temperature swing with a period of 24h. 
+        public double ThermalAdmittance_e { get; private set; } // [W/m²K] - describes the ability to buffer heat upon external temperature swings. Again, it is assumed that the temperature on the opposite side is held constant.
+        public double ArealHeatCapacity_i { get; private set; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
+        public double ArealHeatCapacity_e { get; private set; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
+        public double EffectiveThermalMass { get; private set; } // M [kg/m²]
+        public double UValue { get; private set; }
 
-        public DynamicTempCalc(Element element, Dictionary<string, double> userEnvVars)
+        public DynamicTempCalc(Element element)
         {
             if (element is null || element.Layers.Count == 0)
                 return;
 
-            if (userEnvVars is null)
-                return;
-
             // Assign constuctor parameter values
             Element = element;
-            Rsi = userEnvVars["Rsi"];
-            Rse = userEnvVars["Rse"];
 
             // Calculated parameters (private setter)
-            Z_Layers = CreateLayerMatrices(Element.Layers);
-            Z_Element = CreateElementMatrix(Z_Layers, Rsi, Rse);
-            Y_Element = new ThermalAdmittanceMatrix(Z_Element);
-            DynamicRValue = GetDynamicRValue(Z_Element);
+            _z_Layers = CreateLayerMatrices(Element.Layers);
+            _z_Element = CreateElementMatrix(_z_Layers, _rsi, _rse);
+            _y_Element = new ThermalAdmittanceMatrix(_z_Element);
+            DynamicRValue = GetDynamicRValue(_z_Element);
             DynamicUValue = GetDynamicUValue(DynamicRValue);
-            DecrementFactor = GetDecrement(DynamicUValue);
-            TAD = GetTAD(Z_Element);
+            UValue = _rsi + Element.RValue + _rse;
+            DecrementFactor = GetDecrement(DynamicUValue, UValue);
+            TAD = GetTAD(_z_Element);
             TAV = GetTAV(TAD);
-            TimeShift = GetTimeShift(Y_Element);
-            TimeShift_i = GetTimeShift(Y_Element, "i");
-            TimeShift_e = GetTimeShift(Y_Element, "e");
-            ArealHeatCapacity_i = GetArealHeatCapacity(Z_Element, "i");
-            ArealHeatCapacity_e = GetArealHeatCapacity(Z_Element, "e");
-            ThermalAdmittance_i = GetThermalAdmittance(Y_Element, "i");
-            ThermalAdmittance_e = GetThermalAdmittance(Y_Element, "e");
-            EffectiveThermalMass = GetThermalMass(Y_Element);
+            TimeShift = GetTimeShift(_y_Element);
+            TimeShift_i = GetTimeShift(_y_Element, "i");
+            TimeShift_e = GetTimeShift(_y_Element, "e");
+            ArealHeatCapacity_i = GetArealHeatCapacity(_z_Element, "i");
+            ArealHeatCapacity_e = GetArealHeatCapacity(_z_Element, "e");
+            ThermalAdmittance_i = GetThermalAdmittance(_y_Element, "i");
+            ThermalAdmittance_e = GetThermalAdmittance(_y_Element, "e");
+            EffectiveThermalMass = GetThermalMass(_y_Element);
         }
 
-
-        // Non-static because method accesses intance variables
+        // public Instance Methods, when user requires additional Data. 
+        // Non-static Methods because method accesses intance variables only available when 'new' Instance is created and then the Method can be used
 
         // θsi(t)
-        public double SurfaceTemp_i_Function(int t, double meanTemp_i, double amplitude_i, double amplitude_e)
+        public double SurfaceTemp_i_Function(int t, double meanTemp_i, double amplitude_i, double amplitude_e, double qStatic)
         {
             double airTemp_i = AirTemp_Function(t, meanTemp_i, amplitude_i);
-            double totalHeatFlux_i = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, "i");
-            return Math.Round(airTemp_i + totalHeatFlux_i * Rsi, 2);
+            double totalHeatFlux_i = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, qStatic, "i");
+            return Math.Round(airTemp_i + totalHeatFlux_i * _rsi, 2);
         }
         
         // θse(t)
-        public double SurfaceTemp_e_Function(int t, double meanTemp_e, double amplitude_i, double amplitude_e)
+        public double SurfaceTemp_e_Function(int t, double meanTemp_e, double amplitude_i, double amplitude_e, double qStatic)
         {
             double airTemp_e = AirTemp_Function(t, meanTemp_e, amplitude_e);
-            double totalHeatFlux_e = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, "e");
-            return Math.Round(airTemp_e - totalHeatFlux_e * Rse, 2);
+            double totalHeatFlux_e = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, qStatic, "e");
+            return Math.Round(airTemp_e - totalHeatFlux_e * _rse, 2);
         }
 
         // Creates time function θi(t) or θe(t) which represents the sinusodial curve of interior/exterior air temperature change
@@ -98,15 +106,15 @@ namespace BauphysikToolWPF.ComponentCalculations
             return Math.Round(airTemp, 2);
         }
 
-        public double TotalHeatFlux_Function(int t, double amplitude_i, double amplitude_e, string side)
+        public double TotalHeatFlux_Function(int t, double amplitude_i, double amplitude_e, double qStatic, string side)
         {
             // t and timeshift in Seconds!!
             double totalHeatFlux = 0;
-            double q_static = 0; // TODO
-            double q_11 = -1 * Y_Element.Y11.Magnitude * amplitude_i * Math.Cos((t + TimeShift_i) * (2 * Math.PI) / PeriodDuration);
-            double q_12 = -1 * Y_Element.Y12.Magnitude * amplitude_i * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
-            double q_21 = Y_Element.Y12.Magnitude * amplitude_e * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
-            double q_22 = Y_Element.Y22.Magnitude * amplitude_e * Math.Cos((t + TimeShift_e) * (2 * Math.PI) / PeriodDuration);
+            double q_static = qStatic; // TODO
+            double q_11 = -1 * _y_Element.Y11.Magnitude * amplitude_i * Math.Cos((t + TimeShift_i) * (2 * Math.PI) / PeriodDuration);
+            double q_12 = -1 * _y_Element.Y12.Magnitude * amplitude_i * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
+            double q_21 = _y_Element.Y12.Magnitude * amplitude_e * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
+            double q_22 = _y_Element.Y22.Magnitude * amplitude_e * Math.Cos((t + TimeShift_e) * (2 * Math.PI) / PeriodDuration);
             
             if (side == "i")
                 totalHeatFlux = q_static + q_11 + q_21;
@@ -117,11 +125,61 @@ namespace BauphysikToolWPF.ComponentCalculations
             return totalHeatFlux;
         }
 
+        public ObservablePoint[] CreateDataPoints(FunctionType function, double meanTemp_e, double meanTemp_i, double amplitude_i, double amplitude_e, double qStatic, int iterations = PeriodDuration / IntervallSteps + 1, int startingTime = 0)
+        {
+            ObservablePoint[] dataPoints = new ObservablePoint[iterations];
+
+            if (function == FunctionType.ExteriorSurfaceTemp) // θse(t)
+            {
+                for (int i = startingTime; i < iterations; i++)
+                {
+                    int timePoint = i * IntervallSteps; // time axis [s]
+                    double x = timePoint;
+                    double y = SurfaceTemp_e_Function(timePoint, meanTemp_e, amplitude_i, amplitude_e, qStatic); // temperature axis [°C]
+                    dataPoints[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+                }
+            }
+            else if (function == FunctionType.InteriorSurfaceTemp) // θsi(t)
+            {
+                for (int i = startingTime; i < iterations; i++)
+                {
+                    int timePoint = i * IntervallSteps; // time axis [s]
+                    double x = timePoint;
+                    double y = SurfaceTemp_i_Function(timePoint, meanTemp_i, amplitude_i, amplitude_e, qStatic); // temperature axis [°C]
+                    dataPoints[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+                }
+            }
+            else if (function == FunctionType.ExteriorTemp) // θe(t)
+            {
+                for (int i = startingTime; i < iterations; i++)
+                {
+                    int timePoint = i * IntervallSteps; // time axis [s]
+                    double x = timePoint;
+                    double y = AirTemp_Function(timePoint, meanTemp_e, amplitude_e); // temperature axis [°C]
+                    dataPoints[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+                }
+            }
+            else if (function == FunctionType.InteriorTemp) // θe(t)
+            {
+                for (int i = startingTime; i < iterations; i++)
+                {
+                    int timePoint = i * IntervallSteps; // time axis [s]
+                    double x = timePoint;
+                    double y = AirTemp_Function(timePoint, meanTemp_i, amplitude_i); // temperature axis [°C]
+                    dataPoints[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+                }
+            }
+            return dataPoints;
+        }
+
+        // private Methods to assign calculated values to Class Properties
         private List<HeatTransferMatrix> CreateLayerMatrices(List<Layer> layers)
         {
             List <HeatTransferMatrix> list = new List<HeatTransferMatrix>();
             foreach (Layer layer in layers)
             {
+                if (!layer.IsEffective)
+                    break;
                 // Eindringtiefe δ [m]: Delta ist diejenige Tiefe in einem halbunendlichen Baustoff, bei der die Temperaturschwankung auf 1/e des Wertes der Oberflächentemperaturschwankung abgeklungen ist:
                 double delta = Math.Sqrt((layer.Material.ThermalConductivity * PeriodDuration) / Convert.ToDouble(layer.Material.BulkDensity * layer.Material.SpecificHeatCapacity * Math.PI));
                 // ξ [-]: Xi ist das Verhältnis von Schichtdicke zu Eindringtiefe
@@ -146,27 +204,25 @@ namespace BauphysikToolWPF.ComponentCalculations
         }
         private HeatTransferMatrix MultiplyMatrices(HeatTransferMatrix Z1, HeatTransferMatrix Z2)
         {
-            HeatTransferMatrix result = new HeatTransferMatrix()
+            return new HeatTransferMatrix()
             {
                 Z11 = Complex.Add(Complex.Multiply(Z1.Z11, Z2.Z11), Complex.Multiply(Z1.Z12, Z2.Z21)),
                 Z12 = Complex.Add(Complex.Multiply(Z1.Z11, Z2.Z12), Complex.Multiply(Z1.Z12, Z2.Z22)),
                 Z21 = Complex.Add(Complex.Multiply(Z1.Z21, Z2.Z11), Complex.Multiply(Z1.Z22, Z2.Z21)),
                 Z22 = Complex.Add(Complex.Multiply(Z1.Z21, Z2.Z12), Complex.Multiply(Z1.Z22, Z2.Z22)),
             };
-            return result;
         }
         private double GetDynamicRValue(HeatTransferMatrix elementMatrix)
         {
             return Math.Round(Complex.Abs(elementMatrix.Z12), 3);
         }
-        private double GetDynamicUValue(double rValue)
+        private double GetDynamicUValue(double dyn_rValue)
         {
-            return Math.Round(1/rValue, 3);
+            return Math.Round(1/ dyn_rValue, 3);
         }
-        private double GetDecrement(double u_dyn)
+        private double GetDecrement(double uDynValue, double uValue)
         {
-            double u_0 = Element.RValue + Rsi + Rse;
-            return Math.Round(u_dyn * u_0, 3);
+            return Math.Round(uDynValue * uValue, 3);
         }
         private double GetTAD(HeatTransferMatrix elementMatrix)
         {
@@ -180,39 +236,37 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             double seconds = 0;
             if (side == null)
-            {
                 seconds = (PeriodDuration * matrix.Y12.Phase) / (2 * Math.PI) - (PeriodDuration/2);
-            }
+
             if (side == "i")
-            {
                 seconds = (PeriodDuration * matrix.Y11.Phase) / (2 * Math.PI);
-            }
+
             if (side == "e")
-            {
                 seconds = (PeriodDuration * matrix.Y22.Phase) / (2 * Math.PI);
-            }
+
             return Convert.ToInt32(seconds);
         }
         private double GetThermalAdmittance(ThermalAdmittanceMatrix matrix, string side)
         {
+            double result = 0;
             if (side == "i")
-            {
-                return Math.Round(matrix.Y11.Magnitude, 2);
-            }
-            else if (side == "e")
-            {
-                return Math.Round(matrix.Y22.Magnitude, 2);
-            }
-            else
-            {
-                return 0;
-            }
+                result = Math.Round(matrix.Y11.Magnitude, 2);
+
+            if (side == "e")
+                result = Math.Round(matrix.Y22.Magnitude, 2);
+
+            return result;
         }
-        private double GetArealHeatCapacity(HeatTransferMatrix elementMatrix, string side = "i")
+        private double GetArealHeatCapacity(HeatTransferMatrix elementMatrix, string side)
         {
-            double kappa1 = (PeriodDuration / (2 * Math.PI)) * Complex.Abs(Complex.Divide(Complex.Subtract(elementMatrix.Z11, 1), elementMatrix.Z12)); // Ws/(m²K) = J/(m²K) 
-            double kappa2 = (PeriodDuration / (2 * Math.PI)) * Complex.Abs(Complex.Divide(Complex.Subtract(elementMatrix.Z22, 1), elementMatrix.Z12)); // Ws/(m²K) = J/(m²K)
-            return side == "e" ? Math.Round(kappa2/1000, 2) : Math.Round(kappa1/1000, 2); // kJ/(m²K)
+            double kappa = 0;
+            if (side == "i")
+                kappa = (PeriodDuration / (2 * Math.PI)) * Complex.Abs(Complex.Divide(Complex.Subtract(elementMatrix.Z11, 1), elementMatrix.Z12)); // Ws/(m²K) = J/(m²K) 
+
+            if (side == "e")
+                kappa = (PeriodDuration / (2 * Math.PI)) * Complex.Abs(Complex.Divide(Complex.Subtract(elementMatrix.Z22, 1), elementMatrix.Z12)); // Ws/(m²K) = J/(m²K)
+
+            return Math.Round(kappa/1000, 2); // kJ/(m²K)
         }
         private double GetThermalMass(ThermalAdmittanceMatrix matrix)
         {

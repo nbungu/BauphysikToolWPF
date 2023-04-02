@@ -26,6 +26,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull]
         public double LayerThickness { get; set; } // Layer thickness in cm
 
+        [NotNull]
+        public int Effective { get; set; } // For Calculation Purposes - Whether a Layer is considered in the Calculations or not
+
         //------Not part of the Database-----//
 
         // n:1 relationship with Element
@@ -39,15 +42,12 @@ namespace BauphysikToolWPF.SQLiteRepo
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 
 
+        // Encapsulate/Hide 'Effective' to convert to bool
         [Ignore]
-        public bool IsEffective // For Calculation Purposes - Whether a Layer is considered in the Calculations or not
+        public bool IsEffective // true = 1
         {
-            get
-            {
-                if (Material == null)
-                    return false;
-                return Material.Category != MaterialCategory.Air; // Wenn Luftschicht (belüftet)
-            }
+            get { return Effective != 0; }
+            set { Effective = (value) ? 1 : 0; }
         }
 
         [Ignore]

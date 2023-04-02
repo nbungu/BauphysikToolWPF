@@ -68,22 +68,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         // TODO only call Project from DB once
 
         [ObservableProperty]
-        private string projectName = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId).Name ?? "";
-
-        [ObservableProperty]
-        private string projectUserName = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId).UserName ?? "";
-
-        [ObservableProperty]
-        private bool isBuildingUsage0 = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId).IsNonResidentialUsage;   // Usage 0 = Nichtwohngebäude
-
-        [ObservableProperty]
-        private bool isBuildingUsage1 = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId).IsResidentialUsage;      // Usage 1 = Wohngebäude
-
-        [ObservableProperty]
-        private bool isBuildingAge0 = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId).IsExistingConstruction;    // Usage 0 = Bestand
-
-        [ObservableProperty]
-        private bool isBuildingAge1 = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId).IsNewConstruction;         // Usage 1 = Neubau      
-
+        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId);
     }
 }

@@ -9,6 +9,23 @@ using System.Linq;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     public delegate void Notify(); // delegate with signature: return type void, no input parameters
+    public enum ElementSortingType
+    {
+        Date,
+        Name,
+        Type,
+        Orientation,
+        RValue,
+        SdValue,
+        Default = Date
+    }
+    public enum LayerSortingType
+    {
+        None,
+        Name,
+        LayerPosition,
+        Default = LayerPosition
+    }
     public class LayerSorting : IComparer<Layer>
     {
         private LayerSortingType SortingType { get; set; }
@@ -22,8 +39,6 @@ namespace BauphysikToolWPF.SQLiteRepo
                 return 0;
             switch (SortingType)
             {
-                case LayerSortingType.Date:
-                    return x.LayerId.CompareTo(y.LayerId);
                 case LayerSortingType.Name:
                     return x.Material.Name.CompareTo(y.Material.Name);
                 case LayerSortingType.LayerPosition:
@@ -33,6 +48,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             }
         }
         // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
+        // Layers have to be SORTED (LayerPos)
         public static void FillGaps(List<Layer> layers)
         {
             if (layers.Count > 0)
@@ -42,6 +58,22 @@ namespace BauphysikToolWPF.SQLiteRepo
                 {
                     layers[i].LayerPosition = i;
                     DatabaseAccess.UpdateLayer(layers[i], triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
+                }
+            }
+        }
+        // Set every following Layer after AirLayer to IsEffective = false
+        // Layers have to be SORTED (LayerPos) + No Gaps (FillGaps)
+        public static void AssignEffectiveLayers(List<Layer> layers)
+        {
+            if (layers.Count > 0)
+            {
+                bool foundAirLayer = false;
+                foreach (Layer layer in layers)
+                {                   
+                    if (layer.Material.Category == MaterialCategory.Air)
+                        foundAirLayer = true;
+                    layer.IsEffective = !foundAirLayer;
+                    DatabaseAccess.UpdateLayer(layer, triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
                 }
             }
         }
@@ -71,23 +103,6 @@ namespace BauphysikToolWPF.SQLiteRepo
                     return x.ElementId.CompareTo(y.ElementId);
             }
         }
-    }
-    public enum ElementSortingType
-    {
-        Date,
-        Name,
-        Type,
-        Orientation,
-        RValue,
-        SdValue,
-        Default = Date
-    }
-    public enum LayerSortingType
-    {
-        Date,
-        Name,
-        LayerPosition,
-        Default = LayerPosition
     }
 
     public class DatabaseAccess // publisher of e.g. 'LayersChanged' event
@@ -197,9 +212,15 @@ namespace BauphysikToolWPF.SQLiteRepo
             sqlConn.DeleteAll<Element>();
             OnElementsChanged();
         }
-        public static Element QueryElementById(int elementId)
+        public static Element QueryElementById(int elementId, bool layersSorted = false)
         {
-            return sqlConn.GetWithChildren<Element>(elementId, recursive: true);
+            Element element = sqlConn.GetWithChildren<Element>(elementId, recursive: true);
+
+            // default value = false, mostly not needed to return Element with SORTED Layers!
+            if (layersSorted)
+                element.Layers = QueryLayersByElementId(elementId);            
+
+            return element;
         }
         public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.Default, bool ascending = true)
         {
@@ -213,62 +234,62 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
 
         // Retreive Data from Table "Layer"
-        public static List<Layer> GetLayers()
-        {
-            return sqlConn.GetAllWithChildren<Layer>(recursive: true);
-        }
-
-        public static void CreateLayer(Layer layer, bool triggerUpdateEvent = true)
+        public static void CreateLayer(Layer layer, bool triggerUpdateEvent = true, bool assignEffectiveLayers = true)
         {
             // No need to 'InsertWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
             sqlConn.Insert(layer);
 
-            if (triggerUpdateEvent == false)
-                return;
+            // True by default: Occurs often when a Layer is deleted
+            if (assignEffectiveLayers)
+                LayerSorting.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
 
-            OnLayersChanged();
+            if (triggerUpdateEvent)
+                OnLayersChanged();
         }
 
-        public static void UpdateLayer(Layer layer, bool triggerUpdateEvent = true)
+        public static void UpdateLayer(Layer layer, bool triggerUpdateEvent = true, bool assignEffectiveLayers = false)
         {
             // No need to 'UpdateWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
             sqlConn.Update(layer);
 
-            if (triggerUpdateEvent == false)
-                return;
+            // False by default: Occurs rarely when a Layer is updated
+            if (assignEffectiveLayers)
+                LayerSorting.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
 
-            OnLayersChanged();
+            if (triggerUpdateEvent)
+                OnLayersChanged();
         }
 
-        public static void DeleteLayer(Layer layer, bool triggerUpdateEvent = true, bool fillLayerGaps = true)
+        public static void DeleteLayer(Layer layer, bool triggerUpdateEvent = true, bool fillLayerGaps = true, bool assignEffectiveLayers = true)
         {
             sqlConn.Delete(layer);
 
-            if (triggerUpdateEvent == false)
-                return;
-
+            // True by default: Occurs almost every time a Layer is deleted
             if (fillLayerGaps)                
-                LayerSorting.FillGaps(QueryLayersByElementId(layer.Element.ElementId)); // Remove gaps in the LayerPosition property of current Element
+                LayerSorting.FillGaps(QueryLayersByElementId(layer.ElementId)); // Remove gaps in the LayerPosition property of current Element
 
-            OnLayersChanged();
+            // True by default: Occurs often when a Layer is deleted
+            if (assignEffectiveLayers)
+                LayerSorting.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
+
+            if (triggerUpdateEvent)
+                OnLayersChanged();
         }
 
         public static void DeleteAllLayers(bool triggerUpdateEvent = true)
         {
             sqlConn.DeleteAll<Layer>();
 
-            if (triggerUpdateEvent == false)
-                return;
-
-            OnLayersChanged();
+            if (triggerUpdateEvent)
+                OnLayersChanged();
         }
         public static List<Layer> QueryLayersByElementId(int elementId, LayerSortingType sortingType = LayerSortingType.Default)
         {
             List<Layer> layers = sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
-
-            if (sortingType == LayerSortingType.Date)
+            
+            if (sortingType == LayerSortingType.None)
                 return layers;
-
+            
             layers.Sort(new LayerSorting(sortingType)); // use of List<T>.Sort(IComparer<T>) method
             return layers;
         }

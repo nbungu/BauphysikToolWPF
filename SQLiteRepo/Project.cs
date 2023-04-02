@@ -42,40 +42,28 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         // Encapsulate/Hide BuildingUsage and BuildingAge to convert to bool
         [Ignore]
-        public bool IsResidentialUsage // = 1
+        public bool IsResidentialUsage // true = 1
         {
             get { return BuildingUsage == (int)BuildingUsageType.Residential; }
-            set
-            {
-                BuildingUsage = (value) ? 1 : 0;
-            }
+            set { BuildingUsage = (value) ? 1 : 0; }
         }
         [Ignore]
         public bool IsNonResidentialUsage // = 0
         {
             get { return BuildingUsage == (int)BuildingUsageType.NonResidential; }
-            set
-            {
-                BuildingUsage = (value) ? 0 : 1;
-            }
+            set { BuildingUsage = (value) ? 0 : 1; }
         }
         [Ignore]
         public bool IsNewConstruction // = 1
         {
             get { return BuildingAge == (int)BuildingAgeType.New; }
-            set
-            {
-                BuildingAge = (value) ? 1 : 0;
-            }
+            set { BuildingAge = (value) ? 1 : 0; }
         }
         [Ignore]
         public bool IsExistingConstruction // = 0
         {
             get { return BuildingAge == (int)BuildingAgeType.Existing; }
-            set
-            {
-                BuildingAge = (value) ? 0 : 1;
-            }
+            set { BuildingAge = (value) ? 0 : 1; }
         }
 
         //------Konstruktor-----//

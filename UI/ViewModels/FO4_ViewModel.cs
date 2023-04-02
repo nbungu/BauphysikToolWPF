@@ -21,8 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * Regular Instance Variables
          * 
-         * Not depending on UI changes. No Observable function. 
-         * 
+         * Not depending on UI changes. No Observable function.
          */
 
         public string Title { get; } = "Dynamic";
@@ -82,21 +81,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                 foreach (Layer layer in DynamicTempCalc.Element.Layers)
                 {
                     layer.IsSelected = false;
-                    rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
+                    rectangles.Add(new LayerRect(DynamicTempCalc.Element.Thickness_cm, 320, 400, layer, rectangles.LastOrDefault()));
                 }
                 return rectangles;
-            }
-        }
-        public double ElementWidth
-        {
-            get
-            {
-                double fullWidth = 0;
-                foreach (Layer layer in DynamicTempCalc.Element.Layers)
-                {
-                    fullWidth += layer.LayerThickness;
-                }
-                return fullWidth;
             }
         }
         public LiveChartsCore.Measure.Margin ChartMargin_i { get; private set; } = new LiveChartsCore.Measure.Margin(80, 32, 0, 80);
@@ -126,10 +113,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void EditElement(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
-            if (selectedElement is null)
-                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
             var window = new EditElementWindow(selectedElement);
@@ -138,8 +124,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-            ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+            CurrentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
         }
 
         /*
@@ -149,10 +134,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-
-        [ObservableProperty]
-        private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DataPoints_i))]
@@ -222,22 +204,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (DynamicTempCalc.Element.Layers.Count == 0)
                 return Array.Empty<ISeries>();
 
-            ISeries[] series = new ISeries[2]; // more than one series possible to draw in the same graph      
-            int iterations = DynamicTempCalc.PeriodDuration / DynamicTempCalc.IntervallSteps + 1;
-
-            // θse(t) Data Points
-            ObservablePoint[] surfaceTemp_e_Points = new ObservablePoint[iterations];
-            for (int i = 0; i < iterations; i++)
-            {
-                int timePoint = i * DynamicTempCalc.IntervallSteps; // time axis [s]
-                double x = timePoint;
-                double y = DynamicTempCalc.SurfaceTemp_e_Function(timePoint, Te_Mean, Ti_Amplitude, Te_Amplitude); // temperature axis [°C]
-                surfaceTemp_e_Points[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
-            }
             LineSeries<ObservablePoint> surfaceTemp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Name = "Oberflächentemperatur",
-                Values = surfaceTemp_e_Points,
+                Values = DynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.ExteriorSurfaceTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude, 0),
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
@@ -248,19 +218,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
-            // θe(t) Data Points
-            ObservablePoint[] temp_e_Points = new ObservablePoint[iterations];
-            for (int i = 0; i < iterations; i++)
-            {
-                int timePoint = i * DynamicTempCalc.IntervallSteps; // time axis [s]
-                double x = timePoint;
-                double y = DynamicTempCalc.AirTemp_Function(timePoint, Te_Mean, Te_Amplitude); // temperature axis [°C]
-                temp_e_Points[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
-            }
             LineSeries<ObservablePoint> temp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Name = "Lufttemperatur",
-                Values = temp_e_Points,
+                Values = DynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.ExteriorTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude, StationaryTempCalc.GetqValue(DynamicTempCalc.UValue, Ti_Mean, Te_Mean)),
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 2, PathEffect = new DashEffect(new float[] { 3, 3 }) },
@@ -271,33 +232,17 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
-
-            series[0] = temp_e;
-            series[1] = surfaceTemp_e;
-
-            return series;
+            return new ISeries[] { temp_e, surfaceTemp_e };
         }
         private ISeries[] GetDataPoints_i()
         {
             if (DynamicTempCalc.Element.Layers.Count == 0)
                 return Array.Empty<ISeries>();
 
-            ISeries[] series = new ISeries[2]; // more than one series possible to draw in the same graph      
-            int iterations = DynamicTempCalc.PeriodDuration / DynamicTempCalc.IntervallSteps + 1;
-
-            // θsi(t) Data Points
-            ObservablePoint[] surfaceTemp_i_Points = new ObservablePoint[iterations];
-            for (int i = 0; i < iterations; i++)
-            {
-                int timePoint = i * DynamicTempCalc.IntervallSteps; // time axis [s]
-                double x = timePoint;
-                double y = DynamicTempCalc.SurfaceTemp_i_Function(timePoint, Ti_Mean, Ti_Amplitude, Te_Amplitude); // temperature axis [°C]
-                surfaceTemp_i_Points[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
-            }
             LineSeries<ObservablePoint> surfaceTemp_i = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Name = "Oberflächentemperatur",
-                Values = surfaceTemp_i_Points,
+                Values = DynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.InteriorSurfaceTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude, 0),
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
@@ -308,19 +253,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
-            // θi(t) Data Points
-            ObservablePoint[] temp_i_Points = new ObservablePoint[iterations];
-            for (int i = 0; i < iterations; i++)
-            {
-                int timePoint = i * DynamicTempCalc.IntervallSteps; // time axis [s]
-                double x = timePoint;
-                double y = DynamicTempCalc.AirTemp_Function(timePoint, Ti_Mean, Ti_Amplitude); // temperature axis [°C]
-                temp_i_Points[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
-            }
             LineSeries<ObservablePoint> temp_i = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Name = "Lufttemperatur",
-                Values = temp_i_Points,
+                Values = DynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.InteriorTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude, 0),
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 2, PathEffect = new DashEffect(new float[] { 3, 3 }) },
@@ -331,11 +267,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
-            series[0] = temp_i;
-            series[1] = surfaceTemp_i;
-            //series[2] = surfaceHeatFlux_i;
-
-            return series;
+            return new ISeries[]{ temp_i, surfaceTemp_i }; // more than one series possible to draw in the same graph
         }
         private Axis[] DrawXAxes(string side = "bottom")
         {
@@ -351,8 +283,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                     TextSize = 14,
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 },
                     // Hardcode min/max value to draw all the way to the chart edges
-                    MinLimit= 0,
-                    MaxLimit= 86400
+                    MinLimit = 0,
+                    MaxLimit = DynamicTempCalc.PeriodDuration
                 }
             };
         }

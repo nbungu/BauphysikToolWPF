@@ -19,8 +19,36 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for FO2_Temperature.cs: Used in xaml as "DataContext"
     public partial class FO2_ViewModel : ObservableObject
     {
+        /*
+         * Regular Instance Variables as Properties
+         * 
+         * Not depending on UI changes. No Observable function.
+         */
         public string Title { get; } = "Temperature";
         public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
+        public double Ti { get; private set; } = UserSaved.Ti;
+        public double Te { get; private set; } = UserSaved.Te;
+        public double Rsi { get; private set; } = UserSaved.Rsi;
+        public double Rse { get; private set; } = UserSaved.Rse;
+        public ISeries[] DataPoints
+        {
+            get { return GetDataPoints(); }
+        }
+        public RectangularSection[] LayerSections
+        {
+            get { return DrawLayerSections(); }
+        }
+        public Axis[] XAxes
+        {
+            get { return DrawXAxes(); }
+        }
+        public Axis[] YAxes
+        {
+            get { return DrawYAxes(); }
+        }
+        public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
+        public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
+
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -34,7 +62,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void EditElement(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
             selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
@@ -45,8 +73,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-            ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+            CurrentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
         }
 
         /*
@@ -56,12 +83,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-       
-        [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RequirementValues))]
         [NotifyPropertyChangedFor(nameof(OverviewItems))]
-        private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -71,14 +95,14 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public CheckRequirements RequirementValues
         {
-            get { return new CheckRequirements(TempCalc.UValue, TempCalc.Element.RValue); }
+            get { return new CheckRequirements(CurrentElement); }
         }
 
         public List<OverviewItem> OverviewItems
         {
             get
             {
-                List<OverviewItem> list = new List<OverviewItem>
+                return new List<OverviewItem>
                 {
                     new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
                     new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = TempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
@@ -88,32 +112,12 @@ namespace BauphysikToolWPF.UI.ViewModels
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
                     new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 },
                 };
-                return list;
             }
         }
-        // TODO: Rework as MVVM
 
-        public RectangularSection[] LayerSections { get; private set; }
-        public ISeries[] DataPoints { get; private set; }
-        public Axis[] XAxes { get; private set; }
-        public Axis[] YAxes { get; private set; }
-        public SolidColorPaint TooltipBackgroundPaint { get; private set; }
-        public SolidColorPaint TooltipTextPaint { get; private set; }
-
-        public FO2_ViewModel() // Called by 'InitializeComponent()' from FO2_Calculate.cs due to Class-Binding in xaml via DataContext
-        {
-            // For Drawing the Chart
-            LayerSections = DrawLayerSections();
-            DataPoints = DrawTempCurvePoints();
-            XAxes = DrawXAxes();
-            YAxes = DrawYAxes();
-            TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
-            TooltipTextPaint = new SolidColorPaint
-            {
-                Color = new SKColor(0, 0, 0),
-                SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
-            };
-        }
+        /*
+         * private Methods
+         */
 
         private RectangularSection[] DrawLayerSections()
         {
@@ -134,12 +138,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Xi = left,
                     Xj = right,
                     Fill = new SolidColorPaint(SKColor.Parse(layer.Material.ColorCode)),
-                    Stroke = new SolidColorPaint
-                    {
-                        Color = SKColors.Black,
-                        StrokeThickness = 1,
-                        //PathEffect = new DashEffect(new float[] { 6, 6 })
-                    },
+                    Stroke = new SolidColorPaint { Color = SKColors.Black, StrokeThickness = 1 },
                     ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
                 };
                 left = right; // Add new layer at left edge of previous layer
@@ -159,16 +158,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             };*/
             return rects;
         }
-        private ISeries[] DrawTempCurvePoints()
+        private ISeries[] GetDataPoints()
         {
             if (TempCalc.Element.Layers.Count == 0)
                 return Array.Empty<ISeries>();
 
-            ISeries[] series = new ISeries[3]; // more than one series possible to draw in the same graph      
-
             double tsi_Pos = TempCalc.LayerTemps.First().Key;
             double tsi = TempCalc.LayerTemps.First().Value;
-            double deltaTi = Math.Abs(UserSaved.Ti - tsi);
+            double deltaTi = Math.Abs(Ti - tsi);
 
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
@@ -178,7 +175,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     null, // cuts the line between the points
                     new ObservablePoint(tsi_Pos, tsi),
                     new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
-                    new ObservablePoint(tsi_Pos-2, UserSaved.Ti)
+                    new ObservablePoint(tsi_Pos-2, Ti)
                 },
                 Fill = null,
                 LineSmoothness = 0.8,
@@ -215,12 +212,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             double tse_Pos = TempCalc.LayerTemps.Last().Key;
             double tse = TempCalc.LayerTemps.Last().Value;
-            double deltaTe = Math.Abs(UserSaved.Te - tse);
+            double deltaTe = Math.Abs(Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
                 {
-                    new ObservablePoint(tse_Pos+2, UserSaved.Te),
+                    new ObservablePoint(tse_Pos+2, Te),
                     new ObservablePoint(tse_Pos+0.8, tse-0.9*deltaTe),
                     new ObservablePoint(tse_Pos, tse),
                     null, // cuts the line between the points
@@ -232,72 +229,66 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 0,
                 TooltipLabelFormatter = null
             };
-            series[0] = rsiCurveSeries;
-            series[1] = tempCurveSeries;
-            series[2] = rseCurveSeries;
-
-            return series;
+            return new ISeries[] { rsiCurveSeries, tempCurveSeries, rseCurveSeries };
         }
         private Axis[] DrawXAxes()
         {
-            Axis[] axes = new Axis[1];
-
-            axes[0] = new Axis
+            return new Axis[]
             {
-                Name = "Element thickness [cm]",
-                NameTextSize = 14,
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                //Labels = new string[] { "Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5" },
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14,
-                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 }
+                new Axis
+                {
+                    Name = "Element thickness [cm]",
+                    NameTextSize = 14,
+                    NamePaint = new SolidColorPaint(SKColors.Black),
+                    //Labels = new string[] { "Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5" },
+                    LabelsPaint = new SolidColorPaint(SKColors.Black),
+                    TextSize = 14,
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 },
+                    MinLimit = - 2,
+                    MaxLimit = TempCalc.Element.Thickness_cm + 2
+                }
+                /*new Axis
+                {
+                    Name = "Layer Nr.",
+                    NameTextSize = 16,
+                    NamePaint = new SolidColorPaint(SKColors.Black),
+                    Labels = new string[] { "1", "2", "3", "4" },
+                    LabelsPaint = new SolidColorPaint(SKColors.Black),
+                    TextSize = 14
+                }*/
             };
-            /*axes[1] = new Axis
-            {
-                Name = "Layer Nr.",
-                NameTextSize = 16,
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                Labels = new string[] { "1", "2", "3", "4" },
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14
-            };*/
-            return axes;
         }
         private Axis[] DrawYAxes()
         {
-            Axis[] axes = new Axis[1];
-
-            axes[0] = new Axis
+            return new Axis[]
             {
-                Name = "Temperature curve [°C]",
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14,
-                NameTextSize = 14,
-                Position = LiveChartsCore.Measure.AxisPosition.Start,
-                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
+                new Axis
                 {
-                    StrokeThickness = 1,
-                    PathEffect = new DashEffect(new float[] { 3, 3 })
+                    Name = "Temperature curve [°C]",
+                    NamePaint = new SolidColorPaint(SKColors.Black),
+                    LabelsPaint = new SolidColorPaint(SKColors.Black),
+                    TextSize = 14,
+                    NameTextSize = 14,
+                    Position = LiveChartsCore.Measure.AxisPosition.Start,
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1, PathEffect = new DashEffect(new float[] { 3, 3 }) }
                 }
-            };
-            return axes;
-            /*
-            axes[1] = new Axis
-            {
-                Name = "test",
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14,
-                NameTextSize = 16,
-                Position = LiveChartsCore.Measure.AxisPosition.End,
-                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
+                /*
+                new Axis
                 {
-                    StrokeThickness = 1,
-                    PathEffect = new DashEffect(new float[] { 3, 3 })
-                },
-                ShowSeparatorLines = true
-            };*/
+                    Name = "test",
+                    NamePaint = new SolidColorPaint(SKColors.Black),
+                    LabelsPaint = new SolidColorPaint(SKColors.Black),
+                    TextSize = 14,
+                    NameTextSize = 16,
+                    Position = LiveChartsCore.Measure.AxisPosition.End,
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
+                    {
+                        StrokeThickness = 1,
+                        PathEffect = new DashEffect(new float[] { 3, 3 })
+                    },
+                    ShowSeparatorLines = true
+                }*/
+            };
         }
     }
 }

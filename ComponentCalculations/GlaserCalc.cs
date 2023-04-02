@@ -1,34 +1,42 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
 
 namespace BauphysikToolWPF.ComponentCalculations
 {
+    /*
+     * When creating this as a 'new' Instance, all fields will auto calculate the values (using the current user envVars)
+     * 
+     * When using the static Methods from outside this class, a single value can be calculated without creating full class instance 
+     */
     public class GlaserCalc : StationaryTempCalc
     {
-        // (Instance-) Variables and encapsulated properties
+        // private fields as Instance Variables
+        private double _rel_Fi = UserSaved.Rel_Fi;
+        private double _rel_Fe = UserSaved.Rel_Fe;
+
+        // public fields as Properties
         public double PhiMax { get; private set; } = 0;
         public double TaupunktMax_i { get; private set; } = 0;
         public double P_sat_i { get; private set; } = 0;
         public double P_sat_e { get; private set; } = 0;
-        public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
-        public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
+        public List<KeyValuePair<double, double>> LayerPsat { get; private set; } // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
+        public List<KeyValuePair<double, double>> LayerP { get; private set; } // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
 
         // (Instance-) Constructor
-        public GlaserCalc(Element element, Dictionary<string, double> userEnvVars) : base(element, userEnvVars)
+        public GlaserCalc(Element element) : base(element)
         {
             if (element is null || element.Layers.Count == 0)
                 return;
-            if (userEnvVars is null)
-                return;
 
             // Calculated parameters (private setter)
-            PhiMax = GetMaxRelFi(Ti, Te, FRsi);             // Gl. 3-3; S.37
-            TaupunktMax_i = GetMaxTaupunkt_i(Ti, Rel_Fi);   // Gl. 2.21; S.365. Taupunkttemperatur
-            LayerPsat = GetLayerPsat();                     // Gl. 2.4; S.164
-            LayerP = GetLayerP();                           // Gl. 2.3; S.164
-            P_sat_i = P_sat(Ti);                            // Gl. 2.4; S.164
-            P_sat_e = P_sat(Te);                            // Gl. 2.4; S.164
+            PhiMax = GetMaxRelFi(_ti, _te, FRsi);             // Gl. 3-3; S.37
+            TaupunktMax_i = GetMaxTaupunkt_i(_ti, _rel_Fi);   // Gl. 2.21; S.365. Taupunkttemperatur
+            LayerPsat = GetLayerPsat();                       // Gl. 2.4; S.164
+            LayerP = GetLayerP(_rel_Fi, _rel_Fe, _ti, _te, Element.SdThickness);                             // Gl. 2.3; S.164
+            P_sat_i = P_sat(_ti);                            // Gl. 2.4; S.164
+            P_sat_e = P_sat(_te);                            // Gl. 2.4; S.164
         }
 
         // Methods
@@ -55,16 +63,16 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return p_sat_List;
             else throw new ArgumentOutOfRangeException("calculation failed: sd_width doesn't add up!");*/
         }
-        private List<KeyValuePair<double, double>> GetLayerP()
+        private List<KeyValuePair<double, double>> GetLayerP(double relFi, double relFe, double ti, double te, double sdThickness)
         {
-            double pi = Math.Round((Rel_Fi / 100) * P_sat(Ti), 1);
-            double pe = Math.Round((Rel_Fe / 100) * P_sat(Te), 1);
-            List<KeyValuePair<double, double>> p_List = new List<KeyValuePair<double, double>>()
+            double pi = Math.Round((relFi / 100) * P_sat(ti), 1);
+            double pe = Math.Round((relFe / 100) * P_sat(te), 1);
+
+            return new List<KeyValuePair<double, double>>()
             {
                 new KeyValuePair<double, double>(0, pi),
-                new KeyValuePair<double, double>(Element.SdThickness, pe)
+                new KeyValuePair<double, double>(sdThickness, pe)
             };
-            return p_List;
         }
         private double P_sat(double temperature)
         {
@@ -75,8 +83,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             return Math.Round(p_sat, 1);
         }
 
-        //maximal zulässige Raumluftfeuchte
-        private double GetMaxRelFi(double ti, double te, double fRsi) 
+        // public static, avoid full instance creation process if only a single Value needs to be Calculated 
+        public static double GetMaxRelFi(double ti, double te, double fRsi) //maximal zulässige Raumluftfeuchte
         {
             /* if (FRsi * (Ti - Te) >= 0 && FRsi * (Ti - Te) <= 30)
              {
@@ -88,9 +96,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             double phiMax = 0.8 * Math.Pow((109.8 + fRsi * (ti - te) + te) / (109.8 + ti), 8.02) * 100;
             return Math.Round(phiMax, 1);
         }
-
-        // Taupunkttemperatur Luft innenseite
-        private double GetMaxTaupunkt_i(double ti, double rel_fi)
+        public static double GetMaxTaupunkt_i(double ti, double rel_fi) // Taupunkttemperatur Luft innenseite
         {
             if (ti < 0)
             {

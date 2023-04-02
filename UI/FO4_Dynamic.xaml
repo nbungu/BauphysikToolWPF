@@ -55,7 +55,7 @@
         <!-- Content and Styling of a Canvas Item (Layer Rectangle) -->
         <DataTemplate x:Key="LayerItemStyle">
             <Grid Width="{Binding RectWidth}" Height="{Binding RectHeight}" Background="{Binding RectFill}">
-                <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}"/>
+                <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}" Opacity="{Binding RectOpacity}"/>
             </Grid>
         </DataTemplate>
     </UserControl.Resources>
@@ -75,8 +75,8 @@
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Label Content="{Binding ElementName}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" Margin="8,0,0,0"/>
-                    <Label Content="{Binding ElementType}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
+                    <Label Content="{Binding CurrentElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" Margin="8,0,0,0"/>
+                    <Label Content="{Binding CurrentElement.Construction.Type}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

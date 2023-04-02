@@ -66,8 +66,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
-            if (selectedElement is null)
-                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
             var window = new EditElementWindow(selectedElement);
@@ -76,8 +75,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-            ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+            CurrentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
         }
 
         /*
@@ -87,10 +85,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-
-        [ObservableProperty]
-        private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         // Add m:n realtion to Database when new selection is set
         //TODO implement again

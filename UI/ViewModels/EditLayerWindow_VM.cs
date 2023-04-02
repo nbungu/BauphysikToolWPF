@@ -45,7 +45,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     // Create new Material
                     Material usedDefinedMaterial = new Material()
                     {
-                        Name = Name == EditLayerWindow.SelectedLayer.Material.Name ? Name+"-Edited" : Name,
+                        Name = (Name == EditLayerWindow.SelectedLayer.Material.Name) ? Name+"-Edited" : Name,
                         CategoryName = "Benutzerdefiniert",
                         ThermalConductivity = Convert.ToDouble(ThermalConductivity),
                         BulkDensity = Convert.ToInt32(BulkDensity),

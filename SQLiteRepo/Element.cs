@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.UI;
+﻿using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
@@ -17,7 +18,6 @@ namespace BauphysikToolWPF.SQLiteRepo
     {
         //------Variablen-----//
 
-        private bool layersSorted = false;
 
         //------Eigenschaften-----//
 
@@ -45,22 +45,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         public Project Project { get; set; }
 
         // 1:n relationship with Layer
-        private List<Layer> layers;
-
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all Layers linked to this 'Element')
-        public List<Layer> Layers
-        {
-            get // Always sort List by LayerPosition - ascending
-            {
-                if (layersSorted)
-                    return layers;
-
-                layers.Sort(new LayerSorting());
-                layersSorted = true;
-                return layers;
-            }
-            set { layers = value; }
-        }
+        public List<Layer> Layers { get; set; }
 
         // 1:1 relationship with Construction
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
@@ -189,6 +175,19 @@ namespace BauphysikToolWPF.SQLiteRepo
                         break; 
                     val += layer.R_Value;
                 }
+                return Math.Round(val, 2);
+            }
+        }
+
+        [Ignore]
+        public double UValue // in W/m²K
+        {
+            get
+            {
+                if (RValue == 0)
+                    return 0;
+
+                double val = 1 / (UserSaved.Rsi + RValue + UserSaved.Rse);
                 return Math.Round(val, 2);
             }
         }

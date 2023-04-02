@@ -1,13 +1,25 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.SQLiteRepo;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace BauphysikToolWPF.ComponentCalculations
 {
+    /*
+     * When creating this as a 'new' Instance, all fields will auto calculate the values (using the current user envVars)
+     * 
+     * When using the static Methods from outside this class, a single value can be calculated without creating full class instance 
+     */
     public class StationaryTempCalc
     {
-        // (Instance-) Variables and encapsulated properties - Called before Constructor
+        // protected fields as Instance Variables (= private, but accessible from child class (Inheritance))
+        protected double _ti = UserSaved.Ti;
+        protected double _te = UserSaved.Te;
+        protected double _rsi = UserSaved.Rsi;
+        protected double _rse = UserSaved.Rse;
+
+        // public fields as Properties
         public Element Element { get; private set; } // Access is limited to the containing class or types derived from the containing class within the current assembly
         public double RTotal { get; private set; } = 0;
         public double UValue { get; private set; } = 0;
@@ -16,76 +28,61 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double Tsi_min { get; private set; } = 0;
         public double Tsi { get; private set; } = 0;
         public double Tse { get; private set; } = 0;
-        public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>();// Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
-        public double Ti { get; }
-        public double Te { get; }
-        public double Rsi { get; }
-        public double Rse { get; }
-        public double Rel_Fi { get; }
-        public double Rel_Fe { get; }
-
+        public List<KeyValuePair<double, double>> LayerTemps { get; private set; } // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
+       
         // (Instance-) Constructor
-        public StationaryTempCalc(Element element, Dictionary<string, double> userEnvVars)
+        public StationaryTempCalc(Element element)
         {
             if (element is null || element.Layers.Count == 0)
                 return;
 
-            if (userEnvVars is null)
-                return;
-
             // Assign constuctor parameter values
             Element = element;
-            Ti = userEnvVars["Ti"];
-            Te = userEnvVars["Te"];
-            Rsi = userEnvVars["Rsi"];
-            Rse = userEnvVars["Rse"];
-            Rel_Fi = userEnvVars["Rel_Fi"];
-            Rel_Fe = userEnvVars["Rel_Fe"];
 
             // Calculated parameters (private setter)
-            RTotal = GetRTotal();           // Gl. 2-55; S.28
-            UValue = GetUValue();           // Gl. 2-57; S.29
-            QValue = GetqValue();           // Gl. 2-65; S.31
-            LayerTemps = GetLayerTemps();   // Bsp. S.33
-            FRsi = GetfRsiValue();          // Gl. 3-1; S.36. Schimmelwahrscheinlichkeit
-            Tsi_min = GetTsiMin();          // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7. Schimmelwahrscheinlichkeit
+            RTotal = GetRTotal(Element.RValue, _rsi, _rse);                 // Gl. 2-55; S.28
+            UValue = GetUValue(RTotal);                                     // Gl. 2-57; S.29
+            QValue = GetqValue(UValue, _ti, _te);                           // Gl. 2-65; S.31
+            LayerTemps = GetLayerTemps(Element.Layers, _ti, _rsi, QValue);  // Bsp. S.33
             Tsi = LayerTemps.FirstOrDefault().Value;
             Tse = LayerTemps.LastOrDefault().Value;
+            FRsi = GetfRsiValue(Tsi, _ti, _te);                             // Gl. 3-1; S.36. Schimmelwahrscheinlichkeit
+            Tsi_min = GetTsiMin(_ti, _te);                                  // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7. Schimmelwahrscheinlichkeit
         }
 
-        // Methods
-        private double GetRTotal()
+        // public static, avoid full instance creation process if only a single Value needs to be Calculated 
+        public static double GetRTotal(double rValue, double rsi, double rse)
         {
-            return Math.Round(Rsi + Element.RValue + Rse, 2);
+            return Math.Round(rsi + rValue + rse, 2);
         }
 
-        private double GetUValue()
+        public static double GetUValue(double rTotal)
         {
-            return Math.Round(Math.Pow(RTotal, -1), 3);
+            return Math.Round(1 / rTotal, 2);
         }
 
-        private double GetqValue()
+        public static double GetqValue(double uValue, double ti, double te)
         {
-            return Math.Round(UValue * (Ti - Te), 3);
+            return Math.Round(uValue * (ti - te), 3);
         }
 
-        private List<KeyValuePair<double, double>> GetLayerTemps()
+        public static List<KeyValuePair<double, double>> GetLayerTemps(List<Layer> layers, double ti, double rsi, double qValue)
         {
             // Dictionaries are not ordered: Instead use List as ordered collection
             List<KeyValuePair<double, double>> temp_List = new List<KeyValuePair<double, double>>();
 
             // first tempValue (Tsi)
-            double tsi = Math.Round(Ti - Rsi * QValue, 2);
+            double tsi = Math.Round(ti - rsi * qValue, 2);
             temp_List.Add(new KeyValuePair<double, double>(0, tsi)); // key, value
 
             // Starting from inner side
             double widthPosition = 0; // cm
-            for (int i = 0; i < Element.Layers.Count; i++)
+            for (int i = 0; i < layers.Count; i++)
             {
-                if (!Element.Layers[i].IsEffective)
+                if (!layers[i].IsEffective)
                     break;
-                widthPosition += Element.Layers[i].LayerThickness;
-                double tempValue = Math.Round(temp_List.ElementAt(i).Value - Element.Layers[i].R_Value * QValue, 2);
+                widthPosition += layers[i].LayerThickness;
+                double tempValue = Math.Round(temp_List.ElementAt(i).Value - layers[i].R_Value * qValue, 2);
                 temp_List.Add(new KeyValuePair<double, double>(widthPosition, tempValue));
             }
             return temp_List;
@@ -95,17 +92,17 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return temp_List;
             else throw new ArgumentOutOfRangeException("calculation failed");*/
         }
-        private double GetfRsiValue()
+        public static double GetfRsiValue(double tsi, double ti, double te)
         {
             // Durch 0 teilen abfangen
-            if (Ti - Te == 0)
+            if (ti - te == 0)
                 return 0;
 
-            return Math.Round((LayerTemps.First().Value - Te) / (Ti - Te), 2);
+            return Math.Round((tsi - te) / (ti - te), 2);
         }
-        private double GetTsiMin()
+        public static double GetTsiMin(double ti, double te)
         {
-            return Math.Round(0.7*(Ti-Te)+Te, 2);
+            return Math.Round(0.7 * (ti - te) + te, 2);
         }
 
         /* Hardcoded example:

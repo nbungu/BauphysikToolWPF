@@ -15,31 +15,28 @@ namespace BauphysikToolWPF.ComponentCalculations
     public class CheckRequirements
     {
         // Always fetch current Project on calling this Class. No need for Notifier or Updater when Project changes
-        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId);
+        private Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId);
 
-        // Always fetch current Construction on calling this Class. No need for Notifier or Updater when Construction changes
-        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+        public Element Element { get; private set; }
+        public double U_max { get; set; }
+        public double R_min { get; set; }
+        public double Q_max { get; set; }
+        public bool IsUValueOK { get; set; } = false; // GEG Requirements
+        public bool IsRValueOK { get; set; } = false; // DIN 4108-2 Requirements
+        public bool IsQValueOK { get; set; } = false; // Not mandatory as requirement
 
-        public double U_max;
-
-        public double R_min;
-
-        public double Q_max;
-
-        public bool IsUValueOK = false; // GEG Requirements
-
-        public bool IsRValueOK = false; // DIN 4108-2 Requirements
-
-        public bool IsQValueOK = false; // Not mandatory as requirement
-
-        public CheckRequirements(double u_value, double r_value)
+        public CheckRequirements(Element element)
         {
-            this.U_max = GetUMax();
-            this.R_min = GetRMin();
-            this.Q_max = GetQMax();
-            this.IsUValueOK = (U_max == -1) ? true : u_value <= U_max;
-            this.IsRValueOK = (R_min == -1) ? true : r_value >= R_min;
-            this.IsQValueOK = (Q_max == -1) ? true : Math.Round(u_value * (UserSaved.Ti - UserSaved.Te), 2) <= Q_max;
+            if (element is null)
+                return;
+
+            Element = element;
+            U_max = GetUMax();
+            R_min = GetRMin();
+            Q_max = GetQMax();
+            IsUValueOK = (U_max == -1) ? true : Element.UValue <= U_max;
+            IsRValueOK = (R_min == -1) ? true : Element.RValue >= R_min;
+            IsQValueOK = (Q_max == -1) ? true : Math.Round(Element.UValue * (UserSaved.Ti - UserSaved.Te), 2) <= Q_max;
         }
        
         private double GetUMax()
@@ -49,25 +46,25 @@ namespace BauphysikToolWPF.ComponentCalculations
 
             // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
             // via m:n relation of Construction and Requirement.
-            List<Requirement> allRequirements = currentElement.Construction.Requirements;
+            List<Requirement> allRequirements = Element.Construction.Requirements;
 
             // catch constructions with no requirements (e.g. Innenwand)
             if (allRequirements is null || allRequirements.Count == 0)
                 return -1;
 
             // b) Select relevant Source based off Building Age and Usage
-            if (currentProject.IsNewConstruction)
+            if (_currentProject.IsNewConstruction)
             {
-                if (currentProject.IsResidentialUsage)
+                if (_currentProject.IsResidentialUsage)
                 {
                     requirementSourceId = (int)RequirementSourceType.GEG_Anlage1;
                 }
-                if (currentProject.IsNonResidentialUsage)
+                if (_currentProject.IsNonResidentialUsage)
                 {
                     requirementSourceId = (int)RequirementSourceType.GEG_Anlage2;
                 }
             }
-            if (currentProject.IsExistingConstruction)
+            if (_currentProject.IsExistingConstruction)
             {
                 requirementSourceId = (int)RequirementSourceType.GEG_Anlage7;
             }
@@ -98,7 +95,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
             // via m:n relation of Construction and Requirement.
-            List<Requirement> allRequirements = currentElement.Construction.Requirements;
+            List<Requirement> allRequirements = Element.Construction.Requirements;
 
             // catch constructions with no requirements
             if (allRequirements is null || allRequirements.Count == 0)
@@ -113,7 +110,7 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return -1;
 
             // Check if conditions have to be met
-            if (currentElement.AreaMassDens >= 100)
+            if (Element.AreaMassDens >= 100)
             {
                 return specificRequirement.ValueA;
             }

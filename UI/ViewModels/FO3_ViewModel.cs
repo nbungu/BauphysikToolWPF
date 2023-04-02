@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -17,7 +18,49 @@ namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class FO3_ViewModel : ObservableObject
     {
+        /*
+         * Regular Instance Variables as Properties
+         * 
+         * Not depending on UI changes. No Observable function.
+         */
+
         public string Title { get; } = "Moisture";
+        public GlaserCalc Glaser { get; set; } = FO3_Moisture.GlaserCalculation;
+        public double Ti { get; private set; } = UserSaved.Ti;
+        public double Te { get; private set; } = UserSaved.Te;
+        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi;
+        public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe;
+        public List<OverviewItem> OverviewItems
+        {
+            get
+            {
+                return new List<OverviewItem>
+                {
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = Glaser.Tsi, RequirementValue = Glaser.TaupunktMax_i, IsRequirementMet = Glaser.Tsi >= Glaser.TaupunktMax_i, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = Glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = Glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = Glaser.FRsi >= 0.7 },
+                    new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = UserSaved.Rel_Fi, RequirementValue = Glaser.PhiMax, IsRequirementMet = UserSaved.Rel_Fi < Glaser.PhiMax, Unit = "%" }
+                };
+            }
+        }
+        public ISeries[] DataPoints
+        {
+            get { return GetDataPoints(); }
+        }
+        public RectangularSection[] LayerSections
+        {
+            get { return DrawLayerSections(); }
+        }
+        public Axis[] XAxes
+        {
+            get { return DrawXAxes(); }
+        }
+        public Axis[] YAxes
+        {
+            get { return DrawYAxes(); }
+        }
+        public SolidColorPaint TooltipBackgroundPaint { get; set; } = new SolidColorPaint(new SKColor(255, 255, 255));
+        public SolidColorPaint TooltipTextPaint { get; set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -32,10 +75,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void EditElement(Element? selectedElement) // Binding in XAML via 'ElementChangeCommand'
+        private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
-            if (selectedElement is null)
-                selectedElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
             var window = new EditElementWindow(selectedElement);
@@ -44,8 +86,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            ElementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-            ElementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+            CurrentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
         }
 
         /*
@@ -55,61 +96,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string elementName = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Name;
-
-        [ObservableProperty]
-        private string elementType = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId).Construction.Type;
+        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         /*
-         * MVVM Capsulated Properties + Triggered by other Properties
-         * 
-         * Not Observable, because Triggered and Changed by the elementType Value above
+         * private Methods
          */
 
-        public List<OverviewItem> OverviewItems
-        {
-            get
-            {
-                List<OverviewItem> list = new List<OverviewItem>
-                {
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = Glaser.Tsi, RequirementValue = Glaser.TaupunktMax_i, IsRequirementMet = Glaser.Tsi >= Glaser.TaupunktMax_i, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = Glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = Glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = Glaser.FRsi >= 0.7 },
-                    new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = Glaser.Rel_Fi, RequirementValue = Glaser.PhiMax, IsRequirementMet = Glaser.Rel_Fi < Glaser.PhiMax, Unit = "%" }
-                };
-                return list;
-            }
-        }
-
-        // TODO: Rework as MVVM
-
-        public GlaserCalc Glaser { get; set; } = FO3_Moisture.GlaserCalculation;
-        public RectangularSection[] LayerSections { get; set; }
-        public ISeries[] DataPoints { get; set; }
-        public Axis[] XAxes { get; set; }
-        public Axis[] YAxes { get; set; }
-        public SolidColorPaint TooltipBackgroundPaint { get; set; }
-        public SolidColorPaint TooltipTextPaint { get; set; }
-
-        // Called by 'InitializeComponent()' from FO3_Moisture.cs due to Class-Binding in xaml via DataContext
-        public FO3_ViewModel()
-        {
-            // For Drawing the Chart
-            this.LayerSections = DrawLayerSections();
-            this.DataPoints = DrawGlaserCurvePoints();
-            this.XAxes = DrawXAxes();
-            this.YAxes = DrawYAxes();
-            this.TooltipBackgroundPaint = new SolidColorPaint(new SKColor(255, 255, 255));
-            this.TooltipTextPaint = new SolidColorPaint
-            {
-                Color = new SKColor(0, 0, 0),
-                SKTypeface = SKTypeface.FromFamilyName("SegoeUI"),
-            };
-        }
         private RectangularSection[] DrawLayerSections()
         {
             if (Glaser.Element.Layers.Count == 0)
-                return new RectangularSection[0];
+                return Array.Empty<RectangularSection>();
 
             RectangularSection[] rects = new RectangularSection[Glaser.Element.Layers.Count];
 
@@ -126,24 +122,17 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Xi = left,
                     Xj = right,
                     Fill = new SolidColorPaint(SKColor.Parse(layer.Material.ColorCode)),
-                    Stroke = new SolidColorPaint
-                    {
-                        Color = SKColors.Black,
-                        StrokeThickness = 1,
-                        //PathEffect = new DashEffect(new float[] { 6, 6 })
-                    },
+                    Stroke = new SolidColorPaint { Color = SKColors.Black, StrokeThickness = 1 },
                     ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
                 };
                 left = right; // Add new layer at left edge of previous layer
             }
             return rects;
         }
-        private ISeries[] DrawGlaserCurvePoints()
+        private ISeries[] GetDataPoints()
         {
             if (Glaser.Element.Layers.Count == 0)
-                return new ISeries[0];
-
-            ISeries[] series = new ISeries[2];
+                return Array.Empty<ISeries>();
 
             ObservablePoint[] p_Curve_Values = new ObservablePoint[Glaser.LayerP.Count()]; // represents the temperature points
             for (int i = 0; i < Glaser.LayerP.Count(); i++)
@@ -181,72 +170,39 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 6,
                 TooltipLabelFormatter = (chartPoint) => $"p_sat_i: {chartPoint.PrimaryValue} Pa",
             };
-
-            series[0] = p_Curve; 
-            series[1] = p_sat_Curve;
-
-            return series;
+            return new ISeries[] { p_Curve, p_sat_Curve };
         }
         private Axis[] DrawXAxes()
         {
-            Axis[] axes = new Axis[1];
-
-            axes[0] = new Axis
+            return new Axis[]
             {
-                Name = "Element sd thickness [m]",
-                NameTextSize = 14,
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                //Labels = new string[] { "Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5" },
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14,
-                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 }
+                new Axis
+                {
+                    Name = "Element sd thickness [m]",
+                    NameTextSize = 14,
+                    NamePaint = new SolidColorPaint(SKColors.Black),
+                    LabelsPaint = new SolidColorPaint(SKColors.Black),
+                    TextSize = 14,
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 },
+                    MaxLimit = Glaser.Element.SdThickness
+                }
             };
-            /*axes[1] = new Axis
-            {
-                Name = "Layer Nr.",
-                NameTextSize = 16,
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                Labels = new string[] { "1", "2", "3", "4" },
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14
-            };*/
-            return axes;
         }
         private Axis[] DrawYAxes()
         {
-            Axis[] axes = new Axis[1];
-
-            axes[0] = new Axis
+            return new Axis[]
             {
-                Name = "p, psat [Pa]",
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14,
-                NameTextSize = 14,
-                Position = LiveChartsCore.Measure.AxisPosition.Start,
-                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
+                new Axis
                 {
-                    StrokeThickness = 1,
-                    PathEffect = new DashEffect(new float[] { 3, 3 })
+                    Name = "p, psat [Pa]",
+                    NamePaint = new SolidColorPaint(SKColors.Black),
+                    LabelsPaint = new SolidColorPaint(SKColors.Black),
+                    TextSize = 14,
+                    NameTextSize = 14,
+                    Position = LiveChartsCore.Measure.AxisPosition.Start,
+                    SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1, PathEffect = new DashEffect(new float[] { 3, 3 }) }
                 }
             };
-            return axes;
-            /*
-            axes[1] = new Axis
-            {
-                Name = "test",
-                NamePaint = new SolidColorPaint(SKColors.Black),
-                LabelsPaint = new SolidColorPaint(SKColors.Black),
-                TextSize = 14,
-                NameTextSize = 16,
-                Position = LiveChartsCore.Measure.AxisPosition.End,
-                SeparatorsPaint = new SolidColorPaint(SKColors.LightGray)
-                {
-                    StrokeThickness = 1,
-                    PathEffect = new DashEffect(new float[] { 3, 3 })
-                },
-                ShowSeparatorLines = true
-            };*/
         }
     }
 }

@@ -9,7 +9,8 @@ namespace BauphysikToolWPF.UI
     public partial class FO1_SetupLayer : UserControl
     {
         // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call of this Class.
-        private int currentElementId { get; } = FO0_LandingPage.SelectedElementId;
+        
+        //
 
         // Class Variables - Belongs to the Class-Type itself and stay the same
         public static bool RecalculateTemp { get; set; } = true;
@@ -79,11 +80,12 @@ namespace BauphysikToolWPF.UI
             if (this.IsVisible)
                 return;
 
-            //TODO: Deselect every Layer to remove blue Border around Layer
+            Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            
+            if (currentElement.Layers.Count == 0)
+                return;
 
-            Element currentElement = DatabaseAccess.QueryElementById(currentElementId);
             currentElement.Image = SaveCanvas.SaveAsBLOB(layers_ItemsControl);
-
             // Update in Database
             DatabaseAccess.UpdateElement(currentElement);
         }
