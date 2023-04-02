@@ -104,6 +104,7 @@
             <GridViewColumn DisplayMemberBinding="{Binding Sd_Thickness}" Header="sd [m]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding AreaMassDensity}" Header="m' [kg/m²]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Material.CategoryName}" Header="Kategorie" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding IsEffective}" Header="Wirksam" Width="Auto"/>
         </GridView>
         
         <!-- Custom Layer ListViewItem appearance. Style of the Row Container -->
@@ -219,7 +220,7 @@
                         </MenuItem>
                         <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_DeleteLayer_B}"/>
+                                <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
                             </MenuItem.Icon>
                         </MenuItem>
                     </ContextMenu>

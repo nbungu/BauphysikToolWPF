@@ -159,7 +159,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Element? SelectedElement
         {
             // TODO: layersSorted: false -> viel schnellere reaktion
-            get { return (SelectedElementId != -1) ? DatabaseAccess.QueryElementById(SelectedElementId, layersSorted: true) : null; }
+            get { return (SelectedElementId != -1) ? DatabaseAccess.QueryElementById(SelectedElementId) : null; }
         }
         public bool ElementToolsAvailable
         {

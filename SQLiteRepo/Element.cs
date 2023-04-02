@@ -110,18 +110,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
         public double Thickness_m // d in m
         {
-            get
-            {
-                if (Layers == null)
-                    return 0;
-
-                double val = 0;
-                foreach (Layer layer in Layers)
-                {
-                    val += layer.LayerThickness;
-                }
-                return Math.Round(val/100, 4);
-            }
+            get { return Math.Round(Thickness_cm/100, 4); }
         }
 
         [Ignore]
@@ -135,8 +124,8 @@ namespace BauphysikToolWPF.SQLiteRepo
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    if (!layer.IsEffective) // cut after Air Layer -> Remaining Layer don't add to Sd_Thickness
-                        break;
+                    if (!layer.IsEffective)
+                        continue;
                     val += layer.Sd_Thickness;
                 }
                 return Math.Round(val, 2);
@@ -172,7 +161,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 foreach (Layer layer in Layers)
                 {
                     if (!layer.IsEffective) // cut after Air Layer -> Remaining Layer don't add to RValue
-                        break; 
+                        continue; 
                     val += layer.R_Value;
                 }
                 return Math.Round(val, 2);

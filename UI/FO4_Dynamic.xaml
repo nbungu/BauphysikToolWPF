@@ -95,9 +95,9 @@
                 <RowDefinition Height=".2*" />
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".4*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width=".4*"/>
+                <ColumnDefinition Width=".5*"/>
+                <ColumnDefinition Width="320"/>
+                <ColumnDefinition Width=".5*"/>
             </Grid.ColumnDefinitions>
 
             <ListBox ItemsSource="{Binding DynamicThermalValues_i}"
