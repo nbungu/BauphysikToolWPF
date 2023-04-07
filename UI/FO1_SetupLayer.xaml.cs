@@ -81,11 +81,7 @@ namespace BauphysikToolWPF.UI
                 return;
 
             Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
-            
-            if (currentElement.Layers.Count == 0)
-                return;
-
-            currentElement.Image = SaveCanvas.SaveAsBLOB(layers_ItemsControl);
+            currentElement.Image = (currentElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(layers_ItemsControl) : null;
             // Update in Database
             DatabaseAccess.UpdateElement(currentElement);
         }

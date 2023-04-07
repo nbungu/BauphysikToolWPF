@@ -96,7 +96,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 case ElementSortingType.Name:
                     return x.Name.CompareTo(y.Name);
                 case ElementSortingType.Type:
-                    return x.Construction.Type.CompareTo(y.Construction.Type);
+                    return x.Construction.TypeName.CompareTo(y.Construction.TypeName);
                 case ElementSortingType.RValue:
                     return x.RValue.CompareTo(y.RValue);
                 default:

@@ -52,6 +52,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             // Update XAML Binding Property by fetching from DB
             Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            // Set focus on Layer above
+            SelectedLayer = selectedLayer.LayerPosition == 0 ? 0 : selectedLayer.LayerPosition-1;
         }
 
         [RelayCommand]
@@ -68,6 +70,20 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Update XAML Binding Property by fetching from DB
             Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
         }
+
+        [RelayCommand]
+        private void DuplicateLayer(Layer? selectedLayer)
+        {
+            if (selectedLayer is null)
+                return;
+
+            selectedLayer.LayerPosition = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Count;
+            DatabaseAccess.CreateLayer(selectedLayer);
+
+            // Update XAML Binding Property by fetching from DB
+            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+        }
+
 
         [RelayCommand]
         private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
@@ -105,6 +121,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // Update XAML Binding Property by fetching from DB
             Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            // Keep focus on moved Layer
+            SelectedLayer = selectedLayer.LayerPosition;
         }
 
         [RelayCommand]
@@ -128,6 +146,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // Update XAML Binding Property by fetching from DB
             Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            // Keep focus on moved Layer
+            SelectedLayer = selectedLayer.LayerPosition;
         }
 
         /*
@@ -135,8 +155,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
-
-        //TODO layers und element zusammenfassen
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerRects))]

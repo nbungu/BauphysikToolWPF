@@ -27,6 +27,43 @@
         -->
         <controls:ItemSelectedToEnabledConverter x:Key="ItemSelectedToEnabledConverter"/>
 
+        <Style x:Key="viewBox_Style" TargetType="{x:Type Viewbox}">
+            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <RotateTransform Angle="0"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding CurrentElement.Construction.IsLayoutVertical}" Value="false">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <RotateTransform Angle="270"/>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="labelRotate_Style" TargetType="{x:Type Label}">
+            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <RotateTransform Angle="0"/>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding CurrentElement.Construction.IsLayoutVertical}" Value="false">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <RotateTransform Angle="90"/>
+                        </Setter.Value>
+                    </Setter>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <!-- Defines the type of UIElement used in the ItemsPanel-->
         <ItemsPanelTemplate x:Key="Canvas">
             <!--Takes the Width and Height from TemplatedParent-->
@@ -167,7 +204,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Label Content="{Binding CurrentElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded" Margin="8,0,0,0"/>
-                    <Label Content="{Binding CurrentElement.Construction.Type}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
+                    <Label Content="{Binding CurrentElement.Construction.TypeName}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="4,0,0,0"/>
                     <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -186,7 +223,7 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <StackPanel Orientation="Horizontal">
                 <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding AddLayerCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding EditLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerUpCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Up_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
@@ -218,6 +255,11 @@
                                 <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
                             </MenuItem.Icon>
                         </MenuItem>
+                        <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem.Icon>
+                                <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
                         <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
@@ -236,16 +278,15 @@
             </Grid.RowDefinitions>
             
             <!-- Elements inside of ViewBox are dynamically sizable-->
-            <Viewbox ClipToBounds="True" VerticalAlignment="Top">
+            <Viewbox ClipToBounds="True" VerticalAlignment="Top" Style="{StaticResource viewBox_Style}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="48"/>
                     </Grid.RowDefinitions>
-                    <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12"/>
-                    <Label Content="Vertikalschnitt" FontSize="12"/>
-                    <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12"/>
+                    <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource labelRotate_Style}"/>
+                    <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource labelRotate_Style}"/>
 
                     <!-- "Layers Canvas" -->
                     <ItemsControl x:Name="layers_ItemsControl"

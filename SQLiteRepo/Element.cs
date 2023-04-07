@@ -188,7 +188,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Methoden-----//
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return Name + " - " + Construction.Type + " (Id: " + ElementId + ")";
+            return Name + " - " + Construction.TypeName + " (Id: " + ElementId + ")";
         }
     }
 }

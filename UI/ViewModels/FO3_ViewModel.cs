@@ -184,7 +184,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                     LabelsPaint = new SolidColorPaint(SKColors.Black),
                     TextSize = 14,
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 },
-                    MaxLimit = Glaser.Element.SdThickness
                 }
             };
         }

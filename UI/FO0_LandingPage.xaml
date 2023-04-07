@@ -263,13 +263,9 @@
             </StackPanel>
             
             <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderBrush="{StaticResource PrimaryHighlightBrush}" BorderThickness="0">
-                <Grid Margin="16">
+                <Grid Margin="16">                   
+
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -278,27 +274,34 @@
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>
                     </Grid.ColumnDefinitions>
+                    
                     <!--Top-->
                     <Label Grid.Row="0" Grid.ColumnSpan="2" Content="{Binding SelectedElement.Name}" FontWeight="Bold" Foreground="{StaticResource PrimaryHighlightBrush}"/>
-                    <Image Grid.Row="1" Grid.ColumnSpan="2" SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" VerticalAlignment="Top" Margin="0,0,0,16"/>
+                    <Image Grid.Row="1" Grid.ColumnSpan="2" SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" VerticalAlignment="Top" Margin="16"/>
                     <!--Left-->
-                    <Label Grid.Row="2" Content="Typ:" HorizontalAlignment="Right"/>
-                    <Label Grid.Row="3" Content="Ausrichtung:" HorizontalAlignment="Right"/>
-                    <Label Grid.Row="4" Content="R-Wert:" HorizontalAlignment="Right"/>
-                    <Label Grid.Row="5" Content="U-Wert:" HorizontalAlignment="Right"/>
-                    <Label Grid.Row="6" Content="sd-Wert:" HorizontalAlignment="Right"/>
-                    <Label Grid.Row="7" Content="m':" HorizontalAlignment="Right"/>
+                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Vertical">
+                        <Label Content="Typ:" HorizontalAlignment="Right" FontWeight="Bold"/>
+                        <Label Content="Ausrichtung:" HorizontalAlignment="Right" FontWeight="Bold"/>
+                        <Label Content="R-Wert:" HorizontalAlignment="Right"/>
+                        <Label Content="U-Wert:" HorizontalAlignment="Right"/>
+                        <Label Content="sd-Wert:" HorizontalAlignment="Right"/>
+                        <Label Content="m':" HorizontalAlignment="Right"/>
+                    </StackPanel>
                     <!--Right-->
+                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
+                        <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>
+                        <Label Content="{Binding SelectedElement.Orientation.TypeName}" HorizontalAlignment="Left"/>
+                        <Label Content="{Binding SelectedElement.RValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                        <Label Content="{Binding SelectedElement.UValue}" ContentStringFormat='&#8203;{0} W/m²K' HorizontalAlignment="Left"/>
+                        <Label Content="{Binding SelectedElement.SdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
+                        <Label Content="{Binding SelectedElement.AreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
+                    </StackPanel>
+
                     <!--
                     Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.
                     Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string
                     -->
-                    <Label Grid.Row="2" Grid.Column="1" Content="{Binding SelectedElement.Construction.Type}" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="3" Grid.Column="1" Content="{Binding SelectedElement.Orientation.TypeName}" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="4" Grid.Column="1" Content="{Binding SelectedElement.RValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
-                    <Label Grid.Row="5" Grid.Column="1" Content="{Binding SelectedElement.UValue}" ContentStringFormat='&#8203;{0} W/m²K' HorizontalAlignment="Left"/>
-                    <Label Grid.Row="6" Grid.Column="1" Content="{Binding SelectedElement.SdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
-                    <Label Grid.Row="7" Grid.Column="1" Content="{Binding SelectedElement.AreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
+                    
                 </Grid>
             </Border>
 
