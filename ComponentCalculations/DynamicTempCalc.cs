@@ -50,7 +50,6 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double ArealHeatCapacity_i { get; private set; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
         public double ArealHeatCapacity_e { get; private set; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
         public double EffectiveThermalMass { get; private set; } // M [kg/m²]
-        public double UValue { get; private set; }
 
         public DynamicTempCalc(Element element)
         {
@@ -66,8 +65,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             _y_Element = new ThermalAdmittanceMatrix(_z_Element);
             DynamicRValue = GetDynamicRValue(_z_Element);
             DynamicUValue = GetDynamicUValue(DynamicRValue);
-            UValue = _rsi + Element.RValue + _rse;
-            DecrementFactor = GetDecrement(DynamicUValue, UValue);
+            DecrementFactor = GetDecrement(DynamicUValue);
             TAD = GetTAD(_z_Element);
             TAV = GetTAV(TAD);
             TimeShift = GetTimeShift(_y_Element);
@@ -110,7 +108,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             // t and timeshift in Seconds!!
             double totalHeatFlux = 0;
-            double q_static = qStatic; // TODO
+            double q_static = qStatic;
             double q_11 = -1 * _y_Element.Y11.Magnitude * amplitude_i * Math.Cos((t + TimeShift_i) * (2 * Math.PI) / PeriodDuration);
             double q_12 = -1 * _y_Element.Y12.Magnitude * amplitude_i * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
             double q_21 = _y_Element.Y12.Magnitude * amplitude_e * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
@@ -125,9 +123,11 @@ namespace BauphysikToolWPF.ComponentCalculations
             return totalHeatFlux;
         }
 
-        public ObservablePoint[] CreateDataPoints(FunctionType function, double meanTemp_e, double meanTemp_i, double amplitude_i, double amplitude_e, double qStatic, int iterations = PeriodDuration / IntervallSteps + 1, int startingTime = 0)
+        public ObservablePoint[] CreateDataPoints(FunctionType function, double meanTemp_e, double meanTemp_i, double amplitude_i, double amplitude_e, int iterations = PeriodDuration / IntervallSteps + 1, int startingTime = 0)
         {
             ObservablePoint[] dataPoints = new ObservablePoint[iterations];
+            double uValue = 1 / (_rsi + Element.RValue + _rse);
+            double qStatic = StationaryTempCalc.GetqValue(uValue, meanTemp_i, meanTemp_e);
 
             if (function == FunctionType.ExteriorSurfaceTemp) // θse(t)
             {
@@ -220,8 +220,9 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             return Math.Round(1/ dyn_rValue, 3);
         }
-        private double GetDecrement(double uDynValue, double uValue)
+        private double GetDecrement(double uDynValue)
         {
+            double uValue = 1/(_rsi + Element.RValue + _rse);
             return Math.Round(uDynValue * uValue, 3);
         }
         private double GetTAD(HeatTransferMatrix elementMatrix)

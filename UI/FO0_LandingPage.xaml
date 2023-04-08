@@ -89,8 +89,8 @@
                         <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                             <Grid Margin="8">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height=".2*"/>
-                                    <RowDefinition Height=".8*"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <Label Grid.Row="0" Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
                                 <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
@@ -166,7 +166,8 @@
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
-                <Label Grid.Row="1" Content="{Binding Name}" Margin="0,4,0,0"/>
+                <!--<Label Grid.Row="1" Content="{Binding Name}" Margin="0,4,0,0"/>-->
+                <TextBlock Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>
 
@@ -182,9 +183,9 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".2*" MinWidth="240" MaxWidth="320"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
             <ColumnDefinition Width=".6*" MinWidth="448"/>
-            <ColumnDefinition Width=".2*" MinWidth="240" MaxWidth="360"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="360"/>
         </Grid.ColumnDefinitions>
 
         <!-- Top -->
@@ -264,7 +265,6 @@
             
             <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderBrush="{StaticResource PrimaryHighlightBrush}" BorderThickness="0">
                 <Grid Margin="16">                   
-
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -276,23 +276,21 @@
                     </Grid.ColumnDefinitions>
                     
                     <!--Top-->
-                    <Label Grid.Row="0" Grid.ColumnSpan="2" Content="{Binding SelectedElement.Name}" FontWeight="Bold" Foreground="{StaticResource PrimaryHighlightBrush}"/>
-                    <Image Grid.Row="1" Grid.ColumnSpan="2" SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" VerticalAlignment="Top" Margin="16"/>
+                    <Label Grid.Row="0" Grid.ColumnSpan="2" Content="{Binding SelectedElement.Name}" FontWeight="Bold" FontSize="18" Foreground="{StaticResource PrimaryHighlightBrush}"/>
+                    <Image Grid.Row="1" Grid.ColumnSpan="2" SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" VerticalAlignment="Top" Margin="8"/>
                     <!--Left-->
                     <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Vertical">
-                        <Label Content="Typ:" HorizontalAlignment="Right" FontWeight="Bold"/>
-                        <Label Content="Ausrichtung:" HorizontalAlignment="Right" FontWeight="Bold"/>
-                        <Label Content="R-Wert:" HorizontalAlignment="Right"/>
-                        <Label Content="U-Wert:" HorizontalAlignment="Right"/>
-                        <Label Content="sd-Wert:" HorizontalAlignment="Right"/>
-                        <Label Content="m':" HorizontalAlignment="Right"/>
+                        <Label Content="Typ:" HorizontalAlignment="Left" FontWeight="Bold"/>
+                        <Label Content="Ausrichtung:" HorizontalAlignment="Left" FontWeight="Bold"/>
+                        <Label Content="R-Wert:" HorizontalAlignment="Left"/>
+                        <Label Content="sd-Wert:" HorizontalAlignment="Left"/>
+                        <Label Content="m':" HorizontalAlignment="Left"/>
                     </StackPanel>
                     <!--Right-->
                     <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
                         <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>
                         <Label Content="{Binding SelectedElement.Orientation.TypeName}" HorizontalAlignment="Left"/>
                         <Label Content="{Binding SelectedElement.RValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
-                        <Label Content="{Binding SelectedElement.UValue}" ContentStringFormat='&#8203;{0} W/m²K' HorizontalAlignment="Left"/>
                         <Label Content="{Binding SelectedElement.SdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
                         <Label Content="{Binding SelectedElement.AreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
                     </StackPanel>

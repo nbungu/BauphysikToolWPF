@@ -168,19 +168,6 @@ namespace BauphysikToolWPF.SQLiteRepo
             }
         }
 
-        [Ignore]
-        public double UValue // in W/m²K
-        {
-            get
-            {
-                if (RValue == 0)
-                    return 0;
-
-                double val = 1 / (UserSaved.Rsi + RValue + UserSaved.Rse);
-                return Math.Round(val, 2);
-            }
-        }
-
         //------Konstruktor-----//
 
         // has to be default parameterless constructor when used as DB

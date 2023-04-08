@@ -95,7 +95,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public CheckRequirements RequirementValues
         {
-            get { return new CheckRequirements(CurrentElement); }
+            get { return new CheckRequirements(CurrentElement, TempCalc.UValue, TempCalc.QValue); }
         }
 
         public List<OverviewItem> OverviewItems

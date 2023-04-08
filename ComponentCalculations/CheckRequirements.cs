@@ -18,25 +18,25 @@ namespace BauphysikToolWPF.ComponentCalculations
         private Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId);
 
         public Element Element { get; private set; }
-        public double U_max { get; set; }
-        public double R_min { get; set; }
-        public double Q_max { get; set; }
-        public bool IsUValueOK { get; set; } = false; // GEG Requirements
-        public bool IsRValueOK { get; set; } = false; // DIN 4108-2 Requirements
-        public bool IsQValueOK { get; set; } = false; // Not mandatory as requirement
+        public double U_max { get; private set; }
+        public double R_min { get; private set; }
+        public double Q_max { get; private set; }
+        public bool IsUValueOK { get; private set; } = false; // GEG Requirements
+        public bool IsRValueOK { get; private set; } = false; // DIN 4108-2 Requirements
+        public bool IsQValueOK { get; private set; } = false; // Not mandatory as requirement
 
-        public CheckRequirements(Element element)
+        public CheckRequirements(Element element, double uValue, double qValue)
         {
             if (element is null)
                 return;
 
-            Element = element;
+            Element = element;            
             U_max = GetUMax();
             R_min = GetRMin();
             Q_max = GetQMax();
-            IsUValueOK = (U_max == -1) ? true : Element.UValue <= U_max;
+            IsUValueOK = (U_max == -1) ? true : uValue <= U_max;
             IsRValueOK = (R_min == -1) ? true : Element.RValue >= R_min;
-            IsQValueOK = (Q_max == -1) ? true : Math.Round(Element.UValue * (UserSaved.Ti - UserSaved.Te), 2) <= Q_max;
+            IsQValueOK = (Q_max == -1) ? true : qValue <= Q_max;
         }
        
         private double GetUMax()

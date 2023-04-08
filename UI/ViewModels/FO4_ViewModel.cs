@@ -1,19 +1,17 @@
 ﻿using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using LiveChartsCore.Defaults;
-using LiveChartsCore.SkiaSharpView.Painting.Effects;
-using LiveChartsCore.SkiaSharpView.Painting;
-using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore;
+using LiveChartsCore.Defaults;
+using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -185,9 +183,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             LineSeries<ObservablePoint> surfaceTemp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Name = "Oberflächentemperatur",
-                // TODO add qStatic!
                 // TODO let user change Rsi, Rse
-                Values = _dynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.ExteriorSurfaceTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude, 0),
+                Values = _dynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.ExteriorSurfaceTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude),
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
@@ -201,7 +198,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             LineSeries<ObservablePoint> temp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Name = "Lufttemperatur",
-                Values = _dynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.ExteriorTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude, StationaryTempCalc.GetqValue(_dynamicTempCalc.UValue, Ti_Mean, Te_Mean)),
+                Values = _dynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.ExteriorTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude),
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 2, PathEffect = new DashEffect(new float[] { 3, 3 }) },
@@ -223,7 +220,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 Name = "Oberflächentemperatur",
                 // TODO add qStatic!
-                Values = _dynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.InteriorSurfaceTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude, 0),
+                Values = _dynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.InteriorSurfaceTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude),
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
@@ -237,7 +234,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             LineSeries<ObservablePoint> temp_i = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Name = "Lufttemperatur",
-                Values = _dynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.InteriorTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude, 0),
+                Values = _dynamicTempCalc.CreateDataPoints(DynamicTempCalc.FunctionType.InteriorTemp, Te_Mean, Ti_Mean, Ti_Amplitude, Te_Amplitude),
                 Fill = null,
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 2, PathEffect = new DashEffect(new float[] { 3, 3 }) },
