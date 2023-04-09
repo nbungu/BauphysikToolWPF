@@ -581,6 +581,8 @@
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -592,8 +594,59 @@
                         <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-                                <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Margin="4,4,16,4" FontWeight="Bold" FontSize="14"/>
+                                <Image Source="{TemplateBinding Tag}" Stretch="Uniform" MaxWidth="20" MaxHeight="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                                <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Margin="4,4,16,4" FontWeight="{TemplateBinding FontWeight}" FontSize="{TemplateBinding FontSize}"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--Custom Button03_B_Transparent: with icon, rounded corners, click effects, Transparent -->
+        <Style x:Key="ButtonStyle03_B_Transparent" TargetType="{x:Type Button}">
+            <!--Set default properties of the button-->
+            <Setter Property="Content" Value="Placeholder"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal">
+                                <!--Bind Image via DataContext Property in the Button Element-->
+                                <Image Source="{TemplateBinding Tag}" Stretch="Uniform" MaxWidth="20" MaxHeight="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                                <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Margin="4,4,16,4" FontWeight="{TemplateBinding FontWeight}" FontSize="{TemplateBinding FontSize}"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>
@@ -764,6 +817,41 @@
                             <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".2"/>
                         </Setter.Value>
                     </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ButtonStyle05_Tag" TargetType="{x:Type Button}">
+            <!--Set default properties of the button-->
+            <Setter Property="Content" Value="Tag Name"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal">
+                                <!--Bind Image via DataContext Property in the Button Element-->
+                                <Label Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                <Image Source="{StaticResource ButtonIcon_Exit_B}" Stretch="Uniform" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="10"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
                 </Trigger>
             </Style.Triggers>
         </Style>

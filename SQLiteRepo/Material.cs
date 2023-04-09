@@ -35,7 +35,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         //------Not part of the Database-----//
 
         [Ignore]
-        public Color Color
+        public Color Color // HEX ColorCode (e.g. #dddddd) to 'Color' Type
         {
             get
             {

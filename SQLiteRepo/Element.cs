@@ -5,6 +5,8 @@ using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 /* 
@@ -35,8 +37,9 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         [ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
         public int ProjectId { get; set; }
-
         public byte[]? Image { get; set; }
+        public string? ColorCode { get; set; }
+        public string? Tag { get; set; }
 
         //------Not part of the Database-----//
 
@@ -59,6 +62,34 @@ namespace BauphysikToolWPF.SQLiteRepo
         // m:n relationship with EnvVars
         [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all EnvVars linked to this 'Element')
         public List<EnvVars> EnvVars { get; set; }
+
+        [Ignore]
+        public Color Color // HEX 'ColorCode' Property to 'Color' Type
+        {
+            get
+            {
+                if (ColorCode is null)
+                    return Colors.Transparent;
+                return (Color)ColorConverter.ConvertFromString(ColorCode);
+            }
+        }
+
+        [Ignore]
+        public List<string> TagList // Converts string of Tags, separated by Comma, to a List of Tags
+        {
+            get
+            {
+                if (Tag is null)
+                    return new List<string>(0);
+                // Splits elements of a string into a List
+                return Tag.Split(',').ToList();
+            }
+            set
+            {
+                // Joins elements of a list into a single string with the words separated by commas   
+                Tag = string.Join(",", value);
+            }
+        }
 
         [Ignore]
         public bool IsSelectedElement // For UI Purposes
