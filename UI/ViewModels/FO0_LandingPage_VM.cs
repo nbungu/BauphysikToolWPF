@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string?> SortingListItems
         {
             // Has to match ElementSortingType enum values (+Order)
-            get { return _sortingListItems ??= new List<string?>() { "Änderungsdatum", "Name", "Typ", "Ausrichtung", "R-Wert", "sd-Wert" }; }
+            get { return _sortingListItems ??= new List<string?>() { "Änderungsdatum", "Name", "Typ", "Ausrichtung", "Farbe", "Gruppierung / Tags", "R-Wert", "sd-Wert" }; }
         }
 
         /*

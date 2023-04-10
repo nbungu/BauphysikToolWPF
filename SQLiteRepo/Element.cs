@@ -76,19 +76,17 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
 
         [Ignore]
-        public List<string> TagList // Converts string of Tags, separated by Comma, to a List of Tags
+        public List<string>? TagList // Converts string of Tags, separated by Comma, to a List of Tags
         {
             get
             {
-                if (Tag is null)
-                    return new List<string>(0);
                 // Splits elements of a string into a List
-                return Tag.Split(',').ToList();
+                return Tag?.Split(',').ToList();
             }
             set
             {
                 // Joins elements of a list into a single string with the words separated by commas   
-                Tag = string.Join(",", value);
+                Tag = (value == null) ? null : string.Join(",", value);
             }
         }
 

@@ -77,7 +77,7 @@
 
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
-        <Style x:Key="ButtonStyleGridPanel" TargetType="{x:Type Button}">
+        <Style x:Key="ButtonStyle_WrapPanel" TargetType="{x:Type Button}">
             <Setter Property="Content" Value="{Binding ElementId}"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryMediumBrush}"/>
@@ -89,21 +89,47 @@
                         <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
                             <Grid Margin="8">
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="24"/>
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
-                                <Label Grid.Row="0" Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="20">
+                                    <Ellipse x:Name="ellipse_icon" Fill="{Binding ColorCode}" Width="20" Height="20" Margin="0,0,4,0"/>
+                                    <Image x:Name="comment_icon" Source="{StaticResource ButtonIcon_Comment_Bold_B}" Margin="0,0,4,0"/>
+                                    <Image x:Name="tag_icon" Source="{StaticResource ButtonIcon_Tags_Bold_B}" Margin="0,0,4,0"/>
+                                </StackPanel>
+                                <Label Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
                                 <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
                             </Grid>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <!--You can bind to a property on a named element, but the named element must be in scope!
+                            Define these Triggers in Scope of ControlTemplate instead of 'Style' scope-->
+                            <DataTrigger Binding="{Binding TagList}" Value="{x:Null}">
+                                <Setter TargetName="tag_icon" Property="Visibility" Value="Hidden"/>
+                                <Setter TargetName="tag_icon" Property="Width" Value="0"/>
+                                <Setter TargetName="tag_icon" Property="Height" Value="0"/>
+                                <Setter TargetName="tag_icon" Property="Margin" Value="0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Comment}" Value="{x:Null}">
+                                <Setter TargetName="comment_icon" Property="Visibility" Value="Hidden"/>
+                                <Setter TargetName="comment_icon" Property="Width" Value="0"/>
+                                <Setter TargetName="comment_icon" Property="Height" Value="0"/>
+                                <Setter TargetName="tag_icon" Property="Margin" Value="0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ColorCode}" Value="{x:Null}">
+                                <Setter TargetName="ellipse_icon" Property="Visibility" Value="Hidden"/>
+                                <Setter TargetName="ellipse_icon" Property="Width" Value="0"/>
+                                <Setter TargetName="ellipse_icon" Property="Height" Value="0"/>
+                                <Setter TargetName="ellipse_icon" Property="Margin" Value="0"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            <!--Triggers for this Style w/o scope relevance (e.g. global Triggers for this Style)-->
             <Style.Triggers>
-                <!--
-                Converter checks if currentElementId equals selectedElementId,
-                where selectedElementId is MVVM ObservableProperty for Notification when Selected Element changes
-                -->
+                <!-- Converter checks if currentElementId equals selectedElementId,
+                where selectedElementId is MVVM ObservableProperty for Notification when Selected Element changes -->
                 <DataTrigger Value="True">
                     <DataTrigger.Binding>
                         <MultiBinding Converter="{StaticResource IsSelectedElementConverter}">
@@ -119,6 +145,9 @@
             </Style.Triggers>
         </Style>
 
+        <ItemsPanelTemplate x:Key="WrapPanel_Template">
+            <WrapPanel ItemWidth="144" ItemHeight="208" SnapsToDevicePixels="True"/>
+        </ItemsPanelTemplate>
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <DataTemplate x:Key="WrapPanelItem_DesignTemplate">
             <Grid Margin="8">
@@ -126,22 +155,18 @@
                     <RowDefinition Height="148"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <!--
-                'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
-                Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.
-                -->
+                <!--'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
+                Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
                 <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                         Content="{Binding ElementId}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding ElementId}"
-                        Style="{StaticResource ButtonStyleGridPanel}"
+                        Style="{StaticResource ButtonStyle_WrapPanel}"
                         MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>
-                        <!--
-                        ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
+                        <!--ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
                         You need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
-                        The Tag Property can be used to hold any kind of user specified Data.
-                        -->
+                        The Tag Property can be used to hold any kind of user specified Data.-->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">
                             <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
@@ -166,14 +191,19 @@
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
-                <Ellipse Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Top" Fill="Red" Width="24" Height="24" Margin="-6,-6,0,0" Visibility="Hidden"/>
                 <TextBlock Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>
 
-        <ItemsPanelTemplate x:Key="WrapPanel_Template">
-            <WrapPanel x:Name="element_WrapPanel" ItemWidth="144" ItemHeight="208" ClipToBounds="True"/>
+        <ItemsPanelTemplate x:Key="Tags_WrapPanel_Template">
+            <WrapPanel ItemWidth="Auto" ItemHeight="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
+        <!--Here: Binding (DataContext) is typeof 'TagList' set by ItemsSource Property-->
+        <DataTemplate x:Key="Tags_WrapPanelItem_DesignTemplate">
+            <Grid Margin="4">
+                <Button Content="{Binding}" Style="{StaticResource ButtonStyle05_Tag_B}"/>
+            </Grid>
+        </DataTemplate>
 
     </UserControl.Resources>
 
@@ -224,8 +254,7 @@
                 <Label Content="Sortieren nach" Margin="0,0,8,0"/>
                 <ComboBox Background="Transparent" ItemsSource="{Binding SortingListItems}" SelectedIndex="{Binding SelectedSortingIndex}" Margin="0,0,8,0"/>
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle_Sorting}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,8,8"/>
-                <Button Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Bookmark_B}" Margin="0,8,0,8"/>
+                <Button Style="{StaticResource ButtonStyle_Sorting}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,4,8"/>
             </StackPanel>
             <!-- Switch between ListView and Panels, Button Row 
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
@@ -235,16 +264,15 @@
             </StackPanel>-->
 
             <!--"WrapPanel inside a ListBox does pick up the DataTemplate you define .. so you have complete liberty to bind any list to your WrapPanel"-->
-            <ItemsControl x:Name="element_ItemsControl"
-                          Grid.Row="2"
-                          Grid.Column="1"
+            <ScrollViewer x:Name="WrapPanel_ScrollViewer" Grid.Row="2" Grid.Column="1" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <ItemsControl Width="{Binding ElementName=WrapPanel_ScrollViewer, Path=ActualWidth}"
                           ItemsSource="{Binding Elements}"
                           ItemsPanel="{StaticResource WrapPanel_Template}"
                           ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
                           Background="Transparent"                          
                           BorderThickness="0"
-                          Tag="{Binding}"
-                          Margin="0,16,0,0"/>
+                          Tag="{Binding}"/>
+            </ScrollViewer>
         </Grid>
         
         <!-- Right -->
@@ -263,45 +291,50 @@
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Export_B}" ToolTip="Exportieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
-            
-            <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderBrush="{StaticResource PrimaryHighlightBrush}" BorderThickness="0">
-                <Grid Margin="16">                   
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    
-                    <!--Top-->
-                    <Label Grid.Row="0" Grid.ColumnSpan="2" Content="{Binding SelectedElement.Name}" FontWeight="Bold" FontSize="18" Foreground="{StaticResource PrimaryHighlightBrush}"/>
-                    <Image Grid.Row="1" Grid.ColumnSpan="2" SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" VerticalAlignment="Top" Margin="8"/>
-                    <!--Left-->
-                    <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Vertical">
-                        <Label Content="Typ:" HorizontalAlignment="Left" FontWeight="Bold"/>
-                        <Label Content="Ausrichtung:" HorizontalAlignment="Left" FontWeight="Bold"/>
-                        <Label Content="R-Wert:" HorizontalAlignment="Left"/>
-                        <Label Content="sd-Wert:" HorizontalAlignment="Left"/>
-                        <Label Content="m':" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <!--Right-->
-                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Vertical">
+
+            <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderBrush="{Binding SelectedElement.ColorCode}" BorderThickness="2">
+                <StackPanel Margin="16">
+                    <Label Content="{Binding SelectedElement.Name}" FontWeight="Bold" FontSize="18"/>
+                    <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" Margin="0,16,0,16"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Typ:" HorizontalAlignment="Left" Width="96"/>
                         <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>
                         <Label Content="{Binding SelectedElement.Orientation.TypeName}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96"/>
                         <Label Content="{Binding SelectedElement.RValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="sd-Wert:" HorizontalAlignment="Left" Width="96"/>
                         <Label Content="{Binding SelectedElement.SdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="m':" HorizontalAlignment="Left" Width="96"/>
                         <Label Content="{Binding SelectedElement.AreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
                     </StackPanel>
-
-                    <!--
-                    Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.
-                    Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string
-                    -->
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Image Source="{StaticResource ButtonIcon_Tags_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
+                        <Label Content="Tags:" HorizontalAlignment="Left"/>
+                    </StackPanel>
                     
-                </Grid>
+                    <ItemsControl ItemsSource="{Binding SelectedElement.TagList}"
+                        ItemsPanel="{StaticResource Tags_WrapPanel_Template}"
+                        ItemTemplate="{StaticResource Tags_WrapPanelItem_DesignTemplate}"
+                        Background="Transparent"                          
+                        BorderThickness="0"
+                        Margin="0,8,0,8"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource ButtonIcon_Comment_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
+                        <Label Content="Kommentar:" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <TextBlock TextAlignment="Left" Text="{Binding SelectedElement.Comment}" Background="Transparent" TextWrapping="Wrap" FontSize="14" FontFamily="Consolas" Margin="0,8,0,8"/>
+                </StackPanel>
+                <!--Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.
+                Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string-->
             </Border>
 
             <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Bottom">

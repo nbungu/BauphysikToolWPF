@@ -93,6 +93,8 @@
         <BitmapImage x:Key="ButtonIcon_Tags_B" UriSource="/Resources/Icons/tags.png"/>
         <BitmapImage x:Key="ButtonIcon_Comment_B" UriSource="/Resources/Icons/comment.png"/>
         <BitmapImage x:Key="ButtonIcon_Bookmark_B" UriSource="/Resources/Icons/bookmark.png"/>
+        <BitmapImage x:Key="ButtonIcon_Tags_Bold_B" UriSource="/Resources/Icons/tags_bold.png"/>
+        <BitmapImage x:Key="ButtonIcon_Comment_Bold_B" UriSource="/Resources/Icons/comment_bold.png"/>
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
         
 
@@ -543,7 +545,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                        <Border CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Image x:Name="ButtonIcon" Source="{TemplateBinding Tag}" Stretch="Fill" Width="20" Height="20" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="10"/>
@@ -594,7 +596,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                        <Border CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Image Source="{TemplateBinding Tag}" Stretch="Uniform" MaxWidth="20" MaxHeight="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
@@ -645,7 +647,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                        <Border CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Image Source="{TemplateBinding Tag}" Stretch="Uniform" MaxWidth="20" MaxHeight="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
@@ -693,7 +695,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                        <Border CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="20" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
@@ -744,7 +746,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
+                        <Border CornerRadius="8" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
@@ -785,7 +787,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1">
+                        <Border CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                     </ControlTemplate>
@@ -838,7 +840,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}">
+                        <Border CornerRadius="16" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Label Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
@@ -853,6 +855,36 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        
+        <Style x:Key="ButtonStyle05_Tag_B" TargetType="{x:Type Button}">
+            <!--Set default properties of the button-->
+            <Setter Property="Content" Value="Tag Name"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border CornerRadius="16" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" Margin="4,0,4,0"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Opacity" Value="0.5"/>
                 </Trigger>

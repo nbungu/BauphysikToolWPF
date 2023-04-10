@@ -30,16 +30,18 @@
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
             <Setter Property="Background" Value="Red"/>
+            <Setter Property="Tag" Value="{x:Null}"/> <!--Use 'Tag' as Icon Source-->
             <Setter Property="Height" Value="32"/>
             <Setter Property="Width" Value="32"/>
             <!--Set appearance of the element-->
             <Setter Property="Template">
                 <Setter.Value>
+                    <!--Element appearance with behaviour of a 'RadioButton'-->
                     <ControlTemplate TargetType="{x:Type RadioButton}">
-                        <!--Element appearance with behaviour of a 'RadioButton'-->
                         <Grid>
                             <Border Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" CornerRadius="16" Background="Transparent" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <Ellipse Width="24" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" Fill="{TemplateBinding Background}"/>
+                            <Image Source="{TemplateBinding Tag}" Width="24" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                         </Grid>
                     </ControlTemplate>
                 </Setter.Value>
@@ -65,7 +67,7 @@
         </Style>
 
         <ItemsPanelTemplate x:Key="WrapPanel_Template">
-            <WrapPanel x:Name="element_WrapPanel" ItemWidth="Auto" ItemHeight="Auto" ClipToBounds="True"/>
+            <WrapPanel ItemWidth="Auto" ItemHeight="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
 
         <!--Here: Binding (DataContext) is typeof 'Tag_List' set by ItemsSource Property-->
@@ -112,13 +114,13 @@
                     <RowDefinition Height=".5*"/>
                 </Grid.RowDefinitions>
                 <RadioButton GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Black" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Gray" Margin="4"/>
-                <RadioButton Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Red" Margin="4"/>
-                <RadioButton Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Green" Margin="4"/>
-                <RadioButton Grid.Row="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Blue" Margin="4"/>
-                <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Yellow" Margin="4"/>
-                <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Brown" Margin="4"/>
-                <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Turquoise" Margin="4"/>
+                <RadioButton Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Gray" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Red" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Green" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Blue" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Yellow" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Brown" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Transparent" Tag="{StaticResource ButtonIcon_Cancel_B}" Margin="4" Command="{Binding ChangeColorCommand}"/>
             </Grid>
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
@@ -128,11 +130,10 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.ColumnSpan="2" Visibility="{Binding TagBtnVisible}" Style="{StaticResource ButtonStyle03_B_Transparent}" Tag="{StaticResource ButtonIcon_Add_B}" Content="Neues Tag hinzufügen" Command="{Binding ToggleInputCommand}" Height="32" FontWeight="Regular"/>
+                <Button Grid.ColumnSpan="2" Visibility="{Binding TagBtnVisible}" Style="{StaticResource ButtonStyle03_B_Transparent}" Tag="{StaticResource ButtonIcon_Add_B}" Content="Neues Tag hinzufügen" Command="{Binding ToggleTagInputCommand}" Height="32" FontWeight="Regular"/>
                 <TextBox x:Name="TagInputField" Visibility="{Binding TextBoxVisible}" HorizontalContentAlignment="Left" MaxLength="48" Height="32"/>
                 <Button Visibility="{Binding EnterBtnVisible}" Grid.Column="1" Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Add_B}" Command="{Binding EnterTagCommand}" CommandParameter="{Binding Text, ElementName=TagInputField}" Height="32" Width="32" Margin="8,0,0,0"/>
             </Grid>
-            <!--"WrapPanel inside a ListBox does pick up the DataTemplate you define .. so you have complete liberty to bind any list to your WrapPanel"-->
             <ItemsControl ItemsSource="{Binding Tag_List}"
                           ItemsPanel="{StaticResource WrapPanel_Template}"
                           ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
@@ -142,7 +143,7 @@
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Kommentar" HorizontalAlignment="Left"/>
-            <TextBox TextAlignment="Left" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="12"  FontFamily="Consolas" MaxLength="400"/>
+            <TextBox TextAlignment="Left" Text="{Binding SelectedElementComment}" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="400"/>
         </StackPanel>
         <Button Margin="0,8,0,0" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=Window}" Style="{StaticResource ButtonStyle02_A}"/>
     </StackPanel>

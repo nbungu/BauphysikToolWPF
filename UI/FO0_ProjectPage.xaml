@@ -15,25 +15,8 @@
 
     <UserControl.Resources>
         
-        <!--Custom RadioButton01_A: ToggleButton with behaviour like RadioButton: Exclusive Group, Checkstates etc.-->
+        <!--Custom RadioButton01_A: Exclusive Group, Checkstates etc.-->
         <Style x:Key="RadioButton01_A" TargetType="{x:Type RadioButton}">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <!--Use ToggleButton as UI Element and redirect every propery needed from Parent Element (RadioButton) to the ToggleButton -->
-                        <ToggleButton Style="{DynamicResource ToggleButton01_A}"
-                                      IsChecked="{Binding IsChecked, RelativeSource={RelativeSource TemplatedParent}}"
-                                      Content="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
-                                      Command="{Binding Command, RelativeSource={RelativeSource TemplatedParent}}"
-                                      CommandParameter="{Binding CommandParameter, RelativeSource={RelativeSource TemplatedParent}}"
-                                      Tag="{Binding Tag, RelativeSource={RelativeSource TemplatedParent}}"/>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--Custom ToggleButton01_A: with icon center top, rounded corners, transparent, click effects-->
-        <Style x:Key="ToggleButton01_A" TargetType="{x:Type ToggleButton}">
             <!--Set default properties of the button-->
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
@@ -43,9 +26,9 @@
             <!--Set appearance of the element-->
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="4">
+                    <ControlTemplate TargetType="{x:Type RadioButton}">
+                        <!--Element appearance with behaviour of a 'RadioButton'-->
+                        <Border CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="4">
                             <StackPanel Orientation="Vertical">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16"/>
@@ -66,7 +49,6 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-
     </UserControl.Resources>
 
     <Grid Background="{StaticResource PrimaryLightBrush}">

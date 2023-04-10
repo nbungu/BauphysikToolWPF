@@ -43,7 +43,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void ToggleInput()
+        private void ToggleTagInput()
         {
             if(TagBtnVisible == Visibility.Hidden)
             {
@@ -63,8 +63,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (newTag == string.Empty || newTag is null)
                 return;
+            // When null, create one first
+            Tag_List ??= new List<string>();
             Tag_List = Tag_List.Append(newTag).ToList();
-            ToggleInput();
+            ToggleTagInput();
         }
 
         [RelayCommand]
@@ -75,14 +77,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             // create a copy to update Tag_List, since .Remove is void Method
             var list = Tag_List;
             list.Remove(tag);
-            Tag_List = list.ToList();
+            Tag_List = (list.Count == 0) ? null : list.ToList();
         }
 
         [RelayCommand]
         private void ChangeColor(SolidColorBrush color)
         {
-            string colorCode = color.Color.ToString();
-            //TODO
+            string? colorCode = color?.Color.ToString();
+            SelectedElementColor = colorCode;
         }
 
 
@@ -111,7 +113,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                     OrientationId = orientationId,
                     ProjectId = FO0_ProjectPage.ProjectId,
                     TagList = Tag_List,
-                    Comment = SelectedElementComment
+                    Comment = (SelectedElementComment == string.Empty) ? null : SelectedElementComment,
+                    ColorCode = SelectedElementColor
                 };
                 // Update in Database
                 DatabaseAccess.CreateElement(newElem);
@@ -131,7 +134,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 EditElementWindow.SelectedElement.OrientationId = orientationId;
                 EditElementWindow.SelectedElement.ProjectId = FO0_ProjectPage.ProjectId;
                 EditElementWindow.SelectedElement.TagList = Tag_List;
-                EditElementWindow.SelectedElement.Comment = SelectedElementComment;
+                EditElementWindow.SelectedElement.Comment = (SelectedElementComment == string.Empty) ? null : SelectedElementComment;
+                EditElementWindow.SelectedElement.ColorCode = SelectedElementColor;
 
                 // Update in Database
                 DatabaseAccess.UpdateElement(EditElementWindow.SelectedElement);
@@ -161,7 +165,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private List<string>? tag_List = EditElementWindow.SelectedElement?.TagList;
         [ObservableProperty]
-        private string selectedElementComment = EditElementWindow.SelectedElement?.Comment ?? "";
+        private string? selectedElementComment = EditElementWindow.SelectedElement?.Comment;
+        [ObservableProperty]
+        private string? selectedElementColor = EditElementWindow.SelectedElement?.ColorCode;
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
