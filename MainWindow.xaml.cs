@@ -18,7 +18,8 @@ namespace BauphysikToolWPF
         SetupLayer,
         SetupEnv,
         TemperatureCurve,
-        GlaserCurve
+        GlaserCurve,
+        DynamicHeatCalc
     }
     public partial class MainWindow : Window
     {
@@ -67,6 +68,9 @@ namespace BauphysikToolWPF
                     break;
                 case NavigationContent.GlaserCurve:
                     navigationMenuListBox.SelectedItem = "Moisture";
+                    break;
+                case NavigationContent.DynamicHeatCalc:
+                    navigationMenuListBox.SelectedItem = "Dynamic";
                     break;
                 default:
                     navigationMenuListBox.SelectedItem = "LandingPage";

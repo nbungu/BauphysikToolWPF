@@ -9,7 +9,12 @@
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1200" Background="{StaticResource PrimaryLightBrush}" WindowStartupLocation="CenterScreen">
+        Title="MainWindow"
+        Height="700"
+        Width="1200"
+        Background="{StaticResource PrimaryLightBrush}"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResizeWithGrip">
 
     <Window.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->

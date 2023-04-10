@@ -80,39 +80,40 @@
         <DataTemplate x:Key="LayerItemStyle">
             <Grid Width="{Binding RectWidth}" Height="{Binding RectHeight}" Background="{Binding RectFill}" Opacity="{Binding RectOpacity}">
                 <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}"/>
-                <Ellipse Fill="White" Width="20" Height="20" Stroke="Black" StrokeThickness="1"/>
-                <Label Content="{Binding RectPosition}" Height="32"/>
+                <Ellipse Fill="White" Width="20" Height="20" Stroke="Black" StrokeThickness="1" HorizontalAlignment="Center" Margin="-8"/>
+                <Label Content="{Binding RectPosition}" Margin="-8"/>
             </Grid>
         </DataTemplate>
 
         <!-- Content and Styling of a Canvas Item (Measurement Marker Line) -->
         <DataTemplate x:Key="MeasurementItemStyle">
             <!-- DataContext is LayerRects from ItemSource-->
-            <Grid Width="{Binding RectWidth}" Height="48">
+            <Grid Width="{Binding RectWidth}" Height="56">
                 <!-- X1="0.5" X2="0.5" Adds 0.5 Offset to the Left, to avoid clipping of first marker line-->
                 <Line x:Name="MarkerLine" Y2="12" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                <Label Content="{Binding RectWidth_cm}" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+                <Label Content="{Binding RectWidth_cm}" Margin="-16,-40,-16,0"/>
             </Grid>
         </DataTemplate>
 
         <Style x:Key="MeasurementCanvasStyle" TargetType="{x:Type ItemsControl}">
+            <Setter Property="Height" Value="56"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ItemsControl}">
                         <Grid>
                             <!-- Adds a static UIElement to the ItemsSource-->
                             <!-- DataContext is FO1_Layer_VM-->
-                            <Label Content="{Binding ElementWidth}" VerticalAlignment="Bottom" Margin="0,0,0,-8"/>
+                            <Label Content="{Binding ElementWidth}" Margin="-16,0,-16,-40"/>
+                            <Line x:Name="staticStartLine" Y2="12" X1="0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
                             <Line x:Name="staticBaseLine" X1="0" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                            <Line x:Name="staticEndLine" Y2="12" X1="{TemplateBinding Width}" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
+                            <Line x:Name="staticEndLine" Y2="12" X1="{TemplateBinding Width}" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,-8,0"/>
                             <!-- ItemsPresenter is where the (dynamic) Content of the Canvas Items are shown (from ItemsSource) -->
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                        </Grid>                        
+                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
-
         <!--
         https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
         https://github.com/mochan-b/GridViewCellFormatting
@@ -191,8 +192,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".6*"/>
-            <ColumnDefinition Width=".4*"/>
+            <ColumnDefinition MinWidth="160" Width=".6*"/>
+            <ColumnDefinition MinWidth="160" Width=".4*"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
@@ -246,11 +247,9 @@
                 <!--TODO Add Style-->
                 <ListView.ContextMenu>
                     <ContextMenu>
-                        <!--
-                        ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
-                        You need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
-                        The Tag Property can be used to hold any kind of user specified Data.
-                        -->
+                        <!-- ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
+                        Need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
+                        The Tag Property can be used to hold any kind of user specified Data.-->
                         <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                             <MenuItem.Icon>
                                 <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
@@ -280,11 +279,12 @@
             
             <!-- Elements inside of ViewBox are dynamically sizable-->
             <Viewbox ClipToBounds="True" VerticalAlignment="Top" Style="{StaticResource viewBox_Style}">
-                <Grid>
+                <!--Keep this Margin to avoid clipping of LayerPosition sircles and width measurement numbers!-->
+                <Grid Margin="8">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="40"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="48"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource labelRotate_Style}"/>
                     <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource labelRotate_Style}"/>
@@ -293,7 +293,7 @@
                     <ItemsControl x:Name="layers_ItemsControl"
                                   Grid.Row="1"
                                   Width="320"
-                                  Height="400"                                 
+                                  Height="400"                                  
                                   ItemsSource="{Binding LayerRects}"
                                   ItemsPanel="{StaticResource Canvas}"
                                   ItemContainerStyle="{StaticResource CanvasContainerStyle}"
@@ -307,7 +307,8 @@
                                   ItemsSource="{Binding LayerRects}"
                                   ItemsPanel="{StaticResource Canvas}"
                                   ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                                  ItemTemplate="{StaticResource MeasurementItemStyle}"/>
+                                  ItemTemplate="{StaticResource MeasurementItemStyle}"
+                                  Margin="0,16,0,0"/>
                 </Grid>
             </Viewbox>
 

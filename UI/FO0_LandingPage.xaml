@@ -94,8 +94,8 @@
                                 </Grid.RowDefinitions>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="20">
                                     <Ellipse x:Name="ellipse_icon" Fill="{Binding ColorCode}" Width="20" Height="20" Margin="0,0,4,0"/>
-                                    <Image x:Name="comment_icon" Source="{StaticResource ButtonIcon_Comment_Bold_B}" Margin="0,0,4,0"/>
-                                    <Image x:Name="tag_icon" Source="{StaticResource ButtonIcon_Tags_Bold_B}" Margin="0,0,4,0"/>
+                                    <Image x:Name="comment_icon" Source="{StaticResource ButtonIcon_Comment_B}" Margin="0,0,4,0"/>
+                                    <Image x:Name="tag_icon" Source="{StaticResource ButtonIcon_Tags_B}" Margin="0,0,4,0"/>
                                 </StackPanel>
                                 <Label Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
                                 <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
@@ -165,7 +165,7 @@
                         MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>
                         <!--ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
-                        You need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
+                        Need to pass the DataContext in a different way: e.g. using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
                         The Tag Property can be used to hold any kind of user specified Data.-->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">
                             <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
@@ -215,7 +215,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
             <ColumnDefinition Width=".6*" MinWidth="448"/>
-            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="360"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="400"/>
         </Grid.ColumnDefinitions>
 
         <!-- Top -->
@@ -292,9 +292,12 @@
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
 
-            <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderBrush="{Binding SelectedElement.ColorCode}" BorderThickness="2">
+            <Border x:Name="test" Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderThickness="0">
                 <StackPanel Margin="16">
-                    <Label Content="{Binding SelectedElement.Name}" FontWeight="Bold" FontSize="18"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
+                        <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20"/>
+                    </StackPanel>
                     <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" Margin="0,16,0,16"/>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Typ:" HorizontalAlignment="Left" Width="96"/>
@@ -320,7 +323,6 @@
                         <Image Source="{StaticResource ButtonIcon_Tags_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
                         <Label Content="Tags:" HorizontalAlignment="Left"/>
                     </StackPanel>
-                    
                     <ItemsControl ItemsSource="{Binding SelectedElement.TagList}"
                         ItemsPanel="{StaticResource Tags_WrapPanel_Template}"
                         ItemTemplate="{StaticResource Tags_WrapPanelItem_DesignTemplate}"
@@ -336,14 +338,10 @@
                 <!--Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.
                 Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string-->
             </Border>
-
             <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Bottom">
                 <Button Content="Schichtaufbau" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Layer_W}" IsEnabled="{Binding ElementToolsAvailable}" />
             </StackPanel>
         </Grid>
-        
-        
-        
-        
+        <GridSplitter Grid.Column="2" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
     </Grid>
 </UserControl>

@@ -15,6 +15,29 @@
         </Interaction.Triggers>
     </Button>
 
+    <!-- Blinking Ellipse-->
+    <Ellipse Fill="Red" Width="20" Height="20" Margin="0,0,8,0">
+        <Ellipse.Triggers>
+            <EventTrigger RoutedEvent="Ellipse.Loaded">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                      Duration="0:0:2"
+                                                      FillBehavior="HoldEnd"
+                                                      RepeatBehavior="Forever">
+                                <ColorAnimationUsingKeyFrames.KeyFrames>
+                                    <DiscreteColorKeyFrame KeyTime="0:0:0" Value="Red"/>
+                                    <DiscreteColorKeyFrame KeyTime="0:0:1" Value="Blue"/>
+                                </ColorAnimationUsingKeyFrames.KeyFrames>
+                            </ColorAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+        </Ellipse.Triggers>
+    </Ellipse>
+
     <!-- TEST Custom ComboBox Style: ... -->
     <Style x:Key="ComboBoxStyle_TEST" TargetType="{x:Type ComboBox}">
         <Setter Property="SnapsToDevicePixels" Value="true" />
