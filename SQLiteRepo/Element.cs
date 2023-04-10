@@ -40,6 +40,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public byte[]? Image { get; set; }
         public string? ColorCode { get; set; }
         public string? Tag { get; set; }
+        public string? Comment { get; set; }
 
         //------Not part of the Database-----//
 

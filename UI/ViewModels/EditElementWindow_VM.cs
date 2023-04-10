@@ -4,9 +4,11 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -77,6 +79,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
+        private void ChangeColor(SolidColorBrush color)
+        {
+            string colorCode = color.Color.ToString();
+            //TODO
+        }
+
+
+        [RelayCommand]
         private void ApplyChanges(Window window)
         {
             // To be able to Close EditElementWindow from within this ViewModel
@@ -100,7 +110,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                     ConstructionId = constrId,
                     OrientationId = orientationId,
                     ProjectId = FO0_ProjectPage.ProjectId,
-                    TagList = Tag_List
+                    TagList = Tag_List,
+                    Comment = SelectedElementComment
                 };
                 // Update in Database
                 DatabaseAccess.CreateElement(newElem);
@@ -120,6 +131,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 EditElementWindow.SelectedElement.OrientationId = orientationId;
                 EditElementWindow.SelectedElement.ProjectId = FO0_ProjectPage.ProjectId;
                 EditElementWindow.SelectedElement.TagList = Tag_List;
+                EditElementWindow.SelectedElement.Comment = SelectedElementComment;
 
                 // Update in Database
                 DatabaseAccess.UpdateElement(EditElementWindow.SelectedElement);
@@ -136,22 +148,20 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private string selectedElementName = EditElementWindow.SelectedElement?.Name ?? "";
-
         [ObservableProperty]
         private string selectedConstruction = EditElementWindow.SelectedElement?.Construction.TypeName ?? "";
-
         [ObservableProperty]
         private string selectedOrientation = EditElementWindow.SelectedElement?.Orientation.TypeName ?? "";
-
         [ObservableProperty]
         private Visibility tagBtnVisible = Visibility.Visible;
         [ObservableProperty]
         private Visibility textBoxVisible = Visibility.Hidden;
         [ObservableProperty]
         private Visibility enterBtnVisible = Visibility.Hidden;
-
         [ObservableProperty]
         private List<string>? tag_List = EditElementWindow.SelectedElement?.TagList;
+        [ObservableProperty]
+        private string selectedElementComment = EditElementWindow.SelectedElement?.Comment ?? "";
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties

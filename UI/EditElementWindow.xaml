@@ -8,10 +8,12 @@
         xmlns:local="clr-namespace:BauphysikToolWPF"
         mc:Ignorable="d"
         Title="Bauteildaten festlegen"
-        Height="Auto"
+        ResizeMode="CanResizeWithGrip"
         Width="320"
-        WindowStartupLocation="CenterScreen"
-        
+        MinWidth="220"
+        MaxWidth="480"
+        Height="668"
+        WindowStartupLocation="CenterScreen"        
         ShowInTaskbar="False"
         WindowStyle="ToolWindow">
 
@@ -21,6 +23,46 @@
     </Window.DataContext>
 
     <Window.Resources>
+
+        <!--Custom RadioButton_ColorPicker: with icon center top, rounded corners, transparent, click effects-->
+        <Style x:Key="RadioButton_ColorPicker" TargetType="{x:Type RadioButton}">
+            <!--Set default properties of the button-->
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
+            <Setter Property="Background" Value="Red"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Width" Value="32"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type RadioButton}">
+                        <!--Element appearance with behaviour of a 'RadioButton'-->
+                        <Grid>
+                            <Border Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" CornerRadius="16" Background="Transparent" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                            <Ellipse Width="24" Height="24" VerticalAlignment="Center" HorizontalAlignment="Center" Fill="{TemplateBinding Background}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsChecked" Value="False">
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsMouseOver" Value="True" />
+                        <Condition Property="IsChecked" Value="True" />
+                    </MultiTrigger.Conditions>
+                    <MultiTrigger.Setters>
+                        <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}" />
+                    </MultiTrigger.Setters>
+                </MultiTrigger>
+            </Style.Triggers>
+        </Style>
 
         <ItemsPanelTemplate x:Key="WrapPanel_Template">
             <WrapPanel x:Name="element_WrapPanel" ItemWidth="Auto" ItemHeight="Auto" ClipToBounds="True"/>
@@ -48,15 +90,15 @@
             <Label Content="Name" HorizontalAlignment="Left"/>
             <TextBox Text="{Binding SelectedElementName}" HorizontalContentAlignment="Left" MaxLength="64" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
-        <StackPanel Grid.Row="1" Orientation="Vertical"  Margin="0,0,0,8">
+        <StackPanel Orientation="Vertical"  Margin="0,0,0,8">
             <Label Content="Typ" HorizontalAlignment="Left"/>
             <ComboBox ItemsSource="{Binding ConstructionType_List}" SelectedItem="{Binding SelectedConstruction}"/>
         </StackPanel>
-        <StackPanel Grid.Row="2" Orientation="Vertical" Margin="0,0,0,8">
+        <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Ausrichtung" HorizontalAlignment="Left"/>
             <ComboBox ItemsSource="{Binding Orientation_List}" SelectedItem="{Binding SelectedOrientation}"/>
         </StackPanel>
-        <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,0,0,8">
+        <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Farbe" HorizontalAlignment="Left"/>
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -69,12 +111,17 @@
                     <RowDefinition Height=".5*"/>
                     <RowDefinition Height=".5*"/>
                 </Grid.RowDefinitions>
-
-                <RadioButton GroupName="Colors" Width="24" Height="24"/>
-                <RadioButton Grid.Column="1" GroupName="Colors" Width="24" Height="24"/>
+                <RadioButton GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Black" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Gray" Margin="4"/>
+                <RadioButton Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Red" Margin="4"/>
+                <RadioButton Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Green" Margin="4"/>
+                <RadioButton Grid.Row="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Blue" Margin="4"/>
+                <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Yellow" Margin="4"/>
+                <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Brown" Margin="4"/>
+                <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Turquoise" Margin="4"/>
             </Grid>
         </StackPanel>
-        <StackPanel Grid.Row="4" Orientation="Vertical" Margin="0,0,0,8">
+        <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Eigene Gruppierung" HorizontalAlignment="Left"/>
             <Grid Margin="0,0,0,8">
                 <Grid.ColumnDefinitions>
@@ -93,7 +140,11 @@
                           BorderThickness="0"
                           Tag="{Binding}"/>
         </StackPanel>
-        <Button Grid.Row="5" Margin="0,8,0,0" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=Window}" Style="{StaticResource ButtonStyle02_A}"/>
+        <StackPanel Orientation="Vertical" Margin="0,0,0,8">
+            <Label Content="Kommentar" HorizontalAlignment="Left"/>
+            <TextBox TextAlignment="Left" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="12"  FontFamily="Consolas" MaxLength="400"/>
+        </StackPanel>
+        <Button Margin="0,8,0,0" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=Window}" Style="{StaticResource ButtonStyle02_A}"/>
     </StackPanel>
 
 

@@ -90,6 +90,9 @@
         <BitmapImage x:Key="ButtonIcon_List_W" UriSource="/Resources/Icons/list_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Up_B" UriSource="/Resources/Icons/up.png"/>
         <BitmapImage x:Key="ButtonIcon_Down_B" UriSource="/Resources/Icons/down.png"/>
+        <BitmapImage x:Key="ButtonIcon_Tags_B" UriSource="/Resources/Icons/tags.png"/>
+        <BitmapImage x:Key="ButtonIcon_Comment_B" UriSource="/Resources/Icons/comment.png"/>
+        <BitmapImage x:Key="ButtonIcon_Bookmark_B" UriSource="/Resources/Icons/bookmark.png"/>
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
         
 

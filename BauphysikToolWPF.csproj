@@ -21,8 +21,11 @@
     <None Remove="Resources\Icons\auge_zu_w.png" />
     <None Remove="Resources\Icons\ausruf.png" />
     <None Remove="Resources\Icons\ausruf_w.png" />
+    <None Remove="Resources\Icons\bookmark.png" />
     <None Remove="Resources\Icons\chart.png" />
     <None Remove="Resources\Icons\chart_w.png" />
+    <None Remove="Resources\Icons\comment.png" />
+    <None Remove="Resources\Icons\comment_bold.png" />
     <None Remove="Resources\Icons\copy.png" />
     <None Remove="Resources\Icons\copy_w.png" />
     <None Remove="Resources\Icons\delete-2.png" />
@@ -95,6 +98,8 @@
     <None Remove="Resources\Icons\settings.png" />
     <None Remove="Resources\Icons\settings_Light_b.png" />
     <None Remove="Resources\Icons\settings_w.png" />
+    <None Remove="Resources\Icons\tags.png" />
+    <None Remove="Resources\Icons\tags_bold.png" />
     <None Remove="Resources\Icons\up.png" />
   </ItemGroup>
 
@@ -127,6 +132,9 @@
     <Resource Include="Resources\Icons\auge_zu_w.png" />
     <Resource Include="Resources\Icons\ausruf.png" />
     <Resource Include="Resources\Icons\ausruf_w.png" />
+    <Resource Include="Resources\Icons\bookmark.png" />
+    <Resource Include="Resources\Icons\comment.png" />
+    <Resource Include="Resources\Icons\comment_bold.png" />
     <Resource Include="Resources\Icons\placeholder_256px.png" />
     <Resource Include="Resources\Icons\delete-2.png" />
     <Resource Include="Resources\Icons\edit.png" />
@@ -194,6 +202,8 @@
     <Resource Include="Resources\Icons\settings.png" />
     <Resource Include="Resources\Icons\settings_Light_b.png" />
     <Resource Include="Resources\Icons\settings_w.png" />
+    <Resource Include="Resources\Icons\tags.png" />
+    <Resource Include="Resources\Icons\tags_bold.png" />
     <Resource Include="Resources\Icons\up.png" />
     <Resource Include="Resources\Icons\down.png" />
     <Resource Include="Resources\Icons\export-pdf.png" />
