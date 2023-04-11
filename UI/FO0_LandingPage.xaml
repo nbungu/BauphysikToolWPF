@@ -148,6 +148,7 @@
         <ItemsPanelTemplate x:Key="WrapPanel_Template">
             <WrapPanel ItemWidth="144" ItemHeight="208" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
+        
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <DataTemplate x:Key="WrapPanelItem_DesignTemplate">
             <Grid Margin="8">
@@ -198,12 +199,32 @@
         <ItemsPanelTemplate x:Key="Tags_WrapPanel_Template">
             <WrapPanel ItemWidth="Auto" ItemHeight="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
+        
         <!--Here: Binding (DataContext) is typeof 'TagList' set by ItemsSource Property-->
         <DataTemplate x:Key="Tags_WrapPanelItem_DesignTemplate">
             <Grid Margin="4">
                 <Button Content="{Binding}" Style="{StaticResource ButtonStyle05_Tag_B}"/>
             </Grid>
         </DataTemplate>
+
+        <CollectionViewSource x:Key="GroupedItemsSource" Source="{Binding Elements}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="Construction.TypeName" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+        
+        <Style x:Key="WrapPanel_GroupingHeader" TargetType="{x:Type GroupItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <!-- Header Binding 'Name' binds to 'PropertyName' from PropertyGroupDescription -->
+                        <Expander Header="{Binding Name}" FontSize="14" FontWeight="Bold" IsExpanded="True" Margin="0,0,0,8">
+                            <ItemsPresenter/> <!-- Displays the WrapPanel Items-->
+                        </Expander>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
     </UserControl.Resources>
 
@@ -255,23 +276,27 @@
                 <ComboBox Background="Transparent" ItemsSource="{Binding SortingListItems}" SelectedIndex="{Binding SelectedSortingIndex}" Margin="0,0,8,0"/>
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle_Sorting}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,4,8"/>
-            </StackPanel>
-            <!-- Switch between ListView and Panels, Button Row 
-            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right">
-                <Button Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_List_B}" Margin="0,8,8,8"/>
-                
-                <Button Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Elements_B}" Margin="0,8,0,8"/>
-            </StackPanel>-->
+            </StackPanel>            
 
             <!--"WrapPanel inside a ListBox does pick up the DataTemplate you define .. so you have complete liberty to bind any list to your WrapPanel"-->
             <ScrollViewer x:Name="WrapPanel_ScrollViewer" Grid.Row="2" Grid.Column="1" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                 <ItemsControl Width="{Binding ElementName=WrapPanel_ScrollViewer, Path=ActualWidth}"
-                          ItemsSource="{Binding Elements}"
+                          ItemsSource="{Binding Source={StaticResource GroupedItemsSource}}"
                           ItemsPanel="{StaticResource WrapPanel_Template}"
                           ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
-                          Background="Transparent"                          
+                          Background="Transparent"
                           BorderThickness="0"
-                          Tag="{Binding}"/>
+                          Tag="{Binding}">
+                    <ItemsControl.GroupStyle>
+                        <GroupStyle ContainerStyle="{StaticResource WrapPanel_GroupingHeader}">
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
+                        </GroupStyle>
+                    </ItemsControl.GroupStyle>
+                </ItemsControl>
             </ScrollViewer>
         </Grid>
         
