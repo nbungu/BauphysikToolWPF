@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI;
+﻿using BauphysikToolWPF.UI;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;

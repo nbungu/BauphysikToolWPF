@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using BauphysikToolWPF.SQLiteRepo.Helper;
+using SQLite;
 using SQLiteNetExtensions.Extensions;
 using System;
 using System.Collections.Generic;
@@ -9,102 +10,7 @@ using System.Linq;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     public delegate void Notify(); // delegate with signature: return type void, no input parameters
-    public enum ElementSortingType
-    {
-        Date,
-        Name,
-        Type,
-        Orientation,
-        RValue,
-        SdValue,
-        Default = Date
-    }
-    public enum LayerSortingType
-    {
-        None,
-        Name,
-        LayerPosition,
-        Default = LayerPosition
-    }
-    public class LayerSorting : IComparer<Layer>
-    {
-        private LayerSortingType SortingType { get; set; }
-        public LayerSorting(LayerSortingType sortingType = LayerSortingType.Default)
-        {
-            SortingType = sortingType;
-        }
-        public int Compare(Layer? x, Layer? y) // Interface Method
-        {
-            if (x is null || y is null)
-                return 0;
-            switch (SortingType)
-            {
-                case LayerSortingType.Name:
-                    return x.Material.Name.CompareTo(y.Material.Name);
-                case LayerSortingType.LayerPosition:
-                    return x.LayerPosition.CompareTo(y.LayerPosition);
-                default:
-                    return x.LayerPosition.CompareTo(y.LayerPosition);
-            }
-        }
-        // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
-        // Layers have to be SORTED (LayerPos)
-        public static void FillGaps(List<Layer> layers)
-        {
-            if (layers.Count > 0)
-            {
-                // Update the Id property of the remaining objects
-                for (int i = 0; i < layers.Count; i++)
-                {
-                    layers[i].LayerPosition = i;
-                    DatabaseAccess.UpdateLayer(layers[i], triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
-                }
-            }
-        }
-        // Set every following Layer after AirLayer to IsEffective = false
-        // Layers have to be SORTED (LayerPos) + No Gaps (FillGaps)
-        public static void AssignEffectiveLayers(List<Layer> layers)
-        {
-            if (layers.Count > 0)
-            {
-                bool foundAirLayer = false;
-                foreach (Layer layer in layers)
-                {                   
-                    if (layer.Material.Category == MaterialCategory.Air)
-                        foundAirLayer = true;
-                    layer.IsEffective = !foundAirLayer;
-                    DatabaseAccess.UpdateLayer(layer, triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
-                }
-            }
-        }
-    }
-    public class ElementSorting : IComparer<Element>
-    {
-        private ElementSortingType SortingType { get; set; }
-        public ElementSorting(ElementSortingType sortingType = ElementSortingType.Default)
-        {
-            SortingType = sortingType;
-        }
-        public int Compare(Element? x, Element? y) // Interface Method
-        {
-            if (x is null || y is null)
-                return 0;
-            switch (SortingType)
-            {
-                case ElementSortingType.Date:
-                    return x.ElementId.CompareTo(y.ElementId);
-                case ElementSortingType.Name:
-                    return x.Name.CompareTo(y.Name);
-                case ElementSortingType.Type:
-                    return x.Construction.TypeName.CompareTo(y.Construction.TypeName);
-                case ElementSortingType.RValue:
-                    return x.RValue.CompareTo(y.RValue);
-                default:
-                    return x.ElementId.CompareTo(y.ElementId);
-            }
-        }
-    }
-
+    
     public class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
         // TODO: no absolute Path
@@ -222,11 +128,11 @@ namespace BauphysikToolWPF.SQLiteRepo
 
             return element;
         }
-        public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.Default, bool ascending = true)
+        public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.Date, bool ascending = true)
         {
             List<Element> elements = sqlConn.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
 
-            if (sortingType == ElementSortingType.Default)
+            if (sortingType == ElementSortingType.Date)
                 return ascending ? elements : elements.Reverse<Element>().ToList();
 
             elements.Sort(new ElementSorting(sortingType)); // use of List<T>.Sort(IComparer<T>) method

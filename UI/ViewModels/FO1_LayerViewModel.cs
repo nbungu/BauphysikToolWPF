@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.SQLiteRepo.Helper;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;

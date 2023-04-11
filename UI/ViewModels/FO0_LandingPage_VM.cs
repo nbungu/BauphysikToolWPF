@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.SQLiteRepo.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -18,11 +19,18 @@ namespace BauphysikToolWPF.UI.ViewModels
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
 
-        private static List<string?>? _sortingListItems;
-        public List<string?> SortingListItems
+        private static List<string?>? _sortingProperties;
+        public List<string?> SortingProperties
         {
             // Has to match ElementSortingType enum values (+Order)
-            get { return _sortingListItems ??= new List<string?>() { "Änderungsdatum", "Name", "Typ", "Ausrichtung", "Farbe", "Gruppierung / Tags", "R-Wert", "sd-Wert" }; }
+            get { return _sortingProperties ??= ElementSorting.SortingTypeList; }
+        }
+
+        private static List<string?>? _groupingProperties;
+        public List<string?> GroupingProperties
+        {
+            // Has to match ElementSortingType enum values (+Order)
+            get { return _groupingProperties ??= ElementSorting.GroupingTypeList; }
         }
 
         /*
@@ -52,7 +60,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return;
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)selectedSortingIndex, isAscending);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
         }
 
         [RelayCommand]
@@ -74,7 +82,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)selectedSortingIndex, isAscending);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
         }
 
         [RelayCommand]
@@ -116,7 +124,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             DatabaseAccess.CreateElement(elementCopy, withChildren: true);
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)selectedSortingIndex, isAscending);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
         }
 
         [RelayCommand]
@@ -126,7 +134,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             IsAscending = !IsAscending;
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)selectedSortingIndex, isAscending);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
+        }
+
+        [RelayCommand]
+        private void ToggleGrouping()
+        {
+            // Change sorting order
+            IsGroupingEnabled = !IsGroupingEnabled;
         }
 
         /*
@@ -136,14 +151,22 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private static int selectedSortingIndex = 0; // As Static Class Variable to Save the Selection after Switching Pages!
+        [NotifyPropertyChangedFor(nameof(SelectedSorting))]
+        private static int sortingPropertyIndex = 0; // As Static Class Variable to Save the Selection after Switching Pages!
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SelectedGrouping))]
+        private static int groupingPropertyIndex = 0; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
         private static bool isAscending = true; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
+        private static bool isGroupingEnabled = false;
+        
+        [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElement))]
-        private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)selectedSortingIndex, isAscending) ?? new List<Element>();
+        private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending) ?? new List<Element>();
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElement))]
@@ -164,6 +187,17 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool ElementToolsAvailable
         {
             get { return SelectedElementId != -1; }
+        }
+
+        // For Grouping and Sorting of WrapPanel: Expose as Static for 'GroupingTypeToPropertyName' Converter
+
+        public static ElementSortingType? SelectedSorting
+        {
+            get { return (ElementSortingType)sortingPropertyIndex; }
+        }
+        public static ElementGroupingType? SelectedGrouping
+        {
+            get { return (ElementGroupingType)groupingPropertyIndex; }
         }
     }
 }

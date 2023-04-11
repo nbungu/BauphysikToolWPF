@@ -19,6 +19,9 @@
         <!-- Checks if Element of WrapPanel is currently SelectedElement -->
         <controls:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
 
+        <!-- Assigns current SortingType to the 'PropertyName' Property of PropertyGroupDescription, since 'PropertyName' doesn't support Bindings -->
+        <controls:GroupingTypeToPropertyName x:Key="GroupingTypeToPropertyName"/>
+
         <!--Custom ButtonStyle_Sorting based on Button03_Mini: changing icon, transparent, rounded corners, click effects -->
         <Style x:Key="ButtonStyle_Sorting" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
@@ -207,9 +210,10 @@
             </Grid>
         </DataTemplate>
 
-        <CollectionViewSource x:Key="GroupedItemsSource" Source="{Binding Elements}">
+        <CollectionViewSource x:Key="GroupedItemsSource" Source="{Binding Elements}" >
             <CollectionViewSource.GroupDescriptions>
-                <PropertyGroupDescription PropertyName="Construction.TypeName" />
+                <!-- Here DataContext is of Type 'Element' -->
+                <PropertyGroupDescription PropertyName="." Converter="{StaticResource GroupingTypeToPropertyName}" StringComparison="Ordinal"/>
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
         
@@ -273,15 +277,16 @@
             <!-- Sorting functions, Button Row -->
             <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
                 <Label Content="Sortieren nach" Margin="0,0,8,0"/>
-                <ComboBox Background="Transparent" ItemsSource="{Binding SortingListItems}" SelectedIndex="{Binding SelectedSortingIndex}" Margin="0,0,8,0"/>
+                <ComboBox Background="Transparent" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" Margin="0,0,8,0"/>
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <ToggleButton IsChecked="True" Width="32" Command="{Binding ToggleGroupingCommand}"/>
+                <Label Content="Gruppieren nach" Margin="0,0,8,0"/>
+                <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle_Sorting}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,4,8"/>
-            </StackPanel>            
-
-            <!--"WrapPanel inside a ListBox does pick up the DataTemplate you define .. so you have complete liberty to bind any list to your WrapPanel"-->
+            </StackPanel>
+            
             <ScrollViewer x:Name="WrapPanel_ScrollViewer" Grid.Row="2" Grid.Column="1" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                 <ItemsControl Width="{Binding ElementName=WrapPanel_ScrollViewer, Path=ActualWidth}"
-                          ItemsSource="{Binding Source={StaticResource GroupedItemsSource}}"
                           ItemsPanel="{StaticResource WrapPanel_Template}"
                           ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
                           Background="Transparent"
@@ -296,6 +301,16 @@
                             </GroupStyle.Panel>
                         </GroupStyle>
                     </ItemsControl.GroupStyle>
+                    <ItemsControl.Style>
+                        <Style TargetType="{x:Type ItemsControl}">
+                            <Setter Property="ItemsSource" Value="{Binding Elements}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsGroupingEnabled}" Value="True">
+                                    <Setter Property="ItemsSource" Value="{Binding Source={StaticResource GroupedItemsSource}}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ItemsControl.Style>
                 </ItemsControl>
             </ScrollViewer>
         </Grid>
