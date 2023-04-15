@@ -137,13 +137,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
         }
 
-        [RelayCommand]
-        private void ToggleGrouping()
-        {
-            // Change sorting order
-            IsGroupingEnabled = !IsGroupingEnabled;
-        }
-
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
@@ -156,13 +149,11 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedGrouping))]
+        [NotifyPropertyChangedFor(nameof(IsGroupingEnabled))]
         private static int groupingPropertyIndex = 0; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
         private static bool isAscending = true; // As Static Class Variable to Save the Selection after Switching Pages!
-
-        [ObservableProperty]
-        private static bool isGroupingEnabled = false;
         
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElement))]
@@ -187,6 +178,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool ElementToolsAvailable
         {
             get { return SelectedElementId != -1; }
+        }
+
+        // Returns False if Index is 0. Index 0 means without Grouping, since "Ohne" is first entry in Combobox
+        public bool IsGroupingEnabled
+        {
+            get { return GroupingPropertyIndex > 0; } // TODO 0 in ElementGroupingType is not "Ohne"!!!
         }
 
         // For Grouping and Sorting of WrapPanel: Expose as Static for 'GroupingTypeToPropertyName' Converter

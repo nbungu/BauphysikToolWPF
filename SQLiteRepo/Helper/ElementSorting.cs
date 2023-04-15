@@ -9,6 +9,7 @@ namespace BauphysikToolWPF.SQLiteRepo.Helper
     }
     public enum ElementGroupingType
     {
+        None,
         Type,
         Orientation,
         Color,
@@ -18,7 +19,7 @@ namespace BauphysikToolWPF.SQLiteRepo.Helper
     {
         // Static Class Variable
         public static List<string> SortingTypeList { get; private set; } = new List<string>() { "Änderungsdatum", "Name" };
-        public static List<string> GroupingTypeList { get; private set; } = new List<string>() { "Typ", "Ausrichtung", "Farbe", "Gruppierung / Tag" };
+        public static List<string> GroupingTypeList { get; private set; } = new List<string>() { "Ohne", "Typ", "Ausrichtung", "Farbe", "Tags" };
 
         // Instance Variables
         public ElementSortingType SortingType { get; set; }
