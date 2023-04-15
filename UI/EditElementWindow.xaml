@@ -12,10 +12,11 @@
         Width="320"
         MinWidth="220"
         MaxWidth="480"
-        Height="668"
-        WindowStartupLocation="CenterScreen"        
+        MinHeight="80"
+        WindowStartupLocation="CenterOwner"        
         ShowInTaskbar="False"
-        WindowStyle="ToolWindow">
+        WindowStyle="ToolWindow"
+        SizeToContent="Height">
 
     <Window.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
@@ -30,7 +31,8 @@
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
             <Setter Property="Background" Value="Red"/>
-            <Setter Property="Tag" Value="{x:Null}"/> <!--Use 'Tag' as Icon Source-->
+            <Setter Property="Tag" Value="{x:Null}"/>
+            <!--Use 'Tag' as Icon Source-->
             <Setter Property="Height" Value="32"/>
             <Setter Property="Width" Value="32"/>
             <!--Set appearance of the element-->
@@ -65,7 +67,6 @@
                 </MultiTrigger>
             </Style.Triggers>
         </Style>
-
         <ItemsPanelTemplate x:Key="WrapPanel_Template">
             <WrapPanel ItemWidth="Auto" ItemHeight="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
@@ -73,16 +74,14 @@
         <!--Here: Binding (DataContext) is typeof 'Tag_List' set by ItemsSource Property-->
         <DataTemplate x:Key="WrapPanelItem_DesignTemplate">
             <Grid Margin="4">
-                <!--
-                'RemoveTagCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
-                Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.
-                -->
+                <!-- 'RemoveTagCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
+                Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
                 <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                         Content="{Binding}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.RemoveTagCommand}"
                         CommandParameter="{Binding}"
                         Style="{StaticResource ButtonStyle05_Tag}">
-                </Button>                
+                </Button>
             </Grid>
         </DataTemplate>
     </Window.Resources>
@@ -147,6 +146,4 @@
         </StackPanel>
         <Button Margin="0,8,0,0" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=Window}" Style="{StaticResource ButtonStyle02_A}"/>
     </StackPanel>
-
-
 </Window>

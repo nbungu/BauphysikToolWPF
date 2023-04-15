@@ -23,14 +23,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string?> SortingProperties
         {
             // Has to match ElementSortingType enum values (+Order)
-            get { return _sortingProperties ??= ElementSorting.SortingTypeList; }
+            get { return _sortingProperties ??= ElementOrganisor.SortingTypes; }
         }
 
         private static List<string?>? _groupingProperties;
         public List<string?> GroupingProperties
         {
             // Has to match ElementSortingType enum values (+Order)
-            get { return _groupingProperties ??= ElementSorting.GroupingTypeList; }
+            get { return _groupingProperties ??= ElementOrganisor.GroupingTypes; }
         }
 
         /*
@@ -148,8 +148,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static int sortingPropertyIndex = 0; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(SelectedGrouping))]
         [NotifyPropertyChangedFor(nameof(IsGroupingEnabled))]
+        [NotifyPropertyChangedFor(nameof(SelectedGrouping))]
         private static int groupingPropertyIndex = 0; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
@@ -183,16 +183,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Returns False if Index is 0. Index 0 means without Grouping, since "Ohne" is first entry in Combobox
         public bool IsGroupingEnabled
         {
-            get { return GroupingPropertyIndex > 0; } // TODO 0 in ElementGroupingType is not "Ohne"!!!
+            get { return GroupingPropertyIndex > 0; }
         }
 
         // For Grouping and Sorting of WrapPanel: Expose as Static for 'GroupingTypeToPropertyName' Converter
-
-        public static ElementSortingType? SelectedSorting
+        public static ElementSortingType SelectedSorting
         {
             get { return (ElementSortingType)sortingPropertyIndex; }
         }
-        public static ElementGroupingType? SelectedGrouping
+        public static ElementGroupingType SelectedGrouping
         {
             get { return (ElementGroupingType)groupingPropertyIndex; }
         }

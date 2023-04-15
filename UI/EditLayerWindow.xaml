@@ -7,13 +7,16 @@
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:local="clr-namespace:BauphysikToolWPF.UI"
         mc:Ignorable="d"
-        Title="Schicht bearbeiten"
+        Title="Schicht bearbeiten"                
+        ResizeMode="CanResizeWithGrip"
         Width="420"
-        Height="400"
-        ResizeMode="NoResize"
-        WindowStartupLocation="CenterScreen"
-        ShowInTaskbar="False"        
-        WindowStyle="ToolWindow">
+        MinWidth="220"
+        MaxWidth="560"
+        MinHeight="80"
+        WindowStartupLocation="CenterOwner"        
+        ShowInTaskbar="False"
+        WindowStyle="ToolWindow"
+        SizeToContent="Height">
 
     <Window.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->

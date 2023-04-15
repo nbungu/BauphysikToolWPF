@@ -9,47 +9,17 @@ namespace BauphysikToolWPF.SQLiteRepo.Helper
         LayerPosition,
         Default = LayerPosition
     }
-    public class LayerSorting : IComparer<Layer>
+    public class LayerOrganisor : IComparer<Layer>
     {
         // Static Class Variable
-        public static List<string> TypeList { get; private set; } = new List<string>() { "Schicht ID", "Materialname", "Position" };
+        public static List<string> SortingTypes { get; private set; } = new List<string>() { "Schicht ID", "Materialname", "Position" };
 
         // Instance Variables
         public LayerSortingType SortingType { get; set; }
-        public string Name { get; set; }
-        public string PropertyName { get; set; }
-        public int Index { get; set; }
 
-        public LayerSorting(LayerSortingType sortingType = LayerSortingType.Default)
+        public LayerOrganisor(LayerSortingType sortingType = LayerSortingType.Default)
         {
             SortingType = sortingType;
-            //AssignProperties(SortingType);
-        }
-        public void AssignProperties(LayerSortingType sortingType)
-        {
-            switch (sortingType)
-            {
-                case LayerSortingType.None:
-                    Name = TypeList[(int)sortingType];
-                    PropertyName = "LayerId";
-                    Index = (int)sortingType;
-                    return;
-                case LayerSortingType.Name:
-                    Name = TypeList[(int)sortingType];
-                    PropertyName = "Material.Name";
-                    Index = (int)sortingType;
-                    return;
-                case LayerSortingType.LayerPosition:
-                    Name = TypeList[(int)sortingType];
-                    PropertyName = "LayerPosition";
-                    Index = (int)sortingType;
-                    return;
-                default:
-                    Name = TypeList[(int)LayerSortingType.LayerPosition];
-                    PropertyName = "LayerPosition";
-                    Index = (int)LayerSortingType.LayerPosition;
-                    return;
-            }
         }
 
         // Interface Method

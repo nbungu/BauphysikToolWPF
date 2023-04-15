@@ -135,7 +135,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             if (sortingType == ElementSortingType.Date)
                 return ascending ? elements : elements.Reverse<Element>().ToList();
 
-            elements.Sort(new ElementSorting(sortingType)); // use of List<T>.Sort(IComparer<T>) method
+            elements.Sort(new ElementOrganisor(sortingType)); // use of List<T>.Sort(IComparer<T>) method
             return ascending ? elements : elements.Reverse<Element>().ToList();
         }
 
@@ -147,7 +147,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
             // True by default: Occurs often when a Layer is deleted
             if (assignEffectiveLayers)
-                LayerSorting.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
+                LayerOrganisor.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
 
             if (triggerUpdateEvent)
                 OnLayersChanged();
@@ -160,7 +160,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
             // False by default: Occurs rarely when a Layer is updated
             if (assignEffectiveLayers)
-                LayerSorting.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
+                LayerOrganisor.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
 
             if (triggerUpdateEvent)
                 OnLayersChanged();
@@ -172,11 +172,11 @@ namespace BauphysikToolWPF.SQLiteRepo
 
             // True by default: Occurs almost every time a Layer is deleted
             if (fillLayerGaps)                
-                LayerSorting.FillGaps(QueryLayersByElementId(layer.ElementId)); // Remove gaps in the LayerPosition property of current Element
+                LayerOrganisor.FillGaps(QueryLayersByElementId(layer.ElementId)); // Remove gaps in the LayerPosition property of current Element
 
             // True by default: Occurs often when a Layer is deleted
             if (assignEffectiveLayers)
-                LayerSorting.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
+                LayerOrganisor.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
 
             if (triggerUpdateEvent)
                 OnLayersChanged();
@@ -196,7 +196,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             if (sortingType == LayerSortingType.None)
                 return layers;
             
-            layers.Sort(new LayerSorting(sortingType)); // use of List<T>.Sort(IComparer<T>) method
+            layers.Sort(new LayerOrganisor(sortingType)); // use of List<T>.Sort(IComparer<T>) method
             return layers;
         }
 

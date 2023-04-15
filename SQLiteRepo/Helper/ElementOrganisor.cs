@@ -15,17 +15,17 @@ namespace BauphysikToolWPF.SQLiteRepo.Helper
         Color,
         Tag
     }
-    public class ElementSorting : IComparer<Element>
+    public class ElementOrganisor : IComparer<Element>
     {
         // Static Class Variable
-        public static List<string> SortingTypeList { get; private set; } = new List<string>() { "Änderungsdatum", "Name" };
-        public static List<string> GroupingTypeList { get; private set; } = new List<string>() { "Ohne", "Typ", "Ausrichtung", "Farbe", "Tags" };
+        public static List<string> SortingTypes { get; private set; } = new List<string>() { "Änderungsdatum", "Name" };
+        public static List<string> GroupingTypes { get; private set; } = new List<string>() { "Ohne", "Typ", "Ausrichtung", "Farbe", "Tags" };
 
         // Instance Variables
         public ElementSortingType SortingType { get; set; }
         public ElementGroupingType GroupingType { get; set; }
 
-        public ElementSorting(ElementSortingType sortingType = ElementSortingType.Date)
+        public ElementOrganisor(ElementSortingType sortingType = ElementSortingType.Date)
         {
             SortingType = sortingType;
         }

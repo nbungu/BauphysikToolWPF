@@ -37,7 +37,7 @@ namespace BauphysikToolWPF.UI.Helper
             RectFill = new SolidColorBrush(layer.Material.Color);
             RectHatchPattern = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, rectangleWidth, canvasHeight);
             RectStroke = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            RectStrokeThickness = layer.IsSelected ? 2 : 0.2;
+            RectStrokeThickness = layer.IsSelected ? 1 : 0.2;
             RectOpacity = layer.IsEffective ? 1 : 0.2;
         }
 
