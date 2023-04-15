@@ -279,8 +279,9 @@
                 <Label Content="Sortieren nach" Margin="0,0,8,0"/>
                 <ComboBox Background="Transparent" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" Margin="0,0,8,0"/>
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                <ToggleButton IsChecked="True" Width="32" Command="{Binding ToggleGroupingCommand}"/>
-                <Label Content="Gruppieren nach" Margin="0,0,8,0"/>
+
+                <CheckBox IsChecked="{Binding IsGroupingEnabled}" FontSize="14" VerticalAlignment="Center"/>
+
                 <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle_Sorting}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,4,8"/>
             </StackPanel>
