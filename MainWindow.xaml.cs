@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using BauphysikToolWPF.SQLiteRepo;
+using BauphysikToolWPF.UI;
+using CommunityToolkit.Mvvm.ComponentModel;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace BauphysikToolWPF

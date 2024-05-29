@@ -30,7 +30,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double Tse { get; private set; } = 0;
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
        
-        // (Instance-) Constructor
+        // Constructor
         public StationaryTempCalc(Element element)
         {
             if (element is null || element.Layers.Count == 0)

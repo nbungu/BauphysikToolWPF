@@ -60,7 +60,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return;
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
         }
 
         [RelayCommand]
@@ -82,7 +82,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
         }
 
         [RelayCommand]
@@ -95,7 +95,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             FO0_LandingPage.SelectedElementId = -1;
 
             // Update XAML Binding Property by fetching from DB
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId);
             SelectedElementId = FO0_LandingPage.SelectedElementId;
         }
 
@@ -124,7 +124,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             DatabaseAccess.CreateElement(elementCopy, withChildren: true);
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
         }
 
         [RelayCommand]
@@ -134,7 +134,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             IsAscending = !IsAscending;
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)sortingPropertyIndex, isAscending);
         }
 
         /*
@@ -157,7 +157,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElement))]
-        private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.ProjectId, (ElementSortingType)sortingPropertyIndex, isAscending) ?? new List<Element>();
+        private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)sortingPropertyIndex, isAscending) ?? new List<Element>();
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElement))]

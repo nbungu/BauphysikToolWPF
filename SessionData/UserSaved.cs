@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using BauphysikToolWPF.SQLiteRepo;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.SessionData
 {
@@ -16,12 +17,12 @@ namespace BauphysikToolWPF.SessionData
         // Unordered Collection. Key must be unique!
         private static Dictionary<string, double> userEnvVars = new Dictionary<string, double>()
         {
-            {"Ti", 0 },
-            {"Te", 0 },
-            {"Rsi", 0 },
-            {"Rse", 0 },
-            {"Rel_Fi", 0 },
-            {"Rel_Fe", 0 },
+            {"Ti", DatabaseAccess.QueryEnvVarsBySymbol("Ti")[0].Value },
+            {"Te", DatabaseAccess.QueryEnvVarsBySymbol("Te")[0].Value },
+            {"Rsi", DatabaseAccess.QueryEnvVarsBySymbol("Rsi")[0].Value },
+            {"Rse", DatabaseAccess.QueryEnvVarsBySymbol("Rse")[0].Value },
+            {"Rel_Fi", DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi")[0].Value },
+            {"Rel_Fe", DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe")[0].Value },
         };
         public static Dictionary<string, double> UserEnvVars
         {

@@ -111,7 +111,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Name = SelectedElementName,
                     ConstructionId = constrId,
                     OrientationId = orientationId,
-                    ProjectId = FO0_ProjectPage.ProjectId,
+                    ProjectId = FO0_ProjectPage.SelectedProjectId,
                     TagList = Tag_List,
                     Comment = (SelectedElementComment == string.Empty) ? null : SelectedElementComment,
                     ColorCode = SelectedElementColor
@@ -132,7 +132,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 EditElementWindow.SelectedElement.Name = SelectedElementName;
                 EditElementWindow.SelectedElement.ConstructionId = constrId;
                 EditElementWindow.SelectedElement.OrientationId = orientationId;
-                EditElementWindow.SelectedElement.ProjectId = FO0_ProjectPage.ProjectId;
+                EditElementWindow.SelectedElement.ProjectId = FO0_ProjectPage.SelectedProjectId;
                 EditElementWindow.SelectedElement.TagList = Tag_List;
                 EditElementWindow.SelectedElement.Comment = (SelectedElementComment == string.Empty) ? null : SelectedElementComment;
                 EditElementWindow.SelectedElement.ColorCode = SelectedElementColor;

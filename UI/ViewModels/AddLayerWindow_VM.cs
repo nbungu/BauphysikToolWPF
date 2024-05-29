@@ -32,7 +32,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void AddLayer(Material? selectedMaterial)
         {
-            if (selectedMaterial is null || !IsThicknessValid)
+            if (selectedMaterial is null || Thickness == "")
                 return;
 
             // LayerPosition is always at end of List 
@@ -69,7 +69,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string thickness = "";
+        private string thickness = "6";
 
         /*
         [ObservableProperty]
@@ -84,10 +84,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<Material> Materials
         {
             get { return SelectedCategory == "Alle anzeigen" ? DatabaseAccess.QueryMaterialByCategory("*") : DatabaseAccess.QueryMaterialByCategory(SelectedCategory); }
-        }
-        public bool IsThicknessValid
-        {
-            get { return Thickness != ""; }
         }
     }
 }
