@@ -20,17 +20,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void SwitchPage(NavigationContent desiredPage)
         {
+            
+            
             MainWindow.SetPage(desiredPage);
         }
 
-        // TODO use Enums as parameter
+        // TODO: use Enums as parameter
         [RelayCommand]
         private void ChangeBuildingStats(string property)
         {
             if (property is null)
                 return;
 
-            var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId);
+            var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
             switch (property)
             {
                 case "BuildingUsage0":
@@ -52,6 +54,28 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
+        private void ChangeProjectName(string property)
+        {
+            if (property is null)
+                return;
+
+            var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
+            proj.Name = property;
+            DatabaseAccess.UpdateProject(proj);
+        }
+
+        [RelayCommand]
+        private void ChangeProjectEditor(string property)
+        {
+            if (property is null)
+                return;
+
+            var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
+            proj.UserName = property;
+            DatabaseAccess.UpdateProject(proj);
+        }
+
+        [RelayCommand]
         private void Close(Window window)
         {
             if (window is null)
@@ -68,6 +92,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         // TODO only call Project from DB once
 
         [ObservableProperty]
-        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId);
+        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
     }
 }

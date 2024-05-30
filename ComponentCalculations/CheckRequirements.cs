@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.ComponentCalculations
     public class CheckRequirements
     {
         // Always fetch current Project on calling this Class. No need for Notifier or Updater when Project changes
-        private Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.ProjectId);
+        private Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
 
         public Element Element { get; private set; }
         public double U_max { get; private set; }

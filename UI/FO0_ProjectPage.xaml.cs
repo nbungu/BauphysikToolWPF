@@ -7,7 +7,28 @@ namespace BauphysikToolWPF.UI
         // Class Variables
         // Initialize + Assign Default Values to Avoid null Values.s
 
-        public static int ProjectId { get; private set; } = 1; // TODO change Hardcoded value
+        //public static int ProjectId { get; private set; } = 1; // TODO change Hardcoded value
+
+        private static int selectedProjectId = 1; // Initialize + Assign Default Values to Avoid null Values
+        public static int SelectedProjectId
+        {
+            get { return selectedProjectId; }
+            set
+            {
+                if (value != selectedProjectId)
+                    OnSelectedProjectChanged();
+                selectedProjectId = value;
+            }
+        }
+
+        //The subscriber class must register to SelectedElementChanged event and handle it with the method whose signature matches Notify delegate
+        public static event Notify? SelectedProjectChanged; // event
+
+        // event handlers - publisher
+        public static void OnSelectedProjectChanged() //protected virtual method
+        {
+            SelectedProjectChanged?.Invoke(); //if SelectedProjectChanged is not null then call delegate
+        }
 
         // Constructor
         public FO0_ProjectPage()

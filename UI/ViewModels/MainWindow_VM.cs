@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BauphysikToolWPF.SQLiteRepo;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -26,5 +27,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
+
+        [ObservableProperty]
+        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
     }
 }

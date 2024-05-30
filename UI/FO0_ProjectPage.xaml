@@ -57,15 +57,18 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".2*"/>
-            <ColumnDefinition Width=".6*"/>
-            <ColumnDefinition Width=".2*" MinWidth="170" MaxWidth="290"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
+            <ColumnDefinition Width=".6*" MinWidth="448"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="400"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
         <Border Grid.ColumnSpan="3" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Label Content="Projektdaten" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
         </Border>
+
+        <!-- Left -->
+
 
         <!-- Middle -->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
@@ -103,7 +106,8 @@
         <!-- Right -->
         <!-- Project "Toolbar" Buttons -->
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="16">
-            <Button Content="Exportieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Export_B}" Margin="0,0,0,16"/>
+            <Button Content="Projektdatei speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Export_B}" Margin="0,0,0,16"/>
+            <Button Content="Projektdokument erstellen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Export_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
             <Button Content="Zurücksetzen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_DeleteElement_B}" Margin="0,0,0,16"/>
         </StackPanel>

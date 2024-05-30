@@ -190,10 +190,6 @@
             <RowDefinition Height="56"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition MinWidth="160" Width=".6*"/>
-            <ColumnDefinition MinWidth="160" Width=".4*"/>
-        </Grid.ColumnDefinitions>
 
         <!--Top -->
         <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
@@ -214,82 +210,34 @@
                 </StackPanel>
             </Grid>
         </Border>
-
-        <!--Middle Left -->
-        <Grid Grid.Row="1" Grid.Column="0" Margin="16">
+        
+        <!--Content Area-->
+        <Grid Grid.Row="1" Margin="16">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=".7*"/>
+                <ColumnDefinition Width=".3*"/>
+            </Grid.ColumnDefinitions>
 
-            <StackPanel Orientation="Horizontal">
-                <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding AddLayerCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding EditLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerUpCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Up_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerDownCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Down_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DeleteLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-            </StackPanel>
+            <!--Image-->
+            <Grid Grid.Row="0" Grid.Column="1"  Margin="16">
+                <!-- Elements inside of ViewBox are dynamically sizable-->
+                <Viewbox VerticalAlignment="Top" Style="{StaticResource viewBox_Style}" HorizontalAlignment="Center">
+                    <!--Keep this Margin to avoid clipping of LayerPosition sircles and width measurement numbers!-->
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="40"/>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource labelRotate_Style}"/>
+                        <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource labelRotate_Style}"/>
 
-            <!-- ItemsSource gets updated by backend -->
-            <!-- This is 'PlacementTarget' as seen from ContextMenu -->
-            <ListView x:Name="layers_ListView"
-                      Grid.Row="2"
-                      ItemsSource="{Binding Layers}" 
-                      View="{StaticResource LayerGridViewColumns}"
-                      ItemContainerStyle="{StaticResource LayerItemContainerStyle}"
-                      SelectedIndex="{Binding SelectedLayer}"                      
-                      Style="{StaticResource ListViewStyle01}"
-                      Tag="{Binding}"
-                      Margin="0,16,0,0">
-                <!--TODO Add Style-->
-                <ListView.ContextMenu>
-                    <ContextMenu>
-                        <!-- ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
-                        Need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
-                        The Tag Property can be used to hold any kind of user specified Data.-->
-                        <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                            <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                            <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                        <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                            <MenuItem.Icon>
-                                <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
-                            </MenuItem.Icon>
-                        </MenuItem>
-                    </ContextMenu>
-                </ListView.ContextMenu>
-            </ListView>
-        </Grid>
-
-        <!--Middle Right-->
-        <Grid Grid.Row="1" Grid.Column="1" Margin="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height=".75*"/>
-                <RowDefinition Height=".25*"/>
-            </Grid.RowDefinitions>
-            
-            <!-- Elements inside of ViewBox are dynamically sizable-->
-            <Viewbox VerticalAlignment="Top" Style="{StaticResource viewBox_Style}" HorizontalAlignment="Center">
-                <!--Keep this Margin to avoid clipping of LayerPosition sircles and width measurement numbers!-->
-                <Grid Margin="8">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource labelRotate_Style}"/>
-                    <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource labelRotate_Style}"/>
-
-                    <!-- "Layers Canvas" -->
-                    <ItemsControl x:Name="layers_ItemsControl"
+                        <!-- "Layers Canvas" -->
+                        <ItemsControl x:Name="layers_ItemsControl"
                                   Grid.Row="1"
                                   Width="320"
                                   Height="400"                                  
@@ -298,8 +246,8 @@
                                   ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                                   ItemTemplate="{StaticResource LayerItemStyle}"/>
 
-                    <!-- "Measurement Grid" -->
-                    <ItemsControl x:Name="measurement_Grid"
+                        <!-- "Measurement Grid" -->
+                        <ItemsControl x:Name="measurement_Grid"
                                   Grid.Row="2"
                                   Style="{StaticResource MeasurementCanvasStyle}"
                                   Width="{Binding ElementName=layers_ItemsControl, Path=Width}"
@@ -308,21 +256,131 @@
                                   ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                                   ItemTemplate="{StaticResource MeasurementItemStyle}"
                                   Margin="0,16,0,0"/>
-                </Grid>
-            </Viewbox>
+                    </Grid>
+                </Viewbox>
+            </Grid>
+            
+            <!--List-->
+            <Grid Grid.Row="0" Grid.Column="0" Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <Border Grid.Row="1" CornerRadius="8" Background="White" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="1" Margin="0,16,0,0">
-                <!--
-                Einstellungen wie:
-                Ansicht drehen links, rechts usw.
-                Ansicht spiegeln
-                Gesamtwerte des Bauteils einblenden (dicke, R, U, sd etc.)-->
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding AddLayerCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding EditLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerUpCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Up_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerDownCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Down_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DeleteLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                </StackPanel>
+
+                <!-- ItemsSource gets updated by backend -->
+                <!-- This is 'PlacementTarget' as seen from ContextMenu -->
+                <ListView x:Name="layers_ListView"
+                      Grid.Row="2"
+                      ItemsSource="{Binding Layers}" 
+                      View="{StaticResource LayerGridViewColumns}"
+                      ItemContainerStyle="{StaticResource LayerItemContainerStyle}"
+                      SelectedIndex="{Binding SelectedLayer}"                      
+                      Style="{StaticResource ListViewStyle01}"
+                      Tag="{Binding}"
+                      Margin="0,16,0,0">
+                    <!--TODO Add Style-->
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <!-- ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
+                        Need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
+                        The Tag Property can be used to hold any kind of user specified Data.-->
+                            <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
+                </ListView>
+            </Grid>
+
+            <!--Grid Splitter-->
+            <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+
+            <!--Bottom-->
+            <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="16" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+                <Grid Margin="16,8,16,16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="64" />
+                        <RowDefinition Height="64" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="88" />
+                        <ColumnDefinition Width=".33*" />
+                        <ColumnDefinition Width=".33*" />
+                        <ColumnDefinition Width=".33*" />
+                    </Grid.ColumnDefinitions>
+
+                    <!--Innenseitige Randbedingungen-->
+                    <Label Grid.Row="0" Grid.Column="0" Content="Innen" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" />
+                    <controls:SubscriptLabel Grid.Row="0" Grid.Column="1" BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                    <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                        <ComboBox ItemsSource="{Binding Ti_Keys}" SelectedIndex="{Binding Ti_Index}"/>
+                        <TextBox Text="{Binding TiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                        <Label Content="°C"/>
+                    </StackPanel>
+                    <controls:SubscriptLabel Grid.Row="0" Grid.Column="2" BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                    <StackPanel Grid.Row="0" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <ComboBox ItemsSource="{Binding Rsi_Keys}" SelectedIndex="{Binding Rsi_Index}"/>
+                        <TextBox Text="{Binding RsiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                        <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
+                    </StackPanel>
+                    <controls:SubscriptLabel Grid.Row="0" Grid.Column="3" BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                    <StackPanel Grid.Row="0" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                        <ComboBox ItemsSource="{Binding Rel_Fi_Keys}" SelectedIndex="{Binding Rel_fi_Index}"/>
+                        <TextBox Text="{Binding RelFiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                        <Label Content="%"/>
+                    </StackPanel>
+
+                    <!--Außenseitige Randbedingungen-->
+                    <Label Grid.Row="1" Grid.Column="0" Content="Außen" FontWeight="Bold" Margin="-4,0,0,0" VerticalAlignment="Bottom" />
+                    <controls:SubscriptLabel Grid.Row="1" Grid.Column="1" BaseText="θ" SubscriptText="e" AppendText=" - Außenluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                        <ComboBox ItemsSource="{Binding Te_Keys}" SelectedIndex="{Binding Te_Index}"/>
+                        <TextBox Text="{Binding TeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                        <Label Content="°C"/>
+                    </StackPanel>
+                    <controls:SubscriptLabel Grid.Row="1" Grid.Column="2" BaseText="R" SubscriptText="se" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                    <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                        <ComboBox ItemsSource="{Binding Rse_Keys}" SelectedIndex="{Binding Rse_Index}"/>
+                        <TextBox Text="{Binding RseValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                        <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
+                    </StackPanel>
+                    <controls:SubscriptLabel  Grid.Row="1" Grid.Column="3" BaseText="Φ" SubscriptText="e" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                    <StackPanel Grid.Row="1" Grid.Column="3" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" >
+                        <ComboBox ItemsSource="{Binding Rel_Fe_Keys}" SelectedIndex="{Binding Rel_fe_Index}"/>
+                        <TextBox Text="{Binding RelFeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                        <Label Content="%"/>
+                    </StackPanel>
+                </Grid>
             </Border>
+
+
         </Grid>
 
-        <!--Bottom-->
-        <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+        
 
+        
     </Grid>
 
 </UserControl>
