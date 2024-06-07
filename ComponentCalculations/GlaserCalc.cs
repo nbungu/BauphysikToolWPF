@@ -104,8 +104,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 // Sublimationskurve 
             }
-            double theta_T_i = Math.Pow(rel_fi/100, 0.1247) * (109.8 + ti) - 109.8;
-            return Math.Round(theta_T_i,2);
+            double theta_T_i = Math.Pow(rel_fi / 100, 0.1247) * (109.8 + ti) - 109.8;
+            return Math.Round(theta_T_i, 2);
         }
     }
 }

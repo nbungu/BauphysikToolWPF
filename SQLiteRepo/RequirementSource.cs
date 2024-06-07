@@ -22,8 +22,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int RequirementSourceId { get; set; }
 
-        [NotNull] 
-        public string Name { get; set; } 
+        [NotNull]
+        public string Name { get; set; }
 
         [NotNull]
         public int Year { get; set; }

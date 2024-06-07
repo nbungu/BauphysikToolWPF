@@ -120,7 +120,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // Create copy of selected Element and add to DB
             Element elementCopy = DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId));
-            elementCopy.Name += "-Copy"; 
+            elementCopy.Name += "-Copy";
             DatabaseAccess.CreateElement(elementCopy, withChildren: true);
 
             // Update XAML Binding Property
@@ -154,7 +154,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private static bool isAscending = true; // As Static Class Variable to Save the Selection after Switching Pages!
-        
+
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElement))]
         private List<Element> elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)sortingPropertyIndex, isAscending) ?? new List<Element>();

@@ -140,7 +140,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             set
             {
                 // Save custom user input
-                UserSaved.Ti = Convert.ToDouble(value);              
+                UserSaved.Ti = Convert.ToDouble(value);
                 // Changing ti_Index Triggers TiValue getter due to NotifyProperty
                 Ti_Index = -1;
             }

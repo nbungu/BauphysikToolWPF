@@ -1,13 +1,9 @@
 ﻿using BauphysikToolWPF.SQLiteRepo;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -45,12 +41,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void ToggleTagInput()
         {
-            if(TagBtnVisible == Visibility.Hidden)
+            if (TagBtnVisible == Visibility.Hidden)
             {
                 TagBtnVisible = Visibility.Visible;
                 TextBoxVisible = Visibility.Hidden;
                 EnterBtnVisible = Visibility.Hidden;
-            } else
+            }
+            else
             {
                 TagBtnVisible = Visibility.Hidden;
                 TextBoxVisible = Visibility.Visible;

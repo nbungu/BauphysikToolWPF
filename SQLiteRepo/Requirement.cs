@@ -1,10 +1,6 @@
 ﻿using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BauphysikToolWPF.SQLiteRepo
 {
@@ -21,8 +17,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         [ForeignKey(typeof(RequirementSource))] // FK for the n:1 relationship with RequirementSource
         public int RequirementSourceId { get; set; }
 
-        [NotNull] 
-        public string RefNumber { get; set; } 
+        [NotNull]
+        public string RefNumber { get; set; }
 
         [NotNull]
         public double ValueA { get; set; }

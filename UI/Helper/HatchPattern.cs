@@ -227,7 +227,7 @@ namespace BauphysikToolWPF.UI.Helper
             int y = 20;
             for (int i = 0; i < 3; i++)
             {
-                EllipseGeometry ellipse = new EllipseGeometry(new Point(8,y),3,3);
+                EllipseGeometry ellipse = new EllipseGeometry(new Point(8, y), 3, 3);
                 hatchContent.Children.Add(ellipse);
                 y += 20;
             }
@@ -235,7 +235,7 @@ namespace BauphysikToolWPF.UI.Helper
             DrawingBrush brush = new DrawingBrush()
             {
                 Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
-                TileMode = TileMode.Tile, 
+                TileMode = TileMode.Tile,
                 Viewport = new Rect(0, 0, 16, 80),
                 ViewportUnits = BrushMappingMode.Absolute,
                 Viewbox = new Rect(0, 0, 16, 80),

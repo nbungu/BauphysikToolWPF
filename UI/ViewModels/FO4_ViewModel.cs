@@ -189,8 +189,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 LineSmoothness = 0, // where 0 is a straight line and 1 the most curved
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
                 GeometrySize = 4,
-                GeometryFill= null,
-                GeometryStroke= null,
+                GeometryFill = null,
+                GeometryStroke = null,
                 TooltipLabelFormatter = (chartPoint) => $"Oberflächentemperatur: {chartPoint.PrimaryValue} °C",
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
@@ -245,7 +245,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
-            return new ISeries[]{ temp_i, surfaceTemp_i }; // more than one series possible to draw in the same graph
+            return new ISeries[] { temp_i, surfaceTemp_i }; // more than one series possible to draw in the same graph
         }
         private Axis[] DrawXAxes(string side = "bottom")
         {

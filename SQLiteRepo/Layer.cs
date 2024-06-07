@@ -56,7 +56,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             get
             {
                 if (Material == null || !IsEffective)
-                    return 0;                    
+                    return 0;
                 return Math.Round((this.LayerThickness / 100) / Material.ThermalConductivity, 3);
             }
         }
@@ -109,7 +109,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
-            return LayerThickness + " cm, "+ Material.Name + " (Pos.: " + LayerPosition + ")";
+            return LayerThickness + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
         }
     }
 }
