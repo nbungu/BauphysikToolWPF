@@ -1,7 +1,4 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
-using BauphysikToolWPF.UI;
-using CommunityToolkit.Mvvm.ComponentModel;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace BauphysikToolWPF
@@ -13,7 +10,7 @@ namespace BauphysikToolWPF
      */
 
     // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF. Accessible from whole application
-    public enum NavigationContent 
+    public enum NavigationContent
     {
         // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
         ProjectPage,
@@ -36,7 +33,7 @@ namespace BauphysikToolWPF
             navigationMenuListBox = this.NavigationMenuListBox;
             projectBoxHeader = this.ProjectBoxHeader;
         }
-        
+
         public static void SetPage(NavigationContent page)
         {
             if (navigationMenuListBox is null || projectBoxHeader is null)
@@ -59,7 +56,7 @@ namespace BauphysikToolWPF
                     navigationMenuListBox.SelectedIndex = -1;
                     projectBoxHeader.Tag = "LandingPage";
                     break;
-                    //
+                //
                 case NavigationContent.SetupLayer:
                     navigationMenuListBox.SelectedItem = "SetupLayer";
                     break;

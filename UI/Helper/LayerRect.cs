@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.UI.Helper
         public double RectWidth { get; set; } = 0; // [px]
         public double RectWidth_cm { get; set; } = 0; // [cm]
         public double RectHeight { get; set; } = 0; // [px]
-        public string RectPosition { get; set; } = string.Empty;  
+        public string RectPosition { get; set; } = string.Empty;
 
         // Appearance of the Layer as a 2D Rectangle
         public Brush RectFill { get; set; }

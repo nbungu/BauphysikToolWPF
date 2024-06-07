@@ -31,7 +31,7 @@ namespace BauphysikToolWPF.SQLiteRepo.Helper
         }
 
         // Interface Method
-        public int Compare(Element? x, Element? y) 
+        public int Compare(Element? x, Element? y)
         {
             if (x is null || y is null)
                 return 0;

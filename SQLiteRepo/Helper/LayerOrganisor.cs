@@ -67,5 +67,5 @@ namespace BauphysikToolWPF.SQLiteRepo.Helper
                 }
             }
         }
-    }    
+    }
 }

@@ -21,7 +21,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             ExteriorSurfaceTemp,
             InteriorSurfaceTemp
         }
-        
+
         // Constant Values
         public const int PeriodDuration = 86400; // [s] = 24 h
         public const int IntervallSteps = 600; // [s] = 10 min
@@ -88,7 +88,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             double totalHeatFlux_i = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, qStatic, "i");
             return Math.Round(airTemp_i + totalHeatFlux_i * _rsi, 2);
         }
-        
+
         // θse(t)
         public double SurfaceTemp_e_Function(int t, double meanTemp_e, double amplitude_i, double amplitude_e, double qStatic)
         {
@@ -113,7 +113,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             double q_12 = -1 * _y_Element.Y12.Magnitude * amplitude_i * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
             double q_21 = _y_Element.Y12.Magnitude * amplitude_e * Math.Cos((t + TimeShift) * (2 * Math.PI) / PeriodDuration);
             double q_22 = _y_Element.Y22.Magnitude * amplitude_e * Math.Cos((t + TimeShift_e) * (2 * Math.PI) / PeriodDuration);
-            
+
             if (side == "i")
                 totalHeatFlux = q_static + q_11 + q_21;
 
@@ -175,7 +175,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         // private Methods to assign calculated values to Class Properties
         private List<HeatTransferMatrix> CreateLayerMatrices(List<Layer> layers)
         {
-            List <HeatTransferMatrix> list = new List<HeatTransferMatrix>();
+            List<HeatTransferMatrix> list = new List<HeatTransferMatrix>();
             foreach (Layer layer in layers)
             {
                 if (!layer.IsEffective)
@@ -218,11 +218,11 @@ namespace BauphysikToolWPF.ComponentCalculations
         }
         private double GetDynamicUValue(double dyn_rValue)
         {
-            return Math.Round(1/ dyn_rValue, 3);
+            return Math.Round(1 / dyn_rValue, 3);
         }
         private double GetDecrement(double uDynValue)
         {
-            double uValue = 1/(_rsi + Element.RValue + _rse);
+            double uValue = 1 / (_rsi + Element.RValue + _rse);
             return Math.Round(uDynValue * uValue, 3);
         }
         private double GetTAD(HeatTransferMatrix elementMatrix)
@@ -237,7 +237,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         {
             double seconds = 0;
             if (side == null)
-                seconds = (PeriodDuration * matrix.Y12.Phase) / (2 * Math.PI) - (PeriodDuration/2);
+                seconds = (PeriodDuration * matrix.Y12.Phase) / (2 * Math.PI) - (PeriodDuration / 2);
 
             if (side == "i")
                 seconds = (PeriodDuration * matrix.Y11.Phase) / (2 * Math.PI);
@@ -267,7 +267,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             if (side == "e")
                 kappa = (PeriodDuration / (2 * Math.PI)) * Complex.Abs(Complex.Divide(Complex.Subtract(elementMatrix.Z22, 1), elementMatrix.Z12)); // Ws/(m²K) = J/(m²K)
 
-            return Math.Round(kappa/1000, 2); // kJ/(m²K)
+            return Math.Round(kappa / 1000, 2); // kJ/(m²K)
         }
         private double GetThermalMass(ThermalAdmittanceMatrix matrix)
         {

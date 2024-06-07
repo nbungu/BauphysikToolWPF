@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         {
             if (value is Element)
             {
-                var element = (Element)value;  
+                var element = (Element)value;
                 switch (_grouping)
                 {
                     case ElementGroupingType.Type:

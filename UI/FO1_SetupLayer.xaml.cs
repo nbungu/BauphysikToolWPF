@@ -11,7 +11,7 @@ namespace BauphysikToolWPF.UI
     public partial class FO1_SetupLayer : UserControl
     {
         // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call of this Class.
-        
+
         //
 
         // Class Variables - Belongs to the Class-Type itself and stay the same

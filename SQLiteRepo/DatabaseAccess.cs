@@ -10,7 +10,7 @@ using System.Linq;
 namespace BauphysikToolWPF.SQLiteRepo
 {
     public delegate void Notify(); // delegate with signature: return type void, no input parameters
-    
+
     public class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
         // TODO: no absolute Path
@@ -25,7 +25,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         // event handlers - publisher
         public static void OnLayersChanged() //protected virtual method
-        { 
+        {
             LayersChanged?.Invoke(); //if LayersChanged is not null then call delegate
         }
         public static void OnElementsChanged()
@@ -90,7 +90,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static void CreateElement(Element element, bool withChildren = false)
         {
             if (withChildren)                           // When copying an Element: Insert with children
-                sqlConn.InsertWithChildren(element);    
+                sqlConn.InsertWithChildren(element);
             else sqlConn.Insert(element);               // Default case: Create/Edit a Element: No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
 
             OnElementsChanged();
@@ -124,7 +124,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
             // default value = false, mostly not needed to return Element with SORTED Layers!
             if (layersSorted)
-                element.Layers = QueryLayersByElementId(elementId);            
+                element.Layers = QueryLayersByElementId(elementId);
 
             return element;
         }
@@ -171,7 +171,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             sqlConn.Delete(layer);
 
             // True by default: Occurs almost every time a Layer is deleted
-            if (fillLayerGaps)                
+            if (fillLayerGaps)
                 LayerOrganisor.FillGaps(QueryLayersByElementId(layer.ElementId)); // Remove gaps in the LayerPosition property of current Element
 
             // True by default: Occurs often when a Layer is deleted
@@ -192,10 +192,10 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static List<Layer> QueryLayersByElementId(int elementId, LayerSortingType sortingType = LayerSortingType.Default)
         {
             List<Layer> layers = sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
-            
+
             if (sortingType == LayerSortingType.None)
                 return layers;
-            
+
             layers.Sort(new LayerOrganisor(sortingType)); // use of List<T>.Sort(IComparer<T>) method
             return layers;
         }

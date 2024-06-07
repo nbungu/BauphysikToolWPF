@@ -15,3 +15,11 @@
 
 ## Glaser Curve
 ![alt text](./Resources/MarkdownImages/FO3_Moisture.png "Glaser Curve")
+
+# DEPLOYMENT
+
+https://learn.microsoft.com/en-us/dotnet/core/deploying/#publish-self-contained
+
+https://learn.microsoft.com/en-us/dotnet/core/deploying/deploy-with-vs?tabs=vs156
+
+

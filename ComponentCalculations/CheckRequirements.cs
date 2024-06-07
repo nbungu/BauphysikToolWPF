@@ -30,7 +30,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             if (element is null)
                 return;
 
-            Element = element;            
+            Element = element;
             U_max = GetUMax();
             R_min = GetRMin();
             Q_max = GetQMax();
@@ -38,11 +38,11 @@ namespace BauphysikToolWPF.ComponentCalculations
             IsRValueOK = (R_min == -1) ? true : Element.RValue >= R_min;
             IsQValueOK = (Q_max == -1) ? true : qValue <= Q_max;
         }
-       
+
         private double GetUMax()
         {
             // default (irregular) values
-            int requirementSourceId = -1; 
+            int requirementSourceId = -1;
 
             // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
             // via m:n relation of Construction and Requirement.
@@ -125,6 +125,6 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return -1;
 
             return Math.Round(U_max * (UserSaved.Ti - UserSaved.Te), 3);
-        }       
+        }
     }
 }

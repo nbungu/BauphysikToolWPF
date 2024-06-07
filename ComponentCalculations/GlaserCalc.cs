@@ -33,10 +33,10 @@ namespace BauphysikToolWPF.ComponentCalculations
             // Calculated parameters (private setter)
             PhiMax = GetMaxRelFi(_ti, _te, FRsi);             // Gl. 3-3; S.37
             TaupunktMax_i = GetMaxTaupunkt_i(_ti, _rel_Fi);   // Gl. 2.21; S.365. Taupunkttemperatur
-            LayerPsat = GetLayerPsat();                       // Gl. 2.4; S.164
-            LayerP = GetLayerP(_rel_Fi, _rel_Fe, _ti, _te, Element.SdThickness);                             // Gl. 2.3; S.164
-            P_sat_i = P_sat(_ti);                            // Gl. 2.4; S.164
-            P_sat_e = P_sat(_te);                            // Gl. 2.4; S.164
+            P_sat_i = P_sat(_ti);                            // Gl. 2.4; S.164. Sättigungsdampfdruck innen (Luft)
+            P_sat_e = P_sat(_te);                            // Gl. 2.4; S.164.  Sättigungsdampfdruck außen (Luft)
+            LayerPsat = GetLayerPsat();                       // Gl. 2.4; S.164. Sättigungsdampfdrücke für jede Schichtgrenze
+            LayerP = GetLayerP(_rel_Fi, _rel_Fe, _ti, _te, Element.SdThickness); // Gl. 2.3; S.164, Wasserdampfpartialdruck (innen und außen)
         }
 
         // Methods
@@ -63,6 +63,8 @@ namespace BauphysikToolWPF.ComponentCalculations
                 return p_sat_List;
             else throw new ArgumentOutOfRangeException("calculation failed: sd_width doesn't add up!");*/
         }
+
+        //Bestimmung des Wasserdampfpartialdrucks innen und außen. Gleichung 2.3 umgestellt nach p
         private List<KeyValuePair<double, double>> GetLayerP(double relFi, double relFe, double ti, double te, double sdThickness)
         {
             double pi = Math.Round((relFi / 100) * P_sat(ti), 1);
@@ -102,8 +104,8 @@ namespace BauphysikToolWPF.ComponentCalculations
             {
                 // Sublimationskurve 
             }
-            double theta_T_i = Math.Pow(rel_fi/100, 0.1247) * (109.8 + ti) - 109.8;
-            return Math.Round(theta_T_i,2);
+            double theta_T_i = Math.Pow(rel_fi / 100, 0.1247) * (109.8 + ti) - 109.8;
+            return Math.Round(theta_T_i, 2);
         }
     }
 }

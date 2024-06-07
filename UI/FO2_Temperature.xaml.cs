@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.UI
             if (FO1_SetupLayer.RecalculateTemp == true)
             {
                 StationaryTempCalculation = new StationaryTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId, layersSorted: true)); //for FO2_ViewModel
-                
+
                 // Reset Recalculate Flag
                 FO1_SetupLayer.RecalculateTemp = false;
             }

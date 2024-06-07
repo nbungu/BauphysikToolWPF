@@ -85,7 +85,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 // If no specific Layer is selected, delete All
                 DatabaseAccess.DeleteAllLayers();
-            } else
+            }
+            else
             {
                 // Delete selected Layer
                 DatabaseAccess.DeleteLayer(selectedLayer);
@@ -93,7 +94,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Update XAML Binding Property by fetching from DB
             Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
             // Set focus on Layer above
-            SelectedLayer = selectedLayer.LayerPosition == 0 ? 0 : selectedLayer.LayerPosition-1;
+            SelectedLayer = selectedLayer.LayerPosition == 0 ? 0 : selectedLayer.LayerPosition - 1;
         }
 
         [RelayCommand]
@@ -151,7 +152,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return;
 
             // Change Position of Layer below
-            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Where(e => e.LayerPosition == selectedLayer.LayerPosition + 1).First();            
+            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Where(e => e.LayerPosition == selectedLayer.LayerPosition + 1).First();
             neighbour.LayerPosition -= 1;
             // Change Position of selected Layer
             selectedLayer.LayerPosition += 1;
@@ -196,7 +197,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Initialized and Assigned with Default Values
          */
 
-        
+
 
         // Add m:n realtion to Database when new selection is set
         //TODO implement again

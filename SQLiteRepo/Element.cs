@@ -117,7 +117,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                     image.EndInit();
                 }
                 image.Freeze();
-                return image; 
+                return image;
             }
         }
 
@@ -126,7 +126,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Layers == null )
+                if (Layers == null)
                     return 0;
 
                 double val = 0;
@@ -139,7 +139,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
         public double Thickness_m // d in m
         {
-            get { return Math.Round(Thickness_cm/100, 4); }
+            get { return Math.Round(Thickness_cm / 100, 4); }
         }
 
         [Ignore]
@@ -190,7 +190,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 foreach (Layer layer in Layers)
                 {
                     if (!layer.IsEffective) // cut after Air Layer -> Remaining Layer don't add to RValue
-                        continue; 
+                        continue;
                     val += layer.R_Value;
                 }
                 return Math.Round(val, 2);
