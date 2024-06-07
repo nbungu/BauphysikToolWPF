@@ -214,16 +214,17 @@
         <!--Content Area-->
         <Grid Grid.Row="1" Margin="16">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height=".5*"/>
+                <RowDefinition Height=".5*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".7*"/>
+                <ColumnDefinition Width=".3*"/>
+                <ColumnDefinition Width=".4*"/>
                 <ColumnDefinition Width=".3*"/>
             </Grid.ColumnDefinitions>
 
             <!--Image-->
-            <Grid Grid.Row="0" Grid.Column="1"  Margin="16">
+            <Grid Grid.Row="1" Grid.Column="1"  Margin="16">
                 <!-- Elements inside of ViewBox are dynamically sizable-->
                 <Viewbox VerticalAlignment="Top" Style="{StaticResource viewBox_Style}" HorizontalAlignment="Center">
                     <!--Keep this Margin to avoid clipping of LayerPosition sircles and width measurement numbers!-->
@@ -260,8 +261,8 @@
                 </Viewbox>
             </Grid>
             
-            <!--List-->
-            <Grid Grid.Row="0" Grid.Column="0" Margin="16">
+            <!--LayerList-->
+            <Grid Grid.Row="0" Grid.ColumnSpan="3" Margin="16">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -317,8 +318,45 @@
             <!--Grid Splitter-->
             <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
 
-            <!--Bottom-->
-            <Border Grid.Row="1" Grid.ColumnSpan="2" Margin="16" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+            <!--Env Links-->
+            <Border Grid.Row="1" Grid.Column="0" Margin="16" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+                <Grid Margin="16,8,16,16">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+
+                    <!--Innenseitige Randbedingungen-->
+                    <controls:SubscriptLabel Grid.Row="0" BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                        <ComboBox ItemsSource="{Binding Ti_Keys}" SelectedIndex="{Binding Ti_Index}"/>
+                        <TextBox Text="{Binding TiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                        <Label Content="°C"/>
+                    </StackPanel>
+                    <controls:SubscriptLabel Grid.Row="2" BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                    <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
+                        <ComboBox ItemsSource="{Binding Rsi_Keys}" SelectedIndex="{Binding Rsi_Index}"/>
+                        <TextBox Text="{Binding RsiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
+                        <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
+                    </StackPanel>
+                    <controls:SubscriptLabel Grid.Row="4" BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
+                    <StackPanel Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Bottom" >
+                        <ComboBox ItemsSource="{Binding Rel_Fi_Keys}" SelectedIndex="{Binding Rel_fi_Index}"/>
+                        <TextBox Text="{Binding RelFiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
+                        <Label Content="%"/>
+                    </StackPanel>
+
+                    
+                </Grid>
+            </Border>
+
+            <!--Env Rechts-->
+            <Border Grid.Row="1" Grid.Column="2" Margin="16" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
                 <Grid Margin="16,8,16,16">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="64" />
