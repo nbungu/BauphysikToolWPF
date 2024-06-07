@@ -18,8 +18,9 @@
 
 # DEPLOYMENT
 
-https://learn.microsoft.com/en-us/dotnet/core/deploying/#publish-self-contained
+push a Tag to trigger Deployment
 
-https://learn.microsoft.com/en-us/dotnet/core/deploying/deploy-with-vs?tabs=vs156
+git tag v1.0.0.
+git push origin v1.0.0
 
 
