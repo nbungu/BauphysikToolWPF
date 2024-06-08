@@ -29,6 +29,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
+        private Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
     }
 }

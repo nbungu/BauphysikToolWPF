@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class FO4_ViewModel : ObservableObject
     {
-        private readonly DynamicTempCalc _dynamicTempCalc = FO4_Dynamic.DynamicTempCalculation;
+        private readonly DynamicTempCalc? _dynamicTempCalc = FO4_Dynamic.DynamicTempCalculation;
 
         /*
          * Regular Instance Variables
@@ -29,6 +29,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
+                if (_dynamicTempCalc is null) return new List<OverviewItem>();
                 return new List<OverviewItem>(7)
                 {
                     new OverviewItem { SymbolBase = "R", SymbolSubscript = "dyn", Value = _dynamicTempCalc.DynamicRValue, Unit = "m²K/W" },
@@ -45,6 +46,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
+                if (_dynamicTempCalc is null) return new List<OverviewItem>();
                 return new List<OverviewItem>(6)
                 {
                     new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift_i) / 3600, 2), Unit = "h" },
@@ -57,6 +59,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
+                if (_dynamicTempCalc is null) return new List<OverviewItem>();
                 return new List<OverviewItem>(6)
                 {
                     new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift_e) / 3600, 2), Unit = "h" },
@@ -70,6 +73,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
+                if (_dynamicTempCalc is null) return new List<LayerRect>();
                 List<LayerRect> rectangles = new List<LayerRect>();
                 foreach (Layer layer in _dynamicTempCalc.Element.Layers)
                 {
@@ -120,7 +124,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+        private Element _currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DataPoints_i))]
@@ -166,7 +170,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private ISeries[] GetDataPoints_e()
         {
-            if (_dynamicTempCalc.Element.Layers.Count == 0)
+            if (_dynamicTempCalc is null || _dynamicTempCalc.Element.Layers.Count == 0)
                 return Array.Empty<ISeries>();
 
             LineSeries<ObservablePoint> surfaceTemp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -180,7 +184,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 4,
                 GeometryFill = null,
                 GeometryStroke = null,
-                TooltipLabelFormatter = (chartPoint) => $"Oberflächentemperatur: {chartPoint.PrimaryValue} °C",
+                XToolTipLabelFormatter = (chartPoint) => $"Oberflächentemperatur: {chartPoint.Coordinate.PrimaryValue} °C",
+                YToolTipLabelFormatter = null,
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
@@ -194,7 +199,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 4,
                 GeometryFill = null,
                 GeometryStroke = null,
-                TooltipLabelFormatter = (chartPoint) => $"Außenlufttemperatur: {chartPoint.PrimaryValue} °C ({chartPoint.SecondaryValue} s)",
+                XToolTipLabelFormatter = (chartPoint) => $"Außenlufttemperatur: {chartPoint.Coordinate.PrimaryValue} °C ({chartPoint.Coordinate.SecondaryValue} s)",
+                YToolTipLabelFormatter = null,
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
@@ -202,7 +208,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] GetDataPoints_i()
         {
-            if (_dynamicTempCalc.Element.Layers.Count == 0)
+            if (_dynamicTempCalc is null || _dynamicTempCalc.Element.Layers.Count == 0)
                 return Array.Empty<ISeries>();
 
             LineSeries<ObservablePoint> surfaceTemp_i = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -216,7 +222,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 4,
                 GeometryFill = null,
                 GeometryStroke = null,
-                TooltipLabelFormatter = (chartPoint) => $"Oberflächentemperatur: {chartPoint.PrimaryValue} °C ({chartPoint.SecondaryValue} s)",
+                XToolTipLabelFormatter = (chartPoint) => $"Oberflächentemperatur: {chartPoint.Coordinate.PrimaryValue} °C ({chartPoint.Coordinate.SecondaryValue} s)",
+                YToolTipLabelFormatter = null,
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
@@ -230,7 +237,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 4,
                 GeometryFill = null,
                 GeometryStroke = null,
-                TooltipLabelFormatter = (chartPoint) => $"Raumlufttemperatur: {chartPoint.PrimaryValue} °C",
+                XToolTipLabelFormatter = (chartPoint) => $"Raumlufttemperatur: {chartPoint.Coordinate.PrimaryValue} °C",
+                YToolTipLabelFormatter = null,
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };

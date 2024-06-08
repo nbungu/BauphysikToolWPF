@@ -31,19 +31,15 @@ namespace BauphysikToolWPF.UI.Helper
 
             // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
 
-            using (var fileStream = File.OpenWrite(path + imgName))
-            {
-                encoder.Save(fileStream);
-            }
+            using var fileStream = File.OpenWrite(path + imgName);
+            encoder.Save(fileStream);
         }
 
         public static byte[]? SaveAsBLOB(ItemsControl target)
         {
-            if (target.ItemsSource is null)
-                return null;
+            if (target.ItemsSource is null) return null;
 
             // Convert the BitmapImage to a byte array
-            byte[] imageBytes;
 
             // Set the Bitmap size and target to save
             RenderTargetBitmap bitmap = new RenderTargetBitmap((int)target.RenderSize.Width, (int)target.RenderSize.Height, 96d, 96d, PixelFormats.Default); // Default DPI: 96d -> Adapt cropping (48d -> Width / 2)
@@ -57,11 +53,10 @@ namespace BauphysikToolWPF.UI.Helper
             encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
 
             // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
-            using (MemoryStream stream = new MemoryStream())
-            {
-                encoder.Save(stream);
-                imageBytes = stream.ToArray();
-            }
+            using MemoryStream stream = new MemoryStream();
+            encoder.Save(stream);
+            var imageBytes = stream.ToArray();
+
             return imageBytes;
         }
     }

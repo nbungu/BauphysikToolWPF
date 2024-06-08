@@ -38,7 +38,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // LayerPosition is always at end of List 
             int layerCount = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Count;
 
-            Layer layer = new Layer()
+            Layer layer = new Layer
             {
                 //LayerId gets set by SQLite DB (AutoIncrement)
                 LayerPosition = layerCount,
@@ -53,7 +53,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void CreateMaterial()
         {
-            return;
             //TODO
         }
 
@@ -65,11 +64,11 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private string selectedCategory = "Alle anzeigen";
+        private string _selectedCategory = "Alle anzeigen";
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string thickness = "6";
+        private string _thickness = "6";
 
         /*
         [ObservableProperty]
@@ -81,9 +80,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public List<Material> Materials
-        {
-            get { return SelectedCategory == "Alle anzeigen" ? DatabaseAccess.QueryMaterialByCategory("*") : DatabaseAccess.QueryMaterialByCategory(SelectedCategory); }
-        }
+        public List<Material> Materials => SelectedCategory == "Alle anzeigen" ? DatabaseAccess.QueryMaterialByCategory("*") : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
     }
 }

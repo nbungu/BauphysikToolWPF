@@ -2,6 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Globalization;
 using System.Windows;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -19,11 +20,10 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void ApplyChanges(Window window)
+        private void ApplyChanges(Window? window)
         {
             // To be able to Close EditLayerWindow from within this ViewModel
-            if (window is null)
-                return;
+            if (window is null || EditLayerWindow.SelectedLayer is null) return;
 
             // When Material values or Name has changed 
             if (IsCustomMaterial)
@@ -78,27 +78,27 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]
-        private string name = EditLayerWindow.SelectedLayer.Material.Name.ToString();
+        private string _name = EditLayerWindow.SelectedLayer is null ? "" : EditLayerWindow.SelectedLayer.Material.Name;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]
-        private string thickness = EditLayerWindow.SelectedLayer.LayerThickness.ToString();
+        private string _thickness = EditLayerWindow.SelectedLayer is null ? "" : EditLayerWindow.SelectedLayer.LayerThickness.ToString(CultureInfo.InvariantCulture);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]
-        private string thermalConductivity = EditLayerWindow.SelectedLayer.Material.ThermalConductivity.ToString();
+        private string _thermalConductivity = EditLayerWindow.SelectedLayer is null ? "" : EditLayerWindow.SelectedLayer.Material.ThermalConductivity.ToString(CultureInfo.InvariantCulture);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]
-        private string bulkDensity = EditLayerWindow.SelectedLayer.Material.BulkDensity.ToString();
+        private string _bulkDensity = EditLayerWindow.SelectedLayer is null ? "" : EditLayerWindow.SelectedLayer.Material.BulkDensity.ToString();
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]
-        private string diffusionResistance = EditLayerWindow.SelectedLayer.Material.DiffusionResistance.ToString();
+        private string _diffusionResistance = EditLayerWindow.SelectedLayer is null ? "" : EditLayerWindow.SelectedLayer.Material.DiffusionResistance.ToString(CultureInfo.InvariantCulture);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]
-        private string heatCapacity = EditLayerWindow.SelectedLayer.Material.SpecificHeatCapacity.ToString();
+        private string _heatCapacity = EditLayerWindow.SelectedLayer is null ? "" : EditLayerWindow.SelectedLayer.Material.SpecificHeatCapacity.ToString();
 
 
         /*
@@ -108,24 +108,13 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 'IsCustomMaterial' only gets evaluated after Button Click (no runtime update for frontend needed)
          */
 
-        public bool IsCustomMaterial
-        {
-            get
-            {
-                return Name != EditLayerWindow.SelectedLayer.Material.Name.ToString() ||
-                    ThermalConductivity != EditLayerWindow.SelectedLayer.Material.ThermalConductivity.ToString() ||
-                    BulkDensity != EditLayerWindow.SelectedLayer.Material.BulkDensity.ToString() ||
-                    DiffusionResistance != EditLayerWindow.SelectedLayer.Material.DiffusionResistance.ToString() ||
-                    HeatCapacity != EditLayerWindow.SelectedLayer.Material.SpecificHeatCapacity.ToString();
-            }
-        }
-        public bool IsDataValid
-        {
-            get
-            {
-                // Check if all TextBoxes have non-empty Values
-                return (Name != "" && Thickness != "" && ThermalConductivity != "" && BulkDensity != "" && DiffusionResistance != "" && HeatCapacity != "");
-            }
-        }
+        public bool IsCustomMaterial =>
+            Name != EditLayerWindow.SelectedLayer.Material.Name ||
+            ThermalConductivity != EditLayerWindow.SelectedLayer.Material.ThermalConductivity.ToString() ||
+            BulkDensity != EditLayerWindow.SelectedLayer.Material.BulkDensity.ToString() ||
+            DiffusionResistance != EditLayerWindow.SelectedLayer.Material.DiffusionResistance.ToString() ||
+            HeatCapacity != EditLayerWindow.SelectedLayer.Material.SpecificHeatCapacity.ToString();
+
+        public bool IsDataValid => (Name != "" && Thickness != "" && ThermalConductivity != "" && BulkDensity != "" && DiffusionResistance != "" && HeatCapacity != ""); // Check if all TextBoxes have non-empty Values
     }
 }

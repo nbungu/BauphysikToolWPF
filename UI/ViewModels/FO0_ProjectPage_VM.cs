@@ -20,17 +20,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void SwitchPage(NavigationContent desiredPage)
         {
-
-
             MainWindow.SetPage(desiredPage);
         }
 
         // TODO: use Enums as parameter
         [RelayCommand]
-        private void ChangeBuildingStats(string property)
+        private void ChangeBuildingStats(string? property)
         {
-            if (property is null)
-                return;
+            if (property is null) return;
 
             var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
             switch (property)
@@ -54,10 +51,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void ChangeProjectName(string property)
+        private void ChangeProjectName(string? property)
         {
-            if (property is null)
-                return;
+            if (property is null) return;
 
             var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
             proj.Name = property;
@@ -65,10 +61,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void ChangeProjectEditor(string property)
+        private void ChangeProjectEditor(string? property)
         {
-            if (property is null)
-                return;
+            if (property is null) return;
 
             var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
             proj.UserName = property;
@@ -76,10 +71,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void Close(Window window)
+        private void Close(Window? window)
         {
-            if (window is null)
-                return;
+            if (window is null) return;
             window.Close();
         }
 
@@ -92,6 +86,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         // TODO only call Project from DB once
 
         [ObservableProperty]
-        private Project currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
+        private Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
     }
 }

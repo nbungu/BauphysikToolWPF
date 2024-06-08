@@ -10,12 +10,11 @@ namespace BauphysikToolWPF.UI.CustomControls
     public class GroupingTypeToPropertyName : IValueConverter
     {
         // value is the object from the Binding (Path), e.g. "Element"
-        private ElementGroupingType _grouping = FO0_LandingPage_VM.SelectedGrouping;
+        private readonly ElementGroupingType _grouping = FO0_LandingPage_VM.SelectedGrouping;
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Element)
+            if (value is Element element)
             {
-                var element = (Element)value;
                 switch (_grouping)
                 {
                     case ElementGroupingType.Type:

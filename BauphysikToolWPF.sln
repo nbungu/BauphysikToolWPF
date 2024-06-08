@@ -5,8 +5,6 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BauphysikToolWPF", "BauphysikToolWPF.csproj", "{264742C5-AC5C-403E-821F-498BC27C4B23}"
 EndProject
-Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupBauphysikTool", "..\SetupBauphysikTool\SetupBauphysikTool.vdproj", "{5E9701D2-513B-4161-B6F4-75C41ABDAA2E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -23,11 +21,6 @@ Global
 		{264742C5-AC5C-403E-821F-498BC27C4B23}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{264742C5-AC5C-403E-821F-498BC27C4B23}.Release|x64.ActiveCfg = Release|x64
 		{264742C5-AC5C-403E-821F-498BC27C4B23}.Release|x64.Build.0 = Release|x64
-		{5E9701D2-513B-4161-B6F4-75C41ABDAA2E}.Debug|Any CPU.ActiveCfg = Debug
-		{5E9701D2-513B-4161-B6F4-75C41ABDAA2E}.Debug|Any CPU.Build.0 = Debug
-		{5E9701D2-513B-4161-B6F4-75C41ABDAA2E}.Debug|x64.ActiveCfg = Debug
-		{5E9701D2-513B-4161-B6F4-75C41ABDAA2E}.Release|Any CPU.ActiveCfg = Release
-		{5E9701D2-513B-4161-B6F4-75C41ABDAA2E}.Release|x64.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

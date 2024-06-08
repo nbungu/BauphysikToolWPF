@@ -20,16 +20,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
 
-        private static List<string>? constructionType_List;
+        private static List<string>? _constructionTypeList;
         public List<string> ConstructionType_List
         {
-            get { return constructionType_List ??= DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList(); }
+            get { return _constructionTypeList ??= DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList(); }
         }
 
-        private static List<string>? orientation_List;
+        private static List<string>? _orientationList;
         public List<string> Orientation_List
         {
-            get { return orientation_List ??= DatabaseAccess.GetOrientations().Select(e => e.TypeName).ToList(); }
+            get { return _orientationList ??= DatabaseAccess.GetOrientations().Select(e => e.TypeName).ToList(); }
         }
 
         /*
@@ -56,41 +56,39 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void EnterTag(string newTag)
+        private void EnterTag(string? newTag)
         {
-            if (newTag == string.Empty || newTag is null)
-                return;
+            if (newTag is null || newTag == string.Empty) return;
             // When null, create one first
-            Tag_List ??= new List<string>();
-            Tag_List = Tag_List.Append(newTag).ToList();
+            TagList ??= new List<string>();
+            TagList = TagList.Append(newTag).ToList();
             ToggleTagInput();
         }
 
         [RelayCommand]
-        private void RemoveTag(string tag)
+        private void RemoveTag(string? tag)
         {
-            if (tag is null)
-                return;
+            if (tag is null || TagList is null) return;
             // create a copy to update Tag_List, since .Remove is void Method
-            var list = Tag_List;
+            var list = TagList;
             list.Remove(tag);
-            Tag_List = (list.Count == 0) ? null : list.ToList();
+            TagList = (list.Count == 0) ? null : list.ToList();
         }
 
         [RelayCommand]
-        private void ChangeColor(SolidColorBrush color)
+        private void ChangeColor(SolidColorBrush? color)
         {
-            string? colorCode = color?.Color.ToString();
+            if (color is null) return;
+            string colorCode = color.Color.ToString();
             SelectedElementColor = colorCode;
         }
 
 
         [RelayCommand]
-        private void ApplyChanges(Window window)
+        private void ApplyChanges(Window? window)
         {
             // To be able to Close EditElementWindow from within this ViewModel
-            if (window is null)
-                return;
+            if (window is null) return;
             // Avoid empty Input fields
 
             string constrType = SelectedConstruction;
@@ -102,14 +100,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             // If no Element in Parameter -> Create New
             if (EditElementWindow.SelectedElement is null)
             {
-                Element newElem = new Element()
+                Element newElem = new Element
                 {
                     // ElementId gets set by SQLite DB (AutoIncrement)
                     Name = SelectedElementName,
                     ConstructionId = constrId,
                     OrientationId = orientationId,
                     ProjectId = FO0_ProjectPage.SelectedProjectId,
-                    TagList = Tag_List,
+                    TagList = TagList,
                     Comment = (SelectedElementComment == string.Empty) ? null : SelectedElementComment,
                     ColorCode = SelectedElementColor
                 };
@@ -130,7 +128,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 EditElementWindow.SelectedElement.ConstructionId = constrId;
                 EditElementWindow.SelectedElement.OrientationId = orientationId;
                 EditElementWindow.SelectedElement.ProjectId = FO0_ProjectPage.SelectedProjectId;
-                EditElementWindow.SelectedElement.TagList = Tag_List;
+                EditElementWindow.SelectedElement.TagList = TagList;
                 EditElementWindow.SelectedElement.Comment = (SelectedElementComment == string.Empty) ? null : SelectedElementComment;
                 EditElementWindow.SelectedElement.ColorCode = SelectedElementColor;
 
@@ -148,27 +146,26 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string selectedElementName = EditElementWindow.SelectedElement?.Name ?? "";
+        private string _selectedElementName = EditElementWindow.SelectedElement?.Name ?? "";
         [ObservableProperty]
-        private string selectedConstruction = EditElementWindow.SelectedElement?.Construction.TypeName ?? "";
+        private string _selectedConstruction = EditElementWindow.SelectedElement?.Construction.TypeName ?? "";
         [ObservableProperty]
-        private string selectedOrientation = EditElementWindow.SelectedElement?.Orientation.TypeName ?? "";
+        private string _selectedOrientation = EditElementWindow.SelectedElement?.Orientation.TypeName ?? "";
         [ObservableProperty]
-        private Visibility tagBtnVisible = Visibility.Visible;
+        private Visibility _tagBtnVisible = Visibility.Visible;
         [ObservableProperty]
-        private Visibility textBoxVisible = Visibility.Hidden;
+        private Visibility _textBoxVisible = Visibility.Hidden;
         [ObservableProperty]
-        private Visibility enterBtnVisible = Visibility.Hidden;
+        private Visibility _enterBtnVisible = Visibility.Hidden;
         [ObservableProperty]
-        private List<string>? tag_List = EditElementWindow.SelectedElement?.TagList;
+        private List<string>? _tagList = EditElementWindow.SelectedElement?.TagList;
         [ObservableProperty]
-        private string? selectedElementComment = EditElementWindow.SelectedElement?.Comment;
+        private string? _selectedElementComment = EditElementWindow.SelectedElement?.Comment;
         [ObservableProperty]
-        private string? selectedElementColor = EditElementWindow.SelectedElement?.ColorCode;
+        private string? _selectedElementColor = EditElementWindow.SelectedElement?.ColorCode;
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
-
     }
 }

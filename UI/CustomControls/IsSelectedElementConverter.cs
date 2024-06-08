@@ -10,8 +10,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         {
             // values are the objects from the MultiBindings (Paths), "ElementId" and "SelectedElementId"
             // parameter is from ConverterParameter Property if set.
-            if (values is null)
-                return false;
+            if (values is null) return false;
 
             int currentElement = -1;
             int selectedElement = -1;

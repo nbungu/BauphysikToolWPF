@@ -10,11 +10,8 @@ namespace BauphysikToolWPF.UI
 
         public EditLayerWindow(Layer layer)
         {
-            if (layer is null)
-                return;
-
+            if (layer is null) return;
             SelectedLayer = layer;
-
             InitializeComponent();
         }
     }

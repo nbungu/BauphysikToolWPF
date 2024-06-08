@@ -25,27 +25,15 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not depending on UI changes. No Observable function.
          */
         public string Title { get; } = "Temperature";
-        public StationaryTempCalc TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
+        public StationaryTempCalc? TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
         public double Ti { get; private set; } = UserSaved.Ti;
         public double Te { get; private set; } = UserSaved.Te;
         public double Rsi { get; private set; } = UserSaved.Rsi;
         public double Rse { get; private set; } = UserSaved.Rse;
-        public ISeries[] DataPoints
-        {
-            get { return GetDataPoints(); }
-        }
-        public RectangularSection[] LayerSections
-        {
-            get { return DrawLayerSections(); }
-        }
-        public Axis[] XAxes
-        {
-            get { return DrawXAxes(); }
-        }
-        public Axis[] YAxes
-        {
-            get { return DrawYAxes(); }
-        }
+        public ISeries[] DataPoints => GetDataPoints();
+        public RectangularSection[] LayerSections => DrawLayerSections();
+        public Axis[] XAxes => DrawXAxes();
+        public Axis[] YAxes => DrawYAxes();
         public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
         public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
 
@@ -85,7 +73,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RequirementValues))]
         [NotifyPropertyChangedFor(nameof(OverviewItems))]
-        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+        private Element _currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -93,10 +81,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the elementType Value above
          */
 
-        public CheckRequirements RequirementValues
-        {
-            get { return new CheckRequirements(CurrentElement, TempCalc.UValue, TempCalc.QValue); }
-        }
+        public CheckRequirements RequirementValues => new CheckRequirements(CurrentElement, TempCalc.UValue, TempCalc.QValue);
 
         public List<OverviewItem> OverviewItems
         {
@@ -121,8 +106,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private RectangularSection[] DrawLayerSections()
         {
-            if (TempCalc.Element.Layers.Count == 0)
-                return Array.Empty<RectangularSection>();
+            if (TempCalc is null || TempCalc.Element.Layers.Count == 0) return Array.Empty<RectangularSection>();
 
             RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
 
@@ -160,8 +144,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] GetDataPoints()
         {
-            if (TempCalc.Element.Layers.Count == 0)
-                return Array.Empty<ISeries>();
+            if (TempCalc is null || TempCalc.Element.Layers.Count == 0) return Array.Empty<ISeries>();
 
             double tsi_Pos = TempCalc.LayerTemps.First().Key;
             double tsi = TempCalc.LayerTemps.First().Value;
@@ -181,7 +164,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 LineSmoothness = 0.8,
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
                 GeometrySize = 0,
-                TooltipLabelFormatter = null
+                XToolTipLabelFormatter = null,
+                YToolTipLabelFormatter = null
             };
 
             ObservablePoint[] tempValues = new ObservablePoint[TempCalc.LayerTemps.Count]; // represents the temperature points
@@ -204,7 +188,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometrySize = 6,
                 //Stroke = new LinearGradientPaint(new[] { new SKColor(), new SKColor(255, 212, 96) }) { StrokeThickness = 3 },
                 //GeometryStroke = new LinearGradientPaint(new[] { new SKColor(45, 64, 89), new SKColor(255, 212, 96) }) { StrokeThickness = 3 }
-                TooltipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.PrimaryValue} °C",
+                XToolTipLabelFormatter = (chartPoint) => $"Temperature: {chartPoint.Coordinate.PrimaryValue} °C",
+                YToolTipLabelFormatter = null,
                 //When multiple axes:
                 ScalesYAt = 0, // it will be scaled at the YAxes[0] instance
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
@@ -227,7 +212,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 LineSmoothness = 0.8,
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
                 GeometrySize = 0,
-                TooltipLabelFormatter = null
+                XToolTipLabelFormatter = null,
+                YToolTipLabelFormatter = null
             };
             return new ISeries[] { rsiCurveSeries, tempCurveSeries, rseCurveSeries };
         }

@@ -25,7 +25,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public string Title { get; } = "Moisture";
-        public GlaserCalc Glaser { get; set; } = FO3_Moisture.GlaserCalculation;
+        public GlaserCalc? Glaser { get; set; } = FO3_Moisture.GlaserCalculation;
         public double Ti { get; private set; } = UserSaved.Ti;
         public double Te { get; private set; } = UserSaved.Te;
         public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi;
@@ -43,22 +43,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                 };
             }
         }
-        public ISeries[] DataPoints
-        {
-            get { return GetDataPoints(); }
-        }
-        public RectangularSection[] LayerSections
-        {
-            get { return DrawLayerSections(); }
-        }
-        public Axis[] XAxes
-        {
-            get { return DrawXAxes(); }
-        }
-        public Axis[] YAxes
-        {
-            get { return DrawYAxes(); }
-        }
+        public ISeries[] DataPoints => GetDataPoints();
+        public RectangularSection[] LayerSections => DrawLayerSections();
+        public Axis[] XAxes => DrawXAxes();
+        public Axis[] YAxes => DrawYAxes();
         public SolidColorPaint TooltipBackgroundPaint { get; set; } = new SolidColorPaint(new SKColor(255, 255, 255));
         public SolidColorPaint TooltipTextPaint { get; set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
 
@@ -96,7 +84,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+        private Element _currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         /*
          * private Methods
@@ -104,8 +92,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private RectangularSection[] DrawLayerSections()
         {
-            if (Glaser.Element.Layers.Count == 0)
-                return Array.Empty<RectangularSection>();
+            if (Glaser is null || Glaser.Element.Layers.Count == 0) return Array.Empty<RectangularSection>();
 
             RectangularSection[] rects = new RectangularSection[Glaser.Element.Layers.Count];
 
@@ -131,8 +118,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] GetDataPoints()
         {
-            if (Glaser.Element.Layers.Count == 0)
-                return Array.Empty<ISeries>();
+            if (Glaser is null || Glaser.Element.Layers.Count == 0) return Array.Empty<ISeries>();
 
             ObservablePoint[] p_Curve_Values = new ObservablePoint[Glaser.LayerP.Count()]; // represents the temperature points
             for (int i = 0; i < Glaser.LayerP.Count(); i++)
@@ -150,7 +136,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometryFill = new SolidColorPaint(SKColors.Blue),
                 GeometryStroke = new SolidColorPaint(SKColors.Blue),
                 GeometrySize = 6,
-                TooltipLabelFormatter = (chartPoint) => $"pi: {chartPoint.PrimaryValue} Pa",
+                XToolTipLabelFormatter = (chartPoint) => $"pi: {chartPoint.Coordinate.PrimaryValue} Pa",
+                YToolTipLabelFormatter = null
             };
             ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[Glaser.LayerPsat.Count()]; // represents the temperature points
             for (int i = 0; i < Glaser.LayerPsat.Count(); i++)
@@ -168,7 +155,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 GeometryFill = new SolidColorPaint(SKColors.Red),
                 GeometryStroke = new SolidColorPaint(SKColors.Red),
                 GeometrySize = 6,
-                TooltipLabelFormatter = (chartPoint) => $"p_sat_i: {chartPoint.PrimaryValue} Pa",
+                XToolTipLabelFormatter = (chartPoint) => $"p_sat_i: {chartPoint.Coordinate.PrimaryValue} Pa",
+                YToolTipLabelFormatter = null
             };
             return new ISeries[] { p_Curve, p_sat_Curve };
         }

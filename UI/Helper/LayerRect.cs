@@ -6,14 +6,14 @@ namespace BauphysikToolWPF.UI.Helper
     public class LayerRect
     {
         // Rectangle x,y Coordinates on 2D Canvas. Drawing Origin (0,0) is top left corner.
-        public double Top { get; set; } = 0;
-        public double Left { get; set; } = 0;
+        public double Top { get; set; }
+        public double Left { get; set; }
 
         // Dimensions of the Layer as a 2D Rectangle
-        public double RectWidth { get; set; } = 0; // [px]
-        public double RectWidth_cm { get; set; } = 0; // [cm]
-        public double RectHeight { get; set; } = 0; // [px]
-        public string RectPosition { get; set; } = string.Empty;
+        public double RectWidth { get; set; } // [px]
+        public double RectWidth_cm { get; set; } // [cm]
+        public double RectHeight { get; set; } // [px]
+        public string RectPosition { get; set; }
 
         // Appearance of the Layer as a 2D Rectangle
         public Brush RectFill { get; set; }

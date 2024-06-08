@@ -25,7 +25,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public bool IsRValueOK { get; private set; } = false; // DIN 4108-2 Requirements
         public bool IsQValueOK { get; private set; } = false; // Not mandatory as requirement
 
-        public CheckRequirements(Element element, double uValue, double qValue)
+        public CheckRequirements(Element? element, double uValue, double qValue)
         {
             if (element == null)
             {

@@ -7,27 +7,15 @@ namespace BauphysikToolWPF.UI.CustomControls
     {
         public string CounterText // Zähler
         {
-            get
-            {
-                return (string)GetValue(CounterTextProperty);
-            }
-            set
-            {
-                SetValue(CounterTextProperty, value);
-            }
+            get => (string)GetValue(CounterTextProperty);
+            set => SetValue(CounterTextProperty, value);
         }
 
         public static readonly DependencyProperty CounterTextProperty = DependencyProperty.Register("CounterText", typeof(string), typeof(FractionLabel), new PropertyMetadata(string.Empty));
         public string DenominatorText // Nenner
         {
-            get
-            {
-                return (string)GetValue(DenominatorTextProperty);
-            }
-            set
-            {
-                SetValue(DenominatorTextProperty, value);
-            }
+            get => (string)GetValue(DenominatorTextProperty);
+            set => SetValue(DenominatorTextProperty, value);
         }
 
         public static readonly DependencyProperty DenominatorTextProperty = DependencyProperty.Register("DenominatorText", typeof(string), typeof(FractionLabel), new PropertyMetadata(string.Empty));

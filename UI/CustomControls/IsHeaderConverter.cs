@@ -10,8 +10,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             // value is the object from the Binding (ItemsSource of ListBox): e.g. string "Header1" or "SetupLayer"
-            if (value is null)
-                return false;
+            if (value is null) return false;
 
             string itemsSourceValue = value.ToString() ?? "";
             Regex regex = new Regex("(H|h)eader[0-9]?"); // regex that matches disallowed text
