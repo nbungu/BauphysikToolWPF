@@ -23,10 +23,8 @@ namespace BauphysikToolWPF.UI
         // Handle Custom User Input - Regex Check
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            if (sender is TextBox)
+            if (sender is TextBox tb)
             {
-                TextBox tb = (TextBox)sender;
-
                 // If typed input over a selected Text, delete the old value in the TB
                 if (tb.SelectedText != "")
                     tb.Text = "";

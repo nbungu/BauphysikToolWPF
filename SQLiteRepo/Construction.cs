@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int ConstructionId { get; set; }
 
         [NotNull]
-        public string TypeName { get; set; }
+        public string TypeName { get; set; } = "";
 
         [NotNull]
         public int IsVertical { get; set; }
@@ -26,13 +26,13 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         // m:n relationship with Requirement
         [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
-        public List<Requirement> Requirements { get; set; }
+        public List<Requirement> Requirements { get; set; } = new List<Requirement>();
 
         [Ignore]
         public bool IsLayoutVertical // true = 1
         {
-            get { return IsVertical == 1; }
-            set { IsVertical = (value) ? 1 : 0; }
+            get => IsVertical == 1;
+            set => IsVertical = (value) ? 1 : 0;
         }
 
         //------Konstruktor-----//

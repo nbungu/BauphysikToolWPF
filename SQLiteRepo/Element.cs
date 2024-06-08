@@ -26,7 +26,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int ElementId { get; set; }
 
         [NotNull]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         [ForeignKey(typeof(Construction))] // FK for the 1:1 relationship with Construction
         public int ConstructionId { get; set; }
@@ -45,23 +45,23 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         // n:1 relationship with Project
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public Project Project { get; set; }
+        public Project Project { get; set; } = new Project();
 
         // 1:n relationship with Layer
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all Layers linked to this 'Element')
-        public List<Layer> Layers { get; set; }
+        public List<Layer> Layers { get; set; } = new List<Layer>();
 
         // 1:1 relationship with Construction
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public Construction Construction { get; set; }
+        public Construction Construction { get; set; } = new Construction();
 
         // 1:1 relationship with Orientation
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public Orientation Orientation { get; set; }
+        public Orientation Orientation { get; set; } = new Orientation();
 
         // m:n relationship with EnvVars
         [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all EnvVars linked to this 'Element')
-        public List<EnvVars> EnvVars { get; set; }
+        public List<EnvVars> EnvVars { get; set; } = new List<EnvVars>();
 
         [Ignore]
         public Color Color // HEX 'ColorCode' Property to 'Color' Type
@@ -77,23 +77,12 @@ namespace BauphysikToolWPF.SQLiteRepo
         [Ignore]
         public List<string>? TagList // Converts string of Tags, separated by Comma, to a List of Tags
         {
-            get
-            {
-                // Splits elements of a string into a List
-                return Tag?.Split(',').ToList();
-            }
-            set
-            {
-                // Joins elements of a list into a single string with the words separated by commas   
-                Tag = (value == null) ? null : string.Join(",", value);
-            }
+            get => Tag?.Split(',').ToList(); // Splits elements of a string into a List
+            set => Tag = (value == null) ? null : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
         }
 
         [Ignore]
-        public bool IsSelectedElement // For UI Purposes
-        {
-            get { return ElementId == FO0_LandingPage.SelectedElementId; }
-        }
+        public bool IsSelectedElement => ElementId == FO0_LandingPage.SelectedElementId; // For UI Purposes
 
         // Encapsulate 'Image' variable for use in frontend
         [Ignore]
@@ -137,10 +126,7 @@ namespace BauphysikToolWPF.SQLiteRepo
                 return Math.Round(val, 2);
             }
         }
-        public double Thickness_m // d in m
-        {
-            get { return Math.Round(Thickness_cm / 100, 4); }
-        }
+        public double Thickness_m => Math.Round(Thickness_cm / 100, 4); // d in m
 
         [Ignore]
         public double SdThickness // sd in m

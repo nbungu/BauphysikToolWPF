@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int RequirementSourceId { get; set; }
 
         [NotNull]
-        public string RefNumber { get; set; }
+        public string RefNumber { get; set; } = "";
 
         [NotNull]
         public double ValueA { get; set; }
@@ -33,11 +33,11 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         // n:1 relationship with RequirementSource
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public RequirementSource RequirementSource { get; set; }
+        public RequirementSource RequirementSource { get; set; } = new RequirementSource();
 
         // m:n relationship with Construction
         [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
-        public List<Construction> Constructions { get; set; }
+        public List<Construction> Constructions { get; set; } = new List<Construction>();
 
         //------Konstruktor-----//
 

@@ -9,15 +9,15 @@ namespace BauphysikToolWPF.UI
 
         //public static int ProjectId { get; private set; } = 1; // TODO change Hardcoded value
 
-        private static int selectedProjectId = 1; // Initialize + Assign Default Values to Avoid null Values
+        private static int _selectedProjectId = 1; // Initialize + Assign Default Values to Avoid null Values
         public static int SelectedProjectId
         {
-            get { return selectedProjectId; }
+            get { return _selectedProjectId; }
             set
             {
-                if (value != selectedProjectId)
+                if (value != _selectedProjectId)
                     OnSelectedProjectChanged();
-                selectedProjectId = value;
+                _selectedProjectId = value;
             }
         }
 

@@ -23,35 +23,28 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int RequirementSourceId { get; set; }
 
         [NotNull]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
 
         [NotNull]
         public int Year { get; set; }
 
         [NotNull]
-        public string Specification { get; set; }
+        public string Specification { get; set; } = "";
 
         [NotNull]
-        public string RequirementType { get; set; }
+        public string RequirementType { get; set; } = "";
 
         [NotNull]
-        public string RequirementUnit { get; set; }
+        public string RequirementUnit { get; set; } = "";
 
         //------Not part of the Database-----//
 
         // 1:n relationship with Requirement
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all Requirements linked to this 'RequirementSource')
-        public List<Requirement> Requirements { get; set; }
+        public List<Requirement> Requirements { get; set; } = new List<Requirement>();
 
         [Ignore]
-        public RequirementSourceType SourceType
-        {
-            get
-            {
-                // Returns the enum by its number value (via RequirementSourceId)
-                return (RequirementSourceType)RequirementSourceId;
-            }
-        }
+        public RequirementSourceType SourceType => (RequirementSourceType)RequirementSourceId; // Returns the enum by its number value (via RequirementSourceId)
 
         //------Konstruktor-----//
 

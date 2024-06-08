@@ -13,22 +13,26 @@ namespace BauphysikToolWPF.ComponentCalculations
     public class GlaserCalc : StationaryTempCalc
     {
         // private fields as Instance Variables
-        private double _rel_Fi = UserSaved.Rel_Fi;
-        private double _rel_Fe = UserSaved.Rel_Fe;
+        private readonly double _rel_Fi = UserSaved.Rel_Fi;
+        private readonly double _rel_Fe = UserSaved.Rel_Fe;
 
         // public fields as Properties
-        public double PhiMax { get; private set; } = 0;
-        public double TaupunktMax_i { get; private set; } = 0;
-        public double P_sat_i { get; private set; } = 0;
-        public double P_sat_e { get; private set; } = 0;
+        public double PhiMax { get; private set; }
+        public double TaupunktMax_i { get; private set; }
+        public double P_sat_i { get; private set; }
+        public double P_sat_e { get; private set; }
         public List<KeyValuePair<double, double>> LayerPsat { get; private set; } // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
         public List<KeyValuePair<double, double>> LayerP { get; private set; } // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
 
         // (Instance-) Constructor
         public GlaserCalc(Element element) : base(element)
         {
-            if (element is null || element.Layers.Count == 0)
+            if (element == null || element.Layers.Count == 0)
+            {
+                LayerPsat = new List<KeyValuePair<double, double>>();
+                LayerP = new List<KeyValuePair<double, double>>();
                 return;
+            }
 
             // Calculated parameters (private setter)
             PhiMax = GetMaxRelFi(_ti, _te, FRsi);             // Gl. 3-3; S.37

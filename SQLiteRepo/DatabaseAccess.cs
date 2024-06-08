@@ -3,7 +3,6 @@ using SQLite;
 using SQLiteNetExtensions.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 
@@ -14,8 +13,8 @@ namespace BauphysikToolWPF.SQLiteRepo
     public class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
         // TODO: no absolute Path
-        private static readonly string dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\SQLiteRepo\\DemoDB.db"));
-        private static readonly SQLiteConnection sqlConn = new SQLiteConnection(dbPath);
+        private static readonly string _dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\SQLiteRepo\\DemoDB.db"));
+        private static readonly SQLiteConnection _sqlConn = new SQLiteConnection(_dbPath);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
         public static event Notify? LayersChanged; // event
@@ -56,71 +55,71 @@ namespace BauphysikToolWPF.SQLiteRepo
         // Retreive Data from Table "Project"
         public static List<Project> GetProjects()
         {
-            return sqlConn.GetAllWithChildren<Project>(recursive: true); // Fetch the Projects and all the related entities recursively
+            return _sqlConn.GetAllWithChildren<Project>(recursive: true); // Fetch the Projects and all the related entities recursively
         }
 
         public static void CreateProject(Project project)
         {
             // No need to 'InsertWithChildren', since on 'GetProjects' any Children will be added via FK by SQLiteExtension package
-            sqlConn.Insert(project); // Inserts the object in the database recursively
+            _sqlConn.Insert(project); // Inserts the object in the database recursively
             OnProjectsChanged(); // raises an event
         }
 
         public static void UpdateProject(Project project)
         {
-            sqlConn.Update(project);
+            _sqlConn.Update(project);
         }
 
         public static void DeleteProject(Project project)
         {
-            sqlConn.Delete(project);
+            _sqlConn.Delete(project);
             OnProjectsChanged();
         }
         public static Project QueryProjectById(int projectId)
         {
-            return sqlConn.GetWithChildren<Project>(projectId, recursive: true); // Fetch the Project by ID and all the related entities recursively
+            return _sqlConn.GetWithChildren<Project>(projectId, recursive: true); // Fetch the Project by ID and all the related entities recursively
         }
 
         // Retreive Data from Table "Element"
         public static List<Element> GetElements()
         {
-            return sqlConn.GetAllWithChildren<Element>(recursive: true);
+            return _sqlConn.GetAllWithChildren<Element>(recursive: true);
         }
 
         public static void CreateElement(Element element, bool withChildren = false)
         {
             if (withChildren)                           // When copying an Element: Insert with children
-                sqlConn.InsertWithChildren(element);
-            else sqlConn.Insert(element);               // Default case: Create/Edit a Element: No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
+                _sqlConn.InsertWithChildren(element);
+            else _sqlConn.Insert(element);               // Default case: Create/Edit a Element: No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
 
             OnElementsChanged();
         }
 
         public static void UpdateElement(Element element)
         {
-            sqlConn.Update(element);
+            _sqlConn.Update(element);
             OnElementsChanged();
         }
 
         public static void DeleteElement(Element element)
         {
-            sqlConn.Delete(element);
+            _sqlConn.Delete(element);
             OnElementsChanged();
         }
 
         public static void DeleteElementById(int elementId)
         {
-            sqlConn.Delete<Element>(elementId);
+            _sqlConn.Delete<Element>(elementId);
             OnElementsChanged();
         }
         public static void DeleteAllElements()
         {
-            sqlConn.DeleteAll<Element>();
+            _sqlConn.DeleteAll<Element>();
             OnElementsChanged();
         }
         public static Element QueryElementById(int elementId, bool layersSorted = false)
         {
-            Element element = sqlConn.GetWithChildren<Element>(elementId, recursive: true);
+            Element element = _sqlConn.GetWithChildren<Element>(elementId, recursive: true);
 
             // default value = false, mostly not needed to return Element with SORTED Layers!
             if (layersSorted)
@@ -130,7 +129,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         }
         public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.Date, bool ascending = true)
         {
-            List<Element> elements = sqlConn.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
+            List<Element> elements = _sqlConn.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
 
             if (sortingType == ElementSortingType.Date)
                 return ascending ? elements : elements.Reverse<Element>().ToList();
@@ -143,7 +142,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static void CreateLayer(Layer layer, bool triggerUpdateEvent = true, bool assignEffectiveLayers = true)
         {
             // No need to 'InsertWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
-            sqlConn.Insert(layer);
+            _sqlConn.Insert(layer);
 
             // True by default: Occurs often when a Layer is deleted
             if (assignEffectiveLayers)
@@ -156,7 +155,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public static void UpdateLayer(Layer layer, bool triggerUpdateEvent = true, bool assignEffectiveLayers = false)
         {
             // No need to 'UpdateWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
-            sqlConn.Update(layer);
+            _sqlConn.Update(layer);
 
             // False by default: Occurs rarely when a Layer is updated
             if (assignEffectiveLayers)
@@ -168,7 +167,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void DeleteLayer(Layer layer, bool triggerUpdateEvent = true, bool fillLayerGaps = true, bool assignEffectiveLayers = true)
         {
-            sqlConn.Delete(layer);
+            _sqlConn.Delete(layer);
 
             // True by default: Occurs almost every time a Layer is deleted
             if (fillLayerGaps)
@@ -184,14 +183,14 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         public static void DeleteAllLayers(bool triggerUpdateEvent = true)
         {
-            sqlConn.DeleteAll<Layer>();
+            _sqlConn.DeleteAll<Layer>();
 
             if (triggerUpdateEvent)
                 OnLayersChanged();
         }
         public static List<Layer> QueryLayersByElementId(int elementId, LayerSortingType sortingType = LayerSortingType.Default)
         {
-            List<Layer> layers = sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
+            List<Layer> layers = _sqlConn.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
 
             if (sortingType == LayerSortingType.None)
                 return layers;
@@ -203,7 +202,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         // Retreive Data from Table "Material"
         public static List<Material> GetMaterials()
         {
-            return sqlConn.Table<Material>().ToList();
+            return _sqlConn.Table<Material>().ToList();
         }
 
         public static void CreateMaterial(Material material)
@@ -211,7 +210,7 @@ namespace BauphysikToolWPF.SQLiteRepo
             //Only allow adding user defined materials to DB
             if (material.Category != MaterialCategory.UserDefined)
                 return;
-            sqlConn.Insert(material);
+            _sqlConn.Insert(material);
         }
 
         public static void UpdateMaterial(Material material)
@@ -219,115 +218,115 @@ namespace BauphysikToolWPF.SQLiteRepo
             //Only allow updating user defined materials to DB
             if (material.Category != MaterialCategory.UserDefined)
                 return;
-            sqlConn.Update(material);
+            _sqlConn.Update(material);
         }
 
         public static void DeleteMaterial(Material material)
         {
-            sqlConn.Delete(material);
+            _sqlConn.Delete(material);
         }
 
         public static List<Material> QueryMaterialByCategory(string category)
         {
             if (category == "*")
-                return sqlConn.Query<Material>("SELECT * FROM Material");
+                return _sqlConn.Query<Material>("SELECT * FROM Material");
             else
-                return sqlConn.Query<Material>("SELECT * FROM Material WHERE CategoryName == " + "\"" + category + "\"");
+                return _sqlConn.Query<Material>("SELECT * FROM Material WHERE CategoryName == " + "\"" + category + "\"");
         }
         public static List<Material> QueryMaterialBySearchString(string searchString)
         {
             if (searchString == String.Empty)
-                return sqlConn.Query<Material>("SELECT * FROM Material");
+                return _sqlConn.Query<Material>("SELECT * FROM Material");
             else
-                return sqlConn.Query<Material>("SELECT * FROM Material").Where(m => m.Name.Contains(searchString)).ToList();
+                return _sqlConn.Query<Material>("SELECT * FROM Material").Where(m => m.Name.Contains(searchString)).ToList();
         }
 
         // Retreive Data from Table "EnvVars"
         public static List<EnvVars> GetEnvVars()
         {
-            return sqlConn.GetAllWithChildren<EnvVars>();
+            return _sqlConn.GetAllWithChildren<EnvVars>();
         }
 
         public static List<EnvVars> QueryEnvVarsBySymbol(string symbol)
         {
             if (symbol == "*")
-                return sqlConn.Query<EnvVars>("SELECT * FROM EnvVars");
+                return _sqlConn.Query<EnvVars>("SELECT * FROM EnvVars");
             else
-                return sqlConn.Query<EnvVars>("SELECT * FROM EnvVars WHERE Symbol == " + "\"" + symbol + "\"");
+                return _sqlConn.Query<EnvVars>("SELECT * FROM EnvVars WHERE Symbol == " + "\"" + symbol + "\"");
         }
 
         // Retreive Data from Table "Construction"
         public static List<Construction> GetConstructions()
         {
-            return sqlConn.GetAllWithChildren<Construction>();
+            return _sqlConn.GetAllWithChildren<Construction>();
         }
         public static Construction QueryConstructionById(int constructionId)
         {
-            return sqlConn.GetWithChildren<Construction>(constructionId);
+            return _sqlConn.GetWithChildren<Construction>(constructionId);
         }
 
         // Retreive Data from Table "Orientation"
         public static List<Orientation> GetOrientations()
         {
-            return sqlConn.Table<Orientation>().ToList();
+            return _sqlConn.Table<Orientation>().ToList();
         }
         public static Orientation QueryOrientationById(int orientationId)
         {
-            return sqlConn.Get<Orientation>(orientationId);
+            return _sqlConn.Get<Orientation>(orientationId);
         }
 
         // Retreive Data from Table "ElementEnvVars"
         public static List<ElementEnvVars> GetElementEnvVars()
         {
-            return sqlConn.Table<ElementEnvVars>().ToList();
+            return _sqlConn.Table<ElementEnvVars>().ToList();
         }
         public static void CreateElementEnvVars(ElementEnvVars elementEnvVars)
         {
-            sqlConn.Insert(elementEnvVars);
+            _sqlConn.Insert(elementEnvVars);
             OnElementEnvVarsChanged();
         }
 
         public static int UpdateElementEnvVars(ElementEnvVars elementEnvVars)
         {
-            int i = sqlConn.Update(elementEnvVars);
+            int i = _sqlConn.Update(elementEnvVars);
             OnElementEnvVarsChanged();
             return i;
         }
 
         public static void DeleteElementEnvVars(ElementEnvVars elementEnvVars)
         {
-            sqlConn.Delete(elementEnvVars);
+            _sqlConn.Delete(elementEnvVars);
             OnElementEnvVarsChanged();
         }
 
         public static void DeleteAllElementEnvVars()
         {
-            sqlConn.DeleteAll<ElementEnvVars>();
+            _sqlConn.DeleteAll<ElementEnvVars>();
             OnElementEnvVarsChanged();
         }
 
         // Retreive Data from Table "RequirementSource"
         public static List<RequirementSource> GetRequirementSources()
         {
-            return sqlConn.GetAllWithChildren<RequirementSource>();
+            return _sqlConn.GetAllWithChildren<RequirementSource>();
         }
         public static RequirementSource QueryRequirementSourceById(int requirementSourceId)
         {
-            return sqlConn.Get<RequirementSource>(requirementSourceId);
+            return _sqlConn.Get<RequirementSource>(requirementSourceId);
         }
 
         // Retreive Data from Table "Requirement"
         public static List<Requirement> GetRequirements()
         {
-            return sqlConn.GetAllWithChildren<Requirement>();
+            return _sqlConn.GetAllWithChildren<Requirement>();
         }
         public static Requirement QueryRequirementById(int requirementId)
         {
-            return sqlConn.Get<Requirement>(requirementId);
+            return _sqlConn.Get<Requirement>(requirementId);
         }
         public static List<Requirement> QueryRequirementsBySourceId(int requirementSourceId)
         {
-            return sqlConn.GetAllWithChildren<Requirement>(e => e.RequirementSourceId == requirementSourceId);
+            return _sqlConn.GetAllWithChildren<Requirement>(e => e.RequirementSourceId == requirementSourceId);
         }
     }
 }

@@ -5,6 +5,10 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWPF>true</UseWPF>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+	<WindowsPackageType>None</WindowsPackageType>
+	<StartupObject>BauphysikToolWPF.App</StartupObject>
+	<ApplicationIcon>Ordner_Icon.ico</ApplicationIcon>
+	<Nullable>enable</Nullable>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -121,6 +125,10 @@
 
   <ItemGroup>
     <Page Remove="Resources\Dump.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Ordner_Icon.ico" />
   </ItemGroup>
 
   <ItemGroup>

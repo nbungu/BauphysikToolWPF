@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.SessionData
         }
 
         // Unordered Collection. Key must be unique!
-        private static Dictionary<string, double> userEnvVars = new Dictionary<string, double>()
+        private static readonly Dictionary<string, double> _userEnvVars = new Dictionary<string, double>()
         {
             {"Ti", DatabaseAccess.QueryEnvVarsBySymbol("Ti")[0].Value },
             {"Te", DatabaseAccess.QueryEnvVarsBySymbol("Te")[0].Value },
@@ -24,81 +24,78 @@ namespace BauphysikToolWPF.SessionData
             {"Rel_Fi", DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi")[0].Value },
             {"Rel_Fe", DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe")[0].Value },
         };
-        public static Dictionary<string, double> UserEnvVars
-        {
-            get { return userEnvVars; }
-        }
+        public static Dictionary<string, double> UserEnvVars => _userEnvVars;
 
         //------Eigenschaften-----//
-        // Kapselung von userEnvVars
+        // Kapselung von _userEnvVars
         public static double Ti
         {
-            get { return userEnvVars["Ti"]; }
+            get { return _userEnvVars["Ti"]; }
             set
             {
-                if (value != userEnvVars["Ti"])
+                if (value != _userEnvVars["Ti"])
                 {
-                    userEnvVars["Ti"] = value;
+                    _userEnvVars["Ti"] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Te
         {
-            get { return userEnvVars["Te"]; }
+            get { return _userEnvVars["Te"]; }
             set
             {
-                if (value != userEnvVars["Te"])
+                if (value != _userEnvVars["Te"])
                 {
-                    userEnvVars["Te"] = value;
+                    _userEnvVars["Te"] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Rsi
         {
-            get { return userEnvVars["Rsi"]; }
+            get { return _userEnvVars["Rsi"]; }
             set
             {
-                if (value != userEnvVars["Rsi"])
+                if (value != _userEnvVars["Rsi"])
                 {
-                    userEnvVars["Rsi"] = value;
+                    _userEnvVars["Rsi"] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Rse
         {
-            get { return userEnvVars["Rse"]; }
+            get { return _userEnvVars["Rse"]; }
             set
             {
-                if (value != userEnvVars["Rse"])
+                if (value != _userEnvVars["Rse"])
                 {
-                    userEnvVars["Rse"] = value;
+                    _userEnvVars["Rse"] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Rel_Fi
         {
-            get { return userEnvVars["Rel_Fi"]; }
+            get { return _userEnvVars["Rel_Fi"]; }
             set
             {
-                if (value != userEnvVars["Rel_Fi"])
+                if (value != _userEnvVars["Rel_Fi"])
                 {
-                    userEnvVars["Rel_Fi"] = value;
+                    _userEnvVars["Rel_Fi"] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Rel_Fe
         {
-            get { return userEnvVars["Rel_Fe"]; }
+            get { return _userEnvVars["Rel_Fe"]; }
             set
             {
-                if (value != userEnvVars["Rel_Fe"])
+                if (value != _userEnvVars["Rel_Fe"])
                 {
-                    userEnvVars["Rel_Fe"] = value;
+                    _userEnvVars["Rel_Fe"] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }

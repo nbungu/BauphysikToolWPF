@@ -8,10 +8,7 @@ namespace BauphysikToolWPF.UI.Helper
         public string SymbolSubscript { get; set; } = string.Empty;
         public double Value { get; set; } = 0;
         public double? RequirementValue { private get; set; }
-        public string RequirementStatement
-        {
-            get { return (RequirementValue is null || RequirementValue == -1) ? "-" : RequirementValue.ToString(); }
-        }
+        public string RequirementStatement => (RequirementValue is null || RequirementValue == -1) ? "-" : RequirementValue.ToString();
         public string Unit { get; set; } = string.Empty;
         public bool IsRequirementMet { get; set; } = false;
         public Brush Color

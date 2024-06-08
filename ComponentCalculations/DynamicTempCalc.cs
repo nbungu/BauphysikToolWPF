@@ -31,8 +31,8 @@ namespace BauphysikToolWPF.ComponentCalculations
         private HeatTransferMatrix _z_Element;
         private List<HeatTransferMatrix> _z_Layers;
         private ThermalAdmittanceMatrix _y_Element;
-        private double _rsi = UserSaved.Rsi;
-        private double _rse = UserSaved.Rse;
+        private readonly double _rsi = UserSaved.Rsi;
+        private readonly double _rse = UserSaved.Rse;
 
         // public fields as Properties
         public Element Element { get; private set; }
@@ -53,8 +53,14 @@ namespace BauphysikToolWPF.ComponentCalculations
 
         public DynamicTempCalc(Element element)
         {
-            if (element is null || element.Layers.Count == 0)
+            if (element == null || element.Layers.Count == 0)
+            {
+                _z_Element = new HeatTransferMatrix();
+                _z_Layers = new List<HeatTransferMatrix>();
+                _y_Element = new ThermalAdmittanceMatrix();
+                Element = new Element();
                 return;
+            }
 
             // Assign constuctor parameter values
             Element = element;
@@ -326,5 +332,6 @@ namespace BauphysikToolWPF.ComponentCalculations
             Y21 = null; // Wert in Norm nicht definiert
             Y22 = -1 * Complex.Divide(elementMatrix.Z22, elementMatrix.Z12);
         }
+         public ThermalAdmittanceMatrix() {}
     }
 }

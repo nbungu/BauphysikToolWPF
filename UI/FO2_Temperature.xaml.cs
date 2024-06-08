@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI
         {
             // Save computation time and only recalculate if needed
             // Only if Element, Layers or EnvVars are not set or have changed: update class variables.
-            if (FO1_SetupLayer.RecalculateTemp == true)
+            if (FO1_SetupLayer.RecalculateTemp)
             {
                 StationaryTempCalculation = new StationaryTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId, layersSorted: true)); //for FO2_ViewModel
 

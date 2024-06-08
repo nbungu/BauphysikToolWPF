@@ -20,9 +20,9 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int MaterialId { get; set; }
         [NotNull, Unique]
-        public string Name { get; set; }
+        public string Name { get; set; } = "";
         [NotNull]
-        public string CategoryName { get; set; }
+        public string CategoryName { get; set; } = "";
         [NotNull]
         public int BulkDensity { get; set; }
         [NotNull]
@@ -50,9 +50,6 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (CategoryName == null)
-                    return MaterialCategory.None;
-
                 switch (CategoryName)
                 {
                     case "Wärmedämmung":

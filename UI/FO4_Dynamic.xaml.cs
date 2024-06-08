@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI
         {
             // Save computation time and only recalculate if needed
             // Only if Element, Layers or EnvVars are not set or have changed: update class variables.
-            if (FO1_SetupLayer.RecalculateDynTemp == true)
+            if (FO1_SetupLayer.RecalculateDynTemp)
             {
                 DynamicTempCalculation = new DynamicTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId, layersSorted: true));
 

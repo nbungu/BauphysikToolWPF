@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int OrientationId { get; set; }
         [NotNull]
-        public string TypeName { get; set; }
+        public string TypeName { get; set; } = "";
 
         //------Not part of the Database-----//
 
@@ -33,9 +33,6 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (TypeName == null)
-                    return OrientationType.Default;
-
                 switch (TypeName)
                 {
                     case "North":

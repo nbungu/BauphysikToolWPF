@@ -33,11 +33,11 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         // n:1 relationship with Element
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public Element Element { get; set; }
+        public Element Element { get; set; } = new Element();
 
         // 1:1 relationship with Material
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public Material Material { get; set; }
+        public Material Material { get; set; } = new Material();
 
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 
@@ -46,8 +46,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         [Ignore]
         public bool IsEffective // true = 1
         {
-            get { return Effective != 0; }
-            set { Effective = (value) ? 1 : 0; }
+            get => Effective != 0;
+            set => Effective = (value) ? 1 : 0;
         }
 
         [Ignore]
@@ -102,7 +102,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         //------Methoden-----//
 
-        public Material correspondingMaterial()
+        public Material CorrespondingMaterial()
         {
             return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId) ?? new Material();
         }

@@ -20,21 +20,25 @@ namespace BauphysikToolWPF.ComponentCalculations
         protected double _rse = UserSaved.Rse;
 
         // public fields as Properties
-        public Element Element { get; private set; } // Access is limited to the containing class or types derived from the containing class within the current assembly
-        public double RTotal { get; private set; } = 0;
-        public double UValue { get; private set; } = 0;
-        public double QValue { get; private set; } = 0;
-        public double FRsi { get; private set; } = 0;
-        public double Tsi_min { get; private set; } = 0;
-        public double Tsi { get; private set; } = 0;
-        public double Tse { get; private set; } = 0;
+        public Element Element { get; private set; }  // Access is limited to the containing class or types derived from the containing class within the current assembly
+        public double RTotal { get; private set; }
+        public double UValue { get; private set; }
+        public double QValue { get; private set; }
+        public double FRsi { get; private set; }
+        public double Tsi_min { get; private set; }
+        public double Tsi { get; private set; }
+        public double Tse { get; private set; }
         public List<KeyValuePair<double, double>> LayerTemps { get; private set; } // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
 
         // Constructor
         public StationaryTempCalc(Element element)
         {
-            if (element is null || element.Layers.Count == 0)
+            if (element == null || element.Layers.Count == 0)
+            {
+                Element = new Element();
+                LayerTemps = new List<KeyValuePair<double, double>>();
                 return;
+            }
 
             // Assign constuctor parameter values
             Element = element;
@@ -69,11 +73,11 @@ namespace BauphysikToolWPF.ComponentCalculations
         public static List<KeyValuePair<double, double>> GetLayerTemps(List<Layer> layers, double ti, double rsi, double qValue)
         {
             // Dictionaries are not ordered: Instead use List as ordered collection
-            List<KeyValuePair<double, double>> temp_List = new List<KeyValuePair<double, double>>();
+            List<KeyValuePair<double, double>> tempList = new List<KeyValuePair<double, double>>();
 
             // first tempValue (Tsi)
             double tsi = Math.Round(ti - rsi * qValue, 2);
-            temp_List.Add(new KeyValuePair<double, double>(0, tsi)); // key, value
+            tempList.Add(new KeyValuePair<double, double>(0, tsi)); // key, value
 
             // Starting from inner side
             double widthPosition = 0; // cm
@@ -82,10 +86,10 @@ namespace BauphysikToolWPF.ComponentCalculations
                 if (!layers[i].IsEffective)
                     break;
                 widthPosition += layers[i].LayerThickness;
-                double tempValue = Math.Round(temp_List.ElementAt(i).Value - layers[i].R_Value * qValue, 2);
-                temp_List.Add(new KeyValuePair<double, double>(widthPosition, tempValue));
+                double tempValue = Math.Round(tempList.ElementAt(i).Value - layers[i].R_Value * qValue, 2);
+                tempList.Add(new KeyValuePair<double, double>(widthPosition, tempValue));
             }
-            return temp_List;
+            return tempList;
 
             // TODO implement 
             /*if (widthPosition == 0)

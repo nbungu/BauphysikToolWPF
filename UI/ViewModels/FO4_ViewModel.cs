@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class FO4_ViewModel : ObservableObject
     {
-        private DynamicTempCalc _dynamicTempCalc = FO4_Dynamic.DynamicTempCalculation;
+        private readonly DynamicTempCalc _dynamicTempCalc = FO4_Dynamic.DynamicTempCalculation;
 
         /*
          * Regular Instance Variables
@@ -84,10 +84,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
         public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
 
-        public Axis[] XAxes
-        {
-            get { return DrawXAxes(); }
-        }
+        public Axis[] XAxes => DrawXAxes();
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -159,22 +156,14 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the Values above
          */
 
-        public ISeries[] DataPoints_i
-        {
-            get { return GetDataPoints_i(); }
-        }
-        public ISeries[] DataPoints_e
-        {
-            get { return GetDataPoints_e(); }
-        }
-        public Axis[] YAxes_i
-        {
-            get { return DrawYAxes(); }
-        }
-        public Axis[] YAxes_e
-        {
-            get { return DrawYAxes("right"); }
-        }
+        public ISeries[] DataPoints_i => GetDataPoints_i();
+
+        public ISeries[] DataPoints_e => GetDataPoints_e();
+
+        public Axis[] YAxes_i => DrawYAxes();
+
+        public Axis[] YAxes_e => DrawYAxes("right");
+
         private ISeries[] GetDataPoints_e()
         {
             if (_dynamicTempCalc.Element.Layers.Count == 0)

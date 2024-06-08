@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int EnvVarId { get; set; }
 
         [NotNull]
-        public string Symbol { get; set; }
+        public string Symbol { get; set; } = "";
 
         [NotNull]
         public double Value { get; set; }
@@ -29,7 +29,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         // m:n relationship with Element
         [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.CascadeRead)]
-        public List<Element> Elements { get; set; }
+        public List<Element> Elements { get; set; } = new List<Element>();
 
 
         // SQLite doesnt allow other types than TEXT, INT, REAL or BLOB 
