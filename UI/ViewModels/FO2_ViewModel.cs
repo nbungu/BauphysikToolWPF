@@ -81,12 +81,20 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the elementType Value above
          */
 
-        public CheckRequirements RequirementValues => new CheckRequirements(CurrentElement, TempCalc.UValue, TempCalc.QValue);
+        public CheckRequirements RequirementValues
+        {
+            get
+            {
+                if (TempCalc is null) return new CheckRequirements(CurrentElement, 0, 0); // TODO: make empty ctor for CheckRequirements
+                return new CheckRequirements(CurrentElement, TempCalc.UValue, TempCalc.QValue);
+            }
+        }
 
         public List<OverviewItem> OverviewItems
         {
             get
             {
+                if (TempCalc is null) return new List<OverviewItem>();
                 return new List<OverviewItem>
                 {
                     new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
@@ -155,7 +163,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Values = new ObservablePoint[]
                 {
                     new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
-                    null, // cuts the line between the points
+                    new ObservablePoint(), // null cuts the line between the points // TODO check if null works
                     new ObservablePoint(tsi_Pos, tsi),
                     new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
                     new ObservablePoint(tsi_Pos-2, Ti)
@@ -205,7 +213,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     new ObservablePoint(tse_Pos+2, Te),
                     new ObservablePoint(tse_Pos+0.8, tse-0.9*deltaTe),
                     new ObservablePoint(tse_Pos, tse),
-                    null, // cuts the line between the points
+                    new ObservablePoint(), // null cuts the line between the points // TODO check if null works
                     new ObservablePoint(tse_Pos+0.8, tse+0.9*deltaTe),
                 },
                 Fill = null,
@@ -219,6 +227,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private Axis[] DrawXAxes()
         {
+            if (TempCalc is null) return Array.Empty<Axis>();
             return new Axis[]
             {
                 new Axis

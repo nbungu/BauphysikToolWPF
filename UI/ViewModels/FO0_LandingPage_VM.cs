@@ -142,7 +142,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElement))]
-        private List<Element> _elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending) ?? new List<Element>();
+        private List<Element> _elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElement))]

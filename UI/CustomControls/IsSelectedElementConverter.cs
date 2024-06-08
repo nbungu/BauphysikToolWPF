@@ -6,7 +6,7 @@ namespace BauphysikToolWPF.UI.CustomControls
 {
     public class IsSelectedElementConverter : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[]? values, Type targetType, object parameter, CultureInfo culture)
         {
             // values are the objects from the MultiBindings (Paths), "ElementId" and "SelectedElementId"
             // parameter is from ConverterParameter Property if set.

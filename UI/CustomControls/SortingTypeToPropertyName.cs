@@ -24,12 +24,12 @@ namespace BauphysikToolWPF.UI.CustomControls
                     case ElementGroupingType.Color:
                         return element.Color;
                     case ElementGroupingType.Tag:
-                        return element.TagList[0];
+                        return element.TagList?[0] ?? element.Construction.TypeName;
                     default:
                         return element.Construction.TypeName;
                 }
             }
-            return null;
+            return ""; // null
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

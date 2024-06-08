@@ -61,13 +61,20 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DeleteLayer(Layer? selectedLayer)
         {
-            if (selectedLayer is null) DatabaseAccess.DeleteAllLayers(); // If no specific Layer is selected, delete All
-            else DatabaseAccess.DeleteLayer(selectedLayer); // Delete selected Layer
-            
-            // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
-            // Set focus on Layer above
-            SelectedLayer = selectedLayer.LayerPosition == 0 ? 0 : selectedLayer.LayerPosition - 1;
+            if (selectedLayer is null)
+            {
+                DatabaseAccess.DeleteAllLayers(); // If no specific Layer is selected, delete All
+                // Update XAML Binding Property by fetching from DB
+                Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            }
+            else
+            {
+                DatabaseAccess.DeleteLayer(selectedLayer); // Delete selected Layer
+                // Update XAML Binding Property by fetching from DB
+                Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+                // Set focus on Layer above
+                SelectedLayer = selectedLayer.LayerPosition == 0 ? 0 : selectedLayer.LayerPosition - 1;
+            }
         }
 
         [RelayCommand]
@@ -197,14 +204,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerRects))]
         [NotifyPropertyChangedFor(nameof(ElementWidth))]
-        private List<Layer> layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+        private List<Layer> _layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
 
         [ObservableProperty]
-        private Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+        private Element _currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerRects))]
-        private int selectedLayer = -1;
+        private int _selectedLayer = -1;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties

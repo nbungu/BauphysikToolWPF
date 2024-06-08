@@ -8,7 +8,7 @@ namespace BauphysikToolWPF.UI.CustomControls
     {
         // value is the object from the Binding (Path), e.g. int "ElementId"
         // parameter is from ConverterParameter Property if set.
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             return value != null; // Value object is SelectedItem from a ListView
         }

@@ -7,7 +7,7 @@ namespace BauphysikToolWPF.UI.CustomControls
 {
     public class IsHeaderConverter : IValueConverter
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             // value is the object from the Binding (ItemsSource of ListBox): e.g. string "Header1" or "SetupLayer"
             if (value is null) return false;

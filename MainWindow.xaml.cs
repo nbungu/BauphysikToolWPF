@@ -36,8 +36,7 @@ namespace BauphysikToolWPF
 
         public static void SetPage(NavigationContent page)
         {
-            if (navigationMenuListBox is null || projectBoxHeader is null)
-                return;
+            if (navigationMenuListBox is null || projectBoxHeader is null) return;
             /*
              * MainWindow.xaml changes the ContentPage based on the 'SelectedItem' string when toggled from 'NavigationListBox'
              * The string values of the SelectedItem are defined at 'NavigationMenuItems'
@@ -56,7 +55,6 @@ namespace BauphysikToolWPF
                     navigationMenuListBox.SelectedIndex = -1;
                     projectBoxHeader.Tag = "LandingPage";
                     break;
-                //
                 case NavigationContent.SetupLayer:
                     navigationMenuListBox.SelectedItem = "SetupLayer";
                     break;

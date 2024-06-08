@@ -67,9 +67,7 @@ namespace BauphysikToolWPF.UI
                 EnvVarId = envVar.EnvVarId,
             };
             // Only insert every envVar once! 
-            if (DatabaseAccess.UpdateElementEnvVars(elemEnvVars) == 0)
-                // If no row is updated ( == 0), create a new one
-                DatabaseAccess.CreateElementEnvVars(elemEnvVars);
+            if (DatabaseAccess.UpdateElementEnvVars(elemEnvVars) == 0) DatabaseAccess.CreateElementEnvVars(elemEnvVars); // If no row is updated ( == 0), create a new one
         }
 
         // UI Methods
@@ -79,8 +77,7 @@ namespace BauphysikToolWPF.UI
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             // Only save if leaving this page
-            if (this.IsVisible)
-                return;
+            if (IsVisible) return;
 
             Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
             currentElement.Image = (currentElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(layers_ItemsControl) : null;
