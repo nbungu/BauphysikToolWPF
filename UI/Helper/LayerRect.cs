@@ -24,8 +24,7 @@ namespace BauphysikToolWPF.UI.Helper
 
         public LayerRect(double elementWidth, double canvasWidth, double canvasHeight, Layer layer, LayerRect? previousLayerRect)
         {
-            if (previousLayerRect != null)
-                Left = previousLayerRect.Left + previousLayerRect.RectWidth;
+            if (previousLayerRect != null) Left = previousLayerRect.Left + previousLayerRect.RectWidth;
 
             double scalingFactor = layer.LayerThickness / elementWidth; // from  0 ... 1
             double rectangleWidth = canvasWidth * scalingFactor;

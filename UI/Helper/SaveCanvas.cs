@@ -11,8 +11,7 @@ namespace BauphysikToolWPF.UI.Helper
     {
         public static void SaveAsPNG(ItemsControl target, string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/")
         {
-            if (target.ItemsSource is null)
-                return;
+            if (target.ItemsSource is null) return;
 
             //path = "C:\\Users\\arnes\\source\\repos\\BauphysikToolWPF\\bin\\Debug\\net6.0-windows";
 

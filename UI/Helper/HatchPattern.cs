@@ -66,7 +66,7 @@ namespace BauphysikToolWPF.UI.Helper
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush()
             {
-                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
+                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.Black, lineThickness), hatchContent),
                 TileMode = TileMode.FlipXY,
                 Viewport = new Rect(0, 0, 128, 128),
                 ViewportUnits = BrushMappingMode.Absolute,
@@ -90,9 +90,9 @@ namespace BauphysikToolWPF.UI.Helper
             hatchContent.Children.Add(line2);
 
             // Use the hatch lines as the Drawing's content
-            DrawingBrush brush = new DrawingBrush()
+            DrawingBrush brush = new DrawingBrush
             {
-                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
+                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.Black, lineThickness), hatchContent),
                 TileMode = TileMode.Tile,
                 Viewport = new Rect(0, 0, 32, 32),
                 ViewportUnits = BrushMappingMode.Absolute,
@@ -116,7 +116,7 @@ namespace BauphysikToolWPF.UI.Helper
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush()
             {
-                Drawing = new GeometryDrawing(new SolidColorBrush(Colors.White), null, hatchContent),
+                Drawing = new GeometryDrawing(new SolidColorBrush(Colors.White), new Pen(), hatchContent),
                 TileMode = TileMode.Tile,
                 Viewport = new Rect(0, 0, 16, 80),
                 ViewportUnits = BrushMappingMode.Absolute,
@@ -138,7 +138,7 @@ namespace BauphysikToolWPF.UI.Helper
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush()
             {
-                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
+                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.Black, lineThickness), hatchContent),
                 TileMode = TileMode.Tile,
                 Viewport = new Rect(0, 0, 32, 32),
                 ViewportUnits = BrushMappingMode.Absolute,
@@ -212,7 +212,7 @@ namespace BauphysikToolWPF.UI.Helper
             hatchContent.Children.Add(pathGeometry);
 
             // Use the hatch lines as the Drawing's content
-            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent) };
+            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.Black, lineThickness), hatchContent) };
 
             return brush;
         }
@@ -234,7 +234,7 @@ namespace BauphysikToolWPF.UI.Helper
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush()
             {
-                Drawing = new GeometryDrawing(null, new Pen(Brushes.Black, lineThickness), hatchContent),
+                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.Black, lineThickness), hatchContent),
                 TileMode = TileMode.Tile,
                 Viewport = new Rect(0, 0, 16, 80),
                 ViewportUnits = BrushMappingMode.Absolute,

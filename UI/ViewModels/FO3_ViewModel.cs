@@ -30,19 +30,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public double Te { get; private set; } = UserSaved.Te;
         public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi;
         public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe;
-        public List<OverviewItem> OverviewItems
-        {
-            get
-            {
-                return new List<OverviewItem>
-                {
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = Glaser.Tsi, RequirementValue = Glaser.TaupunktMax_i, IsRequirementMet = Glaser.Tsi >= Glaser.TaupunktMax_i, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = Glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = Glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = Glaser.FRsi >= 0.7 },
-                    new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = UserSaved.Rel_Fi, RequirementValue = Glaser.PhiMax, IsRequirementMet = UserSaved.Rel_Fi < Glaser.PhiMax, Unit = "%" }
-                };
-            }
-        }
+        public List<OverviewItem> OverviewItems => GetOverviewItemsList();
         public ISeries[] DataPoints => GetDataPoints();
         public RectangularSection[] LayerSections => DrawLayerSections();
         public Axis[] XAxes => DrawXAxes();
@@ -89,6 +77,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * private Methods
          */
+
+        private List<OverviewItem> GetOverviewItemsList()
+        {
+            if (Glaser is null) return new List<OverviewItem>();
+
+            return new List<OverviewItem>
+            {
+                new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = Glaser.Tsi, RequirementValue = Glaser.TaupunktMax_i, IsRequirementMet = Glaser.Tsi >= Glaser.TaupunktMax_i, Unit = "°C" },
+                new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = Glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+                new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = Glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = Glaser.FRsi >= 0.7 },
+                new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = UserSaved.Rel_Fi, RequirementValue = Glaser.PhiMax, IsRequirementMet = UserSaved.Rel_Fi < Glaser.PhiMax, Unit = "%" }
+            };
+        }
 
         private RectangularSection[] DrawLayerSections()
         {
