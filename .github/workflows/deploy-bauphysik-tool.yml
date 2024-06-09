@@ -52,5 +52,5 @@ jobs:
     - uses: csexton/release-asset-action@v3
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        pattern: BauphysikToolWPF/bin/Release/net7.0-windows10.0.17763.0/win-x64/publish/*.exe
+        pattern: BauphysikToolWPF/bin/Release/net7.0-windows10.0.17763.0/publish/win-x64/*.exe
         release-url: ${{ steps.create_release.outputs.upload_url }}
