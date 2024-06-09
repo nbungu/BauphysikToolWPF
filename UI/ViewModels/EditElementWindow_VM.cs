@@ -160,9 +160,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private List<string>? _tagList = EditElementWindow.SelectedElement?.TagList;
         [ObservableProperty]
-        private string? _selectedElementComment = EditElementWindow.SelectedElement?.Comment;
+        private string _selectedElementComment = EditElementWindow.SelectedElement?.Comment ?? "";
         [ObservableProperty]
-        private string? _selectedElementColor = EditElementWindow.SelectedElement?.ColorCode;
+        private string _selectedElementColor = EditElementWindow.SelectedElement?.ColorCode ?? "#00FFFFFF";
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties

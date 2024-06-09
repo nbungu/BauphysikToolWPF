@@ -37,7 +37,8 @@ namespace BauphysikToolWPF.SQLiteRepo
         [ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
         public int ProjectId { get; set; }
         public byte[]? Image { get; set; }
-        public string? ColorCode { get; set; } = "#FF0000FF";
+        [NotNull]
+        public string ColorCode { get; set; } = "#00FFFFFF";
         public string? Tag { get; set; }
         public string? Comment { get; set; }
 

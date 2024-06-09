@@ -71,7 +71,7 @@
             <WrapPanel ItemWidth="Auto" ItemHeight="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
 
-        <!--Here: Binding (DataContext) is typeof 'Tag_List' set by ItemsSource Property-->
+        <!--Here: Binding (DataContext) is typeof 'TagList' set by ItemsSource Property-->
         <DataTemplate x:Key="WrapPanelItem_DesignTemplate">
             <Grid Margin="4">
                 <!-- 'RemoveTagCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
@@ -119,7 +119,7 @@
                 <RadioButton Grid.Row="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Blue" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
                 <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Yellow" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
                 <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Brown" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Transparent" Tag="{StaticResource ButtonIcon_Cancel_B}" Margin="4" Command="{Binding ChangeColorCommand}"/>
+                <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Transparent" Tag="{StaticResource ButtonIcon_Cancel_B}" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
             </Grid>
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
@@ -133,7 +133,7 @@
                 <TextBox x:Name="TagInputField" Visibility="{Binding TextBoxVisible}" HorizontalContentAlignment="Left" MaxLength="48" Height="32"/>
                 <Button Visibility="{Binding EnterBtnVisible}" Grid.Column="1" Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Add_B}" Command="{Binding EnterTagCommand}" CommandParameter="{Binding Text, ElementName=TagInputField}" Height="32" Width="32" Margin="8,0,0,0"/>
             </Grid>
-            <ItemsControl ItemsSource="{Binding Tag_List}"
+            <ItemsControl ItemsSource="{Binding TagList}"
                           ItemsPanel="{StaticResource WrapPanel_Template}"
                           ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
                           Background="Transparent"                          

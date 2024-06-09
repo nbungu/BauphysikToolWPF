@@ -12,8 +12,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
     public class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
-        // TODO: no absolute Path
-        private static readonly string _dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\SQLiteRepo\\DemoDB.db"));
+        private static readonly string _dbPath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\SQLiteRepo\\DemoDB.db"));
         private static readonly SQLiteConnection _sqlConn = new SQLiteConnection(_dbPath);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate

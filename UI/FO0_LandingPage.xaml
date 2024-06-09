@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
-             xmlns:helper="clr-namespace:BauphysikToolWPF.SQLiteRepo.Helper"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
@@ -24,7 +23,7 @@
         <controls:GroupingTypeToPropertyName x:Key="GroupingTypeToPropertyName"/>
 
         <!--Custom ButtonStyle_Sorting based on Button03_Mini: changing icon, transparent, rounded corners, click effects -->
-        <Style x:Key="ButtonStyle_Sorting" TargetType="{x:Type Button}">
+        <Style x:Key="ButtonStyleSorting" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value="Placeholder"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -81,7 +80,7 @@
 
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
-        <Style x:Key="ButtonStyle_WrapPanel" TargetType="{x:Type Button}">
+        <Style x:Key="ButtonStyleWrapPanel" TargetType="{x:Type Button}">
             <Setter Property="Content" Value="{Binding ElementId}"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryMediumBrush}"/>
@@ -101,7 +100,7 @@
                                     <Image x:Name="comment_icon" Source="{StaticResource ButtonIcon_Comment_B}" Margin="0,0,4,0"/>
                                     <Image x:Name="tag_icon" Source="{StaticResource ButtonIcon_Tags_B}" Margin="0,0,4,0"/>
                                 </StackPanel>
-                                <Label Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
+                                <Label Grid.Row="0" Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
                                 <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
                             </Grid>
                         </Border>
@@ -114,13 +113,13 @@
                                 <Setter TargetName="tag_icon" Property="Height" Value="0"/>
                                 <Setter TargetName="tag_icon" Property="Margin" Value="0"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding Comment}" Value="{x:Null}">
+                            <DataTrigger Binding="{Binding Comment}" Value="">
                                 <Setter TargetName="comment_icon" Property="Visibility" Value="Hidden"/>
                                 <Setter TargetName="comment_icon" Property="Width" Value="0"/>
                                 <Setter TargetName="comment_icon" Property="Height" Value="0"/>
                                 <Setter TargetName="tag_icon" Property="Margin" Value="0"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding ColorCode}" Value="{x:Null}">
+                            <DataTrigger Binding="{Binding ColorCode}" Value="#00FFFFFF">
                                 <Setter TargetName="ellipse_icon" Property="Visibility" Value="Hidden"/>
                                 <Setter TargetName="ellipse_icon" Property="Width" Value="0"/>
                                 <Setter TargetName="ellipse_icon" Property="Height" Value="0"/>
@@ -149,12 +148,12 @@
             </Style.Triggers>
         </Style>
 
-        <ItemsPanelTemplate x:Key="WrapPanel_Template">
+        <ItemsPanelTemplate x:Key="WrapPanelTemplate">
             <WrapPanel ItemWidth="144" ItemHeight="208" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
         
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
-        <DataTemplate x:Key="WrapPanelItem_DesignTemplate">
+        <DataTemplate x:Key="WrapPanelItemDesignTemplate">
             <Grid Margin="8">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="148"/>
@@ -163,10 +162,9 @@
                 <!--'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
                 Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
                 <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                        Content="{Binding ElementId}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding ElementId}"
-                        Style="{StaticResource ButtonStyle_WrapPanel}"
+                        Style="{StaticResource ButtonStyleWrapPanel}"
                         MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>
                         <!--ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
@@ -200,12 +198,12 @@
             </Grid>
         </DataTemplate>
 
-        <ItemsPanelTemplate x:Key="Tags_WrapPanel_Template">
+        <ItemsPanelTemplate x:Key="TagsWrapPanelTemplate">
             <WrapPanel ItemWidth="Auto" ItemHeight="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
         
         <!--Here: Binding (DataContext) is typeof 'TagList' set by ItemsSource Property-->
-        <DataTemplate x:Key="Tags_WrapPanelItem_DesignTemplate">
+        <DataTemplate x:Key="TagsWrapPanelItemDesignTemplate">
             <Grid Margin="4">
                 <Button Content="{Binding}" Style="{StaticResource ButtonStyle05_Tag_B}"/>
             </Grid>
@@ -218,7 +216,7 @@
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
         
-        <Style x:Key="WrapPanel_GroupingHeader" TargetType="{x:Type GroupItem}">
+        <Style x:Key="WrapPanelGroupingHeader" TargetType="{x:Type GroupItem}">
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
@@ -282,18 +280,18 @@
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <Label Content="Gruppieren nach" Margin="0,0,8,0"/>
                 <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle_Sorting}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,4,8"/>
+                <Button Style="{StaticResource ButtonStyleSorting}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,4,8"/>
             </StackPanel>
             
-            <ScrollViewer x:Name="WrapPanel_ScrollViewer" Grid.Row="2" Grid.Column="1" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <ItemsControl Width="{Binding ElementName=WrapPanel_ScrollViewer, Path=ActualWidth}"
-                          ItemsPanel="{StaticResource WrapPanel_Template}"
-                          ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
+            <ScrollViewer x:Name="WrapPanelScrollViewer" Grid.Row="2" Grid.Column="1" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <ItemsControl Width="{Binding ElementName=WrapPanelScrollViewer, Path=ActualWidth}"
+                          ItemsPanel="{StaticResource WrapPanelTemplate}"
+                          ItemTemplate="{StaticResource WrapPanelItemDesignTemplate}"
                           Background="Transparent"
                           BorderThickness="0"
                           Tag="{Binding}">
                     <ItemsControl.GroupStyle>
-                        <GroupStyle ContainerStyle="{StaticResource WrapPanel_GroupingHeader}">
+                        <GroupStyle ContainerStyle="{StaticResource WrapPanelGroupingHeader}">
                             <GroupStyle.Panel>
                                 <ItemsPanelTemplate>
                                     <VirtualizingStackPanel Orientation="Vertical"/>
@@ -332,7 +330,7 @@
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
 
-            <Border x:Name="test" Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderThickness="0">
+            <Border x:Name="Test" Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderThickness="0">
                 <StackPanel Margin="16">
                     <StackPanel Orientation="Horizontal">
                         <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
@@ -364,8 +362,8 @@
                         <Label Content="Tags:" HorizontalAlignment="Left"/>
                     </StackPanel>
                     <ItemsControl ItemsSource="{Binding SelectedElement.TagList}"
-                        ItemsPanel="{StaticResource Tags_WrapPanel_Template}"
-                        ItemTemplate="{StaticResource Tags_WrapPanelItem_DesignTemplate}"
+                        ItemsPanel="{StaticResource TagsWrapPanelTemplate}"
+                        ItemTemplate="{StaticResource TagsWrapPanelItemDesignTemplate}"
                         Background="Transparent"                          
                         BorderThickness="0"
                         Margin="0,8,0,8"/>
