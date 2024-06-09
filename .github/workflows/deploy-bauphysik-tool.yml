@@ -7,7 +7,7 @@ on:
 
 env:
   SOLUTION_NAME: BauphysikToolWPF.sln
-  PROJECT_PATH: BauphysikToolWPF/BauphysikToolWPF.csproj
+  PROJECT_PATH: ./BauphysikToolWPF.csproj
 
 jobs:
 
