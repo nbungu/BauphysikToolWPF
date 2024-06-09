@@ -37,7 +37,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
         public int ProjectId { get; set; }
         public byte[]? Image { get; set; }
-        public string? ColorCode { get; set; }
+        public string? ColorCode { get; set; } = "#FF0000FF";
         public string? Tag { get; set; }
         public string? Comment { get; set; }
 
@@ -68,8 +68,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (ColorCode is null)
-                    return Colors.Transparent;
+                if (ColorCode is null) return Colors.Transparent;
                 return (Color)ColorConverter.ConvertFromString(ColorCode);
             }
         }
@@ -90,8 +89,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Image is null)
-                    return new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png"));
+                if (Image is null) return new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png"));
 
                 BitmapImage image = new BitmapImage();
                 // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
@@ -115,9 +113,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Layers == null)
-                    return 0;
-
+                if (Layers.Count == 0) return 0;
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
@@ -133,9 +129,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Layers == null)
-                    return 0;
-
+                if (Layers.Count == 0) return 0;
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
@@ -152,9 +146,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Layers == null)
-                    return 0;
-
+                if (Layers.Count == 0) return 0;
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
@@ -169,9 +161,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Layers == null)
-                    return 0;
-
+                if (Layers.Count == 0) return 0;
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {

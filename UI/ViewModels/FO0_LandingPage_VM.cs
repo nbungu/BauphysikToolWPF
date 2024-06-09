@@ -167,5 +167,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public static ElementSortingType SelectedSorting => (ElementSortingType)_sortingPropertyIndex;
 
         public static ElementGroupingType SelectedGrouping => (ElementGroupingType)_groupingPropertyIndex;
+
     }
 }
