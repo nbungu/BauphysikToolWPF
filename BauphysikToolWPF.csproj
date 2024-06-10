@@ -42,7 +42,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Ordner_Icon.ico" />
     <None Remove="Resources\Icons\add_element.png" />
     <None Remove="Resources\Icons\add_element_w.png" />
     <None Remove="Resources\Icons\add_layer.png" />
@@ -142,10 +141,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Ordner_Icon.ico" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include=".github\workflows\deploy-bauphysik-tool.yml" />
     <None Include="Resources\Dump.xaml" />
   </ItemGroup>
@@ -163,7 +158,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Ordner_Icon.ico" />
     <Resource Include="Resources\Icons\add_element.png" />
     <Resource Include="Resources\Icons\add_element_w.png" />
     <Resource Include="Resources\Icons\add_layer.png" />
@@ -259,7 +253,7 @@
 
   <ItemGroup>
     <None Update="SQLiteRepo\DemoDB.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

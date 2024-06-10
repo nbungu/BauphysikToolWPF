@@ -5,7 +5,9 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BauphysikToolWPF", "BauphysikToolWPF.csproj", "{264742C5-AC5C-403E-821F-498BC27C4B23}"
 EndProject
-Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "Installer", "..\Installer\Installer.wapproj", "{5643556C-87EA-4F9D-969E-3D63E06444AD}"
+Project("{C7167F0D-BC9F-4E6E-AFE1-012C56B48DB5}") = "MSIXInstaller", "..\Installer\MSIXInstaller.wapproj", "{5643556C-87EA-4F9D-969E-3D63E06444AD}"
+EndProject
+Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "SetupInstaller", "..\SetupInstaller\SetupInstaller.vdproj", "{70852634-6C62-448A-99CC-0CCEE8D5C484}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -65,6 +67,16 @@ Global
 		{5643556C-87EA-4F9D-969E-3D63E06444AD}.Release|x86.ActiveCfg = Release|x86
 		{5643556C-87EA-4F9D-969E-3D63E06444AD}.Release|x86.Build.0 = Release|x86
 		{5643556C-87EA-4F9D-969E-3D63E06444AD}.Release|x86.Deploy.0 = Release|x86
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Debug|Any CPU.ActiveCfg = Debug
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Debug|ARM.ActiveCfg = Debug
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Debug|ARM64.ActiveCfg = Debug
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Debug|x64.ActiveCfg = Debug
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Debug|x86.ActiveCfg = Debug
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Release|Any CPU.ActiveCfg = Release
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Release|ARM.ActiveCfg = Release
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Release|ARM64.ActiveCfg = Release
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Release|x64.ActiveCfg = Release
+		{70852634-6C62-448A-99CC-0CCEE8D5C484}.Release|x86.ActiveCfg = Release
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
