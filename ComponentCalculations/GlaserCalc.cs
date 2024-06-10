@@ -21,18 +21,15 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double TaupunktMax_i { get; private set; }
         public double P_sat_i { get; private set; }
         public double P_sat_e { get; private set; }
-        public List<KeyValuePair<double, double>> LayerPsat { get; private set; } // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
-        public List<KeyValuePair<double, double>> LayerP { get; private set; } // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
+        public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
+        public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
+        public bool IsValid { get; private set; }
 
         // (Instance-) Constructor
-        public GlaserCalc(Element? element) : base(element)
+        public GlaserCalc() : base() {}
+        public GlaserCalc(Element element) : base(element)
         {
-            if (element == null || element.Layers.Count == 0)
-            {
-                LayerPsat = new List<KeyValuePair<double, double>>();
-                LayerP = new List<KeyValuePair<double, double>>();
-                return;
-            }
+            if (element.Layers.Count == 0) return;
 
             // Calculated parameters (private setter)
             PhiMax = GetMaxRelFi(_ti, _te, FRsi);             // Gl. 3-3; S.37
@@ -41,6 +38,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             P_sat_e = P_sat(_te);                            // Gl. 2.4; S.164.  Sättigungsdampfdruck außen (Luft)
             LayerPsat = GetLayerPsat();                       // Gl. 2.4; S.164. Sättigungsdampfdrücke für jede Schichtgrenze
             LayerP = GetLayerP(_rel_Fi, _rel_Fe, _ti, _te, Element.SdThickness); // Gl. 2.3; S.164, Wasserdampfpartialdruck (innen und außen)
+            IsValid = true;
         }
 
         // Methods

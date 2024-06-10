@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class FO4_ViewModel : ObservableObject
     {
-        private readonly DynamicTempCalc? _dynamicTempCalc = FO4_Dynamic.DynamicTempCalculation;
+        private readonly DynamicTempCalc _dynamicTempCalc = FO4_Dynamic.DynamicTempCalculation;
 
         /*
          * Regular Instance Variables
@@ -29,7 +29,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_dynamicTempCalc is null) return new List<OverviewItem>();
+                if (!_dynamicTempCalc.IsValid) return new List<OverviewItem>();
                 return new List<OverviewItem>(7)
                 {
                     new OverviewItem { SymbolBase = "R", SymbolSubscript = "dyn", Value = _dynamicTempCalc.DynamicRValue, Unit = "m²K/W" },
@@ -46,7 +46,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_dynamicTempCalc is null) return new List<OverviewItem>();
+                if (!_dynamicTempCalc.IsValid) return new List<OverviewItem>();
                 return new List<OverviewItem>(6)
                 {
                     new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift_i) / 3600, 2), Unit = "h" },
@@ -59,7 +59,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_dynamicTempCalc is null) return new List<OverviewItem>();
+                if (!_dynamicTempCalc.IsValid) return new List<OverviewItem>();
                 return new List<OverviewItem>(6)
                 {
                     new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift_e) / 3600, 2), Unit = "h" },
@@ -73,7 +73,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_dynamicTempCalc is null) return new List<LayerRect>();
+                if (!_dynamicTempCalc.IsValid) return new List<LayerRect>();
                 List<LayerRect> rectangles = new List<LayerRect>();
                 foreach (Layer layer in _dynamicTempCalc.Element.Layers)
                 {
@@ -169,8 +169,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private ISeries[] GetDataPoints_e()
         {
-            if (_dynamicTempCalc is null || _dynamicTempCalc.Element.Layers.Count == 0)
-                return Array.Empty<ISeries>();
+            if (!_dynamicTempCalc.IsValid) return Array.Empty<ISeries>();
 
             LineSeries<ObservablePoint> surfaceTemp_e = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
@@ -207,8 +206,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] GetDataPoints_i()
         {
-            if (_dynamicTempCalc is null || _dynamicTempCalc.Element.Layers.Count == 0)
-                return Array.Empty<ISeries>();
+            if (!_dynamicTempCalc.IsValid) return Array.Empty<ISeries>();
 
             LineSeries<ObservablePoint> surfaceTemp_i = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {

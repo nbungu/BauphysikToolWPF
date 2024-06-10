@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int OrientationId { get; set; }
         [NotNull]
-        public string TypeName { get; set; } = "";
+        public string TypeName { get; set; } = string.Empty;
 
         //------Not part of the Database-----//
 

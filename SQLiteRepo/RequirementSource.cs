@@ -23,19 +23,19 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int RequirementSourceId { get; set; }
 
         [NotNull]
-        public string Name { get; set; } = "";
+        public string Name { get; set; } = string.Empty;
 
         [NotNull]
         public int Year { get; set; }
 
         [NotNull]
-        public string Specification { get; set; } = "";
+        public string Specification { get; set; } = string.Empty;
 
         [NotNull]
-        public string RequirementType { get; set; } = "";
+        public string RequirementType { get; set; } = string.Empty;
 
         [NotNull]
-        public string RequirementUnit { get; set; } = "";
+        public string RequirementUnit { get; set; } = string.Empty;
 
         //------Not part of the Database-----//
 

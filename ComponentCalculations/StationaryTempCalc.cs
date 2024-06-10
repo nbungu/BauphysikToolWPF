@@ -20,7 +20,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         protected double _rse = UserSaved.Rse;
 
         // public fields as Properties
-        public Element Element { get; private set; }  // Access is limited to the containing class or types derived from the containing class within the current assembly
+        public Element Element { get; private set; } = new Element(); // Access is limited to the containing class or types derived from the containing class within the current assembly
         public double RTotal { get; private set; }
         public double UValue { get; private set; }
         public double QValue { get; private set; }
@@ -28,17 +28,14 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double Tsi_min { get; private set; }
         public double Tsi { get; private set; }
         public double Tse { get; private set; }
-        public List<KeyValuePair<double, double>> LayerTemps { get; private set; } // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
+        public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>(); // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
+        public bool IsValid { get; private set; }
 
-        // Constructor
-        public StationaryTempCalc(Element? element)
+        // Constructors
+        public StationaryTempCalc() {}
+        public StationaryTempCalc(Element element)
         {
-            if (element == null || element.Layers.Count == 0)
-            {
-                Element = new Element();
-                LayerTemps = new List<KeyValuePair<double, double>>();
-                return;
-            }
+            if (element.Layers.Count == 0) return;
 
             // Assign constuctor parameter values
             Element = element;
@@ -52,6 +49,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             Tse = LayerTemps.LastOrDefault().Value;
             FRsi = GetfRsiValue(Tsi, _ti, _te);                             // Gl. 3-1; S.36. Schimmelwahrscheinlichkeit
             Tsi_min = GetTsiMin(_ti, _te);                                  // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7. Schimmelwahrscheinlichkeit
+            IsValid = true;
         }
 
         // public static, avoid full instance creation process if only a single Value needs to be Calculated 

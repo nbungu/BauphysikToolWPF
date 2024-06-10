@@ -20,7 +20,7 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         [ForeignKey(typeof(Requirement))] // FK for the m:n relation
         public int RequirementId { get; set; }
-
-        public string? Comment { get; set; }
+        [NotNull]
+        public string Comment { get; set; } = string.Empty;
     }
 }

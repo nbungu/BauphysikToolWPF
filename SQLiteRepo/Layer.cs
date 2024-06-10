@@ -55,8 +55,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Material == null || !IsEffective)
-                    return 0;
+                if (!Material.IsValid || !IsEffective) return 0;
                 return Math.Round((this.LayerThickness / 100) / Material.ThermalConductivity, 3);
             }
         }
@@ -66,8 +65,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Material == null)
-                    return 0;
+                if (!Material.IsValid) return 0;
                 return Math.Round((this.LayerThickness / 100) * Material.DiffusionResistance, 3);
             }
         }
@@ -77,8 +75,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Material == null || !IsEffective)
-                    return 0;
+                if (!Material.IsValid || !IsEffective) return 0;
                 return Math.Round(this.LayerThickness / 100 * Material.BulkDensity, 3);
             }
         }
@@ -90,8 +87,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Material == null || !IsEffective)
-                    return 0;
+                if (!Material.IsValid || !IsEffective) return 0;
                 return Math.Round(Material.ThermalConductivity / Convert.ToDouble(Material.BulkDensity / Material.SpecificHeatCapacity), 2);
             }
         }

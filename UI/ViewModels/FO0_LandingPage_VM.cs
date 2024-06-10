@@ -11,16 +11,8 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO0_LandingPage_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "LandingPage";
-
-        /*
-         * Static Class Properties:
-         * If List is already loaded, use existing - static - List.
-         * To only load Propery once. Every other getter request then uses the static class variable.
-         */
-
+        public string Title => "LandingPage";
         public List<string> SortingProperties => ElementOrganisor.SortingTypes; // Has to match ElementSortingType enum values (+Order)
-
         public List<string> GroupingProperties => ElementOrganisor.GroupingTypes; // Has to match ElementSortingType enum values (+Order)
         
         /*
@@ -37,24 +29,24 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Create New Element / Edit Existing Element
         [RelayCommand]
-        private void EditElement(int? selectedElementId) // CommandParameter is the Content Property of the Button which holds the ElementId
+        private void EditElement(int selectedElementId = -1) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
-            var window = (selectedElementId is null) ? new EditElementWindow() : new EditElementWindow(DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId)));
+            var window = (selectedElementId == -1) ? new EditElementWindow() : new EditElementWindow(DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId)));
 
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
 
             // After Window closed:
-            if (selectedElementId is null) return;
+            if (selectedElementId == -1) return;
 
             // Update XAML Binding Property
             Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
         }
 
         [RelayCommand]
-        private void DeleteElement(int? selectedElementId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
+        private void DeleteElement(int selectedElementId = -1) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
         {
-            if (selectedElementId is null) return;
+            if (selectedElementId == -1) return;
 
             // Delete selected Element
             DatabaseAccess.DeleteElementById(Convert.ToInt32(selectedElementId));
@@ -87,9 +79,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void SelectElement(int? selectedElementId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        private void SelectElement(int selectedElementId = -1) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
-            if (selectedElementId is null) return;
+            if (selectedElementId == -1) return;
 
             // Set the currently selected Element
             FO0_LandingPage.SelectedElementId = Convert.ToInt32(selectedElementId);
@@ -99,9 +91,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void CopyElement(int? selectedElementId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        private void CopyElement(int selectedElementId = -1) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
-            if (selectedElementId is null) return;
+            if (selectedElementId == -1) return;
 
             // Create copy of selected Element and add to DB
             Element elementCopy = DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId));

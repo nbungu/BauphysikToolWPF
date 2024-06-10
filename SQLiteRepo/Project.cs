@@ -23,10 +23,10 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int ProjectId { get; set; }
-
-        public string? Name { get; set; }
-
-        public string? UserName { get; set; }
+        [NotNull]
+        public string Name { get; set; } = string.Empty;
+        [NotNull]
+        public string UserName { get; set; } = string.Empty;
 
         [NotNull]
         public int BuildingUsage { get; set; } // Boolean values are stored as integers 0 (false) and 1 (true)

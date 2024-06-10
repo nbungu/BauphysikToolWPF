@@ -20,27 +20,31 @@ namespace BauphysikToolWPF.SQLiteRepo
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int MaterialId { get; set; }
         [NotNull, Unique]
-        public string Name { get; set; } = "";
+        public string Name { get; set; } = string.Empty;
         [NotNull]
-        public string CategoryName { get; set; } = "";
+        public string CategoryName { get; set; } = string.Empty;
         [NotNull]
         public int BulkDensity { get; set; }
         [NotNull]
         public double ThermalConductivity { get; set; }
         [NotNull]
         public double DiffusionResistance { get; set; }
-        public string? ColorCode { get; set; }
-        public int? SpecificHeatCapacity { get; set; }
+        [NotNull]
+        public string ColorCode { get; set; } = "#00FFFFFF";
+        [NotNull]
+        public int SpecificHeatCapacity { get; set; }
 
         //------Not part of the Database-----//
+
+        [Ignore]
+        public bool IsValid => BulkDensity > 0 && ThermalConductivity > 0;
 
         [Ignore]
         public Color Color // HEX ColorCode (e.g. #dddddd) to 'Color' Type
         {
             get
             {
-                if (ColorCode == null)
-                    return Colors.Transparent;
+                if (ColorCode == "#00FFFFFF") return Colors.Transparent;
                 return (Color)ColorConverter.ConvertFromString(ColorCode);
             }
         }

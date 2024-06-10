@@ -113,10 +113,10 @@
                     <RowDefinition Height=".5*"/>
                 </Grid.RowDefinitions>
                 <RadioButton GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Black" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Gray" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Red" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Green" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Row="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Blue" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="0" Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Gray" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="0" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Red" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="0" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Green" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="1" Grid.Column="0" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Blue" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
                 <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Yellow" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
                 <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Brown" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
                 <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Transparent" Tag="{StaticResource ButtonIcon_Cancel_B}" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
@@ -130,7 +130,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Button Grid.ColumnSpan="2" Visibility="{Binding TagBtnVisible}" Style="{StaticResource ButtonStyle03_B_Transparent}" Tag="{StaticResource ButtonIcon_Add_B}" Content="Neues Tag hinzufügen" Command="{Binding ToggleTagInputCommand}" Height="32" FontWeight="Regular"/>
-                <TextBox x:Name="TagInputField" Visibility="{Binding TextBoxVisible}" HorizontalContentAlignment="Left" MaxLength="48" Height="32"/>
+                <TextBox Grid.Column="0" x:Name="TagInputField" Visibility="{Binding TextBoxVisible}" HorizontalContentAlignment="Left" MaxLength="48" Height="32"/>
                 <Button Visibility="{Binding EnterBtnVisible}" Grid.Column="1" Style="{StaticResource ButtonStyle03_Mini}" Tag="{StaticResource ButtonIcon_Add_B}" Command="{Binding EnterTagCommand}" CommandParameter="{Binding Text, ElementName=TagInputField}" Height="32" Width="32" Margin="8,0,0,0"/>
             </Grid>
             <ItemsControl ItemsSource="{Binding TagList}"

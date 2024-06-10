@@ -18,14 +18,15 @@ namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class FO3_ViewModel : ObservableObject
     {
+        private readonly GlaserCalc _glaser = FO3_Moisture.GlaserCalculation;
+
         /*
          * Regular Instance Variables as Properties
          * 
          * Not depending on UI changes. No Observable function.
          */
 
-        public string Title { get; } = "Moisture";
-        public GlaserCalc? Glaser { get; set; } = FO3_Moisture.GlaserCalculation;
+        public string Title => "Moisture";
         public double Ti { get; private set; } = UserSaved.Ti;
         public double Te { get; private set; } = UserSaved.Te;
         public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi;
@@ -80,26 +81,26 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private List<OverviewItem> GetOverviewItemsList()
         {
-            if (Glaser is null) return new List<OverviewItem>();
+            if (!_glaser.IsValid) return new List<OverviewItem>();
 
             return new List<OverviewItem>
             {
-                new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = Glaser.Tsi, RequirementValue = Glaser.TaupunktMax_i, IsRequirementMet = Glaser.Tsi >= Glaser.TaupunktMax_i, Unit = "°C" },
-                new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = Glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = Glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = Glaser.FRsi >= 0.7 },
-                new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = UserSaved.Rel_Fi, RequirementValue = Glaser.PhiMax, IsRequirementMet = UserSaved.Rel_Fi < Glaser.PhiMax, Unit = "%" }
+                new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _glaser.Tsi, RequirementValue = _glaser.TaupunktMax_i, IsRequirementMet = _glaser.Tsi >= _glaser.TaupunktMax_i, Unit = "°C" },
+                new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = _glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+                new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = _glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = _glaser.FRsi >= 0.7 },
+                new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = UserSaved.Rel_Fi, RequirementValue = _glaser.PhiMax, IsRequirementMet = UserSaved.Rel_Fi < _glaser.PhiMax, Unit = "%" }
             };
         }
 
         private RectangularSection[] DrawLayerSections()
         {
-            if (Glaser is null || Glaser.Element.Layers.Count == 0) return Array.Empty<RectangularSection>();
+            if (!_glaser.IsValid) return Array.Empty<RectangularSection>();
 
-            RectangularSection[] rects = new RectangularSection[Glaser.Element.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[_glaser.Element.Layers.Count];
 
             //TODO: Round values of left and right
             double left = 0;
-            foreach (Layer layer in Glaser.Element.Layers)
+            foreach (Layer layer in _glaser.Element.Layers)
             {
                 double layerWidth = layer.Sd_Thickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
@@ -119,13 +120,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] GetDataPoints()
         {
-            if (Glaser is null || Glaser.Element.Layers.Count == 0) return Array.Empty<ISeries>();
+            if (!_glaser.IsValid) return Array.Empty<ISeries>();
 
-            ObservablePoint[] p_Curve_Values = new ObservablePoint[Glaser.LayerP.Count()]; // represents the temperature points
-            for (int i = 0; i < Glaser.LayerP.Count(); i++)
+            ObservablePoint[] p_Curve_Values = new ObservablePoint[_glaser.LayerP.Count()]; // represents the temperature points
+            for (int i = 0; i < _glaser.LayerP.Count(); i++)
             {
-                double x = Glaser.LayerP.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(Glaser.LayerP.ElementAt(i).Value, 2); // Temperature in °C
+                double x = _glaser.LayerP.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(_glaser.LayerP.ElementAt(i).Value, 2); // Temperature in °C
                 p_Curve_Values[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             LineSeries<ObservablePoint> p_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -140,11 +141,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 XToolTipLabelFormatter = (chartPoint) => $"pi: {chartPoint.Coordinate.PrimaryValue} Pa",
                 YToolTipLabelFormatter = null
             };
-            ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[Glaser.LayerPsat.Count()]; // represents the temperature points
-            for (int i = 0; i < Glaser.LayerPsat.Count(); i++)
+            ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[_glaser.LayerPsat.Count()]; // represents the temperature points
+            for (int i = 0; i < _glaser.LayerPsat.Count(); i++)
             {
-                double x = Glaser.LayerPsat.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(Glaser.LayerPsat.ElementAt(i).Value, 2); // Temperature in °C
+                double x = _glaser.LayerPsat.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(_glaser.LayerPsat.ElementAt(i).Value, 2); // Temperature in °C
                 p_sat_Curve_Values[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             LineSeries<ObservablePoint> p_sat_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series

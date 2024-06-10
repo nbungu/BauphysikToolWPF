@@ -9,7 +9,7 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class FO4_Dynamic : UserControl
     {
-        public static DynamicTempCalc? DynamicTempCalculation { get; private set; }
+        public static DynamicTempCalc DynamicTempCalculation { get; private set; } = new DynamicTempCalc();
 
         public FO4_Dynamic()
         {
@@ -22,6 +22,7 @@ namespace BauphysikToolWPF.UI
                 // Reset Recalculate Flag
                 FO1_SetupLayer.RecalculateDynTemp = false;
             }
+
             InitializeComponent();
             // -> Initializes xaml objects
             // -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)

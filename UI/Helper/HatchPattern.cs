@@ -7,13 +7,13 @@ namespace BauphysikToolWPF.UI.Helper
 {
     public static class HatchPattern
     {
-        public static DrawingBrush? PlasterBrush { get; private set; }
-        public static DrawingBrush? InsulationBrush { get; private set; }
-        public static DrawingBrush? WoodBrush { get; private set; }
-        public static DrawingBrush? MasonryBrush { get; private set; }
-        public static DrawingBrush? ConcreteBrush { get; private set; }
-        public static DrawingBrush? AirLayerBrush { get; private set; }
-        public static DrawingBrush? SealantBrush { get; private set; }
+        //public static DrawingBrush? PlasterBrush { get; private set; }
+        //public static DrawingBrush? InsulationBrush { get; private set; }
+        //public static DrawingBrush? WoodBrush { get; private set; }
+        //public static DrawingBrush? MasonryBrush { get; private set; }
+        //public static DrawingBrush? ConcreteBrush { get; private set; }
+        //public static DrawingBrush? AirLayerBrush { get; private set; }
+        //public static DrawingBrush? SealantBrush { get; private set; }
 
         public static DrawingBrush GetHatchPattern(MaterialCategory category, double lineThickness, double rectWidth, double rectHeight)
         {
@@ -23,17 +23,17 @@ namespace BauphysikToolWPF.UI.Helper
                 case MaterialCategory.Insulation:
                     return GetInsulationBrush(rectWidth, rectHeight, lineThickness); // Draw new every time! Updates on every layer change, not only once
                 case MaterialCategory.Concrete:
-                    return ConcreteBrush ??= GetConcreteBrush(lineThickness);
+                    return GetConcreteBrush(lineThickness);
                 //case MaterialCategory.Wood:
                 //    return WoodBrush ??= GetWoodBrush(lineThickness);
                 case MaterialCategory.Masonry:
-                    return MasonryBrush ??= GetMasonryBrush(lineThickness);
+                    return GetMasonryBrush(lineThickness);
                 case MaterialCategory.Plasters:
-                    return PlasterBrush ??= GetPlasterBrush(lineThickness);
+                    return GetPlasterBrush(lineThickness);
                 case MaterialCategory.Sealant:
-                    return SealantBrush ??= GetSealantBrush();
+                    return GetSealantBrush();
                 case MaterialCategory.Air:
-                    return AirLayerBrush ??= GetAirLayerBrush(lineThickness);
+                    return GetAirLayerBrush(lineThickness);
                 default:
                     return new DrawingBrush();
             }
