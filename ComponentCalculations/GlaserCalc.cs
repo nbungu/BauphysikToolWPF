@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double P_sat_e { get; private set; }
         public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
         public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
-        public bool IsValid { get; private set; }
+        public new bool IsValid { get; private set; }
 
         // (Instance-) Constructor
         public GlaserCalc() : base() {}

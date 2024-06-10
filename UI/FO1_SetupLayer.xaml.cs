@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.SessionData;
+﻿using System;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.Helper;
 using System.Text.RegularExpressions;
@@ -80,7 +81,7 @@ namespace BauphysikToolWPF.UI
             if (IsVisible) return;
 
             Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
-            currentElement.Image = (currentElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(layers_ItemsControl) : null;
+            currentElement.Image = (currentElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(layers_ItemsControl) : Array.Empty<byte>();
             // Update in Database
             DatabaseAccess.UpdateElement(currentElement);
         }
