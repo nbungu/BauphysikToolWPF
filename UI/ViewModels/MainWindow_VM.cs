@@ -8,7 +8,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class MainWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from MainWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "Main";
+        public string Title => "Main";
 
         /*
          * MVVM Commands - UI Interaction with Commands

@@ -28,14 +28,14 @@ namespace BauphysikToolWPF.ComponentCalculations
         public const int NormHeatCap = 1080; // Normspeicherkapazität = 0,3 Wh/(kgK) = 1080 J/(kgK) = 1080 Ws/(kgK)
 
         // private Instance Variables
-        private HeatTransferMatrix _zElement;
-        private List<HeatTransferMatrix> _zLayers;
-        private ThermalAdmittanceMatrix _yElement;
+        private HeatTransferMatrix _zElement = new HeatTransferMatrix();
+        private List<HeatTransferMatrix> _zLayers = new List<HeatTransferMatrix>();
+        private ThermalAdmittanceMatrix _yElement = new ThermalAdmittanceMatrix();
         private readonly double _rsi = UserSaved.Rsi;
         private readonly double _rse = UserSaved.Rse;
 
         // public fields as Properties
-        public Element Element { get; private set; }
+        public Element Element { get; private set; } = new Element();
         public double DynamicRValue { get; private set; } // R_dyn [m²K/W]
         public double DynamicUValue { get; private set; } // U_dyn [W/m²K]
         public double DecrementFactor { get; private set; } // f [-] - Abminderungsfaktor
@@ -50,17 +50,12 @@ namespace BauphysikToolWPF.ComponentCalculations
         public double ArealHeatCapacity_i { get; private set; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
         public double ArealHeatCapacity_e { get; private set; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
         public double EffectiveThermalMass { get; private set; } // M [kg/m²]
+        public bool IsValid { get; private set; }
 
-        public DynamicTempCalc(Element? element)
+        public DynamicTempCalc() {}
+        public DynamicTempCalc(Element element)
         {
-            if (element == null || element.Layers.Count == 0)
-            {
-                _zElement = new HeatTransferMatrix();
-                _zLayers = new List<HeatTransferMatrix>();
-                _yElement = new ThermalAdmittanceMatrix();
-                Element = new Element();
-                return;
-            }
+            if (element.Layers.Count == 0) return;
 
             // Assign constuctor parameter values
             Element = element;
@@ -82,6 +77,7 @@ namespace BauphysikToolWPF.ComponentCalculations
             ThermalAdmittance_i = GetThermalAdmittance(_yElement, "i");
             ThermalAdmittance_e = GetThermalAdmittance(_yElement, "e");
             EffectiveThermalMass = GetThermalMass(_yElement);
+            IsValid = true;
         }
 
         // public Instance Methods, when user requires additional Data. 
@@ -332,6 +328,6 @@ namespace BauphysikToolWPF.ComponentCalculations
             Y21 = null; // Wert in Norm nicht definiert
             Y22 = -1 * Complex.Divide(elementMatrix.Z22, elementMatrix.Z12);
         }
-         public ThermalAdmittanceMatrix() {}
+        public ThermalAdmittanceMatrix() {}
     }
 }

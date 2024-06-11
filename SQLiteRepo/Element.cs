@@ -25,9 +25,6 @@ namespace BauphysikToolWPF.SQLiteRepo
         [PrimaryKey, NotNull, AutoIncrement, Unique] // SQL Attributes
         public int ElementId { get; set; }
 
-        [NotNull]
-        public string Name { get; set; } = "";
-
         [ForeignKey(typeof(Construction))] // FK for the 1:1 relationship with Construction
         public int ConstructionId { get; set; }
 
@@ -36,11 +33,16 @@ namespace BauphysikToolWPF.SQLiteRepo
 
         [ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
         public int ProjectId { get; set; }
-        public byte[]? Image { get; set; }
+        [NotNull]
+        public string Name { get; set; } = string.Empty;
+        [NotNull]
+        public byte[] Image { get; set; } = Array.Empty<byte>();
         [NotNull]
         public string ColorCode { get; set; } = "#00FFFFFF";
-        public string? Tag { get; set; }
-        public string? Comment { get; set; }
+        [NotNull]
+        public string Tag { get; set; } = string.Empty;
+        [NotNull]
+        public string Comment { get; set; } = string.Empty;
 
         //------Not part of the Database-----//
 
@@ -65,20 +67,23 @@ namespace BauphysikToolWPF.SQLiteRepo
         public List<EnvVars> EnvVars { get; set; } = new List<EnvVars>();
 
         [Ignore]
+        public bool IsValid => Name != string.Empty && Layers.Count > 0;
+
+        [Ignore]
         public Color Color // HEX 'ColorCode' Property to 'Color' Type
         {
             get
             {
-                if (ColorCode is null) return Colors.Transparent;
+                if (ColorCode == "#00FFFFFF") return Colors.Transparent;
                 return (Color)ColorConverter.ConvertFromString(ColorCode);
             }
         }
 
         [Ignore]
-        public List<string>? TagList // Converts string of Tags, separated by Comma, to a List of Tags
+        public List<string> TagList // Converts string of Tags, separated by Comma, to a List of Tags
         {
-            get => Tag?.Split(',').ToList(); // Splits elements of a string into a List
-            set => Tag = (value == null) ? null : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
+            get => Tag.Split(',').ToList(); // Splits elements of a string into a List
+            set => Tag = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
         }
 
         [Ignore]
@@ -90,7 +95,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         {
             get
             {
-                if (Image is null) return new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png"));
+                if (Image == Array.Empty<byte>()) return new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png"));
 
                 BitmapImage image = new BitmapImage();
                 // use using to call Dispose() after use of unmanaged resources. GC cannot manage this

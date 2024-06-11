@@ -9,7 +9,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO0_ProjectPage_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "ProjectPage";
+        public string Title => "ProjectPage";
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -25,10 +25,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // TODO: use Enums as parameter
         [RelayCommand]
-        private void ChangeBuildingStats(string? property)
+        private void ChangeBuildingStats(string property = "")
         {
-            if (property is null) return;
-
             var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
             switch (property)
             {
@@ -51,20 +49,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void ChangeProjectName(string? property)
+        private void ChangeProjectName(string property  = "")
         {
-            if (property is null) return;
-
             var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
             proj.Name = property;
             DatabaseAccess.UpdateProject(proj);
         }
 
         [RelayCommand]
-        private void ChangeProjectEditor(string? property)
+        private void ChangeProjectEditor(string property = "")
         {
-            if (property is null) return;
-
             var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
             proj.UserName = property;
             DatabaseAccess.UpdateProject(proj);

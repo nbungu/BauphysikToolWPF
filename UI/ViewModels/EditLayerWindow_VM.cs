@@ -11,7 +11,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class EditLayerWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from EditLayerWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "EditLayerWindow";
+        public string Title => "EditLayerWindow";
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -98,7 +98,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]
-        private string _heatCapacity = EditLayerWindow.SelectedLayer?.Material.SpecificHeatCapacity?.ToString() ?? "";
+        private string _heatCapacity = EditLayerWindow.SelectedLayer?.Material.SpecificHeatCapacity.ToString() ?? "";
 
 
         /*

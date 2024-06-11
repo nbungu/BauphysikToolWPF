@@ -19,13 +19,14 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for FO2_Temperature.cs: Used in xaml as "DataContext"
     public partial class FO2_ViewModel : ObservableObject
     {
+        private readonly StationaryTempCalc _tempCalc = FO2_Temperature.StationaryTempCalculation;
+
         /*
          * Regular Instance Variables as Properties
          * 
          * Not depending on UI changes. No Observable function.
          */
-        public string Title { get; } = "Temperature";
-        public StationaryTempCalc? TempCalc { get; private set; } = FO2_Temperature.StationaryTempCalculation;
+        public string Title => "Temperature";
         public double Ti { get; private set; } = UserSaved.Ti;
         public double Te { get; private set; } = UserSaved.Te;
         public double Rsi { get; private set; } = UserSaved.Rsi;
@@ -85,8 +86,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (TempCalc is null) return new CheckRequirements(CurrentElement, 0, 0); // TODO: make empty ctor for CheckRequirements
-                return new CheckRequirements(CurrentElement, TempCalc.UValue, TempCalc.QValue);
+                if (!_tempCalc.IsValid) return new CheckRequirements(CurrentElement, 0, 0); // TODO: make empty ctor for CheckRequirements
+                return new CheckRequirements(CurrentElement, _tempCalc.UValue, _tempCalc.QValue);
             }
         }
 
@@ -94,16 +95,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (TempCalc is null) return new List<OverviewItem>();
+                if (!_tempCalc.IsValid) return new List<OverviewItem>();
                 return new List<OverviewItem>
                 {
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = TempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = TempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = TempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOK, Unit = "W/m²K" },
-                    new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = TempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOK, Unit = "W/m²" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = TempCalc.Tsi, RequirementValue = TempCalc.Tsi_min, IsRequirementMet = TempCalc.Tsi >= TempCalc.Tsi_min, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = TempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = TempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = TempCalc.FRsi >= 0.7 },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = _tempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = _tempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = _tempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOK, Unit = "W/m²K" },
+                    new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = _tempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOK, Unit = "W/m²" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _tempCalc.Tsi, RequirementValue = _tempCalc.Tsi_min, IsRequirementMet = _tempCalc.Tsi >= _tempCalc.Tsi_min, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = _tempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = _tempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCalc.FRsi >= 0.7 },
                 };
             }
         }
@@ -114,12 +115,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private RectangularSection[] DrawLayerSections()
         {
-            if (TempCalc is null || TempCalc.Element.Layers.Count == 0) return Array.Empty<RectangularSection>();
+            if (!_tempCalc.IsValid) return Array.Empty<RectangularSection>();
 
-            RectangularSection[] rects = new RectangularSection[TempCalc.Element.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[_tempCalc.Element.Layers.Count];
 
             double left = 0;
-            foreach (Layer layer in TempCalc.Element.Layers)
+            foreach (Layer layer in _tempCalc.Element.Layers)
             {
                 double layerWidth = layer.LayerThickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
@@ -136,7 +137,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 left = right; // Add new layer at left edge of previous layer
             }
             //TODO: is hardcoded
-            //fRsi frsi = new fRsi(TempCalc.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
+            //fRsi frsi = new fRsi(_tempCalc.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
             /*rects[position+1] = new RectangularSection
             {
                 Yi = StationaryTempCalc.TsiMin,
@@ -152,10 +153,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] GetDataPoints()
         {
-            if (TempCalc is null || TempCalc.Element.Layers.Count == 0) return Array.Empty<ISeries>();
+            if (!_tempCalc.IsValid) return Array.Empty<ISeries>();
 
-            double tsi_Pos = TempCalc.LayerTemps.First().Key;
-            double tsi = TempCalc.LayerTemps.First().Value;
+            double tsi_Pos = _tempCalc.LayerTemps.First().Key;
+            double tsi = _tempCalc.LayerTemps.First().Value;
             double deltaTi = Math.Abs(Ti - tsi);
 
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -176,11 +177,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 YToolTipLabelFormatter = null
             };
 
-            ObservablePoint[] tempValues = new ObservablePoint[TempCalc.LayerTemps.Count]; // represents the temperature points
-            for (int i = 0; i < TempCalc.LayerTemps.Count; i++)
+            ObservablePoint[] tempValues = new ObservablePoint[_tempCalc.LayerTemps.Count]; // represents the temperature points
+            for (int i = 0; i < _tempCalc.LayerTemps.Count; i++)
             {
-                double x = TempCalc.LayerTemps.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(TempCalc.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
+                double x = _tempCalc.LayerTemps.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(_tempCalc.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
                 tempValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             // Set properties & add temperature points to the series
@@ -203,8 +204,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
 
-            double tse_Pos = TempCalc.LayerTemps.Last().Key;
-            double tse = TempCalc.LayerTemps.Last().Value;
+            double tse_Pos = _tempCalc.LayerTemps.Last().Key;
+            double tse = _tempCalc.LayerTemps.Last().Value;
             double deltaTe = Math.Abs(Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
@@ -227,7 +228,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private Axis[] DrawXAxes()
         {
-            if (TempCalc is null) return Array.Empty<Axis>();
+            if (!_tempCalc.IsValid) return Array.Empty<Axis>();
             return new Axis[]
             {
                 new Axis
@@ -240,7 +241,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     TextSize = 14,
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 },
                     MinLimit = - 2,
-                    MaxLimit = TempCalc.Element.Thickness_cm + 2
+                    MaxLimit = _tempCalc.Element.Thickness_cm + 2
                 }
                 /*new Axis
                 {

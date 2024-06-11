@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int RequirementSourceId { get; set; }
 
         [NotNull]
-        public string RefNumber { get; set; } = "";
+        public string RefNumber { get; set; } = string.Empty;
 
         [NotNull]
         public double ValueA { get; set; }

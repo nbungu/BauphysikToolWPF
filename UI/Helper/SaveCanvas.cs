@@ -34,9 +34,9 @@ namespace BauphysikToolWPF.UI.Helper
             encoder.Save(fileStream);
         }
 
-        public static byte[]? SaveAsBLOB(ItemsControl target)
+        public static byte[] SaveAsBLOB(ItemsControl target)
         {
-            if (target.ItemsSource is null) return null;
+            if (target.ItemsSource is null) return Array.Empty<byte>();
 
             // Convert the BitmapImage to a byte array
 

@@ -16,14 +16,14 @@ namespace BauphysikToolWPF.SQLiteRepo
         public int EnvVarId { get; set; }
 
         [NotNull]
-        public string Symbol { get; set; } = "";
+        public string Symbol { get; set; } = string.Empty;
 
         [NotNull]
         public double Value { get; set; }
-
-        public string? Comment { get; set; }
-
-        public string? Unit { get; set; }
+        [NotNull]
+        public string Comment { get; set; } = string.Empty;
+        [NotNull]
+        public string Unit { get; set; } = string.Empty;
 
         //------Not part of the Database-----//
 

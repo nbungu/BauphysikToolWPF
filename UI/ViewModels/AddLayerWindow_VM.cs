@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "AddLayerWindow";
+        public string Title => "AddLayerWindow";
         public List<string> DistinctCategories
         {
             get

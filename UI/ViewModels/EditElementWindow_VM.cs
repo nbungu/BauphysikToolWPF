@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class EditElementWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from EditElementWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "EditElementWindow";
+        public string Title => "EditElementWindow";
 
         /*
          * Static Class Properties:
@@ -20,18 +20,10 @@ namespace BauphysikToolWPF.UI.ViewModels
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
 
-        private static List<string>? _constructionTypeList;
-        public List<string> ConstructionType_List
-        {
-            get { return _constructionTypeList ??= DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList(); }
-        }
+        public List<string> ConstructionType_List => DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList();
 
-        private static List<string>? _orientationList;
-        public List<string> Orientation_List
-        {
-            get { return _orientationList ??= DatabaseAccess.GetOrientations().Select(e => e.TypeName).ToList(); }
-        }
-
+        public List<string> Orientation_List => DatabaseAccess.GetOrientations().Select(e => e.TypeName).ToList();
+        
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -60,7 +52,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (newTag is null || newTag == string.Empty) return;
             // When null, create one first
-            TagList ??= new List<string>();
             TagList = TagList.Append(newTag).ToList();
             ToggleTagInput();
         }
@@ -68,11 +59,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void RemoveTag(string? tag)
         {
-            if (tag is null || TagList is null) return;
+            if (tag is null || TagList.Count == 0) return;
             // create a copy to update Tag_List, since .Remove is void Method
-            var list = TagList;
-            list.Remove(tag);
-            TagList = (list.Count == 0) ? null : list.ToList();
+            TagList.Remove(tag);
         }
 
         [RelayCommand]
@@ -108,7 +97,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     OrientationId = orientationId,
                     ProjectId = FO0_ProjectPage.SelectedProjectId,
                     TagList = TagList,
-                    Comment = (SelectedElementComment == string.Empty) ? null : SelectedElementComment,
+                    Comment = SelectedElementComment,
                     ColorCode = SelectedElementColor
                 };
                 // Update in Database
@@ -129,7 +118,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 EditElementWindow.SelectedElement.OrientationId = orientationId;
                 EditElementWindow.SelectedElement.ProjectId = FO0_ProjectPage.SelectedProjectId;
                 EditElementWindow.SelectedElement.TagList = TagList;
-                EditElementWindow.SelectedElement.Comment = (SelectedElementComment == string.Empty) ? null : SelectedElementComment;
+                EditElementWindow.SelectedElement.Comment = SelectedElementComment;
                 EditElementWindow.SelectedElement.ColorCode = SelectedElementColor;
 
                 // Update in Database
@@ -158,7 +147,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private Visibility _enterBtnVisible = Visibility.Hidden;
         [ObservableProperty]
-        private List<string>? _tagList = EditElementWindow.SelectedElement?.TagList;
+        private List<string> _tagList = EditElementWindow.SelectedElement?.TagList ?? new List<string>();
         [ObservableProperty]
         private string _selectedElementComment = EditElementWindow.SelectedElement?.Comment ?? "";
         [ObservableProperty]

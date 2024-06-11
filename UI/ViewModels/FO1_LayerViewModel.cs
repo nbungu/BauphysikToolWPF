@@ -14,24 +14,24 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class FO1_LayerViewModel : ObservableObject
     {
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
-        public string Title { get; } = "SetupLayer";
+        public string Title => "SetupLayer";
 
         /*
          * Static Class Properties:
          * If List<string> is null, then get List from Database. If List is already loaded, use existing List.
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
-        public List<string?> Ti_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList();
+        public List<string> Ti_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList();
 
-        public List<string?> Te_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList();
+        public List<string> Te_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList();
 
-        public List<string?> Rsi_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Select(e => e.Comment).ToList();
+        public List<string> Rsi_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Select(e => e.Comment).ToList();
 
-        public List<string?> Rse_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rse").Select(e => e.Comment).ToList();
+        public List<string> Rse_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rse").Select(e => e.Comment).ToList();
 
-        public List<string?> Rel_Fi_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Select(e => e.Comment).ToList();
+        public List<string> Rel_Fi_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Select(e => e.Comment).ToList();
 
-        public List<string?> Rel_Fe_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Select(e => e.Comment).ToList();
+        public List<string> Rel_Fe_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Select(e => e.Comment).ToList();
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -334,10 +334,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             get
             {
                 double fullWidth = 0;
-                foreach (Layer layer in Layers)
-                {
-                    fullWidth += layer.LayerThickness;
-                }
+                Layers.ForEach(l => fullWidth += l.LayerThickness);
                 return fullWidth;
             }
         }

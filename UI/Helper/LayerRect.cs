@@ -13,12 +13,12 @@ namespace BauphysikToolWPF.UI.Helper
         public double RectWidth { get; set; } // [px]
         public double RectWidth_cm { get; set; } // [cm]
         public double RectHeight { get; set; } // [px]
-        public string RectPosition { get; set; } = "";
+        public string RectPosition { get; set; }
 
         // Appearance of the Layer as a 2D Rectangle
-        public Brush RectFill { get; set; } = new SolidColorBrush();
-        public Brush RectHatchPattern { get; set; } = new SolidColorBrush();
-        public Brush RectStroke { get; set; } = new SolidColorBrush();
+        public Brush RectFill { get; set; }
+        public Brush RectHatchPattern { get; set; }
+        public Brush RectStroke { get; set; }
         public double RectStrokeThickness { get; set; }
         public double RectOpacity { get; set; }
 

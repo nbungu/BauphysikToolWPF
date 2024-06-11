@@ -15,8 +15,7 @@ namespace BauphysikToolWPF.UI
             get { return _selectedProjectId; }
             set
             {
-                if (value != _selectedProjectId)
-                    OnSelectedProjectChanged();
+                if (value != _selectedProjectId) OnSelectedProjectChanged();
                 _selectedProjectId = value;
             }
         }
