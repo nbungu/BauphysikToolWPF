@@ -62,7 +62,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
+            Elements.Clear();
+            var test = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
+            
+            // TODO: Zuweisung zu Elements geht nicht?!
+            Elements = test;
         }
 
         [RelayCommand]
