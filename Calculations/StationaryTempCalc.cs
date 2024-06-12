@@ -1,10 +1,10 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.SessionData;
 
-namespace BauphysikToolWPF.ComponentCalculations
+namespace BauphysikToolWPF.Calculations
 {
     /*
      * When creating this as a 'new' Instance, all fields will auto calculate the values (using the current user envVars)
@@ -20,16 +20,16 @@ namespace BauphysikToolWPF.ComponentCalculations
         protected double _rse = UserSaved.Rse;
 
         // public fields as Properties
-        public Element Element { get; private set; } = new Element(); // Access is limited to the containing class or types derived from the containing class within the current assembly
-        public double RTotal { get; private set; }
-        public double UValue { get; private set; }
-        public double QValue { get; private set; }
-        public double FRsi { get; private set; }
-        public double Tsi_min { get; private set; }
-        public double Tsi { get; private set; }
-        public double Tse { get; private set; }
-        public List<KeyValuePair<double, double>> LayerTemps { get; private set; } = new List<KeyValuePair<double, double>>(); // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
-        public bool IsValid { get; private set; }
+        public Element Element { get; } = new Element(); // Access is limited to the containing class or types derived from the containing class within the current assembly
+        public double RTotal { get; }
+        public double UValue { get; }
+        public double QValue { get; }
+        public double FRsi { get; }
+        public double Tsi_min { get; }
+        public double Tsi { get; }
+        public double Tse { get; }
+        public SortedDictionary<double, double> LayerTemps { get; } = new SortedDictionary<double, double>(); // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
+        public bool IsValid { get; }
 
         // Constructors
         public StationaryTempCalc() {}
@@ -68,14 +68,14 @@ namespace BauphysikToolWPF.ComponentCalculations
             return Math.Round(uValue * (ti - te), 3);
         }
 
-        public static List<KeyValuePair<double, double>> GetLayerTemps(List<Layer> layers, double ti, double rsi, double qValue)
+        public static SortedDictionary<double, double> GetLayerTemps(List<Layer> layers, double ti, double rsi, double qValue)
         {
             // Dictionaries are not ordered: Instead use List as ordered collection
-            List<KeyValuePair<double, double>> tempList = new List<KeyValuePair<double, double>>();
+            var tempList = new SortedDictionary<double, double>();
 
             // first tempValue (Tsi)
             double tsi = Math.Round(ti - rsi * qValue, 2);
-            tempList.Add(new KeyValuePair<double, double>(0, tsi)); // key, value
+            tempList.Add(0, tsi); // key, value
 
             // Starting from inner side
             double widthPosition = 0; // cm
@@ -85,7 +85,7 @@ namespace BauphysikToolWPF.ComponentCalculations
                     break;
                 widthPosition += layers[i].LayerThickness;
                 double tempValue = Math.Round(tempList.ElementAt(i).Value - layers[i].R_Value * qValue, 2);
-                tempList.Add(new KeyValuePair<double, double>(widthPosition, tempValue));
+                tempList.Add(widthPosition, tempValue);
             }
             return tempList;
 

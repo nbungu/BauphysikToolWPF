@@ -1,19 +1,19 @@
-﻿using BauphysikToolWPF.UI;
-using SQLite;
-using SQLiteNetExtensions.Attributes;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BauphysikToolWPF.UI;
+using SQLite;
+using SQLiteNetExtensions.Attributes;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
  * https://social.msdn.microsoft.com/Forums/en-US/85b1141b-2144-40c2-b9b3-e1e6cdb0ea02/announcement-cascade-operations-in-sqlitenet-extensions?forum=xamarinlibraries
  */
 
-namespace BauphysikToolWPF.SQLiteRepo
+namespace BauphysikToolWPF.Models
 {
     public class Element
     {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BauphysikToolWPF.SQLiteRepo.Helper
+namespace BauphysikToolWPF.Models.Helper
 {
     public enum ElementSortingType
     {

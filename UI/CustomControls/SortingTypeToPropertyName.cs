@@ -1,9 +1,9 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
-using BauphysikToolWPF.SQLiteRepo.Helper;
-using BauphysikToolWPF.UI.ViewModels;
+﻿using BauphysikToolWPF.UI.ViewModels;
 using System;
 using System.Globalization;
 using System.Windows.Data;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {

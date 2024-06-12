@@ -1,6 +1,6 @@
-﻿using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.SQLiteRepo;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
+using BauphysikToolWPF.Calculations;
+using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI
 {

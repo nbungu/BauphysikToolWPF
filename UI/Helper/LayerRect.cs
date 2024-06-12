@@ -1,5 +1,5 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
-using System.Windows.Media;
+﻿using System.Windows.Media;
+using BauphysikToolWPF.Models;
 
 namespace BauphysikToolWPF.UI.Helper
 {

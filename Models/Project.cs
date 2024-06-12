@@ -1,8 +1,8 @@
-﻿using SQLite;
+﻿using System.Collections.Generic;
+using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System.Collections.Generic;
 
-namespace BauphysikToolWPF.SQLiteRepo
+namespace BauphysikToolWPF.Models
 {
     public enum BuildingUsageType
     {

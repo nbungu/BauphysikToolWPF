@@ -1,7 +1,7 @@
 ﻿using SQLite;
 using SQLiteNetExtensions.Attributes;
 
-namespace BauphysikToolWPF.SQLiteRepo
+namespace BauphysikToolWPF.Models
 {
     // Verknüpfungstabelle für m:n Beziehung von 'Construction' und 'Requirement'
     // Intermediate class, not used directly anywhere in the code

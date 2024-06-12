@@ -1,6 +1,4 @@
-﻿using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,6 +11,9 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Calculations;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {

@@ -23,20 +23,20 @@ namespace BauphysikToolWPF
     }
     public partial class MainWindow : Window
     {
-        public static ListBox? navigationMenuListBox;
+        private static ListBox? _navigationMenuListBox;
 
-        public static Border? projectBoxHeader;
+        private static Border? _projectBoxHeader;
 
         public MainWindow()
         {
             InitializeComponent();
-            navigationMenuListBox = this.NavigationMenuListBox;
-            projectBoxHeader = this.ProjectBoxHeader;
+            _navigationMenuListBox = this.NavigationMenuListBox;
+            _projectBoxHeader = this.ProjectBoxHeader;
         }
 
         public static void SetPage(NavigationContent page)
         {
-            if (navigationMenuListBox is null || projectBoxHeader is null) return;
+            if (_navigationMenuListBox is null || _projectBoxHeader is null) return;
             /*
              * MainWindow.xaml changes the ContentPage based on the 'SelectedItem' string when toggled from 'NavigationListBox'
              * The string values of the SelectedItem are defined at 'NavigationMenuItems'
@@ -48,30 +48,30 @@ namespace BauphysikToolWPF
             switch (page)
             {
                 case NavigationContent.ProjectPage:
-                    navigationMenuListBox.SelectedIndex = -1;
-                    projectBoxHeader.Tag = "ProjectPage";
+                    _navigationMenuListBox.SelectedIndex = -1;
+                    _projectBoxHeader.Tag = "ProjectPage";
                     break;
                 case NavigationContent.LandingPage:
-                    navigationMenuListBox.SelectedIndex = -1;
-                    projectBoxHeader.Tag = "LandingPage";
+                    _navigationMenuListBox.SelectedIndex = -1;
+                    _projectBoxHeader.Tag = "LandingPage";
                     break;
                 case NavigationContent.SetupLayer:
-                    navigationMenuListBox.SelectedItem = "SetupLayer";
+                    _navigationMenuListBox.SelectedItem = "SetupLayer";
                     break;
                 case NavigationContent.SetupEnv:
-                    navigationMenuListBox.SelectedItem = "SetupEnv";
+                    _navigationMenuListBox.SelectedItem = "SetupEnv";
                     break;
                 case NavigationContent.TemperatureCurve:
-                    navigationMenuListBox.SelectedItem = "Temperature";
+                    _navigationMenuListBox.SelectedItem = "Temperature";
                     break;
                 case NavigationContent.GlaserCurve:
-                    navigationMenuListBox.SelectedItem = "Moisture";
+                    _navigationMenuListBox.SelectedItem = "Moisture";
                     break;
                 case NavigationContent.DynamicHeatCalc:
-                    navigationMenuListBox.SelectedItem = "Dynamic";
+                    _navigationMenuListBox.SelectedItem = "Dynamic";
                     break;
                 default:
-                    navigationMenuListBox.SelectedItem = "LandingPage";
+                    _navigationMenuListBox.SelectedItem = "LandingPage";
                     break;
             }
         }

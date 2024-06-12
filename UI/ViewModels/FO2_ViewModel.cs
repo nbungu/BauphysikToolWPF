@@ -1,6 +1,4 @@
-﻿using BauphysikToolWPF.ComponentCalculations;
-using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,6 +11,9 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Calculations;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -98,10 +99,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                 if (!_tempCalc.IsValid) return new List<OverviewItem>();
                 return new List<OverviewItem>
                 {
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = _tempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = _tempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOK, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = _tempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOK, Unit = "W/m²K" },
-                    new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = _tempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOK, Unit = "W/m²" },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = _tempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = _tempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = _tempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
+                    new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = _tempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _tempCalc.Tsi, RequirementValue = _tempCalc.Tsi_min, IsRequirementMet = _tempCalc.Tsi >= _tempCalc.Tsi_min, Unit = "°C" },
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = _tempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
                     new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = _tempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCalc.FRsi >= 0.7 },

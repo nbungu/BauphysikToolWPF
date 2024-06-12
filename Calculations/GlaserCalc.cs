@@ -1,9 +1,9 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.SessionData;
 
-namespace BauphysikToolWPF.ComponentCalculations
+namespace BauphysikToolWPF.Calculations
 {
     /*
      * When creating this as a 'new' Instance, all fields will auto calculate the values (using the current user envVars)
@@ -17,16 +17,16 @@ namespace BauphysikToolWPF.ComponentCalculations
         private readonly double _rel_Fe = UserSaved.Rel_Fe;
 
         // public fields as Properties
-        public double PhiMax { get; private set; }
-        public double TaupunktMax_i { get; private set; }
-        public double P_sat_i { get; private set; }
-        public double P_sat_e { get; private set; }
-        public List<KeyValuePair<double, double>> LayerPsat { get; private set; } = new List<KeyValuePair<double, double>>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
-        public List<KeyValuePair<double, double>> LayerP { get; private set; } = new List<KeyValuePair<double, double>>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
-        public new bool IsValid { get; private set; }
+        public double PhiMax { get; }
+        public double TaupunktMax_i { get; }
+        public double P_sat_i { get; }
+        public double P_sat_e { get; }
+        public SortedDictionary<double, double> LayerPsat { get; } = new SortedDictionary<double, double>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
+        public SortedDictionary<double, double> LayerP { get; } = new SortedDictionary<double, double>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
+        public new bool IsValid { get; }
 
         // (Instance-) Constructor
-        public GlaserCalc() : base() {}
+        public GlaserCalc() {}
         public GlaserCalc(Element element) : base(element)
         {
             if (element.Layers.Count == 0) return;
@@ -42,17 +42,17 @@ namespace BauphysikToolWPF.ComponentCalculations
         }
 
         // Methods
-        private List<KeyValuePair<double, double>> GetLayerPsat()
+        private SortedDictionary<double, double> GetLayerPsat()
         {
             //Dictionary is not ordered: Instead use List as ordered collection
-            List<KeyValuePair<double, double>> p_sat_List = new List<KeyValuePair<double, double>>(); //new Methode(): Konstruktoren aufruf
+            var p_sat_List = new SortedDictionary<double, double>(); //new Methode(): Konstruktoren aufruf
 
             //Starting from inner side
             double widthPosition = 0;
             for (int i = 0; i < LayerTemps.Count; i++)
             {
-                double currentValue = P_sat(LayerTemps[i].Value);
-                p_sat_List.Add(new KeyValuePair<double, double>(widthPosition, currentValue));
+                double currentValue = P_sat(LayerTemps[i]);
+                p_sat_List.Add(widthPosition, currentValue);
 
                 if (i == Element.Layers.Count)
                     break; //avoid index out of range exception on Layers[i]: Has 1 less item than in LayerTemps[i]
@@ -67,15 +67,15 @@ namespace BauphysikToolWPF.ComponentCalculations
         }
 
         //Bestimmung des Wasserdampfpartialdrucks innen und außen. Gleichung 2.3 umgestellt nach p
-        private List<KeyValuePair<double, double>> GetLayerP(double relFi, double relFe, double ti, double te, double sdThickness)
+        private SortedDictionary<double, double> GetLayerP(double relFi, double relFe, double ti, double te, double sdThickness)
         {
             double pi = Math.Round((relFi / 100) * P_sat(ti), 1);
             double pe = Math.Round((relFe / 100) * P_sat(te), 1);
 
-            return new List<KeyValuePair<double, double>>()
+            return new SortedDictionary<double, double>
             {
-                new KeyValuePair<double, double>(0, pi),
-                new KeyValuePair<double, double>(sdThickness, pe)
+                { 0, pi },
+                { sdThickness, pe }
             };
         }
         private double P_sat(double temperature)

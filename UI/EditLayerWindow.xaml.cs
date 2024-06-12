@@ -1,5 +1,5 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
-using System.Windows;
+﻿using System.Windows;
+using BauphysikToolWPF.Models;
 
 namespace BauphysikToolWPF.UI
 {

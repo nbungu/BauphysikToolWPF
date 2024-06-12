@@ -1,11 +1,12 @@
 ﻿using System;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
 using BauphysikToolWPF.UI.Helper;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI
 {

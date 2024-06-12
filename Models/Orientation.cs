@@ -1,6 +1,6 @@
 ﻿using SQLite;
 
-namespace BauphysikToolWPF.SQLiteRepo
+namespace BauphysikToolWPF.Models
 {
     public enum OrientationType
     {

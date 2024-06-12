@@ -252,7 +252,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="SQLiteRepo\DemoDB.db">
+    <None Update="Repository\InitialDB.db">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

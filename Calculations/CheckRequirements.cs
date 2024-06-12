@@ -1,10 +1,11 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.SQLiteRepo;
-using BauphysikToolWPF.UI;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI;
 
-namespace BauphysikToolWPF.ComponentCalculations
+namespace BauphysikToolWPF.Calculations
 {
     /*
      * No static Class due to often changing 'Project' and 'Construction'.
@@ -17,13 +18,13 @@ namespace BauphysikToolWPF.ComponentCalculations
         // Always fetch current Project on calling this Class. No need for Notifier or Updater when Project changes
         private readonly Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
 
-        public Element Element { get; private set; }
-        public double U_max { get; private set; }
-        public double R_min { get; private set; }
-        public double Q_max { get; private set; }
-        public bool IsUValueOK { get; private set; } = false; // GEG Requirements
-        public bool IsRValueOK { get; private set; } = false; // DIN 4108-2 Requirements
-        public bool IsQValueOK { get; private set; } = false; // Not mandatory as requirement
+        public Element Element { get; }
+        public double U_max { get; }
+        public double R_min { get; }
+        public double Q_max { get; }
+        public bool IsUValueOk { get; } // GEG Requirements
+        public bool IsRValueOk { get; } // DIN 4108-2 Requirements
+        public bool IsQValueOk { get; } // Not mandatory as requirement
 
         public CheckRequirements(Element? element, double uValue, double qValue)
         {
@@ -37,9 +38,9 @@ namespace BauphysikToolWPF.ComponentCalculations
             U_max = GetUMax();
             R_min = GetRMin();
             Q_max = GetQMax();
-            IsUValueOK = (U_max == -1) || uValue <= U_max;
-            IsRValueOK = (R_min == -1) || Element.RValue >= R_min;
-            IsQValueOK = (Q_max == -1) || qValue <= Q_max;
+            IsUValueOk = (U_max == -1) || uValue <= U_max;
+            IsRValueOk = (R_min == -1) || Element.RValue >= R_min;
+            IsQValueOk = (Q_max == -1) || qValue <= Q_max;
         }
 
         private double GetUMax()

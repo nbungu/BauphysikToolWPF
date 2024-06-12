@@ -1,10 +1,11 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {

@@ -1,8 +1,9 @@
-﻿using SQLite;
+﻿using System;
+using BauphysikToolWPF.Repository;
+using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System;
 
-namespace BauphysikToolWPF.SQLiteRepo
+namespace BauphysikToolWPF.Models
 {
     public class Layer
     {

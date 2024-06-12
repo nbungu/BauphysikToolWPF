@@ -1,18 +1,20 @@
-﻿using BauphysikToolWPF.SQLiteRepo.Helper;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using SQLite;
 using SQLiteNetExtensions.Extensions;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
-namespace BauphysikToolWPF.SQLiteRepo
+namespace BauphysikToolWPF.Repository
 {
     public delegate void Notify(); // delegate with signature: return type void, no input parameters
 
     public static class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
-        public static string ConnectionString = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\SQLiteRepo\\DemoDB.db"));
+        //public static string ConnectionString = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\SQLiteRepo\\DemoDB.db"));
+        public static string ConnectionString = DatabaseInstaller.Install();
+
         private static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate

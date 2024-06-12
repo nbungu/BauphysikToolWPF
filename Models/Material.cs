@@ -1,7 +1,7 @@
-﻿using SQLite;
-using System.Windows.Media;
+﻿using System.Windows.Media;
+using SQLite;
 
-namespace BauphysikToolWPF.SQLiteRepo
+namespace BauphysikToolWPF.Models
 {
     public enum MaterialCategory
     {
