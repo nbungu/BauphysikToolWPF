@@ -32,7 +32,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void EditElement(int selectedElementId = -1) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
-            var window = (selectedElementId == -1) ? new EditElementWindow() : new EditElementWindow(DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId)));
+            var window = (selectedElementId == -1) ? new EditElementWindow() : new EditElementWindow(DatabaseAccess.QueryElementById(selectedElementId));
 
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
@@ -50,7 +50,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (selectedElementId == -1) return;
 
             // Delete selected Element
-            DatabaseAccess.DeleteElementById(Convert.ToInt32(selectedElementId));
+            DatabaseAccess.DeleteElementById(selectedElementId);
 
             // When deleting the Element which was currently SelectedElement
             if (selectedElementId == FO0_LandingPage.SelectedElementId)
@@ -62,11 +62,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
 
             // Update XAML Binding Property
-            Elements.Clear();
-            var test = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
-            
             // TODO: Zuweisung zu Elements geht nicht?!
-            Elements = test;
+            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
         }
 
         [RelayCommand]
@@ -89,7 +86,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (selectedElementId == -1) return;
 
             // Set the currently selected Element
-            FO0_LandingPage.SelectedElementId = Convert.ToInt32(selectedElementId);
+            FO0_LandingPage.SelectedElementId = selectedElementId;
 
             // Update XAML Binding Property
             SelectedElementId = FO0_LandingPage.SelectedElementId;
@@ -101,7 +98,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (selectedElementId == -1) return;
 
             // Create copy of selected Element and add to DB
-            Element elementCopy = DatabaseAccess.QueryElementById(Convert.ToInt32(selectedElementId));
+            Element elementCopy = DatabaseAccess.QueryElementById(selectedElementId);
             elementCopy.Name += "-Copy";
             DatabaseAccess.CreateElement(elementCopy, withChildren: true);
 

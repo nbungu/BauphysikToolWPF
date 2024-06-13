@@ -164,6 +164,7 @@
                 <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding ElementId}"
+                        Content="{Binding ElementId}"
                         Style="{StaticResource ButtonStyleWrapPanel}"
                         MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>

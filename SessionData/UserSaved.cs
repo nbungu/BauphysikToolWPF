@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.SessionData
@@ -14,8 +15,10 @@ namespace BauphysikToolWPF.SessionData
             EnvVarsChanged?.Invoke(); // if EnvVarsChanged is not null then call delegate
         }
 
+        public static Project CurrentProject { get; set; } = new Project();
+
         // Unordered Collection. Key must be unique!
-        private static readonly Dictionary<string, double> _userEnvVars = new Dictionary<string, double>()
+        private static readonly Dictionary<string, double> _userEnvVars = new Dictionary<string, double>(6)
         {
             {"Ti", DatabaseAccess.QueryEnvVarsBySymbol("Ti")[0].Value },
             {"Te", DatabaseAccess.QueryEnvVarsBySymbol("Te")[0].Value },
@@ -24,13 +27,12 @@ namespace BauphysikToolWPF.SessionData
             {"Rel_Fi", DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi")[0].Value },
             {"Rel_Fe", DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe")[0].Value },
         };
-        public static Dictionary<string, double> UserEnvVars => _userEnvVars;
 
         //------Eigenschaften-----//
         // Kapselung von _userEnvVars
         public static double Ti
         {
-            get { return _userEnvVars["Ti"]; }
+            get => _userEnvVars["Ti"];
             set
             {
                 if (value != _userEnvVars["Ti"])
@@ -42,7 +44,7 @@ namespace BauphysikToolWPF.SessionData
         }
         public static double Te
         {
-            get { return _userEnvVars["Te"]; }
+            get => _userEnvVars["Te"];
             set
             {
                 if (value != _userEnvVars["Te"])
@@ -54,7 +56,7 @@ namespace BauphysikToolWPF.SessionData
         }
         public static double Rsi
         {
-            get { return _userEnvVars["Rsi"]; }
+            get => _userEnvVars["Rsi"];
             set
             {
                 if (value != _userEnvVars["Rsi"])
@@ -66,7 +68,7 @@ namespace BauphysikToolWPF.SessionData
         }
         public static double Rse
         {
-            get { return _userEnvVars["Rse"]; }
+            get => _userEnvVars["Rse"];
             set
             {
                 if (value != _userEnvVars["Rse"])
@@ -78,7 +80,7 @@ namespace BauphysikToolWPF.SessionData
         }
         public static double Rel_Fi
         {
-            get { return _userEnvVars["Rel_Fi"]; }
+            get => _userEnvVars["Rel_Fi"];
             set
             {
                 if (value != _userEnvVars["Rel_Fi"])
@@ -90,7 +92,7 @@ namespace BauphysikToolWPF.SessionData
         }
         public static double Rel_Fe
         {
-            get { return _userEnvVars["Rel_Fe"]; }
+            get => _userEnvVars["Rel_Fe"];
             set
             {
                 if (value != _userEnvVars["Rel_Fe"])

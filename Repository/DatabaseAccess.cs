@@ -13,8 +13,7 @@ namespace BauphysikToolWPF.Repository
     public static class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
         //public static string ConnectionString = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\SQLiteRepo\\DemoDB.db"));
-        public static string ConnectionString = DatabaseInstaller.Install();
-
+        private static readonly string ConnectionString = DatabaseInstaller.Install();
         private static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
@@ -24,19 +23,19 @@ namespace BauphysikToolWPF.Repository
         public static event Notify? ProjectsChanged;
 
         // event handlers - publisher
-        public static void OnLayersChanged() //protected virtual method
+        private static void OnLayersChanged() //protected virtual method
         {
             LayersChanged?.Invoke(); //if LayersChanged is not null then call delegate
         }
-        public static void OnElementsChanged()
+        private static void OnElementsChanged()
         {
             ElementsChanged?.Invoke();
         }
-        public static void OnElementEnvVarsChanged()
+        private static void OnElementEnvVarsChanged()
         {
             ElementEnvVarsChanged?.Invoke();
         }
-        public static void OnProjectsChanged()
+        private static void OnProjectsChanged()
         {
             ProjectsChanged?.Invoke();
         }
@@ -78,6 +77,7 @@ namespace BauphysikToolWPF.Repository
         }
         public static Project QueryProjectById(int projectId)
         {
+            projectId = Convert.ToInt32(projectId);
             return Database.GetWithChildren<Project>(projectId, recursive: true); // Fetch the Project by ID and all the related entities recursively
         }
 
@@ -110,6 +110,7 @@ namespace BauphysikToolWPF.Repository
 
         public static void DeleteElementById(int elementId)
         {
+            elementId = Convert.ToInt32(elementId);
             Database.Delete<Element>(elementId);
             OnElementsChanged();
         }
@@ -120,6 +121,7 @@ namespace BauphysikToolWPF.Repository
         }
         public static Element QueryElementById(int elementId, bool layersSorted = false)
         {
+            elementId = Convert.ToInt32(elementId);
             Element element = Database.GetWithChildren<Element>(elementId, recursive: true);
 
             // default value = false, mostly not needed to return Element with SORTED Layers!
@@ -130,6 +132,7 @@ namespace BauphysikToolWPF.Repository
         }
         public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.Date, bool ascending = true)
         {
+            projectId = Convert.ToInt32(projectId);
             List<Element> elements = Database.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
 
             if (sortingType == ElementSortingType.Date)
@@ -191,6 +194,7 @@ namespace BauphysikToolWPF.Repository
         }
         public static List<Layer> QueryLayersByElementId(int elementId, LayerSortingType sortingType = LayerSortingType.Default)
         {
+            elementId = Convert.ToInt32(elementId);
             List<Layer> layers = Database.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
 
             if (sortingType == LayerSortingType.None)
@@ -263,6 +267,7 @@ namespace BauphysikToolWPF.Repository
         }
         public static Construction QueryConstructionById(int constructionId)
         {
+            constructionId = Convert.ToInt32(constructionId);
             return Database.GetWithChildren<Construction>(constructionId);
         }
 
@@ -273,6 +278,7 @@ namespace BauphysikToolWPF.Repository
         }
         public static Orientation QueryOrientationById(int orientationId)
         {
+            orientationId = Convert.ToInt32(orientationId);
             return Database.Get<Orientation>(orientationId);
         }
 
@@ -313,6 +319,7 @@ namespace BauphysikToolWPF.Repository
         }
         public static RequirementSource QueryRequirementSourceById(int requirementSourceId)
         {
+            requirementSourceId = Convert.ToInt32(requirementSourceId);
             return Database.Get<RequirementSource>(requirementSourceId);
         }
 
@@ -323,10 +330,12 @@ namespace BauphysikToolWPF.Repository
         }
         public static Requirement QueryRequirementById(int requirementId)
         {
+            requirementId = Convert.ToInt32(requirementId);
             return Database.Get<Requirement>(requirementId);
         }
         public static List<Requirement> QueryRequirementsBySourceId(int requirementSourceId)
         {
+            requirementSourceId = Convert.ToInt32(requirementSourceId);
             return Database.GetAllWithChildren<Requirement>(e => e.RequirementSourceId == requirementSourceId);
         }
     }
