@@ -15,7 +15,8 @@ namespace BauphysikToolWPF.SessionData
             EnvVarsChanged?.Invoke(); // if EnvVarsChanged is not null then call delegate
         }
 
-        public static Project CurrentProject { get; set; } = new Project();
+        // TODO: remove hardcoded value
+        public static Project CurrentProject { get; set; } = DatabaseAccess.QueryProjectById(1);
 
         // Unordered Collection. Key must be unique!
         private static readonly Dictionary<string, double> _userEnvVars = new Dictionary<string, double>(6)

@@ -66,6 +66,8 @@ namespace BauphysikToolWPF.Models
         [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all EnvVars linked to this 'Element')
         public List<EnvVars> EnvVars { get; set; } = new List<EnvVars>();
 
+        // Properties
+
         [Ignore]
         public bool IsValid => Name != string.Empty && Layers.Count > 0;
 
@@ -184,6 +186,27 @@ namespace BauphysikToolWPF.Models
         // has to be default parameterless constructor when used as DB
 
         //------Methoden-----//
+        public Element Copy()
+        {
+            var copy = new Element();
+            copy.ElementId = this.ElementId;
+            copy.ConstructionId = this.ConstructionId;
+            copy.Construction = this.Construction;
+            copy.OrientationId = this.OrientationId;
+            copy.Orientation = this.Orientation;
+            copy.ProjectId = this.ProjectId;
+            copy.Project = this.Project;
+            copy.Name = this.Name + "-Copy";
+            copy.Image = this.Image;
+            copy.ColorCode = this.ColorCode;
+            copy.Project = this.Project;
+            copy.Tag = this.Tag;
+            copy.Comment = this.Comment;
+            copy.EnvVars = this.EnvVars;
+            copy.Layers = this.Layers;
+            return copy;
+        }
+
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
             return Name + " - " + Construction.TypeName + " (Id: " + ElementId + ")";

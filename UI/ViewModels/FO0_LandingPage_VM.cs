@@ -2,9 +2,11 @@
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -32,16 +34,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void EditElement(int selectedElementId = -1) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
-            var window = (selectedElementId == -1) ? new EditElementWindow() : new EditElementWindow(DatabaseAccess.QueryElementById(selectedElementId));
+            var window = new EditElementWindow(UserSaved.CurrentProject.Elements.Find(i => i.ElementId == selectedElementId));
 
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
 
             // After Window closed:
             if (selectedElementId == -1) return;
-
-            // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
         }
 
         [RelayCommand]
@@ -50,7 +49,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (selectedElementId == -1) return;
 
             // Delete selected Element
-            DatabaseAccess.DeleteElementById(selectedElementId);
+            UserSaved.CurrentProject.Elements.RemoveAll(e => e.ElementId == selectedElementId);
 
             // When deleting the Element which was currently SelectedElement
             if (selectedElementId == FO0_LandingPage.SelectedElementId)
@@ -60,23 +59,18 @@ namespace BauphysikToolWPF.UI.ViewModels
                 // Update XAML Binding Property
                 SelectedElementId = FO0_LandingPage.SelectedElementId;
             }
-
-            // Update XAML Binding Property
-            // TODO: Zuweisung zu Elements geht nicht?!
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
         }
 
         [RelayCommand]
         private void DeleteAllElements()
         {
             // Delete selected Layer
-            DatabaseAccess.DeleteAllElements();
+            UserSaved.CurrentProject.Elements.Clear();
 
             // Reset Selected Layer
             FO0_LandingPage.SelectedElementId = -1;
 
             // Update XAML Binding Property by fetching from DB
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId);
             SelectedElementId = FO0_LandingPage.SelectedElementId;
         }
 
@@ -97,13 +91,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (selectedElementId == -1) return;
 
-            // Create copy of selected Element and add to DB
-            Element elementCopy = DatabaseAccess.QueryElementById(selectedElementId);
-            elementCopy.Name += "-Copy";
-            DatabaseAccess.CreateElement(elementCopy, withChildren: true);
-
-            // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
+            var copy = UserSaved.CurrentProject.Elements.Find(e => e.ElementId == selectedElementId)?.Copy();
+            if (copy != null) UserSaved.CurrentProject.Elements.Add(copy);
         }
 
         [RelayCommand]
@@ -113,7 +102,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             IsAscending = !IsAscending;
 
             // Update XAML Binding Property
-            Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
+            //Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
         }
 
         /*
@@ -134,9 +123,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private static bool _isAscending = true; // As Static Class Variable to Save the Selection after Switching Pages!
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(SelectedElement))]
-        private List<Element> _elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
+        //[ObservableProperty] [NotifyPropertyChangedFor(nameof(SelectedElement))]
+        //private List<Element> _elements = UserSaved.CurrentProject.Elements; //DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedElement))]
@@ -150,7 +138,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         // TODO: layersSorted: false -> viel schnellere reaktion
-        public Element? SelectedElement => (SelectedElementId != -1) ? DatabaseAccess.QueryElementById(SelectedElementId) : null; 
+        public Element? SelectedElement => UserSaved.CurrentProject.Elements.Find(e => e.ElementId == SelectedElementId);
 
         public bool ElementToolsAvailable => SelectedElementId != -1;
 

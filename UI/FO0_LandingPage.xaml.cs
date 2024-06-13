@@ -10,12 +10,12 @@ namespace BauphysikToolWPF.UI
         private static int _selectedElementId = -1; // Initialize + Assign Default Values to Avoid null Values
         public static int SelectedElementId
         {
-            get { return _selectedElementId; }
+            get => _selectedElementId;
             set
             {
-                if (value != _selectedElementId)
-                    OnSelectedElementChanged();
+                if (value != _selectedElementId) OnSelectedElementChanged();
                 _selectedElementId = value;
+
             }
         }
 

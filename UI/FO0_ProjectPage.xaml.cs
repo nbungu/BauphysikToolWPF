@@ -1,4 +1,6 @@
 ﻿using System.Windows.Controls;
+using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.UI
 {
@@ -10,7 +12,7 @@ namespace BauphysikToolWPF.UI
         private static int _selectedProjectId = 1; // Initialize + Assign Default Values to Avoid null Values
         public static int SelectedProjectId
         {
-            get { return _selectedProjectId; }
+            get => _selectedProjectId;
             set
             {
                 if (value != _selectedProjectId) OnSelectedProjectChanged();
