@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
-             xmlns:sessionData="clr-namespace:BauphysikToolWPF.SessionData"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
 
@@ -90,18 +89,18 @@
             </Grid.ColumnDefinitions>
 
             <Label Grid.ColumnSpan="2" Content="Projektname:" HorizontalAlignment="Left"/>
-            <TextBox Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectName_TextBox" Text="{Binding Source={x:Static sessionData:UserSaved.CurrentProject}, Path=Name}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
+            <TextBox Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectName_TextBox" Text="{Binding CurrentProject.Name}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
             <Label Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Content="Bearbeiter:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <TextBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectUser_TextBox" Text="{Binding Source={x:Static sessionData:UserSaved.CurrentProject}, Path=UserName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
+            <TextBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectUser_TextBox" Text="{Binding CurrentProject.UserName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
             <Label Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0" Content="Nutzungsart des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding Source={x:Static sessionData:UserSaved.CurrentProject}, Path=IsResidentialUsage}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage1" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,4,4,0"/>
-            <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding Source={x:Static sessionData:UserSaved.CurrentProject}, Path=IsNonResidentialUsage}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage0" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_Office_B}" Margin="4,4,0,0"/>
+            <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding CurrentProject.IsResidentialUsage}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage1" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,4,4,0"/>
+            <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding CurrentProject.IsNonResidentialUsage}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage0" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_Office_B}" Margin="4,4,0,0"/>
 
             <Label Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="0" Content="Alter des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding Source={x:Static sessionData:UserSaved.CurrentProject}, Path=IsNewConstruction}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge1" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
-            <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding Source={x:Static sessionData:UserSaved.CurrentProject}, Path=IsExistingConstruction}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge0" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
+            <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding CurrentProject.IsNewConstruction}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge1" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
+            <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding CurrentProject.IsExistingConstruction}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge0" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
         </Grid>
 
         <!-- Right -->

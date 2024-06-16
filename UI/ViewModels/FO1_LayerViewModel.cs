@@ -1,13 +1,12 @@
-﻿using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -56,26 +55,21 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            Layers = UserSaved.SelectedElement.Layers;
         }
 
         [RelayCommand]
         private void DeleteLayer(Layer? selectedLayer)
         {
-            if (selectedLayer is null)
-            {
-                DatabaseAccess.DeleteAllLayers(); // If no specific Layer is selected, delete All
-                // Update XAML Binding Property by fetching from DB
-                Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
-            }
-            else
-            {
-                DatabaseAccess.DeleteLayer(selectedLayer); // Delete selected Layer
-                // Update XAML Binding Property by fetching from DB
-                Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
-                // Set focus on Layer above
-                SelectedLayer = selectedLayer.LayerPosition == 0 ? 0 : selectedLayer.LayerPosition - 1;
-            }
+            if (selectedLayer is null) return;
+            
+            // Delete selected Layer
+            UserSaved.SelectedElement.Layers.Remove(selectedLayer);
+
+            // Update XAML Binding Property by fetching from DB
+            Layers = UserSaved.SelectedElement.Layers;
+            // Set focus on Layer above
+            SelectedLayer = selectedLayer.LayerPosition == 0 ? 0 : selectedLayer.LayerPosition - 1;
         }
 
         [RelayCommand]
@@ -89,7 +83,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            Layers = UserSaved.SelectedElement.Layers;
         }
 
         [RelayCommand]
@@ -97,27 +91,30 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (selectedLayer is null) return;
 
-            selectedLayer.LayerPosition = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Count;
-            DatabaseAccess.CreateLayer(selectedLayer);
+            selectedLayer.LayerPosition = UserSaved.SelectedElement.Layers.Count;
 
-            // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            var copy = selectedLayer.Copy();
+            UserSaved.SelectedElement.Layers.Add(copy);
+
+            // Update XAML Binding Property
+            Layers = UserSaved.SelectedElement.Layers;
         }
 
 
         [RelayCommand]
         private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
-            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            // Set the currently selected Element
+            UserSaved.SelectedElementId = selectedElement.ElementId;
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new EditElementWindow(selectedElement);
+            var window = new EditElementWindow();
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            CurrentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            CurrentElement = UserSaved.SelectedElement;
         }
 
         [RelayCommand]
@@ -126,10 +123,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (selectedLayer is null) return;
 
             // When Layer is already at the bottom of the List (last in the List)
-            if (selectedLayer.LayerPosition == DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Count - 1) return;
+            if (selectedLayer.LayerPosition == UserSaved.SelectedElement.Layers.Count - 1) return;
 
             // Change Position of Layer below
-            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Where(e => e.LayerPosition == selectedLayer.LayerPosition + 1).First();
+            Layer neighbour = UserSaved.SelectedElement.Layers.First(e => e.LayerPosition == selectedLayer.LayerPosition + 1);
             neighbour.LayerPosition -= 1;
             // Change Position of selected Layer
             selectedLayer.LayerPosition += 1;
@@ -138,7 +135,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             DatabaseAccess.UpdateLayer(neighbour, assignEffectiveLayers: true); // Assign Effective Layers, after last Layer has been moved and updated in DB
 
             // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            Layers = UserSaved.SelectedElement.Layers;
             // Keep focus on moved Layer
             SelectedLayer = selectedLayer.LayerPosition;
         }
@@ -152,7 +149,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (selectedLayer.LayerPosition == 0) return;
 
             // Change Position of Layer above
-            Layer neighbour = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Where(e => e.LayerPosition == selectedLayer.LayerPosition - 1).First();
+            Layer neighbour = UserSaved.SelectedElement.Layers.First(e => e.LayerPosition == selectedLayer.LayerPosition - 1);
             neighbour.LayerPosition += 1;
             // Change Position of selected Layer
             selectedLayer.LayerPosition -= 1;
@@ -161,7 +158,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             DatabaseAccess.UpdateLayer(neighbour, assignEffectiveLayers: true); // Assign Effective Layers, after last Layer has been moved and updated in DB
 
             // Update XAML Binding Property by fetching from DB
-            Layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+            Layers = UserSaved.SelectedElement.Layers;
             // Keep focus on moved Layer
             SelectedLayer = selectedLayer.LayerPosition;
         }
@@ -205,10 +202,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerRects))]
         [NotifyPropertyChangedFor(nameof(ElementWidth))]
-        private List<Layer> _layers = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId);
+        private List<Layer> _layers = UserSaved.SelectedElement.Layers;
 
         [ObservableProperty]
-        private Element _currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+        private Element _currentElement = UserSaved.SelectedElement;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerRects))]

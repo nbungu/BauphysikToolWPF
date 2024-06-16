@@ -36,6 +36,9 @@ namespace BauphysikToolWPF.Models
 
         //------Not part of the Database-----//
 
+        [Ignore]
+        public int InternalId { get; set; }
+
         // 1:n relationship with Element
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
         public List<Element> Elements { get; set; } = new List<Element>();
@@ -74,6 +77,11 @@ namespace BauphysikToolWPF.Models
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
             return Name + " (Id: " + ProjectId + ")";
+        }
+        public void AssignInternalIdsToElements()
+        {
+            int index = 1; // Start at 1
+            this.Elements.ForEach(e => e.InternalId = index++);
         }
     }
 }

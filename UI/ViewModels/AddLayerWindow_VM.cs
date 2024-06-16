@@ -1,11 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.SessionData;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -33,11 +33,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void AddLayer(Material? selectedMaterial)
         {
-            if (selectedMaterial is null || Thickness == "")
-                return;
+            if (selectedMaterial is null || Thickness == "") return;
 
             // LayerPosition is always at end of List 
-            int layerCount = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Count;
+            int layerCount = UserSaved.SelectedElement.Layers.Count;
 
             Layer layer = new Layer
             {
@@ -46,7 +45,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 LayerThickness = Convert.ToDouble(Thickness),
                 IsEffective = true,
                 MaterialId = selectedMaterial.MaterialId,
-                ElementId = FO0_LandingPage.SelectedElementId,
+                ElementId = UserSaved.SelectedElement.ElementId,
             };
             DatabaseAccess.CreateLayer(layer);
         }

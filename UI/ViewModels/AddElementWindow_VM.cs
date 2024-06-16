@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -9,11 +10,11 @@ using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for EditElementWindow.xaml: Used in xaml as "DataContext"
-    public partial class EditElementWindow_VM : ObservableObject
+    //ViewModel for AddElementWindow.xaml: Used in xaml as "DataContext"
+    public partial class AddElementWindow_VM : ObservableObject
     {
-        // Called by 'InitializeComponent()' from EditElementWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => "EditElementWindow";
+        // Called by 'InitializeComponent()' from AddElementWindow.cs due to Class-Binding in xaml via DataContext
+        public string Title => "AddElementWindow";
 
         /*
          * Static Class Properties:
@@ -61,7 +62,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void RemoveTag(string? tag)
         {
             if (tag is null || TagList.Count == 0) return;
-            
             TagList.Remove(tag);
             // Assign a new instance to force Update or trigger OnPropertyChanged
             TagList = new List<string>(TagList);
@@ -89,16 +89,23 @@ namespace BauphysikToolWPF.UI.ViewModels
             string orientationType = SelectedOrientation;
             int orientationId = DatabaseAccess.GetOrientations().Find(e => e.TypeName == orientationType)?.OrientationId ?? -1;
 
-            UserSaved.SelectedElement.Name = SelectedElementName;
-            UserSaved.SelectedElement.ConstructionId = constrId;
-            UserSaved.SelectedElement.OrientationId = orientationId;
-            UserSaved.SelectedElement.ProjectId = UserSaved.SelectedProject.ProjectId;
-            UserSaved.SelectedElement.TagList = TagList;
-            UserSaved.SelectedElement.Comment = SelectedElementComment;
-            UserSaved.SelectedElement.ColorCode = SelectedElementColor;
 
-            // Just Close this after editing existing Element
+            Element newElem = new Element
+            {
+                // ElementId gets set by SQLite DB (AutoIncrement)
+                Name = SelectedElementName,
+                ConstructionId = constrId,
+                OrientationId = orientationId,
+                ProjectId = UserSaved.SelectedProject.ProjectId,
+                TagList = TagList,
+                Comment = SelectedElementComment,
+                ColorCode = SelectedElementColor
+            };
+
+            // Go to Setup Page (Editor) after creating new Element
             window.Close();
+            MainWindow.SetPage(NavigationContent.SetupLayer);
+            
         }
 
         /*

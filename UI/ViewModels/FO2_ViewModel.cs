@@ -54,16 +54,17 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
         {
-            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            // Set the currently selected Element
+            UserSaved.SelectedElementId = selectedElement.ElementId;
 
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new EditElementWindow(selectedElement);
+            var window = new EditElementWindow();
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             window.ShowDialog();
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            CurrentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            CurrentElement = UserSaved.SelectedElement;
         }
 
         /*
@@ -75,7 +76,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RequirementValues))]
         [NotifyPropertyChangedFor(nameof(OverviewItems))]
-        private Element _currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+        private Element _currentElement = UserSaved.SelectedElement;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties

@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
-using BauphysikToolWPF.Calculations;
-using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Calculations;
+using BauphysikToolWPF.SessionData;
+using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
 {
@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.UI
             // Only if Element, Layers or EnvVars are not set or have changed: update class variables.
             if (FO1_SetupLayer.RecalculateTemp)
             {
-                StationaryTempCalculation = new StationaryTempCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId, layersSorted: true)); //for FO2_ViewModel
+                StationaryTempCalculation = new StationaryTempCalc(UserSaved.SelectedElement); //for FO2_ViewModel
 
                 // Reset Recalculate Flag
                 FO1_SetupLayer.RecalculateTemp = false;

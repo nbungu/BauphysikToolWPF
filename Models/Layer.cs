@@ -32,6 +32,9 @@ namespace BauphysikToolWPF.Models
 
         //------Not part of the Database-----//
 
+        [Ignore]
+        public int InternalId { get; set; }
+
         // n:1 relationship with Element
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Element Element { get; set; } = new Element();
@@ -102,6 +105,22 @@ namespace BauphysikToolWPF.Models
         public Material CorrespondingMaterial()
         {
             return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId) ?? new Material();
+        }
+
+        public Layer Copy()
+        {
+            var copy = new Layer();
+            copy.LayerId = this.LayerId;
+            copy.LayerPosition = this.LayerPosition;
+            copy.Element = this.Element;
+            copy.MaterialId = this.MaterialId;
+            copy.Element = this.Element;
+            copy.Material = this.Material;
+            copy.LayerThickness = this.LayerThickness;
+            copy.Effective = this.Effective;
+            copy.IsSelected = false;
+            copy.InternalId = this.InternalId;
+            return copy;
         }
 
         public override string ToString() // Überlagert vererbte standard ToString() Methode 

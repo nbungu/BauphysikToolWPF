@@ -81,7 +81,7 @@
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <Style x:Key="ButtonStyleWrapPanel" TargetType="{x:Type Button}">
-            <Setter Property="Content" Value="{Binding ElementId}"/>
+            <Setter Property="Content" Value="{Binding InternalId}"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
@@ -107,7 +107,7 @@
                         <ControlTemplate.Triggers>
                             <!--You can bind to a property on a named element, but the named element must be in scope!
                             Define these Triggers in Scope of ControlTemplate instead of 'Style' scope-->
-                            <DataTrigger Binding="{Binding TagList}" Value="{x:Null}">
+                            <DataTrigger Binding="{Binding TagList.Count}" Value="0">
                                 <Setter TargetName="tag_icon" Property="Visibility" Value="Hidden"/>
                                 <Setter TargetName="tag_icon" Property="Width" Value="0"/>
                                 <Setter TargetName="tag_icon" Property="Height" Value="0"/>
@@ -136,8 +136,8 @@
                 <DataTrigger Value="True">
                     <DataTrigger.Binding>
                         <MultiBinding Converter="{StaticResource IsSelectedElementConverter}">
-                            <Binding RelativeSource="{RelativeSource Self}" Path="DataContext.ElementId" Mode="OneWay"/>
-                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" Path="Tag.SelectedElementId" Mode="OneWay"/>
+                            <Binding RelativeSource="{RelativeSource Self}" Path="DataContext.InternalId" Mode="OneWay"/>
+                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" Path="Tag.SelectedElement.InternalId" Mode="OneWay"/>
                         </MultiBinding>
                     </DataTrigger.Binding>
                     <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
@@ -163,8 +163,8 @@
                 Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
                 <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
-                        CommandParameter="{Binding ElementId}"
-                        Content="{Binding ElementId}"
+                        CommandParameter="{Binding InternalId}"
+                        Content="{Binding InternalId}"
                         Style="{StaticResource ButtonStyleWrapPanel}"
                         MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>
@@ -250,7 +250,7 @@
 
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
-            <Button Content="Neues Bauteil erstellen" Command="{Binding EditElementCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
+            <Button Content="Neues Bauteil erstellen" Command="{Binding AddNewElementCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
             <Button Content="Bauteil importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
             <Button Content="Katalog exportieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
@@ -325,10 +325,10 @@
             <Label Grid.Row="0" Content="Ausgewähltes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Export_B}" ToolTip="Exportieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
 
             <Border x:Name="Test" Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderThickness="0">

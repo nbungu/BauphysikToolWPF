@@ -30,7 +30,7 @@ namespace BauphysikToolWPF.UI
             // Event Subscription - Register with Events
             DatabaseAccess.LayersChanged += DB_LayersChanged;
             UserSaved.EnvVarsChanged += Session_EnvVarsChanged;
-            FO0_LandingPage.SelectedElementChanged += Session_SelectedElementChanged;
+            UserSaved.SelectedElementChanged += Session_SelectedElementChanged;
         }
 
         // event handlers - subscribers
@@ -81,10 +81,7 @@ namespace BauphysikToolWPF.UI
             // Only save if leaving this page
             if (IsVisible) return;
 
-            Element currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
-            currentElement.Image = (currentElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(layers_ItemsControl) : Array.Empty<byte>();
-            // Update in Database
-            DatabaseAccess.UpdateElement(currentElement);
+            UserSaved.SelectedElement.Image = (UserSaved.SelectedElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(layers_ItemsControl) : Array.Empty<byte>();
         }
 
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)

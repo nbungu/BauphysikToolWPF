@@ -1,22 +1,43 @@
-﻿using System.Collections.Generic;
-using BauphysikToolWPF.Models;
+﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Repository;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.SessionData
 {
     public delegate void Notify(); // delegate (signature: return type void, no input parameters)
     public static class UserSaved // publisher of 'EnvVarsChanged' event
     {
+        //The subscriber class must register to SelectedElementChanged event and handle it with the method whose signature matches Notify delegate
+        public static event Notify? SelectedProjectChanged; // event
+        public static event Notify? SelectedElementChanged; // event
         public static event Notify? EnvVarsChanged; // event
+        public static Project? SelectedProject;
+
 
         // event handlers - publisher
+        public static void OnSelectedProjectChanged() //protected virtual method
+        {
+            SelectedProjectChanged?.Invoke(); //if SelectedProjectChanged is not null then call delegate
+        }
+        public static void OnSelectedElementChanged() //protected virtual method
+        {
+            SelectedElementChanged?.Invoke(); //if LayersChanged is not null then call delegate
+        }
         public static void OnEnvVarsChanged() //protected virtual method
         {
             EnvVarsChanged?.Invoke(); // if EnvVarsChanged is not null then call delegate
         }
 
-        // TODO: remove hardcoded value
-        public static Project CurrentProject { get; set; } = DatabaseAccess.QueryProjectById(1);
+        /// <summary>
+        /// InternalID des ausgewählten Elements
+        /// </summary>
+        public static int SelectedElementId { get; set; } = -1;
+
+        /// <summary>
+        /// Zeigt auf das entsprechende Element aus dem aktuellen Projekt auf Basis der InternalID von 'SelectedElementId'
+        /// </summary>
+        public static Element? SelectedElement => SelectedProject?.Elements.Find(e => e.InternalId == SelectedElementId);
+
 
         // Unordered Collection. Key must be unique!
         private static readonly Dictionary<string, double> _userEnvVars = new Dictionary<string, double>(6)

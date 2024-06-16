@@ -1,6 +1,6 @@
-﻿using System.Windows.Controls;
-using BauphysikToolWPF.Calculations;
-using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Calculations;
+using BauphysikToolWPF.SessionData;
+using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
 {
@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.UI
             // Only if Element, Layers or EnvVars are not set or have changed: update class variables.
             if (FO1_SetupLayer.RecalculateGlaser)
             {
-                GlaserCalculation = new GlaserCalc(DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId, layersSorted: true)); // for FO3_ViewModel
+                GlaserCalculation = new GlaserCalc(UserSaved.SelectedElement); // for FO3_ViewModel
 
                 // Reset Recalculate Flag
                 FO1_SetupLayer.RecalculateGlaser = false;

@@ -37,6 +37,9 @@ namespace BauphysikToolWPF.Models
         //------Not part of the Database-----//
 
         [Ignore]
+        public int InternalId { get; set; }
+
+        [Ignore]
         public bool IsValid => BulkDensity > 0 && ThermalConductivity > 0;
 
         [Ignore]

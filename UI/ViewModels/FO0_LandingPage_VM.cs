@@ -1,12 +1,12 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
+using BauphysikToolWPF.Repository;
+using System.Diagnostics;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -27,92 +27,89 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void SwitchPage(NavigationContent desiredPage)
         {
-            if (FO0_LandingPage.SelectedElementId != -1) MainWindow.SetPage(desiredPage);
+            if (SelectedElement is null) return;
+            MainWindow.SetPage(desiredPage);
+        }
+
+        [RelayCommand]
+        private void AddNewElement()
+        {
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            new AddElementWindow().ShowDialog();
+
+            UserSaved.SelectedElementId = -1; // Reset SelectedElement
+            Update();
         }
 
         // Create New Element / Edit Existing Element
         [RelayCommand]
-        private void EditElement(int selectedElementId = -1) // CommandParameter is the Content Property of the Button which holds the ElementId
+        private void EditElement(int selectedInternalId) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
-            var window = new EditElementWindow(UserSaved.CurrentProject.Elements.Find(i => i.ElementId == selectedElementId));
+            UserSaved.SelectedElementId = selectedInternalId;
 
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
+            new EditElementWindow().ShowDialog();
 
-            // After Window closed:
-            if (selectedElementId == -1) return;
+            Update();
         }
 
         [RelayCommand]
-        private void DeleteElement(int selectedElementId = -1) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
+        private void DeleteElement(int selectedInternalId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
         {
-            if (selectedElementId == -1) return;
-
             // Delete selected Element
-            UserSaved.CurrentProject.Elements.RemoveAll(e => e.ElementId == selectedElementId);
+            UserSaved.SelectedProject.Elements.RemoveAll(e => e.InternalId == selectedInternalId);
 
-            // When deleting the Element which was currently SelectedElement
-            if (selectedElementId == FO0_LandingPage.SelectedElementId)
-            {
-                // Reset Selected Element
-                FO0_LandingPage.SelectedElementId = -1;
-                // Update XAML Binding Property
-                SelectedElementId = FO0_LandingPage.SelectedElementId;
-            }
+            UserSaved.SelectedElementId = -1; // Reset SelectedElement
+            Update();
         }
 
         [RelayCommand]
         private void DeleteAllElements()
         {
-            // Delete selected Layer
-            UserSaved.CurrentProject.Elements.Clear();
+            // Delete all Elements
+            UserSaved.SelectedProject.Elements.Clear();
 
-            // Reset Selected Layer
-            FO0_LandingPage.SelectedElementId = -1;
-
-            // Update XAML Binding Property by fetching from DB
-            SelectedElementId = FO0_LandingPage.SelectedElementId;
+            UserSaved.SelectedElementId = -1; // Reset SelectedElement
+            Update();
         }
 
         [RelayCommand]
-        private void SelectElement(int selectedElementId = -1) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        private void SelectElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
-            if (selectedElementId == -1) return;
-
-            // Set the currently selected Element
-            FO0_LandingPage.SelectedElementId = selectedElementId;
+            UserSaved.SelectedElementId = selectedInternalId;
 
             // Update XAML Binding Property
-            SelectedElementId = FO0_LandingPage.SelectedElementId;
+            SelectedElement = UserSaved.SelectedElement;
         }
 
         [RelayCommand]
-        private void CopyElement(int selectedElementId = -1) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        private void CopyElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
-            if (selectedElementId == -1) return;
+            UserSaved.SelectedElementId = selectedInternalId;
+            UserSaved.SelectedProject.Elements.Add(UserSaved.SelectedElement.Copy());
 
-            var copy = UserSaved.CurrentProject.Elements.Find(e => e.ElementId == selectedElementId)?.Copy();
-            if (copy != null) UserSaved.CurrentProject.Elements.Add(copy);
+            UserSaved.SelectedElementId = -1; // Reset SelectedElement
+            Update();
         }
 
         [RelayCommand]
         private void ChangeSortingOrder()
         {
-            // Change sorting order
-            IsAscending = !IsAscending;
-
             // Update XAML Binding Property
-            //Elements = DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
+            IsAscending = !IsAscending;
+            Elements = UserSaved.SelectedProject.Elements;
         }
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
-         * 
+         *
+         * e.g.: when _sortingPropertyIndex changes, the PropertyChanged event should also be raised for the properties SelectedSorting
+         *
          * Initialized and Assigned with Default Values
          */
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(SelectedSorting))]
+        [NotifyPropertyChangedFor(nameof(SelectedSorting))] 
         private static int _sortingPropertyIndex; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
@@ -122,14 +119,13 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private static bool _isAscending = true; // As Static Class Variable to Save the Selection after Switching Pages!
-
-        //[ObservableProperty] [NotifyPropertyChangedFor(nameof(SelectedElement))]
-        //private List<Element> _elements = UserSaved.CurrentProject.Elements; //DatabaseAccess.QueryElementsByProjectId(FO0_ProjectPage.SelectedProjectId, (ElementSortingType)_sortingPropertyIndex, _isAscending);
+        
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
+        private static Element? _selectedElement; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(SelectedElement))]
-        [NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
-        private int _selectedElementId = FO0_LandingPage.SelectedElementId;
+        private List<Element> _elements = UserSaved.SelectedProject.Elements;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -137,10 +133,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the _selection Values above
          */
 
-        // TODO: layersSorted: false -> viel schnellere reaktion
-        public Element? SelectedElement => UserSaved.CurrentProject.Elements.Find(e => e.ElementId == SelectedElementId);
-
-        public bool ElementToolsAvailable => SelectedElementId != -1;
+        public bool ElementToolsAvailable => SelectedElement != null;
 
         // Returns False if Index is 0. Index 0 means without Grouping, since "Ohne" is first entry in Combobox
         public bool IsGroupingEnabled => GroupingPropertyIndex > 0;
@@ -150,5 +143,18 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public static ElementGroupingType SelectedGrouping => (ElementGroupingType)_groupingPropertyIndex;
 
+        private void Update()
+        {
+            // Update InternalIds and reset SelectedElement
+            UserSaved.SelectedProject.AssignInternalIdsToElements();
+
+            // Manually Update XAML Binding Property
+            //OnPropertyChanged(nameof(Elements));
+            //OnPropertyChanged(nameof(SelectedElement));
+            Elements = null;
+            Elements = UserSaved.SelectedProject.Elements;
+            SelectedElement = null;
+            SelectedElement = UserSaved.SelectedElement;
+        }
     }
 }

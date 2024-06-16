@@ -1,4 +1,4 @@
-﻿<Window x:Class="BauphysikToolWPF.UI.EditElementWindow"
+﻿<Window x:Class="BauphysikToolWPF.UI.AddElementWindow"
         x:Name="Window"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -20,7 +20,7 @@
 
     <Window.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
-        <vm:EditElementWindow_VM/>
+        <vm:AddElementWindow_VM/>
     </Window.DataContext>
 
     <Window.Resources>
@@ -92,7 +92,6 @@
                 </Button>
             </Grid>
         </DataTemplate>
-
     </Window.Resources>
 
     <StackPanel Margin="16">
@@ -131,7 +130,6 @@
                 <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Transparent" Tag="{StaticResource ButtonIcon_Cancel_B}" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
             </Grid>
         </StackPanel>
-
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Eigene Gruppierung" HorizontalAlignment="Left"/>
             <Grid Margin="0,0,0,8">
@@ -151,13 +149,10 @@
                           Tag="{Binding}"
                           Style="{StaticResource ItemsControlVisibilityStyle}"/>
         </StackPanel>
-
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Kommentar" HorizontalAlignment="Left"/>
             <TextBox TextAlignment="Left" Text="{Binding SelectedElementComment}" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="400"/>
         </StackPanel>
-
         <Button Margin="0,8,0,0" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=Window}" Style="{StaticResource ButtonStyle02_A}"/>
-
     </StackPanel>
 </Window>

@@ -1,4 +1,4 @@
-﻿using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -31,39 +31,47 @@ namespace BauphysikToolWPF.UI.ViewModels
             switch (property)
             {
                 case "BuildingUsage0":
-                    UserSaved.CurrentProject.IsNonResidentialUsage = true;
+                    UserSaved.SelectedProject.IsNonResidentialUsage = true;
                     break;
                 case "BuildingUsage1":
-                    UserSaved.CurrentProject.IsResidentialUsage = true;
+                    UserSaved.SelectedProject.IsResidentialUsage = true;
                     break;
                 case "BuildingAge0":
-                    UserSaved.CurrentProject.IsExistingConstruction = true;
+                    UserSaved.SelectedProject.IsExistingConstruction = true;
                     break;
                 case "BuildingAge1":
-                    UserSaved.CurrentProject.IsNewConstruction = true;
+                    UserSaved.SelectedProject.IsNewConstruction = true;
                     break;
                 default:
                     return;
             }
+            // Update XAML Binding Property
+            CurrentProject = UserSaved.SelectedProject;
         }
 
         // TODO: Execute on every page change?!
-        [RelayCommand]
-        private void SaveProject()
-        {
-            DatabaseAccess.UpdateProject(UserSaved.CurrentProject);
-        }
+        //[RelayCommand]
+        //private void SaveProject()
+        //{
+        //    DatabaseAccess.UpdateProject(UserSaved.SelectedProject);
+        //}
 
         [RelayCommand]
         private void ChangeProjectName(string property = "")
         {
-            UserSaved.CurrentProject.Name = property;
+            UserSaved.SelectedProject.Name = property;
+
+            // Update XAML Binding Property
+            CurrentProject = UserSaved.SelectedProject;
         }
 
         [RelayCommand]
-        private void ChangeProjectEditor(string property = "")
+        private void ChangeProjectAuthor(string property = "")
         {
-            UserSaved.CurrentProject.UserName = property;
+            UserSaved.SelectedProject.UserName = property;
+
+            // Update XAML Binding Property
+            CurrentProject = UserSaved.SelectedProject;
         }
 
         [RelayCommand]
@@ -77,10 +85,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
-
-
-
-        //[ObservableProperty]
-        //private Project _currentProject = UserSaved.CurrentProject;
+        
+        [ObservableProperty]
+        private Project? _currentProject = UserSaved.SelectedProject;
     }
 }

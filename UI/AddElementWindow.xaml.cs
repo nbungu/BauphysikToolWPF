@@ -2,9 +2,9 @@
 
 namespace BauphysikToolWPF.UI
 {
-    public partial class EditElementWindow : Window
+    public partial class AddElementWindow : Window
     {
-        public EditElementWindow()
+        public AddElementWindow()
         {
             InitializeComponent();
         }
