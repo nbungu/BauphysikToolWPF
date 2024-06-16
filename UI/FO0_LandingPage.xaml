@@ -168,7 +168,7 @@
                         Style="{StaticResource ButtonStyleWrapPanel}"
                         MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>
-                        <!--ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
+                        <!--ContextMenu does not inherit the DataContext from its parent element-> DataContext is not available.
                         Need to pass the DataContext in a different way: e.g. using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
                         The Tag Property can be used to hold any kind of user specified Data.-->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">

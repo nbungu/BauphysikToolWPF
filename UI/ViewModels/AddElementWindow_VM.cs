@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using ABI.Windows.System;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -89,7 +90,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             string orientationType = SelectedOrientation;
             int orientationId = DatabaseAccess.GetOrientations().Find(e => e.TypeName == orientationType)?.OrientationId ?? -1;
 
-
             Element newElem = new Element
             {
                 // ElementId gets set by SQLite DB (AutoIncrement)
@@ -101,11 +101,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Comment = SelectedElementComment,
                 ColorCode = SelectedElementColor
             };
-
-            // Go to Setup Page (Editor) after creating new Element
+            UserSaved.SelectedProject.Elements.Add(newElem);
             window.Close();
-            MainWindow.SetPage(NavigationContent.SetupLayer);
-            
         }
 
         /*

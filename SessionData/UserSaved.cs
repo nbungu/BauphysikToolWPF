@@ -38,6 +38,16 @@ namespace BauphysikToolWPF.SessionData
         /// </summary>
         public static Element? SelectedElement => SelectedProject?.Elements.Find(e => e.InternalId == SelectedElementId);
 
+        /// <summary>
+        /// InternalID des ausgewählten Elements
+        /// </summary>
+        public static int SelectedLayerId { get; set; } = -1;
+
+        /// <summary>
+        /// Zeigt auf den entsprechenden Layer aus dem aktuellen Element auf Basis der LayerPosition von 'SelectedLayerPosition'
+        /// </summary>
+        public static Layer? SelectedLayer => SelectedElement?.Layers.Find(e => e.InternalId == SelectedLayerId);
+
 
         // Unordered Collection. Key must be unique!
         private static readonly Dictionary<string, double> _userEnvVars = new Dictionary<string, double>(6)

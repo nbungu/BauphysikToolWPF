@@ -64,8 +64,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             
             TagList.Remove(tag);
             // Assign a new instance to force Update or trigger OnPropertyChanged
-            TagList = new List<string>(TagList);
-            //OnPropertyChanged(nameof(TagList));
+            //TagList = new List<string>(TagList);
+            OnPropertyChanged(nameof(TagList));
         }
 
         [RelayCommand]
@@ -89,14 +89,16 @@ namespace BauphysikToolWPF.UI.ViewModels
             string orientationType = SelectedOrientation;
             int orientationId = DatabaseAccess.GetOrientations().Find(e => e.TypeName == orientationType)?.OrientationId ?? -1;
 
-            UserSaved.SelectedElement.Name = SelectedElementName;
-            UserSaved.SelectedElement.ConstructionId = constrId;
-            UserSaved.SelectedElement.OrientationId = orientationId;
-            UserSaved.SelectedElement.ProjectId = UserSaved.SelectedProject.ProjectId;
-            UserSaved.SelectedElement.TagList = TagList;
-            UserSaved.SelectedElement.Comment = SelectedElementComment;
-            UserSaved.SelectedElement.ColorCode = SelectedElementColor;
-
+            if (UserSaved.SelectedElement != null)
+            {
+                UserSaved.SelectedElement.Name = SelectedElementName;
+                UserSaved.SelectedElement.ConstructionId = constrId;
+                UserSaved.SelectedElement.OrientationId = orientationId;
+                UserSaved.SelectedElement.ProjectId = UserSaved.SelectedProject.ProjectId;
+                UserSaved.SelectedElement.TagList = TagList;
+                UserSaved.SelectedElement.Comment = SelectedElementComment;
+                UserSaved.SelectedElement.ColorCode = SelectedElementColor;
+            }
             // Just Close this after editing existing Element
             window.Close();
         }

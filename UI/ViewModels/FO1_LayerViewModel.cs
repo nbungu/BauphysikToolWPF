@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Helper;
@@ -6,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -49,9 +51,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void AddLayer()
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new AddLayerWindow();
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
+            new AddLayerWindow().ShowDialog();
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
@@ -77,9 +78,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (selectedLayer is null) return;
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new EditLayerWindow(selectedLayer);
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
+            new EditLayerWindow(selectedLayer).ShowDialog();
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
@@ -102,25 +102,21 @@ namespace BauphysikToolWPF.UI.ViewModels
 
 
         [RelayCommand]
-        private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
+        private void EditElement() // Binding in XAML via 'EditElementCommand'
         {
-            // Set the currently selected Element
-            UserSaved.SelectedElementId = selectedElement.ElementId;
-
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new EditElementWindow();
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
+            new EditElementWindow().ShowDialog();
 
-            // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            CurrentElement = UserSaved.SelectedElement;
+            OnPropertyChanged(nameof(CurrentElement));
         }
 
         [RelayCommand]
         private void MoveLayerDown(Layer? selectedLayer)
         {
             if (selectedLayer is null) return;
+            UserSaved.SelectedLayerId = selectedLayer.InternalId;
 
             // When Layer is already at the bottom of the List (last in the List)
             if (selectedLayer.LayerPosition == UserSaved.SelectedElement.Layers.Count - 1) return;
@@ -130,12 +126,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             neighbour.LayerPosition -= 1;
             // Change Position of selected Layer
             selectedLayer.LayerPosition += 1;
-            // Update both
-            DatabaseAccess.UpdateLayer(selectedLayer, triggerUpdateEvent: false);
-            DatabaseAccess.UpdateLayer(neighbour, assignEffectiveLayers: true); // Assign Effective Layers, after last Layer has been moved and updated in DB
+
+            // Update Effective Layer Property
+            LayerOrganisor.AssignEffectiveLayers(UserSaved.SelectedElement.Layers);
 
             // Update XAML Binding Property by fetching from DB
-            Layers = UserSaved.SelectedElement.Layers;
+            OnPropertyChanged(nameof(Layers));
             // Keep focus on moved Layer
             SelectedLayer = selectedLayer.LayerPosition;
         }
@@ -153,9 +149,9 @@ namespace BauphysikToolWPF.UI.ViewModels
             neighbour.LayerPosition += 1;
             // Change Position of selected Layer
             selectedLayer.LayerPosition -= 1;
-            // Update both
-            DatabaseAccess.UpdateLayer(selectedLayer, triggerUpdateEvent: false);
-            DatabaseAccess.UpdateLayer(neighbour, assignEffectiveLayers: true); // Assign Effective Layers, after last Layer has been moved and updated in DB
+
+            // Update Effective Layer Property
+            LayerOrganisor.AssignEffectiveLayers(UserSaved.SelectedElement.Layers);
 
             // Update XAML Binding Property by fetching from DB
             Layers = UserSaved.SelectedElement.Layers;

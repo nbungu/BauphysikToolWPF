@@ -1,12 +1,9 @@
-﻿using System;
-using BauphysikToolWPF.Models;
+﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
-using BauphysikToolWPF.Repository;
-using System.Diagnostics;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -49,7 +46,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new EditElementWindow().ShowDialog();
-
             Update();
         }
 
