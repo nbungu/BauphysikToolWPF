@@ -83,7 +83,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElementId = selectedInternalId;
             UserSaved.SelectedProject.Elements.Add(UserSaved.SelectedElement.Copy());
-
             UserSaved.SelectedElementId = -1; // Reset SelectedElement
             Update();
         }

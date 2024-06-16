@@ -7,7 +7,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -67,7 +66,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Delete selected Layer
             UserSaved.SelectedElement.Layers.Remove(selectedLayer);
 
+            UserSaved.SelectedElement.SortLayersByPosition();
+            LayerOrganisor.AssignEffectiveLayers(UserSaved.SelectedElement.Layers);
+
             // Update XAML Binding Property by fetching from DB
+            Layers = new List<Layer>();
             Layers = UserSaved.SelectedElement.Layers;
             // Set focus on Layer above
             SelectedLayer = selectedLayer.LayerPosition == 0 ? 0 : selectedLayer.LayerPosition - 1;
@@ -77,12 +80,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void EditLayer(Layer? selectedLayer)
         {
             if (selectedLayer is null) return;
+            UserSaved.SelectedLayerId = selectedLayer.InternalId;
+
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new EditLayerWindow(selectedLayer).ShowDialog();
+            new EditLayerWindow().ShowDialog();
 
             // After Window closed:
             // Update XAML Binding Property by fetching from DB
+            Layers = new List<Layer>();
             Layers = UserSaved.SelectedElement.Layers;
         }
 
@@ -96,7 +102,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             var copy = selectedLayer.Copy();
             UserSaved.SelectedElement.Layers.Add(copy);
 
+            UserSaved.SelectedElement.SortLayersByPosition();
+            LayerOrganisor.AssignEffectiveLayers(UserSaved.SelectedElement.Layers);
+
             // Update XAML Binding Property
+            Layers = new List<Layer>();
             Layers = UserSaved.SelectedElement.Layers;
         }
 
@@ -119,44 +129,49 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedLayerId = selectedLayer.InternalId;
 
             // When Layer is already at the bottom of the List (last in the List)
-            if (selectedLayer.LayerPosition == UserSaved.SelectedElement.Layers.Count - 1) return;
+            if (UserSaved.SelectedLayer.LayerPosition == UserSaved.SelectedElement.Layers.Count - 1) return;
 
             // Change Position of Layer below
-            Layer neighbour = UserSaved.SelectedElement.Layers.First(e => e.LayerPosition == selectedLayer.LayerPosition + 1);
+            Layer neighbour = UserSaved.SelectedElement.Layers.First(e => e.LayerPosition == UserSaved.SelectedLayer.LayerPosition + 1);
             neighbour.LayerPosition -= 1;
             // Change Position of selected Layer
-            selectedLayer.LayerPosition += 1;
+            UserSaved.SelectedLayer.LayerPosition += 1;
 
             // Update Effective Layer Property
+            UserSaved.SelectedElement.SortLayersByPosition();
             LayerOrganisor.AssignEffectiveLayers(UserSaved.SelectedElement.Layers);
 
             // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(Layers));
+            Layers = new List<Layer>();
+            Layers = UserSaved.SelectedElement.Layers;
             // Keep focus on moved Layer
-            SelectedLayer = selectedLayer.LayerPosition;
+            SelectedLayer = UserSaved.SelectedLayer.LayerPosition;
         }
 
         [RelayCommand]
         private void MoveLayerUp(Layer? selectedLayer)
         {
             if (selectedLayer is null) return;
+            UserSaved.SelectedLayerId = selectedLayer.InternalId;
 
             // When Layer is already at the top of the List (first in the List)
-            if (selectedLayer.LayerPosition == 0) return;
+            if (UserSaved.SelectedLayer.LayerPosition == 0) return;
 
             // Change Position of Layer above
-            Layer neighbour = UserSaved.SelectedElement.Layers.First(e => e.LayerPosition == selectedLayer.LayerPosition - 1);
+            Layer neighbour = UserSaved.SelectedElement.Layers.First(e => e.LayerPosition == UserSaved.SelectedLayer.LayerPosition - 1);
             neighbour.LayerPosition += 1;
             // Change Position of selected Layer
-            selectedLayer.LayerPosition -= 1;
+            UserSaved.SelectedLayer.LayerPosition -= 1;
 
             // Update Effective Layer Property
+            UserSaved.SelectedElement.SortLayersByPosition();
             LayerOrganisor.AssignEffectiveLayers(UserSaved.SelectedElement.Layers);
 
             // Update XAML Binding Property by fetching from DB
+            Layers = new List<Layer>();
             Layers = UserSaved.SelectedElement.Layers;
             // Keep focus on moved Layer
-            SelectedLayer = selectedLayer.LayerPosition;
+            SelectedLayer = UserSaved.SelectedLayer.LayerPosition;
         }
 
         /*

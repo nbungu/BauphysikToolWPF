@@ -225,5 +225,11 @@ namespace BauphysikToolWPF.Models
             int index = 1; // Start at 1
             this.Layers.ForEach(e => e.InternalId = index++);
         }
+
+        public void SortLayersByPosition(bool ascending = true)
+        {
+            if (ascending) this.Layers.Sort((a, b) => a.LayerPosition.CompareTo(b.LayerPosition));
+            else this.Layers.Sort((a, b) => b.LayerPosition.CompareTo(a.LayerPosition));
+        }
     }
 }

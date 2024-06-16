@@ -10,20 +10,10 @@ namespace BauphysikToolWPF.UI
         // Constructor
         public FO0_ProjectPage()
         {
-            InitializeSessionData();
+            if (UserSaved.SelectedProject != null) UserSaved.SelectedProject.AssignInternalIdsToElements();
 
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
-        }
-
-        private void InitializeSessionData()
-        {
-            if (UserSaved.SelectedProject is null)
-            {
-                var selectedProject = DatabaseAccess.QueryProjectById(1);
-                selectedProject.AssignInternalIdsToElements();
-                UserSaved.SelectedProject = selectedProject;
-            }
         }
     }
 }
