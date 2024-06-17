@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.UI.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -53,7 +54,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new EditElementWindow().ShowDialog();
 
             // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(CurrentElement));
+            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -63,7 +64,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Element _currentElement = UserSaved.SelectedElement;
+        private Element _selectedElement = UserSaved.SelectedElement;
 
         // Add m:n realtion to Database when new selection is set
         //TODO implement again

@@ -32,7 +32,7 @@
             <ui:FO0_ProjectPage/>
         </DataTemplate>
         <DataTemplate x:Key="FO0_LandingPage">
-            <ui:FO0_LandingPage/>
+            <ui:FO0_ElementsPage/>
         </DataTemplate>
         <DataTemplate x:Key="FO1_SetupLayer">
             <ui:FO1_SetupLayer/>

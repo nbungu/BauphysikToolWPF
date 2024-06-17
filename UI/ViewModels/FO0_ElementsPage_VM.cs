@@ -7,17 +7,17 @@ using System.Collections.Generic;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for FO0_LandingPage.xaml: Used in xaml as "DataContext"
-    public partial class FO0_LandingPage_VM : ObservableObject
+    //ViewModel for FO0_ElementsPage.xaml: Used in xaml as "DataContext"
+    public partial class FO0_ElementsPage_VM : ObservableObject
     {
-        public FO0_LandingPage_VM()
+        public FO0_ElementsPage_VM()
         {
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
         }
 
-        // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
+        // Called by 'InitializeComponent()' from FO0_ElementsPage.cs due to Class-Binding in xaml via DataContext
         public string Title => "LandingPage";
         public List<string> SortingProperties => ElementOrganisor.SortingTypes; // Has to match ElementSortingType enum values (+Order)
         public List<string> GroupingProperties => ElementOrganisor.GroupingTypes; // Has to match ElementSortingType enum values (+Order)

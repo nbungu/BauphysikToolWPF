@@ -28,7 +28,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             return currentElement == selectedElement;
 
             // If the WrapPanel Button (an Element) is currently the SelectedElement, return true.
-            //return FO0_LandingPage.SelectedElementId == (int)values ? true : false;
+            //return FO0_ElementsPage.SelectedElementId == (int)values ? true : false;
         }
 
         public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)

@@ -229,11 +229,7 @@ namespace BauphysikToolWPF.Models
         public void SortLayers()
         {
             this.Layers.Sort((a, b) => a.LayerPosition.CompareTo(b.LayerPosition));
-            FixLayerPositioning();
-        }
-
-        private void FixLayerPositioning()
-        {
+            // Fix postioning
             int index = 0; // Start at 0
             this.Layers.ForEach(e => e.LayerPosition = index++);
         }

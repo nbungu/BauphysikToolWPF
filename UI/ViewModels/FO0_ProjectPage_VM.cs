@@ -6,7 +6,7 @@ using System.Windows;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for FO0_LandingPage.xaml: Used in xaml as "DataContext"
+    //ViewModel for FO0_ElementsPage.xaml: Used in xaml as "DataContext"
     public partial class FO0_ProjectPage_VM : ObservableObject
     {
         public FO0_ProjectPage_VM()
@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
         }
 
-        // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
+        // Called by 'InitializeComponent()' from FO0_ElementsPage.cs due to Class-Binding in xaml via DataContext
         public string Title => "ProjectPage";
 
         /*
