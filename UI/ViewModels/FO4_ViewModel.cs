@@ -1,4 +1,7 @@
-﻿using BauphysikToolWPF.UI.Helper;
+﻿using BauphysikToolWPF.Calculations;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -10,10 +13,6 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Calculations;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
-using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -111,7 +110,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new EditElementWindow().ShowDialog();
 
             // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(CurrentElement));
+            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -121,7 +120,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Element _currentElement = UserSaved.SelectedElement;
+        private Element _selectedElement = UserSaved.SelectedElement;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DataPoints_i))]

@@ -1,12 +1,11 @@
-﻿using System;
+﻿using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Helper;
+using System;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI
 {
@@ -14,22 +13,18 @@ namespace BauphysikToolWPF.UI
     {
         // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call of this Class.
 
-        //
-
         // Class Variables - Belongs to the Class-Type itself and stay the same
-        public static bool RecalculateTemp { get; set; } = true;
-        public static bool RecalculateDynTemp { get; set; } = true;
-        public static bool RecalculateGlaser { get; set; } = true;
+        public static bool Recalculate { get; set; } = true;
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public FO1_SetupLayer()
         {
             if (UserSaved.SelectedElement != null)
             {
+                UserSaved.SelectedElement.SortLayers();
                 UserSaved.SelectedElement.AssignInternalIdsToLayers();
-                UserSaved.SelectedElement.SortLayersByPosition();
             }
-            
+
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
@@ -43,40 +38,32 @@ namespace BauphysikToolWPF.UI
         public void DB_LayersChanged() // has to match the signature of the delegate (return type void, no input parameters)
         {
             // Update Recalculate Flag
-            RecalculateTemp = true;
-            RecalculateDynTemp = true;
-            RecalculateGlaser = true;
+            Recalculate = true;
         }
         public void Session_EnvVarsChanged()
         {
             // Update Recalculate Flag
-            RecalculateTemp = true;
-            RecalculateDynTemp = true;
-            RecalculateGlaser = true;
+            Recalculate = true;
         }
 
         public void Session_SelectedElementChanged()
         {
             // Update Recalculate Flag
-            RecalculateTemp = true;
-            RecalculateDynTemp = true;
-            RecalculateGlaser = true;
+            Recalculate = true;
         }
 
-        // custom Methods
-
-        public void UpdateElementEnvVars(int elementID, EnvVars envVar)
-        {
-            // Add m:n realtion to Database
-            ElementEnvVars elemEnvVars = new ElementEnvVars()
-            {
-                //Id gets set by SQLite (Autoincrement)
-                ElementId = elementID,
-                EnvVarId = envVar.EnvVarId,
-            };
-            // Only insert every envVar once! 
-            if (DatabaseAccess.UpdateElementEnvVars(elemEnvVars) == 0) DatabaseAccess.CreateElementEnvVars(elemEnvVars); // If no row is updated ( == 0), create a new one
-        }
+        //public void UpdateElementEnvVars(int elementID, EnvVars envVar)
+        //{
+        //    // Add m:n realtion to Database
+        //    ElementEnvVars elemEnvVars = new ElementEnvVars()
+        //    {
+        //        //Id gets set by SQLite (Autoincrement)
+        //        ElementId = elementID,
+        //        EnvVarId = envVar.EnvVarId,
+        //    };
+        //    // Only insert every envVar once! 
+        //    if (DatabaseAccess.UpdateElementEnvVars(elemEnvVars) == 0) DatabaseAccess.CreateElementEnvVars(elemEnvVars); // If no row is updated ( == 0), create a new one
+        //}
 
         // UI Methods
 

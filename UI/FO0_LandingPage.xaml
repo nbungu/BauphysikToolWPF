@@ -100,7 +100,7 @@
                                     <Image x:Name="comment_icon" Source="{StaticResource ButtonIcon_Comment_B}" Margin="0,0,4,0"/>
                                     <Image x:Name="tag_icon" Source="{StaticResource ButtonIcon_Tags_B}" Margin="0,0,4,0"/>
                                 </StackPanel>
-                                <Label Grid.Row="0" Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
+                                <Label Grid.Row="0" Content="{Binding InternalId}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
                                 <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
                             </Grid>
                         </Border>
@@ -164,7 +164,7 @@
                 <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding InternalId}"
-                        Content="{Binding InternalId}"
+                        Content="{Binding}"
                         Style="{StaticResource ButtonStyleWrapPanel}"
                         MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>
@@ -172,12 +172,12 @@
                         Need to pass the DataContext in a different way: e.g. using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
                         The Tag Property can be used to hold any kind of user specified Data.-->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">
-                            <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Edit_B}" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Copy_B}" />
                                 </MenuItem.Icon>
@@ -187,7 +187,7 @@
                                     <Image Source="{StaticResource ButtonIcon_Export_B}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Delete_B}" />
                                 </MenuItem.Icon>

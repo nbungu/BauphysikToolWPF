@@ -64,7 +64,7 @@ namespace BauphysikToolWPF.Models.Helper
                     if (layer.Material.Category == MaterialCategory.Air)
                         foundAirLayer = true;
                     layer.IsEffective = !foundAirLayer;
-                    DatabaseAccess.UpdateLayer(layer, triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
+                    //DatabaseAccess.UpdateLayer(layer, triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
                 }
             }
         }

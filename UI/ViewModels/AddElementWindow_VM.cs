@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using ABI.Windows.System;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -102,6 +101,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ColorCode = SelectedElementColor
             };
             UserSaved.SelectedProject.Elements.Add(newElem);
+            UserSaved.OnSelectedElementChanged();
             window.Close();
         }
 

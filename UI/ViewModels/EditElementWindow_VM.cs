@@ -99,7 +99,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 UserSaved.SelectedElement.Comment = SelectedElementComment;
                 UserSaved.SelectedElement.ColorCode = SelectedElementColor;
             }
-            // Just Close this after editing existing Element
+            UserSaved.OnSelectedElementChanged();
             window.Close();
         }
 

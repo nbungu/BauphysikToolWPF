@@ -151,7 +151,7 @@
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Kommentar" HorizontalAlignment="Left"/>
-            <TextBox TextAlignment="Left" Text="{Binding SelectedElementComment}" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="400"/>
+            <TextBox TextAlignment="Left" Text="{Binding SelectedElementComment}" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="800"/>
         </StackPanel>
         <Button Margin="0,8,0,0" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=Window}" Style="{StaticResource ButtonStyle02_A}"/>
     </StackPanel>

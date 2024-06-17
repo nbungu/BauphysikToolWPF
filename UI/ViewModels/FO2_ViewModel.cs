@@ -59,7 +59,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new EditElementWindow().ShowDialog();
 
             // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(CurrentElement));
+            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -71,7 +71,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RequirementValues))]
         [NotifyPropertyChangedFor(nameof(OverviewItems))]
-        private Element _currentElement = UserSaved.SelectedElement;
+        private Element _selectedElement = UserSaved.SelectedElement;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -83,8 +83,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (!_tempCalc.IsValid) return new CheckRequirements(CurrentElement, 0, 0); // TODO: make empty ctor for CheckRequirements
-                return new CheckRequirements(CurrentElement, _tempCalc.UValue, _tempCalc.QValue);
+                if (!_tempCalc.IsValid) return new CheckRequirements(SelectedElement, 0, 0); // TODO: make empty ctor for CheckRequirements
+                return new CheckRequirements(SelectedElement, _tempCalc.UValue, _tempCalc.QValue);
             }
         }
 

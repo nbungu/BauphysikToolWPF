@@ -10,6 +10,13 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for FO0_LandingPage.xaml: Used in xaml as "DataContext"
     public partial class FO0_LandingPage_VM : ObservableObject
     {
+        public FO0_LandingPage_VM()
+        {
+            // Subscribe to Event and Handle
+            // Allow child Windows to trigger RefreshXamlBindings of this Window
+            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+        }
+
         // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
         public string Title => "LandingPage";
         public List<string> SortingProperties => ElementOrganisor.SortingTypes; // Has to match ElementSortingType enum values (+Order)
@@ -31,11 +38,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void AddNewElement()
         {
+            UserSaved.SelectedElementId = -1; // Reset SelectedElement
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new AddElementWindow().ShowDialog();
-
-            UserSaved.SelectedElementId = -1; // Reset SelectedElement
-            Update();
         }
 
         // Create New Element / Edit Existing Element
@@ -43,10 +48,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void EditElement(int selectedInternalId) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
             UserSaved.SelectedElementId = selectedInternalId;
-
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new EditElementWindow().ShowDialog();
-            Update();
         }
 
         [RelayCommand]
@@ -56,7 +59,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedProject.Elements.RemoveAll(e => e.InternalId == selectedInternalId);
 
             UserSaved.SelectedElementId = -1; // Reset SelectedElement
-            Update();
+
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
@@ -66,7 +70,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedProject.Elements.Clear();
 
             UserSaved.SelectedElementId = -1; // Reset SelectedElement
-            Update();
+
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
@@ -74,8 +79,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElementId = selectedInternalId;
 
-            // Update XAML Binding Property
-            SelectedElement = UserSaved.SelectedElement;
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
@@ -84,7 +88,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElementId = selectedInternalId;
             UserSaved.SelectedProject.Elements.Add(UserSaved.SelectedElement.Copy());
             UserSaved.SelectedElementId = -1; // Reset SelectedElement
-            Update();
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
@@ -92,7 +96,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Update XAML Binding Property
             IsAscending = !IsAscending;
-            Elements = UserSaved.SelectedProject.Elements;
+
+            RefreshXamlBindings();
         }
 
         /*
@@ -138,15 +143,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public static ElementGroupingType SelectedGrouping => (ElementGroupingType)_groupingPropertyIndex;
 
-        private void Update()
+        private void RefreshXamlBindings()
         {
             // Update InternalIds and reset SelectedElement
             UserSaved.SelectedProject.AssignInternalIdsToElements();
 
-            // Manually Update XAML Binding Property
-            //OnPropertyChanged(nameof(Elements));
-            //OnPropertyChanged(nameof(SelectedElement));
-            Elements = null;
+            Elements = new List<Element>();
             Elements = UserSaved.SelectedProject.Elements;
             SelectedElement = null;
             SelectedElement = UserSaved.SelectedElement;

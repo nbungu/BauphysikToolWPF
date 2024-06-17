@@ -50,17 +50,19 @@ namespace BauphysikToolWPF.UI.ViewModels
                         BulkDensity = Convert.ToInt32(BulkDensity),
                         DiffusionResistance = Convert.ToDouble(DiffusionResistance),
                         SpecificHeatCapacity = Convert.ToInt32(HeatCapacity),
-                        //TODO auch anpassbar machen
                         ColorCode = UserSaved.SelectedLayer.Material.ColorCode
                     };
                     // Create in Database
                     DatabaseAccess.CreateMaterial(usedDefinedMaterial);
                     // Bind to new Material via MaterialId as FK
+                    UserSaved.SelectedLayer.Material = usedDefinedMaterial;
                     UserSaved.SelectedLayer.MaterialId = usedDefinedMaterial.MaterialId;
                 }
             }
             // Update Layer thickness
             UserSaved.SelectedLayer.LayerThickness = Convert.ToDouble(Thickness);
+            // Trigger Event to Update Layer Window
+            UserSaved.OnSelectedElementChanged();
             window.Close();
         }
 

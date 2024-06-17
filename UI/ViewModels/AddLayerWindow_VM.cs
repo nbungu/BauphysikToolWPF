@@ -42,12 +42,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 //LayerId gets set by SQLite DB (AutoIncrement)
                 LayerPosition = layerCount,
+                InternalId = layerCount,
                 LayerThickness = Convert.ToDouble(Thickness),
                 IsEffective = true,
                 MaterialId = selectedMaterial.MaterialId,
+                Material = selectedMaterial,
                 ElementId = UserSaved.SelectedElement.ElementId,
+                Element = UserSaved.SelectedElement
             };
-            DatabaseAccess.CreateLayer(layer);
+            //DatabaseAccess.CreateLayer(layer);
+            UserSaved.SelectedElement.Layers.Add(layer);
+            // Trigger Event to Update Layer Window
+            UserSaved.OnSelectedElementChanged();
         }
 
         [RelayCommand]

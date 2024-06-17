@@ -80,7 +80,7 @@ namespace BauphysikToolWPF.Models
         }
         public void AssignInternalIdsToElements()
         {
-            int index = 1; // Start at 1
+            int index = 0; // Start at 0
             this.Elements.ForEach(e => e.InternalId = index++);
         }
     }

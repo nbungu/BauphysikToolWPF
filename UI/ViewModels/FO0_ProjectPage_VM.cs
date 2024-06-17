@@ -9,6 +9,13 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for FO0_LandingPage.xaml: Used in xaml as "DataContext"
     public partial class FO0_ProjectPage_VM : ObservableObject
     {
+        public FO0_ProjectPage_VM()
+        {
+            // Subscribe to Event and Handle
+            // Allow child Windows to trigger RefreshXamlBindings of this Window
+            UserSaved.SelectedProjectChanged += RefreshXamlBindings;
+        }
+
         // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
         public string Title => "ProjectPage";
 
@@ -45,8 +52,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 default:
                     return;
             }
-            // Update XAML Binding Property
-            CurrentProject = UserSaved.SelectedProject;
+            RefreshXamlBindings();
         }
 
         // TODO: Execute on every page change?!
@@ -61,8 +67,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedProject.Name = property;
 
-            // Update XAML Binding Property
-            CurrentProject = UserSaved.SelectedProject;
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
@@ -70,8 +75,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedProject.UserName = property;
 
-            // Update XAML Binding Property
-            CurrentProject = UserSaved.SelectedProject;
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
@@ -88,5 +92,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         
         [ObservableProperty]
         private Project? _currentProject = UserSaved.SelectedProject;
+
+        private void RefreshXamlBindings()
+        {
+            CurrentProject = null;
+            CurrentProject = UserSaved.SelectedProject;
+        }
     }
 }

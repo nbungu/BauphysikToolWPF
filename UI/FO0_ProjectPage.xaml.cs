@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.Repository;
-using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.SessionData;
 using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
