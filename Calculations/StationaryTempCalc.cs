@@ -84,6 +84,9 @@ namespace BauphysikToolWPF.Calculations
                 if (!layers[i].IsEffective)
                     break;
                 widthPosition += layers[i].LayerThickness;
+                // Skip irregular Layers
+                if (layers[i].LayerThickness <= 0) continue;
+
                 double tempValue = Math.Round(tempList.ElementAt(i).Value - layers[i].R_Value * qValue, 2);
                 tempList.Add(widthPosition, tempValue);
             }

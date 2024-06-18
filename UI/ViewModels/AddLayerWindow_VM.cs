@@ -33,7 +33,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void AddLayer(Material? selectedMaterial)
         {
-            if (selectedMaterial is null || Thickness == "") return;
+            if (selectedMaterial is null) return;
+            if (Thickness == "" || Convert.ToDouble(Thickness) <= 0) return;
 
             // LayerPosition is always at end of List 
             int layerCount = UserSaved.SelectedElement.Layers.Count;

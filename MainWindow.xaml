@@ -83,6 +83,23 @@
             </Style.Triggers>
         </Style>
 
+        <Style TargetType="ToolBarTray">
+            <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+        </Style>
+
+        <!-- Custom style for the ToolBar -->
+        <Style TargetType="ToolBar">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolBar">
+                        <Border Background="{StaticResource PrimaryLightBrush}">
+                            <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!--
         NavigationMenu ListBoxItem values: Used in NavigationMenuListBox as ItemsSource
         Used as Binding Values within the NavigationMenu to toggle between the pages
@@ -245,45 +262,57 @@
         
     </Window.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
+    <DockPanel>
+        <!-- Toolbar at the top -->
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Content="Projektdatei speichern" Style="{StaticResource ButtonStyleToolbar}" Tag="{StaticResource ButtonIcon_Export_B}" Margin="4,4,0,4"/>
+                <Button Content="Projektdatei speichern" Style="{StaticResource ButtonStyleToolbar}" Tag="{StaticResource ButtonIcon_Export_B}" Margin="4,4,0,4"/>
+                <Button Content="Projektdatei speichern" Style="{StaticResource ButtonStyleToolbar}" Tag="{StaticResource ButtonIcon_Export_B}" Margin="4,4,0,4"/>
+            </ToolBar>
+        </ToolBarTray>
 
-        <Border x:Name="ProjectBoxHeader" Grid.Column="1" Grid.Row="0" Background="{StaticResource PrimaryDarkHighlightBrush}" BorderThickness="0">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" MaxHeight="120"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
+        <!-- Main Grid for Content -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Vertical" Margin="16,16,16,0">
-                    <Label Content="Projekt:" Foreground="White" Margin="-4"/>
-                    <TextBlock Text="{Binding CurrentProject.Name}" MaxWidth="152" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="14"/>
-                </StackPanel>
-                <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Project_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
-                <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
-            </Grid>
-        </Border>
+            <!-- Left Selection Box Top-->
+            <Border x:Name="ProjectBoxHeader" Grid.Column="1" Grid.Row="0" Background="{StaticResource PrimaryDarkHighlightBrush}" BorderThickness="0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" MaxHeight="120"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-        <!--The Selection Box on the left side-->
-        <ListBox x:Name="NavigationMenuListBox"
-                 Grid.Column="1"
-                 Grid.Row="1"                 
-                 Style="{StaticResource NavigationMenuListBoxStyle}"
-                 ItemsSource="{StaticResource NavigationMenuItems}"
-                 ItemContainerStyle="{DynamicResource NavigationMenuItemStyle}"
-                 ItemTemplate="{DynamicResource NavigationMenuItemTemplate}"/>
+                    <StackPanel Orientation="Vertical" Margin="16,16,16,0">
+                        <Label Content="Projekt:" Foreground="White" Margin="-4"/>
+                        <TextBlock Text="{Binding CurrentProject.Name}" MaxWidth="152" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="14"/>
+                    </StackPanel>
+                    <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Project_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
+                    <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
+                </Grid>
+            </Border>
 
-        <!--The Actual Pages shown here-->
-        <ContentControl x:Name="MainWindowContent" Grid.Column="2" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
-    </Grid>
+            <!--Left Selection Box Bottom-->
+            <ListBox x:Name="NavigationMenuListBox"
+                     Grid.Column="1"
+                     Grid.Row="1"                 
+                     Style="{StaticResource NavigationMenuListBoxStyle}"
+                     ItemsSource="{StaticResource NavigationMenuItems}"
+                     ItemContainerStyle="{DynamicResource NavigationMenuItemStyle}"
+                     ItemTemplate="{DynamicResource NavigationMenuItemTemplate}"/>
+
+            <!--The Actual Pages shown here-->
+            <ContentControl x:Name="MainWindowContent" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
+        </Grid>
+    </DockPanel>
 </Window>

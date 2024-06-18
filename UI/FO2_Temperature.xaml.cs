@@ -13,15 +13,8 @@ namespace BauphysikToolWPF.UI
 
         public FO2_Temperature()
         {
-            // Save computation time and only recalculate if needed
-            // Only if Element, Layers or EnvVars are not set or have changed: update class variables.
-            if (FO1_SetupLayer.Recalculate)
-            {
-                StationaryTempCalculation = new StationaryTempCalc(UserSaved.SelectedElement); //for FO2_ViewModel
+            if (UserSaved.SelectedElement != null) StationaryTempCalculation = new StationaryTempCalc(UserSaved.SelectedElement);
 
-                // Reset Recalculate Flag
-                FO1_SetupLayer.Recalculate = false;
-            }
             InitializeComponent();
             // -> Initializes xaml objects
             // -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)

@@ -1,11 +1,9 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +17,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
+            UserSaved.SelectedElementChanged += RefreshSortOrder;
         }
 
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
@@ -37,24 +36,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
+        private void EditElement() // Binding in XAML via 'EditElementCommand'
+        {
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            new EditElementWindow().ShowDialog();
+        }
+
+        [RelayCommand]
         private void AddLayer()
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new AddLayerWindow().ShowDialog();
-        }
-
-        [RelayCommand]
-        private void DeleteLayer(int selectedLayerId)
-        {
-            UserSaved.SelectedLayerId = selectedLayerId;
-
-            // Delete selected Layer
-            UserSaved.SelectedElement.Layers.Remove(UserSaved.SelectedLayer);
-
-            RefreshXamlBindings();
-            // Set focus on Layer above
-            //SelectedLayerIndex = UserSaved.SelectedLayer.LayerPosition == 0 ? 0 : UserSaved.SelectedLayer.LayerPosition - 1;
         }
 
         [RelayCommand]
@@ -68,6 +62,18 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
+        private void DeleteLayer(int selectedLayerId)
+        {
+            UserSaved.SelectedLayerId = selectedLayerId;
+
+            // Delete selected Layer
+            UserSaved.SelectedElement.Layers.Remove(UserSaved.SelectedLayer);
+
+            RefreshSortOrder();
+            RefreshXamlBindings();
+        }
+        
+        [RelayCommand]
         private void DuplicateLayer(int selectedLayerId)
         {
             UserSaved.SelectedLayerId = selectedLayerId;
@@ -77,19 +83,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             copy.InternalId = UserSaved.SelectedElement.Layers.Count;
             UserSaved.SelectedElement.Layers.Add(copy);
 
+            RefreshSortOrder();
             RefreshXamlBindings();
-        }
-
-
-        [RelayCommand]
-        private void EditElement() // Binding in XAML via 'EditElementCommand'
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new EditElementWindow().ShowDialog();
-
-            // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(SelectedElement));
         }
 
         [RelayCommand]
@@ -106,6 +101,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Change Position of selected Layer
             UserSaved.SelectedLayer.LayerPosition += 1;
 
+            RefreshSortOrder();
             RefreshXamlBindings();
         }
 
@@ -123,21 +119,26 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Change Position of selected Layer
             UserSaved.SelectedLayer.LayerPosition -= 1;
 
+            RefreshSortOrder();
             RefreshXamlBindings();
         }
 
-        private void RefreshXamlBindings()
+        private void RefreshSortOrder()
         {
             // Always in sorted order
             UserSaved.SelectedElement.SortLayers();
             // Update Effective Layer Property
             LayerOrganisor.AssignEffectiveLayers(UserSaved.SelectedElement.Layers);
-
+        }
+        
+        private void RefreshXamlBindings()
+        {
             Layers = new List<Layer>();
             Layers = UserSaved.SelectedElement.Layers;
-
             SelectedLayerIndex = -1;
             SelectedLayerIndex = UserSaved.SelectedLayer?.LayerPosition ?? -1;
+            SelectedElement = new Element();
+            SelectedElement = UserSaved.SelectedElement;
         }
 
         /*
@@ -146,10 +147,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Initialized and Assigned with Default Values
          */
         
-        // Add m:n realtion to Database when new selection is set
-        //TODO implement again
-        //UpdateElementEnvVars(ElementId, currentEnvVar);
-
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerRects))]
         [NotifyPropertyChangedFor(nameof(ElementWidth))]
