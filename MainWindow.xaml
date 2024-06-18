@@ -391,10 +391,6 @@
                    VerticalAlignment="Bottom"
                    Cursor="SizeNESW"
                    Style="{StaticResource RectBorderStyle}" />
-
-
     </Grid>
-
-
 
 </Window>
