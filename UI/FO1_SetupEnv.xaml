@@ -51,6 +51,57 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Defines the type of UIElement used in the ItemsPanel-->
+        <ItemsPanelTemplate x:Key="Canvas">
+            <!--Takes the Width and Height from TemplatedParent-->
+            <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
+        </ItemsPanelTemplate>
+
+        <!-- Properties of a CanvasItem (Layer Rectangle). Sets the Drawing Coordinates of the container holding a CanvasItem -->
+        <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
+            <Setter Property="Canvas.Left" Value="{Binding Left}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+        </Style>
+
+        <!-- Content and Styling of a Canvas Item (Layer Rectangle) -->
+        <DataTemplate x:Key="LayerItemStyle">
+            <Grid Width="{Binding RectWidth}" Height="{Binding RectHeight}" Background="{Binding RectFill}" Opacity="{Binding RectOpacity}">
+                <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}"/>
+                <Ellipse Fill="White" Width="20" Height="20" Stroke="{Binding RectStroke}" StrokeThickness="1" HorizontalAlignment="Center" Margin="-8"/>
+                <Label Content="{Binding RectPosition}" Margin="-8"/>
+            </Grid>
+        </DataTemplate>
+
+        <!-- Content and Styling of a Canvas Item (Measurement Marker Line) -->
+        <DataTemplate x:Key="MeasurementItemStyle">
+            <!-- DataContext is LayerRects from ItemSource-->
+            <Grid Width="{Binding RectWidth}" Height="56">
+                <!-- X1="0.5" X2="0.5" Adds 0.5 Offset to the Left, to avoid clipping of first marker line-->
+                <Line x:Name="MarkerLine" Y2="12" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
+                <Label Content="{Binding RectWidth_cm}" Margin="-16,-40,-16,0"/>
+            </Grid>
+        </DataTemplate>
+
+        <Style x:Key="MeasurementCanvasStyle" TargetType="{x:Type ItemsControl}">
+            <Setter Property="Height" Value="56"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ItemsControl}">
+                        <Grid>
+                            <!-- Adds a static UIElement to the ItemsSource-->
+                            <!-- DataContext is FO1_Layer_VM-->
+                            <Label Content="{Binding ElementWidth}" Margin="-16,0,-16,-40"/>
+                            <Line x:Name="staticStartLine" Y2="12" X1="0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
+                            <Line x:Name="staticBaseLine" X1="0" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
+                            <Line x:Name="staticEndLine" Y2="12" X1="{TemplateBinding Width}" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,-8,0"/>
+                            <!-- ItemsPresenter is where the (dynamic) Content of the Canvas Items are shown (from ItemsSource) -->
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
     </UserControl.Resources>
     
     <!--
@@ -107,19 +158,19 @@
                 <!--Innenseitige Randbedingungen-->
                 <controls:SubscriptLabel Grid.Row="0" BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" >
-                    <ComboBox ItemsSource="{Binding Ti_Keys}" SelectedIndex="{Binding Ti_Index}"/>
+                    <ComboBox ItemsSource="{Binding Ti_Keys}" SelectedIndex="{Binding Ti_Index}" Width="176"/>
                     <TextBox Text="{Binding TiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
                     <Label Content="°C"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="2" BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
-                    <ComboBox ItemsSource="{Binding Rsi_Keys}" SelectedIndex="{Binding Rsi_Index}"/>
+                    <ComboBox ItemsSource="{Binding Rsi_Keys}" SelectedIndex="{Binding Rsi_Index}" Width="176"/>
                     <TextBox Text="{Binding RsiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="4" Grid.Column="0" BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Bottom" >
-                    <ComboBox ItemsSource="{Binding Rel_Fi_Keys}" SelectedIndex="{Binding Rel_fi_Index}"/>
+                    <ComboBox ItemsSource="{Binding Rel_Fi_Keys}" SelectedIndex="{Binding Rel_fi_Index}" Width="176"/>
                     <TextBox Text="{Binding RelFiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
                     <Label Content="%"/>
                 </StackPanel>
@@ -128,7 +179,7 @@
         </Border>
 
         <!--Image-->
-        <Grid Grid.Row="1" Grid.Column="1"  Margin="16">
+        <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <!-- Elements inside of ViewBox are dynamically sizable-->
             <Viewbox VerticalAlignment="Top" Style="{StaticResource ViewBoxStyle}" HorizontalAlignment="Center">
                 <!--Keep this Margin to avoid clipping of LayerPosition sircles and width measurement numbers!-->
@@ -141,7 +192,26 @@
                     <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
                     <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
 
-                    <Image Grid.Row="1" Source="{Binding SelectedElement.ElementImage}" Width="200" Height="200"/>
+                    <!-- "Layers Canvas" -->
+                    <ItemsControl x:Name="layers_ItemsControl"
+                                  Grid.Row="1"
+                                  Width="320"
+                                  Height="400"                                  
+                                  ItemsSource="{Binding LayerRects}"
+                                  ItemsPanel="{StaticResource Canvas}"
+                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                  ItemTemplate="{StaticResource LayerItemStyle}"/>
+
+                    <!-- "Measurement Grid" -->
+                    <ItemsControl x:Name="measurement_Grid"
+                                  Grid.Row="2"
+                                  Style="{StaticResource MeasurementCanvasStyle}"
+                                  Width="{Binding ElementName=layers_ItemsControl, Path=Width}"
+                                  ItemsSource="{Binding LayerRects}"
+                                  ItemsPanel="{StaticResource Canvas}"
+                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                  ItemTemplate="{StaticResource MeasurementItemStyle}"
+                                  Margin="0,16,0,0"/>
                 </Grid>
             </Viewbox>
         </Grid>
@@ -161,19 +231,19 @@
                 <!--Innenseitige Randbedingungen-->
                 <controls:SubscriptLabel Grid.Row="0" BaseText="θ" SubscriptText="e" AppendText=" - Außenluft" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="1" Orientation="Horizontal" VerticalAlignment="Bottom" >
-                    <ComboBox ItemsSource="{Binding Te_Keys}" SelectedIndex="{Binding Te_Index}"/>
+                    <ComboBox ItemsSource="{Binding Te_Keys}" SelectedIndex="{Binding Te_Index}" Width="176"/>
                     <TextBox Text="{Binding TeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
                     <Label Content="°C"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="2" BaseText="R" SubscriptText="se" AppendText=" - Übergangswiderstand" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="3" Orientation="Horizontal" VerticalAlignment="Bottom">
-                    <ComboBox ItemsSource="{Binding Rse_Keys}" SelectedIndex="{Binding Rse_Index}"/>
+                    <ComboBox ItemsSource="{Binding Rse_Keys}" SelectedIndex="{Binding Rse_Index}" Width="176"/>
                     <TextBox Text="{Binding RseValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0"/>
                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0"/>
                 </StackPanel>
                 <controls:SubscriptLabel Grid.Row="4" BaseText="Φ" SubscriptText="e" AppendText=" - Rel. Feuchte" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"/>
                 <StackPanel Grid.Row="5" Orientation="Horizontal" VerticalAlignment="Bottom" >
-                    <ComboBox ItemsSource="{Binding Rel_Fe_Keys}" SelectedIndex="{Binding Rel_fe_Index}"/>
+                    <ComboBox ItemsSource="{Binding Rel_Fe_Keys}" SelectedIndex="{Binding Rel_fe_Index}" Width="176"/>
                     <TextBox Text="{Binding RelFeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="4" Margin="8,0,0,0"/>
                     <Label Content="%"/>
                 </StackPanel>
