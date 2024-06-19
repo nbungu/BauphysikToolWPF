@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI;
+using System;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.Calculations
 {
@@ -16,7 +14,7 @@ namespace BauphysikToolWPF.Calculations
     public class CheckRequirements
     {
         // Always fetch current Project on calling this Class. No need for Notifier or Updater when Project changes
-        private readonly Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
+        private readonly Project _currentProject = UserSaved.SelectedProject;
 
         public Element Element { get; }
         public double U_max { get; }

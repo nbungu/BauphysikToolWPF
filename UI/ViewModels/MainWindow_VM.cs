@@ -1,5 +1,5 @@
 ﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -30,6 +30,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
+        private Project _currentProject = UserSaved.SelectedProject;
     }
 }

@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.UI.Helper
 {
@@ -26,7 +27,7 @@ namespace BauphysikToolWPF.UI.Helper
             BitmapEncoder encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
 
-            string imgName = "Element_" + FO0_LandingPage.SelectedElementId + ".png";
+            string imgName = "Element_" + UserSaved.SelectedElement.ElementId + ".png";
 
             // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
 

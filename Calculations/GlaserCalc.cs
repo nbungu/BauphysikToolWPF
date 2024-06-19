@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.SessionData;
 
@@ -51,7 +52,8 @@ namespace BauphysikToolWPF.Calculations
             double widthPosition = 0;
             for (int i = 0; i < LayerTemps.Count; i++)
             {
-                double currentValue = P_sat(LayerTemps[i]);
+                double currentValue = P_sat(LayerTemps.ElementAt(i).Value);
+                //double currentValue = P_sat(LayerTemps[i]);
                 p_sat_List.Add(widthPosition, currentValue);
 
                 if (i == Element.Layers.Count)

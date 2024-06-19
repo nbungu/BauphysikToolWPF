@@ -1,12 +1,12 @@
-﻿using System;
+﻿using BauphysikToolWPF.SessionData;
+using SQLite;
+using SQLiteNetExtensions.Attributes;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.UI;
-using SQLite;
-using SQLiteNetExtensions.Attributes;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
@@ -46,6 +46,9 @@ namespace BauphysikToolWPF.Models
 
         //------Not part of the Database-----//
 
+        [Ignore]
+        public int InternalId { get; set; }
+
         // n:1 relationship with Project
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Project Project { get; set; } = new Project();
@@ -66,6 +69,8 @@ namespace BauphysikToolWPF.Models
         [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all EnvVars linked to this 'Element')
         public List<EnvVars> EnvVars { get; set; } = new List<EnvVars>();
 
+        // Properties
+
         [Ignore]
         public bool IsValid => Name != string.Empty && Layers.Count > 0;
 
@@ -82,12 +87,16 @@ namespace BauphysikToolWPF.Models
         [Ignore]
         public List<string> TagList // Converts string of Tags, separated by Comma, to a List of Tags
         {
-            get => Tag.Split(',').ToList(); // Splits elements of a string into a List
+            get
+            {
+                if (Tag == string.Empty) return new List<string>();
+                return Tag.Split(',').ToList(); // Splits elements of a string into a List
+            }
             set => Tag = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
         }
 
         [Ignore]
-        public bool IsSelectedElement => ElementId == FO0_LandingPage.SelectedElementId; // For UI Purposes
+        public bool IsSelectedElement => ElementId == UserSaved.SelectedElement.ElementId; // For UI Purposes
 
         // Encapsulate 'Image' variable for use in frontend
         [Ignore]
@@ -184,9 +193,45 @@ namespace BauphysikToolWPF.Models
         // has to be default parameterless constructor when used as DB
 
         //------Methoden-----//
+        public Element Copy()
+        {
+            var copy = new Element();
+            copy.ElementId = this.ElementId;
+            copy.ConstructionId = this.ConstructionId;
+            copy.Construction = this.Construction;
+            copy.OrientationId = this.OrientationId;
+            copy.Orientation = this.Orientation;
+            copy.ProjectId = this.ProjectId;
+            copy.Project = this.Project;
+            copy.Name = this.Name + "-Copy";
+            copy.Image = this.Image;
+            copy.ColorCode = this.ColorCode;
+            copy.Project = this.Project;
+            copy.Tag = this.Tag;
+            copy.Comment = this.Comment;
+            copy.EnvVars = this.EnvVars;
+            copy.Layers = this.Layers;
+            copy.InternalId = this.InternalId;
+            return copy;
+        }
+
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
             return Name + " - " + Construction.TypeName + " (Id: " + ElementId + ")";
+        }
+
+        public void AssignInternalIdsToLayers()
+        {
+            int index = 0; // Start at 0
+            this.Layers.ForEach(e => e.InternalId = index++);
+        }
+
+        public void SortLayers()
+        {
+            this.Layers.Sort((a, b) => a.LayerPosition.CompareTo(b.LayerPosition));
+            // Fix postioning
+            int index = 0; // Start at 0
+            this.Layers.ForEach(e => e.LayerPosition = index++);
         }
     }
 }

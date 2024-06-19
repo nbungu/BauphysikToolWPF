@@ -1,15 +1,22 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.SessionData;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for FO0_LandingPage.xaml: Used in xaml as "DataContext"
+    //ViewModel for FO0_ElementsPage.xaml: Used in xaml as "DataContext"
     public partial class FO0_ProjectPage_VM : ObservableObject
     {
-        // Called by 'InitializeComponent()' from FO0_LandingPage.cs due to Class-Binding in xaml via DataContext
+        public FO0_ProjectPage_VM()
+        {
+            // Subscribe to Event and Handle
+            // Allow child Windows to trigger RefreshXamlBindings of this Window
+            UserSaved.SelectedProjectChanged += RefreshXamlBindings;
+        }
+
+        // Called by 'InitializeComponent()' from FO0_ElementsPage.cs due to Class-Binding in xaml via DataContext
         public string Title => "ProjectPage";
 
         /*
@@ -28,41 +35,47 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void ChangeBuildingStats(string property = "")
         {
-            var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
             switch (property)
             {
                 case "BuildingUsage0":
-                    proj.IsNonResidentialUsage = true;
+                    UserSaved.SelectedProject.IsNonResidentialUsage = true;
                     break;
                 case "BuildingUsage1":
-                    proj.IsResidentialUsage = true;
+                    UserSaved.SelectedProject.IsResidentialUsage = true;
                     break;
                 case "BuildingAge0":
-                    proj.IsExistingConstruction = true;
+                    UserSaved.SelectedProject.IsExistingConstruction = true;
                     break;
                 case "BuildingAge1":
-                    proj.IsNewConstruction = true;
+                    UserSaved.SelectedProject.IsNewConstruction = true;
                     break;
                 default:
                     return;
             }
-            DatabaseAccess.UpdateProject(proj);
+            RefreshXamlBindings();
+        }
+
+        // TODO: Execute on every page change?!
+        //[RelayCommand]
+        //private void SaveProject()
+        //{
+        //    DatabaseAccess.UpdateProject(UserSaved.SelectedProject);
+        //}
+
+        [RelayCommand]
+        private void ChangeProjectName(string property = "")
+        {
+            UserSaved.SelectedProject.Name = property;
+
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
-        private void ChangeProjectName(string property  = "")
+        private void ChangeProjectAuthor(string property = "")
         {
-            var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
-            proj.Name = property;
-            DatabaseAccess.UpdateProject(proj);
-        }
+            UserSaved.SelectedProject.UserName = property;
 
-        [RelayCommand]
-        private void ChangeProjectEditor(string property = "")
-        {
-            var proj = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
-            proj.UserName = property;
-            DatabaseAccess.UpdateProject(proj);
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
@@ -76,10 +89,14 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
-
-        // TODO only call Project from DB once
-
+        
         [ObservableProperty]
-        private Project _currentProject = DatabaseAccess.QueryProjectById(FO0_ProjectPage.SelectedProjectId);
+        private Project? _currentProject = UserSaved.SelectedProject;
+
+        private void RefreshXamlBindings()
+        {
+            CurrentProject = null;
+            CurrentProject = UserSaved.SelectedProject;
+        }
     }
 }

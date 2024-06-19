@@ -1,4 +1,6 @@
-﻿using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Calculations;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,9 +13,6 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Calculations;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -52,18 +51,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
+        private void EditElement() // Binding in XAML via 'EditElementCommand'
         {
-            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
-
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new EditElementWindow(selectedElement);
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
+            new EditElementWindow().ShowDialog();
 
-            // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            CurrentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -75,7 +70,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RequirementValues))]
         [NotifyPropertyChangedFor(nameof(OverviewItems))]
-        private Element _currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+        private Element _selectedElement = UserSaved.SelectedElement;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -87,8 +82,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (!_tempCalc.IsValid) return new CheckRequirements(CurrentElement, 0, 0); // TODO: make empty ctor for CheckRequirements
-                return new CheckRequirements(CurrentElement, _tempCalc.UValue, _tempCalc.QValue);
+                if (!_tempCalc.IsValid) return new CheckRequirements(SelectedElement, 0, 0); // TODO: make empty ctor for CheckRequirements
+                return new CheckRequirements(SelectedElement, _tempCalc.UValue, _tempCalc.QValue);
             }
         }
 

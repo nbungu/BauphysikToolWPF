@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BauphysikToolWPF.UI.FO0_LandingPage"
+﻿<UserControl x:Class="BauphysikToolWPF.UI.FO0_ElementsPage"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -11,7 +11,7 @@
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
-        <vm:FO0_LandingPage_VM/> 
+        <vm:FO0_ElementsPage_VM/> 
     </UserControl.DataContext>
 
     <UserControl.Resources>
@@ -81,7 +81,7 @@
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <Style x:Key="ButtonStyleWrapPanel" TargetType="{x:Type Button}">
-            <Setter Property="Content" Value="{Binding ElementId}"/>
+            <Setter Property="Content" Value="{Binding InternalId}"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
@@ -100,14 +100,14 @@
                                     <Image x:Name="comment_icon" Source="{StaticResource ButtonIcon_Comment_B}" Margin="0,0,4,0"/>
                                     <Image x:Name="tag_icon" Source="{StaticResource ButtonIcon_Tags_B}" Margin="0,0,4,0"/>
                                 </StackPanel>
-                                <Label Grid.Row="0" Content="{TemplateBinding Content}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
+                                <Label Grid.Row="0" Content="{Binding InternalId}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
                                 <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
                             <!--You can bind to a property on a named element, but the named element must be in scope!
                             Define these Triggers in Scope of ControlTemplate instead of 'Style' scope-->
-                            <DataTrigger Binding="{Binding TagList}" Value="{x:Null}">
+                            <DataTrigger Binding="{Binding TagList.Count}" Value="0">
                                 <Setter TargetName="tag_icon" Property="Visibility" Value="Hidden"/>
                                 <Setter TargetName="tag_icon" Property="Width" Value="0"/>
                                 <Setter TargetName="tag_icon" Property="Height" Value="0"/>
@@ -136,8 +136,8 @@
                 <DataTrigger Value="True">
                     <DataTrigger.Binding>
                         <MultiBinding Converter="{StaticResource IsSelectedElementConverter}">
-                            <Binding RelativeSource="{RelativeSource Self}" Path="DataContext.ElementId" Mode="OneWay"/>
-                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" Path="Tag.SelectedElementId" Mode="OneWay"/>
+                            <Binding RelativeSource="{RelativeSource Self}" Path="DataContext.InternalId" Mode="OneWay"/>
+                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" Path="Tag.SelectedElement.InternalId" Mode="OneWay"/>
                         </MultiBinding>
                     </DataTrigger.Binding>
                     <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
@@ -163,21 +163,21 @@
                 Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
                 <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
-                        CommandParameter="{Binding ElementId}"
-                        Content="{Binding ElementId}"
+                        CommandParameter="{Binding InternalId}"
+                        Content="{Binding}"
                         Style="{StaticResource ButtonStyleWrapPanel}"
                         MouseDoubleClick="Button_MouseDoubleClick">
                     <Button.ContextMenu>
-                        <!--ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
+                        <!--ContextMenu does not inherit the DataContext from its parent element-> DataContext is not available.
                         Need to pass the DataContext in a different way: e.g. using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
                         The Tag Property can be used to hold any kind of user specified Data.-->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">
-                            <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Edit_B}" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Copy_B}" />
                                 </MenuItem.Icon>
@@ -187,7 +187,7 @@
                                     <Image Source="{StaticResource ButtonIcon_Export_B}"/>
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Delete_B}" />
                                 </MenuItem.Icon>
@@ -250,7 +250,7 @@
 
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
-            <Button Content="Neues Bauteil erstellen" Command="{Binding EditElementCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
+            <Button Content="Neues Bauteil erstellen" Command="{Binding AddNewElementCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
             <Button Content="Bauteil importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
             <Button Content="Katalog exportieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
@@ -325,10 +325,10 @@
             <Label Grid.Row="0" Content="Ausgewähltes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Export_B}" ToolTip="Exportieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElementId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
 
             <Border x:Name="Test" Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderThickness="0">

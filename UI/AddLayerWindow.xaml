@@ -95,7 +95,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height=".8*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height=".2*"/>
+            <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -103,7 +103,7 @@
             <ColumnDefinition Width=".75*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Margin="8" Grid.RowSpan="2">
+        <Grid Grid.Column="0" Margin="8" Grid.RowSpan="3">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32"/>
                 <RowDefinition Height="*"/>
@@ -120,7 +120,7 @@
                       Grid.Row="1"/>
         </Grid>
         
-        <Grid Grid.Column="1" Margin="8">
+        <Grid Grid.Row="0" Grid.Column="1" Margin="8">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32"/>
                 <RowDefinition Height="Auto"/>
@@ -136,7 +136,7 @@
                 </Grid.ColumnDefinitions>
 
                 <TextBox Text="{Binding SearchString}" TextAlignment="Left"/>
-                <Button Grid.Column="1" Content="Material erstellen" Command="{Binding CreateMaterialCommand}" Height="32" FontSize="14" Margin="8,0,0,0"/>
+                <Button Grid.Column="1" Content="Material erstellen" Command="{Binding CreateMaterialCommand}" Style="{StaticResource ButtonStyle04}" Margin="8,0,0,0"/>
             </Grid>
 
             <ListView x:Name="materials_ListView"
@@ -153,7 +153,7 @@
             <Label Content="cm" FontWeight="SemiBold"/>
         </StackPanel>
 
-        <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="8">
+        <Grid Grid.Column="1" Grid.Row="2" Margin="8">
             <Button Content="Schicht dem Bauteil hinzufügen" Command="{Binding AddLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=materials_ListView}" Style="{StaticResource ButtonStyle04}"/>
         </Grid>
 

@@ -1,11 +1,12 @@
-﻿using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -46,18 +47,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void EditElement(Element? selectedElement) // Binding in XAML via 'EditElementCommand'
+        private void EditElement() // Binding in XAML via 'EditElementCommand'
         {
-            selectedElement ??= DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
-
             // Once a window is closed, the same object instance can't be used to reopen the window.
-            var window = new EditElementWindow(selectedElement);
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            window.ShowDialog();
+            new EditElementWindow().ShowDialog();
 
-            // After Window closed:
             // Update XAML Binding Property by fetching from DB
-            CurrentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
+            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -65,9 +62,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values (int default = 0)
          */
-
-        [ObservableProperty]
-        private Element _currentElement = DatabaseAccess.QueryElementById(FO0_LandingPage.SelectedElementId);
 
         // Add m:n realtion to Database when new selection is set
         //TODO implement again
@@ -97,6 +91,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(RelFeValue))]
         private static int rel_fe_Index;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(LayerRects))]
+        [NotifyPropertyChangedFor(nameof(ElementWidth))]
+        private List<Layer> _layers = UserSaved.SelectedElement.Layers;
+        
+        [ObservableProperty]
+        private Element _selectedElement = UserSaved.SelectedElement;
+
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
@@ -117,7 +119,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 // Save SessionData
                 UserSaved.Ti = value ?? 0;
                 // Return value to UIElement
-                return value.ToString() ?? String.Empty;
+                return value.ToString() ?? string.Empty;
             }
             set
             {
@@ -195,6 +197,30 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 UserSaved.Rel_Fe = Convert.ToDouble(value);
                 Rel_fe_Index = -1;
+            }
+        }
+
+        public List<LayerRect> LayerRects // When accessed via get: Draws new Layers on Canvas
+        {
+            get
+            {
+                List<LayerRect> rectangles = new List<LayerRect>();
+                foreach (Layer layer in Layers)
+                {
+                    rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
+                }
+                return rectangles;
+            }
+        }
+
+        // TODO remove this property and retrieve ElementWidth from 'currentElement'
+        public double ElementWidth
+        {
+            get
+            {
+                double fullWidth = 0;
+                Layers.ForEach(l => fullWidth += l.LayerThickness);
+                return fullWidth;
             }
         }
     }

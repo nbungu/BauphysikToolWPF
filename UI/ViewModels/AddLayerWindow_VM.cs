@@ -1,11 +1,11 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.SessionData;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -33,22 +33,28 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void AddLayer(Material? selectedMaterial)
         {
-            if (selectedMaterial is null || Thickness == "")
-                return;
+            if (selectedMaterial is null) return;
+            if (Thickness == "" || Convert.ToDouble(Thickness) <= 0) return;
 
             // LayerPosition is always at end of List 
-            int layerCount = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId, LayerSortingType.None).Count;
+            int layerCount = UserSaved.SelectedElement.Layers.Count;
 
             Layer layer = new Layer
             {
                 //LayerId gets set by SQLite DB (AutoIncrement)
                 LayerPosition = layerCount,
+                InternalId = layerCount,
                 LayerThickness = Convert.ToDouble(Thickness),
                 IsEffective = true,
                 MaterialId = selectedMaterial.MaterialId,
-                ElementId = FO0_LandingPage.SelectedElementId,
+                Material = selectedMaterial,
+                ElementId = UserSaved.SelectedElement.ElementId,
+                Element = UserSaved.SelectedElement
             };
-            DatabaseAccess.CreateLayer(layer);
+            //DatabaseAccess.CreateLayer(layer);
+            UserSaved.SelectedElement.Layers.Add(layer);
+            // Trigger Event to Update Layer Window
+            UserSaved.OnSelectedElementChanged();
         }
 
         [RelayCommand]
