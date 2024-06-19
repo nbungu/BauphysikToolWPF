@@ -9,7 +9,7 @@
         Title="AddLayerWindow" Background="{StaticResource PrimaryLightBrush}" Height="488" Width="880">
 
     <Window.DataContext>
-        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
+        <!-- AddLayerWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
         <vm:AddLayerWindow_VM/>
     </Window.DataContext>
     

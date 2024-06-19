@@ -18,10 +18,7 @@
         WindowStyle="ToolWindow"
         SizeToContent="Height">
 
-    <Window.DataContext>
-        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
-        <vm:AddElementWindow_VM/>
-    </Window.DataContext>
+    <!--  AddElementWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
 
     <Window.Resources>
 

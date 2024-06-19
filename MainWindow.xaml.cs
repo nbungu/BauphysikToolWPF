@@ -5,10 +5,7 @@ using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Interop;
-using System.Windows.Shapes;
-using BauphysikToolWPF.UI.ViewModels;
 
 namespace BauphysikToolWPF
 {
@@ -36,9 +33,6 @@ namespace BauphysikToolWPF
 
         private static ListBox? _navigationMenuListBox;
         private static Border? _projectBoxHeader;
-        private static Button? _maximizeButton;
-        private static Button? _restoreButton;
-
 
         public MainWindow()
         {
@@ -47,8 +41,6 @@ namespace BauphysikToolWPF
             InitializeComponent();
             _navigationMenuListBox = this.NavigationMenuListBox;
             _projectBoxHeader = this.ProjectBoxHeader;
-            _maximizeButton = this.MaximizeButton;
-            _restoreButton = this.RestoreButton;
         }
 
         public static void SetPage(NavigationContent page)
@@ -136,13 +128,13 @@ namespace BauphysikToolWPF
         {
             if (this.WindowState == WindowState.Maximized)
             {
-                _maximizeButton.Visibility = Visibility.Collapsed;
-                _restoreButton.Visibility = Visibility.Visible;
+                MaximizeButton.Visibility = Visibility.Collapsed;
+                RestoreButton.Visibility = Visibility.Visible;
             }
             else
             {
-                _maximizeButton.Visibility = Visibility.Visible;
-                _restoreButton.Visibility = Visibility.Collapsed;
+                MaximizeButton.Visibility = Visibility.Visible;
+                RestoreButton.Visibility = Visibility.Collapsed;
             }
         }
 
