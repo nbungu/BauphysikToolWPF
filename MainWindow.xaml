@@ -14,14 +14,25 @@
         Width="1200"
         Background="{StaticResource PrimaryLightBrush}"
         WindowStartupLocation="CenterScreen"
+        Closing="MainWindow_OnClosing"
+        Loaded="MainWindow_OnLoaded"
+        StateChanged="MainWindow_StateChanged"
+        TextOptions.TextFormattingMode="Display"
         ResizeMode="CanResize"
         WindowStyle="None"
         AllowsTransparency="True">
+
+
+
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+    </WindowChrome.WindowChrome>
 
     <Window.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
         <vm:MainWindow_VM/>
     </Window.DataContext>
+
 
     <!-- https://www.codeproject.com/Articles/5275552/WPF-Compact-Navigation-Menu -->
     <Window.Resources>
@@ -83,23 +94,6 @@
                     <Setter Property="ContentTemplate" Value="{StaticResource FO4_Dynamic}"/>
                 </DataTrigger>
             </Style.Triggers>
-        </Style>
-
-        <Style TargetType="ToolBarTray">
-            <Setter Property="Background" Value="White"/>
-        </Style>
-
-        <!-- Custom style for the ToolBar -->
-        <Style TargetType="ToolBar">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ToolBar">
-                        <Border Background="White" BorderBrush="DarkGray" BorderThickness="0,0,0,2" >
-                            <StackPanel Orientation="Horizontal" IsItemsHost="True"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
 
         <!--
@@ -262,39 +256,182 @@
             </DataTemplate.Triggers>
         </DataTemplate>
 
-        <Style x:Key="RectBorderStyle" TargetType="Rectangle">
-            <Setter Property="Focusable" Value="False" />
-            <Setter Property="Fill" Value="Transparent" />
-            <Setter Property="Tag" Value="{Binding RelativeSource={RelativeSource AncestorType=Window}}" />
-            <EventSetter Event="MouseLeftButtonDown" Handler="Resize_Init"/>
-            <EventSetter Event="MouseLeftButtonUp" Handler="Resize_End"/>
-            <EventSetter Event="MouseMove" Handler="Resizing_Form"/>
+        <Style x:Key="WindowMainPanelStyle" TargetType="{x:Type Border}">
+            <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                    <Setter Property="BorderThickness" Value="0" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource WindowTextBrush}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="border"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            SnapsToDevicePixels="true">
+                            <ContentPresenter
+                                x:Name="contentPresenter"
+                                Margin="0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Focusable="False"
+                                RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource MouseOverOverlayBackgroundBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource PressedOverlayBackgroundBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TitleBarCloseButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="border"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            SnapsToDevicePixels="true">
+                            <ContentPresenter
+                                x:Name="contentPresenter"
+                                Margin="0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Focusable="False"
+                                RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource MouseOverWindowCloseButtonBackgroundBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource MouseOverWindowCloseButtonForegroundBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{DynamicResource PressedWindowCloseButtonBackgroundBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource MouseOverWindowCloseButtonForegroundBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
     </Window.Resources>
 
-    <Grid>
-    
-        <DockPanel>
+    <Window.InputBindings>
+        <KeyBinding
+            Key="O"
+            Command="{Binding OpenFile}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="F"
+            Command="{Binding OpenFolder}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="Q"
+            Command="{Binding ProcessingService.AddToQueue}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="O"
+            Command="{Binding ProcessingService.QueueFiles}"
+            Modifiers="Control+Shift" />
+        <KeyBinding
+            Key="T"
+            Command="{Binding ProcessingService.QueueTitlesAction}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="W"
+            Command="{Binding CloseVideoSource}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="D"
+            Command="{Binding OutputPathService.PickOutputPath}"
+            Modifiers="Control" />
+    </Window.InputBindings>
 
-            <!-- Custom title bar -->
-            <Border Background="{StaticResource PrimaryLightBrush}" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="0,0,0,2" Height="32" DockPanel.Dock="Top" MouseDown="DockPanelOnMouseDown">
-                <DockPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Minimize" Width="75"/>
-                        <Button Content="Maximize" Width="75"/>
-                        <Button Content="Close" Width="75"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Projektdatei speichern" Style="{StaticResource ButtonStyleToolbar}" Tag="{StaticResource ButtonIcon_Cancel_B}" Click="MinimizeCommand" Margin="4,0,0,4"/>
-                        <Button Content="Projektdatei speichern" Style="{StaticResource ButtonStyleToolbar}" Tag="{StaticResource ButtonIcon_Cancel_B}" Click="MaximizeCommand" Margin="4,0,0,4"/>
-                        <Button Content="Projektdatei speichern" Style="{StaticResource ButtonStyleToolbar}" Tag="{StaticResource ButtonIcon_Cancel_B}" Click="CloseCommand" Margin="4,0,0,4"/>
-                    </StackPanel>
-                </DockPanel>
-            </Border>
+    <Border Name="RootGrid" Style="{StaticResource WindowMainPanelStyle}">
+        
+        <Grid Name="ContentGrid">
+
+            <Grid.RowDefinitions>
+                <!--  Title bar  -->
+                <RowDefinition Height="30" />
+
+                <!-- Main Grid for Content -->
+                <RowDefinition Height="*" />
+
+            </Grid.RowDefinitions>
             
+            <!-- Title bar -->
+            <Grid Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Top">
+                
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                        <Image Source="{StaticResource ButtonIcon_Accepted_B}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="4"/>
+                        <Button Content="Datei" Style="{StaticResource ButtonStyleToolbar_A}"/>
+                        <Button Content="Einstellungen" Style="{StaticResource ButtonStyleToolbar_A}"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Click="MinimizeCommand" RenderOptions.EdgeMode="Aliased" Style="{StaticResource TitleBarButtonStyle}">
+                            <Path
+                                Width="46"
+                                Height="32"
+                                Data="M 18,15 H 28"
+                                Stroke="{Binding Path=Foreground,
+						                 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                StrokeThickness="1" />
+                        </Button>
+                        <Button Name="MaximizeButton" Click="MaximizeCommand" Style="{StaticResource TitleBarButtonStyle}">
+                            <Path
+                                Width="46"
+                                Height="32"
+                                Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z"
+                                Stroke="{Binding Path=Foreground,
+						                 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                StrokeThickness="1" />
+                        </Button>
+                        <Button Name="RestoreButton" Click="MaximizeCommand" Style="{StaticResource TitleBarButtonStyle}">
+                            <Path
+                                Width="46"
+                                Height="32"
+                                Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5"
+                                Stroke="{Binding Path=Foreground,
+						                 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                StrokeThickness="1" />
+                        </Button>
+                        <Button Name="CloseButton" Click="CloseCommand" Style="{StaticResource TitleBarCloseButtonStyle}">
+                            <Path
+                                Width="46"
+                                Height="32"
+                                Data="M 18,11 27,20 M 18,20 27,11"
+                                Stroke="{Binding Path=Foreground,
+						                 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                StrokeThickness="1" />
+                        </Button>
+                    </StackPanel>
+            </Grid>
+
             <!-- Main Grid for Content -->
-            <Grid>
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
@@ -337,60 +474,8 @@
             </Grid>
 
 
-        </DockPanel>
+        </Grid>
 
-
-        <!--Resizing Grips-->
-        <Rectangle x:Name="leftSizeGrip"
-                   Width="10"
-                   HorizontalAlignment="Left"
-                   Cursor="SizeWE"
-                   Style="{StaticResource RectBorderStyle}"/>
-
-        <Rectangle x:Name="rightSizeGrip"
-                   Width="10"
-                   HorizontalAlignment="Right"
-                   Cursor="SizeWE"
-                   Style="{StaticResource RectBorderStyle}" />
-        <Rectangle x:Name="topSizeGrip"
-                   Height="10"
-                   VerticalAlignment="Top"
-                   Cursor="SizeNS"
-                   Style="{StaticResource RectBorderStyle}" />
-        <Rectangle x:Name="bottomSizeGrip"
-                   Height="10"
-                   VerticalAlignment="Bottom"
-                   Cursor="SizeNS"
-                   Style="{StaticResource RectBorderStyle}" />
-        <!--  Corners  -->
-        <Rectangle Name="topLeftSizeGrip"
-                   Width="10"
-                   Height="10"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Top"
-                   Cursor="SizeNWSE"
-                   Style="{StaticResource RectBorderStyle}" />
-        <Rectangle Name="bottomRightSizeGrip"
-                   Width="10"
-                   Height="10"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Bottom"
-                   Cursor="SizeNWSE"
-                   Style="{StaticResource RectBorderStyle}" />
-        <Rectangle Name="topRightSizeGrip"
-                   Width="10"
-                   Height="10"
-                   HorizontalAlignment="Right"
-                   VerticalAlignment="Top"
-                   Cursor="SizeNESW"
-                   Style="{StaticResource RectBorderStyle}" />
-        <Rectangle Name="bottomLeftSizeGrip"
-                   Width="10"
-                   Height="10"
-                   HorizontalAlignment="Left"
-                   VerticalAlignment="Bottom"
-                   Cursor="SizeNESW"
-                   Style="{StaticResource RectBorderStyle}" />
-    </Grid>
+    </Border>
 
 </Window>

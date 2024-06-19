@@ -13,6 +13,7 @@
 	  <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
 	  <StartupObject>BauphysikToolWPF.App</StartupObject>
 	  <Platforms>x64;x86;AnyCPU</Platforms>
+	  <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
