@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -94,10 +95,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 UserSaved.SelectedElement.Name = SelectedElementName;
                 UserSaved.SelectedElement.ConstructionId = constrId;
                 UserSaved.SelectedElement.OrientationId = orientationId;
-                UserSaved.SelectedElement.ProjectId = UserSaved.SelectedProject.ProjectId;
+                UserSaved.SelectedElement.ProjectId = UserSaved.SelectedProject.Id;
                 UserSaved.SelectedElement.TagList = TagList;
                 UserSaved.SelectedElement.Comment = SelectedElementComment;
                 UserSaved.SelectedElement.ColorCode = SelectedElementColor;
+                UserSaved.SelectedElement.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             }
             UserSaved.OnSelectedElementChanged();
             window.Close();

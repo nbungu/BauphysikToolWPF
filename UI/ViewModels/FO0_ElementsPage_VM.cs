@@ -91,12 +91,16 @@ namespace BauphysikToolWPF.UI.ViewModels
             RefreshXamlBindings();
         }
 
-        [RelayCommand]
-        private void ChangeSortingOrder()
+        // This method will be called whenever SortingPropertyIndex changes
+        // Workaround since Combobox has no Command or Click option
+        partial void OnSortingPropertyIndexChanged(int value)
         {
-            // Update XAML Binding Property
-            IsAscending = !IsAscending;
+            SortingPropertyChangedMethod();
+        }
 
+        private void SortingPropertyChangedMethod()
+        {
+            UserSaved.SelectedProject.Elements.Sort(new ElementOrganisor(SelectedSorting));
             RefreshXamlBindings();
         }
 
@@ -109,7 +113,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(SelectedSorting))] 
+        [NotifyPropertyChangedFor(nameof(SelectedSorting))]
         private static int _sortingPropertyIndex; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
@@ -117,9 +121,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(SelectedGrouping))]
         private static int _groupingPropertyIndex; // As Static Class Variable to Save the Selection after Switching Pages!
 
-        [ObservableProperty]
-        private static bool _isAscending = true; // As Static Class Variable to Save the Selection after Switching Pages!
-        
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
         private static Element? _selectedElement; // As Static Class Variable to Save the Selection after Switching Pages!
@@ -143,6 +144,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public static ElementGroupingType SelectedGrouping => (ElementGroupingType)_groupingPropertyIndex;
 
+        
         private void RefreshXamlBindings()
         {
             // Update InternalIds and reset SelectedElement

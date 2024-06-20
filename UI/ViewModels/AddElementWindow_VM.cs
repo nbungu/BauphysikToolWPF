@@ -95,7 +95,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Name = SelectedElementName,
                 ConstructionId = constrId,
                 OrientationId = orientationId,
-                ProjectId = UserSaved.SelectedProject.ProjectId,
+                ProjectId = UserSaved.SelectedProject.Id,
                 TagList = TagList,
                 Comment = SelectedElementComment,
                 ColorCode = SelectedElementColor

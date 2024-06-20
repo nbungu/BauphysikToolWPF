@@ -22,62 +22,6 @@
         <!-- Assigns current SortingType to the 'PropertyName' Property of PropertyGroupDescription, since 'PropertyName' doesn't support Bindings -->
         <controls:GroupingTypeToPropertyName x:Key="GroupingTypeToPropertyName"/>
 
-        <!--Custom ButtonStyle_Sorting based on Button03_Mini: changing icon, transparent, rounded corners, click effects -->
-        <Style x:Key="ButtonStyleSorting" TargetType="{x:Type Button}">
-            <!--Set default properties of the button-->
-            <Setter Property="Content" Value="Placeholder"/>
-            <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="MinWidth" Value="24"/>
-            <Setter Property="MinHeight" Value="24"/>
-            <Setter Property="MaxWidth" Value="48"/>
-            <Setter Property="MaxHeight" Value="48"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <!--Set appearance of the element-->
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <!--Element appearance with behaviour of a 'Button'-->
-                        <Border x:Name="btn_border" CornerRadius="8" Background="{TemplateBinding Background}">
-                            <StackPanel Orientation="Horizontal">
-                                <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
-                            </StackPanel>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                </Setter.Value>
-            </Setter>
-            <!--Set Triggers and Effects-->
-            <Style.Triggers>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                </Trigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Opacity" Value="0.5"/>
-                </Trigger>
-                <DataTrigger Binding="{Binding IsAscending}" Value="True">
-                    <Setter Property="Tag" Value="{StaticResource ButtonIcon_Up_B}"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsAscending}" Value="False">
-                    <Setter Property="Tag" Value="{StaticResource ButtonIcon_Down_B}"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <Style x:Key="ButtonStyleWrapPanel" TargetType="{x:Type Button}">
@@ -266,26 +210,20 @@
                 <RowDefinition Height="48"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".15*"/>
-                <ColumnDefinition Width=".7*"/>
-                <ColumnDefinition Width=".15*"/>
-            </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Grid.Column="1" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+            <Label Grid.Row="0" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
             <!-- Sorting functions, Button Row -->
-            <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left">
                 <Label Content="Sortieren nach" Margin="0,0,8,0"/>
-                <ComboBox Background="Transparent" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" Margin="0,0,8,0"/>
+                <ComboBox Name="SortingComboBox" Background="Transparent" Width="240" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" Margin="0,0,8,0"/>
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <Label Content="Gruppieren nach" Margin="0,0,8,0"/>
                 <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyleSorting}" Command="{Binding ChangeSortingOrderCommand}" Margin="0,8,4,8"/>
             </StackPanel>
-            
-            <ScrollViewer x:Name="WrapPanelScrollViewer" Grid.Row="2" Grid.Column="1" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-                <ItemsControl Width="{Binding ElementName=WrapPanelScrollViewer, Path=ActualWidth}"
+
+            <ScrollViewer x:Name="WrapPanelScrollViewer" Grid.Row="2" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="ElementsControl" Width="{Binding ElementName=WrapPanelScrollViewer, Path=ActualWidth}"
                           ItemsPanel="{StaticResource WrapPanelTemplate}"
                           ItemTemplate="{StaticResource WrapPanelItemDesignTemplate}"
                           Background="Transparent"
@@ -357,6 +295,14 @@
                     <StackPanel Orientation="Horizontal">
                         <Label Content="m':" HorizontalAlignment="Left" Width="96"/>
                         <Label Content="{Binding SelectedElement.AreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Erstellt:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.CreatedAtString}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Gerändert:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.UpdatedAtString}" HorizontalAlignment="Left"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
                         <Image Source="{StaticResource ButtonIcon_Tags_B}" HorizontalAlignment="Left" Width="20" Height="20"/>

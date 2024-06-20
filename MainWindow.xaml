@@ -288,7 +288,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryBorderBrush}" />
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryMediumBrush}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
                                 <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryHoverBrush}" />
@@ -322,7 +322,7 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="true">
-                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryBorderBrush}" />
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryMediumBrush}" />
                                 <Setter Property="Foreground" Value="{DynamicResource MouseOverWindowCloseButtonForegroundBrush}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="true">
@@ -355,7 +355,7 @@
                         <!--Element appearance with behaviour of a 'Button'-->
                         <Border CornerRadius="0" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
-                                <Label Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" FontSize="10" Margin="4,0,4,0"/>
+                                <Label Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" FontSize="12" Margin="4,0,4,0"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>

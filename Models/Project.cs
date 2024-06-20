@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BauphysikToolWPF.Models.Helper;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 
@@ -22,7 +23,7 @@ namespace BauphysikToolWPF.Models
         //------Eigenschaften-----//
 
         [PrimaryKey, NotNull, AutoIncrement, Unique]
-        public int ProjectId { get; set; }
+        public int Id { get; set; }
         [NotNull]
         public string Name { get; set; } = string.Empty;
         [NotNull]
@@ -34,10 +35,21 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public int BuildingAge { get; set; } // Boolean values are stored as integers 0 (false) and 1 (true)
 
+        [NotNull]
+        public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
+
+        [NotNull]
+        public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
+
         //------Not part of the Database-----//
 
         [Ignore]
         public int InternalId { get; set; }
+
+        [Ignore]
+        public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
+        [Ignore]
+        public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
 
         // 1:n relationship with Element
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
@@ -74,14 +86,37 @@ namespace BauphysikToolWPF.Models
         // has to be default parameterless constructor when used as DB
 
         //------Methoden-----//
+
+        public Project Copy()
+        {
+            var copy = new Project();
+            copy.Id = this.Id;
+            copy.Name = this.Name;
+            copy.UserName = this.UserName;
+            copy.BuildingAge = this.BuildingAge;
+            copy.BuildingUsage = this.BuildingUsage;
+            copy.Id = this.Id;
+            copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.Elements = this.Elements;
+            copy.InternalId = this.InternalId;
+            return copy;
+        }
+
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return Name + " (Id: " + ProjectId + ")";
+            return Name + " (Id: " + Id + ")";
         }
+
         public void AssignInternalIdsToElements()
         {
             int index = 0; // Start at 0
             this.Elements.ForEach(e => e.InternalId = index++);
+        }
+
+        public void UpdateTimestamp()
+        {
+            UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
     }
 }

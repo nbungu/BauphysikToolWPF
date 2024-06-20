@@ -58,7 +58,7 @@ namespace BauphysikToolWPF.UI
         //    ElementEnvVars elemEnvVars = new ElementEnvVars()
         //    {
         //        //Id gets set by SQLite (Autoincrement)
-        //        ElementId = elementID,
+        //        Id = elementID,
         //        EnvVarId = envVar.EnvVarId,
         //    };
         //    // Only insert every envVar once! 

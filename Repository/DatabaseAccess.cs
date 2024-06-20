@@ -130,16 +130,16 @@ namespace BauphysikToolWPF.Repository
 
             return element;
         }
-        public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.Date, bool ascending = true)
+        public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.DateAscending, bool ascending = true)
         {
             projectId = Convert.ToInt32(projectId);
             List<Element> elements = Database.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
 
-            if (sortingType == ElementSortingType.Date)
-                return ascending ? elements : elements.Reverse<Element>().ToList();
+            if (sortingType == ElementSortingType.DateAscending) return elements;
 
             elements.Sort(new ElementOrganisor(sortingType)); // use of List<T>.Sort(IComparer<T>) method
-            return ascending ? elements : elements.Reverse<Element>().ToList();
+            return elements;
+            
         }
 
         // Retreive Data from Table "Layer"

@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.SessionData;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
@@ -23,7 +24,7 @@ namespace BauphysikToolWPF.Models
         //------Eigenschaften-----//
 
         [PrimaryKey, NotNull, AutoIncrement, Unique] // SQL Attributes
-        public int ElementId { get; set; }
+        public int Id { get; set; }
 
         [ForeignKey(typeof(Construction))] // FK for the 1:1 relationship with Construction
         public int ConstructionId { get; set; }
@@ -43,6 +44,12 @@ namespace BauphysikToolWPF.Models
         public string Tag { get; set; } = string.Empty;
         [NotNull]
         public string Comment { get; set; } = string.Empty;
+
+        [NotNull]
+        public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
+
+        [NotNull]
+        public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
         //------Not part of the Database-----//
 
@@ -72,6 +79,11 @@ namespace BauphysikToolWPF.Models
         // Properties
 
         [Ignore]
+        public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
+        [Ignore]
+        public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
+
+        [Ignore]
         public bool IsValid => Name != string.Empty && Layers.Count > 0;
 
         [Ignore]
@@ -96,7 +108,7 @@ namespace BauphysikToolWPF.Models
         }
 
         [Ignore]
-        public bool IsSelectedElement => ElementId == UserSaved.SelectedElement.ElementId; // For UI Purposes
+        public bool IsSelectedElement => Id == UserSaved.SelectedElement.Id; // For UI Purposes
 
         // Encapsulate 'Image' variable for use in frontend
         [Ignore]
@@ -196,7 +208,7 @@ namespace BauphysikToolWPF.Models
         public Element Copy()
         {
             var copy = new Element();
-            copy.ElementId = this.ElementId;
+            copy.Id = this.Id;
             copy.ConstructionId = this.ConstructionId;
             copy.Construction = this.Construction;
             copy.OrientationId = this.OrientationId;
@@ -209,6 +221,8 @@ namespace BauphysikToolWPF.Models
             copy.Project = this.Project;
             copy.Tag = this.Tag;
             copy.Comment = this.Comment;
+            copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.EnvVars = this.EnvVars;
             copy.Layers = this.Layers;
             copy.InternalId = this.InternalId;
@@ -217,7 +231,7 @@ namespace BauphysikToolWPF.Models
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return Name + " - " + Construction.TypeName + " (Id: " + ElementId + ")";
+            return Name + " - " + Construction.TypeName + " (Id: " + Id + ")";
         }
 
         public void AssignInternalIdsToLayers()
@@ -232,6 +246,11 @@ namespace BauphysikToolWPF.Models
             // Fix postioning
             int index = 0; // Start at 0
             this.Layers.ForEach(e => e.LayerPosition = index++);
+        }
+
+        public void UpdateTimestamp()
+        {
+            UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
     }
 }

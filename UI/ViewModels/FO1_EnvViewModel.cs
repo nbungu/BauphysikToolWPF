@@ -65,7 +65,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Add m:n realtion to Database when new selection is set
         //TODO implement again
-        //UpdateElementEnvVars(ElementId, currentEnvVar);
+        //UpdateElementEnvVars(Id, currentEnvVar);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))]

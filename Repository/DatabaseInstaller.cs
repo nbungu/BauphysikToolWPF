@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.Repository
         /// All Application Data should be stored where read/write access is not limited.
         /// </summary>
         /// <returns>Connection String to the new Database Location where the App has full read/write permissions</returns>
-        public static string Install()
+        public static string Install(bool forceUpdate = false)
         {
             try
             {
@@ -31,6 +31,19 @@ namespace BauphysikToolWPF.Repository
 
                 // Example: Copy the database from the output folder to ProgramData if it doesn't already exist
                 string sourceDatabasePath = InitialDatabasePath;//Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DemoDB.db");
+
+                if (forceUpdate)
+                {
+                    if (!File.Exists(databaseFilePath))
+                    {
+                        File.Copy(sourceDatabasePath, databaseFilePath);
+                    }
+                    else
+                    {
+                        File.Delete(databaseFilePath);
+                        File.Copy(sourceDatabasePath, databaseFilePath);
+                    }
+                }
                 if (!File.Exists(databaseFilePath))
                 {
                     File.Copy(sourceDatabasePath, databaseFilePath);

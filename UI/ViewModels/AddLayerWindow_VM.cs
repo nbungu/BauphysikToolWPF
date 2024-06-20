@@ -48,7 +48,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 IsEffective = true,
                 MaterialId = selectedMaterial.MaterialId,
                 Material = selectedMaterial,
-                ElementId = UserSaved.SelectedElement.ElementId,
+                ElementId = UserSaved.SelectedElement.Id,
                 Element = UserSaved.SelectedElement
             };
             //DatabaseAccess.CreateLayer(layer);
