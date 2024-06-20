@@ -25,11 +25,9 @@ namespace BauphysikToolWPF.UI.CustomControls
                     case ElementGroupingType.Type:
                         return element.Construction.TypeName;
                     case ElementGroupingType.Orientation:
-                        return element.Orientation.TypeName;
-                    case ElementGroupingType.Color:
-                        return element.Color;
+                        return element.OrientationType;
                     case ElementGroupingType.Tag:
-                        return element.TagList[0];
+                        return element.TagList;
                     default:
                         return element.Construction.TypeName;
                 }

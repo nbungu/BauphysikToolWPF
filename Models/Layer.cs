@@ -1,8 +1,9 @@
-﻿using System;
-using BauphysikToolWPF.Models.Helper;
+﻿using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
+using System;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.Models
 {
@@ -36,6 +37,8 @@ namespace BauphysikToolWPF.Models
 
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
+        [NotNull]
+        public LayerSubConstruction SubConstruction { get; set; } = new LayerSubConstruction();
 
         //------Not part of the Database-----//
 
@@ -54,6 +57,9 @@ namespace BauphysikToolWPF.Models
         // 1:1 relationship with Material
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
+
+        [Ignore]
+        public bool HasSubConstruction => SubConstruction.IsValid;
 
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 

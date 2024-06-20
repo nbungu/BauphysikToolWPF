@@ -271,17 +271,6 @@ namespace BauphysikToolWPF.Repository
             return Database.GetWithChildren<Construction>(constructionId);
         }
 
-        // Retreive Data from Table "Orientation"
-        public static List<Orientation> GetOrientations()
-        {
-            return Database.Table<Orientation>().ToList();
-        }
-        public static Orientation QueryOrientationById(int orientationId)
-        {
-            orientationId = Convert.ToInt32(orientationId);
-            return Database.Get<Orientation>(orientationId);
-        }
-
         // Retreive Data from Table "ElementEnvVars"
         public static List<ElementEnvVars> GetElementEnvVars()
         {

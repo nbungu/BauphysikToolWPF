@@ -14,14 +14,13 @@ namespace BauphysikToolWPF.Models.Helper
         None,
         Type,
         Orientation,
-        Color,
         Tag
     }
     public class ElementComparer : IComparer<Element>
     {
         // Static Class Variable
         public static List<string> SortingTypes { get; private set; } = new List<string>() { "Änderungsdatum (älteste zuerst)", "Änderungsdatum (neueste zuerst)", "Name (aufsteigend)", "Name (absteigend)" };
-        public static List<string> GroupingTypes { get; private set; } = new List<string>() { "Ohne", "Typ", "Ausrichtung", "Farbe", "Tags" };
+        public static List<string> GroupingTypes { get; private set; } = new List<string>() { "Ohne", "Typ", "Ausrichtung", "Tags" };
 
         // Instance Variables
         public ElementSortingType SortingType { get; set; }

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -24,8 +25,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public List<string> ConstructionType_List => DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList();
 
-        public List<string> Orientation_List => DatabaseAccess.GetOrientations().Select(e => e.TypeName).ToList();
-        
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -65,8 +64,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             
             TagList.Remove(tag);
             // Assign a new instance to force Update or trigger OnPropertyChanged
-            //TagList = new List<string>(TagList);
-            OnPropertyChanged(nameof(TagList));
+            TagList = new List<string>(TagList);
         }
 
         [RelayCommand]
@@ -84,17 +82,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (window is null) return;
             // Avoid empty Input fields
 
-            string constrType = SelectedConstruction;
-            int constrId = DatabaseAccess.GetConstructions().Find(e => e.TypeName == constrType)?.ConstructionId ?? -1;
-
-            string orientationType = SelectedOrientation;
-            int orientationId = DatabaseAccess.GetOrientations().Find(e => e.TypeName == orientationType)?.OrientationId ?? -1;
+            Construction construction = DatabaseAccess.GetConstructions().Find(e => e.TypeName == SelectedConstruction);
 
             if (UserSaved.SelectedElement != null)
             {
                 UserSaved.SelectedElement.Name = SelectedElementName;
-                UserSaved.SelectedElement.ConstructionId = constrId;
-                UserSaved.SelectedElement.OrientationId = orientationId;
+                UserSaved.SelectedElement.ConstructionId = construction.ConstructionId;
+                UserSaved.SelectedElement.Construction = construction;
+                UserSaved.SelectedElement.OrientationType = SelectedOrientation;
                 UserSaved.SelectedElement.ProjectId = UserSaved.SelectedProject.Id;
                 UserSaved.SelectedElement.TagList = TagList;
                 UserSaved.SelectedElement.Comment = SelectedElementComment;
@@ -116,7 +111,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private string _selectedConstruction = UserSaved.SelectedElement?.Construction.TypeName ?? "";
         [ObservableProperty]
-        private string _selectedOrientation = UserSaved.SelectedElement?.Orientation.TypeName ?? "";
+        private OrientationType _selectedOrientation = UserSaved.SelectedElement?.OrientationType ?? OrientationType.Norden;
         [ObservableProperty]
         private Visibility _tagBtnVisible = Visibility.Visible;
         [ObservableProperty]

@@ -157,7 +157,8 @@
                     <ControlTemplate>
                         <!-- Header Binding 'Name' binds to 'PropertyName' from PropertyGroupDescription -->
                         <Expander Header="{Binding Name}" FontSize="14" FontWeight="Bold" IsExpanded="True" Margin="0,0,0,8">
-                            <ItemsPresenter/> <!-- Displays the WrapPanel Items-->
+                            <ItemsPresenter/>
+                            <!-- Displays the WrapPanel Items-->
                         </Expander>
                     </ControlTemplate>
                 </Setter.Value>
@@ -272,7 +273,7 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>
-                        <Label Content="{Binding SelectedElement.Orientation.TypeName}" HorizontalAlignment="Left"/>
+                        <Label Content="{Binding SelectedElement.OrientationType}" HorizontalAlignment="Left"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96"/>

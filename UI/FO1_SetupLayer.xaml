@@ -230,13 +230,15 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding AddLayerCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
                     <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding EditLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
                     <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerUpCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Up_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
                     <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerDownCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Down_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
                     <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DeleteLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
                 </StackPanel>
+
+                <Label Grid.Row="1" Content="Von innen nach außen:" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
 
                 <!-- ItemsSource gets updated by backend -->
                 <!-- This is 'PlacementTarget' as seen from ContextMenu -->
@@ -248,7 +250,7 @@
                       SelectedIndex="{Binding SelectedLayerIndex}"                      
                       Style="{StaticResource ListViewStyle01}"
                       Tag="{Binding}"
-                      Margin="0,16,0,0">
+                      Margin="0,0,0,0">
                     <!--TODO Add Style-->
                     <ListView.ContextMenu>
                         <ContextMenu>

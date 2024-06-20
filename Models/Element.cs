@@ -16,6 +16,18 @@ using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.Models
 {
+    public enum OrientationType
+    {
+        Norden,
+        NordOsten,
+        Osten,
+        SuedOsten,
+        Sueden,
+        SuedWesten,
+        Westen,
+        NordWesten
+    }
+
     public class Element : ISavefileElement<Element>
     {
         //------Variablen-----//
@@ -29,9 +41,6 @@ namespace BauphysikToolWPF.Models
         [ForeignKey(typeof(Construction))] // FK for the 1:1 relationship with Construction
         public int ConstructionId { get; set; }
 
-        [ForeignKey(typeof(Orientation))] // FK for the 1:1 relationship with Orientation
-        public int OrientationId { get; set; }
-
         [ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
         public int ProjectId { get; set; }
         [NotNull]
@@ -44,10 +53,10 @@ namespace BauphysikToolWPF.Models
         public string Tag { get; set; } = string.Empty;
         [NotNull]
         public string Comment { get; set; } = string.Empty;
-
+        [NotNull]
+        public OrientationType OrientationType { get; set; } = OrientationType.Norden;
         [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
@@ -55,7 +64,7 @@ namespace BauphysikToolWPF.Models
 
         [Ignore]
         public int InternalId { get; set; }
-
+        
         // n:1 relationship with Project
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Project Project { get; set; } = new Project();
@@ -67,10 +76,6 @@ namespace BauphysikToolWPF.Models
         // 1:1 relationship with Construction
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Construction Construction { get; set; } = new Construction();
-
-        // 1:1 relationship with Orientation
-        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public Orientation Orientation { get; set; } = new Orientation();
 
         // m:n relationship with EnvVars
         [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all EnvVars linked to this 'Element')
@@ -211,8 +216,7 @@ namespace BauphysikToolWPF.Models
             copy.Id = this.Id;
             copy.ConstructionId = this.ConstructionId;
             copy.Construction = this.Construction;
-            copy.OrientationId = this.OrientationId;
-            copy.Orientation = this.Orientation;
+            copy.OrientationType = this.OrientationType;
             copy.ProjectId = this.ProjectId;
             copy.Project = this.Project;
             copy.Name = this.Name + "-Copy";

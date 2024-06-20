@@ -6,6 +6,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:local="clr-namespace:BauphysikToolWPF"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        xmlns:models="clr-namespace:BauphysikToolWPF.Models"
         mc:Ignorable="d"
         Title="Bauteildaten festlegen"
         ResizeMode="CanResizeWithGrip"
@@ -24,6 +26,13 @@
     </Window.DataContext>
 
     <Window.Resources>
+
+        <!--populate the items of a ComboBox with all elements from an enum-->
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="OrientationTypeValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:OrientationType"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
 
         <Style x:Key="ItemsControlVisibilityStyle" TargetType="ItemsControl">
             <Style.Triggers>
@@ -106,7 +115,7 @@
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Ausrichtung" HorizontalAlignment="Left"/>
-            <ComboBox ItemsSource="{Binding Orientation_List}" SelectedItem="{Binding SelectedOrientation}"/>
+            <ComboBox ItemsSource="{Binding Source={StaticResource OrientationTypeValues}}" SelectedItem="{Binding SelectedOrientation}"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Farbe" HorizontalAlignment="Left"/>
