@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.Repository
     public static class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
         //public static string ConnectionString = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\SQLiteRepo\\DemoDB.db"));
-        private static readonly string ConnectionString = DatabaseInstaller.Install();
+        private static readonly string ConnectionString = DatabaseInstaller.Install(forceUpdate: true);
         private static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
@@ -137,7 +137,7 @@ namespace BauphysikToolWPF.Repository
 
             if (sortingType == ElementSortingType.DateAscending) return elements;
 
-            elements.Sort(new ElementOrganisor(sortingType)); // use of List<T>.Sort(IComparer<T>) method
+            elements.Sort(new ElementComparer(sortingType)); // use of List<T>.Sort(IComparer<T>) method
             return elements;
             
         }
@@ -149,8 +149,8 @@ namespace BauphysikToolWPF.Repository
             Database.Insert(layer);
 
             // True by default: Occurs often when a Layer is deleted
-            if (assignEffectiveLayers)
-                LayerOrganisor.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
+            //if (assignEffectiveLayers)
+            //    LayerComparer.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
 
             if (triggerUpdateEvent)
                 OnLayersChanged();
@@ -162,8 +162,8 @@ namespace BauphysikToolWPF.Repository
             Database.Update(layer);
 
             // False by default: Occurs rarely when a Layer is updated
-            if (assignEffectiveLayers)
-                LayerOrganisor.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
+            //if (assignEffectiveLayers)
+            //    LayerComparer.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
 
             if (triggerUpdateEvent)
                 OnLayersChanged();
@@ -174,12 +174,12 @@ namespace BauphysikToolWPF.Repository
             Database.Delete(layer);
 
             // True by default: Occurs almost every time a Layer is deleted
-            if (fillLayerGaps)
-                LayerOrganisor.FillGaps(QueryLayersByElementId(layer.ElementId)); // Remove gaps in the LayerPosition property of current Element
+            //if (fillLayerGaps)
+            //    LayerComparer.FillGaps(QueryLayersByElementId(layer.ElementId)); // Remove gaps in the LayerPosition property of current Element
 
-            // True by default: Occurs often when a Layer is deleted
-            if (assignEffectiveLayers)
-                LayerOrganisor.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
+            //// True by default: Occurs often when a Layer is deleted
+            //if (assignEffectiveLayers)
+            //    LayerComparer.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
 
             if (triggerUpdateEvent)
                 OnLayersChanged();
@@ -192,15 +192,15 @@ namespace BauphysikToolWPF.Repository
             if (triggerUpdateEvent)
                 OnLayersChanged();
         }
-        public static List<Layer> QueryLayersByElementId(int elementId, LayerSortingType sortingType = LayerSortingType.Default)
+        public static List<Layer> QueryLayersByElementId(int elementId, LayerSortingType sortingType = LayerSortingType.DateAscending)
         {
             elementId = Convert.ToInt32(elementId);
             List<Layer> layers = Database.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
 
-            if (sortingType == LayerSortingType.None)
+            if (sortingType == LayerSortingType.DateAscending)
                 return layers;
 
-            layers.Sort(new LayerOrganisor(sortingType)); // use of List<T>.Sort(IComparer<T>) method
+            layers.Sort(new LayerComparer(sortingType)); // use of List<T>.Sort(IComparer<T>) method
             return layers;
         }
 

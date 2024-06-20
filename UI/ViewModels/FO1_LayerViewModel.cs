@@ -128,7 +128,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Always in sorted order
             UserSaved.SelectedElement.SortLayers();
             // Update Effective Layer Property
-            LayerOrganisor.AssignEffectiveLayers(UserSaved.SelectedElement.Layers);
+            UserSaved.SelectedElement.AssignEffectiveLayers();
         }
         
         private void RefreshXamlBindings()

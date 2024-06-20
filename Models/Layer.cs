@@ -1,11 +1,12 @@
 ﻿using System;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 
 namespace BauphysikToolWPF.Models
 {
-    public class Layer
+    public class Layer : ISavefileElement<Layer>
     {
         //------Variablen-----//
 
@@ -13,7 +14,7 @@ namespace BauphysikToolWPF.Models
         //------Eigenschaften-----//
 
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int LayerId { get; set; }
+        public int Id { get; set; }
 
         [NotNull]
         public int LayerPosition { get; set; } // Inside = 1
@@ -30,10 +31,21 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public int Effective { get; set; } // For Calculation Purposes - Whether a Layer is considered in the Calculations or not
 
+        [NotNull]
+        public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
+
+        [NotNull]
+        public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
+
         //------Not part of the Database-----//
 
         [Ignore]
         public int InternalId { get; set; }
+
+        [Ignore]
+        public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
+        [Ignore]
+        public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
 
         // n:1 relationship with Element
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
@@ -110,7 +122,7 @@ namespace BauphysikToolWPF.Models
         public Layer Copy()
         {
             var copy = new Layer();
-            copy.LayerId = this.LayerId;
+            copy.Id = this.Id;
             copy.LayerPosition = this.LayerPosition;
             copy.Element = this.Element;
             copy.MaterialId = this.MaterialId;
@@ -119,6 +131,8 @@ namespace BauphysikToolWPF.Models
             copy.LayerThickness = this.LayerThickness;
             copy.Effective = this.Effective;
             copy.IsSelected = false;
+            copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.InternalId = this.InternalId;
             return copy;
         }
@@ -126,6 +140,11 @@ namespace BauphysikToolWPF.Models
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
             return LayerThickness + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
+        }
+
+        public void UpdateTimestamp()
+        {
+            UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
     }
 }

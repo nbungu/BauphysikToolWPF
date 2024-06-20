@@ -19,9 +19,6 @@
         <!-- Checks if Element of WrapPanel is currently SelectedElement -->
         <controls:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
 
-        <!-- Assigns current SortingType to the 'PropertyName' Property of PropertyGroupDescription, since 'PropertyName' doesn't support Bindings -->
-        <controls:GroupingTypeToPropertyName x:Key="GroupingTypeToPropertyName"/>
-
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <Style x:Key="ButtonStyleWrapPanel" TargetType="{x:Type Button}">
@@ -153,13 +150,6 @@
                 <Button Content="{Binding}" Style="{StaticResource ButtonStyle05_Tag_B}"/>
             </Grid>
         </DataTemplate>
-
-        <CollectionViewSource x:Key="GroupedItemsSource" Source="{Binding Elements}">
-            <CollectionViewSource.GroupDescriptions>
-                <!-- Here DataContext is of Type 'Element' -->
-                <PropertyGroupDescription PropertyName="." Converter="{StaticResource GroupingTypeToPropertyName}" StringComparison="Ordinal"/>
-            </CollectionViewSource.GroupDescriptions>
-        </CollectionViewSource>
         
         <Style x:Key="WrapPanelGroupingHeader" TargetType="{x:Type GroupItem}">
             <Setter Property="Template">
@@ -243,7 +233,7 @@
                             <Setter Property="ItemsSource" Value="{Binding Elements}"/>
                             <Style.Triggers>
                                 <DataTrigger Binding="{Binding IsGroupingEnabled}" Value="True">
-                                    <Setter Property="ItemsSource" Value="{Binding Source={StaticResource GroupedItemsSource}}"/>
+                                    <Setter Property="ItemsSource" Value="{Binding GroupedElements}"/>
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>

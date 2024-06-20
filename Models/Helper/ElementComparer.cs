@@ -17,17 +17,17 @@ namespace BauphysikToolWPF.Models.Helper
         Color,
         Tag
     }
-    public class ElementOrganisor : IComparer<Element>
+    public class ElementComparer : IComparer<Element>
     {
         // Static Class Variable
-        public static List<string> SortingTypes { get; private set; } = new List<string>() { "Änderungsdatum (neueste zuerst)", "Änderungsdatum (älteste zuerst)", "Name (aufsteigend)", "Name (absteigend)" };
+        public static List<string> SortingTypes { get; private set; } = new List<string>() { "Änderungsdatum (älteste zuerst)", "Änderungsdatum (neueste zuerst)", "Name (aufsteigend)", "Name (absteigend)" };
         public static List<string> GroupingTypes { get; private set; } = new List<string>() { "Ohne", "Typ", "Ausrichtung", "Farbe", "Tags" };
 
         // Instance Variables
         public ElementSortingType SortingType { get; set; }
         public ElementGroupingType GroupingType { get; set; }
 
-        public ElementOrganisor(ElementSortingType sortingType = ElementSortingType.DateAscending)
+        public ElementComparer(ElementSortingType sortingType = ElementSortingType.DateAscending)
         {
             SortingType = sortingType;
         }

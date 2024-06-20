@@ -1,9 +1,12 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -19,8 +22,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Called by 'InitializeComponent()' from FO0_ElementsPage.cs due to Class-Binding in xaml via DataContext
         public string Title => "LandingPage";
-        public List<string> SortingProperties => ElementOrganisor.SortingTypes; // Has to match ElementSortingType enum values (+Order)
-        public List<string> GroupingProperties => ElementOrganisor.GroupingTypes; // Has to match ElementSortingType enum values (+Order)
+        public List<string> SortingProperties => ElementComparer.SortingTypes; // Has to match ElementSortingType enum values (+Order)
+        public List<string> GroupingProperties => ElementComparer.GroupingTypes; // Has to match ElementSortingType enum values (+Order)
         
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -95,13 +98,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Workaround since Combobox has no Command or Click option
         partial void OnSortingPropertyIndexChanged(int value)
         {
-            SortingPropertyChangedMethod();
-        }
-
-        private void SortingPropertyChangedMethod()
-        {
-            UserSaved.SelectedProject.Elements.Sort(new ElementOrganisor(SelectedSorting));
+            UserSaved.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
             RefreshXamlBindings();
+        }
+        
+        // This method will be called whenever SortingPropertyIndex changes
+        // Workaround since Combobox has no Command or Click option
+        partial void OnGroupingPropertyIndexChanged(int value)
+        {
+            GroupedElements = UpdateGroupedItemsSource();
+            //RefreshXamlBindings();
         }
 
         /*
@@ -128,6 +134,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private List<Element> _elements = UserSaved.SelectedProject.Elements;
 
+        [ObservableProperty]
+        private ICollectionView? _groupedElements;
+
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
@@ -144,7 +153,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public static ElementGroupingType SelectedGrouping => (ElementGroupingType)_groupingPropertyIndex;
 
-        
+
         private void RefreshXamlBindings()
         {
             // Update InternalIds and reset SelectedElement
@@ -154,6 +163,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             Elements = UserSaved.SelectedProject.Elements;
             SelectedElement = null;
             SelectedElement = UserSaved.SelectedElement;
+        }
+
+        private ICollectionView UpdateGroupedItemsSource()
+        {
+            var cvs = new CollectionViewSource { Source = UserSaved.SelectedProject.Elements };
+            var pgd = new PropertyGroupDescription(".", new GroupingTypeToPropertyName(SelectedGrouping));
+            cvs.GroupDescriptions.Add(pgd);
+            return cvs.View;
         }
     }
 }

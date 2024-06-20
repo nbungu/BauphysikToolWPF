@@ -1,19 +1,24 @@
-﻿using BauphysikToolWPF.UI.ViewModels;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using System;
 using System.Globalization;
 using System.Windows.Data;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
     public class GroupingTypeToPropertyName : IValueConverter
     {
+        private readonly ElementGroupingType _grouping;
+        public GroupingTypeToPropertyName(ElementGroupingType grouping)
+        {
+            _grouping = grouping;
+        }
+
         // value is the object from the Binding (Path), e.g. "Element"
-        private readonly ElementGroupingType _grouping = FO0_ElementsPage_VM.SelectedGrouping;
+        //private readonly ElementGroupingType _grouping = FO0_ElementsPage_VM.SelectedGrouping;
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is Element element)
+            if (value is Element element && _grouping != ElementGroupingType.None)
             {
                 switch (_grouping)
                 {
@@ -24,12 +29,12 @@ namespace BauphysikToolWPF.UI.CustomControls
                     case ElementGroupingType.Color:
                         return element.Color;
                     case ElementGroupingType.Tag:
-                        return element.TagList?[0] ?? element.Construction.TypeName;
+                        return element.TagList[0];
                     default:
                         return element.Construction.TypeName;
                 }
             }
-            return ""; // null
+            return "Ohne Gruppierung"; // null
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

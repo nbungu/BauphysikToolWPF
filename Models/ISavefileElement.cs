@@ -2,7 +2,7 @@
 {
     // TODO:
 
-    interface IEntity<T>
+    interface ISavefileElement<T>
     {
         int Id { get; }
         int InternalId { get; set; }
