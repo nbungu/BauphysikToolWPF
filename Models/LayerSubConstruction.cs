@@ -13,10 +13,15 @@ namespace BauphysikToolWPF.Models
     }
     public class LayerSubConstruction : ISavefileElement<LayerSubConstruction>
     {
+        [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int Id { get; }
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public double Spacing { get; set; }
+        [NotNull]
+        public double Width { get; set; } // cm
+        [NotNull]
+        public double Height { get; set; } // cm
+        [NotNull]
+        public double Spacing { get; set; } // cm von Achse zu Achse
+        [NotNull]
         public SubConstructionDirection SubConstructionDirection { get; set; }
 
         [NotNull]
@@ -47,7 +52,8 @@ namespace BauphysikToolWPF.Models
         // 1:1 relationship with Material
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
-        
+
+
         //------Methods-----//
 
         public LayerSubConstruction Copy()

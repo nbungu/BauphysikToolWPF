@@ -3,7 +3,6 @@ using BauphysikToolWPF.Repository;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
-using System.Collections.Generic;
 
 namespace BauphysikToolWPF.Models
 {
@@ -26,6 +25,9 @@ namespace BauphysikToolWPF.Models
         [ForeignKey(typeof(Material))] // FK for the 1:1 relationship with Material
         public int MaterialId { get; set; }
 
+        [ForeignKey(typeof(LayerSubConstruction))] // FK for the 1:1 relationship with LayerSubConstruction
+        public int SubConstructionId { get; set; }
+
         [NotNull]
         public double LayerThickness { get; set; } // Layer thickness in cm
 
@@ -37,8 +39,7 @@ namespace BauphysikToolWPF.Models
 
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-        [NotNull]
-        public LayerSubConstruction SubConstruction { get; set; } = new LayerSubConstruction();
+
 
         //------Not part of the Database-----//
 
@@ -47,6 +48,7 @@ namespace BauphysikToolWPF.Models
 
         [Ignore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
+
         [Ignore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
 
@@ -57,6 +59,10 @@ namespace BauphysikToolWPF.Models
         // 1:1 relationship with Material
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
+
+        // 1:1 relationship with SubConstruction
+        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public LayerSubConstruction SubConstruction { get; set; } = new LayerSubConstruction();
 
         [Ignore]
         public bool HasSubConstruction => SubConstruction.IsValid;
