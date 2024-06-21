@@ -464,6 +464,37 @@
             </Setter>
         </Style>
 
+        <!--ListViewItem Button -->
+        <Style x:Key="ButtonStyleListViewItem" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="16"/>
+            <Setter Property="Padding" Value="4,1,4,1"/>
+            <Setter Property="FontSize" Value="10"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="2"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+
         <!--Custom Button02_A: full rounded corners, highlighted blue, click effects-->
         <Style x:Key="ButtonStyle02_A" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>

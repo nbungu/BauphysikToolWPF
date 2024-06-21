@@ -147,6 +147,7 @@
         <!-- Custom Layer ListViewItem appearance. Style of the Row Container -->
         <Style x:Key="LayerItemContainerStyle" TargetType="{x:Type ListViewItem}">
             <Setter Property="Background" Value="Transparent"/>
+            <!--ToolTip uses ToString() of Element-->
             <Setter Property="ToolTip" Value="{Binding}"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Template">
@@ -164,7 +165,7 @@
                                 <!--GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->
                                 <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
                                 <!-- TODO: Balken Lage INFOS hier...-->
-                                <TextBlock Text="Balkenlage hinzufügen"/>
+                                <Button HorizontalAlignment="Left" Margin="56,0,0,0" Content="Balkenlage hinzufügen +" Style="{StaticResource ButtonStyleListViewItem}"/>
                             </StackPanel>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -232,17 +233,18 @@
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
                     <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding AddLayerCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding EditLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerUpCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Up_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerDownCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Down_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DeleteLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding EditLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DuplicateLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Copy_B}"  Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}" ToolTip="Kopieren"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerUpCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Up_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerDownCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Down_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DeleteLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
                 </StackPanel>
 
                 <Label Grid.Row="1" Content="Von innen nach außen:" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
 
                 <!-- ItemsSource gets updated by backend -->
                 <!-- This is 'PlacementTarget' as seen from ContextMenu -->
-                <ListView x:Name="layers_ListView"
+                <ListView x:Name="LayersListView"
                       Grid.Row="2"
                       ItemsSource="{Binding Layers}" 
                       View="{StaticResource LayerGridViewColumns}"
