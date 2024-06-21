@@ -45,7 +45,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Material usedDefinedMaterial = new Material
                     {
                         Name = (Name == UserSaved.SelectedLayer.Material.Name) ? Name + "-Edited" : Name,
-                        CategoryName = "Benutzerdefiniert",
+                        Category = MaterialCategory.UserDefined,
                         ThermalConductivity = Convert.ToDouble(ThermalConductivity),
                         BulkDensity = Convert.ToInt32(BulkDensity),
                         DiffusionResistance = Convert.ToDouble(DiffusionResistance),
@@ -54,9 +54,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                     };
                     // Create in Database
                     DatabaseAccess.CreateMaterial(usedDefinedMaterial);
-                    // Bind to new Material via MaterialId as FK
+                    // Bind to new Material via Id as FK
                     UserSaved.SelectedLayer.Material = usedDefinedMaterial;
-                    UserSaved.SelectedLayer.MaterialId = usedDefinedMaterial.MaterialId;
+                    UserSaved.SelectedLayer.MaterialId = usedDefinedMaterial.Id;
                 }
             }
             // Update Layer thickness

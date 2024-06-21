@@ -60,7 +60,7 @@ namespace BauphysikToolWPF.Models
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
 
-        // 1:1 relationship with SubConstruction
+        // 1:1 relationship with LayerSubConstruction
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public LayerSubConstruction SubConstruction { get; set; } = new LayerSubConstruction();
 
@@ -128,7 +128,7 @@ namespace BauphysikToolWPF.Models
 
         public Material CorrespondingMaterial()
         {
-            return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId) ?? new Material();
+            return DatabaseAccess.GetMaterials().Find(m => m.Id == this.MaterialId) ?? new Material();
         }
 
         public Layer Copy()

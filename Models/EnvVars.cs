@@ -44,7 +44,7 @@ namespace BauphysikToolWPF.Models
 
         /*public Material correspondingMaterial()
         {
-            return DatabaseAccess.GetMaterials().Find(m => m.MaterialId == this.MaterialId);
+            return DatabaseAccess.GetMaterials().Find(m => m.Id == this.Id);
         }*/
 
         /*public byte[] ConvertBLOBToList()

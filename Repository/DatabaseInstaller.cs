@@ -32,20 +32,13 @@ namespace BauphysikToolWPF.Repository
                 // Example: Copy the database from the output folder to ProgramData if it doesn't already exist
                 string sourceDatabasePath = InitialDatabasePath;//Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DemoDB.db");
 
-                if (forceUpdate)
-                {
-                    if (!File.Exists(databaseFilePath))
-                    {
-                        File.Copy(sourceDatabasePath, databaseFilePath);
-                    }
-                    else
-                    {
-                        File.Delete(databaseFilePath);
-                        File.Copy(sourceDatabasePath, databaseFilePath);
-                    }
-                }
                 if (!File.Exists(databaseFilePath))
                 {
+                    File.Copy(sourceDatabasePath, databaseFilePath);
+                }
+                if (forceUpdate)
+                {
+                    File.Delete(databaseFilePath);
                     File.Copy(sourceDatabasePath, databaseFilePath);
                 }
                 return databaseFilePath;

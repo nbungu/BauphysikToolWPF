@@ -46,7 +46,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 InternalId = layerCount,
                 LayerThickness = Convert.ToDouble(Thickness),
                 IsEffective = true,
-                MaterialId = selectedMaterial.MaterialId,
+                MaterialId = selectedMaterial.Id,
                 Material = selectedMaterial,
                 ElementId = UserSaved.SelectedElement.Id,
                 Element = UserSaved.SelectedElement

@@ -14,7 +14,7 @@ namespace BauphysikToolWPF.Models
     public class LayerSubConstruction : ISavefileElement<LayerSubConstruction>
     {
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int Id { get; }
+        public int Id { get; set; }
         [NotNull]
         public double Width { get; set; } // cm
         [NotNull]

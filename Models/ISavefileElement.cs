@@ -4,7 +4,7 @@
 
     interface ISavefileElement<T>
     {
-        int Id { get; }
+        int Id { get; set; }
         int InternalId { get; set; }
         long CreatedAt { get; set; }
         long UpdatedAt { get; set; }
