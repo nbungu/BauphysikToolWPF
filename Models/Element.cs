@@ -248,36 +248,6 @@ namespace BauphysikToolWPF.Models
             return Name + " - " + Construction.TypeName + " (Id: " + Id + ")";
         }
 
-        public void AssignInternalIdsToLayers()
-        {
-            int index = 0; // Start at 0
-            this.Layers.ForEach(e => e.InternalId = index++);
-        }
-
-        // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
-        // Layers have to be SORTED (LayerPos)
-        public void SortLayers()
-        {
-            this.Layers.Sort((a, b) => a.LayerPosition.CompareTo(b.LayerPosition));
-            // Fix postioning
-            int index = 0; // Start at 0
-            this.Layers.ForEach(e => e.LayerPosition = index++);
-        }
-        
-        public void AssignEffectiveLayers()
-        {
-            if (this.Layers.Count > 0)
-            {
-                bool foundAirLayer = false;
-                foreach (Layer layer in Layers)
-                {
-                    if (layer.Material.Category == MaterialCategory.Air)
-                        foundAirLayer = true;
-                    layer.IsEffective = !foundAirLayer;
-                    //DatabaseAccess.UpdateLayer(layer, triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
-                }
-            }
-        }
         public void UpdateTimestamp()
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();

@@ -6,7 +6,7 @@ using System;
 
 namespace BauphysikToolWPF.Models
 {
-    public class Layer : ISavefileElement<Layer>
+    public class Layer : LayerGeometry, ISavefileElement<Layer>
     {
         //------Variablen-----//
 
@@ -45,9 +45,6 @@ namespace BauphysikToolWPF.Models
 
         [Ignore]
         public int InternalId { get; set; }
-
-        //[Ignore]
-        //public LayerGeometry Geometry { get; set; } = new LayerGeometry();
 
         [Ignore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
@@ -125,11 +122,22 @@ namespace BauphysikToolWPF.Models
 
         //------Konstruktor-----//
 
-        // has to be default parameterless constructor when used as DB
+        public Layer() : base()
+        {
+            // Initialize the Layer properties first
+            // TODO: ensure....
+
+            // Now call the base class initializer
+            //base.Initialize(this);
+        }
 
         //------Methoden-----//
 
-        public LayerGeometry ToGeometry() => new LayerGeometry(this);
+        // TODO: inherited Fields must update!
+        //public void Init()
+        //{
+        //    base.Initialize(this);
+        //}
 
         public Layer Copy()
         {

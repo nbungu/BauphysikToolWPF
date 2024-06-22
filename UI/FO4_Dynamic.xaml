@@ -45,17 +45,22 @@
             <!--Takes the Width and Height from TemplatedParent-->
             <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
-        <!-- Properties of a CanvasItem (Layer Rectangle). Sets the Drawing Coordinates of the container holding a CanvasItem -->
+
+        <!-- Properties of a CanvasItem (LayerGeometry). Sets the Drawing Coordinates of the container holding a CanvasItem -->
         <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
-            <Setter Property="Canvas.Left" Value="{Binding Left}"/>
-            <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+            <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
         </Style>
-        <!-- Content and Styling of a Canvas Item (Layer Rectangle) -->
-        <DataTemplate x:Key="LayerItemStyle">
-            <Grid Width="{Binding RectWidth}" Height="{Binding RectHeight}" Background="{Binding RectFill}">
-                <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}" Opacity="{Binding RectOpacity}"/>
+
+        <!-- Content and Styling of a Canvas Item (LayerGeometry) -->
+        <DataTemplate x:Key="CanvasLayerItemStyle">
+            <Grid Width="{Binding Rectangle.Width}" Height="{Binding Rectangle.Height}" Background="{Binding BackgroundColor}" Opacity="{Binding Opacity}">
+                <Rectangle Fill="{Binding HatchPattern}" Stroke="{Binding BorderStroke}" StrokeThickness="{Binding BorderThickness}"/>
+                <Ellipse Fill="White" Width="20" Height="20" Stroke="{Binding BorderStroke}" StrokeThickness="1" HorizontalAlignment="Center" Margin="-8"/>
+                <Label Content="{Binding LayerPosition}" Margin="-8"/>
             </Grid>
         </DataTemplate>
+
     </UserControl.Resources>
 
     <!--Main Grid 2x2-->
@@ -158,10 +163,10 @@
                             x:Name="layers_ItemsControl"
                             Width="360"
                             Height="450"                                 
-                            ItemsSource="{Binding LayerRects}"
+                            ItemsSource="{Binding LayerGeometries}"
                             ItemsPanel="{StaticResource Canvas}"
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                            ItemTemplate="{StaticResource LayerItemStyle}"/>
+                            ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
                     </Viewbox>
 
                     <lvc:CartesianChart

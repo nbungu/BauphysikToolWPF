@@ -160,7 +160,7 @@
 
   <ItemGroup>
     <Reference Include="Geometry">
-      <HintPath>..\Geometry\bin\Debug\net8.0\Geometry.dll</HintPath>
+      <HintPath>bin\Geometry.dll</HintPath>
     </Reference>
   </ItemGroup>
 

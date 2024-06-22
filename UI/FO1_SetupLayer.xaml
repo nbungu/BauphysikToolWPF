@@ -69,14 +69,14 @@
             <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
 
-        <!-- Properties of a CanvasItem (Layer Rectangle). Sets the Drawing Coordinates of the container holding a CanvasItem -->
+        <!-- Properties of a CanvasItem (LayerGeometry). Sets the Drawing Coordinates of the container holding a CanvasItem -->
         <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
             <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
             <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
         </Style>
 
-        <!-- Content and Styling of a Canvas Item (Layer Rectangle) -->
-        <DataTemplate x:Key="LayerItemStyle">
+        <!-- Content and Styling of a Canvas Item (Layer) -->
+        <DataTemplate x:Key="CanvasLayerItemStyle">
             <Grid Width="{Binding Rectangle.Width}" Height="{Binding Rectangle.Height}" Background="{Binding BackgroundColor}" Opacity="{Binding Opacity}">
                 <Rectangle Fill="{Binding HatchPattern}" Stroke="{Binding BorderStroke}" StrokeThickness="{Binding BorderThickness}"/>
                 <Ellipse Fill="White" Width="20" Height="20" Stroke="{Binding BorderStroke}" StrokeThickness="1" HorizontalAlignment="Center" Margin="-8"/>
@@ -298,10 +298,10 @@
                             Grid.Row="1"
                             Width="320"
                             Height="400"                                  
-                            ItemsSource="{Binding LayerGeometries}"
+                            ItemsSource="{Binding Layers}"
                             ItemsPanel="{StaticResource Canvas}"
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                            ItemTemplate="{StaticResource LayerItemStyle}"/>
+                            ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
 
                         <!-- "Measurement Grid" -->
                         <ItemsControl x:Name="measurement_Grid"

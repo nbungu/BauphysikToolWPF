@@ -108,6 +108,7 @@ namespace BauphysikToolWPF.Models
             return Name + " (Id: " + Id + ")";
         }
 
+        // TODO: Move to ProjectExtensions Class
         public void AssignInternalIdsToElements()
         {
             int index = 0; // Start at 0

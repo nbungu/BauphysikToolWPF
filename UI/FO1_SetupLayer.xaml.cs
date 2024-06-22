@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI
 {
@@ -23,6 +24,7 @@ namespace BauphysikToolWPF.UI
             {
                 UserSaved.SelectedElement.SortLayers();
                 UserSaved.SelectedElement.AssignInternalIdsToLayers();
+                UserSaved.SelectedElement.ScaleAndStackLayers();
             }
 
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed

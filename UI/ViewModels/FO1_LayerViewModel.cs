@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
-            UserSaved.SelectedElementChanged += RefreshSortOrder;
+            UserSaved.SelectedElementChanged += RefreshLayers;
         }
 
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
@@ -70,7 +70,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Delete selected Layer
             UserSaved.SelectedElement.Layers.Remove(UserSaved.SelectedLayer);
 
-            RefreshSortOrder();
+            RefreshLayers();
             RefreshXamlBindings();
         }
         
@@ -84,7 +84,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             copy.InternalId = UserSaved.SelectedElement.Layers.Count;
             UserSaved.SelectedElement.Layers.Add(copy);
 
-            RefreshSortOrder();
+            RefreshLayers();
             RefreshXamlBindings();
         }
 
@@ -102,7 +102,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Change Position of selected Layer
             UserSaved.SelectedLayer.LayerPosition += 1;
 
-            RefreshSortOrder();
+            RefreshLayers();
             RefreshXamlBindings();
         }
 
@@ -120,16 +120,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Change Position of selected Layer
             UserSaved.SelectedLayer.LayerPosition -= 1;
 
-            RefreshSortOrder();
+            RefreshLayers();
             RefreshXamlBindings();
         }
 
-        private void RefreshSortOrder()
+        private void RefreshLayers()
         {
             // Always in sorted order
             UserSaved.SelectedElement.SortLayers();
             // Update Effective Layer Property
             UserSaved.SelectedElement.AssignEffectiveLayers();
+            // GUI Stuff
+            UserSaved.SelectedElement.ScaleAndStackLayers();
         }
         
         private void RefreshXamlBindings()
@@ -147,16 +149,14 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
-        
+
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(LayerGeometries))]
         private List<Layer> _layers = UserSaved.SelectedElement.Layers;
 
         [ObservableProperty]
         private Element _selectedElement = UserSaved.SelectedElement;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(LayerGeometries))]
         private int _selectedLayerIndex = -1;
 
         /*
@@ -164,23 +164,15 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Not Observable, because Triggered and Changed by 'layers' above
          */
-        
-        public List<LayerGeometry> LayerGeometries // When accessed via get: Draws new Layers on Canvas
+
+        /*public List<LayerGeometry> LayerGeometries
         {
             get
             {
-                List<LayerGeometry> rectangles = new List<LayerGeometry>();
-                foreach (Layer layer in Layers)
-                {
-                    layer.IsSelected = layer.LayerPosition == SelectedLayerIndex;
-                    rectangles.Add(layer.ToGeometry());
-                }
-                rectangles = ElementDrawer.StackLayers(rectangles);
-                rectangles = ElementDrawer.ScaleToFitCanvas(rectangles);
-                return rectangles;
-
-
+                var geometries = new List<LayerGeometry>();
+                UserSaved.SelectedElement.Layers.ForEach(l => geometries.Add(new LayerGeometry(l)));
+                return geometries.ScaleAndStack(320, 400);
             }
-        }
+        }*/
     }
 }

@@ -69,8 +69,18 @@ namespace BauphysikToolWPF.UI.ViewModels
                 };
             }
         }
+        /*public List<LayerGeometry> LayerGeometries
+        {
+            get
+            {
+                var geometries = new List<LayerGeometry>();
+                UserSaved.SelectedElement.Layers.ForEach(l => geometries.Add(new LayerGeometry(l)));
+                return geometries.ScaleAndStack(320, 400);
+            }
+        }*/
+
         // TOD0 Make cleaner
-        public List<LayerGeometry> LayerRects // When accessed via get: Draws new Layers on Canvas
+        /*public List<LayerGeometry> LayerRects // When accessed via get: Draws new Layers on Canvas
         {
             get
             {
@@ -83,7 +93,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 }
                 return rectangles;
             }
-        }
+        }*/
         public LiveChartsCore.Measure.Margin ChartMargin_i { get; private set; } = new LiveChartsCore.Measure.Margin(64, 16, 0, 64);
         public LiveChartsCore.Measure.Margin ChartMargin_e { get; private set; } = new LiveChartsCore.Measure.Margin(0, 16, 64, 64);
         public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
