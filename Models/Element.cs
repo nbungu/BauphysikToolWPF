@@ -204,6 +204,16 @@ namespace BauphysikToolWPF.Models
                 return Math.Round(val, 2);
             }
         }
+        [Ignore]
+        public double ElementWidth
+        {
+            get
+            {
+                double fullWidth = 0;
+                Layers.ForEach(l => fullWidth += l.LayerThickness);
+                return fullWidth;
+            }
+        }
 
         //------Konstruktor-----//
 

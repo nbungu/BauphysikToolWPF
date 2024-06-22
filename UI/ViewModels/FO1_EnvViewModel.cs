@@ -200,14 +200,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
 
-        public List<LayerRect> LayerRects // When accessed via get: Draws new Layers on Canvas
+        public List<LayerGeometry> LayerRects // When accessed via get: Draws new Layers on Canvas
         {
             get
             {
-                List<LayerRect> rectangles = new List<LayerRect>();
+                List<LayerGeometry> rectangles = new List<LayerGeometry>();
                 foreach (Layer layer in Layers)
                 {
-                    rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
+                    rectangles.Add(new LayerGeometry(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
                 }
                 return rectangles;
             }

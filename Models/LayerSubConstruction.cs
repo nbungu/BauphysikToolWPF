@@ -1,7 +1,10 @@
 ﻿using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.UI.Helper;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
+using System.Windows.Media;
+using Geometry;
 
 namespace BauphysikToolWPF.Models
 {
@@ -65,5 +68,23 @@ namespace BauphysikToolWPF.Models
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
+
+        /*public LayerGeometry ToGeometry()
+        {
+            var initWidth = Width; // cm
+            var initHeight = Height; // cm
+            var geometry = new LayerGeometry()
+            {
+                Rectangle = new Rectangle(new Point(0, 0), initWidth, initHeight),
+                LayerThickness = initWidth,
+                LayerPosition = LayerPosition.ToString(),
+                BackgroundColor = new SolidColorBrush(Material.Color),
+                HatchPattern = HatchPattern.GetHatchPattern(Material.Category, 0.5, 0, 0),
+                BorderStroke = IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
+                BorderThickness = IsSelected ? 1 : 0.2,
+                Opacity = IsEffective ? 1 : 0.2,
+            };
+            return geometry;
+        }*/
     }
 }

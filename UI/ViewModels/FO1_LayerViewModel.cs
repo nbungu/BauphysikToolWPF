@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Documents;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -148,15 +149,14 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
         
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(LayerRects))]
-        [NotifyPropertyChangedFor(nameof(ElementWidth))]
+        [NotifyPropertyChangedFor(nameof(LayerGeometries))]
         private List<Layer> _layers = UserSaved.SelectedElement.Layers;
 
         [ObservableProperty]
         private Element _selectedElement = UserSaved.SelectedElement;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(LayerRects))]
+        [NotifyPropertyChangedFor(nameof(LayerGeometries))]
         private int _selectedLayerIndex = -1;
 
         /*
@@ -165,28 +165,21 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by 'layers' above
          */
         
-        public List<LayerRect> LayerRects // When accessed via get: Draws new Layers on Canvas
+        public List<LayerGeometry> LayerGeometries // When accessed via get: Draws new Layers on Canvas
         {
             get
             {
-                List<LayerRect> rectangles = new List<LayerRect>();
+                List<LayerGeometry> rectangles = new List<LayerGeometry>();
                 foreach (Layer layer in Layers)
                 {
                     layer.IsSelected = layer.LayerPosition == SelectedLayerIndex;
-                    rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
+                    rectangles.Add(layer.ToGeometry());
                 }
+                rectangles = ElementDrawer.StackLayers(rectangles);
+                rectangles = ElementDrawer.ScaleToFitCanvas(rectangles);
                 return rectangles;
-            }
-        }
 
-        // TODO remove this property and retrieve ElementWidth from 'currentElement'
-        public double ElementWidth
-        {
-            get
-            {
-                double fullWidth = 0;
-                Layers.ForEach(l => fullWidth += l.LayerThickness);
-                return fullWidth;
+
             }
         }
     }

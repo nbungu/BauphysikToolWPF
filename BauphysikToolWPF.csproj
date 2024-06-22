@@ -159,6 +159,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Geometry">
+      <HintPath>..\Geometry\bin\Debug\net8.0\Geometry.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\Icons\add_element.png" />
     <Resource Include="Resources\Icons\add_element_w.png" />
     <Resource Include="Resources\Icons\add_layer.png" />
@@ -256,6 +262,9 @@
     <Compile Update="UI\AddElementWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UI\AddLayerSubConstructionWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -266,6 +275,9 @@
 
   <ItemGroup>
     <Page Update="UI\AddElementWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\AddLayerSubConstructionWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

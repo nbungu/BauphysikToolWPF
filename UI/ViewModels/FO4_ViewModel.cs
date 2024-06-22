@@ -70,16 +70,16 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
         // TOD0 Make cleaner
-        public List<LayerRect> LayerRects // When accessed via get: Draws new Layers on Canvas
+        public List<LayerGeometry> LayerRects // When accessed via get: Draws new Layers on Canvas
         {
             get
             {
-                if (!_dynamicTempCalc.IsValid) return new List<LayerRect>();
-                List<LayerRect> rectangles = new List<LayerRect>();
+                if (!_dynamicTempCalc.IsValid) return new List<LayerGeometry>();
+                List<LayerGeometry> rectangles = new List<LayerGeometry>();
                 foreach (Layer layer in _dynamicTempCalc.Element.Layers)
                 {
                     layer.IsSelected = false;
-                    rectangles.Add(new LayerRect(_dynamicTempCalc.Element.Thickness_cm, 360, 450, layer, rectangles.LastOrDefault()));
+                    rectangles.Add(new LayerGeometry(_dynamicTempCalc.Element.Thickness_cm, 360, 450, layer, rectangles.LastOrDefault()));
                 }
                 return rectangles;
             }

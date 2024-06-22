@@ -1,5 +1,5 @@
 ﻿using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.UI.Helper;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
@@ -45,6 +45,9 @@ namespace BauphysikToolWPF.Models
 
         [Ignore]
         public int InternalId { get; set; }
+
+        //[Ignore]
+        //public LayerGeometry Geometry { get; set; } = new LayerGeometry();
 
         [Ignore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
@@ -126,10 +129,7 @@ namespace BauphysikToolWPF.Models
 
         //------Methoden-----//
 
-        public Material CorrespondingMaterial()
-        {
-            return DatabaseAccess.GetMaterials().Find(m => m.Id == this.MaterialId) ?? new Material();
-        }
+        public LayerGeometry ToGeometry() => new LayerGeometry(this);
 
         public Layer Copy()
         {
