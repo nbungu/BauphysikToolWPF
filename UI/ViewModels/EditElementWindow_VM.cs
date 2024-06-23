@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Media;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {

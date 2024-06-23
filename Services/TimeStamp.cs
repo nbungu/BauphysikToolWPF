@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BauphysikToolWPF.Models.Helper
+namespace BauphysikToolWPF.Services
 {
     public static class TimeStamp
     {

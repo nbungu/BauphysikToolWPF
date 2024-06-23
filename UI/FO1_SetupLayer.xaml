@@ -69,7 +69,7 @@
             <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
 
-        <!-- Properties of a CanvasItem (LayerGeometry). Sets the Drawing Coordinates of the container holding a CanvasItem -->
+        <!-- Properties of a CanvasItem (Layer). Sets the Drawing Coordinates of the container holding a CanvasItem -->
         <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
             <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
             <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
@@ -77,42 +77,33 @@
 
         <!-- Content and Styling of a Canvas Item (Layer) -->
         <DataTemplate x:Key="CanvasLayerItemStyle">
-            <Grid Width="{Binding Rectangle.Width}" Height="{Binding Rectangle.Height}" Background="{Binding BackgroundColor}" Opacity="{Binding Opacity}">
-                <Rectangle Fill="{Binding HatchPattern}" Stroke="{Binding BorderStroke}" StrokeThickness="{Binding BorderThickness}"/>
-                <Ellipse Fill="White" Width="20" Height="20" Stroke="{Binding BorderStroke}" StrokeThickness="1" HorizontalAlignment="Center" Margin="-8"/>
+            <Grid Width="{Binding Rectangle.Width}"
+                  Height="{Binding Rectangle.Height}"
+                  Background="{Binding BackgroundColor}"
+                  Opacity="{Binding Opacity}">
+                <Rectangle x:Name="LayerRectangle"
+                           Fill="{Binding DrawingBrush}"
+                           Stroke="{Binding StrokeColor}"
+                           StrokeThickness="{Binding StrokeThickness}"/>
+                <Ellipse Fill="White"
+                         Width="20"
+                         Height="20"
+                         Stroke="{Binding StrokeColor}"
+                         StrokeThickness="1"
+                         HorizontalAlignment="Center"
+                         Margin="-8"/>
                 <Label Content="{Binding LayerPosition}" Margin="-8"/>
             </Grid>
         </DataTemplate>
 
         <!-- Content and Styling of a Canvas Item (Measurement Marker Line) -->
         <DataTemplate x:Key="MeasurementItemStyle">
-            <!-- DataContext is LayerRects from ItemSource-->
-            <Grid Width="{Binding Rectangle.Width}" Height="56">
-                <!-- X1="0.5" X2="0.5" Adds 0.5 Offset to the Left, to avoid clipping of first marker line-->
-                <Line x:Name="MarkerLine" Y2="12" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                <Label Content="{Binding LayerThickness}" Margin="-16,-40,-16,0"/>
+            <Grid Width="{Binding Rectangle.Width}"
+                  Height="{Binding Rectangle.Height}">
+                <Rectangle x:Name="MeasurementDrawing" Fill="{Binding DrawingBrush}"/>
             </Grid>
         </DataTemplate>
 
-        <Style x:Key="MeasurementCanvasStyle" TargetType="{x:Type ItemsControl}">
-            <Setter Property="Height" Value="56"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ItemsControl}">
-                        <Grid>
-                            <!-- Adds a static UIElement to the ItemsSource-->
-                            <!-- DataContext is FO1_Layer_VM-->
-                            <Label Content="{Binding SelectedElement.ElementWidth}" Margin="-16,0,-16,-40"/>
-                            <Line x:Name="staticStartLine" Y2="12" X1="0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                            <Line x:Name="staticBaseLine" X1="0" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                            <Line x:Name="staticEndLine" Y2="12" X1="{TemplateBinding Width}" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,-8,0"/>
-                            <!-- ItemsPresenter is where the (dynamic) Content of the Canvas Items are shown (from ItemsSource) -->
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
         <!--
         https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
         https://github.com/mochan-b/GridViewCellFormatting
@@ -282,7 +273,7 @@
             <!--Image-->
             <Grid Grid.Row="0" Grid.Column="1" Margin="16">
                 <!-- Elements inside of ViewBox are dynamically sizable-->
-                <Viewbox VerticalAlignment="Top" Style="{StaticResource ViewBoxStyle}" HorizontalAlignment="Center">
+                <Viewbox VerticalAlignment="Center" Style="{StaticResource ViewBoxStyle}" HorizontalAlignment="Center">
                     <!--Keep this Margin to avoid clipping of LayerPosition sircles and width measurement numbers!-->
                     <Grid Margin="8">
                         <Grid.RowDefinitions>
@@ -293,8 +284,8 @@
                         <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
                         <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
 
-                        <!-- "Layers Canvas" -->
-                        <ItemsControl x:Name="layers_ItemsControl"
+                        <!-- "Element Canvas" -->
+                        <ItemsControl x:Name="ElementCanvas"
                             Grid.Row="1"
                             Width="320"
                             Height="400"                                  
@@ -304,15 +295,14 @@
                             ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
 
                         <!-- "Measurement Grid" -->
-                        <ItemsControl x:Name="measurement_Grid"
+                        <ItemsControl x:Name="MeasurementGrid"
                             Grid.Row="2"
-                            Style="{StaticResource MeasurementCanvasStyle}"
-                            Width="{Binding ElementName=layers_ItemsControl, Path=Width}"
-                            ItemsSource="{Binding LayerGeometries}"
+                            Width="{Binding ElementName=ElementCanvas, Path=Width}"
+                            Height="16"
+                            ItemsSource="{Binding MeasurementChain}"
                             ItemsPanel="{StaticResource Canvas}"
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                            ItemTemplate="{StaticResource MeasurementItemStyle}"
-                            Margin="0,16,0,0"/>
+                            ItemTemplate="{StaticResource MeasurementItemStyle}"/>
                     </Grid>
                 </Viewbox>
             </Grid>

@@ -1,12 +1,10 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
-using System.Linq;
-using System.Windows.Documents;
+using BauphysikToolWPF.UI.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -158,6 +156,10 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private int _selectedLayerIndex = -1;
+
+        // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
+        [ObservableProperty]
+        private List<MeasurementChain> _measurementChain = new List<MeasurementChain>(){ new MeasurementChain(UserSaved.SelectedElement.Layers) };
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties

@@ -6,7 +6,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BauphysikToolWPF.SessionData;
 
-namespace BauphysikToolWPF.UI.Helper
+namespace BauphysikToolWPF.Services
 {
     public static class SaveCanvas
     {

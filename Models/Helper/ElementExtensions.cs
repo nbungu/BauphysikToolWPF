@@ -7,23 +7,29 @@ namespace BauphysikToolWPF.Models.Helper
     {
         public static void AssignInternalIdsToLayers(this Element element)
         {
-            int index = 0; // Start at 0
-            element.Layers.ForEach(e => e.InternalId = index++);
+            if (element.Layers.Count != 0)
+            {
+                int index = 0; // Start at 0
+                element.Layers.ForEach(e => e.InternalId = index++);
+            }
         }
 
         // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
         // Layers have to be SORTED (LayerPos)
         public static void SortLayers(this Element element)
         {
-            element.Layers.Sort((a, b) => a.LayerPosition.CompareTo(b.LayerPosition));
-            // Fix postioning
-            int index = 0; // Start at 0
-            element.Layers.ForEach(e => e.LayerPosition = index++);
+            if (element.Layers.Count != 0)
+            {
+                element.Layers.Sort((a, b) => a.LayerPosition.CompareTo(b.LayerPosition));
+                // Fix postioning
+                int index = 0; // Start at 0
+                element.Layers.ForEach(e => e.LayerPosition = index++);
+            }
         }
 
         public static void AssignEffectiveLayers(this Element element)
         {
-            if (element.Layers.Count > 0)
+            if (element.Layers.Count != 0)
             {
                 bool foundAirLayer = false;
                 foreach (Layer layer in element.Layers)
@@ -31,15 +37,24 @@ namespace BauphysikToolWPF.Models.Helper
                     if (layer.Material.Category == MaterialCategory.Air)
                         foundAirLayer = true;
                     layer.IsEffective = !foundAirLayer;
-                    //DatabaseAccess.UpdateLayer(layer, triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
                 }
             }
         }
+
+        public static void UpdateLayerGeometries(this Element element)
+        {
+            if (element.Layers.Count != 0)
+            {
+                element.Layers.ForEach(l => l.UpdateGeometry(l));
+            }
+        }
+
 
         #region Drawing Stuff
 
         public static void ScaleAndStackLayers(this Element element, double canvasWidth = 320, double canvasHeight = 400)
         {
+            element.UpdateLayerGeometries();
             element.ScaleToFitCanvas(canvasWidth, canvasHeight);
             element.StackLayers();
         }
@@ -51,7 +66,7 @@ namespace BauphysikToolWPF.Models.Helper
             Point ptStart = new Point(0, 0);
             foreach (var layer in element.Layers)
             {
-                layer.Rectangle.MoveTo(ptStart);
+                layer.Rectangle = layer.Rectangle.MoveTo(ptStart);
                 ptStart = layer.Rectangle.TopRight;
             }
         }
@@ -65,7 +80,7 @@ namespace BauphysikToolWPF.Models.Helper
                 var relativeLayerWidth = layer.Rectangle.Width / element.ElementWidth;
                 var newWidth = canvasWidth * relativeLayerWidth;
                 layer.Rectangle = new Rectangle(new Point(), newWidth, canvasHeight);
-                layer.HatchPattern = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, newWidth, canvasHeight);
+                layer.DrawingBrush = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, newWidth, canvasHeight);
             }
         }
 

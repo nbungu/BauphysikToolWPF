@@ -1,13 +1,13 @@
 ﻿using System.Windows.Media;
 
-namespace BauphysikToolWPF.UI.Helper
+namespace BauphysikToolWPF.Models.Helper
 {
     public class OverviewItem
     {
         public string SymbolBase { get; set; } = string.Empty;
         public string SymbolSubscript { get; set; } = string.Empty;
         public double Value { get; set; }
-        public double? RequirementValue { private get; set; }
+        public double? RequirementValue { get; set; }
         public string RequirementStatement => RequirementValue?.ToString() ?? "-";
         public string Unit { get; set; } = string.Empty;
         public bool IsRequirementMet { get; set; }

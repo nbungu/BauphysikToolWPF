@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BauphysikToolWPF.Services
 {
-    internal class Updater
+    internal class ApplicationUpdater
     {
     }
 }

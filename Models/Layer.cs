@@ -1,12 +1,12 @@
 ﻿using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.UI.Helper;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
+using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.Models
 {
-    public class Layer : LayerGeometry, ISavefileElement<Layer>
+    public class Layer : DrawingGeometry, ISavefileElement<Layer>
     {
         //------Variablen-----//
 
@@ -122,22 +122,9 @@ namespace BauphysikToolWPF.Models
 
         //------Konstruktor-----//
 
-        public Layer() : base()
-        {
-            // Initialize the Layer properties first
-            // TODO: ensure....
 
-            // Now call the base class initializer
-            //base.Initialize(this);
-        }
 
         //------Methoden-----//
-
-        // TODO: inherited Fields must update!
-        //public void Init()
-        //{
-        //    base.Initialize(this);
-        //}
 
         public Layer Copy()
         {
@@ -157,14 +144,14 @@ namespace BauphysikToolWPF.Models
             return copy;
         }
 
-        public override string ToString() // Überlagert vererbte standard ToString() Methode 
-        {
-            return LayerThickness + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
-        }
-
         public void UpdateTimestamp()
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+        }
+        
+        public override string ToString() // Überlagert vererbte standard ToString() Methode 
+        {
+            return LayerThickness + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
         }
     }
 }

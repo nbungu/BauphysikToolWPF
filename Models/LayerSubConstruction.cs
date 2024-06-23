@@ -1,10 +1,8 @@
 ﻿using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.UI.Helper;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
-using System.Windows.Media;
-using Geometry;
+using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.Models
 {
@@ -79,9 +77,9 @@ namespace BauphysikToolWPF.Models
                 LayerThickness = initWidth,
                 LayerPosition = LayerPosition.ToString(),
                 BackgroundColor = new SolidColorBrush(Material.Color),
-                HatchPattern = HatchPattern.GetHatchPattern(Material.Category, 0.5, 0, 0),
-                BorderStroke = IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
-                BorderThickness = IsSelected ? 1 : 0.2,
+                DrawingBrush = DrawingBrush.GetHatchPattern(Material.Category, 0.5, 0, 0),
+                StrokeColor = IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
+                StrokeThickness = IsSelected ? 1 : 0.2,
                 Opacity = IsEffective ? 1 : 0.2,
             };
             return geometry;
