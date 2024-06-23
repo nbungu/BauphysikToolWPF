@@ -83,12 +83,12 @@
                   Opacity="{Binding Opacity}">
                 <Rectangle x:Name="LayerRectangle"
                            Fill="{Binding DrawingBrush}"
-                           Stroke="{Binding StrokeColor}"
-                           StrokeThickness="{Binding StrokeThickness}"/>
+                           Stroke="{Binding RectangleStrokeColor}"
+                           StrokeThickness="{Binding RectangleStrokeThickness}"/>
                 <Ellipse Fill="White"
                          Width="20"
                          Height="20"
-                         Stroke="{Binding StrokeColor}"
+                         Stroke="{Binding RectangleStrokeColor}"
                          StrokeThickness="1"
                          HorizontalAlignment="Center"
                          Margin="-8"/>
@@ -274,13 +274,17 @@
             <Grid Grid.Row="0" Grid.Column="1" Margin="16">
                 <!-- Elements inside of ViewBox are dynamically sizable-->
                 <Viewbox VerticalAlignment="Center" Style="{StaticResource ViewBoxStyle}" HorizontalAlignment="Center">
-                    <!--Keep this Margin to avoid clipping of LayerPosition sircles and width measurement numbers!-->
+                    <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
                     <Grid Margin="8">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="40"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
                         <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
                         <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
 
@@ -294,15 +298,25 @@
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                             ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
 
-                        <!-- "Measurement Grid" -->
+                        <!-- "Horizontal Measurement Grid" -->
                         <ItemsControl x:Name="MeasurementGrid"
                             Grid.Row="2"
                             Width="{Binding ElementName=ElementCanvas, Path=Width}"
-                            Height="16"
                             ItemsSource="{Binding MeasurementChain}"
                             ItemsPanel="{StaticResource Canvas}"
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                            ItemTemplate="{StaticResource MeasurementItemStyle}"/>
+                            ItemTemplate="{StaticResource MeasurementItemStyle}"
+                            Margin="0,16,0,16"/>
+
+                        <!-- "Horizontal Measurement Grid Full" -->
+                        <ItemsControl x:Name="MeasurementGridFull"
+                              Grid.Row="3"
+                              Width="{Binding ElementName=ElementCanvas, Path=Width}"
+                              ItemsSource="{Binding MeasurementChainFull}"
+                              ItemsPanel="{StaticResource Canvas}"
+                              ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                              ItemTemplate="{StaticResource MeasurementItemStyle}"
+                              Margin="0,16,0,16"/>
                     </Grid>
                 </Viewbox>
             </Grid>

@@ -78,8 +78,8 @@ namespace BauphysikToolWPF.Models
                 LayerPosition = LayerPosition.ToString(),
                 BackgroundColor = new SolidColorBrush(Material.Color),
                 DrawingBrush = DrawingBrush.GetHatchPattern(Material.Category, 0.5, 0, 0),
-                StrokeColor = IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
-                StrokeThickness = IsSelected ? 1 : 0.2,
+                RectangleStrokeColor = IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
+                RectangleStrokeThickness = IsSelected ? 1 : 0.2,
                 Opacity = IsEffective ? 1 : 0.2,
             };
             return geometry;

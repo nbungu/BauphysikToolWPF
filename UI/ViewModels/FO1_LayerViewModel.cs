@@ -15,8 +15,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
-            UserSaved.SelectedElementChanged += RefreshXamlBindings;
             UserSaved.SelectedElementChanged += RefreshLayers;
+            UserSaved.SelectedElementChanged += RefreshXamlBindings;
         }
 
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
@@ -140,6 +140,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedLayerIndex = UserSaved.SelectedLayer?.LayerPosition ?? -1;
             SelectedElement = new Element();
             SelectedElement = UserSaved.SelectedElement;
+            MeasurementChain = new List<MeasurementChain>() { new MeasurementChain(UserSaved.SelectedElement.Layers) };
+
         }
 
         /*
@@ -160,6 +162,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         [ObservableProperty]
         private List<MeasurementChain> _measurementChain = new List<MeasurementChain>(){ new MeasurementChain(UserSaved.SelectedElement.Layers) };
+
+        // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
+        [ObservableProperty]
+        private List<MeasurementChain> _measurementChainFull = new List<MeasurementChain>() { new MeasurementChain(new double[]{0, 320}) };
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
