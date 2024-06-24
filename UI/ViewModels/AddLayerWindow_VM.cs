@@ -44,7 +44,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 //LayerId gets set by SQLite DB (AutoIncrement)
                 LayerPosition = layerCount,
                 InternalId = layerCount,
-                LayerThickness = Convert.ToDouble(Thickness),
+                Width = Convert.ToDouble(Thickness),
                 IsEffective = true,
                 MaterialId = selectedMaterial.Id,
                 Material = selectedMaterial,

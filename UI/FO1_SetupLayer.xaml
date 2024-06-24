@@ -83,12 +83,12 @@
                   Opacity="{Binding Opacity}">
                 <Rectangle x:Name="LayerRectangle"
                            Fill="{Binding DrawingBrush}"
-                           Stroke="{Binding RectangleStrokeColor}"
-                           StrokeThickness="{Binding RectangleStrokeThickness}"/>
+                           Stroke="{Binding RectangleBorderColor}"
+                           StrokeThickness="{Binding RectangleBorderThickness}"/>
                 <Ellipse Fill="White"
                          Width="20"
                          Height="20"
-                         Stroke="{Binding RectangleStrokeColor}"
+                         Stroke="{Binding RectangleBorderColor}"
                          StrokeThickness="1"
                          HorizontalAlignment="Center"
                          Margin="-8"/>
@@ -123,7 +123,7 @@
                 </GridViewColumn.CellTemplate>
             </GridViewColumn>
             <GridViewColumn DisplayMemberBinding="{Binding Material.Name}" Header="Material" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding LayerThickness}" Header="d [cm]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding Width}" Header="d [cm]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Material.ThermalConductivity}" Header="λ [W/(mK)]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Material.BulkDensity}" Header="ρ [kg/m³]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="R [m²K/W]" Width="Auto"/>
@@ -141,22 +141,23 @@
             <!--ToolTip uses ToString() of Layer-->
             <Setter Property="ToolTip" Value="{Binding}"/>
             <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
                         <Border x:Name="listView_Border"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                BorderBrush="{StaticResource PrimaryBorderBrush}"
+                                BorderThickness="0,0,0,1"
                                 Background="{TemplateBinding Background}"
                                 Padding="{TemplateBinding Padding}"
-                                CornerRadius="8"
+                                CornerRadius="0"
                                 Height="56"
                                 SnapsToDevicePixels="true">
                             <StackPanel Orientation="Vertical">
                                 <!--GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->
                                 <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
                                 <!-- TODO: Balken Lage INFOS hier...-->
-                                <Button HorizontalAlignment="Left" Margin="56,0,0,0" Content="Balkenlage hinzufügen +" Style="{StaticResource ButtonStyleListViewItem}"/>
+                                <Button HorizontalAlignment="Left" Margin="48,0,0,0" Content="Balkenlage hinzufügen +" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
                             </StackPanel>
                         </Border>
                         <ControlTemplate.Triggers>

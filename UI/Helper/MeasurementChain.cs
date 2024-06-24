@@ -11,20 +11,42 @@ using Point = System.Windows.Point;
 
 namespace BauphysikToolWPF.UI.Helper
 {
-    public class MeasurementChain : DrawingGeometry
+    public class MeasurementChain : IDrawingGeometry
     {
         // All in [px]
         // Origin is TopLeft (0,0)
         private readonly double[] _intervals = Array.Empty<double>();
         private readonly double[] _labels = Array.Empty<double>();
-        
+
+        #region IDrawingGeometry
+
+        public Rectangle Rectangle { get; set; } = Rectangle.Empty;
+        public Brush RectangleBorderColor { get; set; } = Brushes.Transparent;
+        public double RectangleBorderThickness { get; set; } = 0;
+        public Brush BackgroundColor { get; set; } = Brushes.Transparent;
+        public Brush DrawingBrush { get; set; } = new DrawingBrush();
+        public double Opacity { get; set; } = 1;
+        public int ZIndex { get; set; }
+
+        public IDrawingGeometry Convert()
+        {
+            return new DrawingGeometry(this);
+        }
+
+        public void UpdateGeometry()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
         public MeasurementChain() {}
 
         public MeasurementChain(List<Layer> layers)
         {
             if (layers.Count == 0) return;
             _intervals = layers.Select(l => l.Rectangle.Right).Distinct().ToArray();
-            _labels = layers.Select(l => l.LayerThickness).ToArray();
+            _labels = layers.Select(l => l.Width).ToArray();
             DrawingBrush = GetMeasurementDrawing();
         }
 
@@ -35,7 +57,7 @@ namespace BauphysikToolWPF.UI.Helper
             _labels = labels;
             DrawingBrush = GetMeasurementDrawing();
         }
-        
+
         private DrawingBrush GetMeasurementDrawing()
         {
             // Create a GeometryGroup to contain the lines
@@ -46,7 +68,7 @@ namespace BauphysikToolWPF.UI.Helper
 
             // Create Starting Tick Marker at 0
             var selectedInterval = 0.0;
-            var firstLineTickVertical = new LineGeometry() { StartPoint = new Point(selectedInterval, -4), EndPoint = new Point(selectedInterval, 4) };
+            var firstLineTickVertical = new LineGeometry() { StartPoint = new Point(selectedInterval, -12), EndPoint = new Point(selectedInterval, 6) };
             var firstLineTick45 = new LineGeometry() { StartPoint = new Point(selectedInterval - 4, 4), EndPoint = new Point(selectedInterval + 4, -4) };
             hatchContent.Children.Add(firstLineTickVertical);
             hatchContent.Children.Add(firstLineTick45);
@@ -55,12 +77,12 @@ namespace BauphysikToolWPF.UI.Helper
             {
                 // Create the text drawing
                 var labelOrigin = (selectedInterval + _intervals[i]) / 2;
-                var formattedText = new FormattedText(_labels[i].ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10, Brushes.DimGray, 1.25);
+                var formattedText = new FormattedText(_labels[i].ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 12, Brushes.DimGray, 1.0);
                 var textGeometry = formattedText.BuildGeometry(new Point(labelOrigin - formattedText.Width / 2, 8));
                 hatchContent.Children.Add(textGeometry);
 
                 // Create Interval Tick Markers
-                var lineTickVertical = new LineGeometry() { StartPoint = new Point(_intervals[i], -4), EndPoint = new Point(_intervals[i], 4) };
+                var lineTickVertical = new LineGeometry() { StartPoint = new Point(_intervals[i], -12), EndPoint = new Point(_intervals[i], 6) };
                 var lineTick45 = new LineGeometry() { StartPoint = new Point(_intervals[i] - 4, 4), EndPoint = new Point(_intervals[i] + 4, -4) };
                 hatchContent.Children.Add(lineTickVertical);
                 hatchContent.Children.Add(lineTick45);
@@ -74,7 +96,7 @@ namespace BauphysikToolWPF.UI.Helper
             // Use the lines as the Drawing's content
             var brush = new DrawingBrush
             {
-                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.DimGray, 0.8), hatchContent),
+                Drawing = new GeometryDrawing(Brushes.DimGray, new Pen(Brushes.DimGray, 0.6), hatchContent),
             };
             return brush;
         }

@@ -3,10 +3,13 @@ using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
 using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.Helper;
+using System.Windows.Media;
+using Geometry;
 
 namespace BauphysikToolWPF.Models
 {
-    public class Layer : DrawingGeometry, ISavefileElement<Layer>
+    public class Layer : IDrawingGeometry
     {
         //------Variablen-----//
 
@@ -29,7 +32,7 @@ namespace BauphysikToolWPF.Models
         public int SubConstructionId { get; set; }
 
         [NotNull]
-        public double LayerThickness { get; set; } // Layer thickness in cm
+        public double Width { get; set; } // Layer thickness in cm
 
         [NotNull]
         public int Effective { get; set; } // For Calculation Purposes - Whether a Layer is considered in the Calculations or not
@@ -84,7 +87,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                return Math.Round((this.LayerThickness / 100) / Material.ThermalConductivity, 3);
+                return Math.Round((this.Width / 100) / Material.ThermalConductivity, 3);
             }
         }
 
@@ -94,7 +97,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid) return 0;
-                return Math.Round((this.LayerThickness / 100) * Material.DiffusionResistance, 3);
+                return Math.Round((this.Width / 100) * Material.DiffusionResistance, 3);
             }
         }
 
@@ -104,7 +107,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                return Math.Round(this.LayerThickness / 100 * Material.BulkDensity, 3);
+                return Math.Round(this.Width / 100 * Material.BulkDensity, 3);
             }
         }
 
@@ -116,7 +119,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                return Math.Round(Material.ThermalConductivity / Convert.ToDouble(Material.BulkDensity / Material.SpecificHeatCapacity), 2);
+                return Math.Round(Material.ThermalConductivity / System.Convert.ToDouble(Material.BulkDensity / Material.SpecificHeatCapacity), 2);
             }
         }
 
@@ -125,6 +128,19 @@ namespace BauphysikToolWPF.Models
 
 
         //------Methoden-----//
+
+        public void UpdateGeometry()
+        {
+            var initWidth = this.Width; // cm
+            var initHeight = 100;             // cm
+
+            Rectangle = new Rectangle(new Point(0, 0), initWidth, initHeight);
+            BackgroundColor = new SolidColorBrush(this.Material.Color);
+            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, initWidth, initHeight);
+            RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
+            Opacity = this.IsEffective ? 1 : 0.2;
+        }
 
         public Layer Copy()
         {
@@ -135,7 +151,7 @@ namespace BauphysikToolWPF.Models
             copy.MaterialId = this.MaterialId;
             copy.Element = this.Element;
             copy.Material = this.Material;
-            copy.LayerThickness = this.LayerThickness;
+            copy.Width = this.Width;
             copy.Effective = this.Effective;
             copy.IsSelected = false;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
@@ -151,7 +167,23 @@ namespace BauphysikToolWPF.Models
         
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
-            return LayerThickness + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
+            return Width + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
         }
+
+        #region IDrawingGeometry
+
+        public Rectangle Rectangle { get; set; } = Rectangle.Empty;
+        public Brush RectangleBorderColor { get; set; } = Brushes.Black;
+        public double RectangleBorderThickness { get; set; } = 0.2;
+        public Brush BackgroundColor { get; set; } = Brushes.Transparent;
+        public Brush DrawingBrush { get; set; } = new DrawingBrush();
+        public double Opacity { get; set; } = 1;
+        public int ZIndex { get; set; } = 0;
+        public IDrawingGeometry Convert()
+        {
+            return new DrawingGeometry(this);
+        }
+
+        #endregion
     }
 }

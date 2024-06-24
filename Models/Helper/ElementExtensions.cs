@@ -41,15 +41,6 @@ namespace BauphysikToolWPF.Models.Helper
             }
         }
 
-        public static void UpdateLayerGeometries(this Element element)
-        {
-            if (element.Layers.Count != 0)
-            {
-                element.Layers.ForEach(l => l.UpdateGeometry(l));
-            }
-        }
-
-
         #region Drawing Stuff
 
         public static void ScaleAndStackLayers(this Element element, double canvasWidth = 320, double canvasHeight = 400)
@@ -59,7 +50,20 @@ namespace BauphysikToolWPF.Models.Helper
             element.StackLayers();
         }
 
-        public static void StackLayers(this Element element)
+        private static void UpdateLayerGeometries(this Element element)
+        {
+            if (element.Layers.Count != 0)
+            {
+                foreach (var l in element.Layers)
+                {
+                    l.UpdateGeometry();
+                    if (l.HasSubConstruction) l.SubConstruction.UpdateGeometry();
+                }
+                
+            }
+        }
+
+        private static void StackLayers(this Element element)
         {
             if (element.Layers.Count == 0) return;
 
@@ -71,7 +75,7 @@ namespace BauphysikToolWPF.Models.Helper
             }
         }
 
-        public static void ScaleToFitCanvas(this Element element, double canvasWidth = 320, double canvasHeight = 400)
+        private static void ScaleToFitCanvas(this Element element, double canvasWidth = 320, double canvasHeight = 400)
         {
             if (element.Layers.Count == 0) return;
 

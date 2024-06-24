@@ -51,6 +51,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
+        private void AddSubConstructionLayer()
+        {
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            new AddLayerSubConstructionWindow().ShowDialog();
+        }
+
+        [RelayCommand]
         private void EditLayer(int selectedLayerId)
         {
             UserSaved.SelectedLayerId = selectedLayerId;
@@ -141,6 +149,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedElement = new Element();
             SelectedElement = UserSaved.SelectedElement;
             MeasurementChain = new List<MeasurementChain>() { new MeasurementChain(UserSaved.SelectedElement.Layers) };
+            MeasurementChainFull = new List<MeasurementChain>() { new MeasurementChain(new[] { 320.0 }, new[] { UserSaved.SelectedElement.ElementWidth }) };
 
         }
 

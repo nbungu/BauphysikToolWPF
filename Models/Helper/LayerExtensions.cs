@@ -77,7 +77,7 @@ namespace BauphysikToolWPF.Models.Helper
             if (layers.Count == 0) return;
 
             double elementWidth = 0;
-            layers.ForEach(l => elementWidth += l.LayerThickness);
+            layers.ForEach(l => elementWidth += l.Width);
 
             foreach (var layer in layers)
             {

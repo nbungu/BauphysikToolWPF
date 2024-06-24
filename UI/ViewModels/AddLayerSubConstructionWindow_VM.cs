@@ -31,28 +31,24 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void AddLayer(Material? selectedMaterial)
+        private void AddSubConstructionLayer(Material? selectedMaterial)
         {
             if (selectedMaterial is null) return;
-            if (Thickness == "" || Convert.ToDouble(Thickness) <= 0) return;
+            if (Width == "" || Convert.ToDouble(Width) <= 0) return;
+            if (Height == "" || Convert.ToDouble(Height) <= 0) return;
+            if (Spacing == "" || Convert.ToDouble(Spacing) <= 0) return;
 
-            // LayerPosition is always at end of List 
-            int layerCount = UserSaved.SelectedElement.Layers.Count;
-
-            Layer layer = new Layer
+            var subConstruction = new LayerSubConstruction()
             {
-                //LayerId gets set by SQLite DB (AutoIncrement)
-                LayerPosition = layerCount,
-                InternalId = layerCount,
-                LayerThickness = Convert.ToDouble(Thickness),
-                IsEffective = true,
+                Width = Convert.ToDouble(Width),
+                Height = Convert.ToDouble(Height),
+                Spacing = Convert.ToDouble(Spacing),
                 MaterialId = selectedMaterial.Id,
                 Material = selectedMaterial,
-                ElementId = UserSaved.SelectedElement.Id,
-                Element = UserSaved.SelectedElement
+
             };
             //DatabaseAccess.CreateLayer(layer);
-            UserSaved.SelectedElement.Layers.Add(layer);
+            UserSaved.SelectedLayer.SubConstruction = subConstruction;
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedElementChanged();
         }
@@ -75,7 +71,15 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string _thickness = "6";
+        private string _width = "6";
+
+        [ObservableProperty]
+        //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
+        private string _height = "6";
+
+        [ObservableProperty]
+        //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
+        private string _spacing = "40";
 
         /*
         [ObservableProperty]

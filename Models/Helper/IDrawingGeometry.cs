@@ -1,0 +1,19 @@
+﻿using Brush = System.Windows.Media.Brush;
+using Rectangle = Geometry.Rectangle;
+
+namespace BauphysikToolWPF.Models.Helper
+{
+    public interface IDrawingGeometry
+    {
+        // Rectangle on 2D Canvas. Drawing Origin (0,0) is top left corner.
+        Rectangle Rectangle { get; set; } // in [px]
+        Brush RectangleBorderColor { get; set; }
+        double RectangleBorderThickness { get; set; }
+        Brush BackgroundColor { get; set; }
+        Brush DrawingBrush { get; set; }
+        double Opacity { get; set; }
+        int ZIndex { get; set; }
+        IDrawingGeometry Convert();
+        void UpdateGeometry();
+    }
+}

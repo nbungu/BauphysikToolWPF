@@ -1,8 +1,10 @@
 ﻿using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.Helper;
+using Geometry;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System;
-using BauphysikToolWPF.Services;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models
 {
@@ -12,7 +14,7 @@ namespace BauphysikToolWPF.Models
         Horizontal,
         Vertical
     }
-    public class LayerSubConstruction : ISavefileElement<LayerSubConstruction>
+    public class LayerSubConstruction : IDrawingGeometry //, ISavefileElement<LayerSubConstruction>
     {
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; }
@@ -57,9 +59,13 @@ namespace BauphysikToolWPF.Models
 
         //------Methods-----//
 
-        public LayerSubConstruction Copy()
+        public void UpdateGeometry()
         {
-            throw new NotImplementedException();
+            Rectangle = new Rectangle(new Point(0, 0), this.Width, this.Height);
+            BackgroundColor = new SolidColorBrush(this.Material.Color);
+            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, this.Width, this.Height);
+            RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
         }
 
         public void UpdateTimestamp()
@@ -67,22 +73,20 @@ namespace BauphysikToolWPF.Models
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
 
-        /*public LayerGeometry ToGeometry()
+        #region IDrawingGeometry
+
+        public Rectangle Rectangle { get; set; } = Rectangle.Empty;
+        public Brush RectangleBorderColor { get; set; } = Brushes.Black;
+        public double RectangleBorderThickness { get; set; } = 0.2;
+        public Brush BackgroundColor { get; set; } = Brushes.Transparent;
+        public Brush DrawingBrush { get; set; } = new DrawingBrush();
+        public double Opacity { get; set; } = 1;
+        public int ZIndex { get; set; } = 1;
+        public IDrawingGeometry Convert()
         {
-            var initWidth = Width; // cm
-            var initHeight = Height; // cm
-            var geometry = new LayerGeometry()
-            {
-                Rectangle = new Rectangle(new Point(0, 0), initWidth, initHeight),
-                LayerThickness = initWidth,
-                LayerPosition = LayerPosition.ToString(),
-                BackgroundColor = new SolidColorBrush(Material.Color),
-                DrawingBrush = DrawingBrush.GetHatchPattern(Material.Category, 0.5, 0, 0),
-                RectangleStrokeColor = IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black,
-                RectangleStrokeThickness = IsSelected ? 1 : 0.2,
-                Opacity = IsEffective ? 1 : 0.2,
-            };
-            return geometry;
-        }*/
+            return new DrawingGeometry(this);
+        }
+
+        #endregion
     }
 }

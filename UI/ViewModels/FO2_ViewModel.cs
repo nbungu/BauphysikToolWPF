@@ -119,7 +119,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             double left = 0;
             foreach (Layer layer in _tempCalc.Element.Layers)
             {
-                double layerWidth = layer.LayerThickness;
+                double layerWidth = layer.Width;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
 
                 // Set properties of the layer rectangle at the desired position

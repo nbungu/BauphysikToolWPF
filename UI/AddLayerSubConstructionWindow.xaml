@@ -148,15 +148,15 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Margin="8">
             <Label Content="Abstand untereinander: " FontWeight="Bold" HorizontalAlignment="Left"/>
-            <TextBox Text="{Binding Thickness}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
+            <TextBox Text="{Binding Spacing}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
             <Label Content="cm" FontWeight="SemiBold"/>
         </StackPanel>
 
         <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="8">
             <Label Content="Breite x Höhe: " FontWeight="Bold" HorizontalAlignment="Left"/>
-            <TextBox Text="{Binding Thickness}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
+            <TextBox Text="{Binding Width}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
             <Label Content="x"/>
-            <TextBox Text="{Binding Thickness}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
+            <TextBox Text="{Binding Height}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
             <Label Content="cm" FontWeight="SemiBold"/>
         </StackPanel>
 

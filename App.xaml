@@ -409,7 +409,7 @@
                         <Grid>
                             <!-- Text Header of a single Header Column-->
                             <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent">
-                                <TextBlock x:Name="ContentHeader" Text="{TemplateBinding Content}" Padding="10,6,10,0" Width="{TemplateBinding Width}" TextAlignment="Left" FontSize="12" />
+                                <TextBlock x:Name="ContentHeader" Text="{TemplateBinding Content}" Padding="10,6,10,0" Width="{TemplateBinding Width}" TextAlignment="Left" FontSize="12"/>
                             </Border>
                             <!--x:Name="PART_HeaderGripper" is mandatory-->
                             <Thumb x:Name="PART_HeaderGripper" HorizontalAlignment="Right" Margin="0,0,-8,0" Width="16" Background="{StaticResource PrimaryBorderBrush}" >
