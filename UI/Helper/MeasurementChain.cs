@@ -3,7 +3,9 @@ using BauphysikToolWPF.Models.Helper;
 using Geometry;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Windows;
 using System.Windows.Media;
 using Point = System.Windows.Point;
 
@@ -13,33 +15,27 @@ namespace BauphysikToolWPF.UI.Helper
     {
         // All in [px]
         // Origin is TopLeft (0,0)
-        
         private readonly double[] _intervals = Array.Empty<double>();
-
+        private readonly double[] _labels = Array.Empty<double>();
+        
         public MeasurementChain() {}
 
         public MeasurementChain(List<Layer> layers)
         {
             if (layers.Count == 0) return;
-            _intervals = GetIntervals(layers);
+            _intervals = layers.Select(l => l.Rectangle.Right).Distinct().ToArray();
+            _labels = layers.Select(l => l.LayerThickness).ToArray();
             DrawingBrush = GetMeasurementDrawing();
         }
 
-        public MeasurementChain(double[] intervals)
+        public MeasurementChain(double[] intervals, double[] labels)
         {
-            if (intervals.Length <= 1) return;
+            if (intervals.Length < 1) return;
             _intervals = intervals;
+            _labels = labels;
             DrawingBrush = GetMeasurementDrawing();
         }
-
-        private double[] GetIntervals(List<Layer> layers)
-        {
-            var startInterval = layers[0].Rectangle.Left;
-            var intervals = layers.Select(l => l.Rectangle.Right).ToList();
-            intervals.Insert(0, startInterval);
-            return intervals.Distinct().ToArray();
-        }
-
+        
         private DrawingBrush GetMeasurementDrawing()
         {
             // Create a GeometryGroup to contain the lines
@@ -48,12 +44,28 @@ namespace BauphysikToolWPF.UI.Helper
             var baseline = new LineGeometry() { StartPoint = new Point(0, 0), EndPoint = new Point(_intervals.Last(), 0) };
             hatchContent.Children.Add(baseline);
 
+            // Create Starting Tick Marker at 0
+            var selectedInterval = 0.0;
+            var firstLineTickVertical = new LineGeometry() { StartPoint = new Point(selectedInterval, -4), EndPoint = new Point(selectedInterval, 4) };
+            var firstLineTick45 = new LineGeometry() { StartPoint = new Point(selectedInterval - 4, 4), EndPoint = new Point(selectedInterval + 4, -4) };
+            hatchContent.Children.Add(firstLineTickVertical);
+            hatchContent.Children.Add(firstLineTick45);
+            
             for (int i = 0; i < _intervals.Length; i++)
             {
+                // Create the text drawing
+                var labelOrigin = (selectedInterval + _intervals[i]) / 2;
+                var formattedText = new FormattedText(_labels[i].ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 10, Brushes.DimGray, 1.25);
+                var textGeometry = formattedText.BuildGeometry(new Point(labelOrigin - formattedText.Width / 2, 8));
+                hatchContent.Children.Add(textGeometry);
+
+                // Create Interval Tick Markers
                 var lineTickVertical = new LineGeometry() { StartPoint = new Point(_intervals[i], -4), EndPoint = new Point(_intervals[i], 4) };
                 var lineTick45 = new LineGeometry() { StartPoint = new Point(_intervals[i] - 4, 4), EndPoint = new Point(_intervals[i] + 4, -4) };
                 hatchContent.Children.Add(lineTickVertical);
                 hatchContent.Children.Add(lineTick45);
+                // update last used interval
+                selectedInterval = _intervals[i];
             }
 
             //Adjust Rectangle

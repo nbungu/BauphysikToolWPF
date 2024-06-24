@@ -165,7 +165,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         [ObservableProperty]
-        private List<MeasurementChain> _measurementChainFull = new List<MeasurementChain>() { new MeasurementChain(new double[]{0, 320}) };
+        private List<MeasurementChain> _measurementChainFull = new List<MeasurementChain>() { new MeasurementChain(new []{320.0}, new []{UserSaved.SelectedElement.ElementWidth}) };
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -173,14 +173,5 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by 'layers' above
          */
 
-        /*public List<LayerGeometry> LayerGeometries
-        {
-            get
-            {
-                var geometries = new List<LayerGeometry>();
-                UserSaved.SelectedElement.Layers.ForEach(l => geometries.Add(new LayerGeometry(l)));
-                return geometries.ScaleAndStack(320, 400);
-            }
-        }*/
     }
 }
