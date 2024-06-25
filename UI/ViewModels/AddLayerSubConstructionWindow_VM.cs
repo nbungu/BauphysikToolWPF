@@ -5,7 +5,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -13,16 +12,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerSubConstructionWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddLayerSubConstructionWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => "AddLayerWindow";
-        public List<string> DistinctCategories
-        {
-            get
-            {
-                List<string> distinctCategories = DatabaseAccess.GetMaterials().Select(m => m.CategoryName).ToList().Distinct().ToList();
-                distinctCategories.Insert(0, "Alle anzeigen");
-                return distinctCategories;
-            }
-        }
+        public string Title => "AddLayerSubConstructionWindow";
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -32,7 +22,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [RelayCommand]
         private void AddSubConstructionLayer(Material? selectedMaterial)
-        {
+         {
             if (selectedMaterial is null) return;
             if (Width == "" || Convert.ToDouble(Width) <= 0) return;
             if (Height == "" || Convert.ToDouble(Height) <= 0) return;
@@ -45,7 +35,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Spacing = Convert.ToDouble(Spacing),
                 MaterialId = selectedMaterial.Id,
                 Material = selectedMaterial,
-
             };
             //DatabaseAccess.CreateLayer(layer);
             UserSaved.SelectedLayer.SubConstruction = subConstruction;
@@ -54,7 +43,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void CreateMaterial()
+        private void SearchMaterial()
         {
             //TODO
         }
@@ -67,7 +56,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private string _selectedCategory = "Alle anzeigen";
+        private MaterialCategory _selectedCategory = MaterialCategory.None;
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
@@ -91,6 +80,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public List<Material> Materials => SelectedCategory == "Alle anzeigen" ? DatabaseAccess.QueryMaterialByCategory("*") : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
+        public List<Material> Materials => DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
     }
 }

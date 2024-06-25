@@ -1,15 +1,17 @@
-﻿using BauphysikToolWPF.Models.Helper;
+﻿using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.Drawing;
+using Geometry;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.UI.Helper;
 using System.Windows.Media;
-using Geometry;
 
 namespace BauphysikToolWPF.Models
 {
-    public class Layer : IDrawingGeometry
+    /// <summary>
+    /// Business logic of a Layer
+    /// </summary>
+    public partial class Layer
     {
         //------Variablen-----//
 
@@ -129,19 +131,6 @@ namespace BauphysikToolWPF.Models
 
         //------Methoden-----//
 
-        public void UpdateGeometry()
-        {
-            var initWidth = this.Width; // cm
-            var initHeight = 100;             // cm
-
-            Rectangle = new Rectangle(new Point(0, 0), initWidth, initHeight);
-            BackgroundColor = new SolidColorBrush(this.Material.Color);
-            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, initWidth, initHeight);
-            RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
-            Opacity = this.IsEffective ? 1 : 0.2;
-        }
-
         public Layer Copy()
         {
             var copy = new Layer();
@@ -169,7 +158,13 @@ namespace BauphysikToolWPF.Models
         {
             return Width + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
         }
+    }
 
+    /// <summary>
+    /// Presentation logic of a Layer which can be drawn on a XAML Canvas
+    /// </summary>
+    public partial class Layer : IDrawingGeometry
+    {
         #region IDrawingGeometry
 
         public Rectangle Rectangle { get; set; } = Rectangle.Empty;
@@ -182,6 +177,18 @@ namespace BauphysikToolWPF.Models
         public IDrawingGeometry Convert()
         {
             return new DrawingGeometry(this);
+        }
+        public void UpdateGeometry()
+        {
+            var initWidth = this.Width; // cm
+            var initHeight = 100;             // cm
+
+            Rectangle = new Rectangle(new Point(0, 0), initWidth, initHeight);
+            BackgroundColor = new SolidColorBrush(this.Material.Color);
+            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, initWidth, initHeight);
+            RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
+            Opacity = this.IsEffective ? 1 : 0.2;
         }
 
         #endregion

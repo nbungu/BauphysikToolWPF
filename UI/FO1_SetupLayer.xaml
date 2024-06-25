@@ -157,7 +157,7 @@
                                 <!--GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->
                                 <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
                                 <!-- TODO: Balken Lage INFOS hier...-->
-                                <Button HorizontalAlignment="Left" Margin="48,0,0,0" Content="Balkenlage hinzufügen +" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
+                                <Button HorizontalAlignment="Left" Margin="48,0,0,0" Content="Balkenlage hinzufügen +" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
                             </StackPanel>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -238,7 +238,7 @@
                 <!-- This is 'PlacementTarget' as seen from ContextMenu -->
                 <ListView x:Name="LayersListView"
                       Grid.Row="2"
-                      ItemsSource="{Binding Layers}" 
+                      ItemsSource="{Binding LayerList}" 
                       View="{StaticResource LayerGridViewColumns}"
                       Style="{StaticResource ListViewStyle01}"
                       ItemContainerStyle="{StaticResource LayerItemContainerStyle}"
@@ -293,7 +293,7 @@
                             Grid.Row="1"
                             Width="320"
                             Height="400"                                  
-                            ItemsSource="{Binding Layers}"
+                            ItemsSource="{Binding DrawingGeometries}"
                             ItemsPanel="{StaticResource Canvas}"
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                             ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>

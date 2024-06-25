@@ -24,7 +24,6 @@ namespace BauphysikToolWPF.UI
             {
                 UserSaved.SelectedElement.SortLayers();
                 UserSaved.SelectedElement.AssignInternalIdsToLayers();
-                UserSaved.SelectedElement.ScaleAndStackLayers();
             }
 
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed

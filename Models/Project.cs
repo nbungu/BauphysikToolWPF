@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.Models
         Existing,       // 0, Bestandsgebäude
         New             // 1, Neubau
     }
-    public class Project : ISavefileElement<Project>
+    public class Project
     {
         //------Variablen-----//
 

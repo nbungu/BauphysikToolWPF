@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF.UI"
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+        xmlns:models="clr-namespace:BauphysikToolWPF.Models"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         Title="AddLayerWindow" Background="{StaticResource PrimaryLightBrush}" Height="488" Width="880">
 
@@ -62,19 +64,6 @@
             </Style.Triggers>
         </Style>
 
-        <DataTemplate x:Key="CategoriesListViewTemplate">
-            <Grid Margin="4">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="24"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <!--Here Binding is from: ItemsSource="{Binding DistinctCategories}" -->
-                <Label Content="{Binding}" Height="28"/>
-            </Grid>
-        </DataTemplate>
-
         <!--
         https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
         https://github.com/mochan-b/GridViewCellFormatting
@@ -88,6 +77,18 @@
             <GridViewColumn DisplayMemberBinding="{Binding SpecificHeatCapacity}" Header="c [J/(kg·K)]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding DiffusionResistance}" Header="µ (trocken) [-]" Width="Auto"/>
         </GridView>
+
+        <GridView x:Key="CategoryGridViewColumns" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
+            <!--Here: Binding source are Items from the ItemsSource Property-->
+            <GridViewColumn DisplayMemberBinding="{Binding }" Header="Name" Width="Auto"/>
+        </GridView>
+
+        <!--populate the items of a ComboBox with all elements from an enum-->
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="CategoryTypeValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:MaterialCategory"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
 
     </Window.Resources>
 
@@ -111,12 +112,12 @@
 
             <Label Content="Kategorie Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
-            <ListView x:Name="collectionView_Categories"
-                      ItemsSource="{Binding DistinctCategories}"
-                      ItemTemplate="{StaticResource CategoriesListViewTemplate}"
-                      SelectionMode="Single"
+            <ListView x:Name="CategoryListView"
+                      ItemsSource="{Binding Source={StaticResource CategoryTypeValues}}"
+                      View="{StaticResource CategoryGridViewColumns}"
+                      ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
                       SelectedItem="{Binding SelectedCategory}"
-                      ScrollViewer.CanContentScroll="False"
+                      Style="{StaticResource ListViewStyle01}"
                       Grid.Row="1"/>
         </Grid>
         

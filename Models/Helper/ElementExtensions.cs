@@ -1,4 +1,6 @@
-﻿using BauphysikToolWPF.UI.Helper;
+﻿using System.Collections.Generic;
+using System.Windows.Documents;
+using BauphysikToolWPF.UI.Drawing;
 using Geometry;
 
 namespace BauphysikToolWPF.Models.Helper
@@ -43,49 +45,57 @@ namespace BauphysikToolWPF.Models.Helper
 
         #region Drawing Stuff
 
-        public static void ScaleAndStackLayers(this Element element, double canvasWidth = 320, double canvasHeight = 400)
+        public static List<DrawingGeometry> GetLayerDrawings(this Element element, double canvasWidth = 320, double canvasHeight = 400)
         {
-            element.UpdateLayerGeometries();
-            element.ScaleToFitCanvas(canvasWidth, canvasHeight);
-            element.StackLayers();
-        }
-
-        private static void UpdateLayerGeometries(this Element element)
-        {
+            var layerDrawings = new List<DrawingGeometry>();
             if (element.Layers.Count != 0)
             {
+                // Updating Geometry
                 foreach (var l in element.Layers)
                 {
                     l.UpdateGeometry();
                     if (l.HasSubConstruction) l.SubConstruction.UpdateGeometry();
                 }
-                
+
+                // Scaling to fit Canvas (cm to px conversion)
+                foreach (var l in element.Layers)
+                {
+                    var relativeLayerWidth = l.Rectangle.Width / element.ElementWidth;
+                    var newWidth = canvasWidth * relativeLayerWidth;
+                    l.Rectangle = new Rectangle(new Point(), newWidth, canvasHeight);
+                    l.DrawingBrush = HatchPattern.GetHatchPattern(l.Material.Category, 0.5, newWidth, canvasHeight);
+
+                    // SubConstruction
+                    if (l.HasSubConstruction)
+                    {
+                        var relativeLayerSubConstrWidth = l.SubConstruction.Rectangle.Width / element.ElementWidth;
+                        var newWidthSubConstr = canvasWidth * relativeLayerSubConstrWidth;
+
+                        var scFac = newWidthSubConstr / l.SubConstruction.Rectangle.Width;
+                        var newHeightSubConstr = l.SubConstruction.Rectangle.Height * scFac;
+
+                        l.SubConstruction.Rectangle = new Rectangle(new Point(), newWidthSubConstr, newHeightSubConstr);
+                        l.SubConstruction.DrawingBrush = HatchPattern.GetHatchPattern(l.Material.Category, 0.5, newWidthSubConstr, newHeightSubConstr);
+                    }
+                }
+
+                // Stacking
+                Point ptStart = new Point(0, 0);
+                foreach (var l in element.Layers)
+                {
+                    // Layer
+                    l.Rectangle = l.Rectangle.MoveTo(ptStart);
+                    // SubConstruction
+                    if (l.HasSubConstruction) l.SubConstruction.Rectangle = l.SubConstruction.Rectangle.MoveTo(ptStart);
+                    // Update Origin
+                    ptStart = l.Rectangle.TopRight;
+                    // Add to List
+                    layerDrawings.Add((DrawingGeometry)l.Convert());
+                    if (l.HasSubConstruction) layerDrawings.Add((DrawingGeometry)l.SubConstruction.Convert());
+                }
+                layerDrawings.Sort(new DrawingGeometryComparer(DrawingGeometrySortingType.ZIndexAscending));
             }
-        }
-
-        private static void StackLayers(this Element element)
-        {
-            if (element.Layers.Count == 0) return;
-
-            Point ptStart = new Point(0, 0);
-            foreach (var layer in element.Layers)
-            {
-                layer.Rectangle = layer.Rectangle.MoveTo(ptStart);
-                ptStart = layer.Rectangle.TopRight;
-            }
-        }
-
-        private static void ScaleToFitCanvas(this Element element, double canvasWidth = 320, double canvasHeight = 400)
-        {
-            if (element.Layers.Count == 0) return;
-
-            foreach (var layer in element.Layers)
-            {
-                var relativeLayerWidth = layer.Rectangle.Width / element.ElementWidth;
-                var newWidth = canvasWidth * relativeLayerWidth;
-                layer.Rectangle = new Rectangle(new Point(), newWidth, canvasHeight);
-                layer.DrawingBrush = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, newWidth, canvasHeight);
-            }
+            return layerDrawings;
         }
 
         #endregion

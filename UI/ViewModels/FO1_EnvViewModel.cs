@@ -2,7 +2,6 @@
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -62,7 +61,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnLayersChanged(List<Layer> value)
         {
             // Updates the Layer Geometry
-            UserSaved.SelectedElement.ScaleAndStackLayers();
+            UserSaved.SelectedElement.GetLayerDrawings();
 
             // Update XAML Binding Property by fetching from DB
             OnPropertyChanged(nameof(SelectedElement));

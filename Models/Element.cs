@@ -1,4 +1,4 @@
-﻿using BauphysikToolWPF.Models.Helper;
+﻿using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Services;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
@@ -29,7 +28,7 @@ namespace BauphysikToolWPF.Models
         NordWesten
     }
 
-    public class Element : ISavefileElement<Element>
+    public class Element
     {
         //------Variablen-----//
 

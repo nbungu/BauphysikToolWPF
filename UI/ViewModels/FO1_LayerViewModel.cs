@@ -4,7 +4,7 @@ using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
-using BauphysikToolWPF.UI.Helper;
+using BauphysikToolWPF.UI.Drawing;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -51,8 +51,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void AddSubConstructionLayer()
+        private void AddSubConstructionLayer(int selectedLayerId)
         {
+            UserSaved.SelectedLayerId = selectedLayerId;
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new AddLayerSubConstructionWindow().ShowDialog();
@@ -137,20 +138,20 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Update Effective Layer Property
             UserSaved.SelectedElement.AssignEffectiveLayers();
             // GUI Stuff
-            UserSaved.SelectedElement.ScaleAndStackLayers();
+            //UserSaved.SelectedElement.GetLayerDrawings();
         }
         
         private void RefreshXamlBindings()
         {
-            Layers = new List<Layer>();
-            Layers = UserSaved.SelectedElement.Layers;
+            LayerList = new List<Layer>();
+            LayerList = UserSaved.SelectedElement.Layers;
             SelectedLayerIndex = -1;
             SelectedLayerIndex = UserSaved.SelectedLayer?.LayerPosition ?? -1;
             SelectedElement = new Element();
             SelectedElement = UserSaved.SelectedElement;
             MeasurementChain = new List<MeasurementChain>() { new MeasurementChain(UserSaved.SelectedElement.Layers) };
             MeasurementChainFull = new List<MeasurementChain>() { new MeasurementChain(new[] { 320.0 }, new[] { UserSaved.SelectedElement.ElementWidth }) };
-
+            DrawingGeometries = UserSaved.SelectedElement.GetLayerDrawings();
         }
 
         /*
@@ -160,13 +161,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private List<Layer> _layers = UserSaved.SelectedElement.Layers;
+        private List<Layer> _layerList = UserSaved.SelectedElement.Layers;
 
         [ObservableProperty]
         private Element _selectedElement = UserSaved.SelectedElement;
 
         [ObservableProperty]
         private int _selectedLayerIndex = -1;
+
+        [ObservableProperty]
+        private List<DrawingGeometry> _drawingGeometries = UserSaved.SelectedElement.GetLayerDrawings();
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         [ObservableProperty]

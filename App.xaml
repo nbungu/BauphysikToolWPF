@@ -279,7 +279,7 @@
         <!-- Applies on every TextBox in this App -->
         <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}">
             <!--These setters are for the default appearance-->
-            <Setter Property="MinWidth" Value="56"/>
+            <Setter Property="MinWidth" Value="48"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="MaxLength" Value="80"/>
             <Setter Property="Background" Value="Transparent"/>
@@ -435,15 +435,16 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="ToolTip" Value="{Binding}"/>
             <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
                         <Border x:Name="listView_Border"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                BorderBrush="{StaticResource PrimaryBorderBrush}"
+                                BorderThickness="0,0,0,1"
                                 Background="{TemplateBinding Background}"
                                 Padding="{TemplateBinding Padding}"
-                                CornerRadius="8"
+                                CornerRadius="0"
                                 Height="40"
                                 SnapsToDevicePixels="true">
                             <!--GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->

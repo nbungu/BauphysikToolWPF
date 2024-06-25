@@ -3,7 +3,7 @@ using System.Windows;
 using System.Windows.Media;
 using BauphysikToolWPF.Models;
 
-namespace BauphysikToolWPF.UI.Helper
+namespace BauphysikToolWPF.UI.Drawing
 {
     public static class HatchPattern
     {

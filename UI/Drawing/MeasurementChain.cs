@@ -1,15 +1,15 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using Geometry;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
+using Geometry;
 using Point = System.Windows.Point;
 
-namespace BauphysikToolWPF.UI.Helper
+namespace BauphysikToolWPF.UI.Drawing
 {
     public class MeasurementChain : IDrawingGeometry
     {
@@ -18,8 +18,6 @@ namespace BauphysikToolWPF.UI.Helper
         private readonly double[] _intervals = Array.Empty<double>();
         private readonly double[] _labels = Array.Empty<double>();
 
-        #region IDrawingGeometry
-
         public Rectangle Rectangle { get; set; } = Rectangle.Empty;
         public Brush RectangleBorderColor { get; set; } = Brushes.Transparent;
         public double RectangleBorderThickness { get; set; } = 0;
@@ -27,18 +25,6 @@ namespace BauphysikToolWPF.UI.Helper
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
         public double Opacity { get; set; } = 1;
         public int ZIndex { get; set; }
-
-        public IDrawingGeometry Convert()
-        {
-            return new DrawingGeometry(this);
-        }
-
-        public void UpdateGeometry()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
 
         public MeasurementChain() {}
 
@@ -99,6 +85,16 @@ namespace BauphysikToolWPF.UI.Helper
                 Drawing = new GeometryDrawing(Brushes.DimGray, new Pen(Brushes.DimGray, 0.6), hatchContent),
             };
             return brush;
+        }
+
+        public IDrawingGeometry Convert()
+        {
+            return new DrawingGeometry(this);
+        }
+
+        public void UpdateGeometry()
+        {
+            throw new NotImplementedException();
         }
     }
 }

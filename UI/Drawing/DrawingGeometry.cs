@@ -1,11 +1,8 @@
-﻿using Geometry;
-using System.Windows.Media;
+﻿using System.Windows.Media;
+using Geometry;
 
-namespace BauphysikToolWPF.Models.Helper
+namespace BauphysikToolWPF.UI.Drawing
 {
-    /// <summary>
-    /// Presentation logic of a drawable element in the XAML Canvas
-    /// </summary>
     public class DrawingGeometry : IDrawingGeometry
     {
         // Rectangle on 2D Canvas. Drawing Origin (0,0) is top left corner.
@@ -17,6 +14,7 @@ namespace BauphysikToolWPF.Models.Helper
         public Brush RectangleBorderColor { get; set; } = Brushes.Black;
         public double RectangleBorderThickness { get; set; } = 1.0;
         public double Opacity { get; set; } = 1.0;
+        public int ZIndex { get; set; } = 0;
 
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
         {
@@ -37,6 +35,11 @@ namespace BauphysikToolWPF.Models.Helper
         public IDrawingGeometry Convert()
         {
             return new DrawingGeometry(this);
+        }
+
+        public void UpdateGeometry()
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

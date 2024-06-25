@@ -1,7 +1,7 @@
 ﻿using Brush = System.Windows.Media.Brush;
 using Rectangle = Geometry.Rectangle;
 
-namespace BauphysikToolWPF.Models.Helper
+namespace BauphysikToolWPF.UI.Drawing
 {
     public interface IDrawingGeometry
     {

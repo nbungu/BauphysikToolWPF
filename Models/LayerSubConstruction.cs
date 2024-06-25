@@ -1,6 +1,5 @@
-﻿using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.UI.Helper;
+﻿using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.Drawing;
 using Geometry;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
@@ -8,13 +7,16 @@ using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models
 {
-
     public enum SubConstructionDirection
     {
         Horizontal,
         Vertical
     }
-    public class LayerSubConstruction : IDrawingGeometry //, ISavefileElement<LayerSubConstruction>
+
+    /// <summary>
+    /// Business logic of a LayerSubConstruction
+    /// </summary>
+    public partial class LayerSubConstruction
     {
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; }
@@ -55,24 +57,20 @@ namespace BauphysikToolWPF.Models
         // 1:1 relationship with Material
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
-
-
+        
         //------Methods-----//
-
-        public void UpdateGeometry()
-        {
-            Rectangle = new Rectangle(new Point(0, 0), this.Width, this.Height);
-            BackgroundColor = new SolidColorBrush(this.Material.Color);
-            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, this.Width, this.Height);
-            RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
-        }
 
         public void UpdateTimestamp()
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
+    }
 
+    /// <summary>
+    /// Presentation logic of a LayerSubConstruction which can be drawn on a XAML Canvas
+    /// </summary>
+    public partial class LayerSubConstruction : IDrawingGeometry
+    {
         #region IDrawingGeometry
 
         public Rectangle Rectangle { get; set; } = Rectangle.Empty;
@@ -86,7 +84,16 @@ namespace BauphysikToolWPF.Models
         {
             return new DrawingGeometry(this);
         }
+        public void UpdateGeometry()
+        {
+            Rectangle = new Rectangle(new Point(0, 0), this.Width, this.Height);
+            BackgroundColor = new SolidColorBrush(this.Material.Color);
+            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, this.Width, this.Height);
+            RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
+        }
 
         #endregion
     }
 }
+

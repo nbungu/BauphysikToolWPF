@@ -231,12 +231,12 @@ namespace BauphysikToolWPF.Repository
             Database.Delete(material);
         }
 
-        public static List<Material> QueryMaterialByCategory(string category)
+        public static List<Material> QueryMaterialByCategory(MaterialCategory category)
         {
-            if (category == "*")
+            if (category == MaterialCategory.None)
                 return Database.Query<Material>("SELECT * FROM Material");
             else
-                return Database.Query<Material>("SELECT * FROM Material WHERE CategoryName == " + "\"" + category + "\"");
+                return Database.Query<Material>("SELECT * FROM Material WHERE Category == " + "\"" + (int)category + "\"");
         }
         public static List<Material> QueryMaterialBySearchString(string searchString)
         {
