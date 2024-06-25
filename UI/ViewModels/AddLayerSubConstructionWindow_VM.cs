@@ -6,6 +6,8 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
+using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -82,5 +84,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public List<Material> Materials => DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
+
     }
 }

@@ -27,6 +27,24 @@
         -->
         <controls:ItemSelectedToEnabledConverter x:Key="ItemSelectedToEnabledConverter"/>
 
+        <!-- New partial style of ButtonStyleListViewItem that includes the DataTrigger -->
+        <Style x:Key="EditButtonBalkenlageVisibilityStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyleListViewItem}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="AddButtonBalkenlageVisibilityStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyleListViewItem}">
+            <Setter Property="Visibility" Value="Visible"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="ViewBoxStyle" TargetType="{x:Type Viewbox}">
             <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
             <Setter Property="RenderTransform">
@@ -158,9 +176,20 @@
                                 <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
                                 <!-- TODO: Balken Lage INFOS hier...-->
                                 <StackPanel Orientation="Horizontal" Margin="48,0,0,0" Background="Transparent">
-                                    <Label x:Name="LabelBalkenlage" Content="Balkenlage: " FontSize="12" Foreground="{StaticResource PrimaryBorderBrush}" Padding="0,0,4,1"/>
-                                    <Button x:Name="AddButtonBalkenlage" Visibility="Visible" HorizontalAlignment="Left" Content="Hinzufügen +" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
-                                    <Button x:Name="InfoButtonBalkenlage" Visibility="Collapsed" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
+                                    <Label Name="LabelBalkenlage" Content="Balkenlage: " FontSize="12" Padding="0,0,4,1">
+                                        <Label.Style>
+                                            <Style TargetType="Label">
+                                                <Setter Property="Foreground" Value="{StaticResource PrimaryBorderBrush}"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
+                                                        <Setter Property="Foreground" Value="Black"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Label.Style>
+                                    </Label>
+                                    <Button x:Name="AddButtonBalkenlage" HorizontalAlignment="Left" Content="Hinzufügen +" Style="{StaticResource AddButtonBalkenlageVisibilityStyle}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
+                                    <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource EditButtonBalkenlageVisibilityStyle}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
                                 </StackPanel>
                                 
                             </StackPanel>
