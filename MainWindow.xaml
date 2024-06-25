@@ -382,32 +382,20 @@
     <Window.InputBindings>
         <KeyBinding
             Key="O"
-            Command="{Binding OpenFile}"
+            Command="{Binding OpenFileCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="F"
-            Command="{Binding OpenFolder}"
+            Command="{Binding OpenFileCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="Q"
-            Command="{Binding ProcessingService.AddToQueue}"
+            Command="{Binding OpenFileCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="O"
-            Command="{Binding ProcessingService.QueueFiles}"
+            Command="{Binding OpenFileCommand}"
             Modifiers="Control+Shift" />
-        <KeyBinding
-            Key="T"
-            Command="{Binding ProcessingService.QueueTitlesAction}"
-            Modifiers="Control" />
-        <KeyBinding
-            Key="W"
-            Command="{Binding CloseVideoSource}"
-            Modifiers="Control" />
-        <KeyBinding
-            Key="D"
-            Command="{Binding OutputPathService.PickOutputPath}"
-            Modifiers="Control" />
     </Window.InputBindings>
 
     <Border Name="RootGrid" Style="{StaticResource WindowMainPanelStyle}">

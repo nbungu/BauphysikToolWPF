@@ -15,16 +15,19 @@ namespace BauphysikToolWPF.UI.Drawing
         public double RectangleBorderThickness { get; set; } = 1.0;
         public double Opacity { get; set; } = 1.0;
         public int ZIndex { get; set; } = 0;
+        public object Tag { get; set; }
 
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
         {
-            if (drawingGeometry == null) return;
+            if (drawingGeometry is null) return;
             Rectangle = drawingGeometry.Rectangle;
             BackgroundColor = drawingGeometry.BackgroundColor;
             DrawingBrush = drawingGeometry.DrawingBrush;
             RectangleBorderColor = drawingGeometry.RectangleBorderColor;
             RectangleBorderThickness = drawingGeometry.RectangleBorderThickness;
             Opacity = drawingGeometry.Opacity;
+            ZIndex = drawingGeometry.ZIndex;
+            Tag = drawingGeometry.Tag;
         }
 
         public DrawingGeometry Copy()

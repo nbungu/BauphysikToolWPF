@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Models;
+﻿using System;
+using BauphysikToolWPF.Models;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -21,6 +22,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void SwitchPage(NavigationContent desiredPage)
         {
             MainWindow.SetPage(desiredPage);
+        }
+
+
+        [RelayCommand]
+        private void OpenFile(NavigationContent desiredPage)
+        {
+            throw new NotImplementedException();
         }
 
         /*

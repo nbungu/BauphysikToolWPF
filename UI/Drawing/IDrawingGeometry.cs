@@ -13,6 +13,7 @@ namespace BauphysikToolWPF.UI.Drawing
         Brush DrawingBrush { get; set; }
         double Opacity { get; set; }
         int ZIndex { get; set; }
+        object Tag { get; set; }
         IDrawingGeometry Convert();
         void UpdateGeometry();
     }

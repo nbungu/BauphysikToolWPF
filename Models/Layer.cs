@@ -4,6 +4,7 @@ using Geometry;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
+using System.Runtime.CompilerServices;
 using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models
@@ -11,7 +12,7 @@ namespace BauphysikToolWPF.Models
     /// <summary>
     /// Business logic of a Layer
     /// </summary>
-    public partial class Layer
+    public partial class Layer : IDrawingGeometry
     {
         //------Variablen-----//
 
@@ -67,10 +68,13 @@ namespace BauphysikToolWPF.Models
 
         // 1:1 relationship with LayerSubConstruction
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public LayerSubConstruction SubConstruction { get; set; } = new LayerSubConstruction();
+        public LayerSubConstruction? SubConstruction { get; set; }
 
         [Ignore]
-        public bool HasSubConstruction => SubConstruction.IsValid;
+        public bool HasSubConstruction => SubConstruction != null && SubConstruction.IsValid;
+
+        [Ignore]
+        public bool IsValid => LayerPosition >= 0 && Width > 0;
 
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 
@@ -174,6 +178,8 @@ namespace BauphysikToolWPF.Models
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
         public double Opacity { get; set; } = 1;
         public int ZIndex { get; set; } = 0;
+        public object Tag { get; set; }
+
         public IDrawingGeometry Convert()
         {
             return new DrawingGeometry(this);
@@ -181,7 +187,7 @@ namespace BauphysikToolWPF.Models
         public void UpdateGeometry()
         {
             var initWidth = this.Width; // cm
-            var initHeight = 100;             // cm
+            var initHeight = 100;       // cm
 
             Rectangle = new Rectangle(new Point(0, 0), initWidth, initHeight);
             BackgroundColor = new SolidColorBrush(this.Material.Color);

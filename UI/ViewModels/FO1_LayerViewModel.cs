@@ -146,12 +146,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             LayerList = new List<Layer>();
             LayerList = UserSaved.SelectedElement.Layers;
             SelectedLayerIndex = -1;
-            SelectedLayerIndex = UserSaved.SelectedLayer?.LayerPosition ?? -1;
+            SelectedLayerIndex = UserSaved.SelectedLayer.LayerPosition;
             SelectedElement = new Element();
             SelectedElement = UserSaved.SelectedElement;
+            DrawingGeometries = UserSaved.SelectedElement.GetLayerDrawings();
             MeasurementChain = new List<MeasurementChain>() { new MeasurementChain(UserSaved.SelectedElement.Layers) };
             MeasurementChainFull = new List<MeasurementChain>() { new MeasurementChain(new[] { 320.0 }, new[] { UserSaved.SelectedElement.ElementWidth }) };
-            DrawingGeometries = UserSaved.SelectedElement.GetLayerDrawings();
+
         }
 
         /*

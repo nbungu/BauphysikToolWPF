@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -30,9 +31,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             var subConstruction = new LayerSubConstruction()
             {
-                Width = Convert.ToDouble(Width),
-                Height = Convert.ToDouble(Height),
-                Spacing = Convert.ToDouble(Spacing),
+                Width = Convert.ToDouble(Width, CultureInfo.CurrentCulture),
+                Height = Convert.ToDouble(Height, CultureInfo.CurrentCulture),
+                Spacing = Convert.ToDouble(Spacing, CultureInfo.CurrentCulture),
                 MaterialId = selectedMaterial.Id,
                 Material = selectedMaterial,
             };
@@ -40,7 +41,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedLayer.SubConstruction = subConstruction;
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedElementChanged();
-        }
+         }
 
         [RelayCommand]
         private void SearchMaterial()
@@ -56,19 +57,19 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private MaterialCategory _selectedCategory = MaterialCategory.None;
+        private MaterialCategory _selectedCategory = UserSaved.SelectedLayer.SubConstruction?.Material.Category ?? MaterialCategory.None;
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string _width = "6";
+        private string _width = UserSaved.SelectedLayer.SubConstruction?.Width.ToString(CultureInfo.CurrentCulture) ?? "4,8";
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string _height = "6";
+        private string _height = UserSaved.SelectedLayer.SubConstruction?.Height.ToString(CultureInfo.CurrentCulture) ?? "2,4";
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string _spacing = "40";
+        private string _spacing = UserSaved.SelectedLayer.SubConstruction?.Spacing.ToString(CultureInfo.CurrentCulture) ?? "18";
 
         /*
         [ObservableProperty]

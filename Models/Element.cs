@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
@@ -111,9 +110,6 @@ namespace BauphysikToolWPF.Models
             }
             set => Tag = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
         }
-
-        [Ignore]
-        public bool IsSelectedElement => Id == UserSaved.SelectedElement.Id; // For UI Purposes
 
         // Encapsulate 'Image' variable for use in frontend
         [Ignore]

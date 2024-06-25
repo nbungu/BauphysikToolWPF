@@ -1,4 +1,4 @@
-﻿using System.Text.RegularExpressions;
+﻿using BauphysikToolWPF.Services;
 using System.Windows;
 using System.Windows.Input;
 
@@ -14,8 +14,7 @@ namespace BauphysikToolWPF.UI
 
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9.,]+"); //regex that matches disallowed text
-            e.Handled = regex.IsMatch(e.Text);
+            e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
         }
     }
 }

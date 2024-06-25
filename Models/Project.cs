@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Services;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.Models
 {

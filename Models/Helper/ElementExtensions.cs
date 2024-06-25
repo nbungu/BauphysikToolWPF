@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Windows.Documents;
-using BauphysikToolWPF.UI.Drawing;
+﻿using BauphysikToolWPF.UI.Drawing;
 using Geometry;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.Models.Helper
 {
@@ -54,7 +53,12 @@ namespace BauphysikToolWPF.Models.Helper
                 foreach (var l in element.Layers)
                 {
                     l.UpdateGeometry();
-                    if (l.HasSubConstruction) l.SubConstruction.UpdateGeometry();
+                    l.Tag = l.LayerPosition;
+                    if (l.HasSubConstruction)
+                    {
+                        l.SubConstruction.UpdateGeometry();
+                        l.Tag = l.LayerPosition;
+                    }
                 }
 
                 // Scaling to fit Canvas (cm to px conversion)
@@ -75,7 +79,7 @@ namespace BauphysikToolWPF.Models.Helper
                         var newHeightSubConstr = l.SubConstruction.Rectangle.Height * scFac;
 
                         l.SubConstruction.Rectangle = new Rectangle(new Point(), newWidthSubConstr, newHeightSubConstr);
-                        l.SubConstruction.DrawingBrush = HatchPattern.GetHatchPattern(l.Material.Category, 0.5, newWidthSubConstr, newHeightSubConstr);
+                        l.SubConstruction.DrawingBrush = HatchPattern.GetHatchPattern(l.SubConstruction.Material.Category, 0.5, newWidthSubConstr, newHeightSubConstr);
                     }
                 }
 

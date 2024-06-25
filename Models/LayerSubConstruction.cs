@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Services;
+﻿using System.Globalization;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.UI.Drawing;
 using Geometry;
 using SQLite;
@@ -16,7 +17,7 @@ namespace BauphysikToolWPF.Models
     /// <summary>
     /// Business logic of a LayerSubConstruction
     /// </summary>
-    public partial class LayerSubConstruction
+    public partial class LayerSubConstruction : IDrawingGeometry
     {
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; }
@@ -57,12 +58,18 @@ namespace BauphysikToolWPF.Models
         // 1:1 relationship with Material
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
-        
+
         //------Methods-----//
 
         public void UpdateTimestamp()
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+        }
+
+
+        public override string ToString() // Überlagert vererbte standard ToString() Methode 
+        {
+            return "B x H: " + Width.ToString(CultureInfo.CurrentCulture) + " x " + Height.ToString(CultureInfo.CurrentCulture) + " cm, " + "Abstand: " + Spacing.ToString(CultureInfo.CurrentCulture) + " cm, " + Material.Name;
         }
     }
 
@@ -80,6 +87,8 @@ namespace BauphysikToolWPF.Models
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
         public double Opacity { get; set; } = 1;
         public int ZIndex { get; set; } = 1;
+        public object Tag { get; set; }
+
         public IDrawingGeometry Convert()
         {
             return new DrawingGeometry(this);

@@ -92,7 +92,7 @@
                          StrokeThickness="1"
                          HorizontalAlignment="Center"
                          Margin="-8"/>
-                <Label Content="{Binding LayerPosition}" Margin="-8"/>
+                <Label Content="{Binding Tag}" Margin="-8"/>
             </Grid>
         </DataTemplate>
 
@@ -145,7 +145,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <Border x:Name="listView_Border"
+                        <Border x:Name="ListViewItemBorder"
                                 BorderBrush="{StaticResource PrimaryBorderBrush}"
                                 BorderThickness="0,0,0,1"
                                 Background="{TemplateBinding Background}"
@@ -157,13 +157,19 @@
                                 <!--GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->
                                 <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
                                 <!-- TODO: Balken Lage INFOS hier...-->
-                                <Button HorizontalAlignment="Left" Margin="48,0,0,0" Content="Balkenlage hinzufügen +" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
+                                <StackPanel Orientation="Horizontal" Margin="48,0,0,0" Background="Transparent">
+                                    <Label x:Name="LabelBalkenlage" Content="Balkenlage: " FontSize="12" Foreground="{StaticResource PrimaryBorderBrush}" Padding="0,0,4,1"/>
+                                    <Button x:Name="AddButtonBalkenlage" Visibility="Visible" HorizontalAlignment="Left" Content="Hinzufügen +" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
+                                    <Button x:Name="InfoButtonBalkenlage" Visibility="Collapsed" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
+                                </StackPanel>
+                                
                             </StackPanel>
                         </Border>
                         <ControlTemplate.Triggers>
                             <!--When a ListBox entry is Selected-->
                             <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="listView_Border" Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
+                                <Setter TargetName="ListViewItemBorder" Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
+                                <Setter TargetName="LabelBalkenlage" Property="Foreground" Value="White"/>
                                 <Setter Property="Foreground" Value="White"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -322,7 +328,7 @@
             </Grid>
 
             <!--Grid Splitter-->
-            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+            <GridSplitter Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
 
         </Grid>
 

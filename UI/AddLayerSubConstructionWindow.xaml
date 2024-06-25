@@ -101,9 +101,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*"/>
             <ColumnDefinition Width=".6*"/>
-            <ColumnDefinition Width=".2*"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
-
 
         <!--Left Column: Material Category-->
         <Grid Grid.Column="0" Margin="8" Grid.RowSpan="3">
@@ -122,6 +121,9 @@
                       Style="{StaticResource ListViewStyle01}"
                       Grid.Row="1"/>
         </Grid>
+
+        <!--Grid Splitter-->
+        <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" Margin="-4,8,0,8" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
 
         <!--Center Column: Material Selection-->
         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Margin="8">
@@ -182,12 +184,8 @@
                     <TextBox Text="{Binding Height}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
                     <Label Content="cm" FontWeight="SemiBold"/>
                 </StackPanel>
-
-
             </StackPanel>
-
         </Grid>
-
 
         <Grid Grid.Column="2" Grid.Row="2" Margin="8">
             <Button Content="Hinzufügen" Command="{Binding AddSubConstructionLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=MaterialListView}" Style="{StaticResource ButtonStyle04}"/>

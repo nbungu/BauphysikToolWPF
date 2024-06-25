@@ -1,12 +1,11 @@
-﻿using System;
+﻿using BauphysikToolWPF.Models;
+using Geometry;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using Geometry;
 using Point = System.Windows.Point;
 
 namespace BauphysikToolWPF.UI.Drawing
@@ -25,6 +24,7 @@ namespace BauphysikToolWPF.UI.Drawing
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
         public double Opacity { get; set; } = 1;
         public int ZIndex { get; set; }
+        public object Tag { get; set; }
 
         public MeasurementChain() {}
 
