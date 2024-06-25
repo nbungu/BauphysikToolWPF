@@ -90,6 +90,13 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
+        <!--populate the items of a ComboBox with all elements from an enum-->
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="ConstructionDirectionTypeValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:SubConstructionDirection"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
     </Window.Resources>
 
     <Grid Background="{StaticResource PrimaryLightBrush}" Margin="8">
@@ -165,7 +172,7 @@
 
             <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,0,8">
                 <Label Content="Ausrichtung" HorizontalAlignment="Left"/>
-                <ComboBox ItemsSource="{Binding ConstructionType_List}" SelectedItem="{Binding SelectedConstruction}"/>
+                <ComboBox ItemsSource="{Binding Source={StaticResource ConstructionDirectionTypeValues}}" SelectedItem="{Binding SelectedConstructionDirection}"/>
             </StackPanel>
 
             <StackPanel Grid.Row="2" Orientation="Vertical" >

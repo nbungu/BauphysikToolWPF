@@ -69,7 +69,7 @@ namespace BauphysikToolWPF.Models
 
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
-            return "B x H: " + Width.ToString(CultureInfo.CurrentCulture) + " x " + Height.ToString(CultureInfo.CurrentCulture) + " cm, " + "Abstand: " + Spacing.ToString(CultureInfo.CurrentCulture) + " cm, " + Material.Name;
+            return Width.ToString(CultureInfo.CurrentCulture) + " x " + Height.ToString(CultureInfo.CurrentCulture) + " cm " + Material.Name + ", Abstand: " + Spacing.ToString(CultureInfo.CurrentCulture) + " cm";
         }
     }
 

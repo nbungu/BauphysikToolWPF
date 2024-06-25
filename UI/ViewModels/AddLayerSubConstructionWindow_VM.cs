@@ -6,8 +6,6 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -25,7 +23,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [RelayCommand]
         private void AddSubConstructionLayer(Material? selectedMaterial)
-         {
+        {
             if (selectedMaterial is null) return;
             if (Width == "" || Convert.ToDouble(Width) <= 0) return;
             if (Height == "" || Convert.ToDouble(Height) <= 0) return;
@@ -43,12 +41,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedLayer.SubConstruction = subConstruction;
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedElementChanged();
-         }
+        }
 
         [RelayCommand]
         private void SearchMaterial()
         {
-            //TODO
+            throw new NotImplementedException();
+        }
+
+        [RelayCommand]
+        private void DeleteSubConstructionLayer()
+        {
+            throw new NotImplementedException();
         }
 
         /*
@@ -62,6 +66,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         private MaterialCategory _selectedCategory = UserSaved.SelectedLayer.SubConstruction?.Material.Category ?? MaterialCategory.None;
 
         [ObservableProperty]
+        private SubConstructionDirection _selectedConstructionDirection = UserSaved.SelectedLayer.SubConstruction?.SubConstructionDirection ?? SubConstructionDirection.Horizontal;
+
+        [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
         private string _width = UserSaved.SelectedLayer.SubConstruction?.Width.ToString(CultureInfo.CurrentCulture) ?? "4,8";
 
@@ -73,11 +80,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
         private string _spacing = UserSaved.SelectedLayer.SubConstruction?.Spacing.ToString(CultureInfo.CurrentCulture) ?? "18";
 
-        /*
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private string searchString = "";
-        */
+        private string _searchString = "";
+
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties

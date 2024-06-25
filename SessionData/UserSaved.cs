@@ -50,7 +50,7 @@ namespace BauphysikToolWPF.SessionData
         /// <summary>
         /// Zeigt auf das entsprechende Element aus dem aktuellen Projekt auf Basis der InternalID von 'SelectedElementId'
         /// </summary>
-        public static Element SelectedElement => SelectedProject.Elements.First(e => e.InternalId == SelectedElementId);
+        public static Element SelectedElement => SelectedProject.Elements.FirstOrDefault(e => e.InternalId == SelectedElementId, new Element());
 
         /// <summary>
         /// InternalID des ausgewählten Elements
@@ -70,7 +70,7 @@ namespace BauphysikToolWPF.SessionData
         /// <summary>
         /// Zeigt auf den entsprechenden Layer aus dem aktuellen Element auf Basis der LayerPosition von 'SelectedLayerPosition'
         /// </summary>
-        public static Layer SelectedLayer => SelectedElement.Layers.First(e => e.InternalId == SelectedLayerId);
+        public static Layer SelectedLayer => SelectedElement.Layers.FirstOrDefault(e => e.InternalId == SelectedLayerId, new Layer());
 
         // Unordered Collection. Key must be unique!
         private static readonly Dictionary<string, double> _userEnvVars = new Dictionary<string, double>(6)

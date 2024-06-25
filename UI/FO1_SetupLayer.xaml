@@ -189,7 +189,11 @@
                                         </Label.Style>
                                     </Label>
                                     <Button x:Name="AddButtonBalkenlage" HorizontalAlignment="Left" Content="Hinzufügen +" Style="{StaticResource AddButtonBalkenlageVisibilityStyle}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
-                                    <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource EditButtonBalkenlageVisibilityStyle}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                        <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource EditButtonBalkenlageVisibilityStyle}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
+                                        <Button x:Name="DeleteButtonBalkenlage" HorizontalAlignment="Left" Content="Entfernen" Style="{StaticResource EditButtonBalkenlageVisibilityStyle}" Command="{Binding DataContext.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}" Margin="8,0,0,0"/>
+                                    </StackPanel>
+                                    
                                 </StackPanel>
                                 
                             </StackPanel>
