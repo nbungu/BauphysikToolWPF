@@ -61,9 +61,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DeleteSubConstructionLayer()
+        private void DeleteSubConstructionLayer(int selectedLayerId)
         {
-            throw new NotImplementedException();
+            UserSaved.SelectedLayerId = selectedLayerId;
+            UserSaved.SelectedLayer.RemoveSubConstruction();
+
+            RefreshLayers();
+            RefreshXamlBindings();
         }
 
         [RelayCommand]

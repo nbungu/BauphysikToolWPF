@@ -74,19 +74,19 @@
         <Border Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20" Margin="0,0,8,0"/>
                     <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
                     <Label Content="{Binding SelectedElement.Construction.TypeName}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <!--
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                     -->
                 </StackPanel>
             </Grid>

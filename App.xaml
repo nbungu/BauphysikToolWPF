@@ -95,6 +95,8 @@
         <BitmapImage x:Key="ButtonIcon_Bookmark_B" UriSource="/Resources/Icons/bookmark.png"/>
         <BitmapImage x:Key="ButtonIcon_Tags_Bold_B" UriSource="/Resources/Icons/tags_bold.png"/>
         <BitmapImage x:Key="ButtonIcon_Comment_Bold_B" UriSource="/Resources/Icons/comment_bold.png"/>
+        <BitmapImage x:Key="ButtonIcon_Search_B" UriSource="/Resources/Icons/search.png"/>
+        <BitmapImage x:Key="ButtonIcon_Search_Bold_B" UriSource="/Resources/Icons/search_bold.png"/>
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
 
         <!--Custom TextBox for Subscript Text with Equation-->
@@ -291,7 +293,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBoxBase}">
-                        <Border BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" CornerRadius="2" BorderThickness="0,0,0,2">
+                        <Border BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" CornerRadius="4" BorderThickness="0,0,0,2">
                             <ScrollViewer Margin="0" x:Name="PART_ContentHost" />
                         </Border>
                     </ControlTemplate>
@@ -465,7 +467,7 @@
             </Setter>
         </Style>
 
-        <!--ListViewItem Button -->
+        <!-- Very Small ListViewItem Button -->
         <Style x:Key="ButtonStyleListViewItem" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Foreground" Value="Black"/>
@@ -496,7 +498,7 @@
             </Style.Resources>
         </Style>
 
-        <!--Custom Button02_A: full rounded corners, highlighted blue, click effects-->
+        <!--Custom Button02_A: Only Label, full rounded corners, highlighted blue, click effects-->
         <Style x:Key="ButtonStyle02_A" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
             <Setter Property="Foreground" Value="White"/>
@@ -527,7 +529,7 @@
             </Style.Resources>
         </Style>
 
-        <!--Custom Button02_B: full rounded corners, click effects-->
+        <!--Custom Button02_B: Only Label, full rounded corners, click effects-->
         <Style x:Key="ButtonStyle02_B" TargetType="{x:Type Button}">
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
@@ -556,10 +558,7 @@
             </Style.Resources>
         </Style>
 
-        <!--Custom Button03_A: with icon, highlighted, rounded corners, click effects
-        Icon gets passed by the 'Tag' Property: 
-        Tag: "Gets or sets an arbitrary object value that can be used to store custom information about this element."
-        -->        
+        <!--Custom Button03_A: Icon + Label, highlighted, rounded corners, click effects -->        
         <Style x:Key="ButtonStyle03_A" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value="Placeholder"/>
@@ -567,6 +566,7 @@
             <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="MinHeight" Value="32"/>
+            <!--Icon gets passed by the 'Tag' Property:-->
             <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -608,7 +608,7 @@
             </Style.Triggers>
         </Style>
 
-        <!--Custom Button03_B: with icon, rounded corners, click effects -->
+        <!--Custom Button03_B: Icon + Label, rounded corners, click effects -->
         <Style x:Key="ButtonStyle03_B" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value="Placeholder"/>
@@ -659,7 +659,7 @@
             </Style.Triggers>
         </Style>
 
-        <!--Custom Button03_B_Transparent: with icon, rounded corners, click effects, Transparent -->
+        <!--Custom Button03_B_Transparent: Icon + Label, Transparent, rounded corners -->
         <Style x:Key="ButtonStyle03_B_Transparent" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value="Placeholder"/>
@@ -757,8 +757,8 @@
             </Style.Triggers>
         </Style>
 
-        <!--Custom Button03_Mini: only icon, transparent, rounded corners, click effects -->
-        <Style x:Key="ButtonStyle03_Mini" TargetType="{x:Type Button}">
+        <!--Custom Button03_Mini: Only Icon, transparent, rounded corners, click effects -->
+        <Style x:Key="ButtonStyle03_IconMini" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value="Placeholder"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -766,8 +766,8 @@
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="MinWidth" Value="24"/>
             <Setter Property="MinHeight" Value="24"/>
-            <Setter Property="MaxWidth" Value="48"/>
-            <Setter Property="MaxHeight" Value="48"/>
+            <Setter Property="MaxWidth" Value="32"/>
+            <Setter Property="MaxHeight" Value="32"/>
             <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
@@ -776,10 +776,10 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border CornerRadius="8" Background="{TemplateBinding Background}">
+                        <Border CornerRadius="4" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="12" MinHeight="12" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
                             </StackPanel>
                         </Border>
                     </ControlTemplate>
@@ -808,7 +808,59 @@
             </Style.Triggers>
         </Style>
 
-        <!--Custom Button04: rounded corners, click effects, materialUI -->
+        <!--Custom Button03_Mini: Icon + Label, transparent, rounded corners, click effects -->
+        <Style x:Key="ButtonStyle03_Mini" TargetType="{x:Type Button}">
+            <!--Set default properties of the button-->
+            <Setter Property="Content" Value="Placeholder"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="MinWidth" Value="24"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="MaxHeight" Value="32"/>
+            <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border CornerRadius="4" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal">
+                                <!--Bind Image via DataContext Property in the Button Element-->
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" MinWidth="12" MinHeight="12" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8"/>
+                                <TextBlock Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Margin="2,2,8,2" FontSize="{TemplateBinding FontSize}"/>
+                            </StackPanel>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--Custom Button04: Only Label, rounded corners, click effects, materialUI -->
         <Style x:Key="ButtonStyle04" TargetType="{x:Type Button}">
             <Setter Property="SnapsToDevicePixels" Value="True"/>
             <Setter Property="Foreground" Value="Black"/>
@@ -817,7 +869,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
-                        <Border CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1">
+                        <Border CornerRadius="8" Background="{TemplateBinding Background}" BorderThickness="1">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
                     </ControlTemplate>

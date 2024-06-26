@@ -162,6 +162,12 @@ namespace BauphysikToolWPF.Models
         {
             return Width + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
         }
+
+        public void RemoveSubConstruction()
+        {
+            this.SubConstructionId = -1;
+            this.SubConstruction = null;
+        }
     }
 
     /// <summary>

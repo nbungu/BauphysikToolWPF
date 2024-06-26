@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -44,15 +45,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void SearchMaterial()
+        private void ResetMaterialList()
         {
-            throw new NotImplementedException();
-        }
-
-        [RelayCommand]
-        private void DeleteSubConstructionLayer()
-        {
-            throw new NotImplementedException();
+            SearchString = "";
         }
 
         /*
@@ -89,7 +84,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public List<Material> Materials => DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
+        public List<Material> Materials => SearchString != "" ? DatabaseAccess.QueryMaterialByCategory(SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
 
     }
 }

@@ -18,14 +18,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string Title => "EditElementWindow";
 
         /*
-         * Static Class Properties:
-         * If List<string> is null, then get List from Database. If List is already loaded, use existing List.
-         * To only load Propery once. Every other getter request then uses the static class variable.
-         */
-
-        public List<string> ConstructionType_List => DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList();
-
-        /*
          * MVVM Commands - UI Interaction with Commands
          * 
          * Update ONLY UI-Used Values by fetching from Database!
@@ -82,20 +74,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (window is null) return;
             // Avoid empty Input fields
 
-            Construction construction = DatabaseAccess.GetConstructions().Find(e => e.TypeName == SelectedConstruction);
-
-            if (UserSaved.SelectedElement != null)
-            {
-                UserSaved.SelectedElement.Name = SelectedElementName;
-                UserSaved.SelectedElement.ConstructionId = construction.ConstructionId;
-                UserSaved.SelectedElement.Construction = construction;
-                UserSaved.SelectedElement.OrientationType = SelectedOrientation;
-                UserSaved.SelectedElement.ProjectId = UserSaved.SelectedProject.Id;
-                UserSaved.SelectedElement.TagList = TagList;
-                UserSaved.SelectedElement.Comment = SelectedElementComment;
-                UserSaved.SelectedElement.ColorCode = SelectedElementColor;
-                UserSaved.SelectedElement.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            }
+            Construction construction = DatabaseAccess.GetConstructions().FirstOrDefault(e => e.TypeName == SelectedConstruction, new Construction());
+            
+            UserSaved.SelectedElement.Name = SelectedElementName;
+            UserSaved.SelectedElement.ConstructionId = construction.ConstructionId;
+            UserSaved.SelectedElement.Construction = construction;
+            UserSaved.SelectedElement.OrientationType = SelectedOrientation;
+            UserSaved.SelectedElement.ProjectId = UserSaved.SelectedProject.Id;
+            UserSaved.SelectedElement.TagList = TagList;
+            UserSaved.SelectedElement.Comment = SelectedElementComment;
+            UserSaved.SelectedElement.ColorCode = SelectedElementColor;
+            UserSaved.SelectedElement.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            
             UserSaved.OnSelectedElementChanged();
             window.Close();
         }
@@ -107,11 +97,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _selectedElementName = UserSaved.SelectedElement?.Name ?? "";
+        private string _selectedElementName = UserSaved.SelectedElement.Name;
         [ObservableProperty]
-        private string _selectedConstruction = UserSaved.SelectedElement?.Construction.TypeName ?? "";
+        private string _selectedConstruction = UserSaved.SelectedElement.Construction.TypeName;
         [ObservableProperty]
-        private OrientationType _selectedOrientation = UserSaved.SelectedElement?.OrientationType ?? OrientationType.Norden;
+        private OrientationType _selectedOrientation = UserSaved.SelectedElement.OrientationType;
         [ObservableProperty]
         private Visibility _tagBtnVisible = Visibility.Visible;
         [ObservableProperty]
@@ -119,14 +109,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private Visibility _enterBtnVisible = Visibility.Hidden;
         [ObservableProperty]
-        private List<string> _tagList = UserSaved.SelectedElement?.TagList ?? new List<string>();
+        private List<string> _tagList = UserSaved.SelectedElement.TagList;
         [ObservableProperty]
-        private string _selectedElementComment = UserSaved.SelectedElement?.Comment ?? "";
+        private string _selectedElementComment = UserSaved.SelectedElement.Comment;
         [ObservableProperty]
-        private string _selectedElementColor = UserSaved.SelectedElement?.ColorCode ?? "#00FFFFFF";
+        private string _selectedElementColor = UserSaved.SelectedElement.ColorCode;
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
+
+        public List<string> ConstructionTypeList => DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList();
     }
 }

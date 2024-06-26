@@ -129,6 +129,8 @@
     <None Remove="Resources\Icons\save_w.png" />
     <None Remove="Resources\Icons\schloss_zu.png" />
     <None Remove="Resources\Icons\schloss_zu_w.png" />
+    <None Remove="Resources\Icons\search.png" />
+    <None Remove="Resources\Icons\search_bold.png" />
     <None Remove="Resources\Icons\settings.png" />
     <None Remove="Resources\Icons\settings_Light_b.png" />
     <None Remove="Resources\Icons\settings_w.png" />
@@ -244,6 +246,8 @@
     <Resource Include="Resources\Icons\schloss_zu.png" />
     <Resource Include="Resources\Icons\schloss_zu_w.png" />
     <Resource Include="Resources\Icons\moisture_w.png" />
+    <Resource Include="Resources\Icons\search.png" />
+    <Resource Include="Resources\Icons\search_bold.png" />
     <Resource Include="Resources\Icons\settings.png" />
     <Resource Include="Resources\Icons\settings_Light_b.png" />
     <Resource Include="Resources\Icons\settings_w.png" />
