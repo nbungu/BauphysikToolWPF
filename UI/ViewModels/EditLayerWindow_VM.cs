@@ -60,7 +60,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 }
             }
             // Update Layer thickness
-            UserSaved.SelectedLayer.Width = Convert.ToDouble(Thickness, CultureInfo.CurrentCulture);
+            UserSaved.SelectedLayer.Thickness = Convert.ToDouble(Thickness, CultureInfo.CurrentCulture);
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedElementChanged();
             window.Close();
@@ -78,7 +78,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]
-        private string _thickness = UserSaved.SelectedLayer.Width.ToString(CultureInfo.CurrentCulture);
+        private string _thickness = UserSaved.SelectedLayer.Thickness.ToString(CultureInfo.CurrentCulture);
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsDataValid))]

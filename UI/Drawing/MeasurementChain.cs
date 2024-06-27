@@ -31,8 +31,8 @@ namespace BauphysikToolWPF.UI.Drawing
         public MeasurementChain(List<Layer> layers)
         {
             if (layers.Count == 0) return;
-            _intervals = layers.Select(l => l.Rectangle.Right).Distinct().ToArray();
-            _labels = layers.Select(l => l.Width).ToArray();
+            _intervals = layers.Select(l => l.Rectangle.Bottom).Distinct().ToArray();
+            _labels = layers.Select(l => l.Thickness).ToArray();
             DrawingBrush = GetMeasurementDrawing();
         }
 
@@ -44,19 +44,21 @@ namespace BauphysikToolWPF.UI.Drawing
             DrawingBrush = GetMeasurementDrawing();
         }
 
+        // Vertically!
+        // Top Left is Origin (0,0)
         private DrawingBrush GetMeasurementDrawing()
         {
             // Create a GeometryGroup to contain the lines
             var hatchContent = new GeometryGroup();
 
-            var baseline = new LineGeometry() { StartPoint = new Point(0, 0), EndPoint = new Point(_intervals.Last(), 0) };
+            var baseline = new LineGeometry() { StartPoint = new Point(0, 0), EndPoint = new Point(0, _intervals.Last()) };
             hatchContent.Children.Add(baseline);
 
             // Create Starting Tick Marker at 0
             var selectedInterval = 0.0;
-            var firstLineTickVertical = new LineGeometry() { StartPoint = new Point(selectedInterval, -12), EndPoint = new Point(selectedInterval, 6) };
-            var firstLineTick45 = new LineGeometry() { StartPoint = new Point(selectedInterval - 4, 4), EndPoint = new Point(selectedInterval + 4, -4) };
-            hatchContent.Children.Add(firstLineTickVertical);
+            var firstLineTickHorizontal = new LineGeometry() { StartPoint = new Point(-12, selectedInterval), EndPoint = new Point(6, selectedInterval) };
+            var firstLineTick45 = new LineGeometry() { StartPoint = new Point(4, selectedInterval - 4), EndPoint = new Point(-4, selectedInterval + 4) };
+            hatchContent.Children.Add(firstLineTickHorizontal);
             hatchContent.Children.Add(firstLineTick45);
             
             for (int i = 0; i < _intervals.Length; i++)
@@ -64,20 +66,20 @@ namespace BauphysikToolWPF.UI.Drawing
                 // Create the text drawing
                 var labelOrigin = (selectedInterval + _intervals[i]) / 2;
                 var formattedText = new FormattedText(_labels[i].ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 12, Brushes.DimGray, 1.0);
-                var textGeometry = formattedText.BuildGeometry(new Point(labelOrigin - formattedText.Width / 2, 8));
+                var textGeometry = formattedText.BuildGeometry(new Point(8, labelOrigin - formattedText.Height / 2));
                 hatchContent.Children.Add(textGeometry);
 
                 // Create Interval Tick Markers
-                var lineTickVertical = new LineGeometry() { StartPoint = new Point(_intervals[i], -12), EndPoint = new Point(_intervals[i], 6) };
-                var lineTick45 = new LineGeometry() { StartPoint = new Point(_intervals[i] - 4, 4), EndPoint = new Point(_intervals[i] + 4, -4) };
-                hatchContent.Children.Add(lineTickVertical);
+                var lineTickHorizontal = new LineGeometry() { StartPoint = new Point(-12, _intervals[i]), EndPoint = new Point(6, _intervals[i]) };
+                var lineTick45 = new LineGeometry() { StartPoint = new Point(4, _intervals[i] - 4), EndPoint = new Point(-4, _intervals[i] + 4) };
+                hatchContent.Children.Add(lineTickHorizontal);
                 hatchContent.Children.Add(lineTick45);
                 // update last used interval
                 selectedInterval = _intervals[i];
             }
 
             //Adjust Rectangle
-            Rectangle = new Rectangle(hatchContent.Bounds.Left, hatchContent.Bounds.Top, hatchContent.Bounds.Width, hatchContent.Bounds.Height).MoveTo(new Geometry.Point(-4,0));
+            Rectangle = new Rectangle(hatchContent.Bounds.Left, hatchContent.Bounds.Top, hatchContent.Bounds.Width, hatchContent.Bounds.Height).MoveTo(new Geometry.Point(0,-4));
 
             // Use the lines as the Drawing's content
             var brush = new DrawingBrush

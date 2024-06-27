@@ -35,7 +35,7 @@ namespace BauphysikToolWPF.Models
         public int SubConstructionId { get; set; }
 
         [NotNull]
-        public double Width { get; set; } // Layer thickness in cm
+        public double Thickness { get; set; } // Layer thickness in cm
 
         [NotNull]
         public int Effective { get; set; } // For Calculation Purposes - Whether a Layer is considered in the Calculations or not
@@ -74,7 +74,7 @@ namespace BauphysikToolWPF.Models
         public bool HasSubConstruction => SubConstruction != null && SubConstruction.IsValid;
 
         [Ignore]
-        public bool IsValid => LayerPosition >= 0 && Width > 0;
+        public bool IsValid => LayerPosition >= 0 && Thickness > 0;
 
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 
@@ -93,7 +93,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                return Math.Round((this.Width / 100) / Material.ThermalConductivity, 3);
+                return Math.Round((this.Thickness / 100) / Material.ThermalConductivity, 3);
             }
         }
 
@@ -103,7 +103,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid) return 0;
-                return Math.Round((this.Width / 100) * Material.DiffusionResistance, 3);
+                return Math.Round((this.Thickness / 100) * Material.DiffusionResistance, 3);
             }
         }
 
@@ -113,7 +113,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                return Math.Round(this.Width / 100 * Material.BulkDensity, 3);
+                return Math.Round(this.Thickness / 100 * Material.BulkDensity, 3);
             }
         }
 
@@ -144,7 +144,7 @@ namespace BauphysikToolWPF.Models
             copy.MaterialId = this.MaterialId;
             copy.Element = this.Element;
             copy.Material = this.Material;
-            copy.Width = this.Width;
+            copy.Thickness = this.Thickness;
             copy.Effective = this.Effective;
             copy.IsSelected = false;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
@@ -160,7 +160,7 @@ namespace BauphysikToolWPF.Models
         
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
-            return Width + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
+            return Thickness + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
         }
 
         public void RemoveSubConstruction()
@@ -192,8 +192,8 @@ namespace BauphysikToolWPF.Models
         }
         public void UpdateGeometry()
         {
-            var initWidth = this.Width; // cm
-            var initHeight = 100;       // cm
+            var initWidth = 100; // cm
+            var initHeight = this.Thickness; // cm
 
             Rectangle = new Rectangle(new Point(0, 0), initWidth, initHeight);
             BackgroundColor = new SolidColorBrush(this.Material.Color);

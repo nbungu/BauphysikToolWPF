@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -34,7 +35,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 //LayerId gets set by SQLite DB (AutoIncrement)
                 LayerPosition = layerCount,
                 InternalId = layerCount,
-                Width = Convert.ToDouble(Thickness),
+                Thickness = Convert.ToDouble(Thickness),
                 IsEffective = true,
                 MaterialId = selectedMaterial.Id,
                 Material = selectedMaterial,
@@ -48,9 +49,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void CreateMaterial()
+        private void ResetMaterialList()
         {
-            //TODO
+            SearchString = "";
         }
 
         /*
@@ -67,16 +68,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
         private string _thickness = "6";
 
-        /*
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private string searchString = "";
-        */
+        private string _searchString = "";
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public List<Material> Materials => DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
+        public List<Material> Materials => SearchString != "" ? DatabaseAccess.QueryMaterialByCategory(SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
     }
 }

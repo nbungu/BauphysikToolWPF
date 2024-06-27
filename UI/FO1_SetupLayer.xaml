@@ -45,6 +45,7 @@
             </Style.Triggers>
         </Style>
 
+        <!--
         <Style x:Key="ViewBoxStyle" TargetType="{x:Type Viewbox}">
             <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
             <Setter Property="RenderTransform">
@@ -63,6 +64,7 @@
                 </DataTrigger>
             </Style.Triggers>
         </Style>
+        -->
 
         <Style x:Key="LabelRotateStyle" TargetType="{x:Type Label}">
             <Setter Property="RenderTransform">
@@ -241,13 +243,14 @@
         </Border>
         
         <!--Content Area-->
-        <Grid Grid.Row="1" Margin="16">
+        <Grid Grid.Row="1" Margin="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height=".6*"/>
+                <RowDefinition Height=".4*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".65*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width=".8*"/>
+                <ColumnDefinition Width=".2*"/>
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
@@ -307,27 +310,28 @@
             </Grid>
 
             <!--Image-->
-            <Grid Grid.Row="0" Grid.Column="1" Margin="16">
+            <Grid Grid.Column="0" Grid.Row="1" Margin="16">
                 <!-- Elements inside of ViewBox are dynamically sizable-->
-                <Viewbox VerticalAlignment="Center" Style="{StaticResource ViewBoxStyle}" HorizontalAlignment="Center">
+                <Viewbox VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
                     <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
                     <Grid Margin="8">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="40"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
-                        <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
-                        <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
 
                         <!-- "Element Canvas" -->
                         <ItemsControl x:Name="ElementCanvas"
-                            Grid.Row="1"
-                            Width="320"
+                            Grid.Row="0"
+                            Grid.Column="0"
+                            Width="880"
                             Height="400"                                  
                             ItemsSource="{Binding DrawingGeometries}"
                             ItemsPanel="{StaticResource Canvas}"
@@ -336,29 +340,31 @@
 
                         <!-- "Horizontal Measurement Grid" -->
                         <ItemsControl x:Name="MeasurementGrid"
-                            Grid.Row="2"
-                            Width="{Binding ElementName=ElementCanvas, Path=Width}"
+                            Grid.Row="0"
+                            Grid.Column="1"
+                            Height="{Binding ElementName=ElementCanvas, Path=Height}"
                             ItemsSource="{Binding MeasurementChain}"
                             ItemsPanel="{StaticResource Canvas}"
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                             ItemTemplate="{StaticResource MeasurementItemStyle}"
-                            Margin="0,16,0,16"/>
+                            Margin="16,0,16,0"/>
 
                         <!-- "Horizontal Measurement Grid Full" -->
                         <ItemsControl x:Name="MeasurementGridFull"
-                              Grid.Row="3"
-                              Width="{Binding ElementName=ElementCanvas, Path=Width}"
+                              Grid.Row="0"
+                              Grid.Column="2"
+                              Height="{Binding ElementName=ElementCanvas, Path=Height}"
                               ItemsSource="{Binding MeasurementChainFull}"
                               ItemsPanel="{StaticResource Canvas}"
                               ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                               ItemTemplate="{StaticResource MeasurementItemStyle}"
-                              Margin="0,16,0,16"/>
+                              Margin="16,0,16,0"/>
                     </Grid>
                 </Viewbox>
             </Grid>
 
             <!--Grid Splitter-->
-            <GridSplitter Grid.Column="1" Grid.Row="0" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
 
         </Grid>
 

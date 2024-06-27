@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Media;
 using BauphysikToolWPF.Models;
+using SkiaSharp;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
@@ -17,6 +18,8 @@ namespace BauphysikToolWPF.UI.Drawing
 
         public static DrawingBrush GetHatchPattern(MaterialCategory category, double lineThickness, double rectWidth, double rectHeight)
         {
+            if (rectWidth <= 0 || rectHeight <= 0) return new DrawingBrush();
+            
             // return corresp. class variable if already set, otherwise draw new Brush
             switch (category)
             {
@@ -103,24 +106,27 @@ namespace BauphysikToolWPF.UI.Drawing
         }
 
         // Brush for Dichtstoffe
-        private static DrawingBrush GetSealantBrush()
+        private static DrawingBrush GetSealantBrush(bool drawHorizontally = true)
         {
             // Create a GeometryGroup to contain the hatch lines
             GeometryGroup hatchContent = new GeometryGroup();
 
             // Create Rectangle in a 16x40 Tile (0.5* total height of the brush (16x80))
             // Base BG-Color is black. Top Half of brush will be this Rectangle colored in white
-            RectangleGeometry rect = new RectangleGeometry() { Rect = new Rect(0, 0, 16, 40) };
-            hatchContent.Children.Add(rect);
+            if (drawHorizontally) hatchContent.Children.Add(new RectangleGeometry() { Rect = new Rect(0, 0, 40, 16) });
+            else hatchContent.Children.Add(new RectangleGeometry() { Rect = new Rect(0, 0, 16, 40) });
+
+            //RectangleGeometry rect = new RectangleGeometry() { Rect = new Rect(0, 0, 16, 40) };
+            //hatchContent.Children.Add(rect);
 
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush()
             {
                 Drawing = new GeometryDrawing(new SolidColorBrush(Colors.White), new Pen(), hatchContent),
                 TileMode = TileMode.Tile,
-                Viewport = new Rect(0, 0, 16, 80),
+                Viewport = drawHorizontally ? new Rect(0, 0, 80, 16) : new Rect(0, 0, 16, 80),
                 ViewportUnits = BrushMappingMode.Absolute,
-                Viewbox = new Rect(0, 0, 16, 80),
+                Viewbox = drawHorizontally ? new Rect(0, 0, 80, 16) : new Rect(0, 0, 16, 80),
                 ViewboxUnits = BrushMappingMode.Absolute
             };
             return brush;
@@ -149,9 +155,11 @@ namespace BauphysikToolWPF.UI.Drawing
         }
 
         //Brush for Wärmedämmung
+        // Horizontally
         private static DrawingBrush GetInsulationBrush(double rectWidth, double rectHeight, double lineThickness)
         {
-            double w_h_ratio = rectWidth / rectHeight;
+            bool isVertical = rectHeight > rectWidth;
+            double w_h_ratio = isVertical ? (rectWidth / rectHeight) : (rectHeight / rectWidth);
 
             //Imaginary 60x60 Rectangle
             double arcRad = 10;
@@ -163,7 +171,7 @@ namespace BauphysikToolWPF.UI.Drawing
             PathFigure pathFigure = new PathFigure();
             pathFigure.StartPoint = new Point(0, 0); // Startpoint of the segment series
 
-            int iMax = Convert.ToInt32(-20 * w_h_ratio + 20); //increase the number of loops for narrow rectangles; decrease for broader ones
+            int iMax = Math.Max(4, Convert.ToInt32(-20 * w_h_ratio + 25)); //increase the number of loops for narrow rectangles; decrease for broader ones
             for (int i = 0; i < iMax; i++)
             {
                 currentY_Left += arcRad;
@@ -211,8 +219,16 @@ namespace BauphysikToolWPF.UI.Drawing
             GeometryGroup hatchContent = new GeometryGroup();
             hatchContent.Children.Add(pathGeometry);
 
+            if (!isVertical)
+            {
+                var grp = new TransformGroup();
+                grp.Children.Add(new RotateTransform(90));
+                grp.Children.Add(new TranslateTransform(hatchContent.Bounds.Height, 0));
+                hatchContent.Transform = grp;
+            }
+
             // Use the hatch lines as the Drawing's content
-            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.Black, lineThickness), hatchContent) };
+            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.DimGray, lineThickness), hatchContent) };
 
             return brush;
         }

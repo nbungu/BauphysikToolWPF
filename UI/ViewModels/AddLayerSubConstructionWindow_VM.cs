@@ -27,13 +27,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (selectedMaterial is null) return;
             if (Width == "" || Convert.ToDouble(Width) <= 0) return;
-            if (Height == "" || Convert.ToDouble(Height) <= 0) return;
+            if (Thickness == "" || Convert.ToDouble(Thickness) <= 0) return;
             if (Spacing == "" || Convert.ToDouble(Spacing) <= 0) return;
 
             var subConstruction = new LayerSubConstruction()
             {
                 Width = Convert.ToDouble(Width, CultureInfo.CurrentCulture),
-                Height = Convert.ToDouble(Height, CultureInfo.CurrentCulture),
+                Thickness = Convert.ToDouble(Thickness, CultureInfo.CurrentCulture),
                 Spacing = Convert.ToDouble(Spacing, CultureInfo.CurrentCulture),
                 MaterialId = selectedMaterial.Id,
                 Material = selectedMaterial,
@@ -69,7 +69,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string _height = UserSaved.SelectedLayer.SubConstruction?.Height.ToString(CultureInfo.CurrentCulture) ?? "2,4";
+        private string _thickness = UserSaved.SelectedLayer.SubConstruction?.Thickness.ToString(CultureInfo.CurrentCulture) ?? "2,4";
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]

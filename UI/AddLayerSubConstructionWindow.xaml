@@ -173,8 +173,8 @@
 
             <StackPanel Grid.Row="2" Orientation="Vertical" >
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                    <Label Content="Abstand: " HorizontalAlignment="Left"/>
-                    <TextBox Text="{Binding Spacing}" MaxLength="5" Width="32" PreviewTextInput="numericData_PreviewTextInput"/>
+                    <Label Content="Dicke: " HorizontalAlignment="Left"/>
+                    <TextBox Text="{Binding Thickness}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
                     <Label Content="cm" FontWeight="SemiBold"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
@@ -183,8 +183,8 @@
                     <Label Content="cm" FontWeight="SemiBold"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                    <Label Content="Höhe: " HorizontalAlignment="Left"/>
-                    <TextBox Text="{Binding Height}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
+                    <Label Content="Abstand: " HorizontalAlignment="Left"/>
+                    <TextBox Text="{Binding Spacing}" MaxLength="5" Width="32" PreviewTextInput="numericData_PreviewTextInput"/>
                     <Label Content="cm" FontWeight="SemiBold"/>
                 </StackPanel>
             </StackPanel>

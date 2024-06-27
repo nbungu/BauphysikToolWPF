@@ -162,7 +162,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedElement = UserSaved.SelectedElement;
             DrawingGeometries = UserSaved.SelectedElement.GetLayerDrawings();
             MeasurementChain = new List<MeasurementChain>() { new MeasurementChain(UserSaved.SelectedElement.Layers) };
-            MeasurementChainFull = new List<MeasurementChain>() { new MeasurementChain(new[] { 320.0 }, new[] { UserSaved.SelectedElement.ElementWidth }) };
+            MeasurementChainFull = UserSaved.SelectedElement.Layers.Count > 1 ? new List<MeasurementChain>() { new MeasurementChain(new[] { 400.0 }, new[] { UserSaved.SelectedElement.ElementWidth }) } : new List<MeasurementChain>();
 
         }
 
@@ -190,7 +190,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         [ObservableProperty]
-        private List<MeasurementChain> _measurementChainFull = new List<MeasurementChain>() { new MeasurementChain(new []{320.0}, new []{UserSaved.SelectedElement.ElementWidth}) };
+        private List<MeasurementChain> _measurementChainFull = UserSaved.SelectedElement.Layers.Count > 1 ? new List<MeasurementChain>() { new MeasurementChain(new []{400.0}, new []{UserSaved.SelectedElement.ElementWidth}) } : new List<MeasurementChain>();
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties

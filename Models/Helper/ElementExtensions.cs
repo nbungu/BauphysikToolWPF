@@ -44,7 +44,7 @@ namespace BauphysikToolWPF.Models.Helper
 
         #region Drawing Stuff
 
-        public static List<DrawingGeometry> GetLayerDrawings(this Element element, double canvasWidth = 320, double canvasHeight = 400)
+        public static List<DrawingGeometry> GetLayerDrawings(this Element element, double canvasWidth = 880, double canvasHeight = 400)
         {
             var layerDrawings = new List<DrawingGeometry>();
             if (element.Layers.Count != 0)
@@ -64,19 +64,19 @@ namespace BauphysikToolWPF.Models.Helper
                 // Scaling to fit Canvas (cm to px conversion)
                 foreach (var l in element.Layers)
                 {
-                    var relativeLayerWidth = l.Rectangle.Width / element.ElementWidth;
-                    var newWidth = canvasWidth * relativeLayerWidth;
-                    l.Rectangle = new Rectangle(new Point(), newWidth, canvasHeight);
-                    l.DrawingBrush = HatchPattern.GetHatchPattern(l.Material.Category, 0.5, newWidth, canvasHeight);
+                    var relativeLayerHeight = l.Rectangle.Height / element.ElementWidth;
+                    var newHeight = canvasHeight * relativeLayerHeight;
+                    l.Rectangle = new Rectangle(new Point(), canvasWidth, newHeight);
+                    l.DrawingBrush = HatchPattern.GetHatchPattern(l.Material.Category, 0.5, canvasWidth, newHeight);
 
                     // SubConstruction
                     if (l.HasSubConstruction)
                     {
-                        var relativeLayerSubConstrWidth = l.SubConstruction.Rectangle.Width / element.ElementWidth;
-                        var newWidthSubConstr = canvasWidth * relativeLayerSubConstrWidth;
+                        var relativeLayerSubConstrHeight = l.SubConstruction.Rectangle.Height / element.ElementWidth;
+                        var newHeightSubConstr = canvasHeight * relativeLayerSubConstrHeight;
 
-                        var scFac = newWidthSubConstr / l.SubConstruction.Rectangle.Width;
-                        var newHeightSubConstr = l.SubConstruction.Rectangle.Height * scFac;
+                        var scFac = newHeightSubConstr / l.SubConstruction.Rectangle.Height;
+                        var newWidthSubConstr = l.SubConstruction.Rectangle.Width * scFac;
 
                         l.SubConstruction.Rectangle = new Rectangle(new Point(), newWidthSubConstr, newHeightSubConstr);
                         l.SubConstruction.DrawingBrush = HatchPattern.GetHatchPattern(l.SubConstruction.Material.Category, 0.5, newWidthSubConstr, newHeightSubConstr);
@@ -92,7 +92,7 @@ namespace BauphysikToolWPF.Models.Helper
                     // SubConstruction
                     if (l.HasSubConstruction) l.SubConstruction.Rectangle = l.SubConstruction.Rectangle.MoveTo(ptStart);
                     // Update Origin
-                    ptStart = l.Rectangle.TopRight;
+                    ptStart = l.Rectangle.BottomLeft;
                     // Add to List
                     layerDrawings.Add((DrawingGeometry)l.Convert());
                     if (l.HasSubConstruction) layerDrawings.Add((DrawingGeometry)l.SubConstruction.Convert());

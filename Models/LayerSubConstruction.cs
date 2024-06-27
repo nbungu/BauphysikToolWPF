@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public double Width { get; set; } // cm
         [NotNull]
-        public double Height { get; set; } // cm
+        public double Thickness { get; set; } // cm
         [NotNull]
         public double Spacing { get; set; } // cm von Achse zu Achse
         [NotNull]
@@ -45,7 +45,7 @@ namespace BauphysikToolWPF.Models
         [Ignore]
         public int InternalId { get; set; }
         [Ignore]
-        public bool IsValid => Width > 0 && Height > 0 && Spacing > 0;
+        public bool IsValid => Width > 0 && Thickness > 0 && Spacing > 0;
         [Ignore]
         public double InnerSpacing => Spacing - Width;
         [Ignore]
@@ -69,7 +69,7 @@ namespace BauphysikToolWPF.Models
 
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
-            return Width.ToString(CultureInfo.CurrentCulture) + " x " + Height.ToString(CultureInfo.CurrentCulture) + " cm " + Material.Name + ", Abstand: " + Spacing.ToString(CultureInfo.CurrentCulture) + " cm";
+            return Width.ToString(CultureInfo.CurrentCulture) + " x " + Thickness.ToString(CultureInfo.CurrentCulture) + " cm " + Material.Name + ", Abstand: " + Spacing.ToString(CultureInfo.CurrentCulture) + " cm";
         }
     }
 
@@ -95,9 +95,9 @@ namespace BauphysikToolWPF.Models
         }
         public void UpdateGeometry()
         {
-            Rectangle = new Rectangle(new Point(0, 0), this.Width, this.Height);
+            Rectangle = new Rectangle(new Point(0, 0), this.Width, this.Thickness);
             BackgroundColor = new SolidColorBrush(this.Material.Color);
-            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, this.Width, this.Height);
+            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, this.Width, this.Thickness);
             RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
         }

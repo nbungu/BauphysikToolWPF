@@ -145,7 +145,7 @@ namespace BauphysikToolWPF.Models
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    val += layer.Width;
+                    val += layer.Thickness;
                 }
                 return Math.Round(val, 2);
             }
@@ -206,7 +206,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 double fullWidth = 0;
-                Layers.ForEach(l => fullWidth += l.Width);
+                Layers.ForEach(l => fullWidth += l.Thickness);
                 return fullWidth;
             }
         }
