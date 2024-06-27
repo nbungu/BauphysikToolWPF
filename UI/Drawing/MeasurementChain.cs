@@ -98,5 +98,10 @@ namespace BauphysikToolWPF.UI.Drawing
         {
             throw new NotImplementedException();
         }
+
+        public List<DrawingGeometry> GetLayerMeasurementChain(List<Layer> layers)
+        {
+
+        }
     }
 }

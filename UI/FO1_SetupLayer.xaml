@@ -309,6 +309,10 @@
                 </ListView>
             </Grid>
 
+            <!-- GridSplitter - Horizontal
+            <GridSplitter Grid.Row="1" Grid.Column="0" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyle}" />
+            -->
+
             <!--Image-->
             <Grid Grid.Column="0" Grid.Row="1" Margin="16">
                 <!-- Elements inside of ViewBox are dynamically sizable-->
@@ -364,7 +368,7 @@
             </Grid>
 
             <!--Grid Splitter-->
-            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="0,16,0,16"/>
 
         </Grid>
 

@@ -163,7 +163,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             DrawingGeometries = UserSaved.SelectedElement.GetLayerDrawings();
             MeasurementChain = new List<MeasurementChain>() { new MeasurementChain(UserSaved.SelectedElement.Layers) };
             MeasurementChainFull = UserSaved.SelectedElement.Layers.Count > 1 ? new List<MeasurementChain>() { new MeasurementChain(new[] { 400.0 }, new[] { UserSaved.SelectedElement.ElementWidth }) } : new List<MeasurementChain>();
-
         }
 
         /*

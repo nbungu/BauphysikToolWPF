@@ -468,6 +468,27 @@
             </Setter>
         </Style>
 
+        <!-- Grid Splitter -->
+        <Style x:Key="GridSplitterStyleDotted" TargetType="GridSplitter">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="GridSplitter">
+                        <Border Background="Transparent">
+                            <Rectangle Width="{TemplateBinding Width}" Height="{TemplateBinding Height}">
+                                <Rectangle.Fill>
+                                    <VisualBrush TileMode="Tile" Viewport="0,0,4,4" ViewportUnits="Absolute" Viewbox="0,0,4,4" ViewboxUnits="Absolute">
+                                        <VisualBrush.Visual>
+                                            <Ellipse Fill="{StaticResource PrimaryBorderBrush}" Width="2" Height="2"/>
+                                        </VisualBrush.Visual>
+                                    </VisualBrush>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
         <!-- Very Small ListViewItem Button -->
         <Style x:Key="ButtonStyleListViewItem" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
