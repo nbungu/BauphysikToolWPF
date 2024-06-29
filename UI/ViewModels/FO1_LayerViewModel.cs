@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using BauphysikToolWPF.UI.Drawing;
 using System;
+using BauphysikToolWPF.UI.CustomControls;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -192,6 +193,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         [ObservableProperty]
         private List<MeasurementChain> _measurementChainFull = UserSaved.SelectedElement.Layers.Count > 1 ? new MeasurementChain(new []{400.0}, new[]{UserSaved.SelectedElement.ElementWidth}).ToList() : new List<MeasurementChain>();
+
+        [ObservableProperty]
+        private List<PropertyItem> _properties = new List<PropertyItem>
+        {
+            new PropertyItem { PropertyName = "Property1", PropertyValue = "Value1" },
+            new PropertyItem { PropertyName = "Property2", PropertyValue = "Value2", PropertyValues = new string[] { "Value2", "Value3", "Value4" } },
+            new PropertyItem { PropertyName = "Property3", PropertyValue = "Value3" },
+            new PropertyItem { PropertyName = "Property4", PropertyValue = "Value4", PropertyValues = new string[] { "Value2", "Value3", "Value4" } }
+        };
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties

@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 
-namespace BauphysikToolWPF.UI.Drawing
+namespace BauphysikToolWPF.UI.CustomControls
 {
     public class OverviewItem
     {

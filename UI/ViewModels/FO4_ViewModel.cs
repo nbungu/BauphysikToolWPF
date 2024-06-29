@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Calculations;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -11,9 +12,6 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.UI.Drawing;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
