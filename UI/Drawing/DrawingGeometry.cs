@@ -1,10 +1,12 @@
-﻿using System.Windows.Media;
+﻿using System.Collections.Generic;
+using System.Windows.Media;
 using Geometry;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
     public class DrawingGeometry : IDrawingGeometry
     {
+       
         // Rectangle on 2D Canvas. Drawing Origin (0,0) is top left corner.
         public Rectangle Rectangle { get; set; } = Rectangle.Empty; // in [px]
 
@@ -30,6 +32,8 @@ namespace BauphysikToolWPF.UI.Drawing
             Tag = drawingGeometry.Tag;
         }
 
+        public DrawingGeometry() { }
+
         public DrawingGeometry Copy()
         {
             return new DrawingGeometry(this);
@@ -43,6 +47,12 @@ namespace BauphysikToolWPF.UI.Drawing
         public void UpdateGeometry()
         {
             throw new System.NotImplementedException();
+        }
+
+        // For use as single collection Type in XAML Items Source of Canvas
+        public List<DrawingGeometry> ToList()
+        {
+            return new List<DrawingGeometry>() { new DrawingGeometry(this) };
         }
     }
 }

@@ -14,9 +14,8 @@ namespace BauphysikToolWPF.UI.Drawing
     {
         // All in [px]
         // Origin is TopLeft (0,0)
-        private readonly double[] _intervals = Array.Empty<double>();
-        private readonly double[] _labels = Array.Empty<double>();
-
+        private double[] _intervals = Array.Empty<double>();
+        private double[] _labels = Array.Empty<double>();
         public Rectangle Rectangle { get; set; } = Rectangle.Empty;
         public Brush RectangleBorderColor { get; set; } = Brushes.Transparent;
         public double RectangleBorderThickness { get; set; } = 0;
@@ -93,15 +92,15 @@ namespace BauphysikToolWPF.UI.Drawing
         {
             return new DrawingGeometry(this);
         }
-
         public void UpdateGeometry()
         {
             throw new NotImplementedException();
         }
 
-        public List<DrawingGeometry> GetLayerMeasurementChain(List<Layer> layers)
+        // For use as single collection Type in XAML Items Source of Canvas
+        public List<MeasurementChain> ToList()
         {
-
+            return new List<MeasurementChain>() { this };
         }
     }
 }

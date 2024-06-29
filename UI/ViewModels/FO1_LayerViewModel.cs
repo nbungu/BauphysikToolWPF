@@ -12,6 +12,8 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for FO1_SetupLayer.xaml: Used in xaml as "DataContext"
     public partial class FO1_LayerViewModel : ObservableObject
     {
+        private MeasurementChain _measurementDrawer = new MeasurementChain();
+        
         public FO1_LayerViewModel()
         {
             // Subscribe to Event and Handle
@@ -161,8 +163,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedElement = new Element();
             SelectedElement = UserSaved.SelectedElement;
             DrawingGeometries = UserSaved.SelectedElement.GetLayerDrawings();
-            MeasurementChain = new List<MeasurementChain>() { new MeasurementChain(UserSaved.SelectedElement.Layers) };
-            MeasurementChainFull = UserSaved.SelectedElement.Layers.Count > 1 ? new List<MeasurementChain>() { new MeasurementChain(new[] { 400.0 }, new[] { UserSaved.SelectedElement.ElementWidth }) } : new List<MeasurementChain>();
+            MeasurementChain = new MeasurementChain(UserSaved.SelectedElement.Layers).ToList();
+            MeasurementChainFull = UserSaved.SelectedElement.Layers.Count > 1 ? new MeasurementChain(new[] { 400.0 }, new[] { UserSaved.SelectedElement.ElementWidth }).ToList() : new List<MeasurementChain>();
         }
 
         /*
@@ -185,11 +187,11 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         [ObservableProperty]
-        private List<MeasurementChain> _measurementChain = new List<MeasurementChain>(){ new MeasurementChain(UserSaved.SelectedElement.Layers) };
+        private List<MeasurementChain> _measurementChain = new MeasurementChain(UserSaved.SelectedElement.Layers).ToList();
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         [ObservableProperty]
-        private List<MeasurementChain> _measurementChainFull = UserSaved.SelectedElement.Layers.Count > 1 ? new List<MeasurementChain>() { new MeasurementChain(new []{400.0}, new []{UserSaved.SelectedElement.ElementWidth}) } : new List<MeasurementChain>();
+        private List<MeasurementChain> _measurementChainFull = UserSaved.SelectedElement.Layers.Count > 1 ? new MeasurementChain(new []{400.0}, new[]{UserSaved.SelectedElement.ElementWidth}).ToList() : new List<MeasurementChain>();
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties

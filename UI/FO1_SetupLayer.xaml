@@ -7,7 +7,9 @@
             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
             mc:Ignorable="d"
-            d:DesignHeight="700" d:DesignWidth="1200" IsVisibleChanged="UserControl_IsVisibleChanged">
+            d:DesignHeight="700"
+            d:DesignWidth="1200"
+            IsVisibleChanged="UserControl_IsVisibleChanged">
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
@@ -41,44 +43,6 @@
             <Style.Triggers>
                 <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
                     <Setter Property="Visibility" Value="Collapsed"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <!--
-        <Style x:Key="ViewBoxStyle" TargetType="{x:Type Viewbox}">
-            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <RotateTransform Angle="0"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedElement.Construction.IsLayoutVertical}" Value="false">
-                    <Setter Property="Margin" Value="80,0,80,0"/>
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <RotateTransform Angle="270"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        -->
-
-        <Style x:Key="LabelRotateStyle" TargetType="{x:Type Label}">
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <RotateTransform Angle="0"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedElement.Construction.IsLayoutVertical}" Value="false">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <RotateTransform Angle="90"/>
-                        </Setter.Value>
-                    </Setter>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -249,8 +213,8 @@
                 <RowDefinition Height=".4*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".8*"/>
-                <ColumnDefinition Width=".2*"/>
+                <ColumnDefinition Width=".8*" MinWidth="320"/>
+                <ColumnDefinition Width=".2*" MinWidth="160"/>
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
@@ -295,6 +259,11 @@
                                 </MenuItem.Icon>
                             </MenuItem>
                             <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Balkenlage hinzufügen" Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
                                 </MenuItem.Icon>
