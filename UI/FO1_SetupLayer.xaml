@@ -107,13 +107,12 @@
                 </GridViewColumn.CellTemplate>
             </GridViewColumn>
             <GridViewColumn DisplayMemberBinding="{Binding Material.Name}" Header="Material" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Width}" Header="d [cm]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding Thickness}" Header="d [cm]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Material.ThermalConductivity}" Header="λ [W/(mK)]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Material.BulkDensity}" Header="ρ [kg/m³]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="R [m²K/W]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Sd_Thickness}" Header="sd [m]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding AreaMassDensity}" Header="m' [kg/m²]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding IsEffective}" Header="Wirksam" Width="Auto"/>
         </GridView>
         
         <!-- Custom Layer ListViewItem appearance. Style of the Row Container -->
@@ -213,8 +212,8 @@
                 <RowDefinition Height=".4*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".8*" MinWidth="320"/>
-                <ColumnDefinition Width=".2*" MinWidth="160"/>
+                <ColumnDefinition Width=".7*" MinWidth="320"/>
+                <ColumnDefinition Width=".3*" MinWidth="160"/>
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
@@ -337,52 +336,24 @@
             </Grid>
 
             <!--Grid Splitter-->
-            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="0,16,0,16"/>
+            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
 
-            <DataGrid Grid.Row="0" Grid.Column="1" Name="PropertiesDataGrid"
-                Margin="16"
-                ItemsSource="{Binding Properties}"
-                Style="{StaticResource DataGridStyle}"
-                RowStyle="{StaticResource DataGridRowStyle}"
-                CellStyle="{StaticResource DataGridCellStyle}"
-                ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}">
+            <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <DataGrid.Columns>
-                    <!-- Left Column -->
-                    <DataGridTemplateColumn Width=".4*" IsReadOnly="True" MinWidth="80">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <Label Content="{Binding PropertyName}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                    <!-- Right Column with DataTemplate -->
-                    <DataGridTemplateColumn Width=".6*" IsReadOnly="False"  MinWidth="120">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <ContentControl Content="{Binding}">
-                                    <ContentControl.ContentTemplateSelector>
-                                        <controls:PropertyValueTemplateSelector>
-                                            <controls:PropertyValueTemplateSelector.TextBoxTemplate>
-                                                <DataTemplate>
-                                                    <TextBox Text="{Binding PropertyValue}" Style="{StaticResource DataGridTextBox}"/>
-                                                </DataTemplate>
-                                            </controls:PropertyValueTemplateSelector.TextBoxTemplate>
-                                            <controls:PropertyValueTemplateSelector.ComboBoxTemplate>
-                                                <DataTemplate>
-                                                    <ComboBox IsEditable="True" SelectedValue="{Binding PropertyValue}"
-                                      ItemsSource="{Binding PropertyValues}"
-                                      Style="{StaticResource DataGridComboBox}"/>
-                                                </DataTemplate>
-                                            </controls:PropertyValueTemplateSelector.ComboBoxTemplate>
-                                        </controls:PropertyValueTemplateSelector>
-                                    </ContentControl.ContentTemplateSelector>
-                                </ContentControl>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                <Label Grid.Row="0" Content="Gewählte Schicht" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
+                <controls:PropertyDataGrid Grid.Row="1" Properties="{Binding LayerProperties}"/>
+
+                <Label Grid.Row="2" Content="Bauteildaten" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
+                <controls:PropertyDataGrid Grid.Row="3" Properties="{Binding ElementProperties}"/>
+                
+            </Grid>
+           
 
         </Grid>
 

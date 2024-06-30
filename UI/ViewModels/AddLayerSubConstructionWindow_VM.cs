@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Windows.Foundation;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -83,6 +84,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
+
+        public List<PropertyItem> LayerSubConstrProperties => new List<PropertyItem>
+        {
+            new PropertyItem("Ausrichtung", SubConstructionDirection.Horizontal.ToString(), (string[])Enum.GetNames(typeof(SubConstructionDirection)) ),
+            new PropertyItem(Symbol.Width, Width),
+            new PropertyItem(Symbol.Thickness, Thickness),
+            new PropertyItem(Symbol.Length, Spacing),
+        };
 
         public List<Material> Materials => SearchString != "" ? DatabaseAccess.QueryMaterialByCategory(SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
 

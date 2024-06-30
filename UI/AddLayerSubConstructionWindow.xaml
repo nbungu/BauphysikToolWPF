@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:models="clr-namespace:BauphysikToolWPF.Models"
+        xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
         Title="AddLayerSubConstructionWindow" Background="{StaticResource PrimaryLightBrush}" Height="488" Width="880">
@@ -107,8 +108,8 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*"/>
-            <ColumnDefinition Width=".6*"/>
-            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width=".55*"/>
+            <ColumnDefinition Width=".25*"/>
         </Grid.ColumnDefinitions>
 
         <!--Left Column: Material Category-->
@@ -156,38 +157,19 @@
                       Style="{StaticResource ListViewStyle01}"/>
         </Grid>
 
+        <!--Grid Splitter-->
+        <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
+
         <!--Right Column: Dimensions-->
         <Grid Grid.Row="0" Grid.Column="2" Grid.RowSpan="2" Margin="8">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
             <Label Content="Abmessungen" FontWeight="Bold" HorizontalAlignment="Left"/>
+            <controls:PropertyDataGrid Grid.Row="1" Properties="{Binding LayerSubConstrProperties}"/>
 
-            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,0,8">
-                <Label Content="Ausrichtung" HorizontalAlignment="Left"/>
-                <ComboBox ItemsSource="{Binding Source={StaticResource ConstructionDirectionTypeValues}}" SelectedItem="{Binding SelectedConstructionDirection}"/>
-            </StackPanel>
-
-            <StackPanel Grid.Row="2" Orientation="Vertical" >
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                    <Label Content="Dicke: " HorizontalAlignment="Left"/>
-                    <TextBox Text="{Binding Thickness}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
-                    <Label Content="cm" FontWeight="SemiBold"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                    <Label Content="Breite: " HorizontalAlignment="Left"/>
-                    <TextBox Text="{Binding Width}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
-                    <Label Content="cm" FontWeight="SemiBold"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                    <Label Content="Abstand: " HorizontalAlignment="Left"/>
-                    <TextBox Text="{Binding Spacing}" MaxLength="5" Width="32" PreviewTextInput="numericData_PreviewTextInput"/>
-                    <Label Content="cm" FontWeight="SemiBold"/>
-                </StackPanel>
-            </StackPanel>
         </Grid>
 
         <Grid Grid.Column="2" Grid.Row="2" Margin="8">
@@ -197,3 +179,28 @@
     </Grid>
 
 </Window>
+
+<!--
+<StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,0,8">
+    <Label Content="Ausrichtung" HorizontalAlignment="Left"/>
+    <ComboBox ItemsSource="{Binding Source={StaticResource ConstructionDirectionTypeValues}}" SelectedItem="{Binding SelectedConstructionDirection}"/>
+</StackPanel>
+
+<StackPanel Grid.Row="2" Orientation="Vertical" >
+    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+        <Label Content="Dicke: " HorizontalAlignment="Left"/>
+        <TextBox Text="{Binding Thickness}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
+        <Label Content="cm" FontWeight="SemiBold"/>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+        <Label Content="Breite: " HorizontalAlignment="Left"/>
+        <TextBox Text="{Binding Width}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
+        <Label Content="cm" FontWeight="SemiBold"/>
+    </StackPanel>
+    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+        <Label Content="Abstand: " HorizontalAlignment="Left"/>
+        <TextBox Text="{Binding Spacing}" MaxLength="5" Width="32" PreviewTextInput="numericData_PreviewTextInput"/>
+        <Label Content="cm" FontWeight="SemiBold"/>
+    </StackPanel>
+</StackPanel>
+-->

@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using BauphysikToolWPF.UI.Drawing;
 using System;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.UI.CustomControls;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -151,8 +152,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElement.SortLayers();
             // Update Effective Layer Property
             UserSaved.SelectedElement.AssignEffectiveLayers();
-            // GUI Stuff
-            //UserSaved.SelectedElement.GetLayerDrawings();
         }
         
         private void RefreshXamlBindings()
@@ -175,6 +174,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ElementProperties))]
         private List<Layer> _layerList = UserSaved.SelectedElement.Layers;
 
         [ObservableProperty]
@@ -194,20 +194,26 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private List<MeasurementChain> _measurementChainFull = UserSaved.SelectedElement.Layers.Count > 1 ? new MeasurementChain(new []{400.0}, new[]{UserSaved.SelectedElement.ElementWidth}).ToList() : new List<MeasurementChain>();
 
-        [ObservableProperty]
-        private List<PropertyItem> _properties = new List<PropertyItem>
-        {
-            new PropertyItem { PropertyName = "Property1", PropertyValue = "Value1" },
-            new PropertyItem { PropertyName = "Property2", PropertyValue = "Value2", PropertyValues = new string[] { "Value2", "Value3", "Value4" } },
-            new PropertyItem { PropertyName = "Property3", PropertyValue = "Value3" },
-            new PropertyItem { PropertyName = "Property4", PropertyValue = "Value4", PropertyValues = new string[] { "Value2", "Value3", "Value4" } }
-        };
-
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
-         * Not Observable, because Triggered and Changed by 'layers' above
+         * Not Observable, because Triggered and Changed by User Input
          */
+
+        public List<PropertyItem> ElementProperties => new List<PropertyItem>
+        {
+            new PropertyItem(Symbol.Thickness, UserSaved.SelectedElement.Thickness_cm),
+            new PropertyItem(Symbol.RValueElement, UserSaved.SelectedElement.RValue),
+            new PropertyItem(Symbol.AreaMassDensity, UserSaved.SelectedElement.AreaMassDens),
+            new PropertyItem(Symbol.SdThickness, UserSaved.SelectedElement.SdThickness),
+        };
+        public List<PropertyItem> LayerProperties => new List<PropertyItem>
+        {
+            new PropertyItem(Symbol.Thickness, UserSaved.SelectedElement.Thickness_cm),
+            new PropertyItem(Symbol.RValueElement, UserSaved.SelectedElement.RValue),
+            new PropertyItem(Symbol.AreaMassDensity, UserSaved.SelectedElement.AreaMassDens),
+            new PropertyItem(Symbol.SdThickness, UserSaved.SelectedElement.SdThickness),
+        };
 
     }
 }
