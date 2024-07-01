@@ -244,8 +244,8 @@
                       View="{StaticResource LayerGridViewColumns}"
                       Style="{StaticResource ListViewStyle01}"
                       ItemContainerStyle="{StaticResource LayerItemContainerStyle}"
-                      SelectedIndex="{Binding SelectedLayerIndex}"                 
-                      Tag="{Binding}">
+                      Tag="{Binding}"
+                      SelectedItem="{Binding SelectedListViewItem}">
                     <!--TODO Add Style-->
                     <ListView.ContextMenu>
                         <ContextMenu>

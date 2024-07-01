@@ -228,7 +228,10 @@
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBox Grid.Column="0" Text="{Binding Value}" Style="{StaticResource DataGridTextBox}"/>
+                                                    <TextBox Grid.Column="0"
+                                                             Text="{Binding Value}"
+                                                             Style="{StaticResource DataGridTextBox}"
+                                                             IsReadOnly="{Binding IsReadonly}"/>
                                                     <controls:FractionLabel Grid.Column="1"
                                                                             CounterText="{Binding UnitCounterText}"
                                                                             DenominatorText="{Binding UnitDenominatorText}"
@@ -247,7 +250,7 @@
                                                     </Grid.ColumnDefinitions>
                                                     <ComboBox Grid.Column="0"
                                                               IsEditable="True"
-                                                              SelectedValue="{Binding PropertyValue}"
+                                                              SelectedValue="{Binding Value}"
                                                               ItemsSource="{Binding PropertyValues}"
                                                               Style="{StaticResource DataGridComboBox}"/>
                                                     <controls:FractionLabel Grid.Column="1"
@@ -259,6 +262,19 @@
                                                 </Grid>
                                             </DataTemplate>
                                         </controls:PropertyValueTemplateSelector.ComboBoxTemplate>
+                                        <controls:PropertyValueTemplateSelector.CheckBoxTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="Auto"/>
+                                                    </Grid.ColumnDefinitions>
+                                                    <CheckBox Grid.Column="0"
+                                                              HorizontalAlignment="Right"
+                                                              IsChecked="{Binding Value}"
+                                                              Content="Test"/>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </controls:PropertyValueTemplateSelector.CheckBoxTemplate>
                                     </controls:PropertyValueTemplateSelector>
                                 </ContentControl.ContentTemplateSelector>
                             </ContentControl>

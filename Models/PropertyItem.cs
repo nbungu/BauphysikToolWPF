@@ -25,6 +25,7 @@ namespace BauphysikToolWPF.Models
         TemperatureSurfaceExterior,
 
         // R-Values
+        RValueLayer,                      // Ri
         RValueElement,                      // R_ges
         RValueTotal,                        // R_Total
         TransferResistanceSurfaceInterior,  // R_si
@@ -39,6 +40,9 @@ namespace BauphysikToolWPF.Models
         RelativeHumidity,
         RelativeHumidityInterior,
         RelativeHumidityExterior,
+
+        ThermalConductivity, // lambda
+        SpecificHeatCapacity // c
     }
 
     public enum Unit
@@ -158,6 +162,7 @@ namespace BauphysikToolWPF.Models
         public object Comment { get; set; } = "";
 
         //------Not part of the Database-----//
+        public bool IsReadonly { get; set; } = true;
         
         public object[] PropertyValues { get; set; } = Array.Empty<object>();
 
@@ -210,6 +215,7 @@ namespace BauphysikToolWPF.Models
                 { Symbol.TemperatureExterior, (Unit.Celsius, "θ", "e", "°C", "", "Außentemperatur") },
                 { Symbol.TemperatureSurfaceInterior, (Unit.Celsius, "θ", "si", "°C", "", "Raumtemperatur") },
                 { Symbol.TemperatureSurfaceExterior, (Unit.Celsius, "θ", "se", "°C", "", "Außentemperatur") },
+                { Symbol.RValueLayer, (Unit.SquareMeterKelvinPerWatt, "R", "i", "m²K", "W", "Wärmedurchlasswiderstand") },
                 { Symbol.RValueElement, (Unit.SquareMeterKelvinPerWatt, "R", "ges", "m²K", "W", "Wärmedurchlasswiderstand") },
                 { Symbol.RValueTotal, (Unit.SquareMeterKelvinPerWatt, "R", "T", "m²K", "W", "Wärmedurchlasswiderstand") },
                 { Symbol.TransferResistanceSurfaceInterior, (Unit.SquareMeterKelvinPerWatt, "R", "si", "m²K", "W", "Wärmeübergangswiderstand (innen)") },
@@ -222,6 +228,8 @@ namespace BauphysikToolWPF.Models
                 { Symbol.RelativeHumidityInterior, (Unit.Percent, "φ", "i", "%", "", "Relative Luftfeuchtigkeit (innen)") },
                 { Symbol.RelativeHumidityExterior, (Unit.Percent, "φ", "e", "%", "", "Relative Luftfeuchtigkeit (außen)") },
                 { Symbol.VapourResistance, (Unit.None, "µ", "", "-", "", "Wasserdampfdiffusionswiderstandszahl") },
+                { Symbol.ThermalConductivity, (Unit.WattsPerMeterKelvin, "λ", "", "W", "mK", "Wärmeleitfähigkeit") },
+                { Symbol.SpecificHeatCapacity, (Unit.JoulesPerKilogramKelvin, "c", "", "J", "kgK", "spezifische Wärmekapazität") },
             };
 
             // Get the corresponding properties for the given symbol
