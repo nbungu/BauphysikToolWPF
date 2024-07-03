@@ -118,7 +118,7 @@
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
             <!-- CanContentScroll = false for smooth scrolling -->
             <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-            <Setter Property="MinWidth" Value="144"/>
+            <Setter Property="MinWidth" Value="80"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="MaxDropDownHeight" Value="320"/>
             <Setter Property="Template">

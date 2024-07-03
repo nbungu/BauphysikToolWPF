@@ -36,16 +36,7 @@ namespace BauphysikToolWPF.SessionData
         /// <summary>
         /// InternalID des ausgewählten Elements
         /// </summary>
-        private static int _selectedElementId = -1;
-        public static int SelectedElementId
-        {
-            get => _selectedElementId;
-            set
-            {
-                _selectedElementId = value;
-                //OnSelectedElementChanged();
-            }
-        }
+        public static int SelectedElementId { get; set; } = -1;
 
         /// <summary>
         /// Zeigt auf das entsprechende Element aus dem aktuellen Projekt auf Basis der InternalID von 'SelectedElementId'
@@ -55,17 +46,7 @@ namespace BauphysikToolWPF.SessionData
         /// <summary>
         /// InternalID des ausgewählten Elements
         /// </summary>
-        private static int _selectedLayerId = -1;
-
-        public static int SelectedLayerId
-        {
-            get => _selectedLayerId;
-            set
-            {
-                _selectedLayerId = value;
-                //OnSelectedLayerChanged();
-            }
-        }
+        public static int SelectedLayerId { get; set; } = -1;
 
         /// <summary>
         /// Zeigt auf den entsprechenden Layer aus dem aktuellen Element auf Basis der LayerPosition von 'SelectedLayerPosition'

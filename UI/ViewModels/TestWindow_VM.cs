@@ -49,14 +49,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private Element _selectedElement = UserSaved.SelectedElement;
 
-        [ObservableProperty]
-        private List<PropertyItem> _properties = new List<PropertyItem>
-        {
-            new PropertyItem { Name = "Property1", Value = "Value1" },
-            new PropertyItem { Name = "Property2", Value = "Value2", PropertyValues = new string[] { "Value2", "Value3", "Value4" } },
-            new PropertyItem { Name = "Property3", Value = "Value3" },
-            new PropertyItem { Name = "Property4", Value = "Value4", PropertyValues = new string[] { "Value2", "Value3", "Value4" } }
-        };
+        //[ObservableProperty]
+        //private List<PropertyItem> _properties = new List<PropertyItem>
+        //{
+        //    new PropertyItem { Name = "Property1", Value = "Value1" },
+        //    new PropertyItem { Name = "Property2", Value = "Value2", PropertyValues = new string[] { "Value2", "Value3", "Value4" } },
+        //    new PropertyItem { Name = "Property3", Value = "Value3" },
+        //    new PropertyItem { Name = "Property4", Value = "Value4", PropertyValues = new string[] { "Value2", "Value3", "Value4" } }
+        //};
 
 
         /*

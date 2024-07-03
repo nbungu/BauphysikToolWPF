@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.UI.CustomControls;
 using SQLite;

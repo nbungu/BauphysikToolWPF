@@ -1,6 +1,5 @@
-﻿using System.Windows.Media;
-using BauphysikToolWPF.UI.CustomControls;
-using SQLite;
+﻿using SQLite;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models
 {

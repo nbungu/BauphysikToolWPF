@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Models;
 using System.Windows;
 using System.Windows.Controls;
+using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -12,7 +13,7 @@ namespace BauphysikToolWPF.UI.CustomControls
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
-            if (item is PropertyItem propertyItem)
+            if (item is IPropertyItem propertyItem)
             {
                 if (propertyItem.PropertyValues != null && propertyItem.PropertyValues.Length > 1)
                 {

@@ -108,9 +108,7 @@
             </GridViewColumn>
             <GridViewColumn DisplayMemberBinding="{Binding Material.Name}" Header="Material" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Thickness}" Header="d [cm]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.ThermalConductivity}" Header="λ [W/(mK)]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.BulkDensity}" Header="ρ [kg/m³]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="R [m²K/W]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="Ri [m²K/W]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Sd_Thickness}" Header="sd [m]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding AreaMassDensity}" Header="m' [kg/m²]" Width="Auto"/>
         </GridView>
@@ -212,7 +210,7 @@
                 <RowDefinition Height=".4*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".7*" MinWidth="320"/>
+                <ColumnDefinition Width="*" MinWidth="320"/>
                 <ColumnDefinition Width=".3*" MinWidth="160"/>
             </Grid.ColumnDefinitions>
 
@@ -226,12 +224,35 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding AddLayerCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding EditLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DuplicateLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Copy_B}"  Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}" ToolTip="Kopieren"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerUpCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Up_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerDownCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Down_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DeleteLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=LayersListView}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                    <Button Content="Schicht hinzufügen"
+                            Style="{StaticResource ButtonStyle03_A}"
+                            Command="{Binding AddLayerCommand}"
+                            Tag="{StaticResource ButtonIcon_AddLayer_W}"
+                            Margin="0,0,8,0"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                            Command="{Binding DuplicateLayerCommand}"
+                            Tag="{StaticResource ButtonIcon_Copy_B}" 
+                            Margin="0,0,8,0"
+                            IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"
+                            ToolTip="Schicht duplizieren"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                            Command="{Binding MoveLayerUpCommand}"
+                            Tag="{StaticResource ButtonIcon_Up_B}"
+                            Margin="0,0,8,0"
+                            IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"
+                            ToolTip="Schicht eine Lage nach oben verschieben"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                            Command="{Binding MoveLayerDownCommand}"
+                            Tag="{StaticResource ButtonIcon_Down_B}"
+                            Margin="0,0,8,0"
+                            IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"
+                            ToolTip="Schicht eine Lage nach unten verschieben"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                            Command="{Binding DeleteLayerCommand}"
+                            Tag="{StaticResource ButtonIcon_Delete_B}"
+                            Margin="0,0,8,0"
+                            IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"
+                            ToolTip="Schicht löschen"/>
                 </StackPanel>
 
                 <Label Grid.Row="1" Content="Von innen nach außen:" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
@@ -338,20 +359,33 @@
             <!--Grid Splitter-->
             <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
 
-            <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="16">
+            <Grid Grid.Row="0" Grid.Column="1" Margin="16">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Label Grid.Row="0" Content="Gewählte Schicht" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
-                <controls:PropertyDataGrid Grid.Row="1" Properties="{Binding LayerProperties}"/>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                            Command="{Binding EditLayerCommand}"
+                            Tag="{StaticResource ButtonIcon_Edit_B}"
+                            Margin="0,0,8,0"
+                            IsEnabled="{Binding ElementName=LayersListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"
+                            ToolTip="Eigenschaften dieser Schicht bearbeiten"/>
+                </StackPanel>
+                <Label Grid.Row="1" Content="{Binding LayerTitle}" FontWeight="DemiBold" Foreground="{StaticResource PrimaryHighlightBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,8,0,0"/>
+                <controls:PropertyDataGrid Grid.Row="2" Properties="{Binding LayerProperties}"/>
+            </Grid>
 
-                <Label Grid.Row="2" Content="Bauteildaten" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
-                <controls:PropertyDataGrid Grid.Row="3" Properties="{Binding ElementProperties}"/>
-                
+            <Grid Grid.Row="1" Grid.Column="1" Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="Gesamtes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
+                <controls:PropertyDataGrid Grid.Row="1" Properties="{Binding ElementProperties}"/>
             </Grid>
            
 

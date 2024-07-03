@@ -5,7 +5,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
-             mc:Ignorable="d">
+             mc:Ignorable="d"
+             d:DesignHeight="320"
+             d:DesignWidth="320"
+             d:Background="White">
 
     <UserControl.Resources>
 
@@ -31,7 +34,6 @@
             <Setter Property="CanUserResizeRows" Value="False"/>
             <Setter Property="CanUserResizeColumns" Value="True"/>
             <Setter Property="CanUserReorderColumns" Value="False"/>
-            <Setter Property="Padding" Value="0,0,0,0"/>
             <Setter Property="GridLinesVisibility" Value="All"/>
             <Setter Property="VerticalGridLinesBrush" Value="{StaticResource PrimaryBorderBrush}"/>
             <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource PrimaryBorderBrush}"/>
@@ -46,7 +48,6 @@
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
             <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-            <Setter Property="MinWidth" Value="96"/>
             <Setter Property="MinHeight" Value="24"/>
             <Setter Property="MaxDropDownHeight" Value="320"/>
             <Setter Property="Template">
@@ -70,12 +71,12 @@
                             </ToggleButton>
                             <!--Content inside of closed DropDownButton -->
                             <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
-                        Content="{TemplateBinding SelectionBoxItem}"
-                        ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                        ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                        Margin="4,0,0,0"
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Left"/>
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                Margin="4,0,0,0"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"/>
                             <!-- DropDown Menu / Popup -->
                             <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
                                 <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
@@ -111,7 +112,6 @@
         <Style x:Key="DataGridTextBox" TargetType="{x:Type TextBox}">
             <Setter Property="MinWidth" Value="32"/>
             <Setter Property="MinHeight" Value="24"/>
-            <Setter Property="MaxLength" Value="80"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
             <Setter Property="FontSize" Value="12"/>
@@ -128,9 +128,28 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
+                <Trigger Property="IsKeyboardFocused" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
+                <DataTrigger Binding="{Binding IsReadonly}" Value="True">
+                    <Setter Property="Cursor" Value="Arrow"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DataGridCheckBox" TargetType="{x:Type CheckBox}">
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="0"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsReadonly}" Value="True">
+                    <Setter Property="IsEnabled" Value="False"/>
+                    <Setter Property="Cursor" Value="Arrow"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsReadonly}" Value="False">
+                    <Setter Property="IsEnabled" Value="True"/>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -153,7 +172,7 @@
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0,0,0,0" />
-            <Setter Property="Margin" Value="0,0,-1,0" />
+            <Setter Property="Margin" Value="1,0,-1,0" />
             <Setter Property="IsEditing" Value="False" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -197,10 +216,9 @@
                   RowStyle="{StaticResource DataGridRowStyle}"
                   CellStyle="{StaticResource DataGridCellStyle}"
                   ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}">
-
             <DataGrid.Columns>
                 <!-- Left Column -->
-                <DataGridTemplateColumn Width=".5*" IsReadOnly="True" MinWidth="80">
+                <DataGridTemplateColumn Width="Auto" IsReadOnly="True" MinWidth="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <Grid HorizontalAlignment="Stretch">
@@ -208,14 +226,14 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Content="{Binding Name}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
-                                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBaseText}" SubscriptText="{Binding SymbolSubscriptText}" VerticalAlignment="Stretch" Margin="4,0,8,0" Foreground="{StaticResource PrimaryBorderBrush}"/>
+                                <Label Grid.Column="0" Content="{Binding Name}" ToolTip="{Binding Comment}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBaseText}" SubscriptText="{Binding SymbolSubscriptText}" VerticalAlignment="Stretch" Margin="4,0,8,0" FontWeight="DemiBold" Foreground="{StaticResource PrimaryDarkBrush}"/>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
                 <!-- Right Column with DataTemplate -->
-                <DataGridTemplateColumn Width=".5*" IsReadOnly="False" MinWidth="80">
+                <DataGridTemplateColumn Width="*" IsReadOnly="False" MinWidth="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <ContentControl Content="{Binding}">
@@ -231,7 +249,9 @@
                                                     <TextBox Grid.Column="0"
                                                              Text="{Binding Value}"
                                                              Style="{StaticResource DataGridTextBox}"
-                                                             IsReadOnly="{Binding IsReadonly}"/>
+                                                             IsReadOnly="{Binding IsReadonly}"
+                                                             PreviewTextInput="numericData_PreviewTextInput"
+                                                             TextChanged="TextBoxBase_OnTextChanged"/>
                                                     <controls:FractionLabel Grid.Column="1"
                                                                             CounterText="{Binding UnitCounterText}"
                                                                             DenominatorText="{Binding UnitDenominatorText}"
@@ -258,20 +278,17 @@
                                                                             DenominatorText="{Binding UnitDenominatorText}"
                                                                             VerticalAlignment="Stretch"
                                                                             Foreground="{StaticResource PrimaryBorderBrush}"
-                                                                            Margin="4,0,8,0"/>
+                                                                            Margin="4,0,2,0"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </controls:PropertyValueTemplateSelector.ComboBoxTemplate>
                                         <controls:PropertyValueTemplateSelector.CheckBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="Auto"/>
-                                                    </Grid.ColumnDefinitions>
-                                                    <CheckBox Grid.Column="0"
-                                                              HorizontalAlignment="Right"
-                                                              IsChecked="{Binding Value}"
-                                                              Content="Test"/>
+                                                    <CheckBox IsChecked="{Binding Value}"
+                                                              Style="{StaticResource DataGridCheckBox}"
+                                                              IsEnabled="False"
+                                                              Margin="4,0,8,0"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </controls:PropertyValueTemplateSelector.CheckBoxTemplate>

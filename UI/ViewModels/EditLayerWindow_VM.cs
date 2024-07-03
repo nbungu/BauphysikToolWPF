@@ -62,7 +62,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Update Layer thickness
             UserSaved.SelectedLayer.Thickness = Convert.ToDouble(Thickness, CultureInfo.CurrentCulture);
             // Trigger Event to Update Layer Window
-            UserSaved.OnSelectedElementChanged();
+            UserSaved.OnSelectedLayerChanged();
             window.Close();
         }
 

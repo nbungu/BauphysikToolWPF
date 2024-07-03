@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Windows.Foundation;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -59,6 +58,10 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
+        private string _searchString = "";
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(Materials))]
         private MaterialCategory _selectedCategory = UserSaved.SelectedLayer.SubConstruction?.Material.Category ?? MaterialCategory.None;
 
         [ObservableProperty]
@@ -76,22 +79,20 @@ namespace BauphysikToolWPF.UI.ViewModels
         //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
         private string _spacing = UserSaved.SelectedLayer.SubConstruction?.Spacing.ToString(CultureInfo.CurrentCulture) ?? "18";
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(Materials))]
-        private string _searchString = "";
-
 
         /*
-         * MVVM Capsulated Properties or Triggered by other Properties
+         * MVVM Capsulated Properties: Triggered + Updated by other Properties (NotifyPropertyChangedFor)
+         * 
+         * Not Observable, No direct User Input involved
          */
 
-        public List<PropertyItem> LayerSubConstrProperties => new List<PropertyItem>
-        {
-            new PropertyItem("Ausrichtung", SubConstructionDirection.Horizontal.ToString(), (string[])Enum.GetNames(typeof(SubConstructionDirection)) ),
-            new PropertyItem(Symbol.Width, Width),
-            new PropertyItem(Symbol.Thickness, Thickness),
-            new PropertyItem(Symbol.Length, Spacing),
-        };
+        //public List<PropertyItem> LayerSubConstrProperties => new List<PropertyItem>
+        //{
+        //    new PropertyItem("Ausrichtung", SubConstructionDirection.Horizontal.ToString(), (string[])Enum.GetNames(typeof(SubConstructionDirection))) { IsReadonly = false},
+        //    new PropertyItem(Symbol.Width, Width) { IsReadonly = false },
+        //    new PropertyItem(Symbol.Thickness, Thickness) { IsReadonly = false },
+        //    new PropertyItem(Symbol.Length, Spacing) { IsReadonly = false },
+        //};
 
         public List<Material> Materials => SearchString != "" ? DatabaseAccess.QueryMaterialByCategory(SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
 

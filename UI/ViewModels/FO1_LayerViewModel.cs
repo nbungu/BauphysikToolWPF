@@ -1,24 +1,26 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.Drawing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
-using BauphysikToolWPF.UI.Drawing;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for FO1_SetupLayer.xaml: Used in xaml as "DataContext"
     public partial class FO1_LayerViewModel : ObservableObject
     {
-        private MeasurementChain _measurementDrawer = new MeasurementChain();
-        
         public FO1_LayerViewModel()
         {
+            UserSaved.SelectedLayerId = -1;
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedElementChanged += RefreshLayerProperties;
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
+
+            UserSaved.SelectedLayerChanged += RefreshLayerProperties;
+            UserSaved.SelectedLayerChanged += RefreshXamlBindings;
         }
 
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
@@ -62,15 +64,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DeleteSubConstructionLayer()
-        {
-            UserSaved.SelectedLayer.RemoveSubConstruction();
-
-            RefreshLayerProperties();
-            RefreshXamlBindings();
-        }
-
-        [RelayCommand]
         private void EditLayer()
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
@@ -79,13 +72,20 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
+        private void DeleteSubConstructionLayer()
+        {
+            UserSaved.SelectedLayer.RemoveSubConstruction();
+
+            UserSaved.OnSelectedLayerChanged();
+        }
+
+        [RelayCommand]
         private void DeleteLayer()
         {
             // Delete selected Layer
             UserSaved.SelectedElement.Layers.Remove(UserSaved.SelectedLayer);
 
-            RefreshLayerProperties();
-            RefreshXamlBindings();
+            UserSaved.OnSelectedElementChanged();
         }
         
         [RelayCommand]
@@ -96,8 +96,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             copy.InternalId = UserSaved.SelectedElement.Layers.Count;
             UserSaved.SelectedElement.Layers.Add(copy);
 
-            RefreshLayerProperties();
-            RefreshXamlBindings();
+            UserSaved.OnSelectedElementChanged();
             SelectedListViewItem = copy;
         }
 
@@ -113,8 +112,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Change Position of selected Layer
             UserSaved.SelectedLayer.LayerPosition += 1;
 
-            RefreshLayerProperties();
-            RefreshXamlBindings();
+            UserSaved.OnSelectedLayerChanged();
             SelectedListViewItem = UserSaved.SelectedLayer;
         }
 
@@ -129,17 +127,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             neighbour.LayerPosition += 1;
             UserSaved.SelectedLayer.LayerPosition -= 1;
 
-            RefreshLayerProperties();
-            RefreshXamlBindings();
+            UserSaved.OnSelectedLayerChanged();
             SelectedListViewItem = UserSaved.SelectedLayer;
         }
 
         private void RefreshLayerProperties()
         {
-            // Always in sorted order
-            UserSaved.SelectedElement.SortLayers();
-            // Update Effective Layer Property
-            UserSaved.SelectedElement.AssignEffectiveLayers();
+            UserSaved.SelectedElement.SortLayers(); // Always in sorted order
+            UserSaved.SelectedElement.AssignEffectiveLayers(); // Update Effective Layer Property
         }
         
         private void RefreshXamlBindings()
@@ -176,13 +171,16 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
+        [NotifyPropertyChangedFor(nameof(LayerTitle))]
         private Layer _selectedListViewItem;
 
         /*
-         * MVVM Capsulated Properties + Triggered by other Properties
+         * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
          * 
          * Not Observable, No direct User Input involved
          */
+
+        public string LayerTitle => string.Format("Schicht {0}: {1}", UserSaved.SelectedLayer.LayerPosition, UserSaved.SelectedLayer.Material);
 
         public List<DrawingGeometry> DrawingGeometries => UserSaved.SelectedElement.GetLayerDrawings();
 
@@ -191,28 +189,32 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         public List<MeasurementChain> MeasurementChainFull => UserSaved.SelectedElement.Layers.Count > 1 ? new MeasurementChain(new[] { 400.0 }, new[] { UserSaved.SelectedElement.ElementWidth }).ToList() : new List<MeasurementChain>();
-        
-        public List<PropertyItem> ElementProperties => new List<PropertyItem>
-        {
-            new PropertyItem(Symbol.Thickness, UserSaved.SelectedElement.Thickness_cm) { IsReadonly = false },
-            new PropertyItem(Symbol.RValueElement, UserSaved.SelectedElement.RValue),
-            new PropertyItem(Symbol.AreaMassDensity, UserSaved.SelectedElement.AreaMassDens),
-            new PropertyItem(Symbol.SdThickness, UserSaved.SelectedElement.SdThickness),
-        };
 
-        public List<PropertyItem> LayerProperties => new List<PropertyItem>
+        public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {
-            new PropertyItem(Symbol.Thickness, UserSaved.SelectedLayer.Thickness),
-            new PropertyItem(Symbol.ThermalConductivity, UserSaved.SelectedLayer.Material.ThermalConductivity),
-            new PropertyItem(Symbol.RawDensity, UserSaved.SelectedLayer.Material.BulkDensity),
-            new PropertyItem(Symbol.SpecificHeatCapacity, UserSaved.SelectedLayer.Material.SpecificHeatCapacity),
-            new PropertyItem(Symbol.RValueLayer, UserSaved.SelectedLayer.R_Value)
+            new PropertyItem<string>("Material", () => UserSaved.SelectedLayer.Material.Name),
+            new PropertyItem<string>("Kategorie", () => UserSaved.SelectedLayer.Material.CategoryName),
+            new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedLayer.Thickness, value => UserSaved.SelectedLayer.Thickness = value),
+            new PropertyItem<double>(Symbol.ThermalConductivity, () => UserSaved.SelectedLayer.Material.ThermalConductivity),
+            new PropertyItem<double>(Symbol.RawDensity, () => UserSaved.SelectedLayer.Material.BulkDensity),
+            new PropertyItem<double>(Symbol.SpecificHeatCapacity, () => UserSaved.SelectedLayer.Material.SpecificHeatCapacity),
+            new PropertyItem<double>(Symbol.RValueLayer, () => UserSaved.SelectedLayer.R_Value)
             {
                 SymbolSubscriptText = UserSaved.SelectedLayer.LayerPosition.ToString()
             },
-            new PropertyItem(Symbol.AreaMassDensity, UserSaved.SelectedLayer.AreaMassDensity),
-            new PropertyItem(Symbol.SdThickness, UserSaved.SelectedLayer.Sd_Thickness),
-            new PropertyItem(Symbol.None, UserSaved.SelectedLayer.IsEffective),
+            new PropertyItem<double>(Symbol.AreaMassDensity, () => UserSaved.SelectedLayer.AreaMassDensity),
+            new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => UserSaved.SelectedLayer.Material.DiffusionResistance),
+            new PropertyItem<double>(Symbol.SdThickness, () => UserSaved.SelectedLayer.Sd_Thickness),
+            new PropertyItem<bool>("Wirksame Schicht", () => UserSaved.SelectedLayer.IsEffective)
+        };
+
+        public List<IPropertyItem> ElementProperties => new List<IPropertyItem>
+        {
+            new PropertyItem<int>("Schichten", () => UserSaved.SelectedElement.Layers.Count),
+            new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedElement.Thickness_cm),
+            new PropertyItem<double>(Symbol.RValueElement, () => UserSaved.SelectedElement.RValue),
+            new PropertyItem<double>(Symbol.AreaMassDensity, () => UserSaved.SelectedElement.AreaMassDens),
+            new PropertyItem<double>(Symbol.SdThickness, () => UserSaved.SelectedElement.SdThickness),
         };
     }
 }
