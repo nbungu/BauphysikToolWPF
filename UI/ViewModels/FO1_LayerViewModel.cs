@@ -191,7 +191,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<MeasurementChain> MeasurementChain => new MeasurementChain(UserSaved.SelectedElement.Layers).ToList();
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
-        public List<MeasurementChain> MeasurementChainFull => UserSaved.SelectedElement.Layers.Count > 1 ? new MeasurementChain(new[] { 400.0 }, new[] { UserSaved.SelectedElement.ElementWidth }).ToList() : new List<MeasurementChain>();
+        public List<MeasurementChain> MeasurementChainFull => UserSaved.SelectedElement.Layers.Count > 1 ? new MeasurementChain(new[] { 400.0 }, new[] { UserSaved.SelectedElement.Thickness_cm }).ToList() : new List<MeasurementChain>();
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {

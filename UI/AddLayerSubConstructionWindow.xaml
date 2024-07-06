@@ -95,6 +95,7 @@
 
         </Grid>
 
+
         <!--Grid Splitter-->
         <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
 
@@ -111,7 +112,7 @@
         </Grid>
 
         <Grid Grid.Column="2" Grid.Row="2" Margin="16,8,8,8">
-            <Button Content="Hinzufügen"
+            <Button Content="Übernehmen"
                     Command="{Binding AddSubConstructionLayerCommand}"
                     CommandParameter="{Binding ElementName=AddLayerSubConstructionWindowControl}"
                     Style="{StaticResource ButtonStyle03_A}"

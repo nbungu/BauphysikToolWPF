@@ -141,13 +141,10 @@ namespace BauphysikToolWPF.Models
         {
             get
             {
-                if (Layers.Count == 0) return 0;
-                double val = 0;
-                foreach (Layer layer in Layers)
-                {
-                    val += layer.Thickness;
-                }
-                return Math.Round(val, 2);
+                double fullWidth = 0;
+                if (Layers.Count == 0) return fullWidth;
+                Layers.ForEach(l => fullWidth += l.Thickness);
+                return Math.Round(fullWidth, 4);
             }
         }
         public double Thickness_m => Math.Round(Thickness_cm / 100, 4); // d in m
@@ -157,15 +154,15 @@ namespace BauphysikToolWPF.Models
         {
             get
             {
-                if (Layers.Count == 0) return 0;
-                double val = 0;
+                double fullWidth = 0;
+                if (Layers.Count == 0) return fullWidth;
                 foreach (Layer layer in Layers)
                 {
                     if (!layer.IsEffective)
                         continue;
-                    val += layer.Sd_Thickness;
+                    fullWidth += layer.Sd_Thickness;
                 }
-                return Math.Round(val, 2);
+                return Math.Round(fullWidth, 2);
             }
         }
 
@@ -198,16 +195,6 @@ namespace BauphysikToolWPF.Models
                     val += layer.R_Value;
                 }
                 return Math.Round(val, 2);
-            }
-        }
-        [Ignore]
-        public double ElementWidth
-        {
-            get
-            {
-                double fullWidth = 0;
-                Layers.ForEach(l => fullWidth += l.Thickness);
-                return fullWidth;
             }
         }
 
