@@ -83,10 +83,9 @@ namespace BauphysikToolWPF.Models.Helper
                 Point ptStart = new Point(0, 0);
                 foreach (var l in element.Layers)
                 {
-                    // Layer
-                    var mainLayerGeometry = (DrawingGeometry)l.Convert();
-                    mainLayerGeometry.Rectangle = mainLayerGeometry.Rectangle.MoveTo(ptStart);
-                    layerDrawings.Add(mainLayerGeometry);
+                    // Main Layer Geometry
+                    l.Rectangle = l.Rectangle.MoveTo(ptStart);
+                    layerDrawings.Add((DrawingGeometry)l.Convert());
 
                     // SubConstruction
                     if (l.HasSubConstruction)
@@ -107,9 +106,8 @@ namespace BauphysikToolWPF.Models.Helper
                             layerDrawings.Add(subConstrGeometry);
                         }
                     }
-
                     // Update Origin
-                    ptStart = mainLayerGeometry.Rectangle.BottomLeft;
+                    ptStart = l.Rectangle.BottomLeft;
                 }
                 layerDrawings.Sort(new DrawingGeometryComparer(DrawingGeometrySortingType.ZIndexAscending));
             }

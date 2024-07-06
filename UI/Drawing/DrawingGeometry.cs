@@ -4,6 +4,13 @@ using Geometry;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
+    public enum Axis
+    {
+        X,
+        Y,
+        Z
+    }
+    
     public class DrawingGeometry : IDrawingGeometry
     {
        
@@ -52,7 +59,7 @@ namespace BauphysikToolWPF.UI.Drawing
         // For use as single collection Type in XAML Items Source of Canvas
         public List<DrawingGeometry> ToList()
         {
-            return new List<DrawingGeometry>() { new DrawingGeometry(this) };
+            return new List<DrawingGeometry>() { this };
         }
     }
 }

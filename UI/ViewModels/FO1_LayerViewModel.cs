@@ -5,6 +5,7 @@ using BauphysikToolWPF.UI.Drawing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -163,8 +164,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ElementProperties))]
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
-        [NotifyPropertyChangedFor(nameof(MeasurementChain))]
-        [NotifyPropertyChangedFor(nameof(MeasurementChainFull))]
+        [NotifyPropertyChangedFor(nameof(LayerMeasurement))]
+        [NotifyPropertyChangedFor(nameof(LayerMeasurementFull))]
         [NotifyPropertyChangedFor(nameof(DrawingGeometries))]
         private List<Layer> _layerList = UserSaved.SelectedElement.Layers;
 
@@ -188,10 +189,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> DrawingGeometries => UserSaved.SelectedElement.GetLayerDrawings();
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
-        public List<MeasurementChain> MeasurementChain => new MeasurementChain(UserSaved.SelectedElement.Layers).ToList();
+        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetLayerMeasurement(UserSaved.SelectedElement.Layers).ToList();
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
-        public List<MeasurementChain> MeasurementChainFull => UserSaved.SelectedElement.Layers.Count > 1 ? new MeasurementChain(new[] { 400.0 }, new[] { UserSaved.SelectedElement.Thickness_cm }).ToList() : new List<MeasurementChain>();
+        public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurement(new[] { 400.0 }, new[] { UserSaved.SelectedElement.Thickness_cm.ToString(CultureInfo.CurrentCulture) }).ToList() : new List<DrawingGeometry>();
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {

@@ -1,7 +1,7 @@
 ﻿<UserControl x:Class="BauphysikToolWPF.UI.FO1_SetupLayer"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:BauphysikToolWPF"
             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
@@ -195,7 +195,7 @@
                             Grid.Row="0"
                             Grid.Column="1"
                             Height="{Binding ElementName=ElementCanvas, Path=Height}"
-                            ItemsSource="{Binding MeasurementChain}"
+                            ItemsSource="{Binding LayerMeasurement}"
                             ItemsPanel="{StaticResource Canvas}"
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                             ItemTemplate="{StaticResource MeasurementItemStyle}"
@@ -206,7 +206,7 @@
                               Grid.Row="0"
                               Grid.Column="2"
                               Height="{Binding ElementName=ElementCanvas, Path=Height}"
-                              ItemsSource="{Binding MeasurementChainFull}"
+                              ItemsSource="{Binding LayerMeasurementFull}"
                               ItemsPanel="{StaticResource Canvas}"
                               ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                               ItemTemplate="{StaticResource MeasurementItemStyle}"
@@ -242,15 +242,8 @@
                 <controls:PropertyDataGrid Grid.Row="4" Properties="{Binding SubConstructionProperties}"/>
             </Grid>
 
-            <Grid Grid.Row="1" Grid.Column="1" Margin="16">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
 
-                <Label Grid.Row="0" Content="Gesamtes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
-                <controls:PropertyDataGrid Grid.Row="1" Properties="{Binding ElementProperties}"/>
-            </Grid>
+
            
 
         </Grid>

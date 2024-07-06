@@ -49,6 +49,9 @@
     <None Remove="Resources\Icons\add_layer_w.png" />
     <None Remove="Resources\Icons\akzeptiert.png" />
     <None Remove="Resources\Icons\akzeptiert_w.png" />
+    <None Remove="Resources\Icons\align-bottom.png" />
+    <None Remove="Resources\Icons\align-center.png" />
+    <None Remove="Resources\Icons\align-top.png" />
     <None Remove="Resources\Icons\auge.png" />
     <None Remove="Resources\Icons\auge_w.png" />
     <None Remove="Resources\Icons\auge_zu.png" />
@@ -173,6 +176,9 @@
     <Resource Include="Resources\Icons\add_layer_w.png" />
     <Resource Include="Resources\Icons\akzeptiert.png" />
     <Resource Include="Resources\Icons\akzeptiert_w.png" />
+    <Resource Include="Resources\Icons\align-bottom.png" />
+    <Resource Include="Resources\Icons\align-center.png" />
+    <Resource Include="Resources\Icons\align-top.png" />
     <Resource Include="Resources\Icons\auge.png" />
     <Resource Include="Resources\Icons\auge_w.png" />
     <Resource Include="Resources\Icons\auge_zu.png" />
