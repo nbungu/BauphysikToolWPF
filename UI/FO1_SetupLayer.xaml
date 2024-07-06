@@ -29,24 +29,6 @@
         -->
         <controls:ItemSelectedToEnabledConverter x:Key="ItemSelectedToEnabledConverter"/>
 
-        <!-- New partial style of ButtonStyleListViewItem that includes the DataTrigger -->
-        <Style x:Key="EditButtonBalkenlageVisibilityStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyleListViewItem}">
-            <Setter Property="Visibility" Value="Collapsed"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
-                    <Setter Property="Visibility" Value="Visible"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-        <Style x:Key="AddButtonBalkenlageVisibilityStyle" TargetType="Button" BasedOn="{StaticResource ButtonStyleListViewItem}">
-            <Setter Property="Visibility" Value="Visible"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
-                    <Setter Property="Visibility" Value="Collapsed"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
         <!-- Defines the type of UIElement used in the ItemsPanel-->
         <ItemsPanelTemplate x:Key="Canvas">
             <!--Takes the Width and Height from TemplatedParent-->
@@ -88,92 +70,6 @@
             </Grid>
         </DataTemplate>
 
-        <!--
-        https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
-        https://github.com/mochan-b/GridViewCellFormatting
-        Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD of ItemTemplate
-        -->
-        <GridView x:Key="LayerGridViewColumns" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
-            <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
-            <GridViewColumn Header="Pos." Width="Auto">
-                <!--Custom Column Style for Column 0-->
-                <GridViewColumn.CellTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Ellipse Fill="{Binding Material.ColorCode}" Height="28" Width="28" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <Label Content="{Binding LayerPosition}" Foreground="White" FontWeight="Bold"/>
-                        </Grid>
-                    </DataTemplate>
-                </GridViewColumn.CellTemplate>
-            </GridViewColumn>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.Name}" Header="Material" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Thickness}" Header="d [cm]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="Ri [m²K/W]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Sd_Thickness}" Header="sd [m]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding AreaMassDensity}" Header="m' [kg/m²]" Width="Auto"/>
-        </GridView>
-        
-        <!-- Custom Layer ListViewItem appearance. Style of the Row Container -->
-        <Style x:Key="LayerItemContainerStyle" TargetType="{x:Type ListViewItem}">
-            <Setter Property="Background" Value="Transparent"/>
-            <!--ToolTip uses ToString() of Layer-->
-            <Setter Property="ToolTip" Value="{Binding}"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="Margin" Value="0,0,0,0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <Border x:Name="ListViewItemBorder"
-                                BorderBrush="{StaticResource PrimaryBorderBrush}"
-                                BorderThickness="0,0,0,1"
-                                Background="{TemplateBinding Background}"
-                                Padding="{TemplateBinding Padding}"
-                                CornerRadius="0"
-                                Height="56"
-                                SnapsToDevicePixels="true">
-                            <StackPanel Orientation="Vertical">
-                                <!--GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->
-                                <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
-                                <!-- TODO: Balken Lage INFOS hier...-->
-                                <StackPanel Orientation="Horizontal" Margin="48,0,0,0" Background="Transparent">
-                                    <Label Name="LabelBalkenlage" Content="Balkenlage: " FontSize="12" Padding="0,0,4,1">
-                                        <Label.Style>
-                                            <Style TargetType="Label">
-                                                <Setter Property="Foreground" Value="{StaticResource PrimaryBorderBrush}"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
-                                                        <Setter Property="Foreground" Value="Black"/>
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Label.Style>
-                                    </Label>
-                                    <Button x:Name="AddButtonBalkenlage" HorizontalAlignment="Left" Content="Hinzufügen +" Style="{StaticResource AddButtonBalkenlageVisibilityStyle}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                        <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource EditButtonBalkenlageVisibilityStyle}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
-                                        <Button x:Name="DeleteButtonBalkenlage" HorizontalAlignment="Left" Content="Entfernen" Style="{StaticResource EditButtonBalkenlageVisibilityStyle}" Command="{Binding DataContext.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}" Margin="8,0,0,0"/>
-                                    </StackPanel>
-                                    
-                                </StackPanel>
-                                
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <!--When a ListBox entry is Selected-->
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="ListViewItemBorder" Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
-                                <Setter TargetName="LabelBalkenlage" Property="Foreground" Value="White"/>
-                                <Setter Property="Foreground" Value="White"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>        
-        
     </UserControl.Resources>
 
     <!--Main Grid: 2x2-->
@@ -211,7 +107,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="320"/>
-                <ColumnDefinition Width=".3*" MinWidth="160"/>
+                <ColumnDefinition Width=".35*" MinWidth="160"/>
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
@@ -257,45 +153,8 @@
 
                 <Label Grid.Row="1" Content="Von innen nach außen:" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
 
-                <!-- ItemsSource gets updated by backend -->
-                <!-- This is 'PlacementTarget' as seen from ContextMenu -->
-                <ListView x:Name="LayersListView"
-                      Grid.Row="2"
-                      ItemsSource="{Binding LayerList}" 
-                      View="{StaticResource LayerGridViewColumns}"
-                      Style="{StaticResource ListViewStyle01}"
-                      ItemContainerStyle="{StaticResource LayerItemContainerStyle}"
-                      Tag="{Binding}"
-                      SelectedItem="{Binding SelectedListViewItem}">
-                    <!--TODO Add Style-->
-                    <ListView.ContextMenu>
-                        <ContextMenu>
-                            <!-- ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
-                        Need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
-                        The Tag Property can be used to hold any kind of user specified Data.-->
-                            <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Balkenlage hinzufügen" Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </ContextMenu>
-                    </ListView.ContextMenu>
-                </ListView>
+                <controls:LayersListView Grid.Row="2" Layers="{Binding LayerList}" SelectedLayer="{Binding SelectedListViewItem, Mode=TwoWay}"/>
+
             </Grid>
 
             <!-- GridSplitter - Horizontal
@@ -364,6 +223,8 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
@@ -376,6 +237,9 @@
                 </StackPanel>
                 <Label Grid.Row="1" Content="{Binding LayerTitle}" FontWeight="DemiBold" Foreground="{StaticResource PrimaryHighlightBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,8,0,0"/>
                 <controls:PropertyDataGrid Grid.Row="2" Properties="{Binding LayerProperties}"/>
+
+                <Label Grid.Row="3" Content="Balkenlage" FontWeight="DemiBold" Foreground="{StaticResource PrimaryHighlightBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,8,0,0"/>
+                <controls:PropertyDataGrid Grid.Row="4" Properties="{Binding SubConstructionProperties}"/>
             </Grid>
 
             <Grid Grid.Row="1" Grid.Column="1" Margin="16">

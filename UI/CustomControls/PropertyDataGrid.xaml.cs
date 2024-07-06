@@ -1,6 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -31,17 +31,21 @@ namespace BauphysikToolWPF.UI.CustomControls
             e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
         }
 
-        private void TextBoxBase_OnTextChanged(object sender, TextChangedEventArgs e)
+        private void TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
             if (sender is TextBox textBox)
             {
-                var propertyItem = (IPropertyItem)textBox.DataContext;
-                if (textBox.Text != "")
+                if (textBox.IsReadOnly) return;
+
+                var propertyItem = textBox.DataContext as IPropertyItem ?? null;
+                if (textBox.Text != "" && propertyItem != null)
                 {
                     // Change Value in property item, which reflects to the corresponding SelectedLayer Property
-                    propertyItem.Value = double.Parse(textBox.Text);
-                    // Update XAML
-                    UserSaved.OnSelectedLayerChanged();
+                    var type = propertyItem.Value.GetType();
+
+                    if (type == typeof(double)) propertyItem.Value = double.Parse(textBox.Text);
+                    else if (type == typeof(int)) propertyItem.Value = int.Parse(textBox.Text);
+                    else propertyItem.Value = textBox.Text.ToString(CultureInfo.CurrentCulture);
                 }
             }
         }

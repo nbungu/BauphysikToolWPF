@@ -1,6 +1,7 @@
-﻿using System;
+﻿using SQLite;
+using System;
 using System.Collections.Generic;
-using SQLite;
+using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.Models.Helper
 {
@@ -160,7 +161,7 @@ namespace BauphysikToolWPF.Models.Helper
     {
         //------Events-----//
 
-        public static event Action? PropertyChanged; // event
+        public static event Notify? PropertyChanged; // event
 
         public static void OnPropertyChanged() //protected virtual method
         {
@@ -185,13 +186,17 @@ namespace BauphysikToolWPF.Models.Helper
             get => _getter != null ? (object)_getter() : _value;
             set
             {
+                if (Equals(_value, value)) return;
+
                 if (_setter != null)
                 {
                     _setter((T)value);
+                    if (TriggerPropertyChanged) OnPropertyChanged();
                 }
                 else
                 {
                     _value = (T)value;
+                    if (TriggerPropertyChanged) OnPropertyChanged();
                 }
             }
         }
@@ -205,6 +210,7 @@ namespace BauphysikToolWPF.Models.Helper
 
         //------Not part of the Database-----//
         public bool IsReadonly { get; set; } = true;
+        public bool TriggerPropertyChanged { get; set; } = true;
         public object[] PropertyValues { get; set; } = Array.Empty<object>();
         public string SymbolBaseText { get; set; } = string.Empty;
         public string SymbolSubscriptText { get; set; } = string.Empty;

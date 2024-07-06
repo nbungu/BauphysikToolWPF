@@ -419,16 +419,20 @@
 
         <!--Custom ListView Column Header Style-->
         <Style x:Key="ListViewHeaderStyle01" TargetType="{x:Type GridViewColumnHeader}">
-            <Setter Property="Height" Value="32"/>
-            <Setter Property="Margin" Value="0,0,0,4"/>
+            <Setter Property="Height" Value="Auto"/>
+            <Setter Property="Margin" Value="-2,0,-4,0"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="FontSize" Value="14"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type GridViewColumnHeader}">
                         <Grid>
                             <!-- Text Header of a single Header Column-->
-                            <Border BorderThickness="0,0,0,1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent">
-                                <TextBlock x:Name="ContentHeader" Text="{TemplateBinding Content}" Padding="10,6,10,0" Width="{TemplateBinding Width}" TextAlignment="Left" FontSize="12"/>
+                            <Border BorderThickness="0,0,0,2" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="Transparent">
+                                <TextBlock x:Name="ContentHeader" Text="{TemplateBinding Content}" Padding="12,6,12,6" Width="{TemplateBinding Width}" TextAlignment="Left" FontSize="12"/>
                             </Border>
                             <!--x:Name="PART_HeaderGripper" is mandatory-->
                             <Thumb x:Name="PART_HeaderGripper" HorizontalAlignment="Right" Margin="0,0,-8,0" Width="16" Background="{StaticResource PrimaryBorderBrush}" >
@@ -444,9 +448,6 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="OverridesDefaultStyle" Value="True" />
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="FontSize" Value="14"/>
         </Style>
 
         <!-- Default ListViewItem appearance. Style of the Row Container -->
@@ -455,6 +456,7 @@
             <Setter Property="ToolTip" Value="{Binding}"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="Padding" Value="0,4,0,4"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
@@ -464,7 +466,7 @@
                                 Background="{TemplateBinding Background}"
                                 Padding="{TemplateBinding Padding}"
                                 CornerRadius="0"
-                                Height="40"
+                                Height="Auto"
                                 SnapsToDevicePixels="true">
                             <!--GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->
                             <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
@@ -484,7 +486,7 @@
             </Setter>
         </Style>
 
-        <!-- Very Small ListViewItem Button -->
+        <!-- Very Small ListViewItem Button: Only Label -->
         <Style x:Key="ButtonStyleListViewItem" TargetType="{x:Type Button}">
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Foreground" Value="Black"/>
@@ -494,6 +496,50 @@
             <Setter Property="FontSize" Value="10"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="RenderTransform">
+                <Setter.Value>
+                    <ScaleTransform ScaleX="1" ScaleY="1" />
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+            <Style.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="CornerRadius" Value="2"/>
+                </Style>
+            </Style.Resources>
+        </Style>
+
+        <!-- Very Small ListViewItem Button: Only Icon -->
+        <Style x:Key="ButtonStyleListViewItem_Icon" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Height" Value="32"/>
+            <Setter Property="Width" Value="32"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Tag" Value="{StaticResource ButtonIcon_ImagePlaceholder_B}"/> 
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border CornerRadius="2" Background="{TemplateBinding Background}">
+                            <!--Bind Image via DataContext Property in the Button Element-->
+                            <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="24" Height="24" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Setter Property="RenderTransform">
                 <Setter.Value>
                     <ScaleTransform ScaleX="1" ScaleY="1" />

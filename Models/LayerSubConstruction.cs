@@ -45,7 +45,7 @@ namespace BauphysikToolWPF.Models
         [Ignore]
         public int InternalId { get; set; }
         [Ignore]
-        public bool IsValid => Width > 0 && Thickness > 0 && Spacing > 0;
+        public bool IsValid => Width > 0 && Thickness > 0 && Spacing > 0 && Material != null;
         [Ignore]
         public double InnerSpacing => Spacing - Width;
         [Ignore]

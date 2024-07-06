@@ -80,10 +80,8 @@ namespace BauphysikToolWPF.Models
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
         [Ignore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
-
         [Ignore]
         public bool HasSubConstruction => SubConstruction != null && SubConstruction.IsValid;
-
         [Ignore]
         public bool IsValid => LayerPosition >= 0 && Thickness > 0;
 
@@ -129,48 +127,8 @@ namespace BauphysikToolWPF.Models
             }
         }
 
-        //[Ignore]
-        //public PropertyItem MaterialProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem CategoryProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem ThicknessProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem ThermalConductivityProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem RawDensityProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem SpecificHeatCapacityProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem RValueProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem AreaMassDensityProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem VapourDiffusionResistanceProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem SdThicknessProperty { get; } = new PropertyItem();
-        //[Ignore]
-        //public PropertyItem IsEffectiveProperty { get; } = new PropertyItem();
-
         //------Konstruktor-----//
 
-        //public Layer()
-        //{
-        //    MaterialProperty = new PropertyItem("Material", this.Material.Name);
-        //    CategoryProperty = new PropertyItem("Kategorie", this.Material.CategoryName);
-        //    ThicknessProperty = new PropertyItem(Symbol.Thickness, this.Thickness) { IsReadonly = false };
-        //    ThermalConductivityProperty = new PropertyItem(Symbol.ThermalConductivity, this.Material.ThermalConductivity);
-        //    RawDensityProperty = new PropertyItem(Symbol.RawDensity, this.Material.BulkDensity);
-        //    SpecificHeatCapacityProperty = new PropertyItem(Symbol.SpecificHeatCapacity, this.Material.SpecificHeatCapacity);
-        //    RValueProperty = new PropertyItem(Symbol.RValueLayer, this.R_Value)
-        //    {
-        //        SymbolSubscriptText = UserSaved.SelectedLayer.LayerPosition.ToString()
-        //    };
-        //    AreaMassDensityProperty = new PropertyItem(Symbol.AreaMassDensity, this.AreaMassDensity);
-        //    VapourDiffusionResistanceProperty = new PropertyItem(Symbol.VapourDiffusionResistance, this.Material.DiffusionResistance);
-        //    SdThicknessProperty = new PropertyItem(Symbol.SdThickness, this.Sd_Thickness);
-        //    IsEffectiveProperty = new PropertyItem("Wirksame Schicht", this.IsEffective);
-        //}
 
         //------Methoden-----//
         public Layer Copy()
@@ -206,28 +164,6 @@ namespace BauphysikToolWPF.Models
             this.SubConstructionId = -1;
             this.SubConstruction = null;
         }
-
-        //private Dictionary<string, PropertyItem> SetProperties()
-        //{
-        //    var props = new Dictionary<string, PropertyItem>()
-        //    {
-        //        {"Material", new PropertyItem("Material", this.Material.Name)},
-        //        {"Kategorie", new PropertyItem("Kategorie", this.Material.CategoryName)},
-        //        {"Dicke", new PropertyItem(Symbol.Thickness, this.Thickness)},
-        //        {"Wärmeleitfähigkeit", new PropertyItem(Symbol.ThermalConductivity, this.Material.ThermalConductivity)},
-        //        {"Rohdichte", new PropertyItem(Symbol.RawDensity, this.Material.BulkDensity)},
-        //        {"Wärmekapazität", new PropertyItem(Symbol.SpecificHeatCapacity, this.Material.SpecificHeatCapacity)},
-        //        {"RWert", new PropertyItem(Symbol.RValueLayer, this.R_Value)
-        //        {
-        //            SymbolSubscriptText = this.LayerPosition.ToString()
-        //        }},
-        //        {"Flächenmasse", new PropertyItem(Symbol.AreaMassDensity, this.AreaMassDensity)},
-        //        {"Diffusionswiderstand", new PropertyItem(Symbol.VapourDiffusionResistance, this.Material.DiffusionResistance)},
-        //        {"SdWert", new PropertyItem(Symbol.SdThickness, this.Sd_Thickness)},
-        //        {"Wirksam", new PropertyItem("Wirksame Schicht", this.IsEffective)},
-        //    };
-        //    return props;
-        //}
     }
 
     /// <summary>

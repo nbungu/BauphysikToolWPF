@@ -1,12 +1,13 @@
 ﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
+using System.Windows;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -16,6 +17,29 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from AddLayerSubConstructionWindow.cs due to Class-Binding in xaml via DataContext
         public string Title => "AddLayerSubConstructionWindow";
 
+        // All changes are being made to this Instance first
+        private readonly LayerSubConstruction _tempConstruction;
+
+        public AddLayerSubConstructionWindow_VM()
+        {
+            if (!UserSaved.SelectedLayer.HasSubConstruction)
+            {
+                _tempConstruction = new LayerSubConstruction()
+                {
+                    Width = 4,
+                    Thickness = 2,
+                    Spacing = 18,
+                    MaterialId = UserSaved.SelectedLayer.MaterialId,
+                    Material = UserSaved.SelectedLayer.Material
+                };
+            }
+            else
+            {
+                _tempConstruction = UserSaved.SelectedLayer.SubConstruction;
+            }
+            SelectedListViewItem = _tempConstruction.Material;
+        }
+
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -23,31 +47,33 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void AddSubConstructionLayer(Material? selectedMaterial)
+        private void AddSubConstructionLayer(Window? window)
         {
-            if (selectedMaterial is null) return;
-            if (Width == "" || Convert.ToDouble(Width) <= 0) return;
-            if (Thickness == "" || Convert.ToDouble(Thickness) <= 0) return;
-            if (Spacing == "" || Convert.ToDouble(Spacing) <= 0) return;
+            // To be able to Close Window from within this ViewModel
+            if (window is null) return;
 
-            var subConstruction = new LayerSubConstruction()
-            {
-                Width = Convert.ToDouble(Width, CultureInfo.CurrentCulture),
-                Thickness = Convert.ToDouble(Thickness, CultureInfo.CurrentCulture),
-                Spacing = Convert.ToDouble(Spacing, CultureInfo.CurrentCulture),
-                MaterialId = selectedMaterial.Id,
-                Material = selectedMaterial,
-            };
+            if (!_tempConstruction.IsValid) return;
+            UserSaved.SelectedLayer.SubConstruction = _tempConstruction;
+
             //DatabaseAccess.CreateLayer(layer);
-            UserSaved.SelectedLayer.SubConstruction = subConstruction;
+
             // Trigger Event to Update Layer Window
-            UserSaved.OnSelectedElementChanged();
+            UserSaved.OnSelectedLayerChanged();
+            window.Close();
         }
 
         [RelayCommand]
         private void ResetMaterialList()
         {
             SearchString = "";
+        }
+
+        // This method will be called whenever SelectedListViewItem changes
+        partial void OnSelectedListViewItemChanged(Material value)
+        {
+            if (value is null) return;
+            _tempConstruction.Material.Id = value.Id;
+            _tempConstruction.Material = value;
         }
 
         /*
@@ -65,19 +91,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         private MaterialCategory _selectedCategory = UserSaved.SelectedLayer.SubConstruction?.Material.Category ?? MaterialCategory.None;
 
         [ObservableProperty]
-        private SubConstructionDirection _selectedConstructionDirection = UserSaved.SelectedLayer.SubConstruction?.SubConstructionDirection ?? SubConstructionDirection.Horizontal;
-
-        [ObservableProperty]
-        //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string _width = UserSaved.SelectedLayer.SubConstruction?.Width.ToString(CultureInfo.CurrentCulture) ?? "4,8";
-
-        [ObservableProperty]
-        //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string _thickness = UserSaved.SelectedLayer.SubConstruction?.Thickness.ToString(CultureInfo.CurrentCulture) ?? "2,4";
-
-        [ObservableProperty]
-        //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string _spacing = UserSaved.SelectedLayer.SubConstruction?.Spacing.ToString(CultureInfo.CurrentCulture) ?? "18";
+        [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
+        private Material _selectedListViewItem = new Material();
 
 
         /*
@@ -86,15 +101,20 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, No direct User Input involved
          */
 
-        //public List<PropertyItem> LayerSubConstrProperties => new List<PropertyItem>
-        //{
-        //    new PropertyItem("Ausrichtung", SubConstructionDirection.Horizontal.ToString(), (string[])Enum.GetNames(typeof(SubConstructionDirection))) { IsReadonly = false},
-        //    new PropertyItem(Symbol.Width, Width) { IsReadonly = false },
-        //    new PropertyItem(Symbol.Thickness, Thickness) { IsReadonly = false },
-        //    new PropertyItem(Symbol.Length, Spacing) { IsReadonly = false },
-        //};
+        public List<IPropertyItem> SubConstructionProperties => new List<IPropertyItem>()
+        {
+            new PropertyItem<string>("Material", () => _tempConstruction.Material.Name) { TriggerPropertyChanged = false },
+            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => _tempConstruction.SubConstructionDirection, value => _tempConstruction.SubConstructionDirection = value)
+            {
+                Value = SubConstructionDirection.Horizontal,
+                PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray(),
+                TriggerPropertyChanged = false,
+            },
+            new PropertyItem<double>(Symbol.Thickness, () => _tempConstruction.Thickness, value => _tempConstruction.Thickness = value) { TriggerPropertyChanged = false },
+            new PropertyItem<double>(Symbol.Width, () => _tempConstruction.Width, value => _tempConstruction.Width = value) { TriggerPropertyChanged = false },
+            new PropertyItem<double>(Symbol.Distance, () => _tempConstruction.Spacing, value => _tempConstruction.Spacing = value) { TriggerPropertyChanged = false },
+        };
 
         public List<Material> Materials => SearchString != "" ? DatabaseAccess.QueryMaterialByCategory(SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
-
     }
 }

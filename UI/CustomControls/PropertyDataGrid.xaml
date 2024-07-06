@@ -128,11 +128,9 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
-                <Trigger Property="IsKeyboardFocused" Value="True">
-                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                </Trigger>
                 <DataTrigger Binding="{Binding IsReadonly}" Value="True">
                     <Setter Property="Cursor" Value="Arrow"/>
+                    <Setter Property="Focusable" Value="False"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -251,7 +249,7 @@
                                                              Style="{StaticResource DataGridTextBox}"
                                                              IsReadOnly="{Binding IsReadonly}"
                                                              PreviewTextInput="numericData_PreviewTextInput"
-                                                             TextChanged="TextBoxBase_OnTextChanged"/>
+                                                             LostKeyboardFocus="TextBox_LostKeyboardFocus" />
                                                     <controls:FractionLabel Grid.Column="1"
                                                                             CounterText="{Binding UnitCounterText}"
                                                                             DenominatorText="{Binding UnitDenominatorText}"

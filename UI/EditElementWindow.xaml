@@ -1,5 +1,5 @@
 ﻿<Window x:Class="BauphysikToolWPF.UI.EditElementWindow"
-        x:Name="Window"
+        x:Name="EditElementWindowControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -182,7 +182,12 @@
 
 
 
-        <Button Grid.Row="2" Margin="16,0,16,16" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=Window}" Style="{StaticResource ButtonStyle02_A}"/>
+        <Button Grid.Row="2"
+                Margin="16,0,16,16"
+                Content="Übernehmen"
+                Command="{Binding ApplyChangesCommand}"
+                CommandParameter="{Binding ElementName=EditElementWindowControl}"
+                Style="{StaticResource ButtonStyle02_A}"/>
     </Grid>
 
     

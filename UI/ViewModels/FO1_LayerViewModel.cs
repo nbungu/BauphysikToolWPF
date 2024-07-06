@@ -21,6 +21,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             UserSaved.SelectedLayerChanged += RefreshLayerProperties;
             UserSaved.SelectedLayerChanged += RefreshXamlBindings;
+
+            PropertyItem<double>.PropertyChanged += RefreshXamlBindings;
         }
 
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
@@ -171,6 +173,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
+        [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         [NotifyPropertyChangedFor(nameof(LayerTitle))]
         private Layer _selectedListViewItem;
 
@@ -207,6 +210,15 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.SdThickness, () => UserSaved.SelectedLayer.Sd_Thickness),
             new PropertyItem<bool>("Wirksame Schicht", () => UserSaved.SelectedLayer.IsEffective)
         };
+
+        public List<IPropertyItem> SubConstructionProperties => UserSaved.SelectedLayer.HasSubConstruction ? new List<IPropertyItem>()
+        {
+            new PropertyItem<string>("Material", () => UserSaved.SelectedLayer.SubConstruction.Material.Name),
+            new PropertyItem<string>("Kategorie", () => UserSaved.SelectedLayer.SubConstruction.Material.CategoryName),
+            new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedLayer.SubConstruction.Thickness, value => UserSaved.SelectedLayer.SubConstruction.Thickness = value),
+            new PropertyItem<double>(Symbol.Width, () => UserSaved.SelectedLayer.SubConstruction.Width, value => UserSaved.SelectedLayer.SubConstruction.Width = value),
+            new PropertyItem<double>(Symbol.Distance, () => UserSaved.SelectedLayer.SubConstruction.Spacing, value => UserSaved.SelectedLayer.SubConstruction.Spacing = value),
+        } : new List<IPropertyItem>();
 
         public List<IPropertyItem> ElementProperties => new List<IPropertyItem>
         {

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:BauphysikToolWPF.UI"
+        xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:models="clr-namespace:BauphysikToolWPF.Models"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
@@ -16,67 +17,6 @@
     </Window.DataContext>
     
     <Window.Resources>
-
-        <!--Custom Button04: rounded corners, click effects, materialUI -->
-        <Style x:Key="ButtonStyle04" TargetType="{x:Type Button}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".6"/>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF6DD46D"/>
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Foreground" Value="Gray"/>
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".2"/>
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!--
-        https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
-        https://github.com/mochan-b/GridViewCellFormatting
-        Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD of ItemTemplate
-        -->
-        <GridView x:Key="MaterialGridViewColumns" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
-            <!--Here: Binding source are Items (typeof 'Material') from the ItemsSource Property-->
-            <GridViewColumn DisplayMemberBinding="{Binding Name}" Header="Materialname" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding BulkDensity}" Header="ρ [kg/m³]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding ThermalConductivity}" Header="λ [W/(m·K)]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding SpecificHeatCapacity}" Header="c [J/(kg·K)]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding DiffusionResistance}" Header="µ (trocken) [-]" Width="Auto"/>
-        </GridView>
 
         <GridView x:Key="CategoryGridViewColumns" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
             <!--Here: Binding source are Items from the ItemsSource Property-->
@@ -96,7 +36,6 @@
         <Grid.RowDefinitions>
             <RowDefinition Height=".8*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="64"/>
         </Grid.RowDefinitions>
 
         <Grid.ColumnDefinitions>
@@ -136,23 +75,24 @@
                 <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle03_Mini}" Margin="0,0,8,0"/>
             </StackPanel>
 
-            <ListView x:Name="materials_ListView"
-                      Grid.Row="2"
-                      ItemsSource="{Binding Materials}"
-                      View="{StaticResource MaterialGridViewColumns}"
-                      ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
-                      Style="{StaticResource ListViewStyle01}"/>
+            <controls:MaterialsListView Grid.Row="2" Materials="{Binding Materials}" SelectedMaterial="{Binding SelectedListViewItem, Mode=TwoWay }"/>
         </Grid>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="8">
-            <Label Content="Schichtdicke angeben: " FontWeight="Bold" HorizontalAlignment="Left"/>
-            <TextBox Text="{Binding Thickness}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
-            <Label Content="cm" FontWeight="SemiBold"/>
-        </StackPanel>
-
-        <Grid Grid.Column="1" Grid.Row="2" Margin="8">
-            <Button Content="Schicht dem Bauteil hinzufügen" Command="{Binding AddLayerCommand}" CommandParameter="{Binding SelectedItem, ElementName=materials_ListView}" Style="{StaticResource ButtonStyle04}"/>
+        <Grid Grid.Row="1" Grid.Column="1" Margin="8">
+            <StackPanel Orientation="Horizontal">
+                <Label Content="Schichtdicke angeben: " FontWeight="Bold" HorizontalAlignment="Left"/>
+                <TextBox Text="{Binding Thickness}" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
+                <Label Content="cm" FontWeight="SemiBold"/>
+            </StackPanel>
+            <Button HorizontalAlignment="Right" Content="Schicht hinzufügen"
+                    Command="{Binding AddLayerCommand}"
+                    Style="{StaticResource ButtonStyle03_A}"
+                    Tag="{StaticResource ButtonIcon_AddLayer_W}"/>
         </Grid>
+
+
+
+
 
     </Grid>
 

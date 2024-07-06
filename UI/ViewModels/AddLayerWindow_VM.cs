@@ -22,9 +22,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void AddLayer(Material? selectedMaterial)
+        private void AddLayer()
         {
-            if (selectedMaterial is null) return;
             if (Thickness == "" || Convert.ToDouble(Thickness) <= 0) return;
 
             // LayerPosition is always at end of List 
@@ -37,8 +36,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 InternalId = layerCount,
                 Thickness = Convert.ToDouble(Thickness),
                 IsEffective = true,
-                MaterialId = selectedMaterial.Id,
-                Material = selectedMaterial,
+                MaterialId = _selectedListViewItem.Id,
+                Material = _selectedListViewItem,
                 ElementId = UserSaved.SelectedElement.Id,
                 Element = UserSaved.SelectedElement
             };
@@ -61,16 +60,18 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(Materials))]
-        private MaterialCategory _selectedCategory = MaterialCategory.None;
-
-        [ObservableProperty]
-        //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
         private string _thickness = "6";
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
         private string _searchString = "";
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(Materials))]
+        private MaterialCategory _selectedCategory = MaterialCategory.None;
+
+        [ObservableProperty]
+        private Material _selectedListViewItem = new Material();
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
