@@ -190,7 +190,7 @@
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                             ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
 
-                        <!-- "Horizontal Measurement Grid" -->
+                        <!-- "Vertical Measurement Grid" -->
                         <ItemsControl x:Name="MeasurementGrid"
                             Grid.Row="0"
                             Grid.Column="1"
@@ -201,7 +201,7 @@
                             ItemTemplate="{StaticResource MeasurementItemStyle}"
                             Margin="16,0,16,0"/>
 
-                        <!-- "Horizontal Measurement Grid Full" -->
+                        <!-- "Vertical Measurement Grid Full" -->
                         <ItemsControl x:Name="MeasurementGridFull"
                               Grid.Row="0"
                               Grid.Column="2"
@@ -211,6 +211,17 @@
                               ItemContainerStyle="{StaticResource CanvasContainerStyle}"
                               ItemTemplate="{StaticResource MeasurementItemStyle}"
                               Margin="16,0,16,0"/>
+
+                        <!-- "Horizontal Measurement Grid Test" -->
+                        <ItemsControl x:Name="MeasurementGridTest"
+                                      Grid.Row="1"
+                                      Grid.Column="0"
+                                      Width="{Binding ElementName=ElementCanvas, Path=Width}"
+                                      ItemsSource="{Binding SubConstructionMeasurement}"
+                                      ItemsPanel="{StaticResource Canvas}"
+                                      ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                      ItemTemplate="{StaticResource MeasurementItemStyle}"
+                                      Margin="0,16,0,16"/>
                     </Grid>
                 </Viewbox>
             </Grid>

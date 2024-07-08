@@ -9,7 +9,7 @@ namespace BauphysikToolWPF.Models.Helper
         ZIndexDescending
     }
 
-    public class DrawingGeometryComparer : IComparer<DrawingGeometry>
+    public class DrawingGeometryComparer : IComparer<IDrawingGeometry>
     {
 
         // Instance Variables
@@ -21,7 +21,7 @@ namespace BauphysikToolWPF.Models.Helper
         }
 
         // Interface Method
-        public int Compare(DrawingGeometry? x, DrawingGeometry? y)
+        public int Compare(IDrawingGeometry? x, IDrawingGeometry? y)
         {
             if (x is null || y is null)
                 return 0;

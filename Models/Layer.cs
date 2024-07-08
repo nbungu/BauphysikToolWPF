@@ -195,7 +195,7 @@ namespace BauphysikToolWPF.Models
             BackgroundColor = new SolidColorBrush(this.Material.Color);
             DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, initWidth, initHeight);
             RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
+            RectangleBorderThickness = this.IsSelected ? 2 : 0.2;
             Opacity = this.IsEffective ? 1 : 0.2;
         }
 

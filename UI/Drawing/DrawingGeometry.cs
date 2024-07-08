@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media;
 using Geometry;
 
@@ -13,7 +15,9 @@ namespace BauphysikToolWPF.UI.Drawing
     
     public class DrawingGeometry : IDrawingGeometry
     {
-       
+        // Static, because globally valid for all Intstances
+        public static double SizeOf1Cm;
+        
         // Rectangle on 2D Canvas. Drawing Origin (0,0) is top left corner.
         public Rectangle Rectangle { get; set; } = Rectangle.Empty; // in [px]
 

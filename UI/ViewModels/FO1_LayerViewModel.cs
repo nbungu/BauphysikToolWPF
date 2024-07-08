@@ -5,7 +5,8 @@ using BauphysikToolWPF.UI.Drawing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Linq;
+using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -152,7 +153,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnSelectedListViewItemChanged(Layer value)
         {
             if (value is null) return;
+            UserSaved.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
             UserSaved.SelectedLayerId = value.InternalId;
+            UserSaved.SelectedLayer.IsSelected = true;
         }
 
         /*
@@ -166,6 +169,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
         [NotifyPropertyChangedFor(nameof(LayerMeasurement))]
         [NotifyPropertyChangedFor(nameof(LayerMeasurementFull))]
+        [NotifyPropertyChangedFor(nameof(SubConstructionMeasurement))]
         [NotifyPropertyChangedFor(nameof(DrawingGeometries))]
         private List<Layer> _layerList = UserSaved.SelectedElement.Layers;
 
@@ -176,6 +180,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
         [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         [NotifyPropertyChangedFor(nameof(LayerTitle))]
+        [NotifyPropertyChangedFor(nameof(DrawingGeometries))]
         private Layer _selectedListViewItem;
 
         /*
@@ -186,13 +191,15 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public string LayerTitle => string.Format("Schicht {0}: {1}", UserSaved.SelectedLayer.LayerPosition, UserSaved.SelectedLayer.Material);
 
-        public List<DrawingGeometry> DrawingGeometries => UserSaved.SelectedElement.GetLayerDrawings();
+        public List<IDrawingGeometry> DrawingGeometries => UserSaved.SelectedElement.GetLayerDrawings();
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
-        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetLayerMeasurement(UserSaved.SelectedElement.Layers).ToList();
+        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers).ToList();
+        //public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(MeasurementChain.GetGeometryIntervals(DrawingGeometries.Where(g => (int)g.Tag == 0 && g.ZIndex == 1), Axis.X), Axis.X).ToList();
+        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
-        public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurement(new[] { 400.0 }, new[] { UserSaved.SelectedElement.Thickness_cm.ToString(CultureInfo.CurrentCulture) }).ToList() : new List<DrawingGeometry>();
+        public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {
