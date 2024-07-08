@@ -6,7 +6,6 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -24,11 +23,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedLayerChanged += RefreshLayerProperties;
             UserSaved.SelectedLayerChanged += RefreshXamlBindings;
 
+            // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += RefreshXamlBindings;
         }
 
         // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
-        public string Title => "SetupLayer";
+        public static string Title = "SetupLayer";
         
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -177,6 +177,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private Element _selectedElement = UserSaved.SelectedElement;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
         [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         [NotifyPropertyChangedFor(nameof(LayerTitle))]
@@ -188,6 +189,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Not Observable, No direct User Input involved
          */
+        public bool IsLayerSelected => SelectedListViewItem != null;
 
         public string LayerTitle => string.Format("Schicht {0}: {1}", UserSaved.SelectedLayer.LayerPosition, UserSaved.SelectedLayer.Material);
 
@@ -201,6 +203,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
 
+        // static to keep selection after page change
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Material", () => UserSaved.SelectedLayer.Material.Name),

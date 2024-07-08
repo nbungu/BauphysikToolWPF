@@ -180,40 +180,7 @@
 
         <!--Image-->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
-            <!-- Elements inside of ViewBox are dynamically sizable-->
-            <Viewbox VerticalAlignment="Top" Style="{StaticResource ViewBoxStyle}" HorizontalAlignment="Center">
-                <!--Keep this Margin to avoid clipping of LayerPosition sircles and width measurement numbers!-->
-                <Grid Margin="8">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
-                    <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
-
-                    <!-- "Layers Canvas" -->
-                    <ItemsControl x:Name="layers_ItemsControl"
-                                  Grid.Row="1"
-                                  Width="320"
-                                  Height="400"                                  
-                                  ItemsSource="{Binding Layers}"
-                                  ItemsPanel="{StaticResource Canvas}"
-                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                                  ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
-
-                    <!-- "Measurement Grid" -->
-                    <ItemsControl x:Name="measurement_Grid"
-                                  Grid.Row="2"
-                                  Style="{StaticResource MeasurementCanvasStyle}"
-                                  Width="{Binding ElementName=layers_ItemsControl, Path=Width}"
-                                  ItemsSource="{Binding LayerRects}"
-                                  ItemsPanel="{StaticResource Canvas}"
-                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                                  ItemTemplate="{StaticResource MeasurementItemStyle}"
-                                  Margin="0,16,0,0"/>
-                </Grid>
-            </Viewbox>
+           
         </Grid>
 
         <!--Env Rechts-->

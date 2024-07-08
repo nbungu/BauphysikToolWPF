@@ -268,9 +268,10 @@
                                                     </Grid.ColumnDefinitions>
                                                     <ComboBox Grid.Column="0"
                                                               IsEditable="True"
-                                                              SelectedValue="{Binding Value}"
+                                                              SelectedItem="{Binding Value}"
                                                               ItemsSource="{Binding PropertyValues}"
-                                                              Style="{StaticResource DataGridComboBox}"/>
+                                                              Style="{StaticResource DataGridComboBox}"
+                                                              SelectionChanged="ComboBox_SelectionChanged"/>
                                                     <controls:FractionLabel Grid.Column="1"
                                                                             CounterText="{Binding UnitCounterText}"
                                                                             DenominatorText="{Binding UnitDenominatorText}"

@@ -94,7 +94,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         private Material _selectedListViewItem = new Material();
 
-
         /*
          * MVVM Capsulated Properties: Triggered + Updated by other Properties (NotifyPropertyChangedFor)
          * 
@@ -106,7 +105,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<string>("Material", () => _tempConstruction.Material.Name) { TriggerPropertyChanged = false },
             new PropertyItem<SubConstructionDirection>("Ausrichtung", () => _tempConstruction.SubConstructionDirection, value => _tempConstruction.SubConstructionDirection = value)
             {
-                Value = SubConstructionDirection.Horizontal,
                 PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray(),
                 TriggerPropertyChanged = false,
             },

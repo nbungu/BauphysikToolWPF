@@ -7,7 +7,7 @@
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d"
              d:DesignHeight="320"
-             d:DesignWidth="320"
+             d:DesignWidth="640"
              d:Background="White">
 
     <UserControl.Resources>
@@ -83,12 +83,12 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
 
                                 <!-- Button for adding a subconstruction -->
                                 <Button x:Name="AddButton"
-                                HorizontalAlignment="Right"
-                                Content="Balkenlage hinzufügen +"
-                                Style="{StaticResource ButtonStyleListViewItem}"
-                                Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
-                                CommandParameter="{Binding InternalId}"
-                                Margin="0,0,16,0"/>
+                                    HorizontalAlignment="Right"
+                                    Content="Balkenlage hinzufügen +"
+                                    Style="{StaticResource ButtonStyleListViewItem}"
+                                    Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
+                                    CommandParameter="{Binding InternalId}"
+                                    Margin="0,0,16,0"/>
 
                             </Grid>
                         </Border>
@@ -101,9 +101,11 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                             </Trigger>
                             <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
                                 <Setter TargetName="EditDeletePanel" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="AddButton" Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding HasSubConstruction}" Value="False">
                                 <Setter TargetName="EditDeletePanel" Property="Visibility" Value="Collapsed" />
+                                <Setter TargetName="AddButton" Property="Visibility" Value="Visible" />
                             </DataTrigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>

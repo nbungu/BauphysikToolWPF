@@ -186,7 +186,7 @@ namespace BauphysikToolWPF.Models.Helper
             get => _getter != null ? (object)_getter() : _value;
             set
             {
-                if (Equals(_value, value)) return;
+                if (Equals(Value, value)) return;
 
                 if (_setter != null)
                 {

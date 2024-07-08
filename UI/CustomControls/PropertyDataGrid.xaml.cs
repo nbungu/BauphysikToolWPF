@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BauphysikToolWPF.Models;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -46,6 +47,20 @@ namespace BauphysikToolWPF.UI.CustomControls
                     if (type == typeof(double)) propertyItem.Value = double.Parse(textBox.Text);
                     else if (type == typeof(int)) propertyItem.Value = int.Parse(textBox.Text);
                     else propertyItem.Value = textBox.Text.ToString(CultureInfo.CurrentCulture);
+                }
+            }
+        }
+
+        private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender is ComboBox comboBox)
+            {
+                if (comboBox.IsReadOnly) return;
+
+                var propertyItem = comboBox.DataContext as IPropertyItem ?? null;
+                if (comboBox.SelectedItem != null && propertyItem != null)
+                {
+                    propertyItem.Value = comboBox.SelectedItem;
                 }
             }
         }
