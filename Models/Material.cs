@@ -1,5 +1,5 @@
-﻿using System.Windows.Media;
-using SQLite;
+﻿using SQLite;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models
 {
@@ -18,11 +18,11 @@ namespace BauphysikToolWPF.Models
     public class Material
     {
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int MaterialId { get; set; }
+        public int Id { get; set; }
         [NotNull, Unique]
         public string Name { get; set; } = string.Empty;
         [NotNull]
-        public string CategoryName { get; set; } = string.Empty;
+        public MaterialCategory Category { get; set; } = MaterialCategory.None;
         [NotNull]
         public int BulkDensity { get; set; }
         [NotNull]
@@ -43,6 +43,9 @@ namespace BauphysikToolWPF.Models
         public bool IsValid => BulkDensity > 0 && ThermalConductivity > 0;
 
         [Ignore]
+        public string CategoryName => TranslateToCategoryName();
+
+        [Ignore]
         public Color Color // HEX ColorCode (e.g. #dddddd) to 'Color' Type
         {
             get
@@ -52,40 +55,36 @@ namespace BauphysikToolWPF.Models
             }
         }
 
-        [Ignore]
-        public MaterialCategory Category
-        {
-            get
-            {
-                switch (CategoryName)
-                {
-                    case "Wärmedämmung":
-                        return MaterialCategory.Insulation;
-                    case "Beton":
-                        return MaterialCategory.Concrete;
-                    case "Holz":
-                        return MaterialCategory.Wood;
-                    case "Mörtel und Putze":
-                        return MaterialCategory.Plasters;
-                    case "Dichtbahnen, Folien":
-                        return MaterialCategory.Sealant;
-                    case "Luftschicht":
-                        return MaterialCategory.Air;
-                    case "Mauerwerk":
-                        return MaterialCategory.Masonry;
-                    case "Benutzerdefiniert":
-                        return MaterialCategory.UserDefined;
-                    default:
-                        return MaterialCategory.None;
-                }
-            }
-        }
-
         //------Methoden-----//
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
             return this.Name + " (" + this.CategoryName + ")";
+        }
+
+        private string TranslateToCategoryName()
+        {
+            switch (Category)
+            {
+                case MaterialCategory.Insulation:
+                    return "Wärmedämmung";
+                case MaterialCategory.Concrete:
+                    return "Beton";
+                case MaterialCategory.Wood:
+                    return "Holz";
+                case MaterialCategory.Plasters:
+                    return "Mörtel und Putze";
+                case MaterialCategory.Sealant:
+                    return "Dichtbahnen, Folien";
+                case MaterialCategory.Air:
+                    return "Luftschicht";
+                case MaterialCategory.Masonry:
+                    return "Mauerwerk";
+                case MaterialCategory.UserDefined:
+                    return "Benutzerdefiniert";
+                default:
+                    return "Ohne";
+            }
         }
     }
 }

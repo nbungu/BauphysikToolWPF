@@ -1,7 +1,7 @@
 ﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Helper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -57,6 +57,16 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(SelectedElement));
         }
 
+        // Manually Trigger this method whenever SortingPropertyIndex changes
+        partial void OnLayersChanged(List<Layer> value)
+        {
+            // Updates the Layer Geometry
+            UserSaved.SelectedElement.GetLayerDrawings();
+
+            // Update XAML Binding Property by fetching from DB
+            OnPropertyChanged(nameof(SelectedElement));
+        }
+
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
@@ -92,8 +102,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static int rel_fe_Index;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(LayerRects))]
-        [NotifyPropertyChangedFor(nameof(ElementWidth))]
         private List<Layer> _layers = UserSaved.SelectedElement.Layers;
         
         [ObservableProperty]
@@ -200,28 +208,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
 
-        public List<LayerRect> LayerRects // When accessed via get: Draws new Layers on Canvas
+        /*public List<LayerGeometry> LayerGeometries
         {
             get
             {
-                List<LayerRect> rectangles = new List<LayerRect>();
-                foreach (Layer layer in Layers)
-                {
-                    rectangles.Add(new LayerRect(ElementWidth, 320, 400, layer, rectangles.LastOrDefault()));
-                }
-                return rectangles;
+                var geometries = new List<LayerGeometry>();
+                UserSaved.SelectedElement.Layers.ForEach(l => geometries.Add(new LayerGeometry(l)));
+                return geometries.ScaleAndStack(320, 400);
             }
-        }
-
-        // TODO remove this property and retrieve ElementWidth from 'currentElement'
-        public double ElementWidth
-        {
-            get
-            {
-                double fullWidth = 0;
-                Layers.ForEach(l => fullWidth += l.LayerThickness);
-                return fullWidth;
-            }
-        }
+        }*/
     }
 }

@@ -185,7 +185,7 @@ namespace BauphysikToolWPF.Calculations
                 // Eindringtiefe δ [m]: Delta ist diejenige Tiefe in einem halbunendlichen Baustoff, bei der die Temperaturschwankung auf 1/e des Wertes der Oberflächentemperaturschwankung abgeklungen ist:
                 double delta = Math.Sqrt((layer.Material.ThermalConductivity * PeriodDuration) / Convert.ToDouble(layer.Material.BulkDensity * layer.Material.SpecificHeatCapacity * Math.PI));
                 // ξ [-]: Xi ist das Verhältnis von Schichtdicke zu Eindringtiefe
-                double xi = (layer.LayerThickness / 100) / delta;
+                double xi = (layer.Thickness / 100) / delta;
                 list.Add(HeatTransferMatrix.CreateLayerMatrix(delta, xi, layer.Material.ThermalConductivity));
             }
             return list;

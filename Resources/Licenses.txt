@@ -2,5 +2,8 @@
 
 Uicons by <a href="https://www.flaticon.com/uicons">Flaticon</a>
 
+<a href="https://www.flaticon.com/free-icons/top-alignment" title="top alignment icons">Top alignment icons created by Tempo_doloe - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/bottom-alignment" title="bottom alignment icons">Bottom alignment icons created by joalfa - Flaticon</a>
+<a href="https://www.flaticon.com/free-icons/align" title="align icons">Align icons created by Tempo_doloe - Flaticon</a>
 
 NuGet Packages

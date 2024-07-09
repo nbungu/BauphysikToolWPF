@@ -1,22 +1,33 @@
-﻿using BauphysikToolWPF.Models.Helper;
+﻿using System.Globalization;
+using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.Drawing;
+using Geometry;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models
 {
-
     public enum SubConstructionDirection
     {
-        Horizontal,
-        Vertical
+        Vertical,
+        Horizontal
     }
-    public class LayerSubConstruction : ISavefileElement<LayerSubConstruction>
+
+    /// <summary>
+    /// Business logic of a LayerSubConstruction
+    /// </summary>
+    public partial class LayerSubConstruction : IDrawingGeometry
     {
-        public int Id { get; }
-        public double Width { get; set; }
-        public double Height { get; set; }
-        public double Spacing { get; set; }
+        [NotNull, PrimaryKey, AutoIncrement, Unique]
+        public int Id { get; set; }
+        [NotNull]
+        public double Width { get; set; } // cm
+        [NotNull]
+        public double Thickness { get; set; } // cm
+        [NotNull]
+        public double Spacing { get; set; } // cm von Achse zu Achse
+        [NotNull]
         public SubConstructionDirection SubConstructionDirection { get; set; }
 
         [NotNull]
@@ -34,7 +45,7 @@ namespace BauphysikToolWPF.Models
         [Ignore]
         public int InternalId { get; set; }
         [Ignore]
-        public bool IsValid => Width > 0 && Height > 0 && Spacing > 0;
+        public bool IsValid => Width > 0 && Thickness > 0 && Spacing > 0 && Material != null;
         [Ignore]
         public double InnerSpacing => Spacing - Width;
         [Ignore]
@@ -47,17 +58,54 @@ namespace BauphysikToolWPF.Models
         // 1:1 relationship with Material
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
-        
-        //------Methods-----//
 
-        public LayerSubConstruction Copy()
-        {
-            throw new NotImplementedException();
-        }
+        [Ignore]
+        public bool IsEffective { get; set; } = true;
+
+        //------Methods-----//
 
         public void UpdateTimestamp()
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
+
+        public override string ToString() // Überlagert vererbte standard ToString() Methode 
+        {
+            return Width.ToString(CultureInfo.CurrentCulture) + " x " + Thickness.ToString(CultureInfo.CurrentCulture) + " cm " + Material.Name + ", Abstand: " + Spacing.ToString(CultureInfo.CurrentCulture) + " cm";
+        }
+    }
+
+    /// <summary>
+    /// Presentation logic of a LayerSubConstruction which can be drawn on a XAML Canvas
+    /// </summary>
+    public partial class LayerSubConstruction : IDrawingGeometry
+    {
+        #region IDrawingGeometry
+
+        public Rectangle Rectangle { get; set; } = Rectangle.Empty;
+        public Brush RectangleBorderColor { get; set; } = Brushes.Black;
+        public double RectangleBorderThickness { get; set; } = 0.2;
+        public Brush BackgroundColor { get; set; } = Brushes.Transparent;
+        public Brush DrawingBrush { get; set; } = new DrawingBrush();
+        public double Opacity { get; set; } = 1;
+        public int ZIndex { get; set; } = 1;
+        public object Tag { get; set; }
+
+        public IDrawingGeometry Convert()
+        {
+            return new DrawingGeometry(this);
+        }
+        public void UpdateGeometry()
+        {
+            Rectangle = new Rectangle(new Point(0, 0), this.Width, this.Thickness);
+            BackgroundColor = new SolidColorBrush(this.Material.Color);
+            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, this.Width, this.Thickness);
+            RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
+            Opacity = this.IsEffective ? 1 : 0.4;
+        }
+
+        #endregion
     }
 }
+

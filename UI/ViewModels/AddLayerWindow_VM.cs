@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,16 +14,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => "AddLayerWindow";
-        public List<string> DistinctCategories
-        {
-            get
-            {
-                List<string> distinctCategories = DatabaseAccess.GetMaterials().Select(m => m.CategoryName).ToList().Distinct().ToList();
-                distinctCategories.Insert(0, "Alle anzeigen");
-                return distinctCategories;
-            }
-        }
+        public string Title = "AddLayerWindow";
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -31,10 +23,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void AddLayer(Material? selectedMaterial)
+        private void AddLayer()
         {
-            if (selectedMaterial is null) return;
-            if (Thickness == "" || Convert.ToDouble(Thickness) <= 0) return;
+            if (Thickness <= 0) return;
 
             // LayerPosition is always at end of List 
             int layerCount = UserSaved.SelectedElement.Layers.Count;
@@ -44,10 +35,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                 //LayerId gets set by SQLite DB (AutoIncrement)
                 LayerPosition = layerCount,
                 InternalId = layerCount,
-                LayerThickness = Convert.ToDouble(Thickness),
+                Thickness = Convert.ToDouble(Thickness),
                 IsEffective = true,
-                MaterialId = selectedMaterial.MaterialId,
-                Material = selectedMaterial,
+                MaterialId = _selectedListViewItem.Id,
+                Material = _selectedListViewItem,
                 ElementId = UserSaved.SelectedElement.Id,
                 Element = UserSaved.SelectedElement
             };
@@ -55,12 +46,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElement.Layers.Add(layer);
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedElementChanged();
+
+            //DatabaseAccess.CreateLayer(layer);
         }
 
         [RelayCommand]
-        private void CreateMaterial()
+        private void ResetMaterialList()
         {
-            //TODO
+            SearchString = "";
         }
 
         /*
@@ -70,23 +63,28 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(Materials))]
-        private string _selectedCategory = "Alle anzeigen";
+        private double _thickness = 6.0;
 
         [ObservableProperty]
-        //[NotifyPropertyChangedFor(nameof(IsThicknessValid))]
-        private string _thickness = "6";
+        [NotifyPropertyChangedFor(nameof(Materials))]
+        private string _searchString = "";
 
-        /*
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private string searchString = "";
-        */
+        private MaterialCategory _selectedCategory = MaterialCategory.None;
+
+        [ObservableProperty]
+        private Material _selectedListViewItem = new Material();
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public List<Material> Materials => SelectedCategory == "Alle anzeigen" ? DatabaseAccess.QueryMaterialByCategory("*") : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
+        public List<IPropertyItem> ThicknessProperties => new List<IPropertyItem>()
+        {
+            new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
+        };
+
+        public List<Material> Materials => SearchString != "" ? DatabaseAccess.QueryMaterialByCategory(SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
     }
 }

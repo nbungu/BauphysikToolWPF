@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
-using BauphysikToolWPF.Models.Helper;
+﻿using BauphysikToolWPF.Services;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.Models
 {
@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.Models
         Existing,       // 0, Bestandsgebäude
         New             // 1, Neubau
     }
-    public class Project : ISavefileElement<Project>
+    public class Project
     {
         //------Variablen-----//
 
@@ -108,6 +108,7 @@ namespace BauphysikToolWPF.Models
             return Name + " (Id: " + Id + ")";
         }
 
+        // TODO: Move to ProjectExtensions Class
         public void AssignInternalIdsToElements()
         {
             int index = 0; // Start at 0

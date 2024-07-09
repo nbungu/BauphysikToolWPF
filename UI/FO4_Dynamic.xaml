@@ -45,17 +45,22 @@
             <!--Takes the Width and Height from TemplatedParent-->
             <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
-        <!-- Properties of a CanvasItem (Layer Rectangle). Sets the Drawing Coordinates of the container holding a CanvasItem -->
+
+        <!-- Properties of a CanvasItem (LayerGeometry). Sets the Drawing Coordinates of the container holding a CanvasItem -->
         <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
-            <Setter Property="Canvas.Left" Value="{Binding Left}"/>
-            <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+            <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
         </Style>
-        <!-- Content and Styling of a Canvas Item (Layer Rectangle) -->
-        <DataTemplate x:Key="LayerItemStyle">
-            <Grid Width="{Binding RectWidth}" Height="{Binding RectHeight}" Background="{Binding RectFill}">
-                <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}" Opacity="{Binding RectOpacity}"/>
+
+        <!-- Content and Styling of a Canvas Item (LayerGeometry) -->
+        <DataTemplate x:Key="CanvasLayerItemStyle">
+            <Grid Width="{Binding Rectangle.Width}" Height="{Binding Rectangle.Height}" Background="{Binding BackgroundColor}" Opacity="{Binding Opacity}">
+                <Rectangle Fill="{Binding HatchPattern}" Stroke="{Binding BorderStroke}" StrokeThickness="{Binding BorderThickness}"/>
+                <Ellipse Fill="White" Width="20" Height="20" Stroke="{Binding BorderStroke}" StrokeThickness="1" HorizontalAlignment="Center" Margin="-8"/>
+                <Label Content="{Binding LayerPosition}" Margin="-8"/>
             </Grid>
         </DataTemplate>
+
     </UserControl.Resources>
 
     <!--Main Grid 2x2-->
@@ -69,19 +74,19 @@
         <Border Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20" Margin="0,0,8,0"/>
                     <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
                     <Label Content="{Binding SelectedElement.Construction.TypeName}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <!--
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                     -->
                 </StackPanel>
             </Grid>
@@ -158,10 +163,10 @@
                             x:Name="layers_ItemsControl"
                             Width="360"
                             Height="450"                                 
-                            ItemsSource="{Binding LayerRects}"
+                            ItemsSource="{Binding LayerGeometries}"
                             ItemsPanel="{StaticResource Canvas}"
                             ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                            ItemTemplate="{StaticResource LayerItemStyle}"/>
+                            ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
                     </Viewbox>
 
                     <lvc:CartesianChart

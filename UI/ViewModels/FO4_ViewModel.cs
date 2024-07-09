@@ -1,7 +1,7 @@
 ﻿using BauphysikToolWPF.Calculations;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Helper;
+using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -12,7 +12,6 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -69,21 +68,31 @@ namespace BauphysikToolWPF.UI.ViewModels
                 };
             }
         }
-        // TOD0 Make cleaner
-        public List<LayerRect> LayerRects // When accessed via get: Draws new Layers on Canvas
+        /*public List<LayerGeometry> LayerGeometries
         {
             get
             {
-                if (!_dynamicTempCalc.IsValid) return new List<LayerRect>();
-                List<LayerRect> rectangles = new List<LayerRect>();
+                var geometries = new List<LayerGeometry>();
+                UserSaved.SelectedElement.Layers.ForEach(l => geometries.Add(new LayerGeometry(l)));
+                return geometries.ScaleAndStack(320, 400);
+            }
+        }*/
+
+        // TOD0 Make cleaner
+        /*public List<LayerGeometry> LayerRects // When accessed via get: Draws new Layers on Canvas
+        {
+            get
+            {
+                if (!_dynamicTempCalc.IsValid) return new List<LayerGeometry>();
+                List<LayerGeometry> rectangles = new List<LayerGeometry>();
                 foreach (Layer layer in _dynamicTempCalc.Element.Layers)
                 {
                     layer.IsSelected = false;
-                    rectangles.Add(new LayerRect(_dynamicTempCalc.Element.Thickness_cm, 360, 450, layer, rectangles.LastOrDefault()));
+                    rectangles.Add(new LayerGeometry(_dynamicTempCalc.Element.Thickness_cm, 360, 450, layer, rectangles.LastOrDefault()));
                 }
                 return rectangles;
             }
-        }
+        }*/
         public LiveChartsCore.Measure.Margin ChartMargin_i { get; private set; } = new LiveChartsCore.Measure.Margin(64, 16, 0, 64);
         public LiveChartsCore.Measure.Margin ChartMargin_e { get; private set; } = new LiveChartsCore.Measure.Margin(0, 16, 64, 64);
         public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));

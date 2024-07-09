@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Repository;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace BauphysikToolWPF.SessionData
 {
@@ -12,7 +13,7 @@ namespace BauphysikToolWPF.SessionData
         public static event Notify? SelectedElementChanged; // event
         public static event Notify? SelectedLayerChanged; // event
         public static event Notify? EnvVarsChanged; // event
-        public static Project? SelectedProject;
+        public static Project SelectedProject = new Project();
 
         // event handlers - publisher
         public static void OnSelectedProjectChanged() //protected virtual method
@@ -35,41 +36,22 @@ namespace BauphysikToolWPF.SessionData
         /// <summary>
         /// InternalID des ausgewählten Elements
         /// </summary>
-        private static int _selectedElementId = -1;
-        public static int SelectedElementId
-        {
-            get => _selectedElementId;
-            set
-            {
-                _selectedElementId = value;
-                //OnSelectedElementChanged();
-            }
-        }
+        public static int SelectedElementId { get; set; } = -1;
 
         /// <summary>
         /// Zeigt auf das entsprechende Element aus dem aktuellen Projekt auf Basis der InternalID von 'SelectedElementId'
         /// </summary>
-        public static Element? SelectedElement => SelectedProject?.Elements.Find(e => e.InternalId == SelectedElementId);
+        public static Element SelectedElement => SelectedProject.Elements.FirstOrDefault(e => e.InternalId == SelectedElementId, new Element());
 
         /// <summary>
         /// InternalID des ausgewählten Elements
         /// </summary>
-        private static int _selectedLayerId = -1;
-
-        public static int SelectedLayerId
-        {
-            get => _selectedLayerId;
-            set
-            {
-                _selectedLayerId = value;
-                //OnSelectedLayerChanged();
-            }
-        }
+        public static int SelectedLayerId { get; set; } = -1;
 
         /// <summary>
         /// Zeigt auf den entsprechenden Layer aus dem aktuellen Element auf Basis der LayerPosition von 'SelectedLayerPosition'
         /// </summary>
-        public static Layer? SelectedLayer => SelectedElement?.Layers.Find(e => e.InternalId == SelectedLayerId);
+        public static Layer SelectedLayer => SelectedElement.Layers.FirstOrDefault(e => e.InternalId == SelectedLayerId, new Layer());
 
         // Unordered Collection. Key must be unique!
         private static readonly Dictionary<string, double> _userEnvVars = new Dictionary<string, double>(6)

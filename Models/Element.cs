@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Services;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
@@ -28,7 +27,7 @@ namespace BauphysikToolWPF.Models
         NordWesten
     }
 
-    public class Element : ISavefileElement<Element>
+    public class Element
     {
         //------Variablen-----//
 
@@ -112,9 +111,6 @@ namespace BauphysikToolWPF.Models
             set => Tag = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
         }
 
-        [Ignore]
-        public bool IsSelectedElement => Id == UserSaved.SelectedElement.Id; // For UI Purposes
-
         // Encapsulate 'Image' variable for use in frontend
         [Ignore]
         public BitmapImage ElementImage
@@ -145,13 +141,10 @@ namespace BauphysikToolWPF.Models
         {
             get
             {
-                if (Layers.Count == 0) return 0;
-                double val = 0;
-                foreach (Layer layer in Layers)
-                {
-                    val += layer.LayerThickness;
-                }
-                return Math.Round(val, 2);
+                double fullWidth = 0;
+                if (Layers.Count == 0) return fullWidth;
+                Layers.ForEach(l => fullWidth += l.Thickness);
+                return Math.Round(fullWidth, 4);
             }
         }
         public double Thickness_m => Math.Round(Thickness_cm / 100, 4); // d in m
@@ -161,15 +154,15 @@ namespace BauphysikToolWPF.Models
         {
             get
             {
-                if (Layers.Count == 0) return 0;
-                double val = 0;
+                double fullWidth = 0;
+                if (Layers.Count == 0) return fullWidth;
                 foreach (Layer layer in Layers)
                 {
                     if (!layer.IsEffective)
                         continue;
-                    val += layer.Sd_Thickness;
+                    fullWidth += layer.Sd_Thickness;
                 }
-                return Math.Round(val, 2);
+                return Math.Round(fullWidth, 2);
             }
         }
 
@@ -238,36 +231,6 @@ namespace BauphysikToolWPF.Models
             return Name + " - " + Construction.TypeName + " (Id: " + Id + ")";
         }
 
-        public void AssignInternalIdsToLayers()
-        {
-            int index = 0; // Start at 0
-            this.Layers.ForEach(e => e.InternalId = index++);
-        }
-
-        // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
-        // Layers have to be SORTED (LayerPos)
-        public void SortLayers()
-        {
-            this.Layers.Sort((a, b) => a.LayerPosition.CompareTo(b.LayerPosition));
-            // Fix postioning
-            int index = 0; // Start at 0
-            this.Layers.ForEach(e => e.LayerPosition = index++);
-        }
-        
-        public void AssignEffectiveLayers()
-        {
-            if (this.Layers.Count > 0)
-            {
-                bool foundAirLayer = false;
-                foreach (Layer layer in Layers)
-                {
-                    if (layer.Material.Category == MaterialCategory.Air)
-                        foundAirLayer = true;
-                    layer.IsEffective = !foundAirLayer;
-                    //DatabaseAccess.UpdateLayer(layer, triggerUpdateEvent: false); // triggerUpdateEvent: false -> avoid notification loop
-                }
-            }
-        }
         public void UpdateTimestamp()
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();

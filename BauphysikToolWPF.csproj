@@ -49,6 +49,9 @@
     <None Remove="Resources\Icons\add_layer_w.png" />
     <None Remove="Resources\Icons\akzeptiert.png" />
     <None Remove="Resources\Icons\akzeptiert_w.png" />
+    <None Remove="Resources\Icons\align-bottom.png" />
+    <None Remove="Resources\Icons\align-center.png" />
+    <None Remove="Resources\Icons\align-top.png" />
     <None Remove="Resources\Icons\auge.png" />
     <None Remove="Resources\Icons\auge_w.png" />
     <None Remove="Resources\Icons\auge_zu.png" />
@@ -129,6 +132,8 @@
     <None Remove="Resources\Icons\save_w.png" />
     <None Remove="Resources\Icons\schloss_zu.png" />
     <None Remove="Resources\Icons\schloss_zu_w.png" />
+    <None Remove="Resources\Icons\search.png" />
+    <None Remove="Resources\Icons\search_bold.png" />
     <None Remove="Resources\Icons\settings.png" />
     <None Remove="Resources\Icons\settings_Light_b.png" />
     <None Remove="Resources\Icons\settings_w.png" />
@@ -159,12 +164,21 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="Geometry">
+      <HintPath>..\Geometry\bin\Debug\net8.0\Geometry.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="Resources\Icons\add_element.png" />
     <Resource Include="Resources\Icons\add_element_w.png" />
     <Resource Include="Resources\Icons\add_layer.png" />
     <Resource Include="Resources\Icons\add_layer_w.png" />
     <Resource Include="Resources\Icons\akzeptiert.png" />
     <Resource Include="Resources\Icons\akzeptiert_w.png" />
+    <Resource Include="Resources\Icons\align-bottom.png" />
+    <Resource Include="Resources\Icons\align-center.png" />
+    <Resource Include="Resources\Icons\align-top.png" />
     <Resource Include="Resources\Icons\auge.png" />
     <Resource Include="Resources\Icons\auge_w.png" />
     <Resource Include="Resources\Icons\auge_zu.png" />
@@ -238,6 +252,8 @@
     <Resource Include="Resources\Icons\schloss_zu.png" />
     <Resource Include="Resources\Icons\schloss_zu_w.png" />
     <Resource Include="Resources\Icons\moisture_w.png" />
+    <Resource Include="Resources\Icons\search.png" />
+    <Resource Include="Resources\Icons\search_bold.png" />
     <Resource Include="Resources\Icons\settings.png" />
     <Resource Include="Resources\Icons\settings_Light_b.png" />
     <Resource Include="Resources\Icons\settings_w.png" />
@@ -256,6 +272,12 @@
     <Compile Update="UI\AddElementWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UI\AddLayerSubConstructionWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="UI\TestWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -266,6 +288,12 @@
 
   <ItemGroup>
     <Page Update="UI\AddElementWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\AddLayerSubConstructionWindow.xaml">
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Update="UI\TestWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

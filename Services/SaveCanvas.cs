@@ -4,13 +4,13 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.SessionData;
 
-namespace BauphysikToolWPF.UI.Helper
+namespace BauphysikToolWPF.Services
 {
     public static class SaveCanvas
     {
-        public static void SaveAsPNG(ItemsControl target, string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/")
+        // TODO adjust offsets like BLOB
+        /*public static void SaveAsPNG(ItemsControl target, string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/")
         {
             if (target.ItemsSource is null) return;
 
@@ -33,7 +33,7 @@ namespace BauphysikToolWPF.UI.Helper
 
             using var fileStream = File.OpenWrite(path + imgName);
             encoder.Save(fileStream);
-        }
+        }*/
 
         public static byte[] SaveAsBLOB(ItemsControl target)
         {
@@ -46,8 +46,21 @@ namespace BauphysikToolWPF.UI.Helper
             bitmap.Render(target);
 
             // Set Width, Height and Croppings: Create always img of same size, regardless of current canvas dimensions
-            int yOffset = Math.Abs((int)target.RenderSize.Width - (int)target.RenderSize.Height);
-            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(0, yOffset, (int)target.RenderSize.Width, (int)target.RenderSize.Width));
+            int offset = Math.Abs((int)target.RenderSize.Width - (int)target.RenderSize.Height) / 2;
+
+            // Set Focus to middle of Image via offsets
+            bool isVertical = (int)target.RenderSize.Width < (int)target.RenderSize.Height;
+            bool isSquare = (int)target.RenderSize.Width == (int)target.RenderSize.Height;
+            int offsetX = isVertical ? 0 : offset;
+            int offsetY = isVertical ? offset : 0;
+            if (isSquare)
+            {
+                offsetX = offset;
+                offsetY = offset;
+            }
+
+            var sizeOfSquareImage = Math.Min((int)target.RenderSize.Width, (int)target.RenderSize.Height);
+            var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(offsetX, offsetY, sizeOfSquareImage, sizeOfSquareImage));
 
             BitmapEncoder encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));

@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using BauphysikToolWPF.Services;
+using System.Windows;
+using System.Windows.Input;
 
 namespace BauphysikToolWPF.UI
 {
@@ -7,6 +9,10 @@ namespace BauphysikToolWPF.UI
         public AddElementWindow()
         {
             InitializeComponent();
+        }
+        private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
         }
     }
 }

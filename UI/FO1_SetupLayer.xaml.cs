@@ -1,6 +1,7 @@
-﻿using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Helper;
 using System;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -52,19 +53,6 @@ namespace BauphysikToolWPF.UI
             Recalculate = true;
         }
 
-        //public void UpdateElementEnvVars(int elementID, EnvVars envVar)
-        //{
-        //    // Add m:n realtion to Database
-        //    ElementEnvVars elemEnvVars = new ElementEnvVars()
-        //    {
-        //        //Id gets set by SQLite (Autoincrement)
-        //        Id = elementID,
-        //        EnvVarId = envVar.EnvVarId,
-        //    };
-        //    // Only insert every envVar once! 
-        //    if (DatabaseAccess.UpdateElementEnvVars(elemEnvVars) == 0) DatabaseAccess.CreateElementEnvVars(elemEnvVars); // If no row is updated ( == 0), create a new one
-        //}
-
         // UI Methods
 
         // Save current canvas as image, just before closing FO1_SetupLayer Page
@@ -74,7 +62,7 @@ namespace BauphysikToolWPF.UI
             // Only save if leaving this page
             if (IsVisible) return;
             UserSaved.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
-            UserSaved.SelectedElement.Image = (UserSaved.SelectedElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(layers_ItemsControl) : Array.Empty<byte>();
+            UserSaved.SelectedElement.Image = (UserSaved.SelectedElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(ElementCanvas) : Array.Empty<byte>();
         }
 
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)

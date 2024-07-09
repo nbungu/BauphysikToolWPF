@@ -3,7 +3,6 @@ using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
 {
-    public delegate void Notify(); // delegate with signature: return type void, no input parameters
     public partial class FO0_ProjectPage : UserControl
     {
         // Constructor

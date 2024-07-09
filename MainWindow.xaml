@@ -61,6 +61,9 @@
         <DataTemplate x:Key="FO4_Dynamic">
             <ui:FO4_Dynamic/>
         </DataTemplate>
+        <DataTemplate x:Key="TestWindow">
+            <ui:TestWindow/>
+        </DataTemplate>
 
         <!--Content Pages on right side-->
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
@@ -92,6 +95,9 @@
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Dynamic">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO4_Dynamic}"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Test">
+                    <Setter Property="ContentTemplate" Value="{StaticResource TestWindow}"/>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -108,6 +114,7 @@
             <system:String>Temperature</system:String> <!--SelectedIndex: 4-->
             <system:String>Moisture</system:String>    <!--SelectedIndex: 5-->
             <system:String>Dynamic</system:String>    <!--SelectedIndex: 6-->
+            <system:String>Test</system:String>
         </x:Array>
 
         <!--NavigationMenu ListBox appearance: Used in ListBox as Style -->
@@ -252,12 +259,16 @@
                     <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Moisture_W}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Dynamic"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="Test">
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Hide_W}"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Test"/>
+                </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
 
         <Style x:Key="WindowMainPanelStyle" TargetType="{x:Type Border}">
             <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderThickness" Value="0" />
             <Style.Triggers>
                 <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
                     <Setter Property="BorderThickness" Value="0" />
@@ -382,32 +393,20 @@
     <Window.InputBindings>
         <KeyBinding
             Key="O"
-            Command="{Binding OpenFile}"
+            Command="{Binding OpenFileCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="F"
-            Command="{Binding OpenFolder}"
+            Command="{Binding OpenFileCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="Q"
-            Command="{Binding ProcessingService.AddToQueue}"
+            Command="{Binding OpenFileCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="O"
-            Command="{Binding ProcessingService.QueueFiles}"
+            Command="{Binding OpenFileCommand}"
             Modifiers="Control+Shift" />
-        <KeyBinding
-            Key="T"
-            Command="{Binding ProcessingService.QueueTitlesAction}"
-            Modifiers="Control" />
-        <KeyBinding
-            Key="W"
-            Command="{Binding CloseVideoSource}"
-            Modifiers="Control" />
-        <KeyBinding
-            Key="D"
-            Command="{Binding OutputPathService.PickOutputPath}"
-            Modifiers="Control" />
     </Window.InputBindings>
 
     <Border Name="RootGrid" Style="{StaticResource WindowMainPanelStyle}">
@@ -437,8 +436,7 @@
                                 Width="46"
                                 Height="32"
                                 Data="M 18,15 H 28"
-                                Stroke="{Binding Path=Foreground,
-						                 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                 StrokeThickness="1" />
                         </Button>
                         <Button Name="MaximizeButton" Click="MaximizeCommand" Style="{StaticResource TitleBarButtonStyle}">
@@ -446,8 +444,7 @@
                                 Width="46"
                                 Height="32"
                                 Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z"
-                                Stroke="{Binding Path=Foreground,
-						                 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                 StrokeThickness="1" />
                         </Button>
                         <Button Name="RestoreButton" Click="MaximizeCommand" Style="{StaticResource TitleBarButtonStyle}">
@@ -455,8 +452,7 @@
                                 Width="46"
                                 Height="32"
                                 Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5"
-                                Stroke="{Binding Path=Foreground,
-						                 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                 StrokeThickness="1" />
                         </Button>
                         <Button Name="CloseButton" Click="CloseCommand" Style="{StaticResource TitleBarCloseButtonStyle}">
@@ -464,8 +460,7 @@
                                 Width="46"
                                 Height="32"
                                 Data="M 18,11 27,20 M 18,20 27,11"
-                                Stroke="{Binding Path=Foreground,
-						                 RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                 StrokeThickness="1" />
                         </Button>
                     </StackPanel>

@@ -1,13 +1,15 @@
 ﻿<UserControl x:Class="BauphysikToolWPF.UI.FO1_SetupLayer"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
             xmlns:local="clr-namespace:BauphysikToolWPF"
             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
             mc:Ignorable="d"
-            d:DesignHeight="700" d:DesignWidth="1200" IsVisibleChanged="UserControl_IsVisibleChanged">
+            d:DesignHeight="700"
+            d:DesignWidth="1200"
+            IsVisibleChanged="UserControl_IsVisibleChanged">
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
@@ -21,47 +23,6 @@
     -->
 
     <UserControl.Resources>
-        <!--
-        Defines a Template for the Items in the LayerListView.
-        The Bindings are retrieved from the ItemsSource which is set by the backend.
-        -->
-        <controls:ItemSelectedToEnabledConverter x:Key="ItemSelectedToEnabledConverter"/>
-
-        <Style x:Key="ViewBoxStyle" TargetType="{x:Type Viewbox}">
-            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <RotateTransform Angle="0"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedElement.Construction.IsLayoutVertical}" Value="false">
-                    <Setter Property="Margin" Value="80,0,80,0"/>
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <RotateTransform Angle="270"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="LabelRotateStyle" TargetType="{x:Type Label}">
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <RotateTransform Angle="0"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedElement.Construction.IsLayoutVertical}" Value="false">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <RotateTransform Angle="90"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
 
         <!-- Defines the type of UIElement used in the ItemsPanel-->
         <ItemsPanelTemplate x:Key="Canvas">
@@ -69,119 +30,41 @@
             <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
 
-        <!-- Properties of a CanvasItem (Layer Rectangle). Sets the Drawing Coordinates of the container holding a CanvasItem -->
+        <!-- Properties of a CanvasItem (Layer). Sets the Drawing Coordinates of the container holding a CanvasItem -->
         <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
-            <Setter Property="Canvas.Left" Value="{Binding Left}"/>
-            <Setter Property="Canvas.Top" Value="{Binding Top}"/>
+            <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
         </Style>
 
-        <!-- Content and Styling of a Canvas Item (Layer Rectangle) -->
-        <DataTemplate x:Key="LayerItemStyle">
-            <Grid Width="{Binding RectWidth}" Height="{Binding RectHeight}" Background="{Binding RectFill}" Opacity="{Binding RectOpacity}">
-                <Rectangle Fill="{Binding RectHatchPattern}" Stroke="{Binding RectStroke}" StrokeThickness="{Binding RectStrokeThickness}"/>
-                <Ellipse Fill="White" Width="20" Height="20" Stroke="{Binding RectStroke}" StrokeThickness="1" HorizontalAlignment="Center" Margin="-8"/>
-                <Label Content="{Binding RectPosition}" Margin="-8"/>
+        <!-- Content and Styling of a Canvas Item (Layer) -->
+        <DataTemplate x:Key="CanvasLayerItemStyle">
+            <Grid Width="{Binding Rectangle.Width}"
+                  Height="{Binding Rectangle.Height}"
+                  Background="{Binding BackgroundColor}"
+                  Opacity="{Binding Opacity}">
+                <Rectangle x:Name="LayerRectangle"
+                           Fill="{Binding DrawingBrush}"
+                           Stroke="{Binding RectangleBorderColor}"
+                           StrokeThickness="{Binding RectangleBorderThickness}"/>
+                <Ellipse Fill="White"
+                         Width="20"
+                         Height="20"
+                         Stroke="{Binding RectangleBorderColor}"
+                         StrokeThickness="1"
+                         HorizontalAlignment="Center"
+                         Margin="-8"/>
+                <Label Content="{Binding Tag}" Margin="-8"/>
             </Grid>
         </DataTemplate>
 
         <!-- Content and Styling of a Canvas Item (Measurement Marker Line) -->
         <DataTemplate x:Key="MeasurementItemStyle">
-            <!-- DataContext is LayerRects from ItemSource-->
-            <Grid Width="{Binding RectWidth}" Height="56">
-                <!-- X1="0.5" X2="0.5" Adds 0.5 Offset to the Left, to avoid clipping of first marker line-->
-                <Line x:Name="MarkerLine" Y2="12" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                <Label Content="{Binding RectWidth_cm}" Margin="-16,-40,-16,0"/>
+            <Grid Width="{Binding Rectangle.Width}"
+                  Height="{Binding Rectangle.Height}">
+                <Rectangle x:Name="MeasurementDrawing" Fill="{Binding DrawingBrush}"/>
             </Grid>
         </DataTemplate>
 
-        <Style x:Key="MeasurementCanvasStyle" TargetType="{x:Type ItemsControl}">
-            <Setter Property="Height" Value="56"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ItemsControl}">
-                        <Grid>
-                            <!-- Adds a static UIElement to the ItemsSource-->
-                            <!-- DataContext is FO1_Layer_VM-->
-                            <Label Content="{Binding ElementWidth}" Margin="-16,0,-16,-40"/>
-                            <Line x:Name="staticStartLine" Y2="12" X1="0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                            <Line x:Name="staticBaseLine" X1="0" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                            <Line x:Name="staticEndLine" Y2="12" X1="{TemplateBinding Width}" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,-8,0"/>
-                            <!-- ItemsPresenter is where the (dynamic) Content of the Canvas Items are shown (from ItemsSource) -->
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-        <!--
-        https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
-        https://github.com/mochan-b/GridViewCellFormatting
-        Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD of ItemTemplate
-        -->
-        <GridView x:Key="LayerGridViewColumns" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
-            <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
-            <GridViewColumn Header="Pos." Width="Auto">
-                <!--Custom Column Style for Column 0-->
-                <GridViewColumn.CellTemplate>
-                    <DataTemplate>
-                        <Grid>
-                            <Ellipse Fill="{Binding Material.ColorCode}" Height="28" Width="28" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <Label Content="{Binding LayerPosition}" Foreground="White" FontWeight="Bold"/>
-                        </Grid>
-                    </DataTemplate>
-                </GridViewColumn.CellTemplate>
-            </GridViewColumn>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.Name}" Header="Material" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding LayerThickness}" Header="d [cm]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.ThermalConductivity}" Header="λ [W/(mK)]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.BulkDensity}" Header="ρ [kg/m³]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="R [m²K/W]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.SpecificHeatCapacity}" Header="c [J/(kgK)]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.DiffusionResistance}" Header="µ [-]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Sd_Thickness}" Header="sd [m]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding AreaMassDensity}" Header="m' [kg/m²]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.CategoryName}" Header="Kategorie" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding IsEffective}" Header="Wirksam" Width="Auto"/>
-        </GridView>
-        
-        <!-- Custom Layer ListViewItem appearance. Style of the Row Container -->
-        <Style x:Key="LayerItemContainerStyle" TargetType="{x:Type ListViewItem}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="ToolTip" Value="{Binding}"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ListViewItem}">
-                        <Border x:Name="listView_Border"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" 
-                                Background="{TemplateBinding Background}"
-                                Padding="{TemplateBinding Padding}"
-                                CornerRadius="8"
-                                Height="56"
-                                SnapsToDevicePixels="true">
-                            <StackPanel Orientation="Vertical">
-                                <!--GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->
-                                <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
-                                <!-- TODO: Balken Lage INFOS hier...-->
-                                <TextBlock Text="Balkenlage hinzufügen"/>
-                            </StackPanel>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <!--When a ListBox entry is Selected-->
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="listView_Border" Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
-                                <Setter Property="Foreground" Value="White"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>        
-        
     </UserControl.Resources>
 
     <!--Main Grid: 2x2-->
@@ -195,30 +78,31 @@
         <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20" Margin="0,0,8,0"/>
                     <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
                     <Label Content="{Binding SelectedElement.Construction.TypeName}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupEnv}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupEnv}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
                 </StackPanel>
             </Grid>
         </Border>
         
         <!--Content Area-->
-        <Grid Grid.Row="1" Margin="16">
+        <Grid Grid.Row="1" Margin="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height=".55*"/>
+                <RowDefinition Height=".45*"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".65*"/>
-                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*" MinWidth="320"/>
+                <ColumnDefinition Width="Auto" MinWidth="200" MaxWidth="560"/>
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
@@ -231,97 +115,146 @@
                 </Grid.RowDefinitions>
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button Content="Hinzufügen" Style="{StaticResource ButtonStyle03_A}" Command="{Binding AddLayerCommand}" Tag="{StaticResource ButtonIcon_AddLayer_W}" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding EditLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerUpCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Up_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding MoveLayerDownCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Down_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}" Command="{Binding DeleteLayerCommand}" CommandParameter="{Binding SelectedItem.InternalId, ElementName=layers_ListView}" Tag="{StaticResource ButtonIcon_Delete_B}" Margin="0,0,8,0" IsEnabled="{Binding ElementName=layers_ListView, Path=SelectedItem, Converter={StaticResource ItemSelectedToEnabledConverter}}"/>
+                    <Button Content="Schicht hinzufügen"
+                            Style="{StaticResource ButtonStyle03_A}"
+                            Command="{Binding AddLayerCommand}"
+                            Tag="{StaticResource ButtonIcon_AddLayer_W}"
+                            Margin="0,0,8,0"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                            Command="{Binding DuplicateLayerCommand}"
+                            Tag="{StaticResource ButtonIcon_Copy_B}" 
+                            Margin="0,0,8,0"
+                            IsEnabled="{Binding IsLayerSelected}"
+                            ToolTip="Schicht duplizieren"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                            Command="{Binding MoveLayerUpCommand}"
+                            Tag="{StaticResource ButtonIcon_Up_B}"
+                            Margin="0,0,8,0"
+                            IsEnabled="{Binding IsLayerSelected}"
+                            ToolTip="Schicht eine Lage nach oben verschieben"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                            Command="{Binding MoveLayerDownCommand}"
+                            Tag="{StaticResource ButtonIcon_Down_B}"
+                            Margin="0,0,8,0"
+                            IsEnabled="{Binding IsLayerSelected}"
+                            ToolTip="Schicht eine Lage nach unten verschieben"/>
+                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                            Command="{Binding DeleteLayerCommand}"
+                            Tag="{StaticResource ButtonIcon_Delete_B}"
+                            Margin="0,0,8,0"
+                            IsEnabled="{Binding IsLayerSelected}"
+                            ToolTip="Schicht löschen"/>
                 </StackPanel>
 
                 <Label Grid.Row="1" Content="Von innen nach außen:" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
 
-                <!-- ItemsSource gets updated by backend -->
-                <!-- This is 'PlacementTarget' as seen from ContextMenu -->
-                <ListView x:Name="layers_ListView"
-                      Grid.Row="2"
-                      ItemsSource="{Binding Layers}" 
-                      View="{StaticResource LayerGridViewColumns}"
-                      ItemContainerStyle="{StaticResource LayerItemContainerStyle}"
-                      SelectedIndex="{Binding SelectedLayerIndex}"                      
-                      Style="{StaticResource ListViewStyle01}"
-                      Tag="{Binding}"
-                      Margin="0,0,0,0">
-                    <!--TODO Add Style-->
-                    <ListView.ContextMenu>
-                        <ContextMenu>
-                            <!-- ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
-                        Need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
-                        The Tag Property can be used to hold any kind of user specified Data.-->
-                            <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </ContextMenu>
-                    </ListView.ContextMenu>
-                </ListView>
+                <controls:LayersListView Grid.Row="2" Layers="{Binding LayerList}" SelectedLayer="{Binding SelectedListViewItem, Mode=TwoWay}"/>
+
             </Grid>
 
+            <!-- GridSplitter - Horizontal
+            <GridSplitter Grid.Row="1" Grid.Column="0" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyle}" />
+            -->
+
             <!--Image-->
-            <Grid Grid.Row="0" Grid.Column="1" Margin="16">
-                <!-- Elements inside of ViewBox are dynamically sizable-->
-                <Viewbox VerticalAlignment="Top" Style="{StaticResource ViewBoxStyle}" HorizontalAlignment="Center">
-                    <!--Keep this Margin to avoid clipping of LayerPosition sircles and width measurement numbers!-->
-                    <Grid Margin="8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="40"/>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Label Content="Innen" FontWeight="Bold" HorizontalAlignment="Left" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
-                        <Label Content="Außen" FontWeight="Bold" HorizontalAlignment="Right" FontSize="12" Style="{StaticResource LabelRotateStyle}"/>
+            <Grid Grid.Column="0" Grid.Row="1" Margin="16,0,16,16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                        <!-- "Layers Canvas" -->
-                        <ItemsControl x:Name="layers_ItemsControl"
-                      Grid.Row="1"
-                      Width="320"
-                      Height="400"                                  
-                      ItemsSource="{Binding LayerRects}"
-                      ItemsPanel="{StaticResource Canvas}"
-                      ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                      ItemTemplate="{StaticResource LayerItemStyle}"/>
+                    <!-- Elements inside of ViewBox are dynamically sizable-->
+                    <Label Grid.Row="0" Content="Querschnitt" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="0" Content="Innen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                    <Label Grid.Row="2" Content="Außen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                    <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
+                        <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                        <!-- "Measurement Grid" -->
-                        <ItemsControl x:Name="measurement_Grid"
-                      Grid.Row="2"
-                      Style="{StaticResource MeasurementCanvasStyle}"
-                      Width="{Binding ElementName=layers_ItemsControl, Path=Width}"
-                      ItemsSource="{Binding LayerRects}"
-                      ItemsPanel="{StaticResource Canvas}"
-                      ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                      ItemTemplate="{StaticResource MeasurementItemStyle}"
-                      Margin="0,16,0,0"/>
-                    </Grid>
-                </Viewbox>
+                            <!-- "Element Canvas" -->
+                            <ItemsControl x:Name="ElementCanvas"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Width="880"
+                                Height="400"                                  
+                                ItemsSource="{Binding DrawingGeometries}"
+                                ItemsPanel="{StaticResource Canvas}"
+                                ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
+
+                            <!-- "Vertical Measurement Grid" -->
+                            <ItemsControl x:Name="MeasurementGrid"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Height="{Binding ElementName=ElementCanvas, Path=Height}"
+                                ItemsSource="{Binding LayerMeasurement}"
+                                ItemsPanel="{StaticResource Canvas}"
+                                ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                ItemTemplate="{StaticResource MeasurementItemStyle}"
+                                Margin="16,0,16,0"/>
+
+                            <!-- "Vertical Measurement Grid Full" -->
+                            <ItemsControl x:Name="MeasurementGridFull"
+                                  Grid.Row="0"
+                                  Grid.Column="2"
+                                  Height="{Binding ElementName=ElementCanvas, Path=Height}"
+                                  ItemsSource="{Binding LayerMeasurementFull}"
+                                  ItemsPanel="{StaticResource Canvas}"
+                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                  ItemTemplate="{StaticResource MeasurementItemStyle}"
+                                  Margin="16,0,16,0"/>
+
+                            <!-- "Horizontal Measurement Grid Test" -->
+                            <ItemsControl x:Name="MeasurementGridTest"
+                                  Grid.Row="1"
+                                  Grid.Column="0"
+                                  Width="{Binding ElementName=ElementCanvas, Path=Width}"
+                                  ItemsSource="{Binding SubConstructionMeasurement}"
+                                  ItemsPanel="{StaticResource Canvas}"
+                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                  ItemTemplate="{StaticResource MeasurementItemStyle}"
+                                  Margin="0,16,0,16"/>
+                        </Grid>
+                    </Viewbox>
+
+                </Grid>
+
+                
             </Grid>
 
             <!--Grid Splitter-->
-            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
+
+            <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Expander Grid.Row="0" Header="{Binding LayerTitle}" IsExpanded="True" IsEnabled="{Binding IsLayerSelected}" Margin="0,8,0,0">
+                    <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid" Properties="{Binding LayerProperties}"/>
+                </Expander>
+
+                <Expander Grid.Row="1" Header="Balkenlage" IsExpanded="False" IsEnabled="{Binding SelectedListViewItem.HasSubConstruction}" Margin="0,8,0,0">
+                    <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
+                </Expander>
+                
+            </Grid>
 
         </Grid>
-
-        
-
         
     </Grid>
 
