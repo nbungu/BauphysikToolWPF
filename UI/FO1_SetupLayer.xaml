@@ -23,11 +23,6 @@
     -->
 
     <UserControl.Resources>
-        <!--
-        Defines a Template for the Items in the LayerListView.
-        The Bindings are retrieved from the ItemsSource which is set by the backend.
-        -->
-        <controls:ItemSelectedToEnabledConverter x:Key="ItemSelectedToEnabledConverter"/>
 
         <!-- Defines the type of UIElement used in the ItemsPanel-->
         <ItemsPanelTemplate x:Key="Canvas">
@@ -107,7 +102,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="320"/>
-                <ColumnDefinition Width=".4*" MinWidth="160"/>
+                <ColumnDefinition Width="Auto" MinWidth="200" MaxWidth="560"/>
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
@@ -162,68 +157,82 @@
             -->
 
             <!--Image-->
-            <Grid Grid.Column="0" Grid.Row="1" Margin="16">
-                <!-- Elements inside of ViewBox are dynamically sizable-->
-                <Viewbox VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
-                    <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                    <Grid Margin="8">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0" Grid.Row="1" Margin="16,0,16,16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
 
-                        <!-- "Element Canvas" -->
-                        <ItemsControl x:Name="ElementCanvas"
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Width="880"
-                            Height="400"                                  
-                            ItemsSource="{Binding DrawingGeometries}"
-                            ItemsPanel="{StaticResource Canvas}"
-                            ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                            ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
+                    <!-- Elements inside of ViewBox are dynamically sizable-->
+                    <Label Grid.Row="0" Content="Querschnitt" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="0" Content="Innen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                    <Label Grid.Row="2" Content="Außen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                    <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
+                        <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
 
-                        <!-- "Vertical Measurement Grid" -->
-                        <ItemsControl x:Name="MeasurementGrid"
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Height="{Binding ElementName=ElementCanvas, Path=Height}"
-                            ItemsSource="{Binding LayerMeasurement}"
-                            ItemsPanel="{StaticResource Canvas}"
-                            ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                            ItemTemplate="{StaticResource MeasurementItemStyle}"
-                            Margin="16,0,16,0"/>
+                            <!-- "Element Canvas" -->
+                            <ItemsControl x:Name="ElementCanvas"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Width="880"
+                                Height="400"                                  
+                                ItemsSource="{Binding DrawingGeometries}"
+                                ItemsPanel="{StaticResource Canvas}"
+                                ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
 
-                        <!-- "Vertical Measurement Grid Full" -->
-                        <ItemsControl x:Name="MeasurementGridFull"
-                              Grid.Row="0"
-                              Grid.Column="2"
-                              Height="{Binding ElementName=ElementCanvas, Path=Height}"
-                              ItemsSource="{Binding LayerMeasurementFull}"
-                              ItemsPanel="{StaticResource Canvas}"
-                              ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                              ItemTemplate="{StaticResource MeasurementItemStyle}"
-                              Margin="16,0,16,0"/>
+                            <!-- "Vertical Measurement Grid" -->
+                            <ItemsControl x:Name="MeasurementGrid"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Height="{Binding ElementName=ElementCanvas, Path=Height}"
+                                ItemsSource="{Binding LayerMeasurement}"
+                                ItemsPanel="{StaticResource Canvas}"
+                                ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                ItemTemplate="{StaticResource MeasurementItemStyle}"
+                                Margin="16,0,16,0"/>
 
-                        <!-- "Horizontal Measurement Grid Test" -->
-                        <ItemsControl x:Name="MeasurementGridTest"
-                                      Grid.Row="1"
-                                      Grid.Column="0"
-                                      Width="{Binding ElementName=ElementCanvas, Path=Width}"
-                                      ItemsSource="{Binding SubConstructionMeasurement}"
-                                      ItemsPanel="{StaticResource Canvas}"
-                                      ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                                      ItemTemplate="{StaticResource MeasurementItemStyle}"
-                                      Margin="0,16,0,16"/>
-                    </Grid>
-                </Viewbox>
+                            <!-- "Vertical Measurement Grid Full" -->
+                            <ItemsControl x:Name="MeasurementGridFull"
+                                  Grid.Row="0"
+                                  Grid.Column="2"
+                                  Height="{Binding ElementName=ElementCanvas, Path=Height}"
+                                  ItemsSource="{Binding LayerMeasurementFull}"
+                                  ItemsPanel="{StaticResource Canvas}"
+                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                  ItemTemplate="{StaticResource MeasurementItemStyle}"
+                                  Margin="16,0,16,0"/>
+
+                            <!-- "Horizontal Measurement Grid Test" -->
+                            <ItemsControl x:Name="MeasurementGridTest"
+                                  Grid.Row="1"
+                                  Grid.Column="0"
+                                  Width="{Binding ElementName=ElementCanvas, Path=Width}"
+                                  ItemsSource="{Binding SubConstructionMeasurement}"
+                                  ItemsPanel="{StaticResource Canvas}"
+                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+                                  ItemTemplate="{StaticResource MeasurementItemStyle}"
+                                  Margin="0,16,0,16"/>
+                        </Grid>
+                    </Viewbox>
+
+                </Grid>
+
+                
             </Grid>
 
             <!--Grid Splitter-->
@@ -233,34 +242,19 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Grid.Row="0" Orientation="Horizontal">
-                    <Button Style="{StaticResource ButtonStyle03_B_Icon}"
-                            Command="{Binding EditLayerCommand}"
-                            Tag="{StaticResource ButtonIcon_Edit_B}"
-                            Margin="0,0,8,0"
-                            IsEnabled="{Binding IsLayerSelected}"
-                            ToolTip="Eigenschaften dieser Schicht bearbeiten"/>
-                </StackPanel>
-                <Label Grid.Row="1" Content="{Binding LayerTitle}" FontWeight="DemiBold" Foreground="{StaticResource PrimaryHighlightBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,8,0,0"/>
-                <controls:PropertyDataGrid Grid.Row="2" Properties="{Binding LayerProperties}"/>
+                <Expander Grid.Row="0" Header="{Binding LayerTitle}" IsExpanded="True" IsEnabled="{Binding IsLayerSelected}" Margin="0,8,0,0">
+                    <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid" Properties="{Binding LayerProperties}"/>
+                </Expander>
 
-                <Label Grid.Row="3" Content="Balkenlage" FontWeight="DemiBold" Foreground="{StaticResource PrimaryHighlightBrush}" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,8,0,0"/>
-                <controls:PropertyDataGrid Grid.Row="4" Properties="{Binding SubConstructionProperties}"/>
+                <Expander Grid.Row="1" Header="Balkenlage" IsExpanded="False" IsEnabled="{Binding SelectedListViewItem.HasSubConstruction}" Margin="0,8,0,0">
+                    <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
+                </Expander>
+                
             </Grid>
 
-
-
-           
-
         </Grid>
-
-        
-
         
     </Grid>
 

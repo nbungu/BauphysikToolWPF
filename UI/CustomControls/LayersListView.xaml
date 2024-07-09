@@ -147,14 +147,43 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                             <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Balkenlage hinzufügen" Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <Separator Margin="-30,0,0,0" Padding="0" HorizontalAlignment="Stretch" BorderThickness="0.6" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
+
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Style>
+                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                <Setter Property="Header" Value="Balkenlage hinzufügen" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstruction, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                        <Setter Property="Header" Value="Balkenlage bearbeiten" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
                         <MenuItem.Icon>
                             <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Style>
+                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                <Setter Property="Header" Value="Balkenlage löschen" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstruction, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
                         <MenuItem.Icon>
-                            <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
+                            <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
                 </ContextMenu>

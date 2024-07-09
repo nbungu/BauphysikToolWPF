@@ -224,7 +224,7 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Content="{Binding Name}" ToolTip="{Binding Comment}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                                <Label Grid.Column="0" Content="{Binding Name}" FontWeight="Normal" ToolTip="{Binding Comment}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
                                 <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBaseText}" SubscriptText="{Binding SymbolSubscriptText}" VerticalAlignment="Stretch" Margin="4,0,8,0" FontWeight="DemiBold" Foreground="{StaticResource PrimaryDarkBrush}"/>
                             </Grid>
                         </DataTemplate>
@@ -245,6 +245,7 @@
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
                                                     <TextBox Grid.Column="0"
+                                                             FontWeight="Normal"
                                                              Text="{Binding Value}"
                                                              Style="{StaticResource DataGridTextBox}"
                                                              IsReadOnly="{Binding IsReadonly}"
@@ -255,7 +256,8 @@
                                                                             DenominatorText="{Binding UnitDenominatorText}"
                                                                             VerticalAlignment="Stretch"
                                                                             Foreground="{StaticResource PrimaryBorderBrush}"
-                                                                            Margin="4,0,8,0"/>
+                                                                            Margin="4,0,8,0"
+                                                                            FontWeight="Normal"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </controls:PropertyValueTemplateSelector.TextBoxTemplate>
@@ -271,13 +273,15 @@
                                                               SelectedItem="{Binding Value}"
                                                               ItemsSource="{Binding PropertyValues}"
                                                               Style="{StaticResource DataGridComboBox}"
-                                                              SelectionChanged="ComboBox_SelectionChanged"/>
+                                                              SelectionChanged="ComboBox_SelectionChanged"
+                                                              FontWeight="Normal"/>
                                                     <controls:FractionLabel Grid.Column="1"
                                                                             CounterText="{Binding UnitCounterText}"
                                                                             DenominatorText="{Binding UnitDenominatorText}"
                                                                             VerticalAlignment="Stretch"
                                                                             Foreground="{StaticResource PrimaryBorderBrush}"
-                                                                            Margin="4,0,2,0"/>
+                                                                            Margin="4,0,2,0"
+                                                                            FontWeight="Normal"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </controls:PropertyValueTemplateSelector.ComboBoxTemplate>
@@ -287,7 +291,8 @@
                                                     <CheckBox IsChecked="{Binding Value}"
                                                               Style="{StaticResource DataGridCheckBox}"
                                                               IsEnabled="False"
-                                                              Margin="4,0,8,0"/>
+                                                              Margin="4,0,8,0"
+                                                              FontWeight="Normal"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </controls:PropertyValueTemplateSelector.CheckBoxTemplate>

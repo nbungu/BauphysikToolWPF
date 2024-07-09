@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -13,7 +14,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => "AddLayerWindow";
+        public string Title = "AddLayerWindow";
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -24,7 +25,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void AddLayer()
         {
-            if (Thickness == "" || Convert.ToDouble(Thickness) <= 0) return;
+            if (Thickness <= 0) return;
 
             // LayerPosition is always at end of List 
             int layerCount = UserSaved.SelectedElement.Layers.Count;
@@ -45,6 +46,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElement.Layers.Add(layer);
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedElementChanged();
+
+            //DatabaseAccess.CreateLayer(layer);
         }
 
         [RelayCommand]
@@ -60,7 +63,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _thickness = "6";
+        private double _thickness = 6.0;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
@@ -76,6 +79,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
+
+        public List<IPropertyItem> ThicknessProperties => new List<IPropertyItem>()
+        {
+            new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
+        };
 
         public List<Material> Materials => SearchString != "" ? DatabaseAccess.QueryMaterialByCategory(SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
     }

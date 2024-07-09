@@ -37,9 +37,6 @@ namespace BauphysikToolWPF.Models
         public double Thickness { get; set; } // Layer thickness in cm
 
         [NotNull]
-        public int Effective { get; set; } // For Calculation Purposes - Whether a Layer is considered in the Calculations or not
-
-        [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
         [NotNull]
@@ -66,15 +63,10 @@ namespace BauphysikToolWPF.Models
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 
 
-        // Encapsulate/Hide 'Effective' to convert to bool
         [Ignore]
-        public bool IsEffective // true = 1
-        {
-            get => Effective != 0;
-            set => Effective = (value) ? 1 : 0;
-        }
+        public bool IsEffective { get; set; } = true;
 
-        // Readonly Properties
+            // Readonly Properties
 
         [Ignore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
@@ -83,7 +75,7 @@ namespace BauphysikToolWPF.Models
         [Ignore]
         public bool HasSubConstruction => SubConstruction != null && SubConstruction.IsValid;
         [Ignore]
-        public bool IsValid => LayerPosition >= 0 && Thickness > 0;
+        public bool IsValid => LayerPosition >= 0 && Thickness > 0 && Material.IsValid;
 
         [Ignore]
         public double R_Value
@@ -141,7 +133,7 @@ namespace BauphysikToolWPF.Models
             copy.Element = this.Element;
             copy.Material = this.Material;
             copy.Thickness = this.Thickness;
-            copy.Effective = this.Effective;
+            copy.IsEffective = this.IsEffective;
             copy.IsSelected = false;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
@@ -196,7 +188,7 @@ namespace BauphysikToolWPF.Models
             DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, initWidth, initHeight);
             RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             RectangleBorderThickness = this.IsSelected ? 2 : 0.2;
-            Opacity = this.IsEffective ? 1 : 0.2;
+            Opacity = this.IsEffective ? 1 : 0.3;
         }
 
         #endregion

@@ -60,6 +60,8 @@
                 <ColumnDefinition Width=".2*" MinWidth="160"/>
             </Grid.ColumnDefinitions>
 
+<Expander />
+
             <!--Grid Splitter-->
             <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="0,16,0,16"/>
            

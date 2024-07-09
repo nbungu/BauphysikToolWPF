@@ -10,8 +10,8 @@ namespace BauphysikToolWPF.Models
 {
     public enum SubConstructionDirection
     {
-        Horizontal,
-        Vertical
+        Vertical,
+        Horizontal
     }
 
     /// <summary>
@@ -59,13 +59,15 @@ namespace BauphysikToolWPF.Models
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
 
+        [Ignore]
+        public bool IsEffective { get; set; } = true;
+
         //------Methods-----//
 
         public void UpdateTimestamp()
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
-
 
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
@@ -100,6 +102,7 @@ namespace BauphysikToolWPF.Models
             DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, this.Width, this.Thickness);
             RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
+            Opacity = this.IsEffective ? 1 : 0.4;
         }
 
         #endregion

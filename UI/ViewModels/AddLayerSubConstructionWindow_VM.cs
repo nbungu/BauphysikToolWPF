@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerSubConstructionWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddLayerSubConstructionWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => "AddLayerSubConstructionWindow";
+        public string Title = "AddLayerSubConstructionWindow";
 
         // All changes are being made to this Instance first
         private readonly LayerSubConstruction _tempConstruction;

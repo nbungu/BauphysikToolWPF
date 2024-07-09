@@ -203,7 +203,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
 
-        // static to keep selection after page change
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Material", () => UserSaved.SelectedLayer.Material.Name),

@@ -2,7 +2,6 @@
 using Geometry;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BauphysikToolWPF.Models.Helper
 {
@@ -40,6 +39,7 @@ namespace BauphysikToolWPF.Models.Helper
                     if (layer.Material.Category == MaterialCategory.Air)
                         foundAirLayer = true;
                     layer.IsEffective = !foundAirLayer;
+                    if (layer.HasSubConstruction) layer.SubConstruction.IsEffective = layer.IsEffective;
                 }
             }
         }
