@@ -25,12 +25,12 @@
     <!--Main Grid: 2x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="56"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
         <!--Top -->
-        <Border Grid.ColumnSpan="2" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+        <Border Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
@@ -52,12 +52,12 @@
         <!--Content Area-->
         <Grid Grid.Row="1" Margin="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height=".55*"/>
-                <RowDefinition Height=".45*"/>
+                <RowDefinition Height=".5*" MinHeight="240"/>
+                <RowDefinition Height=".5*" MinHeight="240"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="320"/>
-                <ColumnDefinition Width="320" MinWidth="240" MaxWidth="480"/>
+                <ColumnDefinition Width="280" MinWidth="240" MaxWidth="440"/>
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
@@ -166,13 +166,17 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Expander Grid.Row="0" Header="{Binding LayerTitle}" IsExpanded="False" IsEnabled="{Binding ShowLayerExpander}" Margin="0,8,0,0">
+                <Label Grid.Row="0" Content="{Binding LayerTitle}" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
+
+
+                <Expander Grid.Row="1" Header="Eigenschaften" IsExpanded="False" IsEnabled="{Binding ShowLayerExpander}" Margin="0,8,0,0">
                     <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid" Properties="{Binding LayerProperties}"/>
                 </Expander>
 
-                <Expander Grid.Row="1" Header="Balkenlage" IsExpanded="False" IsEnabled="{Binding ShowSubConstructionExpander}" Margin="0,8,0,0">
+                <Expander Grid.Row="2" Header="Balkenlage" IsExpanded="False" IsEnabled="{Binding ShowSubConstructionExpander}" Margin="0,8,0,0">
                     <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
                 </Expander>
                 

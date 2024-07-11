@@ -53,7 +53,7 @@
 
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="56" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
@@ -63,7 +63,7 @@
         </Grid.ColumnDefinitions>
 
         <!--Top -->
-        <Border Grid.ColumnSpan="3" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+        <Border Grid.ColumnSpan="3" Background="{StaticResource PrimaryMediumBrush}">
             <Label Content="Projektdaten" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
         </Border>
 

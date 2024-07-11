@@ -196,7 +196,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool ShowLayerExpander => IsLayerSelected;
         public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstruction;
 
-        public string LayerTitle => string.Format("Schicht {0}: {1}", UserSaved.SelectedLayer.LayerPosition, UserSaved.SelectedLayer.Material);
+        public string LayerTitle => string.Format("Schicht {0}", UserSaved.SelectedLayer.LayerPosition);
 
         public List<IDrawingGeometry> DrawingGeometries => UserSaved.SelectedElement.GetLayerDrawings();
 
