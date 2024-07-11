@@ -239,7 +239,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     TextSize = 14,
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 },
                     MinLimit = - 2,
-                    MaxLimit = _tempCalc.Element.Thickness_cm + 2
+                    MaxLimit = _tempCalc.Element.Thickness + 2
                 }
                 /*new Axis
                 {

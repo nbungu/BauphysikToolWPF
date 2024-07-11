@@ -27,7 +27,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 _tempConstruction = new LayerSubConstruction()
                 {
                     Width = 4,
-                    Thickness = 2,
+                    Thickness = UserSaved.SelectedLayer.Thickness,
                     Spacing = 18,
                     MaterialId = UserSaved.SelectedLayer.MaterialId,
                     Material = UserSaved.SelectedLayer.Material

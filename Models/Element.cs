@@ -137,7 +137,7 @@ namespace BauphysikToolWPF.Models
         }
 
         [Ignore]
-        public double Thickness_cm // d in cm
+        public double Thickness // d in cm
         {
             get
             {
@@ -147,7 +147,6 @@ namespace BauphysikToolWPF.Models
                 return Math.Round(fullWidth, 4);
             }
         }
-        public double Thickness_m => Math.Round(Thickness_cm / 100, 4); // d in m
 
         [Ignore]
         public double SdThickness // sd in m

@@ -5,6 +5,7 @@ using Geometry;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Windows.Media;
+using System;
 
 namespace BauphysikToolWPF.Models
 {
@@ -21,12 +22,13 @@ namespace BauphysikToolWPF.Models
     {
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; }
+
         [NotNull]
         public double Width { get; set; } // cm
         [NotNull]
         public double Thickness { get; set; } // cm
         [NotNull]
-        public double Spacing { get; set; } // cm von Achse zu Achse
+        public double Spacing { get; set; } // cm (innerer Abstand)
         [NotNull]
         public SubConstructionDirection SubConstructionDirection { get; set; }
 
@@ -46,8 +48,15 @@ namespace BauphysikToolWPF.Models
         public int InternalId { get; set; }
         [Ignore]
         public bool IsValid => Width > 0 && Thickness > 0 && Spacing > 0 && Material != null;
+
+
         [Ignore]
-        public double InnerSpacing => Spacing - Width;
+        public double AxisSpacing
+        {
+            get => Spacing + Width;
+            set => Spacing = value - Width;
+        }
+
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes
         [Ignore]
@@ -61,6 +70,16 @@ namespace BauphysikToolWPF.Models
 
         [Ignore]
         public bool IsEffective { get; set; } = true;
+
+        [Ignore]
+        public double R_Value
+        {
+            get
+            {
+                if (!Material.IsValid || !IsEffective) return 0;
+                return Math.Round((this.Thickness / 100) / Material.ThermalConductivity, 3);
+            }
+        }
 
         //------Methods-----//
 

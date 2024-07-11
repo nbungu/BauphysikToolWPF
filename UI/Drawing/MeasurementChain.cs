@@ -64,20 +64,23 @@ namespace BauphysikToolWPF.UI.Drawing
                 if (i > 0)
                 {
                     var intervalWidthInCm = Math.Round(Math.Abs(intervals[i] - selectedInterval) / DrawingGeometry.SizeOf1Cm, 2);
-                    var label = new FormattedText(intervalWidthInCm.ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 14, Brushes.DimGray, 1.0);
+                    if (intervalWidthInCm > 0)
+                    {
+                        var label = new FormattedText(intervalWidthInCm.ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 14, Brushes.DimGray, 1.0);
 
-                    // Create the text drawing
-                    var labelOrigin = (selectedInterval + intervals[i]) / 2;
-                    System.Windows.Media.Geometry textGeometry;
-                    if (intervalDirection == Axis.Z)
-                    {
-                        textGeometry = label.BuildGeometry(new Point(8, labelOrigin - label.Height / 2));
+                        // Create the text drawing
+                        var labelOrigin = (selectedInterval + intervals[i]) / 2;
+                        System.Windows.Media.Geometry textGeometry;
+                        if (intervalDirection == Axis.Z)
+                        {
+                            textGeometry = label.BuildGeometry(new Point(8, labelOrigin - label.Height / 2));
+                        }
+                        else
+                        {
+                            textGeometry = label.BuildGeometry(new Point(labelOrigin - label.Width / 2, 8));
+                        }
+                        hatchContent.Children.Add(textGeometry);
                     }
-                    else
-                    {
-                        textGeometry = label.BuildGeometry(new Point(labelOrigin - label.Height / 2, 8));
-                    }
-                    hatchContent.Children.Add(textGeometry);
                 }
 
                 // Create Interval Tick Markers

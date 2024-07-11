@@ -35,7 +35,7 @@ namespace BauphysikToolWPF.Calculations
         public StationaryTempCalc() {}
         public StationaryTempCalc(Element element)
         {
-            if (element.Layers.Count == 0) return;
+            if (element.Layers.Count == 0 || element is null) return;
 
             // Assign constuctor parameter values
             Element = element;
@@ -65,7 +65,7 @@ namespace BauphysikToolWPF.Calculations
 
         public static double GetqValue(double uValue, double ti, double te)
         {
-            return Math.Round(uValue * (ti - te), 3);
+            return Math.Round(uValue * (ti - te), 2);
         }
 
         public static SortedDictionary<double, double> GetLayerTemps(List<Layer> layers, double ti, double rsi, double qValue)

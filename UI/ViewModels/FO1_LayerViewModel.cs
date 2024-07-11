@@ -179,6 +179,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
+        [NotifyPropertyChangedFor(nameof(ShowLayerExpander))]
+        [NotifyPropertyChangedFor(nameof(ShowSubConstructionExpander))]
         [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         [NotifyPropertyChangedFor(nameof(LayerTitle))]
         [NotifyPropertyChangedFor(nameof(DrawingGeometries))]
@@ -190,6 +192,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, No direct User Input involved
          */
         public bool IsLayerSelected => SelectedListViewItem != null;
+
+        public bool ShowLayerExpander => IsLayerSelected;
+        public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstruction;
 
         public string LayerTitle => string.Format("Schicht {0}: {1}", UserSaved.SelectedLayer.LayerPosition, UserSaved.SelectedLayer.Material);
 
@@ -228,12 +233,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedLayer.SubConstruction.Thickness, value => UserSaved.SelectedLayer.SubConstruction.Thickness = value),
             new PropertyItem<double>(Symbol.Width, () => UserSaved.SelectedLayer.SubConstruction.Width, value => UserSaved.SelectedLayer.SubConstruction.Width = value),
             new PropertyItem<double>(Symbol.Distance, () => UserSaved.SelectedLayer.SubConstruction.Spacing, value => UserSaved.SelectedLayer.SubConstruction.Spacing = value),
+            new PropertyItem<double>("Achsenabstand", Symbol.Distance, () => UserSaved.SelectedLayer.SubConstruction.AxisSpacing, value => UserSaved.SelectedLayer.SubConstruction.AxisSpacing = value),
         } : new List<IPropertyItem>();
 
         public List<IPropertyItem> ElementProperties => new List<IPropertyItem>
         {
             new PropertyItem<int>("Schichten", () => UserSaved.SelectedElement.Layers.Count),
-            new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedElement.Thickness_cm),
+            new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedElement.Thickness),
             new PropertyItem<double>(Symbol.RValueElement, () => UserSaved.SelectedElement.RValue),
             new PropertyItem<double>(Symbol.AreaMassDensity, () => UserSaved.SelectedElement.AreaMassDens),
             new PropertyItem<double>(Symbol.SdThickness, () => UserSaved.SelectedElement.SdThickness),

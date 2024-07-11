@@ -228,14 +228,6 @@ namespace BauphysikToolWPF.Models.Helper
             _getter = getter;
             _setter = setter;
         }
-
-        public PropertyItem(Symbol symbol, Func<T> getter, Action<T> setter)
-        {
-            SetPropertiesBySymbol(symbol);
-            IsReadonly = false;
-            _getter = getter;
-            _setter = setter;
-        }
         public PropertyItem(string name, Func<T> getter)
         {
             Name = name;
@@ -248,6 +240,28 @@ namespace BauphysikToolWPF.Models.Helper
             SetPropertiesBySymbol(symbol);
             IsReadonly = true;
             _getter = getter;
+        }
+        public PropertyItem(Symbol symbol, Func<T> getter, Action<T> setter)
+        {
+            SetPropertiesBySymbol(symbol);
+            IsReadonly = false;
+            _getter = getter;
+            _setter = setter;
+        }
+        public PropertyItem(string name, Symbol symbol, Func<T> getter)
+        {
+            SetPropertiesBySymbol(symbol);
+            Name = name;
+            IsReadonly = true;
+            _getter = getter;
+        }
+        public PropertyItem(string name, Symbol symbol, Func<T> getter, Action<T> setter)
+        {
+            SetPropertiesBySymbol(symbol);
+            Name = name;
+            IsReadonly = false;
+            _getter = getter;
+            _setter = setter;
         }
 
         //------Methoden-----//

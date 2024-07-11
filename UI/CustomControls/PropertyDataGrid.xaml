@@ -290,9 +290,9 @@
                                                 <Grid>
                                                     <CheckBox IsChecked="{Binding Value}"
                                                               Style="{StaticResource DataGridCheckBox}"
-                                                              IsEnabled="False"
+                                                              IsEnabled="True"
                                                               Margin="4,0,8,0"
-                                                              FontWeight="Normal"/>
+                                                              FontWeight="Normal" Click="CheckBox_Click"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </controls:PropertyValueTemplateSelector.CheckBoxTemplate>

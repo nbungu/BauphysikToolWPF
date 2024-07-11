@@ -49,7 +49,7 @@ namespace BauphysikToolWPF.Models.Helper
         public static List<IDrawingGeometry> GetLayerDrawings(this Element element, double canvasWidth = 880, double canvasHeight = 400)
         {
             var layerDrawings = new List<IDrawingGeometry>();
-            DrawingGeometry.SizeOf1Cm = canvasHeight / element.Thickness_cm;
+            DrawingGeometry.SizeOf1Cm = canvasHeight / element.Thickness;
 
             if (element.Layers.Count != 0)
             {
@@ -80,6 +80,7 @@ namespace BauphysikToolWPF.Models.Helper
                 }
 
                 // Stacking
+                // Stacking
                 Point ptStart = new Point(0, 0);
                 foreach (var l in element.Layers)
                 {
@@ -95,6 +96,10 @@ namespace BauphysikToolWPF.Models.Helper
                         double spacing = l.SubConstruction.Spacing * DrawingGeometry.SizeOf1Cm;
 
                         int numSubconstructions = (int)Math.Floor((canvasWidth + spacing) / (subConstrWidth + spacing));
+
+                        // Adjust to ensure at least one subconstruction in the middle
+                        if (numSubconstructions % 2 == 0) numSubconstructions--;
+
                         double totalSubconstructionsWidth = numSubconstructions * subConstrWidth + (numSubconstructions - 1) * spacing;
                         double startX = (canvasWidth - totalSubconstructionsWidth) / 2;
 

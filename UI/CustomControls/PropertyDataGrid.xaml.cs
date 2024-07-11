@@ -64,5 +64,19 @@ namespace BauphysikToolWPF.UI.CustomControls
                 }
             }
         }
+
+        private void CheckBox_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is CheckBox checkBox)
+            {
+                if (!checkBox.IsEnabled) return;
+
+                var propertyItem = checkBox.DataContext as IPropertyItem ?? null;
+                if (propertyItem != null)
+                {
+                    propertyItem.Value = checkBox.IsChecked;
+                }
+            }
+        }
     }
 }

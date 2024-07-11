@@ -1,7 +1,7 @@
-﻿using System;
+﻿using BauphysikToolWPF.UI.CustomControls;
+using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -35,9 +35,9 @@ namespace BauphysikToolWPF.Services
             encoder.Save(fileStream);
         }*/
 
-        public static byte[] SaveAsBLOB(ItemsControl target)
+        public static byte[] SaveAsBLOB(LayersCanvas target)
         {
-            if (target.ItemsSource is null) return Array.Empty<byte>();
+            if (target.DrawingGeometries is null) return Array.Empty<byte>();
 
             // Convert the BitmapImage to a byte array
 

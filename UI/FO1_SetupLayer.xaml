@@ -22,51 +22,6 @@
     Both can be used for binding to display and modify data in the UI.
     -->
 
-    <UserControl.Resources>
-
-        <!-- Defines the type of UIElement used in the ItemsPanel-->
-        <ItemsPanelTemplate x:Key="Canvas">
-            <!--Takes the Width and Height from TemplatedParent-->
-            <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
-        </ItemsPanelTemplate>
-
-        <!-- Properties of a CanvasItem (Layer). Sets the Drawing Coordinates of the container holding a CanvasItem -->
-        <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
-            <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
-            <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
-        </Style>
-
-        <!-- Content and Styling of a Canvas Item (Layer) -->
-        <DataTemplate x:Key="CanvasLayerItemStyle">
-            <Grid Width="{Binding Rectangle.Width}"
-                  Height="{Binding Rectangle.Height}"
-                  Background="{Binding BackgroundColor}"
-                  Opacity="{Binding Opacity}">
-                <Rectangle x:Name="LayerRectangle"
-                           Fill="{Binding DrawingBrush}"
-                           Stroke="{Binding RectangleBorderColor}"
-                           StrokeThickness="{Binding RectangleBorderThickness}"/>
-                <Ellipse Fill="White"
-                         Width="20"
-                         Height="20"
-                         Stroke="{Binding RectangleBorderColor}"
-                         StrokeThickness="1"
-                         HorizontalAlignment="Center"
-                         Margin="-8"/>
-                <Label Content="{Binding Tag}" Margin="-8"/>
-            </Grid>
-        </DataTemplate>
-
-        <!-- Content and Styling of a Canvas Item (Measurement Marker Line) -->
-        <DataTemplate x:Key="MeasurementItemStyle">
-            <Grid Width="{Binding Rectangle.Width}"
-                  Height="{Binding Rectangle.Height}">
-                <Rectangle x:Name="MeasurementDrawing" Fill="{Binding DrawingBrush}"/>
-            </Grid>
-        </DataTemplate>
-
-    </UserControl.Resources>
-
     <!--Main Grid: 2x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
@@ -102,7 +57,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="320"/>
-                <ColumnDefinition Width="Auto" MinWidth="200" MaxWidth="560"/>
+                <ColumnDefinition Width="320" MinWidth="240" MaxWidth="480"/>
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
@@ -184,49 +139,18 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <!-- "Element Canvas" -->
-                            <ItemsControl x:Name="ElementCanvas"
-                                Grid.Row="0"
-                                Grid.Column="0"
-                                Width="880"
-                                Height="400"                                  
-                                ItemsSource="{Binding DrawingGeometries}"
-                                ItemsPanel="{StaticResource Canvas}"
-                                ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                                ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
+                            <!-- "Layers Canvas" -->
+                            <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="0" Grid.Column="0" DrawingGeometries="{Binding DrawingGeometries}"/>
 
                             <!-- "Vertical Measurement Grid" -->
-                            <ItemsControl x:Name="MeasurementGrid"
-                                Grid.Row="0"
-                                Grid.Column="1"
-                                Height="{Binding ElementName=ElementCanvas, Path=Height}"
-                                ItemsSource="{Binding LayerMeasurement}"
-                                ItemsPanel="{StaticResource Canvas}"
-                                ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                                ItemTemplate="{StaticResource MeasurementItemStyle}"
-                                Margin="16,0,16,0"/>
-
+                            <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurement}" Margin="16,0,16,0"/>
+                            
                             <!-- "Vertical Measurement Grid Full" -->
-                            <ItemsControl x:Name="MeasurementGridFull"
-                                  Grid.Row="0"
-                                  Grid.Column="2"
-                                  Height="{Binding ElementName=ElementCanvas, Path=Height}"
-                                  ItemsSource="{Binding LayerMeasurementFull}"
-                                  ItemsPanel="{StaticResource Canvas}"
-                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                                  ItemTemplate="{StaticResource MeasurementItemStyle}"
-                                  Margin="16,0,16,0"/>
+                            <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="16,0,16,0"/>
 
                             <!-- "Horizontal Measurement Grid Test" -->
-                            <ItemsControl x:Name="MeasurementGridTest"
-                                  Grid.Row="1"
-                                  Grid.Column="0"
-                                  Width="{Binding ElementName=ElementCanvas, Path=Width}"
-                                  ItemsSource="{Binding SubConstructionMeasurement}"
-                                  ItemsPanel="{StaticResource Canvas}"
-                                  ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                                  ItemTemplate="{StaticResource MeasurementItemStyle}"
-                                  Margin="0,16,0,16"/>
+                            <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurement}" Margin="0,16,0,16"/>
+
                         </Grid>
                     </Viewbox>
 
@@ -244,11 +168,11 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
-                <Expander Grid.Row="0" Header="{Binding LayerTitle}" IsExpanded="True" IsEnabled="{Binding IsLayerSelected}" Margin="0,8,0,0">
+                <Expander Grid.Row="0" Header="{Binding LayerTitle}" IsExpanded="False" IsEnabled="{Binding ShowLayerExpander}" Margin="0,8,0,0">
                     <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid" Properties="{Binding LayerProperties}"/>
                 </Expander>
 
-                <Expander Grid.Row="1" Header="Balkenlage" IsExpanded="False" IsEnabled="{Binding SelectedListViewItem.HasSubConstruction}" Margin="0,8,0,0">
+                <Expander Grid.Row="1" Header="Balkenlage" IsExpanded="False" IsEnabled="{Binding ShowSubConstructionExpander}" Margin="0,8,0,0">
                     <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
                 </Expander>
                 

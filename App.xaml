@@ -101,6 +101,19 @@
         <BitmapImage x:Key="ButtonIcon_Search_Bold_B" UriSource="/Resources/Icons/search_bold.png"/>
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
 
+        <!-- Defines the type of UIElement used in the ItemsPanel-->
+        <ItemsPanelTemplate x:Key="Canvas">
+            <!--Takes the Width and Height from TemplatedParent-->
+            <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
+        </ItemsPanelTemplate>
+
+        <!-- Properties of a CanvasItem. Sets the Drawing Coordinates of the container holding a CanvasItem -->
+        <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
+            <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
+            <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
+        </Style>
+
+
         <!-- Custom Label Style -->
         <!-- Applies on every Label in this App -->
         <Style x:Key="{x:Type Label}" TargetType="{x:Type Label}">
