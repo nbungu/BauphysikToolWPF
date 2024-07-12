@@ -1,20 +1,15 @@
 ﻿using Geometry;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
-    public enum Axis
-    {
-        X,
-        Y,
-        Z
-    }
-    
     public class DrawingGeometry : IDrawingGeometry
     {
         // Static, because globally valid for all Intstances
-        public static double SizeOf1Cm;
+        public static double SizeOf1Cm = 16.0; // starting value
         
         // Rectangle on 2D Canvas. Drawing Origin (0,0) is top left corner.
         public Rectangle Rectangle { get; set; } = Rectangle.Empty; // in [px]
@@ -22,8 +17,8 @@ namespace BauphysikToolWPF.UI.Drawing
         // Appearance of the Layer as a 2D Rectangle
         public Brush BackgroundColor { get; set; } = Brushes.Transparent;
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
-        public Brush RectangleBorderColor { get; set; } = Brushes.Black;
-        public double RectangleBorderThickness { get; set; } = 1.0;
+        public Brush RectangleBorderColor { get; set; } = Brushes.Transparent;
+        public double RectangleBorderThickness { get; set; } = 0.0;
         public double Opacity { get; set; } = 1.0;
         public int ZIndex { get; set; } = 0;
         public object Tag { get; set; }

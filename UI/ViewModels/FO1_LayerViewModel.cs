@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
+using Geometry;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -145,8 +146,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             LayerList = new List<Layer>();
             LayerList = UserSaved.SelectedElement.Layers;
-            SelectedElement = new Element();
-            SelectedElement = UserSaved.SelectedElement;
+            //SelectedElement = new Element();
+            //SelectedElement = UserSaved.SelectedElement;
+            SelectedListViewItem = null;
+            SelectedListViewItem = UserSaved.SelectedLayer;
+
+
         }
 
         // This method will be called whenever SelectedListViewItem changes
@@ -192,20 +197,20 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, No direct User Input involved
          */
         public bool IsLayerSelected => SelectedListViewItem != null;
-
         public bool ShowLayerExpander => IsLayerSelected;
         public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstruction;
-
         public string LayerTitle => string.Format("Schicht {0}", UserSaved.SelectedLayer.LayerPosition);
 
-        public List<IDrawingGeometry> DrawingGeometries => UserSaved.SelectedElement.GetLayerDrawings();
+        public CanvasDrawingService Drawing { get; set; } = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
+
+        public List<IDrawingGeometry> DrawingGeometries => Drawing.DrawingGeometries;
+
+        //public Rectangle CanvasSize { get; set; } = new Rectangle(new Point(0, 0), 880, 400);
+        //public List<IDrawingGeometry> DrawingGeometries => UserSaved.SelectedElement.GetCrossSectionDrawing(CanvasSize);
 
         // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
         public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers).ToList();
-        //public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(MeasurementChain.GetGeometryIntervals(DrawingGeometries.Where(g => (int)g.Tag == 0 && g.ZIndex == 1), Axis.X), Axis.X).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
-
-        // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
+        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(Drawing.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
         public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()

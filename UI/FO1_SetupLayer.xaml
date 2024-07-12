@@ -140,7 +140,7 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- "Layers Canvas" -->
-                            <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="0" Grid.Column="0" DrawingGeometries="{Binding DrawingGeometries}"/>
+                            <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="0" Grid.Column="0" Width="{Binding Drawing.CanvasSize.Width}" Height="{Binding Drawing.CanvasSize.Height}" DrawingGeometries="{Binding Drawing.DrawingGeometries}"/>
 
                             <!-- "Vertical Measurement Grid" -->
                             <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurement}" Margin="16,0,16,0"/>

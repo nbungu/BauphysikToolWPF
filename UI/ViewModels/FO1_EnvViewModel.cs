@@ -61,7 +61,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnLayersChanged(List<Layer> value)
         {
             // Updates the Layer Geometry
-            UserSaved.SelectedElement.GetLayerDrawings();
+            //UserSaved.SelectedElement.GetCrossSectionDrawing();
 
             // Update XAML Binding Property by fetching from DB
             OnPropertyChanged(nameof(SelectedElement));

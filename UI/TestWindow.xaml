@@ -57,10 +57,54 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".4*" MinWidth="320"/>
                 <ColumnDefinition Width=".4*" MinWidth="160"/>
-                <ColumnDefinition Width=".2*" MinWidth="160"/>
             </Grid.ColumnDefinitions>
 
-<Expander />
+            <Grid Grid.Column="1" Grid.Row="0" Margin="16,0,16,16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Elements inside of ViewBox are dynamically sizable-->
+                    <Label Grid.Row="0" Content="Querschnitt" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="0" Content="Innen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                    <Label Grid.Row="2" Content="Außen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+                    <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
+                        <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
+                        <Grid Margin="8">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- "Layers Canvas" -->
+                            <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSize.Width}" Height="{Binding CanvasSize.Height}" DrawingGeometries="{Binding DrawingGeometries}"/>
+
+                            <!-- "Vertical Measurement Grid" -->
+                            <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurement}" Margin="16,0,16,0"/>
+
+                            <!-- "Vertical Measurement Grid Full" -->
+                            <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="16,0,16,0"/>
+
+                            <!-- "Horizontal Measurement Grid Test" -->
+                            <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurement}" Margin="0,16,0,16"/>
+
+                        </Grid>
+                    </Viewbox>
+
+                </Grid>
+
+
+            </Grid>
 
             <!--Grid Splitter-->
             <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="0,16,0,16"/>

@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.CustomControls;
+using BauphysikToolWPF.UI.Drawing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Geometry;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -49,21 +52,24 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private Element _selectedElement = UserSaved.SelectedElement;
 
-        //[ObservableProperty]
-        //private List<PropertyItem> _properties = new List<PropertyItem>
-        //{
-        //    new PropertyItem { Name = "Property1", Value = "Value1" },
-        //    new PropertyItem { Name = "Property2", Value = "Value2", PropertyValues = new string[] { "Value2", "Value3", "Value4" } },
-        //    new PropertyItem { Name = "Property3", Value = "Value3" },
-        //    new PropertyItem { Name = "Property4", Value = "Value4", PropertyValues = new string[] { "Value2", "Value3", "Value4" } }
-        //};
-
-
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
          * Not Observable, because Triggered and Changed by the Values above
          */
+        
+        //public Rectangle Bounds => UserSaved.SelectedElement.CalculationAreaBounds();
+        public static Rectangle CanvasSize { get; set; } = new Rectangle(new Point(0, 0), 400, 400);
+
+        //public List<IDrawingGeometry> DrawingGeometries => UserSaved.SelectedElement.GetCrossSectionDrawing(CanvasSize.Width, CanvasSize.Height);
+
+        // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
+        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers).ToList();
+        //public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(MeasurementChain.GetGeometryIntervals(DrawingGeometries.Where(g => (int)g.Tag == 0 && g.ZIndex == 1), Axis.X), Axis.X).ToList();
+        //public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
+
+        // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
+        public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] { 0, 400.0 }).ToList() : new List<DrawingGeometry>();
 
 
     }

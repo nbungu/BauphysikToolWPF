@@ -35,8 +35,8 @@
     <Grid>
         <!-- "Layers Canvas" -->
         <ItemsControl x:Name="LayersCanvasElement"
-            Width="880"
-            Height="400"
+            Width="{Binding Width, ElementName=LayersCanvasControl}"
+            Height="{Binding Height, ElementName=LayersCanvasControl}"
             ItemsSource="{Binding DrawingGeometries, ElementName=LayersCanvasControl}"
             ItemsPanel="{StaticResource Canvas}"
             ItemContainerStyle="{StaticResource CanvasContainerStyle}"

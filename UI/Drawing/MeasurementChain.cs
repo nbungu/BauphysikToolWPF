@@ -10,6 +10,12 @@ using Point = System.Windows.Point;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
+    public enum Axis
+    {
+        X,
+        Y,
+        Z
+    }
     public static class MeasurementChain
     {
         #region Public Methods

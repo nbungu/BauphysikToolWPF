@@ -37,6 +37,37 @@ namespace BauphysikToolWPF.Calculations
             IsValid = true;
         }
 
+        /*private Dictionary<int, double> GetAreaFractions(Element element)
+        {
+            var areas = new Dictionary<int, double>();
+
+            if (!element.IsValid || !element.Layers.Any(l => l.HasSubConstruction)) return new Dictionary<int, double>() { {1, 1.0} };
+            
+            var subConstructions = element.Layers.Where(l => l.HasSubConstruction).Select(l => l.SubConstruction);
+            var verticalLayerSubConstructions =
+                subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Vertical).ToList();
+            var horinzontalLayerSubConstructions =
+                subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Horizontal).ToList();
+
+            var boundsInXDirection = verticalLayerSubConstructions.Max(l => l.Spacing + l.Width);
+            var boundsInZDirection = horinzontalLayerSubConstructions.Max(l => l.Spacing + l.Width);
+
+
+            var verticalAreaWidths = new Dictionary<int, double>();
+            for (int i = 0; i < verticalLayerSubConstructions.Count(); i++)
+            {
+                verticalAreaWidths.Add(i, verticalLayerSubConstructions[i].Width);
+                verticalAreaWidths.Add(i+1, verticalLayerSubConstructions[i].Spacing);
+            }
+
+            foreach (var vSubConstr in verticalLayerSubConstructions)
+            {
+                verticalAreaWidths.Add("a", vSubConstr.Width);
+                verticalAreaWidths.Add(vSubConstr.Spacing);
+
+            }
+        }*/
+
         /*private Dictionary<string, double> GetAreaFractions(Element element)
         {
             
@@ -79,6 +110,6 @@ namespace BauphysikToolWPF.Calculations
             return (rUpper, rLower);
         }*/
 
-        
+
     }
 }
