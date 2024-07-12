@@ -17,28 +17,25 @@ namespace BauphysikToolWPF.UI.Drawing
     {
         public Element Element { get; set; }
         public Rectangle CanvasSize { get; set; }
-        public List<IDrawingGeometry> DrawingGeometries { get; private set; }
+        public List<IDrawingGeometry> DrawingGeometries => GetCrossSectionDrawing(Element, CanvasSize);
 
         public CanvasDrawingService(Element element, Rectangle canvasSize)
         {
             Element = element;
             CanvasSize = canvasSize;
-            DrawingGeometries = GetCrossSectionDrawing(Element, CanvasSize);
+        }
 
+        public void UpdateCanvasSize()
+        {
             var checkDrawingBounds = GetWidth(DrawingGeometries);
             if (checkDrawingBounds > CanvasSize.Width)
             {
                 CanvasSize = new Rectangle(CanvasSize.Left, CanvasSize.Top, checkDrawingBounds, CanvasSize.Height);
-                Update();
             }
         }
 
-        public List<IDrawingGeometry> Update()
-        {
-            DrawingGeometries = GetCrossSectionDrawing(Element, CanvasSize);
-            return DrawingGeometries;
-        }
-        
+        #region Static Methods
+
         public static double GetWidth(IEnumerable<IDrawingGeometry> geometries)
         {
             var minX = geometries.Min(g => g.Rectangle.Left);
@@ -146,5 +143,7 @@ namespace BauphysikToolWPF.UI.Drawing
             }
             return layerDrawings;
         }
+
+        #endregion
     }
 }
