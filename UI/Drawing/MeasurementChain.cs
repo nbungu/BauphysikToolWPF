@@ -69,7 +69,7 @@ namespace BauphysikToolWPF.UI.Drawing
             {
                 if (i > 0)
                 {
-                    var intervalWidthInCm = Math.Round(Math.Abs(intervals[i] - selectedInterval) / DrawingGeometry.SizeOf1Cm, 2);
+                    var intervalWidthInCm = Math.Round(Math.Abs(intervals[i] - selectedInterval) / CanvasDrawingService.SizeOf1Cm, 2);
                     if (intervalWidthInCm > 0)
                     {
                         var label = new FormattedText(intervalWidthInCm.ToString(), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 14, Brushes.DimGray, 1.0);

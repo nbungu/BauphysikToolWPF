@@ -1,16 +1,11 @@
 ﻿using Geometry;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
     public class DrawingGeometry : IDrawingGeometry
     {
-        // Static, because globally valid for all Intstances
-        public static double SizeOf1Cm = 16.0; // starting value
-        
         // Rectangle on 2D Canvas. Drawing Origin (0,0) is top left corner.
         public Rectangle Rectangle { get; set; } = Rectangle.Empty; // in [px]
 

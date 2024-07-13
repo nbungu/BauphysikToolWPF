@@ -13,6 +13,11 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for FO1_SetupLayer.xaml: Used in xaml as "DataContext"
     public partial class FO1_LayerViewModel : ObservableObject
     {
+        public static string Title = "SetupLayer";
+
+        private CanvasDrawingService _drawingService = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
+
+        // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
         public FO1_LayerViewModel()
         {
             UserSaved.SelectedLayerId = -1;
@@ -27,12 +32,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += RefreshXamlBindings;
         }
-
-        // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
-        public static string Title = "SetupLayer";
-
-        private static CanvasDrawingService _drawing = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
-
+        
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -147,16 +147,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         
         private void RefreshXamlBindings()
         {
-            _drawing.UpdateCanvasSize();
-
-            LayerList = new List<Layer>();
+            _drawingService.UpdateDrawings();
+            
+            LayerList = null;
             LayerList = UserSaved.SelectedElement.Layers;
-            //SelectedElement = new Element();
-            //SelectedElement = UserSaved.SelectedElement;
+            SelectedElement = null;
+            SelectedElement = UserSaved.SelectedElement;
             SelectedListViewItem = null;
             SelectedListViewItem = UserSaved.SelectedLayer;
-
-            
         }
 
         // This method will be called whenever SelectedListViewItem changes
@@ -166,6 +164,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
             UserSaved.SelectedLayerId = value.InternalId;
             UserSaved.SelectedLayer.IsSelected = true;
+
+            _drawingService.UpdateDrawings();
         }
 
         /*
@@ -173,6 +173,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
+
+        [ObservableProperty]
+        private Element _selectedElement = UserSaved.SelectedElement;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ElementProperties))]
@@ -183,9 +186,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(DrawingGeometries))]
         [NotifyPropertyChangedFor(nameof(CanvasSize))]
         private List<Layer> _layerList = UserSaved.SelectedElement.Layers;
-
-        [ObservableProperty]
-        private Element _selectedElement = UserSaved.SelectedElement;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
@@ -202,20 +202,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Not Observable, No direct User Input involved
          */
+
         public bool IsLayerSelected => SelectedListViewItem != null;
         public bool ShowLayerExpander => IsLayerSelected;
         public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstruction;
         public string LayerTitle => string.Format("Schicht {0}", UserSaved.SelectedLayer.LayerPosition);
-
-        public List<IDrawingGeometry> DrawingGeometries => _drawing.DrawingGeometries;
-        public Rectangle CanvasSize => _drawing.CanvasSize;
-
-        //public Rectangle CanvasSize { get; set; } = new Rectangle(new Point(0, 0), 880, 400);
-        //public List<IDrawingGeometry> DrawingGeometries => UserSaved.SelectedElement.GetCrossSectionDrawing(CanvasSize);
-
-        // Using a Single-Item Collection, since ItemsSource of XAML Element expects IEnumerable iface
+        public List<IDrawingGeometry> DrawingGeometries => _drawingService.DrawingGeometries;
+        public Rectangle CanvasSize => _drawingService.CanvasSize;
+        
         public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_drawing.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
+        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
         public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()

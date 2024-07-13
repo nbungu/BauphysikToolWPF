@@ -1,42 +1,54 @@
-﻿using System;
+﻿using BauphysikToolWPF.Models;
+using System;
 using System.Windows;
 using System.Windows.Media;
-using BauphysikToolWPF.Models;
-using SkiaSharp;
+using Geometry;
+using Point = System.Windows.Point;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
     public static class HatchPattern
     {
-        //public static DrawingBrush? PlasterBrush { get; private set; }
-        //public static DrawingBrush? InsulationBrush { get; private set; }
-        //public static DrawingBrush? WoodBrush { get; private set; }
-        //public static DrawingBrush? MasonryBrush { get; private set; }
-        //public static DrawingBrush? ConcreteBrush { get; private set; }
-        //public static DrawingBrush? AirLayerBrush { get; private set; }
-        //public static DrawingBrush? SealantBrush { get; private set; }
+        private static double _currentLineThickness;
+        //private static Rectangle _currentRectangle;
+        private static bool _redraw = true;
 
-        public static DrawingBrush GetHatchPattern(MaterialCategory category, double lineThickness, double rectWidth, double rectHeight)
+        public static DrawingBrush? PlasterBrush { get; private set; }
+        public static DrawingBrush? InsulationBrush { get; private set; }
+        public static DrawingBrush? WoodBrush { get; private set; }
+        public static DrawingBrush? MasonryBrush { get; private set; }
+        public static DrawingBrush? ConcreteBrush { get; private set; }
+        public static DrawingBrush? AirLayerBrush { get; private set; }
+        public static DrawingBrush? SealantBrush { get; private set; }
+
+        public static DrawingBrush GetHatchPattern(MaterialCategory category, double lineThickness, Rectangle rectangle)
         {
-            if (rectWidth <= 0 || rectHeight <= 0) return new DrawingBrush();
+            if (rectangle.Width <= 0 || rectangle.Height <= 0) return new DrawingBrush();
+
+            _redraw = lineThickness != _currentLineThickness;
+            //_currentRectangle = rectangle;
+            _currentLineThickness = lineThickness;
             
             // return corresp. class variable if already set, otherwise draw new Brush
             switch (category)
             {
                 case MaterialCategory.Insulation:
-                    return GetInsulationBrush(rectWidth, rectHeight, lineThickness); // Draw new every time! Updates on every layer change, not only once
+                    return GetInsulationBrush(rectangle, lineThickness);
                 case MaterialCategory.Concrete:
-                    return GetConcreteBrush(lineThickness);
-                //case MaterialCategory.Wood:
-                //    return WoodBrush ??= GetWoodBrush(lineThickness);
+                    if (_redraw || ConcreteBrush is null) return GetConcreteBrush(lineThickness);
+                    return ConcreteBrush;
                 case MaterialCategory.Masonry:
-                    return GetMasonryBrush(lineThickness);
+                    if (_redraw || MasonryBrush is null) return GetMasonryBrush(lineThickness);
+                    return MasonryBrush;
                 case MaterialCategory.Plasters:
-                    return GetPlasterBrush(lineThickness);
+                    if (_redraw || PlasterBrush is null) return GetPlasterBrush(lineThickness);
+                    return PlasterBrush;
                 case MaterialCategory.Sealant:
-                    return GetSealantBrush();
+                    if (_redraw || SealantBrush is null) return GetSealantBrush();
+                    return SealantBrush;
                 case MaterialCategory.Air:
-                    return GetAirLayerBrush(lineThickness);
+                    if (_redraw || AirLayerBrush is null) return GetAirLayerBrush(lineThickness);
+                    return AirLayerBrush;
                 default:
                     return new DrawingBrush();
             }
@@ -78,7 +90,8 @@ namespace BauphysikToolWPF.UI.Drawing
                 Transform = new RotateTransform(15)
 
             };
-            return brush;
+            PlasterBrush = brush;
+            return PlasterBrush;
         }
 
         // Brush for Beton (bewehrt)
@@ -102,7 +115,8 @@ namespace BauphysikToolWPF.UI.Drawing
                 Viewbox = new Rect(0, 0, 32, 32),
                 ViewboxUnits = BrushMappingMode.Absolute
             };
-            return brush;
+            ConcreteBrush = brush;
+            return ConcreteBrush;
         }
 
         // Brush for Dichtstoffe
@@ -129,7 +143,8 @@ namespace BauphysikToolWPF.UI.Drawing
                 Viewbox = drawHorizontally ? new Rect(0, 0, 80, 16) : new Rect(0, 0, 16, 80),
                 ViewboxUnits = BrushMappingMode.Absolute
             };
-            return brush;
+            SealantBrush = brush;
+            return SealantBrush;
         }
 
         //Brush for Mauerwerk
@@ -151,15 +166,16 @@ namespace BauphysikToolWPF.UI.Drawing
                 Viewbox = new Rect(0, 0, 32, 32),
                 ViewboxUnits = BrushMappingMode.Absolute
             };
-            return brush;
+            MasonryBrush = brush;
+            return MasonryBrush;
         }
 
         //Brush for Wärmedämmung
         // Horizontally
-        private static DrawingBrush GetInsulationBrush(double rectWidth, double rectHeight, double lineThickness)
+        private static DrawingBrush GetInsulationBrush(Rectangle rectangle, double lineThickness)
         {
-            bool isVertical = rectHeight > rectWidth;
-            double w_h_ratio = isVertical ? (rectWidth / rectHeight) : (rectHeight / rectWidth);
+            bool isVertical = rectangle.Height > rectangle.Width;
+            double w_h_ratio = isVertical ? (rectangle.Width / rectangle.Height) : (rectangle.Height / rectangle.Width);
 
             //Imaginary 60x60 Rectangle
             double arcRad = 10;
@@ -230,7 +246,8 @@ namespace BauphysikToolWPF.UI.Drawing
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.DimGray, lineThickness), hatchContent) };
 
-            return brush;
+            InsulationBrush = brush;
+            return InsulationBrush;
         }
 
         // Brush for Luftschicht
@@ -258,7 +275,8 @@ namespace BauphysikToolWPF.UI.Drawing
                 ViewboxUnits = BrushMappingMode.Absolute,
 
             };
-            return brush;
+            AirLayerBrush = brush;
+            return AirLayerBrush;
         }
     }
 }

@@ -3,7 +3,6 @@ using BauphysikToolWPF.Models.Helper;
 using Geometry;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
@@ -15,39 +14,33 @@ namespace BauphysikToolWPF.UI.Drawing
     }
     public class CanvasDrawingService
     {
+        private Rectangle _defaultCrossSectionRectangle = new Rectangle(new Point(0, 0), 880, 400);
+        private Rectangle _defaultVerticalCutRectangle = new Rectangle(new Point(0, 0), 400, 880);
+        private bool _isOverflowing = false;
+
+        // Static, because globally valid for all Intstances
+        public static double SizeOf1Cm = 16.0; // starting value
         public Element Element { get; set; }
         public Rectangle CanvasSize { get; set; }
-        public List<IDrawingGeometry> DrawingGeometries => GetCrossSectionDrawing(Element, CanvasSize);
+        public List<IDrawingGeometry> DrawingGeometries { get; set; } //=> GetCrossSectionDrawing(Element, CanvasSize);
 
         public CanvasDrawingService(Element element, Rectangle canvasSize)
         {
             Element = element;
             CanvasSize = canvasSize;
+            DrawingGeometries = GetCrossSectionDrawing(Element, CanvasSize);
         }
 
-        public void UpdateCanvasSize()
+        public void UpdateDrawings()
         {
-            var checkDrawingBounds = GetWidth(DrawingGeometries);
-            if (checkDrawingBounds > CanvasSize.Width)
-            {
-                CanvasSize = new Rectangle(CanvasSize.Left, CanvasSize.Top, checkDrawingBounds, CanvasSize.Height);
-            }
-        }
-
-        #region Static Methods
-
-        public static double GetWidth(IEnumerable<IDrawingGeometry> geometries)
-        {
-            var minX = geometries.Min(g => g.Rectangle.Left);
-            var maxX = geometries.Max(g => g.Rectangle.Right);
-            return Math.Abs(minX - maxX);
+            DrawingGeometries = GetCrossSectionDrawing(Element, CanvasSize);
         }
 
         // Querschnitt, Canvas in PX
-        public static List<IDrawingGeometry> GetCrossSectionDrawing(Element element, Rectangle canvas, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
+        private List<IDrawingGeometry> GetCrossSectionDrawing(Element element, Rectangle canvas, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {
             var layerDrawings = new List<IDrawingGeometry>();
-            DrawingGeometry.SizeOf1Cm = canvas.Height / element.Thickness;
+            SizeOf1Cm = canvas.Height / element.Thickness;
 
             if (element.IsValid)
             {
@@ -66,14 +59,14 @@ namespace BauphysikToolWPF.UI.Drawing
                 // Scaling to fit Canvas (cm to px conversion)
                 foreach (var l in element.Layers)
                 {
-                    l.Rectangle = new Rectangle(new Point(), canvas.Width, l.Rectangle.Height * DrawingGeometry.SizeOf1Cm);
-                    l.DrawingBrush = HatchPattern.GetHatchPattern(l.Material.Category, 0.5, l.Rectangle.Width, l.Rectangle.Height);
+                    l.Rectangle = new Rectangle(new Point(), canvas.Width, l.Rectangle.Height * SizeOf1Cm);
+                    l.DrawingBrush = HatchPattern.GetHatchPattern(l.Material.Category, 0.5, l.Rectangle);
 
                     // SubConstruction
                     if (l.HasSubConstruction)
                     {
-                        l.SubConstruction.Rectangle = l.SubConstruction.Rectangle.Scale(DrawingGeometry.SizeOf1Cm); // new Rectangle(new Point(), l.SubConstruction.Rectangle.Width * sizeOf1Cm, l.SubConstruction.Rectangle.Height * sizeOf1Cm);
-                        l.SubConstruction.DrawingBrush = HatchPattern.GetHatchPattern(l.SubConstruction.Material.Category, 0.5, l.SubConstruction.Rectangle.Width, l.SubConstruction.Rectangle.Height);
+                        l.SubConstruction.Rectangle = l.SubConstruction.Rectangle.Scale(SizeOf1Cm); // new Rectangle(new Point(), l.SubConstruction.Rectangle.Width * sizeOf1Cm, l.SubConstruction.Rectangle.Height * sizeOf1Cm);
+                        l.SubConstruction.DrawingBrush = HatchPattern.GetHatchPattern(l.SubConstruction.Material.Category, 0.5, l.SubConstruction.Rectangle);
                     }
                 }
 
@@ -90,7 +83,7 @@ namespace BauphysikToolWPF.UI.Drawing
                     {
                         double subConstrWidth = l.SubConstruction.Rectangle.Width;
                         double subConstrHeight = l.SubConstruction.Rectangle.Height;
-                        double spacing = l.SubConstruction.Spacing * DrawingGeometry.SizeOf1Cm;
+                        double spacing = l.SubConstruction.Spacing * SizeOf1Cm;
 
                         int numSubconstructions = (int)Math.Floor((canvas.Width + spacing) / (subConstrWidth + spacing));
                         double startX = 0;
@@ -104,18 +97,16 @@ namespace BauphysikToolWPF.UI.Drawing
                             numSubconstructions = Math.Max(numSubconstructions, 2);
 
                             double totalSubconstructionsWidth = numSubconstructions * subConstrWidth + (numSubconstructions - 1) * spacing;
+                            _isOverflowing = totalSubconstructionsWidth > canvas.Width;
+                            
+                            if (_isOverflowing)
+                            {
+                                CanvasSize = new Rectangle(CanvasSize.Left, CanvasSize.Top, totalSubconstructionsWidth, CanvasSize.Height);
+                                return GetCrossSectionDrawing(Element, CanvasSize, variant);
+                            }
+                            // If it fits within the canvas width, center normally
                             startX = (canvas.Width - totalSubconstructionsWidth) / 2;
-
-                            // Allow for overflow only if the minimum number of elements is reached
-                            if (totalSubconstructionsWidth > canvas.Width)
-                            {
-                                startX = Math.Min(startX, 0);
-                            }
-                            else
-                            {
-                                // If it fits within the canvas width, center normally
-                                startX = (canvas.Width - totalSubconstructionsWidth) / 2;
-                            }
+                            
                         }
                         else if (variant == AlignmentVariant.OddElementCentered)
                         {
@@ -143,7 +134,5 @@ namespace BauphysikToolWPF.UI.Drawing
             }
             return layerDrawings;
         }
-
-        #endregion
     }
 }
