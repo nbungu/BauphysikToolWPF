@@ -57,7 +57,6 @@ namespace BauphysikToolWPF.UI.Drawing
 
             if (!Element.IsValid) return new List<IDrawingGeometry>();
 
-            // Reset Geometries for selected Drawing Type
             UpdateGeometries();
 
             // Stacking
@@ -193,46 +192,70 @@ namespace BauphysikToolWPF.UI.Drawing
 
         private void UpdateGeometries()
         {
-            // Updating + Scaling Geometries
-            // Scaling to fit Canvas (cm to px conversion)
             foreach (var l in Element.Layers)
             {
                 if (DrawingType == DrawingType.CrossSection)
-                {
                     l.Rectangle = new Rectangle(new Point(0, 0), CanvasSize.Width, l.Thickness * SizeOf1Cm);
-                }
                 else if (DrawingType == DrawingType.VerticalCut)
-                {
                     l.Rectangle = new Rectangle(new Point(0, 0), l.Thickness * SizeOf1Cm, CanvasSize.Height);
-                }
-                l.BackgroundColor = new SolidColorBrush(l.Material.Color);
-                l.DrawingBrush = HatchPattern.GetHatchPattern(l.Material.Category, 0.5, l.Rectangle);
-                l.RectangleBorderColor = l.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-                l.RectangleBorderThickness = l.IsSelected ? 2 : 0.2;
-                l.Opacity = l.IsEffective ? 1 : 0.3;
-                l.Tag = l.InternalId;
+
+                UpdateLayerGeometry(l);
 
                 if (l.HasSubConstruction)
                 {
-                    // Shows Faces of Cutted Crossections
-                    if ((int)DrawingType == (int)l.SubConstruction.SubConstructionDirection)
+                    if (DrawingType == DrawingType.CrossSection)
                     {
-                        l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Width * SizeOf1Cm, l.SubConstruction.Thickness * SizeOf1Cm);
-                        l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
+                        // if it shows Faces of Cutted Vertical/Crosssections
+                        if ((int)DrawingType == (int)l.SubConstruction.SubConstructionDirection)
+                        {
+                            l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Width * SizeOf1Cm, l.SubConstruction.Thickness * SizeOf1Cm);
+                            l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
+                        }
+                        // if sub construction runs parallel to main layer
+                        else
+                        {
+                            l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.Rectangle.Width, l.SubConstruction.Thickness * SizeOf1Cm);
+                            l.SubConstruction.Opacity = 0.2;
+                        }
                     }
-                    // SubConstruction runs parallel to Main Layer
-                    else
+                    else if (DrawingType == DrawingType.VerticalCut)
                     {
-                        l.SubConstruction.Rectangle = l.Rectangle;
-                        l.SubConstruction.Opacity = 0.2;
+                        // if it shows Faces of Cutted Vertical/Crosssections
+                        if ((int)DrawingType == (int)l.SubConstruction.SubConstructionDirection)
+                        {
+                            l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Thickness * SizeOf1Cm, l.SubConstruction.Width * SizeOf1Cm);
+                            l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
+                        }
+                        // if sub construction runs parallel to main layer
+                        else
+                        {
+                            l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Thickness * SizeOf1Cm, l.Rectangle.Height);
+                            l.SubConstruction.Opacity = 0.2;
+                        }
                     }
-                    l.SubConstruction.BackgroundColor = new SolidColorBrush(l.SubConstruction.Material.Color);
-                    l.SubConstruction.DrawingBrush = HatchPattern.GetHatchPattern(l.SubConstruction.Material.Category, 0.5, l.SubConstruction.Rectangle);
-                    l.SubConstruction.RectangleBorderColor = l.SubConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-                    l.SubConstruction.RectangleBorderThickness = l.SubConstruction.IsSelected ? 1 : 0.2;
-                    l.SubConstruction.Tag = l.InternalId;
+                    UpdateSubConstructionGeometry(l);
                 }
             }
+        }
+
+        private void UpdateLayerGeometry(Layer layer)
+        {
+            layer.BackgroundColor = new SolidColorBrush(layer.Material.Color);
+            layer.DrawingBrush = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, layer.Rectangle);
+            layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
+            layer.Opacity = layer.IsEffective ? 1 : 0.3;
+            layer.Tag = layer.InternalId;
+        }
+
+        private void UpdateSubConstructionGeometry(Layer layer)
+        {
+            var subConstruction = layer.SubConstruction;
+            subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
+            subConstruction.DrawingBrush = HatchPattern.GetHatchPattern(subConstruction.Material.Category, 0.5, subConstruction.Rectangle);
+            subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            subConstruction.RectangleBorderThickness = subConstruction.IsSelected ? 1 : 0.2;
+            subConstruction.Tag = layer.InternalId;
         }
     }
 }
