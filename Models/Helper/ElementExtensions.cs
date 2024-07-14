@@ -1,4 +1,5 @@
-﻿using Geometry;
+﻿using BauphysikToolWPF.SessionData;
+using Geometry;
 using System.Linq;
 
 namespace BauphysikToolWPF.Models.Helper
@@ -42,23 +43,47 @@ namespace BauphysikToolWPF.Models.Helper
             }
         }
 
-        public static Rectangle CalculationAreaBounds(this Element element)
+        public static void MoveLayerPositionToInside(this Element element, int targetLayerId)
         {
-            // Return 100 x 100 cm Rectangle by default
-            if (!element.IsValid || !element.Layers.Any(l => l.HasSubConstruction)) return new Rectangle(new Point(0, 0), 100, 100);
-
-            var subConstructions = element.Layers.Select(l => l.SubConstruction);
-
-            var verticalLayerSubConstructions =
-                subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Vertical).ToList();
-            var horizontalLayerSubConstructions =
-                subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Horizontal).ToList();
-
-
-            var boundsInXDirection = verticalLayerSubConstructions.Count > 0 ? verticalLayerSubConstructions.Max(l => l.Spacing + l.Width) : 100;
-            var boundsInZDirection = horizontalLayerSubConstructions.Count > 0 ? horizontalLayerSubConstructions.Max(l => l.Spacing + l.Width) : 100;
-            return new Rectangle(new Point(0, 0), boundsInXDirection, boundsInZDirection);
+            if (element is null || element.Layers.Count == 0) return;
+            var targetLayer = element.Layers.First(l => l.InternalId == targetLayerId);
+            // When Layer is already at the top of the List (first in the List)
+            if (targetLayer.LayerPosition == 0) return;
+            // Change Positions
+            Layer neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition - 1);
+            neighbour.LayerPosition += 1;
+            targetLayer.LayerPosition -= 1;
         }
+
+        public static void MoveLayerPositionToOutside(this Element element, int targetLayerId)
+        {
+            if (element is null || element.Layers.Count == 0) return;
+            var targetLayer = element.Layers.First(l => l.InternalId == targetLayerId);
+            // When Layer is already at the bottom of the List (last in the List)
+            if (targetLayer.LayerPosition == element.Layers.Count - 1) return;
+            // Change Positions
+            Layer neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition + 1);
+            neighbour.LayerPosition -= 1;
+            targetLayer.LayerPosition += 1;
+        }
+
+        //public static Rectangle CalculationAreaBounds(this Element element)
+        //{
+        //    // Return 100 x 100 cm Rectangle by default
+        //    if (!element.IsValid || !element.Layers.Any(l => l.HasSubConstruction)) return new Rectangle(new Point(0, 0), 100, 100);
+
+        //    var subConstructions = element.Layers.Select(l => l.SubConstruction);
+
+        //    var verticalLayerSubConstructions =
+        //        subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Vertical).ToList();
+        //    var horizontalLayerSubConstructions =
+        //        subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Horizontal).ToList();
+
+
+        //    var boundsInXDirection = verticalLayerSubConstructions.Count > 0 ? verticalLayerSubConstructions.Max(l => l.Spacing + l.Width) : 100;
+        //    var boundsInZDirection = horizontalLayerSubConstructions.Count > 0 ? horizontalLayerSubConstructions.Max(l => l.Spacing + l.Width) : 100;
+        //    return new Rectangle(new Point(0, 0), boundsInXDirection, boundsInZDirection);
+        //}
 
     }
 }

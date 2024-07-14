@@ -3,10 +3,10 @@ using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
 {
-    public partial class FO0_ProjectPage : UserControl
+    public partial class Page_Project : UserControl
     {
         // Constructor
-        public FO0_ProjectPage()
+        public Page_Project()
         {
             if (UserSaved.SelectedProject != null) UserSaved.SelectedProject.AssignInternalIdsToElements();
 

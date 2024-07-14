@@ -5,13 +5,13 @@ using System.Windows.Controls;
 namespace BauphysikToolWPF.UI
 {
     /// <summary>
-    /// Interaktionslogik für FO3_Moisture.xaml
+    /// Interaktionslogik für Page_MoistureResults.xaml
     /// </summary>
-    public partial class FO3_Moisture : UserControl
+    public partial class Page_MoistureResults : UserControl
     {
         public static GlaserCalc GlaserCalculation { get; private set; } = new GlaserCalc();
 
-        public FO3_Moisture()
+        public Page_MoistureResults()
         {
             if (UserSaved.SelectedElement != null) GlaserCalculation = new GlaserCalc(UserSaved.SelectedElement);
             InitializeComponent();

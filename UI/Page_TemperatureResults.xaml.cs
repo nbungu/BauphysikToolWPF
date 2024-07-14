@@ -5,13 +5,13 @@ using System.Windows.Controls;
 namespace BauphysikToolWPF.UI
 {
     /// <summary>
-    /// Interaktionslogik für FO2_Temperature.xaml
+    /// Interaktionslogik für Page_TemperatureResults.xaml
     /// </summary>
-    public partial class FO2_Temperature : UserControl
+    public partial class Page_TemperatureResults : UserControl
     {
         public static StationaryTempCalc StationaryTempCalculation { get; private set; } = new StationaryTempCalc();
 
-        public FO2_Temperature()
+        public Page_TemperatureResults()
         {
             if (UserSaved.SelectedElement != null) StationaryTempCalculation = new StationaryTempCalc(UserSaved.SelectedElement);
 

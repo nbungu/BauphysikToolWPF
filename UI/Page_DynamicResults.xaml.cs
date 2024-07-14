@@ -7,20 +7,20 @@ namespace BauphysikToolWPF.UI
     /// <summary>
     /// Interaktionslogik für F04_Dynamic.xaml
     /// </summary>
-    public partial class FO4_Dynamic : UserControl
+    public partial class Page_DynamicResults : UserControl
     {
         public static DynamicTempCalc DynamicTempCalculation { get; private set; } = new DynamicTempCalc();
 
-        public FO4_Dynamic()
+        public Page_DynamicResults()
         {
             // Save computation time and only recalculate if needed
             // Only if Element, Layers or EnvVars are not set or have changed: update class variables.
-            if (FO1_SetupLayer.Recalculate)
+            if (Page_LayerSetup.Recalculate)
             {
                 DynamicTempCalculation = new DynamicTempCalc(UserSaved.SelectedElement);
 
                 // Reset Recalculate Flag
-                FO1_SetupLayer.Recalculate = false;
+                Page_LayerSetup.Recalculate = false;
             }
 
             InitializeComponent();

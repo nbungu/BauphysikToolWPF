@@ -18,10 +18,10 @@ using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for FO2_Temperature.cs: Used in xaml as "DataContext"
-    public partial class FO2_ViewModel : ObservableObject
+    //ViewModel for Page_TemperatureResults.cs: Used in xaml as "DataContext"
+    public partial class Page_TemperatureResults_VM : ObservableObject
     {
-        private readonly StationaryTempCalc _tempCalc = FO2_Temperature.StationaryTempCalculation;
+        private readonly StationaryTempCalc _tempCalc = Page_TemperatureResults.StationaryTempCalculation;
 
         /*
          * Regular Instance Variables as Properties

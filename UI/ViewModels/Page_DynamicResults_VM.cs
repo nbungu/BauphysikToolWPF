@@ -15,9 +15,9 @@ using System.Collections.Generic;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    public partial class FO4_ViewModel : ObservableObject
+    public partial class Page_DynamicResults_VM : ObservableObject
     {
-        private readonly DynamicTempCalc _dynamicTempCalc = FO4_Dynamic.DynamicTempCalculation;
+        private readonly DynamicTempCalc _dynamicTempCalc = Page_DynamicResults.DynamicTempCalculation;
 
         /*
          * Regular Instance Variables

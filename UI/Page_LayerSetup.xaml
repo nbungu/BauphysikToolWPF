@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="BauphysikToolWPF.UI.FO1_SetupLayer"
+﻿<UserControl x:Class="BauphysikToolWPF.UI.Page_LayerSetup"
             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -13,7 +13,7 @@
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
-        <vm:FO1_LayerViewModel/>
+        <vm:Page_LayerSetup_VM/>
     </UserControl.DataContext>
     
     <!--

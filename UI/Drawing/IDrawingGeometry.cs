@@ -15,6 +15,5 @@ namespace BauphysikToolWPF.UI.Drawing
         int ZIndex { get; set; }
         object Tag { get; set; }
         IDrawingGeometry Convert();
-        void UpdateGeometry();
     }
 }

@@ -41,25 +41,25 @@
 
         <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page-->
         <DataTemplate x:Key="FO0_ProjectPage">
-            <ui:FO0_ProjectPage/>
+            <ui:Page_Project/>
         </DataTemplate>
         <DataTemplate x:Key="FO0_LandingPage">
-            <ui:FO0_ElementsPage/>
+            <ui:Page_Elements/>
         </DataTemplate>
         <DataTemplate x:Key="FO1_SetupLayer">
-            <ui:FO1_SetupLayer/>
+            <ui:Page_LayerSetup/>
         </DataTemplate>
         <DataTemplate x:Key="FO1_SetupEnv">
-            <ui:FO1_SetupEnv/>
+            <ui:Page_EnvironmentSetup/>
         </DataTemplate>
         <DataTemplate x:Key="FO2_Temperature">
-            <ui:FO2_Temperature/>
+            <ui:Page_TemperatureResults/>
         </DataTemplate>
         <DataTemplate x:Key="FO3_Moisture">
-            <ui:FO3_Moisture/>
+            <ui:Page_MoistureResults/>
         </DataTemplate>
         <DataTemplate x:Key="FO4_Dynamic">
-            <ui:FO4_Dynamic/>
+            <ui:Page_DynamicResults/>
         </DataTemplate>
         <DataTemplate x:Key="TestWindow">
             <ui:TestWindow/>

@@ -4,7 +4,7 @@ using System.Windows.Input;
 
 namespace BauphysikToolWPF.UI
 {
-    public partial class FO1_SetupEnv : UserControl
+    public partial class Page_EnvironmentSetup : UserControl
     {
         // Class Variables - Belongs to the Class-Type itself and stay the same
 
@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.UI
 
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
-        public FO1_SetupEnv()
+        public Page_EnvironmentSetup()
         {
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    

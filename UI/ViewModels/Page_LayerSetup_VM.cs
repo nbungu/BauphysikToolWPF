@@ -10,15 +10,15 @@ using Geometry;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for FO1_SetupLayer.xaml: Used in xaml as "DataContext"
-    public partial class FO1_LayerViewModel : ObservableObject
+    //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
+    public partial class Page_LayerSetup_VM : ObservableObject
     {
         public static string Title = "SetupLayer";
 
-        private CanvasDrawingService _drawingService = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
+        private readonly CanvasDrawingService _drawingService = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
 
-        // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
-        public FO1_LayerViewModel()
+        // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
+        public Page_LayerSetup_VM()
         {
             UserSaved.SelectedLayerId = -1;
             // Subscribe to Event and Handle
@@ -33,7 +33,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             PropertyItem<double>.PropertyChanged += RefreshXamlBindings;
         }
         
-
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -111,31 +110,18 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void MoveLayerDown()
         {
-            // When Layer is already at the bottom of the List (last in the List)
-            if (UserSaved.SelectedLayer.LayerPosition == UserSaved.SelectedElement.Layers.Count - 1) return;
+            UserSaved.SelectedElement.MoveLayerPositionToOutside(UserSaved.SelectedLayerId);
 
-            // Change Position of Layer below
-            Layer neighbour = UserSaved.SelectedElement.Layers.Find(e => e.LayerPosition == UserSaved.SelectedLayer.LayerPosition + 1);
-            neighbour.LayerPosition -= 1;
-            // Change Position of selected Layer
-            UserSaved.SelectedLayer.LayerPosition += 1;
-
-            UserSaved.OnSelectedLayerChanged();
+            UserSaved.OnSelectedElementChanged();
             SelectedListViewItem = UserSaved.SelectedLayer;
         }
 
         [RelayCommand]
         private void MoveLayerUp()
         {
-            // When Layer is already at the top of the List (first in the List)
-            if (UserSaved.SelectedLayer.LayerPosition == 0) return;
+            UserSaved.SelectedElement.MoveLayerPositionToInside(UserSaved.SelectedLayerId);
 
-            // Change Positions
-            Layer neighbour = UserSaved.SelectedElement.Layers.Find(e => e.LayerPosition == UserSaved.SelectedLayer.LayerPosition - 1);
-            neighbour.LayerPosition += 1;
-            UserSaved.SelectedLayer.LayerPosition -= 1;
-
-            UserSaved.OnSelectedLayerChanged();
+            UserSaved.OnSelectedElementChanged();
             SelectedListViewItem = UserSaved.SelectedLayer;
         }
 
@@ -206,7 +192,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool IsLayerSelected => SelectedListViewItem != null;
         public bool ShowLayerExpander => IsLayerSelected;
         public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstruction;
-        public string LayerTitle => string.Format("Schicht {0}", UserSaved.SelectedLayer.LayerPosition);
+        public string LayerTitle => $"Schicht {UserSaved.SelectedLayer.LayerPosition}";
         public List<IDrawingGeometry> DrawingGeometries => _drawingService.DrawingGeometries;
         public Rectangle CanvasSize => _drawingService.CanvasSize;
         

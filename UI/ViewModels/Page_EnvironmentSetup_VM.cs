@@ -10,10 +10,10 @@ using System.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    // ViewModel for FO1_SetupEnv.xaml: Used in xaml as "DataContext"
-    public partial class FO1_EnvViewModel : ObservableObject
+    // ViewModel for Page_EnvironmentSetup.xaml: Used in xaml as "DataContext"
+    public partial class Page_EnvironmentSetup_VM : ObservableObject
     {
-        // Called by 'InitializeComponent()' from FO1_SetupLayer.cs due to Class-Binding in xaml via DataContext
+        // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public string Title => "SetupEnv";
 
         /*

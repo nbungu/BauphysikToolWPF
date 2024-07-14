@@ -114,15 +114,6 @@ namespace BauphysikToolWPF.Models
         {
             return new DrawingGeometry(this);
         }
-        public void UpdateGeometry()
-        {
-            Rectangle = new Rectangle(new Point(0, 0), this.Width, this.Thickness);
-            BackgroundColor = new SolidColorBrush(this.Material.Color);
-            DrawingBrush = HatchPattern.GetHatchPattern(this.Material.Category, 0.5, Rectangle);
-            RectangleBorderColor = this.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            RectangleBorderThickness = this.IsSelected ? 1 : 0.2;
-            Opacity = this.IsEffective ? 1 : 0.4;
-        }
 
         #endregion
     }

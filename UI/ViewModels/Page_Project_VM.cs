@@ -6,17 +6,17 @@ using System.Windows;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for FO0_ElementsPage.xaml: Used in xaml as "DataContext"
-    public partial class FO0_ProjectPage_VM : ObservableObject
+    //ViewModel for Page_Elements.xaml: Used in xaml as "DataContext"
+    public partial class Page_Project_VM : ObservableObject
     {
-        public FO0_ProjectPage_VM()
+        public Page_Project_VM()
         {
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
         }
 
-        // Called by 'InitializeComponent()' from FO0_ElementsPage.cs due to Class-Binding in xaml via DataContext
+        // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
         public string Title => "ProjectPage";
 
         /*

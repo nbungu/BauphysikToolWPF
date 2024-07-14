@@ -10,7 +10,7 @@ using System.Windows.Input;
 
 namespace BauphysikToolWPF.UI
 {
-    public partial class FO1_SetupLayer : UserControl
+    public partial class Page_LayerSetup : UserControl
     {
         // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call of this Class.
 
@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.UI
         public static bool Recalculate { get; set; } = true;
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
-        public FO1_SetupLayer()
+        public Page_LayerSetup()
         {
             if (UserSaved.SelectedElement != null)
             {
@@ -55,7 +55,7 @@ namespace BauphysikToolWPF.UI
 
         // UI Methods
 
-        // Save current canvas as image, just before closing FO1_SetupLayer Page
+        // Save current canvas as image, just before closing Page_LayerSetup Page
         // 'Unloaded' event was called after FO0 Initialize();
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {

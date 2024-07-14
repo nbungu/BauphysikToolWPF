@@ -68,7 +68,7 @@
                     </Grid.RowDefinitions>
 
                     <!-- Elements inside of ViewBox are dynamically sizable-->
-                    <Label Grid.Row="0" Content="Querschnitt" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="0" Content="Vertikalschnitt" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                     <Label Grid.Row="0" Content="Innen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
                     <Label Grid.Row="2" Content="Außen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
                     <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
@@ -95,9 +95,9 @@
                             <!-- "Vertical Measurement Grid Full" -->
                             <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="16,0,16,0"/>
 
-                            <!-- "Horizontal Measurement Grid Test" -->
+                            <!-- "Horizontal Measurement Grid Test" 
                             <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurement}" Margin="0,16,0,16"/>
-
+                            -->
                         </Grid>
                     </Viewbox>
 

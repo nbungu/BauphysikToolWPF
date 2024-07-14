@@ -17,9 +17,9 @@ using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    public partial class FO3_ViewModel : ObservableObject
+    public partial class Page_MoistureResults_VM : ObservableObject
     {
-        private readonly GlaserCalc _glaser = FO3_Moisture.GlaserCalculation;
+        private readonly GlaserCalc _glaser = UI.Page_MoistureResults.GlaserCalculation;
 
         /*
          * Regular Instance Variables as Properties
