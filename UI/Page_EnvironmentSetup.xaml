@@ -14,96 +14,6 @@
         <vm:Page_EnvironmentSetup_VM/>
     </UserControl.DataContext>
 
-
-    <UserControl.Resources>
-        <Style x:Key="ViewBoxStyle" TargetType="{x:Type Viewbox}">
-            <Setter Property="RenderTransformOrigin" Value="0.5, 0.5"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <RotateTransform Angle="0"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedElement.Construction.IsLayoutVertical}" Value="false">
-                    <Setter Property="Margin" Value="80,0,80,0"/>
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <RotateTransform Angle="270"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="LabelRotateStyle" TargetType="{x:Type Label}">
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <RotateTransform Angle="0"/>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding SelectedElement.Construction.IsLayoutVertical}" Value="false">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <RotateTransform Angle="90"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- Defines the type of UIElement used in the ItemsPanel-->
-        <ItemsPanelTemplate x:Key="Canvas">
-            <!--Takes the Width and Height from TemplatedParent-->
-            <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
-        </ItemsPanelTemplate>
-
-        <!-- Properties of a CanvasItem (LayerGeometry). Sets the Drawing Coordinates of the container holding a CanvasItem -->
-        <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
-            <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
-            <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
-        </Style>
-
-        <!-- Content and Styling of a Canvas Item (LayerGeometry) -->
-        <DataTemplate x:Key="CanvasLayerItemStyle">
-            <Grid Width="{Binding Rectangle.Width}" Height="{Binding Rectangle.Height}" Background="{Binding BackgroundColor}" Opacity="{Binding Opacity}">
-                <Rectangle Fill="{Binding HatchPattern}" Stroke="{Binding BorderStroke}" StrokeThickness="{Binding BorderThickness}"/>
-                <Ellipse Fill="White" Width="20" Height="20" Stroke="{Binding BorderStroke}" StrokeThickness="1" HorizontalAlignment="Center" Margin="-8"/>
-                <Label Content="{Binding LayerPosition}" Margin="-8"/>
-            </Grid>
-        </DataTemplate>
-
-        <!-- Content and Styling of a Canvas Item (Measurement Marker Line) -->
-        <DataTemplate x:Key="MeasurementItemStyle">
-            <!-- DataContext is LayerRects from ItemSource-->
-            <Grid Width="{Binding RectWidth}" Height="56">
-                <!-- X1="0.5" X2="0.5" Adds 0.5 Offset to the Left, to avoid clipping of first marker line-->
-                <Line x:Name="MarkerLine" Y2="12" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                <Label Content="{Binding RectWidth_cm}" Margin="-16,-40,-16,0"/>
-            </Grid>
-        </DataTemplate>
-
-        <Style x:Key="MeasurementCanvasStyle" TargetType="{x:Type ItemsControl}">
-            <Setter Property="Height" Value="56"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ItemsControl}">
-                        <Grid>
-                            <!-- Adds a static UIElement to the ItemsSource-->
-                            <!-- DataContext is FO1_Layer_VM-->
-                            <Label Content="{Binding SelectedElement.ElementWidth}" Margin="-16,0,-16,-40"/>
-                            <Line x:Name="staticStartLine" Y2="12" X1="0" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                            <Line x:Name="staticBaseLine" X1="0" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center"/>
-                            <Line x:Name="staticEndLine" Y2="12" X1="{TemplateBinding Width}" X2="{TemplateBinding Width}" Stroke="Black" StrokeThickness="1" VerticalAlignment="Center" Margin="0,0,-8,0"/>
-                            <!-- ItemsPresenter is where the (dynamic) Content of the Canvas Items are shown (from ItemsSource) -->
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                        </Grid>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-    </UserControl.Resources>
-    
     <!--
     the DataContext is used to specify the data source for a UI element,
     while the ItemsSource is used to specify the data source for a list of items.
@@ -113,18 +23,17 @@
     <!--Main Grid: 3x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
-            <RowDefinition Height="56"/>
+            <RowDefinition Height="40"/>
             <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*" MinWidth="320"/>
             <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
-        <Border Grid.ColumnSpan="3" Margin="16,16,16,0" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+        <Border Grid.ColumnSpan="3" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.SetupLayer}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
@@ -179,8 +88,53 @@
         </Border>
 
         <!--Image-->
-        <Grid Grid.Row="1" Grid.Column="1" Margin="16">
-           
+        <Grid Grid.Column="1" Grid.Row="1" Margin="0,16,0,16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="0" Grid.ColumnSpan="3"  Content="Vertikalschnitt" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="Innen" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <Label Grid.Row="1" Grid.Column="2" Content="Außen" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+
+                <Viewbox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
+                    <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- "Layers Canvas" -->
+                        <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSize.Width}" Height="{Binding CanvasSize.Height}" DrawingGeometries="{Binding DrawingGeometries}"/>
+
+                        <!-- "Horizontal Measurement Grid" -->
+                        <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding LayerMeasurement}" Margin="0,16,0,16"/>
+
+                        <!-- "Horizontal Measurement Grid Full" -->
+                        <controls:MeasurementChain Grid.Row="2" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="0,16,0,16"/>
+
+                        <!-- "Horizontal Measurement Grid Test" -->
+                        <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding SubConstructionMeasurement}" Margin="16,0,16,0"/>
+
+                    </Grid>
+                </Viewbox>
+
+            </Grid>
+
         </Grid>
 
         <!--Env Rechts-->

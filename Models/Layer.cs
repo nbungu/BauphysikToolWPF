@@ -132,6 +132,8 @@ namespace BauphysikToolWPF.Models
             copy.MaterialId = this.MaterialId;
             copy.Element = this.Element;
             copy.Material = this.Material;
+            copy.SubConstructionId = this.SubConstructionId;
+            copy.SubConstruction = this.SubConstruction;
             copy.Thickness = this.Thickness;
             copy.IsEffective = this.IsEffective;
             copy.IsSelected = false;
@@ -181,7 +183,4 @@ namespace BauphysikToolWPF.Models
 
         #endregion
     }
-
-
-
 }

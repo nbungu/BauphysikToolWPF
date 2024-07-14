@@ -16,6 +16,11 @@
         <SolidColorBrush x:Key="PrimaryBorderBrush" Color="#FFABADB3"/>
         <SolidColorBrush x:Key="PrimaryHoverBrush" Color="#BEE6FD"/>
 
+        <SolidColorBrush x:Key="SecondaryLightGreenBrush" Color="#e3ffe3"/>
+        <SolidColorBrush x:Key="SecondaryLightBlueBrush" Color="#e3f2ff"/>
+        <SolidColorBrush x:Key="SecondaryLightRedBrush" Color="#ffe3e3"/>
+        <SolidColorBrush x:Key="SecondaryLightYellowBrush" Color="#ffffe3"/>
+
         <!--Button Icons source paths-->
         <BitmapImage x:Key="ButtonIcon_Add_B" UriSource="/Resources/Icons/plus.png"/>
         <BitmapImage x:Key="ButtonIcon_Add_W" UriSource="/Resources/Icons/plus_w.png"/>

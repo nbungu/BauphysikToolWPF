@@ -46,7 +46,7 @@ namespace BauphysikToolWPF.UI.Drawing
         {
             DrawingGeometries = GetDrawing();
         }
-        
+
         // Vertikalschnitt, Canvas in PX
         // Querschnitt, Canvas in PX
         private List<IDrawingGeometry> GetDrawing()

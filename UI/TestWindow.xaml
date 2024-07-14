@@ -64,19 +64,24 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
 
                     <!-- Elements inside of ViewBox are dynamically sizable-->
-                    <Label Grid.Row="0" Content="Vertikalschnitt" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="0" Content="Innen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
-                    <Label Grid.Row="2" Content="Außen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
-                    <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Label Grid.Row="0" Grid.Column="1" Content="Vertikalschnitt" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                    <Label Grid.Row="1" Grid.Column="0" Content="Innen" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                    <Label Grid.Row="1" Grid.Column="2" Content="Außen" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    <Viewbox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                         <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
                         <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
                         <Grid Margin="8">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
+                                <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
@@ -87,13 +92,13 @@
                             </Grid.ColumnDefinitions>
 
                             <!-- "Layers Canvas" -->
-                            <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSize.Width}" Height="{Binding CanvasSize.Height}" DrawingGeometries="{Binding DrawingGeometries}"/>
+                            <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="1" Grid.Column="1" Width="{Binding CanvasSize.Width}" Height="{Binding CanvasSize.Height}" DrawingGeometries="{Binding DrawingGeometries}"/>
 
                             <!-- "Vertical Measurement Grid" -->
-                            <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurement}" Margin="16,0,16,0"/>
+                            <controls:MeasurementChain Grid.Row="2" Grid.Column="1" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding LayerMeasurement}" Margin="0,16,0,16"/>
 
                             <!-- "Vertical Measurement Grid Full" -->
-                            <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="16,0,16,0"/>
+                            <controls:MeasurementChain Grid.Row="3" Grid.Column="1" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="0,16,0,16"/>
 
                             <!-- "Horizontal Measurement Grid Test" 
                             <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurement}" Margin="0,16,0,16"/>

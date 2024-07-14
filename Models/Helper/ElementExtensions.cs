@@ -1,6 +1,4 @@
-﻿using BauphysikToolWPF.SessionData;
-using Geometry;
-using System.Linq;
+﻿using System.Linq;
 
 namespace BauphysikToolWPF.Models.Helper
 {
@@ -66,24 +64,5 @@ namespace BauphysikToolWPF.Models.Helper
             neighbour.LayerPosition -= 1;
             targetLayer.LayerPosition += 1;
         }
-
-        //public static Rectangle CalculationAreaBounds(this Element element)
-        //{
-        //    // Return 100 x 100 cm Rectangle by default
-        //    if (!element.IsValid || !element.Layers.Any(l => l.HasSubConstruction)) return new Rectangle(new Point(0, 0), 100, 100);
-
-        //    var subConstructions = element.Layers.Select(l => l.SubConstruction);
-
-        //    var verticalLayerSubConstructions =
-        //        subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Vertical).ToList();
-        //    var horizontalLayerSubConstructions =
-        //        subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Horizontal).ToList();
-
-
-        //    var boundsInXDirection = verticalLayerSubConstructions.Count > 0 ? verticalLayerSubConstructions.Max(l => l.Spacing + l.Width) : 100;
-        //    var boundsInZDirection = horizontalLayerSubConstructions.Count > 0 ? horizontalLayerSubConstructions.Max(l => l.Spacing + l.Width) : 100;
-        //    return new Rectangle(new Point(0, 0), boundsInXDirection, boundsInZDirection);
-        //}
-
     }
 }

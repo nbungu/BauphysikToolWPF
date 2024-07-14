@@ -4,9 +4,10 @@ using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Drawing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Geometry;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -31,6 +32,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += RefreshXamlBindings;
+            PropertyItem<SubConstructionDirection>.PropertyChanged += RefreshXamlBindings;
         }
         
         /*
@@ -182,7 +184,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(LayerTitle))]
         [NotifyPropertyChangedFor(nameof(DrawingGeometries))]
         private Layer _selectedListViewItem;
-
+        
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
          * 
@@ -192,10 +194,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool IsLayerSelected => SelectedListViewItem != null;
         public bool ShowLayerExpander => IsLayerSelected;
         public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstruction;
+        public bool ShowElementExpander => LayerList.Count > 0;
         public string LayerTitle => $"Schicht {UserSaved.SelectedLayer.LayerPosition}";
         public List<IDrawingGeometry> DrawingGeometries => _drawingService.DrawingGeometries;
         public Rectangle CanvasSize => _drawingService.CanvasSize;
-        
         public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers).ToList();
         public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
         public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
@@ -222,6 +224,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             new PropertyItem<string>("Material", () => UserSaved.SelectedLayer.SubConstruction.Material.Name),
             new PropertyItem<string>("Kategorie", () => UserSaved.SelectedLayer.SubConstruction.Material.CategoryName),
+            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => UserSaved.SelectedLayer.SubConstruction.SubConstructionDirection, value => UserSaved.SelectedLayer.SubConstruction.SubConstructionDirection = value)
+            {
+                PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray(),
+            },
             new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedLayer.SubConstruction.Thickness, value => UserSaved.SelectedLayer.SubConstruction.Thickness = value),
             new PropertyItem<double>(Symbol.Width, () => UserSaved.SelectedLayer.SubConstruction.Width, value => UserSaved.SelectedLayer.SubConstruction.Width = value),
             new PropertyItem<double>(Symbol.Distance, () => UserSaved.SelectedLayer.SubConstruction.Spacing, value => UserSaved.SelectedLayer.SubConstruction.Spacing = value),

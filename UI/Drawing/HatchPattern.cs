@@ -249,7 +249,7 @@ namespace BauphysikToolWPF.UI.Drawing
             InsulationBrush = brush;
             return InsulationBrush;
         }
-
+        
         // Brush for Luftschicht
         private static DrawingBrush GetAirLayerBrush(double lineThickness)
         {

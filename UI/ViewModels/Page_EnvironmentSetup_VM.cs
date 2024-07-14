@@ -1,12 +1,13 @@
 ﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.Drawing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Geometry;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -14,7 +15,10 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class Page_EnvironmentSetup_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
-        public string Title => "SetupEnv";
+        public string Title = "SetupEnv";
+
+        private readonly CanvasDrawingService _drawingService = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
+
 
         /*
          * Static Class Properties:
@@ -112,6 +116,13 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Not Observable, because Triggered and Changed by the _selection Values above
          */
+
+        public List<IDrawingGeometry> DrawingGeometries => _drawingService.DrawingGeometries;
+        public Rectangle CanvasSize => _drawingService.CanvasSize;
+
+        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers, Axis.X).ToList();
+        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z).ToList();
+        public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] { 0, 400.0 }, Axis.X).ToList() : new List<DrawingGeometry>();
 
         public string TiValue
         {
