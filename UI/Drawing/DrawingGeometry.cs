@@ -14,6 +14,7 @@ namespace BauphysikToolWPF.UI.Drawing
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
         public Brush RectangleBorderColor { get; set; } = Brushes.Transparent;
         public double RectangleBorderThickness { get; set; } = 0.0;
+        public DoubleCollection RectangleStrokeDashArray { get; set; } = new DoubleCollection();
         public double Opacity { get; set; } = 1.0;
         public int ZIndex { get; set; } = 0;
         public object Tag { get; set; }
@@ -26,6 +27,7 @@ namespace BauphysikToolWPF.UI.Drawing
             DrawingBrush = drawingGeometry.DrawingBrush;
             RectangleBorderColor = drawingGeometry.RectangleBorderColor;
             RectangleBorderThickness = drawingGeometry.RectangleBorderThickness;
+            RectangleStrokeDashArray = drawingGeometry.RectangleStrokeDashArray;
             Opacity = drawingGeometry.Opacity;
             ZIndex = drawingGeometry.ZIndex;
             Tag = drawingGeometry.Tag;

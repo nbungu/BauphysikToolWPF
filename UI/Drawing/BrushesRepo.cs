@@ -4,10 +4,13 @@ using System.Windows;
 using System.Windows.Media;
 using Geometry;
 using Point = System.Windows.Point;
+using System.Globalization;
+using ABI.Windows.Media.Audio;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
-    public static class HatchPattern
+    public static class BrushesRepo
     {
         private static double _currentLineThickness;
         //private static Rectangle _currentRectangle;
@@ -245,7 +248,7 @@ namespace BauphysikToolWPF.UI.Drawing
 
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.DimGray, lineThickness), hatchContent) };
-
+            
             InsulationBrush = brush;
             return InsulationBrush;
         }
@@ -273,10 +276,22 @@ namespace BauphysikToolWPF.UI.Drawing
                 ViewportUnits = BrushMappingMode.Absolute,
                 Viewbox = new Rect(0, 0, 16, 80),
                 ViewboxUnits = BrushMappingMode.Absolute,
-
             };
             AirLayerBrush = brush;
             return AirLayerBrush;
         }
+
+        public static Pen CreateDottedPen(Color color, double thickness)
+        {
+            return new Pen(new SolidColorBrush(color), thickness)
+            {
+                DashStyle = new DashStyle(new double[] { 2, 2 }, 0)
+            };
+        }
+
+        //public static DrawingBrush CreateCircleWithNumberBrush(string text, double radius, Brush backgroundColor, Brush borderBrush, double borderThickness)
+        //{
+        
+        //}
     }
 }

@@ -37,10 +37,10 @@ namespace BauphysikToolWPF.Models
         [PrimaryKey, NotNull, AutoIncrement, Unique] // SQL Attributes
         public int Id { get; set; }
 
-        [ForeignKey(typeof(Construction))] // FK for the 1:1 relationship with Construction
+        [NotNull, ForeignKey(typeof(Construction))] // FK for the 1:1 relationship with Construction
         public int ConstructionId { get; set; }
 
-        [ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
+        [NotNull, ForeignKey(typeof(Project))] // FK for the n:1 relationship with Project
         public int ProjectId { get; set; }
         [NotNull]
         public string Name { get; set; } = string.Empty;
@@ -70,7 +70,7 @@ namespace BauphysikToolWPF.Models
 
         // 1:n relationship with Layer
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all Layers linked to this 'Element')
-        public List<Layer> Layers { get; set; } = new List<Layer>();
+        public List<Layer> Layers { get; set; } = new List<Layer>(0);
 
         // 1:1 relationship with Construction
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]

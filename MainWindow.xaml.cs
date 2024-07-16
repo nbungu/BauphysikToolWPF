@@ -239,6 +239,5 @@ namespace BauphysikToolWPF
 
         #endregion
 
-
     }
 }

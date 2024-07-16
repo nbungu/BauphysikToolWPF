@@ -3,6 +3,7 @@ using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
+using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -55,33 +56,27 @@ namespace BauphysikToolWPF.UI.ViewModels
             RefreshXamlBindings();
         }
 
-        // TODO: Execute on every page change?!
-        //[RelayCommand]
-        //private void SaveProject()
-        //{
-        //    DatabaseAccess.UpdateProject(UserSaved.SelectedProject);
-        //}
-
         [RelayCommand]
-        private void ChangeProjectName(string property = "")
+        private void SaveProject()
         {
-            UserSaved.SelectedProject.Name = property;
-
-            RefreshXamlBindings();
-        }
-
-        [RelayCommand]
-        private void ChangeProjectAuthor(string property = "")
-        {
-            UserSaved.SelectedProject.UserName = property;
-
-            RefreshXamlBindings();
+            UserSaved.SelectedProject.UpdateTimestamp();
+            DatabaseAccess.UpdateFullProject(UserSaved.SelectedProject);
         }
 
         [RelayCommand]
         private void Close(Window? window)
         {
             window?.Close();
+        }
+
+        partial void OnAuthorNameChanged(string value)
+        {
+            UserSaved.SelectedProject.UserName = value;
+        }
+
+        partial void OnProjectNameChanged(string value)
+        {
+            UserSaved.SelectedProject.Name = value;
         }
 
         /*
@@ -91,7 +86,13 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
         
         [ObservableProperty]
-        private Project? _currentProject = UserSaved.SelectedProject;
+        private Project _currentProject = UserSaved.SelectedProject;
+
+        [ObservableProperty]
+        private string _projectName = UserSaved.SelectedProject.Name;
+
+        [ObservableProperty]
+        private string _authorName = UserSaved.SelectedProject.UserName;
 
         private void RefreshXamlBindings()
         {

@@ -41,6 +41,7 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
+
         //------Not part of the Database-----//
 
         [Ignore]
@@ -52,7 +53,7 @@ namespace BauphysikToolWPF.Models
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
 
         // 1:n relationship with Element
-        [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
+        [Ignore, OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
         public List<Element> Elements { get; set; } = new List<Element>();
 
         // Encapsulate/Hide BuildingUsage and BuildingAge to convert to bool

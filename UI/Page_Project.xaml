@@ -69,11 +69,10 @@
 
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
-            <Button Content="Projektauswahl öffnen"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Projektdatei öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
-        </StackPanel>
-        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
-            <Button Content="Projektauswahl öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
+            <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
+            <Button Content="Speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16" Command="{Binding SaveProjectCommand}"/>
+            <Button Content="Speichern unter" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
+            <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
         </StackPanel>
 
         <!-- Middle  -->
@@ -95,10 +94,10 @@
             </Grid.ColumnDefinitions>
 
             <Label Grid.ColumnSpan="2" Content="Projektname:" HorizontalAlignment="Left"/>
-            <TextBox Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectName_TextBox" Text="{Binding CurrentProject.Name}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
+            <TextBox Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectName_TextBox" Text="{Binding ProjectName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
             <Label Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Content="Bearbeiter:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <TextBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectUser_TextBox" Text="{Binding CurrentProject.UserName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
+            <TextBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectUser_TextBox" Text="{Binding AuthorName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
             <Label Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0" Content="Nutzungsart des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
             <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding CurrentProject.IsResidentialUsage}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage1" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,4,4,0"/>
@@ -111,12 +110,7 @@
 
         <!-- Right -->
         <!-- Project "Toolbar" Buttons -->
-        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" Margin="16">
-            <Button Content="Projektdatei speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Export_B}" Margin="0,0,0,16"/>
-            <Button Content="Projektdokument erstellen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Export_B}" Margin="0,0,0,16"/>
-            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            <Button Content="Zurücksetzen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_DeleteElement_B}" Margin="0,0,0,16"/>
-        </StackPanel>
+
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="16">
             <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}"/>
         </StackPanel>

@@ -3,7 +3,9 @@ using BauphysikToolWPF.Models.Helper;
 using Geometry;
 using System;
 using System.Collections.Generic;
+using System.Windows;
 using System.Windows.Media;
+using Point = Geometry.Point;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
@@ -57,6 +59,7 @@ namespace BauphysikToolWPF.UI.Drawing
 
             if (!Element.IsValid) return new List<IDrawingGeometry>();
 
+            // Draw Layers
             UpdateGeometries();
 
             // Stacking
@@ -66,6 +69,7 @@ namespace BauphysikToolWPF.UI.Drawing
             layerDrawings.Sort(new DrawingGeometryComparer(sortingType: DrawingGeometrySortingType.ZIndexAscending));
             return layerDrawings;
             
+            // TODO: Add Ellipses and Arrows to the drawing geometries
         }
         
         private List<IDrawingGeometry> Stacking()
@@ -78,6 +82,14 @@ namespace BauphysikToolWPF.UI.Drawing
                 // Main Layer Geometry
                 l.Rectangle = l.Rectangle.MoveTo(ptStart);
                 layerDrawings.Add(l.Convert());
+
+                //var numberBadge = new DrawingGeometry()
+                //{
+                //    Rectangle = new Rectangle(l.Rectangle.TopLeft, 48, 48),
+                //    DrawingBrush = BrushesRepo.CreateCircleWithNumberBrush("2", 24, Brushes.Red, Brushes.Black, 1),
+                //    ZIndex = 3,
+                //};
+                //layerDrawings.Add(numberBadge);
 
                 // SubConstruction
                 if (l.HasSubConstruction)
@@ -194,6 +206,7 @@ namespace BauphysikToolWPF.UI.Drawing
         {
             foreach (var l in Element.Layers)
             {
+                // Main Layer Geometry
                 if (DrawingType == DrawingType.CrossSection)
                     l.Rectangle = new Rectangle(new Point(0, 0), CanvasSize.Width, l.Thickness * SizeOf1Cm);
                 else if (DrawingType == DrawingType.VerticalCut)
@@ -210,12 +223,16 @@ namespace BauphysikToolWPF.UI.Drawing
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Width * SizeOf1Cm, l.SubConstruction.Thickness * SizeOf1Cm);
                             l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
+                            l.SubConstruction.RectangleStrokeDashArray = new DoubleCollection();
+                            l.SubConstruction.RectangleBorderThickness = 0.5;
                         }
                         // if sub construction runs parallel to main layer
                         else
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.Rectangle.Width, l.SubConstruction.Thickness * SizeOf1Cm);
-                            l.SubConstruction.Opacity = 0.2;
+                            l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 0.4 : 0.2;
+                            l.SubConstruction.RectangleStrokeDashArray = new DoubleCollection(new double[] { 16, 12 });
+                            l.SubConstruction.RectangleBorderThickness = 1.2;
                         }
                     }
                     else if (DrawingType == DrawingType.VerticalCut)
@@ -225,12 +242,16 @@ namespace BauphysikToolWPF.UI.Drawing
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Thickness * SizeOf1Cm, l.SubConstruction.Width * SizeOf1Cm);
                             l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
+                            l.SubConstruction.RectangleStrokeDashArray = new DoubleCollection();
+                            l.SubConstruction.RectangleBorderThickness = 0.5;
                         }
                         // if sub construction runs parallel to main layer
                         else
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Thickness * SizeOf1Cm, l.Rectangle.Height);
-                            l.SubConstruction.Opacity = 0.2;
+                            l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 0.4 : 0.2;
+                            l.SubConstruction.RectangleStrokeDashArray = new DoubleCollection(new double[] { 16, 12 });
+                            l.SubConstruction.RectangleBorderThickness = 1.2;
                         }
                     }
                     UpdateSubConstructionGeometry(l);
@@ -241,7 +262,7 @@ namespace BauphysikToolWPF.UI.Drawing
         private void UpdateLayerGeometry(Layer layer)
         {
             layer.BackgroundColor = new SolidColorBrush(layer.Material.Color);
-            layer.DrawingBrush = HatchPattern.GetHatchPattern(layer.Material.Category, 0.5, layer.Rectangle);
+            layer.DrawingBrush = BrushesRepo.GetHatchPattern(layer.Material.Category, 0.5, layer.Rectangle);
             layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
@@ -252,9 +273,8 @@ namespace BauphysikToolWPF.UI.Drawing
         {
             var subConstruction = layer.SubConstruction;
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
-            subConstruction.DrawingBrush = HatchPattern.GetHatchPattern(subConstruction.Material.Category, 0.5, subConstruction.Rectangle);
+            subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.Category, 0.5, subConstruction.Rectangle);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            subConstruction.RectangleBorderThickness = subConstruction.IsSelected ? 1 : 0.2;
             subConstruction.Tag = layer.InternalId;
         }
     }

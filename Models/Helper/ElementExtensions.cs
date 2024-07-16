@@ -41,6 +41,16 @@ namespace BauphysikToolWPF.Models.Helper
             }
         }
 
+        public static void DuplicateLayer(this Element element, int targetLayerId)
+        {
+            if (element is null || element.Layers.Count == 0) return;
+            var copy = element.Layers.First(l => l.InternalId == targetLayerId).Copy();
+            copy.LayerPosition = element.Layers.Count;
+            copy.InternalId = element.Layers.Count;
+
+            element.AddLayer(copy);
+        }
+
         public static void MoveLayerPositionToInside(this Element element, int targetLayerId)
         {
             if (element is null || element.Layers.Count == 0) return;
@@ -51,6 +61,10 @@ namespace BauphysikToolWPF.Models.Helper
             Layer neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition - 1);
             neighbour.LayerPosition += 1;
             targetLayer.LayerPosition -= 1;
+            //
+            element.SortLayers();
+            element.AssignInternalIdsToLayers();
+            element.AssignEffectiveLayers();
         }
 
         public static void MoveLayerPositionToOutside(this Element element, int targetLayerId)
@@ -63,6 +77,32 @@ namespace BauphysikToolWPF.Models.Helper
             Layer neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition + 1);
             neighbour.LayerPosition -= 1;
             targetLayer.LayerPosition += 1;
+            //
+            element.SortLayers();
+            element.AssignInternalIdsToLayers();
+            element.AssignEffectiveLayers();
+        }
+
+        public static void RemoveLayer(this Element element, int targetLayerId)
+        {
+            if (element is null || element.Layers.Count == 0) return;
+            var targetLayer = element.Layers.First(l => l.InternalId == targetLayerId);
+            element.Layers.Remove(targetLayer);
+            //
+            element.SortLayers();
+            element.AssignInternalIdsToLayers();
+            element.AssignEffectiveLayers();
+        }
+
+        public static void AddLayer(this Element element, Layer newLayer)
+        {
+            if (element is null) return;
+
+            element.Layers.Add(newLayer);
+            //
+            element.SortLayers();
+            element.AssignInternalIdsToLayers();
+            element.AssignEffectiveLayers();
         }
     }
 }

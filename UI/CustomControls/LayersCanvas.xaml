@@ -17,6 +17,7 @@
                   Background="{Binding BackgroundColor}"
                   Opacity="{Binding Opacity}">
                 <Rectangle x:Name="LayerRectangle"
+                           StrokeDashArray="{Binding RectangleStrokeDashArray}"
                            Fill="{Binding DrawingBrush}"
                            Stroke="{Binding RectangleBorderColor}"
                            StrokeThickness="{Binding RectangleBorderThickness}"/>

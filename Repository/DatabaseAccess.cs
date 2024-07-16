@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.SessionData;
 using SQLite;
 using SQLiteNetExtensions.Extensions;
 
@@ -12,8 +14,8 @@ namespace BauphysikToolWPF.Repository
 
     public static class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
-        //public static string ConnectionString = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\SQLiteRepo\\DemoDB.db"));
-        private static readonly string ConnectionString = DatabaseInstaller.Install(forceUpdate: true);
+        public static string ConnectionString = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repository\\InitialDB.db"));
+        //private static readonly string ConnectionString = 
         private static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
@@ -65,9 +67,17 @@ namespace BauphysikToolWPF.Repository
             OnProjectsChanged(); // raises an event
         }
 
-        public static void UpdateProject(Project project)
+        public static void UpdateFullProject(Project project)
         {
-            Database.Update(project);
+            Database.InsertOrReplace(project);
+            foreach (var element in project.Elements)
+            {
+                Database.InsertOrReplace(element);
+                foreach (var layer in element.Layers)
+                {
+                    Database.InsertOrReplace(layer);
+                }
+            }
         }
 
         public static void DeleteProject(Project project)
@@ -96,9 +106,15 @@ namespace BauphysikToolWPF.Repository
             OnElementsChanged();
         }
 
-        public static void UpdateElement(Element element)
+        public static void UpdateElement(Element element, bool withChildren = false)
         {
-            Database.Update(element);
+            if (withChildren) Database.UpdateWithChildren(element);
+            else Database.Update(element);
+        }
+
+        public static void UpdateElements(IEnumerable<Element> elements)
+        {
+            Database.UpdateAll(elements);
             OnElementsChanged();
         }
 

@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.Repository
         /// All Application Data should be stored where read/write access is not limited.
         /// </summary>
         /// <returns>Connection String to the new Database Location where the App has full read/write permissions</returns>
-        public static string Install(bool forceUpdate = false)
+        public static string GetInstalledDatabase(bool forceReplace = false)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace BauphysikToolWPF.Repository
                 {
                     File.Copy(sourceDatabasePath, databaseFilePath);
                 }
-                if (forceUpdate)
+                if (forceReplace)
                 {
                     File.Delete(databaseFilePath);
                     File.Copy(sourceDatabasePath, databaseFilePath);
@@ -48,6 +48,11 @@ namespace BauphysikToolWPF.Repository
                 Console.WriteLine(e);
                 throw;
             }
+        }
+
+        public static string GetInitialProjectDatabase()
+        {
+            return InitialDatabasePath;
         }
     }
 }

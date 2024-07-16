@@ -38,7 +38,7 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
-        [ForeignKey(typeof(Material))] // FK for the 1:1 relationship with Material
+        [NotNull, ForeignKey(typeof(Material))] // FK for the 1:1 relationship with Material
         public int MaterialId { get; set; }
 
 
@@ -100,14 +100,23 @@ namespace BauphysikToolWPF.Models
     public partial class LayerSubConstruction : IDrawingGeometry
     {
         #region IDrawingGeometry
-
+        [Ignore]
         public Rectangle Rectangle { get; set; } = Rectangle.Empty;
+        [Ignore]
         public Brush RectangleBorderColor { get; set; } = Brushes.Black;
+        [Ignore]
         public double RectangleBorderThickness { get; set; } = 0.2;
+        [Ignore]
+        public DoubleCollection RectangleStrokeDashArray { get; set; } = new DoubleCollection();
+        [Ignore]
         public Brush BackgroundColor { get; set; } = Brushes.Transparent;
+        [Ignore]
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
+        [Ignore]
         public double Opacity { get; set; } = 1;
+        [Ignore]
         public int ZIndex { get; set; } = 1;
+        [Ignore]
         public object Tag { get; set; }
 
         public IDrawingGeometry Convert()

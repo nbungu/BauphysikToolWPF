@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,7 @@ namespace BauphysikToolWPF.SessionData
         public static event Notify? SelectedElementChanged; // event
         public static event Notify? SelectedLayerChanged; // event
         public static event Notify? EnvVarsChanged; // event
-        public static Project SelectedProject = new Project();
+        
 
         // event handlers - publisher
         public static void OnSelectedProjectChanged() //protected virtual method
@@ -33,6 +32,8 @@ namespace BauphysikToolWPF.SessionData
         {
             EnvVarsChanged?.Invoke(); // if EnvVarsChanged is not null then call delegate
         }
+
+        public static Project SelectedProject = new Project();
 
         /// <summary>
         /// InternalID des ausgewählten Elements

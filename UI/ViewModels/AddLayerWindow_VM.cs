@@ -42,8 +42,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ElementId = UserSaved.SelectedElement.Id,
                 Element = UserSaved.SelectedElement
             };
+
+            UserSaved.SelectedElement.AddLayer(layer);
             //DatabaseAccess.CreateLayer(layer);
-            UserSaved.SelectedElement.Layers.Add(layer);
+            //UserSaved.SelectedElement.Layers.Add(layer);
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedElementChanged();
 

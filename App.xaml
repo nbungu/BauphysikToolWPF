@@ -216,11 +216,13 @@
             <Setter Property="OverridesDefaultStyle" Value="true"/>
             <Setter Property="Padding" Value="4"/>
             <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="MaxHeight" Value="32"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBoxItem}">
-                        <Border CornerRadius="4"
+                        <Border CornerRadius="1"
                                 Padding="{TemplateBinding Padding}"
                                 Background="{TemplateBinding Background}"
                                 SnapsToDevicePixels="true">
@@ -363,7 +365,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="{TemplateBinding Background}" Padding="4" CornerRadius="8" BorderThickness="1">
+                        <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="{TemplateBinding Background}" Padding="0,1,0,1" CornerRadius="4" BorderThickness="1">
                             <!--Force MenuItems to set the size of parent. If omitted, ContextMenu has size 0x0-->
                             <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
                         </Border>
@@ -378,14 +380,15 @@
             <Setter Property="Padding" Value="4"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="MinHeight" Value="16"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="Height" Value="30"/>
             <Setter Property="MaxHeight" Value="32"/>
             <Setter Property="MinWidth" Value="120"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type MenuItem}">
                         <Border x:Name="menuItem_Border"
-                            CornerRadius="4"
+                            CornerRadius="1"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
                             SnapsToDevicePixels="true">
@@ -394,8 +397,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding Icon}" Margin="4,4,16,4" MaxHeight="{TemplateBinding Height}" MaxWidth="{TemplateBinding Height}"/>
-                                <TextBlock Grid.Column="1" Text="{TemplateBinding Header}" VerticalAlignment="Center"/>
+                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding Icon}" Margin="4,4,12,4" MaxHeight="{TemplateBinding Height}" MaxWidth="{TemplateBinding Height}"/>
+                                <TextBlock Grid.Column="1" Margin="0,0,12,0" Text="{TemplateBinding Header}" VerticalAlignment="Center"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>

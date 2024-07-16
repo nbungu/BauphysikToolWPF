@@ -282,7 +282,7 @@
 
   <ItemGroup>
     <None Update="Repository\InitialDB.db">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 

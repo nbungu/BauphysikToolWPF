@@ -277,13 +277,6 @@
                                                               Style="{StaticResource DataGridComboBox}"
                                                               SelectionChanged="ComboBox_SelectionChanged"
                                                               FontWeight="Normal"/>
-                                                    <controls:FractionLabel Grid.Column="1"
-                                                                            CounterText="{Binding UnitCounterText}"
-                                                                            DenominatorText="{Binding UnitDenominatorText}"
-                                                                            VerticalAlignment="Stretch"
-                                                                            Foreground="{StaticResource PrimaryBorderBrush}"
-                                                                            Margin="4,0,2,0"
-                                                                            FontWeight="Normal"/>
                                                 </Grid>
                                             </DataTemplate>
                                         </controls:PropertyValueTemplateSelector.ComboBoxTemplate>

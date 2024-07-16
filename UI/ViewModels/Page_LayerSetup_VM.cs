@@ -24,10 +24,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedLayerId = -1;
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
-            UserSaved.SelectedElementChanged += RefreshLayerProperties;
+            //UserSaved.SelectedElementChanged += RefreshLayerProperties;
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
 
-            UserSaved.SelectedLayerChanged += RefreshLayerProperties;
+            //UserSaved.SelectedLayerChanged += RefreshLayerProperties;
             UserSaved.SelectedLayerChanged += RefreshXamlBindings;
 
             // For values changed in PropertyDataGrid TextBox
@@ -84,37 +84,29 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void DeleteSubConstructionLayer()
         {
             UserSaved.SelectedLayer.RemoveSubConstruction();
-
-            UserSaved.OnSelectedLayerChanged();
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
         private void DeleteLayer()
         {
-            // Delete selected Layer
-            UserSaved.SelectedElement.Layers.Remove(UserSaved.SelectedLayer);
-
-            UserSaved.OnSelectedElementChanged();
+            UserSaved.SelectedElement.RemoveLayer(UserSaved.SelectedLayerId);
+            RefreshXamlBindings();
         }
         
         [RelayCommand]
         private void DuplicateLayer()
         {
-            var copy = UserSaved.SelectedLayer.Copy();
-            copy.LayerPosition = UserSaved.SelectedElement.Layers.Count;
-            copy.InternalId = UserSaved.SelectedElement.Layers.Count;
-            UserSaved.SelectedElement.Layers.Add(copy);
-
-            UserSaved.OnSelectedElementChanged();
-            SelectedListViewItem = copy;
+            UserSaved.SelectedElement.DuplicateLayer(UserSaved.SelectedLayerId);
+            RefreshXamlBindings();
+            SelectedListViewItem = UserSaved.SelectedLayer;
         }
 
         [RelayCommand]
         private void MoveLayerDown()
         {
             UserSaved.SelectedElement.MoveLayerPositionToOutside(UserSaved.SelectedLayerId);
-
-            UserSaved.OnSelectedElementChanged();
+            RefreshXamlBindings();
             SelectedListViewItem = UserSaved.SelectedLayer;
         }
 
@@ -122,8 +114,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void MoveLayerUp()
         {
             UserSaved.SelectedElement.MoveLayerPositionToInside(UserSaved.SelectedLayerId);
-
-            UserSaved.OnSelectedElementChanged();
+            RefreshXamlBindings();
             SelectedListViewItem = UserSaved.SelectedLayer;
         }
 

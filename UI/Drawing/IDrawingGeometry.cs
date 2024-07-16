@@ -1,4 +1,5 @@
-﻿using Brush = System.Windows.Media.Brush;
+﻿using System.Windows.Media;
+using Brush = System.Windows.Media.Brush;
 using Rectangle = Geometry.Rectangle;
 
 namespace BauphysikToolWPF.UI.Drawing
@@ -9,6 +10,7 @@ namespace BauphysikToolWPF.UI.Drawing
         Rectangle Rectangle { get; set; } // in [px]
         Brush RectangleBorderColor { get; set; }
         double RectangleBorderThickness { get; set; }
+        DoubleCollection RectangleStrokeDashArray { get; set; }
         Brush BackgroundColor { get; set; }
         Brush DrawingBrush { get; set; }
         double Opacity { get; set; }
