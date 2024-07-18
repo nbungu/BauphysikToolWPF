@@ -68,7 +68,7 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                                                 <Style TargetType="Label">
                                                     <Setter Property="Foreground" Value="{StaticResource PrimaryBorderBrush}"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
+                                                        <DataTrigger Binding="{Binding HasSubConstructions}" Value="True">
                                                             <Setter Property="Foreground" Value="Black"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -99,11 +99,11 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                                 <Setter Property="Foreground" Value="White"/>
                                 <Setter TargetName="LabelBalkenlage" Property="Foreground" Value="White"/>
                             </Trigger>
-                            <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
+                            <DataTrigger Binding="{Binding HasSubConstructions}" Value="True">
                                 <Setter TargetName="EditDeletePanel" Property="Visibility" Value="Visible" />
                                 <Setter TargetName="AddButton" Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding HasSubConstruction}" Value="False">
+                            <DataTrigger Binding="{Binding HasSubConstructions}" Value="False">
                                 <Setter TargetName="EditDeletePanel" Property="Visibility" Value="Collapsed" />
                                 <Setter TargetName="AddButton" Property="Visibility" Value="Visible" />
                             </DataTrigger>
@@ -160,7 +160,7 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage hinzufügen" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstruction, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstructions, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
                                         <Setter Property="Header" Value="Balkenlage bearbeiten" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -176,7 +176,7 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage löschen" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstruction, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False">
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstructions, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>

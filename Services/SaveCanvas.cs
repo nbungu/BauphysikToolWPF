@@ -37,7 +37,7 @@ namespace BauphysikToolWPF.Services
 
         public static byte[] SaveAsBLOB(LayersCanvas target)
         {
-            if (target.DrawingGeometries is null) return Array.Empty<byte>();
+            if (target?.DrawingGeometries == null) return Array.Empty<byte>();
 
             // Convert the BitmapImage to a byte array
             try
@@ -69,9 +69,7 @@ namespace BauphysikToolWPF.Services
                 // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
                 using MemoryStream stream = new MemoryStream();
                 encoder.Save(stream);
-                var imageBytes = stream.ToArray();
-
-                return imageBytes;
+                return stream.ToArray();
             }
             catch (Exception e)
             {

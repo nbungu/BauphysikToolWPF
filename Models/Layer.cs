@@ -56,7 +56,7 @@ namespace BauphysikToolWPF.Models
 
         // 1:n relationship with LayerSubConstruction
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all SubConstructions linked to this 'Layer')
-        public List<LayerSubConstruction> SubConstructions { get; set; } = new List<LayerSubConstruction>(0);
+        public List<LayerSubConstruction> SubConstructions { get; set; } = new List<LayerSubConstruction>(1);
         
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 
@@ -71,7 +71,7 @@ namespace BauphysikToolWPF.Models
         [Ignore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
         [Ignore]
-        public bool HasSubConstructions => SubConstructions != null && SubConstructions.Count > 0;
+        public bool HasSubConstructions => SubConstructions.Count > 0;
         [Ignore]
         public bool IsValid => LayerPosition >= 0 && Thickness > 0 && Material.IsValid;
 
