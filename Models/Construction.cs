@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 
@@ -25,10 +26,10 @@ namespace BauphysikToolWPF.Models
         //------Not part of the Database-----//
 
         // m:n relationship with Requirement
-        [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
+        [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead), JsonIgnore]
         public List<Requirement> Requirements { get; set; } = new List<Requirement>();
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsLayoutVertical // true = 1
         {
             get => IsVertical == 1;

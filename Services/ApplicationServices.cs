@@ -1,13 +1,45 @@
 ﻿using System;
+using System.IO;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Repository;
 using System.Linq;
 using SQLiteNetExtensions.Extensions;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BauphysikToolWPF.Services
 {
     public static class ApplicationServices
     {
+        // TODO: Dokument erzeugen
+
+        // TODO: Save-File erzeugen
+        public static void SaveProjectToFile(Project project, string filePath)
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true,
+                ReferenceHandler = ReferenceHandler.Preserve,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+            };
+
+            string jsonString = JsonSerializer.Serialize(project, options);
+            File.WriteAllText(filePath, jsonString);
+        }
+
+        public static Project LoadProjectFromFile(string filePath)
+        {
+            string jsonString = File.ReadAllText(filePath);
+            var options = new JsonSerializerOptions
+            {
+                ReferenceHandler = ReferenceHandler.Preserve,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+            };
+
+            Project project = JsonSerializer.Deserialize<Project>(jsonString, options);
+            return project;
+        }
+
         public static void WriteToConnectedDatabase(Project project)
         {
             UpdateFullProject(project);

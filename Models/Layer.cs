@@ -6,6 +6,7 @@ using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models
@@ -43,11 +44,11 @@ namespace BauphysikToolWPF.Models
 
         //------Not part of the Database-----//
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public int InternalId { get; set; }
 
         // n:1 relationship with Element
-        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead), JsonIgnore]
         public Element Element { get; set; } = new Element();
 
         // 1:1 relationship with Material
@@ -58,25 +59,25 @@ namespace BauphysikToolWPF.Models
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all SubConstructions linked to this 'Layer')
         public List<LayerSubConstruction> SubConstructions { get; set; } = new List<LayerSubConstruction>(1);
         
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsSelected { get; set; } // For UI Purposes 
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsEffective { get; set; } = true;
 
         // Readonly Properties
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
-        [Ignore]
+        [Ignore, JsonIgnore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool HasSubConstructions => SubConstructions.Count > 0;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsValid => LayerPosition >= 0 && Thickness > 0 && Material.IsValid;
 
         // Workaround: Currently only 1 SubConstruction supported
-        [Ignore]
+        [Ignore, JsonIgnore]
         public LayerSubConstruction? SubConstruction
         {
             get => SubConstructions.FirstOrDefault();
@@ -88,7 +89,7 @@ namespace BauphysikToolWPF.Models
             }
         }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double R_Value
         {
             get
@@ -98,7 +99,7 @@ namespace BauphysikToolWPF.Models
             }
         }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double Sd_Thickness // sd thickness in m
         {
             get
@@ -108,7 +109,7 @@ namespace BauphysikToolWPF.Models
             }
         }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double AreaMassDensity // m' in kg/m²
         {
             get
@@ -120,7 +121,7 @@ namespace BauphysikToolWPF.Models
 
         // Temperaturleitfähigkeit a gibt das Mass für die Geschwindigkeit an,
         // mit der sich eine Temperaturänderung im Material ausbreitet:
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double TemperatureConductivity // a in m²/s
         {
             get
@@ -175,23 +176,23 @@ namespace BauphysikToolWPF.Models
     public partial class Layer : IDrawingGeometry
     {
         #region IDrawingGeometry
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Rectangle Rectangle { get; set; } = Rectangle.Empty;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Brush RectangleBorderColor { get; set; } = Brushes.Black;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double RectangleBorderThickness { get; set; } = 0.2;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public DoubleCollection RectangleStrokeDashArray { get; set; } = new DoubleCollection();
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Brush BackgroundColor { get; set; } = Brushes.Transparent;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double Opacity { get; set; } = 1;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public int ZIndex { get; set; } = 0;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public object Tag { get; set; }
 
         public IDrawingGeometry Convert()

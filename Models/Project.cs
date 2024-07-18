@@ -2,6 +2,7 @@
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace BauphysikToolWPF.Models
 {
@@ -44,12 +45,12 @@ namespace BauphysikToolWPF.Models
 
         //------Not part of the Database-----//
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public int InternalId { get; set; }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
-        [Ignore]
+        [Ignore, JsonIgnore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
 
         // 1:n relationship with Element
@@ -57,25 +58,25 @@ namespace BauphysikToolWPF.Models
         public List<Element> Elements { get; set; } = new List<Element>();
 
         // Encapsulate/Hide BuildingUsage and BuildingAge to convert to bool
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsResidentialUsage // true = 1
         {
             get => BuildingUsage == (int)BuildingUsageType.Residential;
             set => BuildingUsage = (value) ? 1 : 0;
         }
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsNonResidentialUsage // = 0
         {
             get => BuildingUsage == (int)BuildingUsageType.NonResidential;
             set => BuildingUsage = (value) ? 0 : 1;
         }
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsNewConstruction // = 1
         {
             get => BuildingAge == (int)BuildingAgeType.New;
             set => BuildingAge = (value) ? 1 : 0;
         }
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsExistingConstruction // = 0
         {
             get => BuildingAge == (int)BuildingAgeType.Existing;

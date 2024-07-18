@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
@@ -61,11 +62,11 @@ namespace BauphysikToolWPF.Models
 
         //------Not part of the Database-----//
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public int InternalId { get; set; }
         
         // n:1 relationship with Project
-        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead), JsonIgnore]
         public Project Project { get; set; } = new Project();
 
         // 1:n relationship with Layer
@@ -79,15 +80,15 @@ namespace BauphysikToolWPF.Models
 
         // Properties
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
-        [Ignore]
+        [Ignore, JsonIgnore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsValid => Name != string.Empty && Layers.Count > 0;
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Color Color // HEX 'ColorCode' Property to 'Color' Type
         {
             get
@@ -109,7 +110,7 @@ namespace BauphysikToolWPF.Models
         }
 
         // Encapsulate 'Image' variable for use in frontend
-        [Ignore]
+        [Ignore, JsonIgnore]
         public BitmapImage ElementImage
         {
             get
@@ -133,7 +134,7 @@ namespace BauphysikToolWPF.Models
             }
         }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double Thickness // d in cm
         {
             get
@@ -145,7 +146,7 @@ namespace BauphysikToolWPF.Models
             }
         }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double SdThickness // sd in m
         {
             get
@@ -162,7 +163,7 @@ namespace BauphysikToolWPF.Models
             }
         }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double AreaMassDens // m' in kg/m²
         {
             get
@@ -177,7 +178,7 @@ namespace BauphysikToolWPF.Models
             }
         }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double RValue // R_ges in m²K/W
         {
             get

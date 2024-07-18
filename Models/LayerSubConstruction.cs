@@ -6,6 +6,7 @@ using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Windows.Media;
 using System;
+using System.Text.Json.Serialization;
 
 namespace BauphysikToolWPF.Models
 {
@@ -42,37 +43,37 @@ namespace BauphysikToolWPF.Models
 
         //------Not part of the Database-----//
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public int InternalId { get; set; }
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsValid => Width > 0 && Thickness > 0 && Spacing > 0 && Material != null;
 
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double AxisSpacing
         {
             get => Spacing + Width;
             set => Spacing = value - Width;
         }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsSelected { get; set; } // For UI Purposes
-        [Ignore]
+        [Ignore, JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
-        [Ignore]
+        [Ignore, JsonIgnore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
 
         // 1:1 relationship with Material
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
         // relationship with Layer
-        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead), JsonIgnore]
         public Layer Layer { get; set; } = new Layer();
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsEffective { get; set; } = true;
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double R_Value
         {
             get
@@ -101,23 +102,23 @@ namespace BauphysikToolWPF.Models
     public partial class LayerSubConstruction : IDrawingGeometry
     {
         #region IDrawingGeometry
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Rectangle Rectangle { get; set; } = Rectangle.Empty;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Brush RectangleBorderColor { get; set; } = Brushes.Black;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double RectangleBorderThickness { get; set; } = 0.2;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public DoubleCollection RectangleStrokeDashArray { get; set; } = new DoubleCollection();
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Brush BackgroundColor { get; set; } = Brushes.Transparent;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
-        [Ignore]
+        [Ignore, JsonIgnore]
         public double Opacity { get; set; } = 1;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public int ZIndex { get; set; } = 1;
-        [Ignore]
+        [Ignore, JsonIgnore]
         public object Tag { get; set; }
 
         public IDrawingGeometry Convert()

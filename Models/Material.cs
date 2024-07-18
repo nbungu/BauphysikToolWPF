@@ -1,4 +1,5 @@
-﻿using SQLite;
+﻿using System.Text.Json.Serialization;
+using SQLite;
 using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models
@@ -36,16 +37,16 @@ namespace BauphysikToolWPF.Models
 
         //------Not part of the Database-----//
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public int InternalId { get; set; }
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public bool IsValid => BulkDensity > 0 && ThermalConductivity > 0;
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public string CategoryName => TranslateToCategoryName();
 
-        [Ignore]
+        [Ignore, JsonIgnore]
         public Color Color // HEX ColorCode (e.g. #dddddd) to 'Color' Type
         {
             get
