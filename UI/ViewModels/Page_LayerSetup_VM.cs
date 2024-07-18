@@ -99,7 +99,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElement.DuplicateLayer(UserSaved.SelectedLayerId);
             RefreshXamlBindings();
-            SelectedListViewItem = UserSaved.SelectedLayer;
         }
 
         [RelayCommand]
@@ -107,7 +106,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElement.MoveLayerPositionToOutside(UserSaved.SelectedLayerId);
             RefreshXamlBindings();
-            SelectedListViewItem = UserSaved.SelectedLayer;
         }
 
         [RelayCommand]
@@ -115,13 +113,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElement.MoveLayerPositionToInside(UserSaved.SelectedLayerId);
             RefreshXamlBindings();
-            SelectedListViewItem = UserSaved.SelectedLayer;
-        }
-
-        private void RefreshLayerProperties()
-        {
-            UserSaved.SelectedElement.SortLayers(); // Always in sorted order
-            UserSaved.SelectedElement.AssignEffectiveLayers(); // Update Effective Layer Property
         }
         
         private void RefreshXamlBindings()
@@ -184,7 +175,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public bool IsLayerSelected => SelectedListViewItem != null;
         public bool ShowLayerExpander => IsLayerSelected;
-        public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstruction;
+        public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstructions;
         public bool ShowElementExpander => LayerList.Count > 0;
         public string LayerTitle => $"Schicht {UserSaved.SelectedLayer.LayerPosition}";
         public List<IDrawingGeometry> DrawingGeometries => _drawingService.DrawingGeometries;
@@ -211,7 +202,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<bool>("Wirksame Schicht", () => UserSaved.SelectedLayer.IsEffective)
         };
 
-        public List<IPropertyItem> SubConstructionProperties => UserSaved.SelectedLayer.HasSubConstruction ? new List<IPropertyItem>()
+        public List<IPropertyItem> SubConstructionProperties => UserSaved.SelectedLayer.HasSubConstructions ? new List<IPropertyItem>()
         {
             new PropertyItem<string>("Material", () => UserSaved.SelectedLayer.SubConstruction.Material.Name),
             new PropertyItem<string>("Kategorie", () => UserSaved.SelectedLayer.SubConstruction.Material.CategoryName),

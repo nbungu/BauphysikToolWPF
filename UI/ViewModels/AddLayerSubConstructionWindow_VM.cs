@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public AddLayerSubConstructionWindow_VM()
         {
-            if (!UserSaved.SelectedLayer.HasSubConstruction)
+            if (!UserSaved.SelectedLayer.HasSubConstructions)
             {
                 _tempConstruction = new LayerSubConstruction()
                 {
@@ -30,7 +30,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Thickness = UserSaved.SelectedLayer.Thickness,
                     Spacing = 18,
                     MaterialId = UserSaved.SelectedLayer.MaterialId,
-                    Material = UserSaved.SelectedLayer.Material
+                    Material = UserSaved.SelectedLayer.Material,
+                    LayerId = UserSaved.SelectedLayer.Id,
+                    Layer = UserSaved.SelectedLayer,
                 };
             }
             else
@@ -55,8 +57,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (!_tempConstruction.IsValid) return;
             UserSaved.SelectedLayer.SubConstruction = _tempConstruction;
 
-            //DatabaseAccess.CreateLayer(layer);
-
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedLayerChanged();
             window.Close();
@@ -72,7 +72,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnSelectedListViewItemChanged(Material value)
         {
             if (value is null) return;
-            _tempConstruction.Material.Id = value.Id;
+            _tempConstruction.MaterialId = value.Id;
             _tempConstruction.Material = value;
         }
 

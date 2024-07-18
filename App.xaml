@@ -106,6 +106,17 @@
         <BitmapImage x:Key="ButtonIcon_Search_Bold_B" UriSource="/Resources/Icons/search_bold.png"/>
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
 
+        <!--Flat Style by https://www.flaticon.com/authors/srip -->
+        <BitmapImage x:Key="ButtonIcon_Save_Flat" UriSource="/Resources/Icons/floppy-disk.png"/>
+        <BitmapImage x:Key="ButtonIcon_Open_Flat" UriSource="/Resources/Icons/file-folder.png"/>
+        <BitmapImage x:Key="ButtonIcon_Settings_Flat" UriSource="/Resources/Icons/setting.png"/>
+
+
+        <BitmapImage x:Key="AppIcon" UriSource="/Resources/Icons/Ordner_Icon.ico"/>
+
+
+
+
         <!-- Defines the type of UIElement used in the ItemsPanel-->
         <ItemsPanelTemplate x:Key="Canvas">
             <!--Takes the Width and Height from TemplatedParent-->
@@ -365,7 +376,7 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate>
-                        <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="{TemplateBinding Background}" Padding="0,1,0,1" CornerRadius="4" BorderThickness="1">
+                        <Border BorderBrush="{StaticResource PrimaryBorderBrush}" Background="{TemplateBinding Background}" Padding="4" CornerRadius="6" BorderThickness="1">
                             <!--Force MenuItems to set the size of parent. If omitted, ContextMenu has size 0x0-->
                             <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle" />
                         </Border>
@@ -381,14 +392,14 @@
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="MinHeight" Value="24"/>
-            <Setter Property="Height" Value="30"/>
+            <Setter Property="Height" Value="28"/>
             <Setter Property="MaxHeight" Value="32"/>
             <Setter Property="MinWidth" Value="120"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type MenuItem}">
                         <Border x:Name="menuItem_Border"
-                            CornerRadius="1"
+                            CornerRadius="4"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
                             SnapsToDevicePixels="true">
@@ -397,8 +408,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
-                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding Icon}" Margin="4,4,12,4" MaxHeight="{TemplateBinding Height}" MaxWidth="{TemplateBinding Height}"/>
-                                <TextBlock Grid.Column="1" Margin="0,0,12,0" Text="{TemplateBinding Header}" VerticalAlignment="Center"/>
+                                <ContentPresenter Grid.Column="0" Content="{TemplateBinding Icon}" Margin="8,2,16,2" MaxHeight="{TemplateBinding Height}" MaxWidth="{TemplateBinding Height}"/>
+                                <TextBlock Grid.Column="1" Margin="0,0,16,0" Text="{TemplateBinding Header}" VerticalAlignment="Center"/>
                             </Grid>
                         </Border>
                     </ControlTemplate>

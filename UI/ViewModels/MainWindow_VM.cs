@@ -1,8 +1,9 @@
-﻿using System;
-using BauphysikToolWPF.Models;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -23,12 +24,23 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             MainWindow.SetPage(desiredPage);
         }
-
-
+        
         [RelayCommand]
-        private void OpenFile(NavigationContent desiredPage)
+        private void OpenFile()
         {
             throw new NotImplementedException();
+        }
+
+        [RelayCommand]
+        private void SaveFile()
+        {
+            throw new NotImplementedException();
+        }
+
+        [RelayCommand]
+        private void Save()
+        {
+            UserSaved.SelectedProject.WriteToConnectedDatabase();
         }
 
         /*

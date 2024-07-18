@@ -153,7 +153,7 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                         </MenuItem.Icon>
                     </MenuItem>
 
-                    <Separator Margin="-30,0,0,0" Padding="0" HorizontalAlignment="Stretch" BorderThickness="0.6" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
+                    <Separator Margin="-30,4,0,4" Padding="0" HorizontalAlignment="Stretch" BorderThickness="0.6" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
 
                     <MenuItem Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Style>

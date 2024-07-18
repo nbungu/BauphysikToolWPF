@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using BauphysikToolWPF.Models;
+﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.SessionData;
 using SQLite;
 using SQLiteNetExtensions.Extensions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BauphysikToolWPF.Repository
 {
@@ -14,9 +12,8 @@ namespace BauphysikToolWPF.Repository
 
     public static class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
-        public static string ConnectionString = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repository\\InitialDB.db"));
-        //private static readonly string ConnectionString = 
-        private static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
+        private static readonly string ConnectionString = DatabaseInstaller.GetInitialDatabase();
+        public static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate
         public static event Notify? LayersChanged; // event
@@ -55,6 +52,24 @@ namespace BauphysikToolWPF.Repository
          */
 
         // Retreive Data from Table "Project"
+
+        public static IQueryable<Project> GetProjectsQuery()
+        {
+            return Database.Table<Project>().AsQueryable();
+        }
+        public static IQueryable<Element> GetElementsQuery()
+        {
+            return Database.Table<Element>().AsQueryable();
+        }
+        public static IQueryable<Layer> GetLayersQuery()
+        {
+            return Database.Table<Layer>().AsQueryable();
+        }
+        public static IQueryable<LayerSubConstruction> GetSubConstructionQuery()
+        {
+            return Database.Table<LayerSubConstruction>().AsQueryable();
+        }
+
         public static List<Project> GetProjects()
         {
             return Database.GetAllWithChildren<Project>(recursive: true); // Fetch the Projects and all the related entities recursively
@@ -66,28 +81,20 @@ namespace BauphysikToolWPF.Repository
             Database.Insert(project); // Inserts the object in the Database recursively
             OnProjectsChanged(); // raises an event
         }
-
-        public static void UpdateFullProject(Project project)
-        {
-            Database.InsertOrReplace(project);
-            foreach (var element in project.Elements)
-            {
-                Database.InsertOrReplace(element);
-                foreach (var layer in element.Layers)
-                {
-                    Database.InsertOrReplace(layer);
-                }
-            }
-        }
-
         public static void DeleteProject(Project project)
         {
             Database.Delete(project);
             OnProjectsChanged();
         }
+
+        public static void UpdateProject(Project project)
+        {
+            Database.Update(project);
+            OnProjectsChanged();
+        }
+
         public static Project QueryProjectById(int projectId)
         {
-            projectId = Convert.ToInt32(projectId);
             return Database.GetWithChildren<Project>(projectId, recursive: true); // Fetch the Project by ID and all the related entities recursively
         }
 
@@ -97,19 +104,16 @@ namespace BauphysikToolWPF.Repository
             return Database.GetAllWithChildren<Element>(recursive: true);
         }
 
-        public static void CreateElement(Element element, bool withChildren = false)
+        public static void CreateElement(Element element)
         {
-            if (withChildren)                           // When copying an Element: Insert with children
-                Database.InsertWithChildren(element);
-            else Database.Insert(element);               // Default case: Create/Edit a Element: No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
-
+            Database.Insert(element);               // Default case: Create/Edit a Element: No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
             OnElementsChanged();
         }
 
-        public static void UpdateElement(Element element, bool withChildren = false)
+        public static void UpdateElement(Element element)
         {
-            if (withChildren) Database.UpdateWithChildren(element);
-            else Database.Update(element);
+            Database.Update(element);
+            OnElementsChanged();
         }
 
         public static void UpdateElements(IEnumerable<Element> elements)
@@ -126,7 +130,6 @@ namespace BauphysikToolWPF.Repository
 
         public static void DeleteElementById(int elementId)
         {
-            elementId = Convert.ToInt32(elementId);
             Database.Delete<Element>(elementId);
             OnElementsChanged();
         }
@@ -135,20 +138,12 @@ namespace BauphysikToolWPF.Repository
             Database.DeleteAll<Element>();
             OnElementsChanged();
         }
-        public static Element QueryElementById(int elementId, bool layersSorted = false)
+        public static Element QueryElementById(int elementId)
         {
-            elementId = Convert.ToInt32(elementId);
-            Element element = Database.GetWithChildren<Element>(elementId, recursive: true);
-
-            // default value = false, mostly not needed to return Element with SORTED Layers!
-            if (layersSorted)
-                element.Layers = QueryLayersByElementId(elementId);
-
-            return element;
+            return Database.GetWithChildren<Element>(elementId, recursive: true);
         }
-        public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.DateAscending, bool ascending = true)
+        public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.DateAscending)
         {
-            projectId = Convert.ToInt32(projectId);
             List<Element> elements = Database.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
 
             if (sortingType == ElementSortingType.DateAscending) return elements;

@@ -21,8 +21,7 @@ namespace BauphysikToolWPF.Models
     public partial class LayerSubConstruction : IDrawingGeometry
     {
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int Id { get; set; }
-
+        public int Id { get; set; } = -1; // -1 means: Is not part of Database yet
         [NotNull]
         public double Width { get; set; } // cm
         [NotNull]
@@ -31,15 +30,14 @@ namespace BauphysikToolWPF.Models
         public double Spacing { get; set; } // cm (innerer Abstand)
         [NotNull]
         public SubConstructionDirection SubConstructionDirection { get; set; }
-
         [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-
         [NotNull, ForeignKey(typeof(Material))] // FK for the 1:1 relationship with Material
         public int MaterialId { get; set; }
+        [NotNull, ForeignKey(typeof(Layer))] // FK for the 1:n relationship with Layer
+        public int LayerId { get; set; }
 
 
         //------Not part of the Database-----//
@@ -67,6 +65,9 @@ namespace BauphysikToolWPF.Models
         // 1:1 relationship with Material
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
+        // relationship with Layer
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public Layer Layer { get; set; } = new Layer();
 
         [Ignore]
         public bool IsEffective { get; set; } = true;

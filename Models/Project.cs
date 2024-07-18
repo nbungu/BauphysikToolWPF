@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.Models
         //------Eigenschaften-----//
 
         [PrimaryKey, NotNull, AutoIncrement, Unique]
-        public int Id { get; set; }
+        public int Id { get; set; } = -1; // -1 means: Is not part of Database yet
         [NotNull]
         public string Name { get; set; } = string.Empty;
         [NotNull]

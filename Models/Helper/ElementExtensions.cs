@@ -36,7 +36,7 @@ namespace BauphysikToolWPF.Models.Helper
                     if (layer.Material.Category == MaterialCategory.Air)
                         foundAirLayer = true;
                     layer.IsEffective = !foundAirLayer;
-                    if (layer.HasSubConstruction) layer.SubConstruction.IsEffective = layer.IsEffective;
+                    if (layer.HasSubConstructions) layer.SubConstruction.IsEffective = layer.IsEffective;
                 }
             }
         }
@@ -61,9 +61,9 @@ namespace BauphysikToolWPF.Models.Helper
             Layer neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition - 1);
             neighbour.LayerPosition += 1;
             targetLayer.LayerPosition -= 1;
-            //
+            
             element.SortLayers();
-            element.AssignInternalIdsToLayers();
+            //element.AssignInternalIdsToLayers();
             element.AssignEffectiveLayers();
         }
 
@@ -77,9 +77,9 @@ namespace BauphysikToolWPF.Models.Helper
             Layer neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition + 1);
             neighbour.LayerPosition -= 1;
             targetLayer.LayerPosition += 1;
-            //
+
             element.SortLayers();
-            element.AssignInternalIdsToLayers();
+            //element.AssignInternalIdsToLayers();
             element.AssignEffectiveLayers();
         }
 

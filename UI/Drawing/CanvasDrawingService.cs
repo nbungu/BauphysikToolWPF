@@ -92,7 +92,7 @@ namespace BauphysikToolWPF.UI.Drawing
                 //layerDrawings.Add(numberBadge);
 
                 // SubConstruction
-                if (l.HasSubConstruction)
+                if (l.HasSubConstructions)
                 {
                     double subConstrWidth = l.SubConstruction.Rectangle.Width;
                     double subConstrHeight = l.SubConstruction.Rectangle.Height;
@@ -214,7 +214,7 @@ namespace BauphysikToolWPF.UI.Drawing
 
                 UpdateLayerGeometry(l);
 
-                if (l.HasSubConstruction)
+                if (l.HasSubConstructions)
                 {
                     if (DrawingType == DrawingType.CrossSection)
                     {
@@ -266,7 +266,7 @@ namespace BauphysikToolWPF.UI.Drawing
             layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
-            layer.Tag = layer.InternalId;
+            layer.Tag = layer.LayerPosition;
         }
 
         private void UpdateSubConstructionGeometry(Layer layer)
@@ -275,7 +275,7 @@ namespace BauphysikToolWPF.UI.Drawing
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
             subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.Category, 0.5, subConstruction.Rectangle);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            subConstruction.Tag = layer.InternalId;
+            subConstruction.Tag = layer.LayerPosition;
         }
     }
 }

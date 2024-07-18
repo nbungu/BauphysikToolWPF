@@ -90,6 +90,8 @@
     <None Remove="Resources\Icons\export-pdf_w.png" />
     <None Remove="Resources\Icons\export.png" />
     <None Remove="Resources\Icons\export_w.png" />
+    <None Remove="Resources\Icons\file-folder.png" />
+    <None Remove="Resources\Icons\floppy-disk.png" />
     <None Remove="Resources\Icons\grid.png" />
     <None Remove="Resources\Icons\grid_w.png" />
     <None Remove="Resources\Icons\haken.png" />
@@ -116,6 +118,7 @@
     <None Remove="Resources\Icons\office_w.png" />
     <None Remove="Resources\Icons\open_project.png" />
     <None Remove="Resources\Icons\open_project_w.png" />
+    <None Remove="Resources\Icons\Ordner_Icon.ico" />
     <None Remove="Resources\Icons\placeholder_256px.png" />
     <None Remove="Resources\Icons\placeholder_256px_light.png" />
     <None Remove="Resources\Icons\plus.png" />
@@ -134,6 +137,7 @@
     <None Remove="Resources\Icons\schloss_zu_w.png" />
     <None Remove="Resources\Icons\search.png" />
     <None Remove="Resources\Icons\search_bold.png" />
+    <None Remove="Resources\Icons\setting.png" />
     <None Remove="Resources\Icons\settings.png" />
     <None Remove="Resources\Icons\settings_Light_b.png" />
     <None Remove="Resources\Icons\settings_w.png" />
@@ -188,6 +192,9 @@
     <Resource Include="Resources\Icons\bookmark.png" />
     <Resource Include="Resources\Icons\comment.png" />
     <Resource Include="Resources\Icons\comment_bold.png" />
+    <Resource Include="Resources\Icons\file-folder.png" />
+    <Resource Include="Resources\Icons\floppy-disk.png" />
+    <Resource Include="Resources\Icons\Ordner_Icon.ico" />
     <Resource Include="Resources\Icons\placeholder_256px.png" />
     <Resource Include="Resources\Icons\delete-2.png" />
     <Resource Include="Resources\Icons\edit.png" />
@@ -254,6 +261,7 @@
     <Resource Include="Resources\Icons\moisture_w.png" />
     <Resource Include="Resources\Icons\search.png" />
     <Resource Include="Resources\Icons\search_bold.png" />
+    <Resource Include="Resources\Icons\setting.png" />
     <Resource Include="Resources\Icons\settings.png" />
     <Resource Include="Resources\Icons\settings_Light_b.png" />
     <Resource Include="Resources\Icons\settings_w.png" />

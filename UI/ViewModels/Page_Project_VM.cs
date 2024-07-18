@@ -1,9 +1,9 @@
 ﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
-using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -59,8 +59,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void SaveProject()
         {
-            UserSaved.SelectedProject.UpdateTimestamp();
-            DatabaseAccess.UpdateFullProject(UserSaved.SelectedProject);
+            UserSaved.SelectedProject.WriteToConnectedDatabase();
         }
 
         [RelayCommand]

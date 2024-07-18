@@ -351,7 +351,8 @@
             <!--Set default properties of the button-->
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Content" Value="Title"/>
+            <Setter Property="Content" Value=""/>
+            <Setter Property="Tag" Value=""/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="MinWidth" Value="20"/>
             <Setter Property="MinHeight" Value="20"/>
@@ -366,9 +367,21 @@
                         <!--Element appearance with behaviour of a 'Button'-->
                         <Border CornerRadius="0" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
-                                <Label Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" FontSize="12" Margin="4,0,4,0"/>
+                                <Image x:Name="ButtonIcon" Source="{TemplateBinding Tag}" Stretch="Fill" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0"/>
+                                <Label x:Name="ButtonLabel" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" FontSize="12" Margin="0,0,8,0"/>
                             </StackPanel>
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Content" Value="">
+                                <Setter TargetName="ButtonLabel" Property="Visibility" Value="Collapsed"/>
+                                <Setter TargetName="ButtonLabel" Property="Margin" Value="0"/>
+                                <Setter TargetName="ButtonLabel" Property="Padding" Value="0"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="">
+                                <Setter TargetName="ButtonIcon" Property="Visibility" Value="Collapsed"/>
+                                <Setter TargetName="ButtonIcon" Property="Margin" Value="0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
@@ -384,6 +397,13 @@
                 </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -426,9 +446,9 @@
             <Grid Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Top">
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <Image Source="{StaticResource ButtonIcon_Accepted_B}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4,8,4"/>
-                    <Button Content="Datei" Style="{StaticResource TitleBarButtonStyle_B}"/>
-                    <Button Content="Einstellungen" Style="{StaticResource TitleBarButtonStyle_B}"/>
+                    <Image Source="{StaticResource AppIcon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4,16,4"/>
+                    <Button Content="Speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}"/>
+                    <Button Content="Öffnen"  Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Open_Flat}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

@@ -4,6 +4,8 @@ using Geometry;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models
@@ -19,7 +21,7 @@ namespace BauphysikToolWPF.Models
         //------Eigenschaften-----//
 
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int Id { get; set; }
+        public int Id { get; set; } = -1; // -1 means: Is not part of Database yet
 
         [NotNull]
         public int LayerPosition { get; set; } // Inside = 1
@@ -30,9 +32,6 @@ namespace BauphysikToolWPF.Models
         [NotNull, ForeignKey(typeof(Material))] // FK for the 1:1 relationship with Material
         public int MaterialId { get; set; }
 
-        [ForeignKey(typeof(LayerSubConstruction))] // FK for the 1:1 relationship with LayerSubConstruction
-        public int? SubConstructionId { get; set; } = null;
-
         [NotNull]
         public double Thickness { get; set; } // Layer thickness in cm
 
@@ -41,7 +40,6 @@ namespace BauphysikToolWPF.Models
 
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-
 
         //------Not part of the Database-----//
 
@@ -56,9 +54,9 @@ namespace BauphysikToolWPF.Models
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Material Material { get; set; } = new Material();
 
-        // 1:1 relationship with LayerSubConstruction
-        [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public LayerSubConstruction? SubConstruction { get; set; }
+        // 1:n relationship with LayerSubConstruction
+        [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all SubConstructions linked to this 'Layer')
+        public List<LayerSubConstruction> SubConstructions { get; set; } = new List<LayerSubConstruction>(0);
         
         [Ignore]
         public bool IsSelected { get; set; } // For UI Purposes 
@@ -66,16 +64,29 @@ namespace BauphysikToolWPF.Models
         [Ignore]
         public bool IsEffective { get; set; } = true;
 
-            // Readonly Properties
+        // Readonly Properties
 
         [Ignore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
         [Ignore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
         [Ignore]
-        public bool HasSubConstruction => SubConstruction != null && SubConstruction.IsValid;
+        public bool HasSubConstructions => SubConstructions != null && SubConstructions.Count > 0;
         [Ignore]
         public bool IsValid => LayerPosition >= 0 && Thickness > 0 && Material.IsValid;
+
+        // Workaround: Currently only 1 SubConstruction supported
+        [Ignore]
+        public LayerSubConstruction? SubConstruction
+        {
+            get => SubConstructions.FirstOrDefault();
+            set
+            {
+                if (value == null) return;
+                SubConstructions.Clear();
+                SubConstructions.Add(value);
+            }
+        }
 
         [Ignore]
         public double R_Value
@@ -132,8 +143,7 @@ namespace BauphysikToolWPF.Models
             copy.MaterialId = this.MaterialId;
             copy.Element = this.Element;
             copy.Material = this.Material;
-            copy.SubConstructionId = this.SubConstructionId;
-            copy.SubConstruction = this.SubConstruction;
+            copy.SubConstructions = this.SubConstructions;
             copy.Thickness = this.Thickness;
             copy.IsEffective = this.IsEffective;
             copy.IsSelected = false;
@@ -155,8 +165,7 @@ namespace BauphysikToolWPF.Models
 
         public void RemoveSubConstruction()
         {
-            this.SubConstructionId = null;
-            this.SubConstruction = null;
+            this.SubConstructions.Clear();
         }
     }
 

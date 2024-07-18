@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.Models
     public class Material
     {
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int Id { get; set; }
+        public int Id { get; set; } = -1; // -1 means: Is not part of Database yet
         [NotNull, Unique]
         public string Name { get; set; } = string.Empty;
         [NotNull]
