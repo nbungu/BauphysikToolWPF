@@ -25,7 +25,7 @@ namespace BauphysikToolWPF.Models.Helper
         TemperatureSurfaceExterior,
 
         // R-Values
-        RValueLayer,                      // Ri
+        RValueLayer,                        // Ri
         RValueElement,                      // R_ges
         RValueTotal,                        // R_Total
         TransferResistanceSurfaceInterior,  // R_si
@@ -36,10 +36,10 @@ namespace BauphysikToolWPF.Models.Helper
         RawDensity,
         AreaMassDensity,                    // m'
         SdThickness,                        
-        VapourDiffusionResistance, // 
-        RelativeHumidity,
-        RelativeHumidityInterior,
-        RelativeHumidityExterior,
+        VapourDiffusionResistance, 
+        RelativeHumidity, 
+        RelativeHumidityInterior,           // Rel_Fi
+        RelativeHumidityExterior,           // Rel_Fe
 
         ThermalConductivity, // lambda
         SpecificHeatCapacity // c

@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.Models
         public int ConstructionId { get; set; }
 
         [NotNull]
-        public string TypeName { get; set; } = "";
+        public string TypeName { get; set; } = "Außenwand";
 
         [NotNull]
         public int IsVertical { get; set; }

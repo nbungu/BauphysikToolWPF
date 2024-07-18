@@ -10,7 +10,7 @@ namespace BauphysikToolWPF.Models
         GEG_Anlage1 = 1,
         GEG_Anlage2 = 2,
         GEG_Anlage7 = 3,
-        DIN_4108_2_Tabelle3 = 4
+        DIN_4108_2_Tabelle3 = 4 
     }
     public class RequirementSource
     {
@@ -20,22 +20,19 @@ namespace BauphysikToolWPF.Models
         //------Eigenschaften-----//
 
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int RequirementSourceId { get; set; }
+        public int Id { get; set; }
 
         [NotNull]
-        public string Name { get; set; } = string.Empty;
+        public RequirementSourceType Source { get; set; }
+        
+        [NotNull]
+        public string Comment { get; set; } = string.Empty;
 
         [NotNull]
-        public int Year { get; set; }
+        public string TargetSymbol { get; set; } = string.Empty;
 
         [NotNull]
-        public string Specification { get; set; } = string.Empty;
-
-        [NotNull]
-        public string RequirementType { get; set; } = string.Empty;
-
-        [NotNull]
-        public string RequirementUnit { get; set; } = string.Empty;
+        public string TargetUnit { get; set; } = string.Empty;
 
         //------Not part of the Database-----//
 
@@ -43,8 +40,6 @@ namespace BauphysikToolWPF.Models
         [OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all Requirements linked to this 'RequirementSource')
         public List<Requirement> Requirements { get; set; } = new List<Requirement>();
 
-        [Ignore]
-        public RequirementSourceType SourceType => (RequirementSourceType)RequirementSourceId; // Returns the enum by its number value (via RequirementSourceId)
 
         //------Konstruktor-----//
 
@@ -54,7 +49,7 @@ namespace BauphysikToolWPF.Models
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return Name + " (Id: " + RequirementSourceId + ")";
+            return Comment + " (Id: " + Id + ")";
         }
     }
 }

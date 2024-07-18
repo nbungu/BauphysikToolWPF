@@ -1,5 +1,5 @@
 ﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -40,7 +40,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void Save()
         {
-            UserSaved.SelectedProject.WriteToConnectedDatabase();
+            ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
         }
 
         /*

@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Models.Helper;
 using Geometry;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -26,17 +27,12 @@ namespace BauphysikToolWPF.UI.ViewModels
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
 
-        public List<string> Ti_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Ti").Select(e => e.Comment).ToList();
-
-        public List<string> Te_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Te").Select(e => e.Comment).ToList();
-
-        public List<string> Rsi_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Select(e => e.Comment).ToList();
-
-        public List<string> Rse_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rse").Select(e => e.Comment).ToList();
-
-        public List<string> Rel_Fi_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Select(e => e.Comment).ToList();
-
-        public List<string> Rel_Fe_Keys => DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Select(e => e.Comment).ToList();
+        public List<string> Ti_Keys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Select(e => e.Comment).ToList();
+        public List<string> Te_Keys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Select(e => e.Comment).ToList();
+        public List<string> Rsi_Keys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Select(e => e.Comment).ToList();
+        public List<string> Rse_Keys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior).Select(e => e.Comment).ToList();
+        public List<string> Rel_Fi_Keys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Select(e => e.Comment).ToList();
+        public List<string> Rel_Fe_Keys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Select(e => e.Comment).ToList();
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -134,7 +130,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 // On custom user input
 
                 //Get corresp Value
-                double? value = (ti_Index == -1) ? UserSaved.Ti : DatabaseAccess.QueryEnvVarsBySymbol("Ti").Find(e => e.Comment == Ti_Keys[ti_Index])?.Value;
+                double? value = (ti_Index == -1) ? UserSaved.Ti : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Find(e => e.Comment == Ti_Keys[ti_Index])?.Value;
                 // Save SessionData
                 UserSaved.Ti = value ?? 0;
                 // Return value to UIElement
@@ -152,7 +148,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (te_Index == -1) ? UserSaved.Te : DatabaseAccess.QueryEnvVarsBySymbol("Te").Find(e => e.Comment == Te_Keys[te_Index])?.Value;
+                double? value = (te_Index == -1) ? UserSaved.Te : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Find(e => e.Comment == Te_Keys[te_Index])?.Value;
                 UserSaved.Te = value ?? 0;
                 return value.ToString() ?? string.Empty;
             }
@@ -166,7 +162,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (rsi_Index == -1) ? UserSaved.Rsi : DatabaseAccess.QueryEnvVarsBySymbol("Rsi").Find(e => e.Comment == Rsi_Keys[rsi_Index])?.Value;
+                double? value = (rsi_Index == -1) ? UserSaved.Rsi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Comment == Rsi_Keys[rsi_Index])?.Value;
                 UserSaved.Rsi = value ?? 0;
                 return value.ToString() ?? string.Empty;
             }
@@ -180,7 +176,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (rse_Index == -1) ? UserSaved.Rse : DatabaseAccess.QueryEnvVarsBySymbol("Rse").Find(e => e.Comment == Rse_Keys[rse_Index])?.Value;
+                double? value = (rse_Index == -1) ? UserSaved.Rse : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Comment == Rse_Keys[rse_Index])?.Value;
                 UserSaved.Rse = value ?? 0;
                 return value.ToString() ?? string.Empty;
             }
@@ -194,7 +190,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (rel_fi_Index == -1) ? UserSaved.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi").Find(e => e.Comment == Rel_Fi_Keys[rel_fi_Index])?.Value;
+                double? value = (rel_fi_Index == -1) ? UserSaved.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Comment == Rel_Fi_Keys[rel_fi_Index])?.Value;
                 UserSaved.Rel_Fi = value ?? 0;
                 return value.ToString() ?? string.Empty;
             }
@@ -208,7 +204,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (rel_fe_Index == -1) ? UserSaved.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe").Find(e => e.Comment == Rel_Fe_Keys[rel_fe_Index])?.Value;
+                double? value = (rel_fe_Index == -1) ? UserSaved.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Comment == Rel_Fe_Keys[rel_fe_Index])?.Value;
                 UserSaved.Rel_Fe = value ?? 0;
                 return value.ToString() ?? string.Empty;
             }
@@ -218,15 +214,5 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Rel_fe_Index = -1;
             }
         }
-
-        /*public List<LayerGeometry> LayerGeometries
-        {
-            get
-            {
-                var geometries = new List<LayerGeometry>();
-                UserSaved.SelectedElement.Layers.ForEach(l => geometries.Add(new LayerGeometry(l)));
-                return geometries.ScaleAndStack(320, 400);
-            }
-        }*/
     }
 }

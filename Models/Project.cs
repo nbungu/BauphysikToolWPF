@@ -30,10 +30,10 @@ namespace BauphysikToolWPF.Models
         public string UserName { get; set; } = string.Empty;
 
         [NotNull]
-        public int BuildingUsage { get; set; } // Boolean values are stored as integers 0 (false) and 1 (true)
+        public int BuildingUsage { get; set; }
 
         [NotNull]
-        public int BuildingAge { get; set; } // Boolean values are stored as integers 0 (false) and 1 (true)
+        public int BuildingAge { get; set; }
 
         [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
@@ -92,6 +92,7 @@ namespace BauphysikToolWPF.Models
         {
             var copy = new Project();
             copy.Id = this.Id;
+            copy.InternalId = this.InternalId;
             copy.Name = this.Name;
             copy.UserName = this.UserName;
             copy.BuildingAge = this.BuildingAge;
@@ -100,20 +101,13 @@ namespace BauphysikToolWPF.Models
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.Elements = this.Elements;
-            copy.InternalId = this.InternalId;
+
             return copy;
         }
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
             return Name + " (Id: " + Id + ")";
-        }
-
-        // TODO: Move to ProjectExtensions Class
-        public void AssignInternalIdsToElements()
-        {
-            int index = 0; // Start at 0
-            this.Elements.ForEach(e => e.InternalId = index++);
         }
 
         public void UpdateTimestamp()

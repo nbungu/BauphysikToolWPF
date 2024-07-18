@@ -76,9 +76,6 @@ namespace BauphysikToolWPF.Models
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Construction Construction { get; set; } = new Construction();
 
-        // m:n relationship with EnvVars
-        [ManyToMany(typeof(ElementEnvVars), CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When parent Element is removed: Deletes all EnvVars linked to this 'Element')
-        public List<EnvVars> EnvVars { get; set; } = new List<EnvVars>();
 
         // Properties
 
@@ -219,7 +216,6 @@ namespace BauphysikToolWPF.Models
             copy.Comment = this.Comment;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.EnvVars = this.EnvVars;
             copy.Layers = this.Layers;
             copy.InternalId = this.InternalId;
             return copy;

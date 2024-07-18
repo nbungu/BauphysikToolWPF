@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Repository;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.SessionData
 {
@@ -56,86 +57,86 @@ namespace BauphysikToolWPF.SessionData
         public static Layer SelectedLayer => SelectedElement.Layers.FirstOrDefault(e => e.InternalId == SelectedLayerId, new Layer());
 
         // Unordered Collection. Key must be unique!
-        private static readonly Dictionary<string, double> _userEnvVars = new Dictionary<string, double>(6)
+        private static readonly Dictionary<Symbol, double> _userEnvVars = new Dictionary<Symbol, double>(6)
         {
-            {"Ti", DatabaseAccess.QueryEnvVarsBySymbol("Ti")[0].Value },
-            {"Te", DatabaseAccess.QueryEnvVarsBySymbol("Te")[0].Value },
-            {"Rsi", DatabaseAccess.QueryEnvVarsBySymbol("Rsi")[0].Value },
-            {"Rse", DatabaseAccess.QueryEnvVarsBySymbol("Rse")[0].Value },
-            {"Rel_Fi", DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fi")[0].Value },
-            {"Rel_Fe", DatabaseAccess.QueryEnvVarsBySymbol("Rel_Fe")[0].Value },
+            {Symbol.TemperatureInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior)[0].Value },
+            {Symbol.TemperatureExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior)[0].Value },
+            {Symbol.TransferResistanceSurfaceInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior)[0].Value },
+            {Symbol.TransferResistanceSurfaceExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior)[0].Value },
+            {Symbol.RelativeHumidityInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior)[0].Value },
+            {Symbol.RelativeHumidityExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior)[0].Value },
         };
 
         //------Eigenschaften-----//
         // Kapselung von _userEnvVars
         public static double Ti
         {
-            get => _userEnvVars["Ti"];
+            get => _userEnvVars[Symbol.TemperatureInterior];
             set
             {
-                if (value != _userEnvVars["Ti"])
+                if (value != _userEnvVars[Symbol.TemperatureInterior])
                 {
-                    _userEnvVars["Ti"] = value;
+                    _userEnvVars[Symbol.TemperatureInterior] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Te
         {
-            get => _userEnvVars["Te"];
+            get => _userEnvVars[Symbol.TemperatureExterior];
             set
             {
-                if (value != _userEnvVars["Te"])
+                if (value != _userEnvVars[Symbol.TemperatureExterior])
                 {
-                    _userEnvVars["Te"] = value;
+                    _userEnvVars[Symbol.TemperatureExterior] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Rsi
         {
-            get => _userEnvVars["Rsi"];
+            get => _userEnvVars[Symbol.TransferResistanceSurfaceInterior];
             set
             {
-                if (value != _userEnvVars["Rsi"])
+                if (value != _userEnvVars[Symbol.TransferResistanceSurfaceInterior])
                 {
-                    _userEnvVars["Rsi"] = value;
+                    _userEnvVars[Symbol.TransferResistanceSurfaceInterior] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Rse
         {
-            get => _userEnvVars["Rse"];
+            get => _userEnvVars[Symbol.TransferResistanceSurfaceExterior];
             set
             {
-                if (value != _userEnvVars["Rse"])
+                if (value != _userEnvVars[Symbol.TransferResistanceSurfaceExterior])
                 {
-                    _userEnvVars["Rse"] = value;
+                    _userEnvVars[Symbol.TransferResistanceSurfaceExterior] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Rel_Fi
         {
-            get => _userEnvVars["Rel_Fi"];
+            get => _userEnvVars[Symbol.RelativeHumidityInterior];
             set
             {
-                if (value != _userEnvVars["Rel_Fi"])
+                if (value != _userEnvVars[Symbol.RelativeHumidityInterior])
                 {
-                    _userEnvVars["Rel_Fi"] = value;
+                    _userEnvVars[Symbol.RelativeHumidityInterior] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }
         }
         public static double Rel_Fe
         {
-            get => _userEnvVars["Rel_Fe"];
+            get => _userEnvVars[Symbol.RelativeHumidityExterior];
             set
             {
-                if (value != _userEnvVars["Rel_Fe"])
+                if (value != _userEnvVars[Symbol.RelativeHumidityExterior])
                 {
-                    _userEnvVars["Rel_Fe"] = value;
+                    _userEnvVars[Symbol.RelativeHumidityExterior] = value;
                     OnEnvVarsChanged(); // raises an event
                 }
             }

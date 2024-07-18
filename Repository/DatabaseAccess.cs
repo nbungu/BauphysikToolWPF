@@ -51,8 +51,8 @@ namespace BauphysikToolWPF.Repository
          *  For an Object to contain the complete entity tree starting from 'Project', specifiy the recursive operations
          */
 
-        // Retreive Data from Table "Project"
-
+        #region IQueryable
+        
         public static IQueryable<Project> GetProjectsQuery()
         {
             return Database.Table<Project>().AsQueryable();
@@ -69,6 +69,25 @@ namespace BauphysikToolWPF.Repository
         {
             return Database.Table<LayerSubConstruction>().AsQueryable();
         }
+        public static IQueryable<Material> GetMaterialsQuery()
+        {
+            return Database.Table<Material>().AsQueryable();
+        }
+        public static IQueryable<EnvVars> GetEnvVarsQuery()
+        {
+            return Database.Table<EnvVars>().AsQueryable();
+        }
+        public static IQueryable<Requirement> GetRequirementsQuery()
+        {
+            return Database.Table<Requirement>().AsQueryable();
+        }
+        public static IQueryable<RequirementSource> GetRequirementSourcesQuery()
+        {
+            return Database.Table<RequirementSource>().AsQueryable();
+        }
+        #endregion
+
+        #region Projects
 
         public static List<Project> GetProjects()
         {
@@ -81,141 +100,26 @@ namespace BauphysikToolWPF.Repository
             Database.Insert(project); // Inserts the object in the Database recursively
             OnProjectsChanged(); // raises an event
         }
-        public static void DeleteProject(Project project)
-        {
-            Database.Delete(project);
-            OnProjectsChanged();
-        }
-
         public static void UpdateProject(Project project)
         {
             Database.Update(project);
             OnProjectsChanged();
         }
 
+        public static void DeleteProject(Project project)
+        {
+            Database.Delete(project);
+            OnProjectsChanged();
+        }
         public static Project QueryProjectById(int projectId)
         {
             return Database.GetWithChildren<Project>(projectId, recursive: true); // Fetch the Project by ID and all the related entities recursively
         }
 
-        // Retreive Data from Table "Element"
-        public static List<Element> GetElements()
-        {
-            return Database.GetAllWithChildren<Element>(recursive: true);
-        }
+        #endregion
 
-        public static void CreateElement(Element element)
-        {
-            Database.Insert(element);               // Default case: Create/Edit a Element: No need to 'InsertWithChildren', since on 'GetElements' any Children will be added via FK by SQLiteExtension package
-            OnElementsChanged();
-        }
+        #region Materials
 
-        public static void UpdateElement(Element element)
-        {
-            Database.Update(element);
-            OnElementsChanged();
-        }
-
-        public static void UpdateElements(IEnumerable<Element> elements)
-        {
-            Database.UpdateAll(elements);
-            OnElementsChanged();
-        }
-
-        public static void DeleteElement(Element element)
-        {
-            Database.Delete(element);
-            OnElementsChanged();
-        }
-
-        public static void DeleteElementById(int elementId)
-        {
-            Database.Delete<Element>(elementId);
-            OnElementsChanged();
-        }
-        public static void DeleteAllElements()
-        {
-            Database.DeleteAll<Element>();
-            OnElementsChanged();
-        }
-        public static Element QueryElementById(int elementId)
-        {
-            return Database.GetWithChildren<Element>(elementId, recursive: true);
-        }
-        public static List<Element> QueryElementsByProjectId(int projectId, ElementSortingType sortingType = ElementSortingType.DateAscending)
-        {
-            List<Element> elements = Database.GetAllWithChildren<Element>(e => e.ProjectId == projectId, recursive: true);
-
-            if (sortingType == ElementSortingType.DateAscending) return elements;
-
-            elements.Sort(new ElementComparer(sortingType)); // use of List<T>.Sort(IComparer<T>) method
-            return elements;
-            
-        }
-
-        // Retreive Data from Table "Layer"
-        public static void CreateLayer(Layer layer, bool triggerUpdateEvent = true, bool assignEffectiveLayers = true)
-        {
-            // No need to 'InsertWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
-            Database.Insert(layer);
-
-            // True by default: Occurs often when a Layer is deleted
-            //if (assignEffectiveLayers)
-            //    LayerComparer.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
-
-            if (triggerUpdateEvent)
-                OnLayersChanged();
-        }
-
-        public static void UpdateLayer(Layer layer, bool triggerUpdateEvent = true, bool assignEffectiveLayers = false)
-        {
-            // No need to 'UpdateWithChildren', since on 'GetLayers' any Children will be added via FK by SQLiteExtension package
-            Database.Update(layer);
-
-            // False by default: Occurs rarely when a Layer is updated
-            //if (assignEffectiveLayers)
-            //    LayerComparer.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
-
-            if (triggerUpdateEvent)
-                OnLayersChanged();
-        }
-
-        public static void DeleteLayer(Layer layer, bool triggerUpdateEvent = true, bool fillLayerGaps = true, bool assignEffectiveLayers = true)
-        {
-            Database.Delete(layer);
-
-            // True by default: Occurs almost every time a Layer is deleted
-            //if (fillLayerGaps)
-            //    LayerComparer.FillGaps(QueryLayersByElementId(layer.ElementId)); // Remove gaps in the LayerPosition property of current Element
-
-            //// True by default: Occurs often when a Layer is deleted
-            //if (assignEffectiveLayers)
-            //    LayerComparer.AssignEffectiveLayers(QueryLayersByElementId(layer.ElementId));
-
-            if (triggerUpdateEvent)
-                OnLayersChanged();
-        }
-
-        public static void DeleteAllLayers(bool triggerUpdateEvent = true)
-        {
-            Database.DeleteAll<Layer>();
-
-            if (triggerUpdateEvent)
-                OnLayersChanged();
-        }
-        public static List<Layer> QueryLayersByElementId(int elementId, LayerSortingType sortingType = LayerSortingType.DateAscending)
-        {
-            elementId = Convert.ToInt32(elementId);
-            List<Layer> layers = Database.GetAllWithChildren<Layer>(e => e.ElementId == elementId, recursive: true);
-
-            if (sortingType == LayerSortingType.DateAscending)
-                return layers;
-
-            layers.Sort(new LayerComparer(sortingType)); // use of List<T>.Sort(IComparer<T>) method
-            return layers;
-        }
-
-        // Retreive Data from Table "Material"
         public static List<Material> GetMaterials()
         {
             return Database.Table<Material>().ToList();
@@ -224,16 +128,14 @@ namespace BauphysikToolWPF.Repository
         public static void CreateMaterial(Material material)
         {
             //Only allow adding user defined materials to DB
-            if (material.Category != MaterialCategory.UserDefined)
-                return;
+            if (material.Category != MaterialCategory.UserDefined) return;
             Database.Insert(material);
         }
 
         public static void UpdateMaterial(Material material)
         {
             //Only allow updating user defined materials to DB
-            if (material.Category != MaterialCategory.UserDefined)
-                return;
+            if (material.Category != MaterialCategory.UserDefined) return;
             Database.Update(material);
         }
 
@@ -244,32 +146,26 @@ namespace BauphysikToolWPF.Repository
 
         public static List<Material> QueryMaterialByCategory(MaterialCategory category)
         {
-            if (category == MaterialCategory.None)
-                return Database.Query<Material>("SELECT * FROM Material");
-            else
-                return Database.Query<Material>("SELECT * FROM Material WHERE Category == " + "\"" + (int)category + "\"");
-        }
-        public static List<Material> QueryMaterialBySearchString(string searchString)
-        {
-            if (searchString == String.Empty)
-                return Database.Query<Material>("SELECT * FROM Material");
-            else
-                return Database.Query<Material>("SELECT * FROM Material").Where(m => m.Name.Contains(searchString)).ToList();
+            if (category == MaterialCategory.None) return GetMaterials();
+            return GetMaterialsQuery().Where(m => (int)m.Category == (int)category).ToList();
         }
 
-        // Retreive Data from Table "EnvVars"
+        #endregion
+
+        #region EnvVars
+
         public static List<EnvVars> GetEnvVars()
         {
             return Database.GetAllWithChildren<EnvVars>();
         }
 
-        public static List<EnvVars> QueryEnvVarsBySymbol(string symbol)
+        public static List<EnvVars> QueryEnvVarsBySymbol(Symbol symbol)
         {
-            if (symbol == "*")
-                return Database.Query<EnvVars>("SELECT * FROM EnvVars");
-            else
-                return Database.Query<EnvVars>("SELECT * FROM EnvVars WHERE Symbol == " + "\"" + symbol + "\"");
+            if (symbol == Symbol.None) return GetEnvVars();
+            return GetEnvVarsQuery().Where(e => (int)e.Symbol == (int)symbol).ToList();
         }
+
+        #endregion
 
         // Retreive Data from Table "Construction"
         public static List<Construction> GetConstructions()
@@ -282,45 +178,14 @@ namespace BauphysikToolWPF.Repository
             return Database.GetWithChildren<Construction>(constructionId);
         }
 
-        // Retreive Data from Table "ElementEnvVars"
-        public static List<ElementEnvVars> GetElementEnvVars()
-        {
-            return Database.Table<ElementEnvVars>().ToList();
-        }
-        public static void CreateElementEnvVars(ElementEnvVars elementEnvVars)
-        {
-            Database.Insert(elementEnvVars);
-            OnElementEnvVarsChanged();
-        }
-
-        public static int UpdateElementEnvVars(ElementEnvVars elementEnvVars)
-        {
-            int i = Database.Update(elementEnvVars);
-            OnElementEnvVarsChanged();
-            return i;
-        }
-
-        public static void DeleteElementEnvVars(ElementEnvVars elementEnvVars)
-        {
-            Database.Delete(elementEnvVars);
-            OnElementEnvVarsChanged();
-        }
-
-        public static void DeleteAllElementEnvVars()
-        {
-            Database.DeleteAll<ElementEnvVars>();
-            OnElementEnvVarsChanged();
-        }
-
         // Retreive Data from Table "RequirementSource"
         public static List<RequirementSource> GetRequirementSources()
         {
             return Database.GetAllWithChildren<RequirementSource>();
         }
-        public static RequirementSource QueryRequirementSourceById(int requirementSourceId)
+        public static RequirementSource QueryRequirementSourceBySourceType(RequirementSourceType sourceType)
         {
-            requirementSourceId = Convert.ToInt32(requirementSourceId);
-            return Database.Get<RequirementSource>(requirementSourceId);
+            return GetRequirementSourcesQuery().First(r => (int)r.Source == (int)sourceType);
         }
 
         // Retreive Data from Table "Requirement"
@@ -328,15 +193,10 @@ namespace BauphysikToolWPF.Repository
         {
             return Database.GetAllWithChildren<Requirement>();
         }
-        public static Requirement QueryRequirementById(int requirementId)
+        public static List<Requirement> QueryRequirementsBySourceType(RequirementSourceType sourceType)
         {
-            requirementId = Convert.ToInt32(requirementId);
-            return Database.Get<Requirement>(requirementId);
-        }
-        public static List<Requirement> QueryRequirementsBySourceId(int requirementSourceId)
-        {
-            requirementSourceId = Convert.ToInt32(requirementSourceId);
-            return Database.GetAllWithChildren<Requirement>(e => e.RequirementSourceId == requirementSourceId);
+            var requirementSourceId = QueryRequirementSourceBySourceType(sourceType).Id;
+            return GetRequirementsQuery().Where(e => e.RequirementSourceId == requirementSourceId).ToList();
         }
     }
 }

@@ -4,6 +4,7 @@ using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
+using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -59,7 +60,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void SaveProject()
         {
-            UserSaved.SelectedProject.WriteToConnectedDatabase();
+            ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
         }
 
         [RelayCommand]

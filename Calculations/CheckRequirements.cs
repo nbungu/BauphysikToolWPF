@@ -48,10 +48,10 @@ namespace BauphysikToolWPF.Calculations
 
             // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
             // via m:n relation of Construction and Requirement.
-            List<Requirement> allRequirements = Element.Construction.Requirements;
+            var constructionRequirements = Element.Construction.Requirements;
 
             // catch constructions with no requirements (e.g. Innenwand)
-            if (allRequirements is null || allRequirements.Count == 0) return -1;
+            if (constructionRequirements is null || constructionRequirements.Count == 0) return -1;
 
             // b) Select relevant Source based off Building Age and Usage
             if (_currentProject.IsNewConstruction)
@@ -60,18 +60,18 @@ namespace BauphysikToolWPF.Calculations
                 {
                     requirementSourceId = (int)RequirementSourceType.GEG_Anlage1;
                 }
-                if (_currentProject.IsNonResidentialUsage)
+                else if (_currentProject.IsNonResidentialUsage)
                 {
                     requirementSourceId = (int)RequirementSourceType.GEG_Anlage2;
                 }
             }
-            if (_currentProject.IsExistingConstruction)
+            else if (_currentProject.IsExistingConstruction)
             {
                 requirementSourceId = (int)RequirementSourceType.GEG_Anlage7;
             }
 
             // c) Get specific Requirement from selected RequirementSource
-            Requirement? specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            Requirement? specificRequirement = constructionRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
             if (specificRequirement is null) return -1;
 
             // Check if conditions have to be met

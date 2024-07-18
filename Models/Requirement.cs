@@ -12,9 +12,9 @@ namespace BauphysikToolWPF.Models
         //------Eigenschaften-----//
 
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int RequirementId { get; set; }
+        public int Id { get; set; }
 
-        [ForeignKey(typeof(RequirementSource))] // FK for the n:1 relationship with RequirementSource
+        [NotNull, ForeignKey(typeof(RequirementSource))] // FK for the n:1 relationship with RequirementSource
         public int RequirementSourceId { get; set; }
 
         [NotNull]
@@ -47,7 +47,7 @@ namespace BauphysikToolWPF.Models
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return "(Id: " + RequirementId + ")";
+            return "(Id: " + Id + ")";
         }
     }
 }

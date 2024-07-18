@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.SessionData;
 using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
