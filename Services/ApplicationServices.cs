@@ -13,7 +13,25 @@ namespace BauphysikToolWPF.Services
     {
         // TODO: Dokument erzeugen
 
-        // TODO: Save-File erzeugen
+        #region Logging
+
+        // Determine the path for the log file
+        public static string LogFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "bauphysikTool.log");
+
+        public static void AppendToLogFile(string[] contents)
+        {
+            // Log the arguments to a file
+            File.WriteAllLines(LogFilePath, contents);
+        }
+        public static void AppendToLogFile(string content)
+        {
+            // Log the arguments to a file
+            File.AppendAllText(LogFilePath, $"{content}{Environment.NewLine}");
+        }
+
+        #endregion
+
+
         public static void SaveProjectToFile(Project project, string filePath)
         {
             var options = new JsonSerializerOptions

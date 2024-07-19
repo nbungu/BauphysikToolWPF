@@ -81,9 +81,9 @@ namespace BauphysikToolWPF.Repository
         {
             return Database.Table<Requirement>().AsQueryable();
         }
-        public static IQueryable<RequirementSource> GetRequirementSourcesQuery()
+        public static IQueryable<DocumentSource> GetRequirementSourcesQuery()
         {
-            return Database.Table<RequirementSource>().AsQueryable();
+            return Database.Table<DocumentSource>().AsQueryable();
         }
         #endregion
 
@@ -179,11 +179,11 @@ namespace BauphysikToolWPF.Repository
         }
 
         // Retreive Data from Table "RequirementSource"
-        public static List<RequirementSource> GetRequirementSources()
+        public static List<DocumentSource> GetRequirementSources()
         {
-            return Database.GetAllWithChildren<RequirementSource>();
+            return Database.GetAllWithChildren<DocumentSource>();
         }
-        public static RequirementSource QueryRequirementSourceBySourceType(RequirementSourceType sourceType)
+        public static DocumentSource QueryRequirementSourceBySourceType(RequirementSourceType sourceType)
         {
             return GetRequirementSourcesQuery().First(r => (int)r.Source == (int)sourceType);
         }
@@ -196,7 +196,7 @@ namespace BauphysikToolWPF.Repository
         public static List<Requirement> QueryRequirementsBySourceType(RequirementSourceType sourceType)
         {
             var requirementSourceId = QueryRequirementSourceBySourceType(sourceType).Id;
-            return GetRequirementsQuery().Where(e => e.RequirementSourceId == requirementSourceId).ToList();
+            return GetRequirementsQuery().Where(e => e.DocumentSourceId == requirementSourceId).ToList();
         }
     }
 }

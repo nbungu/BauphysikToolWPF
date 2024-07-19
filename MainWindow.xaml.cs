@@ -1,4 +1,4 @@
-﻿using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
 using System;
 using System.ComponentModel;
@@ -36,7 +36,7 @@ namespace BauphysikToolWPF
 
         public MainWindow()
         {
-            UserSaved.SelectedProject = DatabaseAccess.QueryProjectById(1);
+            ApplicationServices.AppendToLogFile($"MainWindow: Selected Project: {UserSaved.SelectedProject?.ToString() ?? "null"}");
 
             InitializeComponent();
             _navigationMenuListBox = this.NavigationMenuListBox;

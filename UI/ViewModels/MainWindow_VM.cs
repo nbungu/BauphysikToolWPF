@@ -28,9 +28,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void OpenFile()
         {
-            string filePath = @"C:\Users\arnes\Desktop\project.json";
+            string filePath = @"C:\Users\arnes\Desktop\project.btk";
             Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
             UserSaved.SelectedProject = loadedProject;
+            ApplicationServices.AppendToLogFile($"Successfully loaded: {loadedProject}");
         }
 
         [RelayCommand]
@@ -44,7 +45,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
 
-            string filePath = @"C:\Users\arnes\Desktop\project.json";
+            string filePath = @"C:\Users\arnes\Desktop\project.btk";
             ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
         }
 

@@ -71,7 +71,7 @@ namespace BauphysikToolWPF.Calculations
             }
 
             // c) Get specific Requirement from selected RequirementSource
-            Requirement? specificRequirement = constructionRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            Requirement? specificRequirement = constructionRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
             if (specificRequirement is null) return -1;
 
             // Check if conditions have to be met
@@ -104,7 +104,7 @@ namespace BauphysikToolWPF.Calculations
             int requirementSourceId = (int)RequirementSourceType.DIN_4108_2_Tabelle3;
 
             // c) Get specific Requirement from selected RequirementSource
-            Requirement? specificRequirement = allRequirements.Find(r => r.RequirementSourceId == requirementSourceId);
+            Requirement? specificRequirement = allRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
             if (specificRequirement is null) return -1;
 
             // Check if conditions have to be met

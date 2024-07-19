@@ -5,7 +5,22 @@ using SQLiteNetExtensions.Attributes;
 
 namespace BauphysikToolWPF.Models
 {
-    // TODO add enum for ConstructionTypes
+    public enum ConstructionType
+    {
+        NotDefined,
+        Aussenwand,
+        AussenwandGegErdreich,
+        Innenwand,
+        WhgTrennwand,
+        GeschossdeckeGegAussenluft,
+        DeckeGegUnbeheizt,
+        InnenwandGegUnbeheizt,
+        Flachdach,
+        Schraegdach,
+        Umkehrdach,
+        Bodenplatte,
+        Kellerdecke,
+    }
 
     public class Construction
     {
@@ -16,14 +31,24 @@ namespace BauphysikToolWPF.Models
 
         [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int ConstructionId { get; set; }
-
         [NotNull]
-        public string TypeName { get; set; } = "Außenwand";
+        public ConstructionType Type { get; set; }
+        [NotNull]
+        public string TypeName { get; set; } = string.Empty;
+
+        public string TypeDescription { get; set; } = string.Empty;
 
         [NotNull]
         public int IsVertical { get; set; }
 
+        [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
+        public int DocumentSourceId { get; set; }
+
         //------Not part of the Database-----//
+
+        // n:1 relationship with DocumentSource
+        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        public DocumentSource DocumentSource { get; set; } = new DocumentSource();
 
         // m:n relationship with Requirement
         [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead), JsonIgnore]

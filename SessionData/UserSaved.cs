@@ -34,7 +34,7 @@ namespace BauphysikToolWPF.SessionData
             EnvVarsChanged?.Invoke(); // if EnvVarsChanged is not null then call delegate
         }
 
-        public static Project SelectedProject = new Project();
+        public static Project SelectedProject;
 
         /// <summary>
         /// InternalID des ausgewählten Elements

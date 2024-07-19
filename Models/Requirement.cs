@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BauphysikToolWPF.Models.Helper;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 
@@ -12,10 +13,7 @@ namespace BauphysikToolWPF.Models
         //------Eigenschaften-----//
 
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int Id { get; set; }
-
-        [NotNull, ForeignKey(typeof(RequirementSource))] // FK for the n:1 relationship with RequirementSource
-        public int RequirementSourceId { get; set; }
+        public int Id { get; set; } = -1;
 
         [NotNull]
         public string RefNumber { get; set; } = string.Empty;
@@ -29,11 +27,19 @@ namespace BauphysikToolWPF.Models
 
         public string? ValueBCondition { get; set; }
 
+        [NotNull]
+        public Symbol Symbol { get; set; }
+        [NotNull]
+        public Unit Unit { get; set; }
+
+        [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
+        public int DocumentSourceId { get; set; }
+
         //------Not part of the Database-----//
 
-        // n:1 relationship with RequirementSource
+        // n:1 relationship with DocumentSource
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public RequirementSource RequirementSource { get; set; } = new RequirementSource();
+        public DocumentSource DocumentSource { get; set; } = new DocumentSource();
 
         // m:n relationship with Construction
         [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
