@@ -70,8 +70,8 @@
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
             <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16" Command="{Binding SaveProjectCommand}"/>
-            <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
+            <Button Content="Speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveProjectCommand}"/>
+            <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Open_Flat}" Margin="0,0,0,16"/>
         </StackPanel>
 
         <!-- Middle  -->

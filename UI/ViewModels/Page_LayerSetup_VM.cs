@@ -22,12 +22,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Page_LayerSetup_VM()
         {
             UserSaved.SelectedLayerId = -1;
+
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
-            //UserSaved.SelectedElementChanged += RefreshLayerProperties;
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
-
-            //UserSaved.SelectedLayerChanged += RefreshLayerProperties;
             UserSaved.SelectedLayerChanged += RefreshXamlBindings;
 
             // For values changed in PropertyDataGrid TextBox

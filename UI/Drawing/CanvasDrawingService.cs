@@ -3,7 +3,6 @@ using BauphysikToolWPF.Models.Helper;
 using Geometry;
 using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Media;
 using Point = Geometry.Point;
 
