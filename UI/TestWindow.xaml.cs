@@ -1,4 +1,6 @@
 ﻿using System.Windows.Controls;
+using BauphysikToolWPF.Calculations;
+using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.UI
 {
@@ -13,6 +15,8 @@ namespace BauphysikToolWPF.UI
             // -> Initializes xaml objects
             // -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
             // -> e.g. Calls the FO1_ViewModel constructor & LiveChartsViewModel constructor
-            }
+
+            var test = new StationaryTempCalcInhomogen(UserSaved.SelectedElement);
+        }
     }
 }

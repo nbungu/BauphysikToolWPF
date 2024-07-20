@@ -265,7 +265,7 @@ namespace BauphysikToolWPF.UI.Drawing
             layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
-            layer.Tag = layer.LayerPosition;
+            layer.Tag = layer.LayerPosition.ToString();
         }
 
         private void UpdateSubConstructionGeometry(Layer layer)
@@ -274,7 +274,7 @@ namespace BauphysikToolWPF.UI.Drawing
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
             subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.Category, 0.5, subConstruction.Rectangle);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            subConstruction.Tag = layer.LayerPosition;
+            subConstruction.Tag = $"{layer.LayerPosition}b";
         }
     }
 }

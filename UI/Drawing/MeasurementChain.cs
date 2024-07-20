@@ -92,14 +92,14 @@ namespace BauphysikToolWPF.UI.Drawing
                 // Create Interval Tick Markers
                 if (intervalDirection == Axis.Z)
                 {
-                    var lineTickHorizontal = new LineGeometry() { StartPoint = new Point(-12, intervals[i]), EndPoint = new Point(6, intervals[i]) };
+                    var lineTickHorizontal = new LineGeometry() { StartPoint = new Point(-16, intervals[i]), EndPoint = new Point(6, intervals[i]) };
                     var lineTick45 = new LineGeometry() { StartPoint = new Point(4, intervals[i] - 4), EndPoint = new Point(-4, intervals[i] + 4) };
                     hatchContent.Children.Add(lineTickHorizontal);
                     hatchContent.Children.Add(lineTick45);
                 }
                 else
                 {
-                    var lineTickVertical = new LineGeometry() { StartPoint = new Point(intervals[i], -12), EndPoint = new Point(intervals[i], 6) };
+                    var lineTickVertical = new LineGeometry() { StartPoint = new Point(intervals[i], -16), EndPoint = new Point(intervals[i], 6) };
                     var lineTick45 = new LineGeometry() { StartPoint = new Point(intervals[i] - 4, 4), EndPoint = new Point(intervals[i] + 4, -4) };
                     hatchContent.Children.Add(lineTickVertical);
                     hatchContent.Children.Add(lineTick45);

@@ -1,27 +1,23 @@
 ﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using Geometry;
 
 namespace BauphysikToolWPF.Calculations
 {
     public class StationaryTempCalcInhomogen
     {
-        protected double _ti = UserSaved.Ti;
-        protected double _te = UserSaved.Te;
         protected double _rsi = UserSaved.Rsi;
         protected double _rse = UserSaved.Rse;
 
+        private Dictionary<string, object> _layerMapping = new Dictionary<string, object>();
+        private Dictionary<int, List<string>> _areaToLayerPathCombinations = new Dictionary<int, List<string>>();
+        private Dictionary<string, int[]> _layerToAreasMapping = new Dictionary<string, int[]>();
+        private Dictionary<int, Rectangle> _areaMapping = new Dictionary<int, Rectangle>();
+
         public Element Element { get; } = new Element();
-        public double RTotal { get; }
-        public double UValue { get; }
-        public double QValue { get; }
-        public double FRsi { get; }
-        public double Tsi_min { get; }
-        public double Tsi { get; }
-        public double Tse { get; }
-        public SortedDictionary<double, double> LayerTemps { get; } = new SortedDictionary<double, double>();
         public bool IsValid { get; }
 
         public StationaryTempCalcInhomogen() { }
@@ -31,85 +27,66 @@ namespace BauphysikToolWPF.Calculations
             if (element.Layers.Count == 0 || element is null) return;
 
             Element = element;
+            Element.SortLayers();
 
-            //var (rUpper, rLower) = GetInhomogeneousRTotals(element);
-            //RTotal = (rUpper + rLower) / 2;
+            GetLayerMapping();
+            GetLayerPathCombinations(0, new List<string>());
+            GetLayerToRectanglesMapping();
+            GetAreaMapping();
+
+
             IsValid = true;
         }
 
-        /*private Dictionary<int, double> GetAreaFractions(Element element)
+
+        private void GetLayerPathCombinations(int i, List<string> currentCombination)
         {
-            var areas = new Dictionary<int, double>();
-
-            if (!element.IsValid || !element.Layers.Any(l => l.HasSubConstruction)) return new Dictionary<int, double>() { {1, 1.0} };
-            
-            var subConstructions = element.Layers.Where(l => l.HasSubConstruction).Select(l => l.SubConstruction);
-            var verticalLayerSubConstructions =
-                subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Vertical).ToList();
-            var horinzontalLayerSubConstructions =
-                subConstructions.Where(l => l.SubConstructionDirection == SubConstructionDirection.Horizontal).ToList();
-
-            var boundsInXDirection = verticalLayerSubConstructions.Max(l => l.Spacing + l.Width);
-            var boundsInZDirection = horinzontalLayerSubConstructions.Max(l => l.Spacing + l.Width);
-
-
-            var verticalAreaWidths = new Dictionary<int, double>();
-            for (int i = 0; i < verticalLayerSubConstructions.Count(); i++)
+            if (i == Element.Layers.Count)
             {
-                verticalAreaWidths.Add(i, verticalLayerSubConstructions[i].Width);
-                verticalAreaWidths.Add(i+1, verticalLayerSubConstructions[i].Spacing);
+                _areaToLayerPathCombinations.Add(_areaToLayerPathCombinations.Count + 1, currentCombination);
+                return;
             }
 
-            foreach (var vSubConstr in verticalLayerSubConstructions)
+            var layer = Element.Layers[i];
+                
+            if (layer.HasSubConstructions)
             {
-                verticalAreaWidths.Add("a", vSubConstr.Width);
-                verticalAreaWidths.Add(vSubConstr.Spacing);
-
+                var newCombinationPath = new List<string>(currentCombination);
+                newCombinationPath.Add($"{layer.LayerPosition}b");
+                GetLayerPathCombinations(i + 1, newCombinationPath);
             }
-        }*/
 
-        /*private Dictionary<string, double> GetAreaFractions(Element element)
+            currentCombination.Add(layer.LayerPosition.ToString());
+            GetLayerPathCombinations(i + 1, currentCombination);
+        }
+
+        private void GetLayerMapping()
         {
-            
-            
-            
-            double rUpper = 0;
-            double rLower = _rsi + _rse;
-
-            var areaFractions = new List<double>();
-            var rUpperValues = new List<double>();
-            var rLayerValues = new List<double>();
-
-            foreach (var layer in element.Layers)
+            foreach (var layer in Element.Layers)
             {
-                if (layer.HasSubConstruction)
+                _layerMapping.Add($"{layer.LayerPosition}", layer);
+                if (layer.HasSubConstructions)
                 {
-                    var subConstruction = layer.SubConstruction;
-                    var rValue = layer.R_Value;
-                    var rSubValue = subConstruction.R_Value;
-
-                    double areaFractionA = subConstruction.SubConstructionDirection == SubConstructionDirection.Vertical ?
-                        (subConstruction.Spacing - subConstruction.Width) / subConstruction.Spacing :
-                        (subConstruction.Thickness - subConstruction.Width) / subConstruction.Thickness;
-                    double areaFractionB = 1 - areaFractionA;
-
-                    areaFractions.Add(areaFractionA);
-                    rUpperValues.Add(rValue + rSubValue);
-                    rLayerValues.Add(1 / (areaFractionA / rValue + areaFractionB / rSubValue));
-                }
-                else
-                {
-                    rUpper += layer.R_Value;
-                    rLower += layer.R_Value;
+                    _layerMapping.Add($"{layer.LayerPosition}b", layer.SubConstruction);
                 }
             }
+        }
 
-            rUpper += 1 / rUpperValues.Sum(r => 1 / r);
-            rLower += rLayerValues.Sum();
+        private void GetAreaMapping()
+        {
+            foreach (var kvp in _areaToLayerPathCombinations)
+            {
+                _areaMapping.Add(kvp.Key, new Rectangle());
+            }
+        }
 
-            return (rUpper, rLower);
-        }*/
-
-
+        private void GetLayerToRectanglesMapping()
+        {
+            foreach (var layerString in _layerMapping.Keys)
+            {
+                int[] correspondingRectangles = _areaToLayerPathCombinations.Where(kvp => kvp.Value.Contains(layerString)).Select(kvp => kvp.Key).ToArray();
+                _layerToAreasMapping.Add(layerString, correspondingRectangles);
+            }
+        }
     }
 }
