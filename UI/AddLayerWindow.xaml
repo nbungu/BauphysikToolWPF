@@ -8,7 +8,7 @@
         xmlns:models="clr-namespace:BauphysikToolWPF.Models"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="AddLayerWindow" Background="{StaticResource PrimaryLightBrush}" Height="488" Width="880">
+        Title="AddLayerWindow" Background="{StaticResource PrimaryLightBrush}" Height="480" Width="1060">
 
     <Window.DataContext>
         <!-- AddLayerWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
@@ -16,6 +16,8 @@
     </Window.DataContext>
 
     <Window.Resources>
+
+        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
 
         <!-- Style to collapse the GridView column headers -->
         <Style x:Key="InvisibleHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
@@ -48,8 +50,8 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="160" MaxWidth="480"/>
-            <ColumnDefinition Width=".55*" MinWidth="200"/>
-            <ColumnDefinition Width=".25*" MinWidth="160" MaxWidth="480"/>
+            <ColumnDefinition Width=".50*" MinWidth="200"/>
+            <ColumnDefinition Width=".30*" MinWidth="160" MaxWidth="480"/>
         </Grid.ColumnDefinitions>
 
         <!--Left Column: Material Category-->
@@ -83,8 +85,6 @@
                               Margin="-2"/>
                 </TabItem>
             </TabControl>
-
-
             
         </Grid>
 
@@ -114,21 +114,37 @@
         <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
 
         <!--Right Column: Dimensions-->
-        <Grid Grid.Row="2" Grid.Column="2" Margin="16,8,8,8">
+
+        <!--Left Column: Material Category-->
+        <Grid Grid.Row="0" Grid.Column="2" Margin="16,8,8,8" Grid.RowSpan="3">
             <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <controls:PropertyDataGrid Grid.Row="0" Properties="{Binding ThicknessProperties}" Margin="0,8,0,8"/>
+            <Label Content="Material bearbeiten" FontWeight="Bold" HorizontalAlignment="Left"/>
 
-            <Button Grid.Row="1"  Content="Übernehmen"
+            <controls:PropertyDataGrid Grid.Row="1" Properties="{Binding MaterialProperties}" />
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,16,0,16">
+                <Label Content="Schichtdicke" FontWeight="Bold" HorizontalAlignment="Left"/>
+                <TextBox Text="{Binding Thickness, Converter={StaticResource DoubleToStringConverter}}" TextAlignment="Center" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
+                <Label Content="cm" FontWeight="Bold"/>
+            </StackPanel>
+
+            <Button Grid.Row="3"
+                    Content="Übernehmen"
+                    VerticalAlignment="Bottom"
                     Command="{Binding AddLayerCommand}"
                     CommandParameter="{Binding ElementName=AddLayerSubConstructionWindowControl}"
                     Style="{StaticResource ButtonStyle03_A}"
                     Tag="{StaticResource ButtonIcon_AddLayer_W}"/>
-
         </Grid>
+
+
+        
 
     </Grid>
 

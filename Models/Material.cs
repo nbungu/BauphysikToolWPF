@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
 using SQLite;
 using System.Windows.Media;
 using BauphysikToolWPF.Services;
@@ -16,7 +17,7 @@ namespace BauphysikToolWPF.Models
         Sealant,
         Air
     }
-    public class Material
+    public class Material : IEquatable<Material>
     {
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; } = -1; // -1 means: Is not part of Database yet
@@ -113,6 +114,48 @@ namespace BauphysikToolWPF.Models
                 default:
                     return "Ohne";
             }
+        }
+        public static double DefaultLayerWidthForCategory(MaterialCategory category)
+        {
+            switch (category)
+            {
+                case MaterialCategory.Insulation:
+                    return 16.0;
+                case MaterialCategory.Concrete:
+                    return 24.0;
+                case MaterialCategory.Wood:
+                    return 4.8;
+                case MaterialCategory.Plasters:
+                    return 1.0;
+                case MaterialCategory.Sealant:
+                    return 0.01;
+                case MaterialCategory.Air:
+                    return 4.0;
+                case MaterialCategory.Masonry:
+                    return 24.0;
+                default:
+                    return 6.0;
+            }
+        }
+
+        public bool Equals(Material? other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Name == other.Name && Category == other.Category && IsUserDefined == other.IsUserDefined && BulkDensity == other.BulkDensity && ThermalConductivity.Equals(other.ThermalConductivity) && DiffusionResistance.Equals(other.DiffusionResistance) && ColorCode == other.ColorCode && SpecificHeatCapacity == other.SpecificHeatCapacity;
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Material)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(Name, (int)Category, IsUserDefined, BulkDensity, ThermalConductivity, DiffusionResistance, ColorCode, SpecificHeatCapacity);
         }
     }
 }

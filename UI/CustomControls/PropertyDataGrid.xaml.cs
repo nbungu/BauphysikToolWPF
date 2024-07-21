@@ -1,10 +1,10 @@
 ﻿using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Services;
+using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BauphysikToolWPF.Models;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -44,7 +44,7 @@ namespace BauphysikToolWPF.UI.CustomControls
                     // Change Value in property item, which reflects to the corresponding SelectedLayer Property
                     var type = propertyItem.Value.GetType();
 
-                    if (type == typeof(double)) propertyItem.Value = double.Parse(textBox.Text);
+                    if (type == typeof(double)) propertyItem.Value = Convert.ToDouble(textBox.Text, CultureInfo.CurrentCulture);
                     else if (type == typeof(int)) propertyItem.Value = int.Parse(textBox.Text);
                     else propertyItem.Value = textBox.Text.ToString(CultureInfo.CurrentCulture);
                 }

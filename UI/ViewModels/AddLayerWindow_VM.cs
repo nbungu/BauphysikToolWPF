@@ -6,7 +6,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -27,6 +29,37 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (Thickness <= 0) return;
 
+            int materialId;
+            Material material;
+
+            if (_selectedListViewItem.IsUserDefined)
+            {
+                DatabaseAccess.UpdateMaterial(_selectedListViewItem);
+                materialId = _selectedListViewItem.Id;
+                material = _selectedListViewItem;
+            }
+            else
+            {
+                // Check if current Material from Database List was edited
+                var dbMaterial = DatabaseAccess.GetMaterialsQuery().First(m => m.Id == _selectedListViewItem.Id);
+                if (!_selectedListViewItem.Equals(dbMaterial))
+                {
+                    // Create new Material
+                    var customMaterial = _selectedListViewItem.Copy();
+                    customMaterial.Name = _selectedListViewItem.Name + " (Edited)";
+                    customMaterial.IsUserDefined = true;
+                    // Create in Database
+                    DatabaseAccess.CreateMaterial(customMaterial);
+                    materialId = customMaterial.Id;
+                    material = customMaterial;
+                }
+                else
+                {
+                    materialId = _selectedListViewItem.Id;
+                    material = _selectedListViewItem;
+                }
+            }
+            
             // LayerPosition is always at end of List 
             int layerCount = UserSaved.SelectedElement.Layers.Count;
 
@@ -37,8 +70,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 InternalId = layerCount,
                 Thickness = Convert.ToDouble(Thickness),
                 IsEffective = true,
-                MaterialId = _selectedListViewItem.Id,
-                Material = _selectedListViewItem,
+                MaterialId = materialId,
+                Material = material,
                 ElementId = UserSaved.SelectedElement.Id,
                 Element = UserSaved.SelectedElement
             };
@@ -53,6 +86,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             SearchString = "";
         }
+
+        partial void OnSelectedListViewItemChanged(Material value)
+        {
+            if (value is null) return;
+            Thickness = Material.DefaultLayerWidthForCategory(value.Category);
+        }
+
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
@@ -69,30 +109,33 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private MaterialCategory _selectedCategory = MaterialCategory.NotDefined;
+        private static MaterialCategory _selectedCategory = MaterialCategory.NotDefined;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
         private int _selectedTabIndex;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(MaterialProperties))]
         private Material _selectedListViewItem = new Material();
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public List<IPropertyItem> ThicknessProperties => new List<IPropertyItem>()
+        public List<IPropertyItem> MaterialProperties => _selectedListViewItem is null ? new List<IPropertyItem>() : new List<IPropertyItem>()
         {
-            new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
+            new PropertyItem<string>("Material", () => _selectedListViewItem.Name),
+            new PropertyItem<string>("Kategorie", () => _selectedListViewItem.CategoryName),
+            new PropertyItem<double>(Symbol.ThermalConductivity, () => _selectedListViewItem.ThermalConductivity, value => _selectedListViewItem.ThermalConductivity = value),
+            new PropertyItem<int>(Symbol.RawDensity, () => _selectedListViewItem.BulkDensity, value => _selectedListViewItem.BulkDensity = value),
+            new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => _selectedListViewItem.SpecificHeatCapacity, value => _selectedListViewItem.SpecificHeatCapacity = value),
+            new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => _selectedListViewItem.DiffusionResistance, value => _selectedListViewItem.DiffusionResistance = value),
         };
 
         public List<MaterialCategory> CustomCategories => DatabaseAccess.GetMaterialsQuery().Where(m => m.IsUserDefined).Select(m => m.Category).ToList();
-
-        //public List<Material> Materials => SearchString != "" ? DatabaseAccess.GetMaterialsQuery().Where(m => m.Category == SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
         public List<Material> Materials => GetMaterials();
-
-
+        
 
         // TODO: implement QueryFilterConfig...
         private List<Material> GetMaterials()

@@ -12,6 +12,8 @@
 
     <UserControl.Resources>
 
+        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+
         <!-- 
 
         DATAGRID STYLING
@@ -159,8 +161,6 @@
             <Setter Property="Margin" Value="0,0,0,0"/>
             <Setter Property="Padding" Value="0,0,0,0"/>
         </Style>
-
-
         
         <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
             <Setter Property="Background" Value="Transparent" />
@@ -248,7 +248,7 @@
                                                     </Grid.ColumnDefinitions>
                                                     <TextBox Grid.Column="0"
                                                              FontWeight="Normal"
-                                                             Text="{Binding Value}"
+                                                             Text="{Binding Value, Converter={StaticResource DoubleToStringConverter}}"
                                                              Style="{StaticResource DataGridTextBox}"
                                                              IsReadOnly="{Binding IsReadonly}"
                                                              PreviewTextInput="numericData_PreviewTextInput"
