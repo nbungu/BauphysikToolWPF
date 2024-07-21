@@ -166,7 +166,6 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
                 <Label Grid.Row="0" Content="Gewählte Schicht" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
@@ -182,16 +181,6 @@
                         <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
                     </ScrollViewer>
                 </Expander>
-
-                <StackPanel Grid.Row="3" Orientation="Vertical" VerticalAlignment="Bottom">
-                    <Label Content="Gesamtbauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
-                    <Expander Header="Eigenschaften" IsExpanded="True" IsEnabled="{Binding ShowElementExpander}" Margin="0,8,0,0">
-                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-                            <controls:PropertyDataGrid x:Name="ElementPropertiesDataGrid" Properties="{Binding ElementProperties}"/>
-                        </ScrollViewer>
-                    </Expander>
-                </StackPanel>
-                
 
             </Grid>
 
