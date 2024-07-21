@@ -1,11 +1,10 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+﻿using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.SessionData;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Globalization;
 using System.Windows;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
-using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -30,7 +29,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // When Material values or Name has changed 
             if (IsCustomMaterial)
             {
-                if (UserSaved.SelectedLayer.Material.Category == MaterialCategory.UserDefined)
+                if (UserSaved.SelectedLayer.Material.IsUserDefined)
                 {
                     // Update exisiting Material if already 'UserDefined'
                     UserSaved.SelectedLayer.Material.Name = Name;
@@ -42,21 +41,19 @@ namespace BauphysikToolWPF.UI.ViewModels
                 else
                 {
                     // Create new Material
-                    Material usedDefinedMaterial = new Material
-                    {
-                        Name = (Name == UserSaved.SelectedLayer.Material.Name) ? Name + "-Edited" : Name,
-                        Category = MaterialCategory.UserDefined,
-                        ThermalConductivity = Convert.ToDouble(ThermalConductivity, CultureInfo.CurrentCulture),
-                        BulkDensity = Convert.ToInt32(BulkDensity, CultureInfo.CurrentCulture),
-                        DiffusionResistance = Convert.ToDouble(DiffusionResistance, CultureInfo.CurrentCulture),
-                        SpecificHeatCapacity = Convert.ToInt32(HeatCapacity, CultureInfo.CurrentCulture),
-                        ColorCode = UserSaved.SelectedLayer.Material.ColorCode
-                    };
+                    var customMaterial = UserSaved.SelectedLayer.Material.Copy();
+                    customMaterial.Name = Name + " (Edited)";
+                    customMaterial.IsUserDefined = true;
+                    customMaterial.ThermalConductivity = Convert.ToDouble(ThermalConductivity, CultureInfo.CurrentCulture);
+                    customMaterial.BulkDensity = Convert.ToInt32(BulkDensity, CultureInfo.CurrentCulture);
+                    customMaterial.DiffusionResistance = Convert.ToDouble(DiffusionResistance, CultureInfo.CurrentCulture);
+                    customMaterial.SpecificHeatCapacity = Convert.ToInt32(HeatCapacity, CultureInfo.CurrentCulture);
+
                     // Create in Database
-                    DatabaseAccess.CreateMaterial(usedDefinedMaterial);
+                    DatabaseAccess.CreateMaterial(customMaterial);
                     // Bind to new Material via Id as FK
-                    UserSaved.SelectedLayer.Material = usedDefinedMaterial;
-                    UserSaved.SelectedLayer.MaterialId = usedDefinedMaterial.Id;
+                    UserSaved.SelectedLayer.Material = customMaterial;
+                    UserSaved.SelectedLayer.MaterialId = customMaterial.Id;
                 }
             }
             // Update Layer thickness

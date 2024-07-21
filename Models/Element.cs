@@ -203,7 +203,7 @@ namespace BauphysikToolWPF.Models
         public Element Copy()
         {
             var copy = new Element();
-            copy.Id = this.Id;
+            copy.Id = -1;
             copy.ConstructionId = this.ConstructionId;
             copy.Construction = this.Construction;
             copy.OrientationType = this.OrientationType;
@@ -212,7 +212,6 @@ namespace BauphysikToolWPF.Models
             copy.Name = this.Name + "-Copy";
             copy.Image = this.Image;
             copy.ColorCode = this.ColorCode;
-            copy.Project = this.Project;
             copy.Tag = this.Tag;
             copy.Comment = this.Comment;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();

@@ -128,14 +128,14 @@ namespace BauphysikToolWPF.Repository
         public static void CreateMaterial(Material material)
         {
             //Only allow adding user defined materials to DB
-            if (material.Category != MaterialCategory.UserDefined) return;
+            if (!material.IsUserDefined) return;
             Database.Insert(material);
         }
 
         public static void UpdateMaterial(Material material)
         {
             //Only allow updating user defined materials to DB
-            if (material.Category != MaterialCategory.UserDefined) return;
+            if (!material.IsUserDefined) return;
             Database.Update(material);
         }
 
@@ -146,7 +146,7 @@ namespace BauphysikToolWPF.Repository
 
         public static List<Material> QueryMaterialByCategory(MaterialCategory category)
         {
-            if (category == MaterialCategory.None) return GetMaterials();
+            if (category == MaterialCategory.NotDefined) return GetMaterials();
             return GetMaterialsQuery().Where(m => (int)m.Category == (int)category).ToList();
         }
 

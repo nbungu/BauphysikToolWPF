@@ -42,14 +42,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ElementId = UserSaved.SelectedElement.Id,
                 Element = UserSaved.SelectedElement
             };
-
             UserSaved.SelectedElement.AddLayer(layer);
-            //DatabaseAccess.CreateLayer(layer);
-            //UserSaved.SelectedElement.Layers.Add(layer);
+
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedElementChanged();
-
-            //DatabaseAccess.CreateLayer(layer);
         }
 
         [RelayCommand]
@@ -73,7 +69,11 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private MaterialCategory _selectedCategory = MaterialCategory.None;
+        private MaterialCategory _selectedCategory = MaterialCategory.NotDefined;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(Materials))]
+        private int _selectedTabIndex;
 
         [ObservableProperty]
         private Material _selectedListViewItem = new Material();
@@ -87,6 +87,40 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
         };
 
-        public List<Material> Materials => SearchString != "" ? DatabaseAccess.QueryMaterialByCategory(SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
+        public List<MaterialCategory> CustomCategories => DatabaseAccess.GetMaterialsQuery().Where(m => m.IsUserDefined).Select(m => m.Category).ToList();
+
+        //public List<Material> Materials => SearchString != "" ? DatabaseAccess.GetMaterialsQuery().Where(m => m.Category == SelectedCategory).Where(m => m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList() : DatabaseAccess.QueryMaterialByCategory(SelectedCategory);
+        public List<Material> Materials => GetMaterials();
+
+
+
+        // TODO: implement QueryFilterConfig...
+        private List<Material> GetMaterials()
+        {
+            if (SelectedCategory == MaterialCategory.NotDefined)
+            {
+                if (SearchString != "")
+                {
+                    return DatabaseAccess.GetMaterialsQuery().Where(m =>
+                        m.IsUserDefined == (SelectedTabIndex == 1) &&
+                        m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                }
+                return DatabaseAccess.GetMaterialsQuery().Where(m =>
+                    m.IsUserDefined == (SelectedTabIndex == 1)).ToList();
+            }
+            else
+            {
+                if (SearchString != "")
+                {
+                    return DatabaseAccess.GetMaterialsQuery().Where(m =>
+                        m.IsUserDefined == (SelectedTabIndex == 1) &&
+                        m.Category == SelectedCategory &&
+                        m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
+                }
+                return DatabaseAccess.GetMaterialsQuery().Where(m =>
+                    m.IsUserDefined == (SelectedTabIndex == 1) &&
+                    m.Category == SelectedCategory).ToList();
+            }
+        }
     }
 }

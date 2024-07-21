@@ -1,20 +1,20 @@
 ﻿using System.Text.Json.Serialization;
 using SQLite;
 using System.Windows.Media;
+using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.Models
 {
     public enum MaterialCategory
     {
-        None,
+        NotDefined,
         Insulation,
         Concrete,
         Wood,
         Masonry,
         Plasters,
         Sealant,
-        Air,
-        UserDefined
+        Air
     }
     public class Material
     {
@@ -23,7 +23,9 @@ namespace BauphysikToolWPF.Models
         [NotNull, Unique]
         public string Name { get; set; } = string.Empty;
         [NotNull]
-        public MaterialCategory Category { get; set; } = MaterialCategory.None;
+        public MaterialCategory Category { get; set; } = MaterialCategory.NotDefined;
+        [NotNull]
+        public bool IsUserDefined { get; set; }
         [NotNull]
         public int BulkDensity { get; set; }
         [NotNull]
@@ -34,6 +36,10 @@ namespace BauphysikToolWPF.Models
         public string ColorCode { get; set; } = "#00FFFFFF";
         [NotNull]
         public int SpecificHeatCapacity { get; set; }
+
+        public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
+
+        public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
         //------Not part of the Database-----//
 
@@ -63,6 +69,29 @@ namespace BauphysikToolWPF.Models
             return this.Name + " (" + this.CategoryName + ")";
         }
 
+        public Material Copy()
+        {
+            var copy = new Material();
+            copy.Id = -1;
+            copy.Name = this.Name;
+            copy.Category = this.Category;
+            copy.IsUserDefined = this.IsUserDefined;
+            copy.BulkDensity = this.BulkDensity;
+            copy.ThermalConductivity = this.ThermalConductivity;
+            copy.DiffusionResistance = this.DiffusionResistance;
+            copy.ColorCode = this.ColorCode;
+            copy.SpecificHeatCapacity = this.SpecificHeatCapacity;
+            copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.InternalId = this.InternalId;
+            return copy;
+        }
+
+        public void UpdateTimestamp()
+        {
+            UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+        }
+
         private string TranslateToCategoryName()
         {
             switch (Category)
@@ -81,8 +110,6 @@ namespace BauphysikToolWPF.Models
                     return "Luftschicht";
                 case MaterialCategory.Masonry:
                     return "Mauerwerk";
-                case MaterialCategory.UserDefined:
-                    return "Benutzerdefiniert";
                 default:
                     return "Ohne";
             }

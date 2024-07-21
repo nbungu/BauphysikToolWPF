@@ -14,15 +14,17 @@ namespace BauphysikToolWPF.Calculations
         protected double _rse = UserSaved.Rse;
 
         private Rectangle _calculationAreaBounds = new Rectangle();
-        private Dictionary<string, object> _layerMapping = new Dictionary<string, object>();
-        private Dictionary<int, List<string>> _areaToLayerPathCombinations = new Dictionary<int, List<string>>();
-        private Dictionary<string, int[]> _layerToAreasMapping = new Dictionary<string, int[]>();
-        private Dictionary<int, Rectangle> _areaRectangleMapping = new Dictionary<int, Rectangle>();
-        private Dictionary<int, double> _areaSharesMapping = new Dictionary<int, double>();
+        private readonly Dictionary<string, object> _layerMapping = new Dictionary<string, object>();
+        private readonly Dictionary<int, List<string>> _areaToLayerPathCombinations = new Dictionary<int, List<string>>();
+        private readonly Dictionary<string, int[]> _layerToAreasMapping = new Dictionary<string, int[]>();
+        private readonly Dictionary<int, Rectangle> _areaRectangleMapping = new Dictionary<int, Rectangle>();
+        private readonly Dictionary<int, double> _areaSharesMapping = new Dictionary<int, double>();
 
-
-        public double UValue { get; }
-        public Element Element { get; } = new Element();
+        public double UValue { get; private set; }
+        public double RTotal { get; private set; }
+        public double ErrorEstimation { get; private set; }
+        public bool ErrorEstimationOk { get; private set; }
+        public Element Element { get; }
         public bool IsValid { get; }
 
         public StationaryTempCalcInhomogen() { }
@@ -52,11 +54,11 @@ namespace BauphysikToolWPF.Calculations
             SetAreaHeights();
             CreateAreaSharesMapping();
 
-            UValue = CalculateUValue();
+            Calculate();
             IsValid = true;
         }
 
-        private double CalculateUValue()
+        private void Calculate()
         {
             // R_upper via cross section
             double r_tot_upper = 0.0;
@@ -117,11 +119,16 @@ namespace BauphysikToolWPF.Calculations
 
             // R_tot
             double r_tot = (r_tot_upper + r_tot_lower) / 2;
+            RTotal = r_tot;
 
             // U-Value
             double uValue = Math.Pow(r_tot, -1);
+            UValue = uValue;
 
-            return uValue;
+            // Fehlerabschätzung
+            double e = r_tot != 0 ? (r_tot_upper - r_tot_lower) / (2 * r_tot) : 0;
+            ErrorEstimation = e * 100;
+            ErrorEstimationOk = e * 100 <= 20;
         }
 
 

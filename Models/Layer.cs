@@ -138,11 +138,11 @@ namespace BauphysikToolWPF.Models
         public Layer Copy()
         {
             var copy = new Layer();
-            copy.Id = this.Id;
+            copy.Id = -1;
             copy.LayerPosition = this.LayerPosition;
+            copy.ElementId = this.ElementId;
             copy.Element = this.Element;
             copy.MaterialId = this.MaterialId;
-            copy.Element = this.Element;
             copy.Material = this.Material;
             copy.SubConstructions = this.SubConstructions;
             copy.Thickness = this.Thickness;

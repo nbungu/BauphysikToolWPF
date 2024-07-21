@@ -3,7 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BauphysikToolWPF.UI"
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:models="clr-namespace:BauphysikToolWPF.Models"
@@ -15,10 +14,19 @@
         <!-- AddLayerWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
         <vm:AddLayerWindow_VM/>
     </Window.DataContext>
-    
+
     <Window.Resources>
 
-        <GridView x:Key="CategoryGridViewColumns" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
+        <!-- Style to collapse the GridView column headers -->
+        <Style x:Key="InvisibleHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+
+        <GridView x:Key="CategoryGridViewColumns" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource InvisibleHeaderStyle}">
+            <!--Here: Binding source are Items from the ItemsSource Property-->
+            <GridViewColumn DisplayMemberBinding="{Binding }" Header="Name" Width="Auto"/>
+        </GridView>
+        <GridView x:Key="CategoryGridViewColumns2" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource InvisibleHeaderStyle}">
             <!--Here: Binding source are Items from the ItemsSource Property-->
             <GridViewColumn DisplayMemberBinding="{Binding }" Header="Name" Width="Auto"/>
         </GridView>
@@ -53,13 +61,31 @@
 
             <Label Content="Kategorie Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
-            <ListView x:Name="CategoryListView"
-                      ItemsSource="{Binding Source={StaticResource CategoryTypeValues}}"
-                      View="{StaticResource CategoryGridViewColumns}"
-                      ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
-                      SelectedItem="{Binding SelectedCategory}"
-                      Style="{StaticResource ListViewStyle01}"
-                      Grid.Row="1"/>
+            <TabControl Grid.Row="1" Height="Auto" Width="Auto" SelectedIndex="{Binding SelectedTabIndex}">
+                <TabItem Header="Datenbank" Padding="8">
+                    <ListView x:Name="CategoryListView"
+                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}}"
+                              View="{StaticResource CategoryGridViewColumns}"
+                              ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
+                              SelectedItem="{Binding SelectedCategory}"
+                              Style="{StaticResource ListViewStyle01}"
+                              BorderThickness="0"
+                              Margin="-2"/>
+                </TabItem>
+                <TabItem Header="Eigene Materialien" Padding="8">
+                    <ListView x:Name="CategoryListViewCustom"
+                              ItemsSource="{Binding CustomCategories}"
+                              View="{StaticResource CategoryGridViewColumns2}"
+                              ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
+                              SelectedItem="{Binding SelectedCategory}"
+                              Style="{StaticResource ListViewStyle01}"
+                              BorderThickness="0"
+                              Margin="-2"/>
+                </TabItem>
+            </TabControl>
+
+
+            
         </Grid>
 
         <!--Grid Splitter-->

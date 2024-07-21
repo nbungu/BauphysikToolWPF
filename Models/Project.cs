@@ -92,18 +92,22 @@ namespace BauphysikToolWPF.Models
         public Project Copy()
         {
             var copy = new Project();
-            copy.Id = this.Id;
+            copy.Id = -1;
             copy.InternalId = this.InternalId;
             copy.Name = this.Name;
             copy.UserName = this.UserName;
             copy.BuildingAge = this.BuildingAge;
             copy.BuildingUsage = this.BuildingUsage;
-            copy.Id = this.Id;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.Elements = this.Elements;
 
             return copy;
+        }
+
+        public IRepositoryEntity<Project> Convert()
+        {
+            throw new System.NotImplementedException();
         }
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
