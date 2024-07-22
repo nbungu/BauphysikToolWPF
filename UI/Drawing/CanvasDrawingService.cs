@@ -120,6 +120,9 @@ namespace BauphysikToolWPF.UI.Drawing
 
                                 if (_isOverflowing)
                                 {
+                                    
+                                    // Add padding to the width when overflowing. Creates an extra space of half the width of the SubConstr on each side.
+                                    totalSubconstructionsWidth += l.SubConstruction.Width * SizeOf1Cm;
                                     CanvasSize = new Rectangle(CanvasSize.Left, CanvasSize.Top, totalSubconstructionsWidth, CanvasSize.Height);
                                     return GetDrawing();
                                 }
@@ -163,6 +166,8 @@ namespace BauphysikToolWPF.UI.Drawing
 
                                 if (_isOverflowing)
                                 {
+                                    // Add padding to the width when overflowing. Creates an extra space of half the width of the SubConstr on each side.
+                                    totalSubconstructionsHeight += l.SubConstruction.Width * SizeOf1Cm;
                                     CanvasSize = new Rectangle(CanvasSize.Left, CanvasSize.Top, CanvasSize.Width, totalSubconstructionsHeight);
                                     return GetDrawing();
                                 }

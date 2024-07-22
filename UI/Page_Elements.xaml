@@ -136,7 +136,7 @@
                         </ContextMenu>
                     </Button.ContextMenu>
                 </Button>
-                <TextBlock Grid.Row="1" Text="{Binding Name}" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" Margin="0,4,0,0"/>
+                <TextBlock Grid.Row="1" Text="{Binding Name}" FontWeight="Normal" Foreground="Black" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" Margin="0,4,0,0"/>
             </Grid>
         </DataTemplate>
 

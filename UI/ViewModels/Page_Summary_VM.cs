@@ -69,14 +69,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<IDrawingGeometry> CrossSectionDrawing => _drawingServiceH.DrawingGeometries;
         public Rectangle CanvasSizeCrossSection => _drawingServiceH.CanvasSize;
         public List<DrawingGeometry> LayerMeasurementCrossSection => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers, Axis.Z).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurementCrossSection => MeasurementChain.GetMeasurementChain(_drawingServiceH.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true).ToList();
+        public List<DrawingGeometry> SubConstructionMeasurementCrossSection => MeasurementChain.GetMeasurementChain(_drawingServiceH.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
         public List<DrawingGeometry> LayerMeasurementFullCrossSection => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] { 0, 400.0 }).ToList() : new List<DrawingGeometry>();
 
         // Vertical Cut
         public List<IDrawingGeometry> VerticalCutDrawing => _drawingServiceV.DrawingGeometries;
         public Rectangle CanvasSizeVerticalCut => _drawingServiceV.CanvasSize;
         public List<DrawingGeometry> LayerMeasurementVerticalCut => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers, Axis.X).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurementVerticalCut => MeasurementChain.GetMeasurementChain(_drawingServiceV.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z, true).ToList();
+        public List<DrawingGeometry> SubConstructionMeasurementVerticalCut => MeasurementChain.GetMeasurementChain(_drawingServiceV.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z).ToList();
         public List<DrawingGeometry> LayerMeasurementFullVerticalCut => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] { 0, 400.0 }, Axis.X).ToList() : new List<DrawingGeometry>();
         
 

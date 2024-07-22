@@ -159,6 +159,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Update InternalIds and reset SelectedElement
             UserSaved.SelectedProject.AssignInternalIdsToElements();
 
+            // Trigger re-grouping
+            OnGroupingPropertyIndexChanged(_groupingPropertyIndex);
             Elements = new List<Element>();
             Elements = UserSaved.SelectedProject.Elements;
             SelectedElement = null;

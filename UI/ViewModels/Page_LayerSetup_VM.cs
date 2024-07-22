@@ -200,11 +200,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<string>("Materialquelle", () => UserSaved.SelectedLayer.Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
             new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedLayer.Thickness, value => UserSaved.SelectedLayer.Thickness = value),
             new PropertyItem<double>(Symbol.ThermalConductivity, () => UserSaved.SelectedLayer.Material.ThermalConductivity),
-            new PropertyItem<double>(Symbol.RawDensity, () => UserSaved.SelectedLayer.Material.BulkDensity),
             new PropertyItem<double>(Symbol.RValueLayer, () => UserSaved.SelectedLayer.R_Value)
             {
                 SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerPosition}"
             },
+            new PropertyItem<double>(Symbol.RawDensity, () => UserSaved.SelectedLayer.Material.BulkDensity),
             new PropertyItem<double>(Symbol.AreaMassDensity, () => UserSaved.SelectedLayer.AreaMassDensity),
             new PropertyItem<double>(Symbol.SdThickness, () => UserSaved.SelectedLayer.Sd_Thickness),
             new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => UserSaved.SelectedLayer.Material.DiffusionResistance),
@@ -228,6 +228,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.Width, () => UserSaved.SelectedLayer.SubConstruction.Width, value => UserSaved.SelectedLayer.SubConstruction.Width = value),
             new PropertyItem<double>(Symbol.Distance, () => UserSaved.SelectedLayer.SubConstruction.Spacing, value => UserSaved.SelectedLayer.SubConstruction.Spacing = value),
             new PropertyItem<double>("Achsenabstand", Symbol.Distance, () => UserSaved.SelectedLayer.SubConstruction.AxisSpacing, value => UserSaved.SelectedLayer.SubConstruction.AxisSpacing = value),
+            new PropertyItem<double>(Symbol.ThermalConductivity, () => UserSaved.SelectedLayer.SubConstruction.Material.ThermalConductivity),
             new PropertyItem<double>(Symbol.RValueLayer, () => UserSaved.SelectedLayer.SubConstruction.R_Value)
             {
                 SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerPosition}b"
