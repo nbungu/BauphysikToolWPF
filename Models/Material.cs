@@ -28,15 +28,15 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public bool IsUserDefined { get; set; }
         [NotNull]
-        public int BulkDensity { get; set; }
+        public int BulkDensity { get; set; } // kg/m³
         [NotNull]
-        public double ThermalConductivity { get; set; }
+        public double ThermalConductivity { get; set; } // W/(mK)
         [NotNull]
-        public double DiffusionResistance { get; set; }
+        public double DiffusionResistance { get; set; } // -
+        [NotNull]
+        public int SpecificHeatCapacity { get; set; } // J/(kg·K)
         [NotNull]
         public string ColorCode { get; set; } = "#00FFFFFF";
-        [NotNull]
-        public int SpecificHeatCapacity { get; set; }
 
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
@@ -60,6 +60,16 @@ namespace BauphysikToolWPF.Models
             {
                 if (ColorCode == "#00FFFFFF") return Colors.Transparent;
                 return (Color)ColorConverter.ConvertFromString(ColorCode);
+            }
+        }
+
+        [Ignore, JsonIgnore]
+        public double VolumetricHeatCapacity // C in kJ/m³K
+        {
+            get
+            {
+                if (!IsValid) return 0;
+                return (SpecificHeatCapacity * BulkDensity) / 1000;
             }
         }
 

@@ -1,8 +1,8 @@
-﻿using System;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.SessionData;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.Calculations
 {
@@ -11,7 +11,7 @@ namespace BauphysikToolWPF.Calculations
      * 
      * When using the static Methods from outside this class, a single value can be calculated without creating full class instance 
      */
-    public class StationaryTempCalc
+    public class TemperatureCurveCalc
     {
         // protected fields as Instance Variables (= private, but accessible from child class (Inheritance))
         protected double _ti = UserSaved.Ti;
@@ -32,8 +32,8 @@ namespace BauphysikToolWPF.Calculations
         public bool IsValid { get; }
 
         // Constructors
-        public StationaryTempCalc() {}
-        public StationaryTempCalc(Element element)
+        public TemperatureCurveCalc() {}
+        public TemperatureCurveCalc(Element element)
         {
             if (element.Layers.Count == 0 || element is null) return;
 
@@ -41,7 +41,7 @@ namespace BauphysikToolWPF.Calculations
             Element = element;
 
             // Calculated parameters (private setter)
-            RTotal = GetRTotal(Element.RValue, _rsi, _rse);                 // Gl. 2-55; S.28
+            RTotal = GetRTotal(Element.RGesValue, _rsi, _rse);                 // Gl. 2-55; S.28
             UValue = GetUValue(RTotal);                                     // Gl. 2-57; S.29
             QValue = GetqValue(UValue, _ti, _te);                           // Gl. 2-65; S.31
             LayerTemps = GetLayerTemps(Element.Layers, _ti, _rsi, QValue);  // Bsp. S.33
@@ -109,6 +109,7 @@ namespace BauphysikToolWPF.Calculations
         {
             return Math.Round(0.7 * (ti - te) + te, 2);
         }
+
 
         /* Hardcoded example:
          double tsiVal = tiVal - SurfaceResistance.selectedRsi * qValue;

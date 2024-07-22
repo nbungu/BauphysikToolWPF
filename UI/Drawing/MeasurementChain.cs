@@ -22,20 +22,22 @@ namespace BauphysikToolWPF.UI.Drawing
 
         public static DrawingGeometry GetMeasurementChain(IEnumerable<Layer> layers, Axis intervalDirection = Axis.Z)
         {
-            var intervals = GetGeometryIntervals(layers.Select(l => l.Convert()), intervalDirection);
+            var intervals = layers.Select(l => l.Convert()).SelectMany(e => new[] { e.Rectangle.Top, e.Rectangle.Bottom }).ToArray();
 
             return GetMeasurementDrawing(intervals, intervalDirection);
         }
 
-        public static DrawingGeometry GetMeasurementChain(IEnumerable<IDrawingGeometry> geometries, Axis intervalDirection = Axis.Z)
+        public static DrawingGeometry GetMeasurementChain(IEnumerable<IDrawingGeometry> geometries, Axis intervalDirection = Axis.Z, bool removeFirstAndLast = false)
         {
             var intervals = GetGeometryIntervals(geometries, intervalDirection);
+            if (removeFirstAndLast) intervals = RemoveFirstAndLast(intervals);
 
             return GetMeasurementDrawing(intervals, intervalDirection);
         }
 
-        public static DrawingGeometry GetMeasurementChain(double[] intervals, Axis intervalDirection = Axis.Z)
+        public static DrawingGeometry GetMeasurementChain(double[] intervals, Axis intervalDirection = Axis.Z, bool removeFirstAndLast = false)
         {
+            if (removeFirstAndLast) intervals = RemoveFirstAndLast(intervals);
             return GetMeasurementDrawing(intervals, intervalDirection);
         }
 
@@ -142,6 +144,23 @@ namespace BauphysikToolWPF.UI.Drawing
 
             // Sort Ascending and Distinct
             return intervals.OrderBy(x => x).Distinct().ToArray();
+        }
+
+        private static double[] RemoveFirstAndLast(double[] array)
+        {
+            // Check if the array has more than two elements
+            if (array.Length <= 2)
+            {
+                return new double[0]; // Return an empty array if it has two or fewer elements
+            }
+
+            // Create a new array of appropriate length
+            double[] result = new double[array.Length - 2];
+
+            // Copy the relevant elements from the original array
+            Array.Copy(array, 1, result, 0, array.Length - 2);
+
+            return result;
         }
 
         #endregion

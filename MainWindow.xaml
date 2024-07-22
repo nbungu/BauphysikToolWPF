@@ -43,14 +43,14 @@
         <DataTemplate x:Key="FO0_ProjectPage">
             <ui:Page_Project/>
         </DataTemplate>
-        <DataTemplate x:Key="FO0_LandingPage">
+        <DataTemplate x:Key="FO1_ElementsPage">
             <ui:Page_Elements/>
         </DataTemplate>
-        <DataTemplate x:Key="FO1_SetupLayer">
+        <DataTemplate x:Key="FO1_LayerSetup">
             <ui:Page_LayerSetup/>
         </DataTemplate>
-        <DataTemplate x:Key="FO1_SetupEnv">
-            <ui:Page_EnvironmentSetup/>
+        <DataTemplate x:Key="FO1_Summary">
+            <ui:Page_Summary/>
         </DataTemplate>
         <DataTemplate x:Key="FO2_Temperature">
             <ui:Page_TemperatureResults/>
@@ -78,13 +78,13 @@
                     <Setter Property="ContentTemplate" Value="{StaticResource FO0_ProjectPage}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=ProjectBoxHeader, Path=Tag}" Value="LandingPage">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_ElementsPage}"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupLayer">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_SetupLayer}"/>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="LayerSetup">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_LayerSetup}"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupEnv">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_SetupEnv}"/>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Summary">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_Summary}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Temperature">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO2_Temperature}"/>
@@ -108,8 +108,8 @@
         -->
         <x:Array x:Key="NavigationMenuItems" Type="system:String">
             <system:String>Header1</system:String>
-            <system:String>SetupLayer</system:String>  <!--SelectedIndex: 1-->
-            <system:String>SetupEnv</system:String>    <!--SelectedIndex: 2-->
+            <system:String>LayerSetup</system:String>  <!--SelectedIndex: 1-->
+            <system:String>Summary</system:String>    <!--SelectedIndex: 2-->
             <system:String>Header2</system:String>
             <system:String>Temperature</system:String> <!--SelectedIndex: 4-->
             <system:String>Moisture</system:String>    <!--SelectedIndex: 5-->
@@ -233,13 +233,13 @@
                     <Setter TargetName="MenuItemLabel" Property="FontWeight" Value="Bold"/>
                     <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="SetupLayer">
+                <DataTrigger Binding="{Binding}" Value="LayerSetup">
                     <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Layer_W}"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Schichtaufbau"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Erstellen"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="SetupEnv">
+                <DataTrigger Binding="{Binding}" Value="Summary">
                     <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_EnvVar_W}"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Umgebung"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Zusammenfassung"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Header2">
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="ERGEBNISSE"/>

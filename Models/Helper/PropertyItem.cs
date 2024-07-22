@@ -19,30 +19,32 @@ namespace BauphysikToolWPF.Models.Helper
         Height,                             // h
 
         // Temperatures
-        TemperatureInterior,
-        TemperatureExterior,
-        TemperatureSurfaceInterior,
-        TemperatureSurfaceExterior,
+        TemperatureInterior,                // θ_i
+        TemperatureExterior,                // θ_e
+        TemperatureSurfaceInterior,         // θ_si
+        TemperatureSurfaceExterior,         // θ_se
 
         // R-Values
-        RValueLayer,                        // Ri
+        RValueLayer,                        // R_i
         RValueElement,                      // R_ges
-        RValueTotal,                        // R_Total
+        RValueTotal,                        // R_Total (incl. R_si+R_se)
         TransferResistanceSurfaceInterior,  // R_si
         TransferResistanceSurfaceExterior,  // R_se
-        UValue,
+        UValue,                             // U
 
         // Other
         RawDensity,
         AreaMassDensity,                    // m'
         SdThickness,                        
-        VapourDiffusionResistance, 
+        VapourDiffusionResistance,          // µ
         RelativeHumidity, 
         RelativeHumidityInterior,           // Rel_Fi
         RelativeHumidityExterior,           // Rel_Fe
 
-        ThermalConductivity, // lambda
-        SpecificHeatCapacity // c
+        ThermalConductivity,                // λ
+        SpecificHeatCapacity,               // c
+        VolumetricHeatCapacity,              // C_V
+        ArealHeatCapacity                   // C_i
     }
 
     public enum Unit
@@ -136,7 +138,7 @@ namespace BauphysikToolWPF.Models.Helper
         WattsPerSquareMeter,           // W/m² - Heat Flux
         KilojoulesPerSquareMeterKelvin,// kJ/(m²·K) - Heat Storage Capacity
         SquareMeterKelvinPerWatt,      // m²·K/W - Thermal Resistance (R-value)
-        WattsPerCubicMeterKelvin,      // W/(m³·K) - Volumetric Heat Capacity
+        KilojoulesPerCubicMeterKelvin, // kJ/(m³·K) - Volumetric Heat Capacity
 
         // Other
         Percent                 // %
@@ -298,6 +300,8 @@ namespace BauphysikToolWPF.Models.Helper
                 { Symbol.VapourDiffusionResistance, (Unit.None, "µ", "", "-", "", "µ-Wert", "Wasserdampfdiffusionswiderstandszahl (trocken)") },
                 { Symbol.ThermalConductivity, (Unit.WattsPerMeterKelvin, "λ", "", "W", "mK", "Wärmeleitfähigkeit", "Bemessungswert der Wärmeleitfähigkeit (WLF)") },
                 { Symbol.SpecificHeatCapacity, (Unit.JoulesPerKilogramKelvin, "c", "", "J", "kgK", "spezifische Wärmekapazität", "") },
+                { Symbol.VolumetricHeatCapacity, (Unit.KilojoulesPerCubicMeterKelvin, "C", "V", "kJ", "m³K", "Vol.bezogene Wärmekapazität", "") },
+                { Symbol.ArealHeatCapacity, (Unit.KilojoulesPerCubicMeterKelvin, "C", "", "kJ", "m²K", "Flächenbezogene Wärmekapazität", "") },
             };
 
             // Get the corresponding properties for the given symbol

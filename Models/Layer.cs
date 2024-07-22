@@ -115,7 +115,27 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                return Math.Round(this.Thickness / 100 * Material.BulkDensity, 3);
+                if (HasSubConstructions)
+                {
+                    var partialAreaOfLayer = 1 - (SubConstruction.Width / (SubConstruction.Width + SubConstruction.Spacing));
+                    return Math.Round((this.Thickness / 100) * Material.BulkDensity * partialAreaOfLayer, 3);
+                }
+                return Math.Round((this.Thickness / 100) * Material.BulkDensity, 3);
+            }
+        }
+
+        [Ignore, JsonIgnore]
+        public double ArealHeatCapacity // C_i in kJ/m²K 
+        {
+            get
+            {
+                if (!Material.IsValid || !IsEffective) return 0;
+                if (HasSubConstructions)
+                {
+                    var partialAreaOfLayer = 1 - (SubConstruction.Width / (SubConstruction.Width + SubConstruction.Spacing));
+                    return (this.Thickness / 100) * Material.VolumetricHeatCapacity * partialAreaOfLayer;
+                } 
+                return (this.Thickness / 100) * Material.VolumetricHeatCapacity;
             }
         }
 

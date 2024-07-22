@@ -111,10 +111,8 @@
         <BitmapImage x:Key="ButtonIcon_Open_Flat" UriSource="/Resources/Icons/file-folder.png"/>
         <BitmapImage x:Key="ButtonIcon_Settings_Flat" UriSource="/Resources/Icons/setting.png"/>
 
-
+        <!--Application Icon -->
         <BitmapImage x:Key="AppIcon" UriSource="/Resources/Icons/Ordner_Icon.ico"/>
-
-
 
 
         <!-- Defines the type of UIElement used in the ItemsPanel-->
@@ -128,7 +126,6 @@
             <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
             <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
         </Style>
-
 
         <!-- Custom Label Style -->
         <!-- Applies on every Label in this App -->
@@ -321,7 +318,7 @@
             </Setter>
         </Style>
 
-        <!-- Custom Expander Style -->
+        <!--Custom Expander Style-->
         <Style x:Key="{x:Type Expander}" TargetType="{x:Type Expander}">
             <Setter Property="Foreground" Value="{StaticResource PrimaryHighlightBrush}" />
             <Setter Property="FontWeight" Value="DemiBold"/>
@@ -331,6 +328,8 @@
             <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}" />
             <Setter Property="Padding" Value="4"/>
         </Style>
+
+        
 
         <!-- GLOBAL TextBox Style: Underlined, Transparent BG, small rounded corners -->
         <!-- Applies on every TextBox in this App -->

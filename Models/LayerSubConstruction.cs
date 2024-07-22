@@ -82,6 +82,37 @@ namespace BauphysikToolWPF.Models
                 return Math.Round((this.Thickness / 100) / Material.ThermalConductivity, 3);
             }
         }
+        [Ignore, JsonIgnore]
+        public double Sd_Thickness // sd thickness in m
+        {
+            get
+            {
+                if (!Material.IsValid) return 0;
+                return Math.Round((this.Thickness / 100) * Material.DiffusionResistance, 3);
+            }
+        }
+
+        [Ignore, JsonIgnore]
+        public double AreaMassDensity // m' in kg/m²
+        {
+            get
+            {
+                if (!Material.IsValid || !IsEffective) return 0;
+                var partialAreaOfSubConstr = this.Width / (this.Width + this.Spacing);
+                return Math.Round((this.Thickness / 100) * Material.BulkDensity * partialAreaOfSubConstr, 3);
+            }
+        }
+
+        [Ignore, JsonIgnore]
+        public double ArealHeatCapacity // C_i in kJ/m²K 
+        {
+            get
+            {
+                if (!Material.IsValid || !IsEffective) return 0;
+                var partialAreaOfSubConstr = this.Width / (this.Width + this.Spacing);
+                return (this.Thickness / 100) * Material.VolumetricHeatCapacity * partialAreaOfSubConstr;
+            }
+        }
 
         //------Methods-----//
 

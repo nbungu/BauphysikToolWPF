@@ -37,7 +37,7 @@ namespace BauphysikToolWPF.Calculations
             R_min = GetRMin();
             Q_max = GetQMax();
             IsUValueOk = (U_max == -1) || uValue <= U_max;
-            IsRValueOk = (R_min == -1) || Element.RValue >= R_min;
+            IsRValueOk = (R_min == -1) || Element.RGesValue >= R_min;
             IsQValueOk = (Q_max == -1) || qValue <= Q_max;
         }
 

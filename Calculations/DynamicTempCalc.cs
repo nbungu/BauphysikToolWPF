@@ -128,8 +128,8 @@ namespace BauphysikToolWPF.Calculations
         public ObservablePoint[] CreateDataPoints(FunctionType function, double meanTemp_e, double meanTemp_i, double amplitude_i, double amplitude_e, int iterations = PeriodDuration / IntervallSteps + 1, int startingTime = 0)
         {
             ObservablePoint[] dataPoints = new ObservablePoint[iterations];
-            double uValue = 1 / (_rsi + Element.RValue + _rse);
-            double qStatic = StationaryTempCalc.GetqValue(uValue, meanTemp_i, meanTemp_e);
+            double uValue = 1 / (_rsi + Element.RGesValue + _rse);
+            double qStatic = TemperatureCurveCalc.GetqValue(uValue, meanTemp_i, meanTemp_e);
 
             if (function == FunctionType.ExteriorSurfaceTemp) // θse(t)
             {
@@ -224,7 +224,7 @@ namespace BauphysikToolWPF.Calculations
         }
         private double GetDecrement(double uDynValue)
         {
-            double uValue = 1 / (_rsi + Element.RValue + _rse);
+            double uValue = 1 / (_rsi + Element.RGesValue + _rse);
             return Math.Round(uDynValue * uValue, 3);
         }
         private double GetTAD(HeatTransferMatrix elementMatrix)

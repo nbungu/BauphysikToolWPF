@@ -1,18 +1,15 @@
-﻿using System;
-using BauphysikToolWPF.Models;
+﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.SessionData;
+using Geometry;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Geometry;
 
 namespace BauphysikToolWPF.Calculations
 {
-    public class StationaryTempCalcInhomogen
+    public class ThermalValuesCalc
     {
-        protected double _rsi = UserSaved.Rsi;
-        protected double _rse = UserSaved.Rse;
-
+        private List<Layer> _relevantLayers = new List<Layer>();
         private Rectangle _calculationAreaBounds = new Rectangle();
         private readonly Dictionary<string, object> _layerMapping = new Dictionary<string, object>();
         private readonly Dictionary<int, List<string>> _areaToLayerPathCombinations = new Dictionary<int, List<string>>();
@@ -22,51 +19,55 @@ namespace BauphysikToolWPF.Calculations
 
         public double UValue { get; private set; }
         public double RTotal { get; private set; }
+        public double RGes { get; private set; }
         public double ErrorEstimation { get; private set; }
         public bool ErrorEstimationOk { get; private set; }
-        public Element Element { get; }
+        public Element Element { get; } = new Element();
+        public double Rsi { get; }
+        public double Rse { get; }
         public bool IsValid { get; }
 
-        public StationaryTempCalcInhomogen() { }
+        public ThermalValuesCalc() { }
 
-        public StationaryTempCalcInhomogen(Element element)
+        public ThermalValuesCalc(Element element, double rsi, double rse)
         {
             if (element.Layers.Count == 0 || element is null) return;
-
             Element = element;
+            Rsi = Math.Max(0, rsi);
+            Rse = Math.Max(0, rse);
             Element.SortLayers();
-
-            CreateCalculationAreaBoundaries();
-
-            // Wenn ungültige Bounds ermittelt -> Homogenes Bauteil -> Normale Berechnung des Bauteils!
-            if (_calculationAreaBounds.Area == 0)
-            {
-                UValue = new StationaryTempCalc(Element).UValue;
-                IsValid = true;
-                return;
-            }
-
-            CreateLayerMapping();
-            CreateLayerPathCombinations(0, new List<string>());
-            CreateLayerToRectanglesMapping();
-            CreateAreaMapping();
-            SetAreaWidths();
-            SetAreaHeights();
-            CreateAreaSharesMapping();
-
-            Calculate();
+            SetRelevantLayers();
+            if (Element.IsInhomogeneous) CalculateInhomogeneous();
+            else CalculateHomogeneous();
             IsValid = true;
         }
 
-        private void Calculate()
+        private void CalculateHomogeneous()
         {
+            double rGes = 0.0;
+            foreach (var layer in _relevantLayers)
+            {
+                rGes += layer.R_Value;
+            }
+            RGes = Math.Round(rGes, 2);
+            RTotal = Math.Round(Rsi + rGes + Rse, 2);
+            UValue = Math.Round(1 / (Rsi + rGes + Rse), 2);
+        }
+
+        private void CalculateInhomogeneous()
+        {
+            PrepareMappingsForInhomogeneous();
+
             // R_upper via cross section
+            
             double r_tot_upper = 0.0;
+            double r_ges_upper = 0.0;
             foreach (var kvp in _areaToLayerPathCombinations)
             {
                 var area = kvp.Key;
                 var layerPathCombo = kvp.Value;
-                double r_tot_area = _rsi + _rse;
+                double r_tot_area = Rsi + Rse;
+                double r_ges_area = 0;
 
                 foreach (var layerString in layerPathCombo)
                 {
@@ -74,20 +75,25 @@ namespace BauphysikToolWPF.Calculations
                     if (_layerMapping[layerString] is Layer layer)
                     {
                         r_tot_area += layer.R_Value;
+                        r_ges_area += layer.R_Value;
                     }
                     else if (_layerMapping[layerString] is LayerSubConstruction layerSubConstr)
                     {
                         r_tot_area += layerSubConstr.R_Value;
+                        r_ges_area += layerSubConstr.R_Value;
                     }
                     else throw new Exception("Typ konnte nicht aufgelöst werden");
                 }
                 r_tot_upper += _areaSharesMapping[area] / r_tot_area;
+                r_ges_upper += _areaSharesMapping[area] / r_ges_area;
             }
             r_tot_upper = Math.Pow(r_tot_upper, -1);
+            r_ges_upper = Math.Pow(r_ges_upper, -1);
 
             // R_lower via vertical cut
-            double r_tot_lower = _rsi + _rse;
-            foreach (var layer in Element.Layers)
+            double r_tot_lower = Rsi + Rse;
+            double r_ges_lower = 0.0;
+            foreach (var layer in _relevantLayers)
             {
                 if (layer.HasSubConstructions)
                 {
@@ -110,14 +116,19 @@ namespace BauphysikToolWPF.Calculations
                     double r_area = (combinedAreaMainLayer / layer.R_Value) + (combinedAreaSubLayer / layer.SubConstruction.R_Value);
                     r_area = Math.Pow(r_area, -1);
                     r_tot_lower += r_area;
+                    r_ges_lower += r_area;
                 }
                 else
                 {
                     r_tot_lower += layer.R_Value;
+                    r_ges_lower += layer.R_Value;
                 }
             }
+            // R_ges (without Rsi, Rse)
+            double r_ges = (r_ges_upper + r_ges_lower) / 2;
+            RGes = r_ges;
 
-            // R_tot
+            // R_tot (including Rsi, Rse)
             double r_tot = (r_tot_upper + r_tot_lower) / 2;
             RTotal = r_tot;
 
@@ -131,16 +142,40 @@ namespace BauphysikToolWPF.Calculations
             ErrorEstimationOk = e * 100 <= 20;
         }
 
+        private void SetRelevantLayers()
+        {
+            _relevantLayers = Element.Layers.Where(l => l.IsEffective).ToList();
+        }
 
+        private void PrepareMappingsForInhomogeneous()
+        {
+            CreateCalculationAreaBoundaries();
+
+            // Wenn ungültige Bounds ermittelt -> Homogenes Bauteil -> Normale Berechnung des Bauteils!
+            if (_calculationAreaBounds.Area == 0)
+            {
+                CalculateHomogeneous();
+                return;
+            }
+
+            CreateLayerMapping();
+            CreateLayerPathCombinations(0, new List<string>());
+            CreateLayerToRectanglesMapping();
+            CreateAreaMapping();
+            SetAreaWidths();
+            SetAreaHeights();
+            CreateAreaSharesMapping();
+        }
+        
         private void CreateLayerPathCombinations(int i, List<string> currentCombination)
         {
-            if (i == Element.Layers.Count)
+            if (i == _relevantLayers.Count)
             {
                 _areaToLayerPathCombinations.Add(_areaToLayerPathCombinations.Count + 1, currentCombination);
                 return;
             }
 
-            var layer = Element.Layers[i];
+            var layer = _relevantLayers[i];
                 
             if (layer.HasSubConstructions)
             {
@@ -155,7 +190,7 @@ namespace BauphysikToolWPF.Calculations
 
         private void CreateLayerMapping()
         {
-            foreach (var layer in Element.Layers)
+            foreach (var layer in _relevantLayers)
             {
                 _layerMapping.Add($"{layer.LayerPosition}", layer);
                 if (layer.HasSubConstructions)
@@ -184,7 +219,7 @@ namespace BauphysikToolWPF.Calculations
 
         private void CreateCalculationAreaBoundaries()
         {
-            var subConstr = Element.Layers.Where(l => l.SubConstruction != null).Select(l => l.SubConstruction).ToList();
+            var subConstr = _relevantLayers.Where(l => l.SubConstruction != null).Select(l => l.SubConstruction).ToList();
             double maxWidth = 0.0;
             double maxHeight = 0.0;
 

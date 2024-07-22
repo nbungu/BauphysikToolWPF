@@ -21,8 +21,8 @@ namespace BauphysikToolWPF
         // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
         ProjectPage,
         LandingPage,
-        SetupLayer,
-        SetupEnv,
+        LayerSetup,
+        Summary,
         TemperatureCurve,
         GlaserCurve,
         DynamicHeatCalc
@@ -64,11 +64,11 @@ namespace BauphysikToolWPF
                     _navigationMenuListBox.SelectedIndex = -1;
                     _projectBoxHeader.Tag = "LandingPage";
                     break;
-                case NavigationContent.SetupLayer:
-                    _navigationMenuListBox.SelectedItem = "SetupLayer";
+                case NavigationContent.LayerSetup:
+                    _navigationMenuListBox.SelectedItem = "LayerSetup";
                     break;
-                case NavigationContent.SetupEnv:
-                    _navigationMenuListBox.SelectedItem = "SetupEnv";
+                case NavigationContent.Summary:
+                    _navigationMenuListBox.SelectedItem = "Summary";
                     break;
                 case NavigationContent.TemperatureCurve:
                     _navigationMenuListBox.SelectedItem = "Temperature";

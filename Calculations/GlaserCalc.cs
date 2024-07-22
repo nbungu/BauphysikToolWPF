@@ -11,7 +11,7 @@ namespace BauphysikToolWPF.Calculations
      * 
      * When using the static Methods from outside this class, a single value can be calculated without creating full class instance 
      */
-    public class GlaserCalc : StationaryTempCalc
+    public class GlaserCalc : TemperatureCurveCalc
     {
         // private fields as Instance Variables
         private readonly double _rel_Fi = UserSaved.Rel_Fi;

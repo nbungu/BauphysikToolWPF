@@ -14,7 +14,7 @@ namespace BauphysikToolWPF.UI
         // Not in ViewModel due to the lack of Command Bindings to ButtonEvents
         private void Button_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            MainWindow.SetPage(NavigationContent.SetupLayer);
+            MainWindow.SetPage(NavigationContent.LayerSetup);
         }
     }
 }

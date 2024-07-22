@@ -21,7 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_TemperatureResults.cs: Used in xaml as "DataContext"
     public partial class Page_TemperatureResults_VM : ObservableObject
     {
-        private readonly StationaryTempCalc _tempCalc = Page_TemperatureResults.StationaryTempCalculation;
+        private readonly TemperatureCurveCalc _tempCalc = Page_TemperatureResults.TemperatureCurveCalculation;
 
         /*
          * Regular Instance Variables as Properties
@@ -96,7 +96,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 if (!_tempCalc.IsValid) return new List<OverviewItem>();
                 return new List<OverviewItem>
                 {
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = _tempCalc.Element.RValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = _tempCalc.Element.RGesValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
                     new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = _tempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
                     new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = _tempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
                     new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = _tempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
@@ -138,8 +138,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             //fRsi frsi = new fRsi(_tempCalc.LayerTemps.First().Value, Temperatures.selectedTi.First().Value, Temperatures.selectedTe.First().Value);
             /*rects[position+1] = new RectangularSection
             {
-                Yi = StationaryTempCalc.TsiMin,
-                Yj = StationaryTempCalc.TsiMin,
+                Yi = TemperatureCurveCalc.TsiMin,
+                Yj = TemperatureCurveCalc.TsiMin,
                 Stroke = new SolidColorPaint
                 {
                     Color = SKColors.Red,

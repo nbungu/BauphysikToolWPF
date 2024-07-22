@@ -103,6 +103,7 @@ namespace BauphysikToolWPF.UI.Drawing
                         // Stack Horizontally
                         if (DrawingType == DrawingType.CrossSection)
                         {
+                            // returns the largest integer less than or equal to the specified value
                             int numSubconstructions = (int)Math.Floor((CanvasSize.Width + spacing) / (subConstrWidth + spacing));
                             double startX = 0;
 

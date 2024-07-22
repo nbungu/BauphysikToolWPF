@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BauphysikToolWPF.Calculations;
+using BauphysikToolWPF.SessionData;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
@@ -87,6 +89,9 @@ namespace BauphysikToolWPF.Models
 
         [Ignore, JsonIgnore]
         public bool IsValid => Name != string.Empty && Layers.Count > 0;
+
+        [Ignore, JsonIgnore]
+        public bool IsInhomogeneous => Layers.Any(l => l.HasSubConstructions);
 
         [Ignore, JsonIgnore]
         public Color Color // HEX 'ColorCode' Property to 'Color' Type
@@ -172,14 +177,19 @@ namespace BauphysikToolWPF.Models
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    val += layer.AreaMassDensity;
+                    if (layer.HasSubConstructions)
+                    {
+                        val += layer.AreaMassDensity;
+                        val += layer.SubConstruction.AreaMassDensity;
+                    }
+                    else val += layer.AreaMassDensity;
                 }
                 return Math.Round(val, 2);
             }
         }
 
         [Ignore, JsonIgnore]
-        public double RValue // R_ges in m²K/W
+        public double ArealHeatCapacity // C in kJ/m²K
         {
             get
             {
@@ -187,11 +197,34 @@ namespace BauphysikToolWPF.Models
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    if (!layer.IsEffective) // cut after Air Layer -> Remaining Layer don't add to RValue
-                        continue;
-                    val += layer.R_Value;
+                    if (layer.HasSubConstructions)
+                    {
+                        val += layer.ArealHeatCapacity;
+                        val += layer.SubConstruction.ArealHeatCapacity;
+                    }
+                    else val += layer.ArealHeatCapacity;
                 }
                 return Math.Round(val, 2);
+            }
+        }
+
+        [Ignore, JsonIgnore]
+        public double RGesValue // R_ges in m²K/W
+        {
+            get
+            {
+                if (Layers.Count == 0) return 0;
+                return new ThermalValuesCalc(this, UserSaved.Rsi, UserSaved.Rse).RGes;
+            }
+        }
+
+        [Ignore, JsonIgnore]
+        public double RTotValue // R_tot in m²K/W
+        {
+            get
+            {
+                if (Layers.Count == 0) return 0;
+                return new ThermalValuesCalc(this, UserSaved.Rsi, UserSaved.Rse).RTotal;
             }
         }
 

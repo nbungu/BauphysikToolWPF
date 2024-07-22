@@ -9,11 +9,11 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class Page_TemperatureResults : UserControl
     {
-        public static StationaryTempCalc StationaryTempCalculation { get; private set; } = new StationaryTempCalc();
+        public static TemperatureCurveCalc TemperatureCurveCalculation { get; private set; } = new TemperatureCurveCalc();
 
         public Page_TemperatureResults()
         {
-            if (UserSaved.SelectedElement != null) StationaryTempCalculation = new StationaryTempCalc(UserSaved.SelectedElement);
+            if (UserSaved.SelectedElement != null) TemperatureCurveCalculation = new TemperatureCurveCalc(UserSaved.SelectedElement);
 
             InitializeComponent();
             // -> Initializes xaml objects

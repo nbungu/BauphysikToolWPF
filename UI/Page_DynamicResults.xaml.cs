@@ -13,15 +13,7 @@ namespace BauphysikToolWPF.UI
 
         public Page_DynamicResults()
         {
-            // Save computation time and only recalculate if needed
-            // Only if Element, Layers or EnvVars are not set or have changed: update class variables.
-            if (Page_LayerSetup.Recalculate)
-            {
-                DynamicTempCalculation = new DynamicTempCalc(UserSaved.SelectedElement);
-
-                // Reset Recalculate Flag
-                Page_LayerSetup.Recalculate = false;
-            }
+            DynamicTempCalculation = new DynamicTempCalc(UserSaved.SelectedElement);
 
             InitializeComponent();
             // -> Initializes xaml objects
