@@ -54,7 +54,6 @@ namespace BauphysikToolWPF.Calculations
         {
             try
             {
-                Logger.LogInfo($"Start calculating homogeneous Element: {Element}");
                 double rGes = 0.0;
                 foreach (var layer in RelevantLayers)
                 {
@@ -78,8 +77,6 @@ namespace BauphysikToolWPF.Calculations
         {
             try
             {
-                Logger.LogInfo($"Start calculating Inhomogenous Element: {Element}");
-
                 PrepareMappingsForInhomogeneous();
 
                 // R_upper via cross section

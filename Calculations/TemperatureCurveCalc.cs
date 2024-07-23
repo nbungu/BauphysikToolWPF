@@ -39,7 +39,6 @@ namespace BauphysikToolWPF.Calculations
         {
             try
             {
-                Logger.LogInfo($"Start calculating Layer Temparatures of Element: {Element}");
                 // Dictionaries are not ordered: Instead use List as ordered collection
                 var tempList = new SortedDictionary<double, double>();
 

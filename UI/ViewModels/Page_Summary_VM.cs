@@ -78,8 +78,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> SubConstructionMeasurementVerticalCut => MeasurementChain.GetMeasurementChain(_drawingServiceV.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z).ToList();
         public List<DrawingGeometry> LayerMeasurementFullVerticalCut => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] { 0, 400.0 }, Axis.X).ToList() : new List<DrawingGeometry>();
         
-
-
         public List<IPropertyItem> ElementProperties => new List<IPropertyItem>
         {
             new PropertyItem<int>("Schichten", () => UserSaved.SelectedElement.Layers.Count),

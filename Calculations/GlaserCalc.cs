@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.Models;
+using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,14 +40,22 @@ namespace BauphysikToolWPF.Calculations
 
         private void Calculate()
         {
-            // Calculated parameters (private setter)
-            PhiMax = GetMaxRelFi(Ti, Te, FRsi);             // Gl. 3-3; S.37
-            TaupunktMax_i = GetMaxTaupunkt_i(Ti, RelFi);   // Gl. 2.21; S.365. Taupunkttemperatur
-            P_sat_i = P_sat(Ti);                            // Gl. 2.4; S.164. Sättigungsdampfdruck innen (Luft)
-            P_sat_e = P_sat(Te);                            // Gl. 2.4; S.164.  Sättigungsdampfdruck außen (Luft)
-            LayerPsat = GetLayerPsat();                       // Gl. 2.4; S.164. Sättigungsdampfdrücke für jede Schichtgrenze
-            LayerP = GetLayerP(RelFi, RelFe, Ti, Te, Element.SdThickness); // Gl. 2.3; S.164, Wasserdampfpartialdruck (innen und außen)
-            IsValid = true;
+            try
+            {
+                // Calculated parameters (private setter)
+                PhiMax = GetMaxRelFi(Ti, Te, FRsi);             // Gl. 3-3; S.37
+                TaupunktMax_i = GetMaxTaupunkt_i(Ti, RelFi);   // Gl. 2.21; S.365. Taupunkttemperatur
+                P_sat_i = P_sat(Ti);                            // Gl. 2.4; S.164. Sättigungsdampfdruck innen (Luft)
+                P_sat_e = P_sat(Te);                            // Gl. 2.4; S.164.  Sättigungsdampfdruck außen (Luft)
+                LayerPsat = GetLayerPsat();                       // Gl. 2.4; S.164. Sättigungsdampfdrücke für jede Schichtgrenze
+                LayerP = GetLayerP(RelFi, RelFe, Ti, Te, Element.SdThickness); // Gl. 2.3; S.164, Wasserdampfpartialdruck (innen und außen)
+                IsValid = true;
+                Logger.LogInfo($"Successfully calculated Glaser values of Element: {Element}");
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Error calculating Glaser values of Element: {Element}, {ex.Message}");
+            }
         }
 
         // Methods
