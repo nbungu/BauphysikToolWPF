@@ -3,7 +3,7 @@ using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Drawing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Geometry;
+using BT.Geometry;
 using System.Collections.Generic;
 
 namespace BauphysikToolWPF.UI.ViewModels

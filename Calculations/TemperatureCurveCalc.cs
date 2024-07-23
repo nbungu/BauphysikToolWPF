@@ -1,5 +1,5 @@
 ﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.SessionData;
+using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,103 +11,77 @@ namespace BauphysikToolWPF.Calculations
      * 
      * When using the static Methods from outside this class, a single value can be calculated without creating full class instance 
      */
-    public class TemperatureCurveCalc
+    public class TemperatureCurveCalc : ThermalValuesCalc
     {
-        // protected fields as Instance Variables (= private, but accessible from child class (Inheritance))
-        protected double _ti = UserSaved.Ti;
-        protected double _te = UserSaved.Te;
-        protected double _rsi = UserSaved.Rsi;
-        protected double _rse = UserSaved.Rse;
-
-        // public fields as Properties
-        public Element Element { get; } = new Element(); // Access is limited to the containing class or types derived from the containing class within the current assembly
-        public double RTotal { get; }
-        public double UValue { get; }
-        public double QValue { get; }
-        public double FRsi { get; }
-        public double Tsi_min { get; }
-        public double Tsi { get; }
-        public double Tse { get; }
-        public SortedDictionary<double, double> LayerTemps { get; } = new SortedDictionary<double, double>(); // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
-        public bool IsValid { get; }
+        // Calculated Properties
+        public double FRsi { get; private set; }
+        public double TsiMin { get; private set; }
+        public double Tsi { get; private set; }
+        public double Tse { get; private set; }
+        public SortedDictionary<double, double> LayerTemps { get; private set; } // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
 
         // Constructors
         public TemperatureCurveCalc() {}
-        public TemperatureCurveCalc(Element element)
+        public TemperatureCurveCalc(Element element, double rsi, double rse, double ti, double te) : base(element, rsi, rse, ti, te)
         {
             if (element.Layers.Count == 0 || element is null) return;
-
-            // Assign constuctor parameter values
-            Element = element;
-
-            // Calculated parameters (private setter)
-            RTotal = GetRTotal(Element.RGesValue, _rsi, _rse);                 // Gl. 2-55; S.28
-            UValue = GetUValue(RTotal);                                     // Gl. 2-57; S.29
-            QValue = GetqValue(UValue, _ti, _te);                           // Gl. 2-65; S.31
-            LayerTemps = GetLayerTemps(Element.Layers, _ti, _rsi, QValue);  // Bsp. S.33
-            Tsi = LayerTemps.FirstOrDefault().Value;
-            Tse = LayerTemps.LastOrDefault().Value;
-            FRsi = GetfRsiValue(Tsi, _ti, _te);                             // Gl. 3-1; S.36. Schimmelwahrscheinlichkeit
-            Tsi_min = GetTsiMin(_ti, _te);                                  // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7. Schimmelwahrscheinlichkeit
-            IsValid = true;
+            Calculate();
+        }
+        
+        private void Calculate()
+        {
+            CalculateLayerTemps();  // Bsp. S.33
+            CalculatefRsiValue();   // Gl. 3-1; S.36. Schimmelwahrscheinlichkeit
+            CalculateTsiMin();      // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7. Schimmelwahrscheinlichkeit
         }
 
-        // public static, avoid full instance creation process if only a single Value needs to be Calculated 
-        public static double GetRTotal(double rValue, double rsi, double rse)
+        private void CalculateLayerTemps()
         {
-            return Math.Round(rsi + rValue + rse, 2);
-        }
-
-        public static double GetUValue(double rTotal)
-        {
-            return Math.Round(1 / rTotal, 2);
-        }
-
-        public static double GetqValue(double uValue, double ti, double te)
-        {
-            return Math.Round(uValue * (ti - te), 2);
-        }
-
-        public static SortedDictionary<double, double> GetLayerTemps(List<Layer> layers, double ti, double rsi, double qValue)
-        {
-            // Dictionaries are not ordered: Instead use List as ordered collection
-            var tempList = new SortedDictionary<double, double>();
-
-            // first tempValue (Tsi)
-            double tsi = Math.Round(ti - rsi * qValue, 2);
-            tempList.Add(0, tsi); // key, value
-
-            // Starting from inner side
-            double widthPosition = 0; // cm
-            for (int i = 0; i < layers.Count; i++)
+            try
             {
-                if (!layers[i].IsEffective)
-                    break;
-                widthPosition += layers[i].Thickness;
-                // Skip irregular Layers
-                if (layers[i].Thickness <= 0) continue;
+                Logger.LogInfo($"Start calculating Layer Temparatures of Element: {Element}");
+                // Dictionaries are not ordered: Instead use List as ordered collection
+                var tempList = new SortedDictionary<double, double>();
 
-                double tempValue = Math.Round(tempList.ElementAt(i).Value - layers[i].R_Value * qValue, 2);
-                tempList.Add(widthPosition, tempValue);
+                // first tempValue (Tsi)
+                double tsi = Math.Round(Ti - Rsi * QValue, 2);
+                tempList.Add(0, tsi); // key, value
+
+                // Starting from inner side
+                double widthPosition = 0; // cm
+                for (int i = 0; i < RelevantLayers.Count; i++)
+                {
+                    widthPosition += RelevantLayers[i].Thickness;
+                    if (RelevantLayers[i].Thickness <= 0) continue;
+
+                    double tempValue = Math.Round(tempList.ElementAt(i).Value - RelevantLayers[i].R_Value * QValue, 2);
+                    tempList.Add(widthPosition, tempValue);
+                }
+                LayerTemps = tempList;
+                Tsi = tsi;
+                Tse = LayerTemps.Last().Value;
+                Logger.LogInfo($"Successfully calculated Layer Temparatures of Element: {Element}");
+
+                // TODO implement 
+                /*if (widthPosition == 0)
+                    return temp_List;
+                else throw new ArgumentOutOfRangeException("calculation failed");*/
             }
-            return tempList;
+            catch (Exception ex)
+            {
+                Logger.LogError($"Error calculating Layer Temparatures of Element: {Element}, {ex.Message}");
+            }
 
-            // TODO implement 
-            /*if (widthPosition == 0)
-                return temp_List;
-            else throw new ArgumentOutOfRangeException("calculation failed");*/
         }
-        public static double GetfRsiValue(double tsi, double ti, double te)
+        private void CalculatefRsiValue()
         {
             // Durch 0 teilen abfangen
-            if (ti - te == 0)
-                return 0;
-
-            return Math.Round((tsi - te) / (ti - te), 2);
+            if (Ti - Te == 0) FRsi = 0;
+            else FRsi = Math.Round((Tsi - Te) / (Ti - Te), 2);
         }
-        public static double GetTsiMin(double ti, double te)
+        private void CalculateTsiMin()
         {
-            return Math.Round(0.7 * (ti - te) + te, 2);
+            TsiMin = Math.Round(0.7 * (Ti - Te) + Te, 2);
         }
 
 

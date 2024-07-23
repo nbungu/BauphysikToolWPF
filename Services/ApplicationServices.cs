@@ -6,6 +6,7 @@ using System.Linq;
 using SQLiteNetExtensions.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BT.Logging;
 
 namespace BauphysikToolWPF.Services
 {
@@ -13,49 +14,53 @@ namespace BauphysikToolWPF.Services
     {
         // TODO: Dokument erzeugen
 
-        #region Logging
-
-        // Determine the path for the log file
-        public static string LogFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "bauphysikTool.log");
-
-        public static void AppendToLogFile(string[] contents)
-        {
-            // Log the arguments to a file
-            File.WriteAllLines(LogFilePath, contents);
-        }
-        public static void AppendToLogFile(string content)
-        {
-            // Log the arguments to a file
-            File.AppendAllText(LogFilePath, $"{content}{Environment.NewLine}");
-        }
-
-        #endregion
-
-
         public static void SaveProjectToFile(Project project, string filePath)
         {
-            var options = new JsonSerializerOptions
+            try
             {
-                WriteIndented = true,
-                ReferenceHandler = ReferenceHandler.Preserve,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-            };
+                Logger.LogInfo($"Start saving project to file: {filePath}");
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+                };
 
-            string jsonString = JsonSerializer.Serialize(project, options);
-            File.WriteAllText(filePath, jsonString);
+                string jsonString = JsonSerializer.Serialize(project, options);
+                File.WriteAllText(filePath, jsonString);
+                Logger.LogInfo($"Successfully saved project to file: {filePath}");
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Error saving project to file: {filePath}, {e.Message}");
+            }
         }
 
         public static Project LoadProjectFromFile(string filePath)
         {
-            string jsonString = File.ReadAllText(filePath);
-            var options = new JsonSerializerOptions
+            try
             {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-            };
-
-            Project project = JsonSerializer.Deserialize<Project>(jsonString, options);
-            return project;
+                Logger.LogInfo($"Start reading project from file: {filePath}");
+                string jsonString = File.ReadAllText(filePath);
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+                };
+                Project project = JsonSerializer.Deserialize<Project>(jsonString, options);
+                if (project != null)
+                {
+                    Logger.LogInfo($"Successfully read project from file: {filePath}");
+                    return project;
+                }
+                Logger.LogWarning($"Could not read from project file: {filePath}");
+                return new Project();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Error reading project from file: {filePath}, {e.Message}");
+                return new Project();
+            }
         }
 
         public static void WriteToConnectedDatabase(Project project)

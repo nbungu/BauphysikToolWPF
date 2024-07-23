@@ -1,5 +1,5 @@
-﻿using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.SessionData;
+using BT.Logging;
 using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
@@ -36,7 +36,7 @@ namespace BauphysikToolWPF
 
         public MainWindow()
         {
-            ApplicationServices.AppendToLogFile($"MainWindow: Selected Project: {UserSaved.SelectedProject?.ToString() ?? "null"}");
+            Logger.LogInfo($"Selected Project: {UserSaved.SelectedProject?.ToString() ?? "null"}");
 
             InitializeComponent();
             _navigationMenuListBox = this.NavigationMenuListBox;

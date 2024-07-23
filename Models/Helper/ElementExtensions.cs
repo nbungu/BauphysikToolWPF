@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.Models.Helper
 
         // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
         // Layers have to be SORTED (LayerPos)
-        public static void SortLayers(this Element element)
+        public static Element SortLayers(this Element element)
         {
             if (element.Layers.Count != 0)
             {
@@ -24,6 +24,7 @@ namespace BauphysikToolWPF.Models.Helper
                 int index = 0; // Start at 0
                 element.Layers.ForEach(e => e.LayerPosition = index++);
             }
+            return element;
         }
 
         public static void AssignEffectiveLayers(this Element element)

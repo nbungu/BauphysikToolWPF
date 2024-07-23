@@ -21,7 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_TemperatureResults.cs: Used in xaml as "DataContext"
     public partial class Page_TemperatureResults_VM : ObservableObject
     {
-        private readonly TemperatureCurveCalc _tempCalc = Page_TemperatureResults.TemperatureCurveCalculation;
+        private readonly TemperatureCurveCalc _tempCalc = UserSaved.CalcResults;
 
         /*
          * Regular Instance Variables as Properties
@@ -100,7 +100,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = _tempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
                     new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = _tempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
                     new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = _tempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _tempCalc.Tsi, RequirementValue = _tempCalc.Tsi_min, IsRequirementMet = _tempCalc.Tsi >= _tempCalc.Tsi_min, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _tempCalc.Tsi, RequirementValue = _tempCalc.TsiMin, IsRequirementMet = _tempCalc.Tsi >= _tempCalc.TsiMin, Unit = "°C" },
                     new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = _tempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
                     new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = _tempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCalc.FRsi >= 0.7 },
                 };

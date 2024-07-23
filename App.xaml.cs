@@ -1,10 +1,11 @@
-﻿using System.IO;
-using BauphysikToolWPF.Models;
-using System.Windows;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
+using BT.Logging;
 using System;
-using BauphysikToolWPF.Repository;
+using System.IO;
+using System.Windows;
 
 namespace BauphysikToolWPF
 {
@@ -17,12 +18,12 @@ namespace BauphysikToolWPF
         {
             base.OnStartup(e);
 
-
-            // Log the arguments to a file
-            ApplicationServices.AppendToLogFile(e.Args);
+            Logger.SetLogFilePath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "bauphysikTool.log"));
 
             if (e.Args.Length > 0)
             {
+                Logger.LogInfo($"Opened Application with Arguments: {e.Args}");
+
                 string filePath = e.Args[0];
                 if (File.Exists(filePath))
                 {
@@ -31,27 +32,23 @@ namespace BauphysikToolWPF
                         // Load the project from the specified file
                         Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
                         UserSaved.SelectedProject = loadedProject;
-                        ApplicationServices.AppendToLogFile($"Successfully loaded: {UserSaved.SelectedProject}");
-                        MessageBox.Show($"Success"); 
+                        Logger.LogInfo($"Loaded Project: '{UserSaved.SelectedProject}' from Arguments!");
                     }
                     catch (Exception ex)
                     {
-                        // Log any exceptions
-                        ApplicationServices.AppendToLogFile($"Error: {ex.Message}");
-                        MessageBox.Show($"Error loading project: {ex.Message}");
+                        Logger.LogError($"Error reading Project from Arguments: {ex.Message}");
                     }
                 }
                 else
                 {
-                    ApplicationServices.AppendToLogFile($"File does not exist: {filePath}");
-                    MessageBox.Show("File does not exist.");
+                    Logger.LogWarning($"File does not exist: {filePath}");
                 }
             }
             else
             {
-                ApplicationServices.AppendToLogFile($"No .btk file as Arguments specified");
+                Logger.LogInfo("Opened Application without Arguments");
                 UserSaved.SelectedProject = DatabaseAccess.QueryProjectById(1);
-                ApplicationServices.AppendToLogFile($"Select Project from Database: {UserSaved.SelectedProject}");
+                Logger.LogInfo($"Loaded Project: '{UserSaved.SelectedProject}' from Database!");
             }
         }
 

@@ -1,6 +1,6 @@
-﻿using System.Windows.Media;
+﻿using BT.Geometry;
+using System.Windows.Media;
 using Brush = System.Windows.Media.Brush;
-using Rectangle = Geometry.Rectangle;
 
 namespace BauphysikToolWPF.UI.Drawing
 {

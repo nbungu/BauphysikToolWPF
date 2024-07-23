@@ -4,7 +4,7 @@ using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Drawing;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Geometry;
+using BT.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -24,8 +24,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * If List<string> is null, then get List from Database. If List is already loaded, use existing List.
          * To only load Propery once. Every other getter request then uses the static class variable.
          */
-
-
+        
         /*
          * MVVM Commands - UI Interaction with Commands
          * 

@@ -1,8 +1,7 @@
-﻿using System;
+﻿using BauphysikToolWPF.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.Calculations
 {
@@ -14,31 +13,39 @@ namespace BauphysikToolWPF.Calculations
     public class GlaserCalc : TemperatureCurveCalc
     {
         // private fields as Instance Variables
-        private readonly double _rel_Fi = UserSaved.Rel_Fi;
-        private readonly double _rel_Fe = UserSaved.Rel_Fe;
+        public double RelFi { get; private set; }
+        public double RelFe { get; private set; }
 
         // public fields as Properties
-        public double PhiMax { get; }
-        public double TaupunktMax_i { get; }
-        public double P_sat_i { get; }
-        public double P_sat_e { get; }
-        public SortedDictionary<double, double> LayerPsat { get; } = new SortedDictionary<double, double>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
-        public SortedDictionary<double, double> LayerP { get; } = new SortedDictionary<double, double>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
-        public new bool IsValid { get; }
+        public double PhiMax { get; private set; }
+        public double TaupunktMax_i { get; private set; }
+        public double P_sat_i { get; private set; }
+        public double P_sat_e { get; private set; }
+        public SortedDictionary<double, double> LayerPsat { get; private set; } = new SortedDictionary<double, double>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
+        public SortedDictionary<double, double> LayerP { get; private set; } = new SortedDictionary<double, double>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
+        public new bool IsValid { get; private set; }
 
         // (Instance-) Constructor
         public GlaserCalc() {}
-        public GlaserCalc(Element element) : base(element)
+        public GlaserCalc(Element element, double rsi, double rse, double ti, double te, double relFi, double relFe) : base(element, rsi, rse, ti, te)
         {
-            if (element.Layers.Count == 0) return;
+            if (element.Layers.Count == 0 || element is null) return;
 
+            RelFi = Math.Max(0, relFi);
+            RelFe = Math.Max(0, relFe);
+
+            Calculate();
+        }
+
+        private void Calculate()
+        {
             // Calculated parameters (private setter)
-            PhiMax = GetMaxRelFi(_ti, _te, FRsi);             // Gl. 3-3; S.37
-            TaupunktMax_i = GetMaxTaupunkt_i(_ti, _rel_Fi);   // Gl. 2.21; S.365. Taupunkttemperatur
-            P_sat_i = P_sat(_ti);                            // Gl. 2.4; S.164. Sättigungsdampfdruck innen (Luft)
-            P_sat_e = P_sat(_te);                            // Gl. 2.4; S.164.  Sättigungsdampfdruck außen (Luft)
+            PhiMax = GetMaxRelFi(Ti, Te, FRsi);             // Gl. 3-3; S.37
+            TaupunktMax_i = GetMaxTaupunkt_i(Ti, RelFi);   // Gl. 2.21; S.365. Taupunkttemperatur
+            P_sat_i = P_sat(Ti);                            // Gl. 2.4; S.164. Sättigungsdampfdruck innen (Luft)
+            P_sat_e = P_sat(Te);                            // Gl. 2.4; S.164.  Sättigungsdampfdruck außen (Luft)
             LayerPsat = GetLayerPsat();                       // Gl. 2.4; S.164. Sättigungsdampfdrücke für jede Schichtgrenze
-            LayerP = GetLayerP(_rel_Fi, _rel_Fe, _ti, _te, Element.SdThickness); // Gl. 2.3; S.164, Wasserdampfpartialdruck (innen und außen)
+            LayerP = GetLayerP(RelFi, RelFe, Ti, Te, Element.SdThickness); // Gl. 2.3; S.164, Wasserdampfpartialdruck (innen und außen)
             IsValid = true;
         }
 
@@ -56,10 +63,10 @@ namespace BauphysikToolWPF.Calculations
                 //double currentValue = P_sat(LayerTemps[i]);
                 p_sat_List.Add(widthPosition, currentValue);
 
-                if (i == Element.Layers.Count)
+                if (i == RelevantLayers.Count)
                     break; //avoid index out of range exception on Layers[i]: Has 1 less item than in LayerTemps[i]
 
-                widthPosition += Element.Layers[i].Sd_Thickness;
+                widthPosition += RelevantLayers[i].Sd_Thickness;
             }
             return p_sat_List;
 

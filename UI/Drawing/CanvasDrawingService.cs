@@ -1,10 +1,9 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
-using Geometry;
+using BT.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media;
-using Point = Geometry.Point;
 
 namespace BauphysikToolWPF.UI.Drawing
 {

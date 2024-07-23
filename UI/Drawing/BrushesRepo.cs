@@ -1,12 +1,9 @@
 ﻿using BauphysikToolWPF.Models;
+using BT.Geometry;
 using System;
 using System.Windows;
 using System.Windows.Media;
-using Geometry;
 using Point = System.Windows.Point;
-using System.Globalization;
-using ABI.Windows.Media.Audio;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace BauphysikToolWPF.UI.Drawing
 {

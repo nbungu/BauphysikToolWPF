@@ -1,9 +1,9 @@
-﻿using System;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
+using LiveChartsCore.Defaults;
+using System;
 using System.Collections.Generic;
 using System.Numerics;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.SessionData;
-using LiveChartsCore.Defaults;
 
 namespace BauphysikToolWPF.Calculations
 {
@@ -11,17 +11,8 @@ namespace BauphysikToolWPF.Calculations
     // https://enbau-online.ch/bauphysik/2-2-waermespeicherung/
     // https://www.htflux.com/de/u-wert-und-dynamisch-thermische-kenngroessen-eines-inhomogenen-wandaufbaus-holzrahmen/
     // https://www.htflux.com/en/free-calculation-tool-for-thermal-mass-of-building-components-iso-13786/
-    public class DynamicTempCalc
+    public class DynamicTempCalc : ThermalValuesCalc
     {
-        // The Type of functions you can get from DIN EN ISO 13786:2018-04
-        public enum FunctionType
-        {
-            ExteriorTemp,
-            InteriorTemp,
-            ExteriorSurfaceTemp,
-            InteriorSurfaceTemp
-        }
-
         // Constant Values
         public const int PeriodDuration = 86400; // [s] = 24 h
         public const int IntervallSteps = 600; // [s] = 10 min
@@ -31,8 +22,6 @@ namespace BauphysikToolWPF.Calculations
         private HeatTransferMatrix _zElement = new HeatTransferMatrix();
         private List<HeatTransferMatrix> _zLayers = new List<HeatTransferMatrix>();
         private ThermalAdmittanceMatrix _yElement = new ThermalAdmittanceMatrix();
-        private readonly double _rsi = UserSaved.Rsi;
-        private readonly double _rse = UserSaved.Rse;
 
         // public fields as Properties
         public Element Element { get; } = new Element();
@@ -53,16 +42,15 @@ namespace BauphysikToolWPF.Calculations
         public bool IsValid { get; }
 
         public DynamicTempCalc() {}
-        public DynamicTempCalc(Element element)
-        {
-            if (element.Layers.Count == 0) return;
 
-            // Assign constuctor parameter values
-            Element = element;
+        // Chose Inheritance approach vs Composition approach 
+        public DynamicTempCalc(Element element, double rsi, double rse, double ti, double te) : base(element, rsi, rse, ti, te)
+        {
+            if (element.Layers.Count == 0 || element is null) return;
 
             // Calculated parameters (private setter)
-            _zLayers = CreateLayerMatrices(Element.Layers);
-            _zElement = CreateElementMatrix(_zLayers, _rsi, _rse);
+            _zLayers = CreateLayerMatrices(RelevantLayers);
+            _zElement = CreateElementMatrix(_zLayers, Rsi, Rse);
             _yElement = new ThermalAdmittanceMatrix(_zElement);
             DynamicRValue = GetDynamicRValue(_zElement);
             DynamicUValue = GetDynamicUValue(DynamicRValue);
@@ -88,7 +76,7 @@ namespace BauphysikToolWPF.Calculations
         {
             double airTemp_i = AirTemp_Function(t, meanTemp_i, amplitude_i);
             double totalHeatFlux_i = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, qStatic, "i");
-            return Math.Round(airTemp_i + totalHeatFlux_i * _rsi, 2);
+            return Math.Round(airTemp_i + totalHeatFlux_i * Rsi, 2);
         }
 
         // θse(t)
@@ -96,7 +84,7 @@ namespace BauphysikToolWPF.Calculations
         {
             double airTemp_e = AirTemp_Function(t, meanTemp_e, amplitude_e);
             double totalHeatFlux_e = TotalHeatFlux_Function(t, amplitude_i, amplitude_e, qStatic, "e");
-            return Math.Round(airTemp_e - totalHeatFlux_e * _rse, 2);
+            return Math.Round(airTemp_e - totalHeatFlux_e * Rse, 2);
         }
 
         // Creates time function θi(t) or θe(t) which represents the sinusodial curve of interior/exterior air temperature change
@@ -125,13 +113,13 @@ namespace BauphysikToolWPF.Calculations
             return totalHeatFlux;
         }
 
-        public ObservablePoint[] CreateDataPoints(FunctionType function, double meanTemp_e, double meanTemp_i, double amplitude_i, double amplitude_e, int iterations = PeriodDuration / IntervallSteps + 1, int startingTime = 0)
+        public ObservablePoint[] CreateDataPoints(Symbol symbol, double meanTemp_e, double meanTemp_i, double amplitude_i, double amplitude_e, int iterations = PeriodDuration / IntervallSteps + 1, int startingTime = 0)
         {
             ObservablePoint[] dataPoints = new ObservablePoint[iterations];
-            double uValue = 1 / (_rsi + Element.RGesValue + _rse);
-            double qStatic = TemperatureCurveCalc.GetqValue(uValue, meanTemp_i, meanTemp_e);
 
-            if (function == FunctionType.ExteriorSurfaceTemp) // θse(t)
+            double qStatic = Math.Round(UValue * (meanTemp_i - meanTemp_e), 2);
+
+            if (symbol == Symbol.TemperatureSurfaceExterior) // θse(t)
             {
                 for (int i = startingTime; i < iterations; i++)
                 {
@@ -141,7 +129,7 @@ namespace BauphysikToolWPF.Calculations
                     dataPoints[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
                 }
             }
-            else if (function == FunctionType.InteriorSurfaceTemp) // θsi(t)
+            else if (symbol == Symbol.TemperatureSurfaceInterior) // θsi(t)
             {
                 for (int i = startingTime; i < iterations; i++)
                 {
@@ -151,7 +139,7 @@ namespace BauphysikToolWPF.Calculations
                     dataPoints[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
                 }
             }
-            else if (function == FunctionType.ExteriorTemp) // θe(t)
+            else if (symbol == Symbol.TemperatureExterior) // θe(t)
             {
                 for (int i = startingTime; i < iterations; i++)
                 {
@@ -161,7 +149,7 @@ namespace BauphysikToolWPF.Calculations
                     dataPoints[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
                 }
             }
-            else if (function == FunctionType.InteriorTemp) // θe(t)
+            else if (symbol == Symbol.TemperatureInterior) // θi(t)
             {
                 for (int i = startingTime; i < iterations; i++)
                 {
@@ -224,7 +212,7 @@ namespace BauphysikToolWPF.Calculations
         }
         private double GetDecrement(double uDynValue)
         {
-            double uValue = 1 / (_rsi + Element.RGesValue + _rse);
+            double uValue = 1 / (Rsi + Element.RGesValue + Rse);
             return Math.Round(uDynValue * uValue, 3);
         }
         private double GetTAD(HeatTransferMatrix elementMatrix)

@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.UI
 
         public Page_DynamicResults()
         {
-            DynamicTempCalculation = new DynamicTempCalc(UserSaved.SelectedElement);
+            DynamicTempCalculation = new DynamicTempCalc(UserSaved.SelectedElement, UserSaved.Rsi, UserSaved.Rse, UserSaved.Ti, UserSaved.Te);
 
             InitializeComponent();
             // -> Initializes xaml objects

@@ -19,7 +19,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class Page_MoistureResults_VM : ObservableObject
     {
-        private readonly GlaserCalc _glaser = UI.Page_MoistureResults.GlaserCalculation;
+        private readonly GlaserCalc _glaser = UserSaved.CalcResults;
 
         /*
          * Regular Instance Variables as Properties

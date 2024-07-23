@@ -168,8 +168,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Geometry">
-      <HintPath>..\Geometry\bin\Debug\net8.0\Geometry.dll</HintPath>
+    <Reference Include="BT.Geometry">
+      <HintPath>..\BT.Geometry\bin\Debug\net8.0\BT.Geometry.dll</HintPath>
+    </Reference>
+    <Reference Include="BT.Logging">
+      <HintPath>..\BT.Logging\bin\Debug\net8.0\BT.Logging.dll</HintPath>
     </Reference>
   </ItemGroup>
 

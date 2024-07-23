@@ -2,7 +2,9 @@
 using BauphysikToolWPF.Repository;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Calculations;
 using BauphysikToolWPF.Models.Helper;
+using BT.Logging;
 
 namespace BauphysikToolWPF.SessionData
 {
@@ -14,7 +16,6 @@ namespace BauphysikToolWPF.SessionData
         public static event Notify? SelectedElementChanged; // event
         public static event Notify? SelectedLayerChanged; // event
         public static event Notify? EnvVarsChanged; // event
-        
 
         // event handlers - publisher
         public static void OnSelectedProjectChanged() //protected virtual method
@@ -55,6 +56,38 @@ namespace BauphysikToolWPF.SessionData
         /// Zeigt auf den entsprechenden Layer aus dem aktuellen Element auf Basis der LayerPosition von 'SelectedLayerPosition'
         /// </summary>
         public static Layer SelectedLayer => SelectedElement.Layers.FirstOrDefault(e => e.InternalId == SelectedLayerId, new Layer());
+
+
+        // Use GlaserCalc as Collection for Results due to Polymorphism;
+        // You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.
+        private static GlaserCalc _calcResults = new GlaserCalc();
+        public static GlaserCalc CalcResults
+        {
+            get
+            {
+                if (Recalculate)
+                {
+                    _calcResults = new GlaserCalc(SelectedElement, Rsi, Rse, Ti, Te, Rel_Fi, Rel_Fe);
+                    Recalculate = false;
+                }
+                return _calcResults;
+            }
+        }
+
+        private static bool _recalculate = true;
+        /// <summary>
+        /// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,
+        /// which would require a re-calculation, are made there.
+        /// </summary>
+        public static bool Recalculate
+        {
+            get => _recalculate;
+            set
+            {
+                _recalculate = value;
+                Logger.LogInfo($"Set Recalculate flag to: {value}");
+            }
+        }
 
         // Unordered Collection. Key must be unique!
         private static readonly Dictionary<Symbol, double> _userEnvVars = new Dictionary<Symbol, double>(6)

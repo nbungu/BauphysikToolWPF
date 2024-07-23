@@ -3,10 +3,9 @@ using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Drawing;
+using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Geometry;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,14 +25,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedLayerId = -1;
 
             // Subscribe to Event and Handle
-            // Allow child Windows to trigger RefreshXamlBindings of this Window
-            UserSaved.SelectedElementChanged += RefreshXamlBindings;
-            UserSaved.SelectedLayerChanged += RefreshXamlBindings;
+            // Allow child Windows to trigger UpdateBindingsAndRecalculateFlag of this Window
+            UserSaved.SelectedElementChanged += UpdateBindingsAndRecalculateFlag;
+            UserSaved.SelectedLayerChanged += UpdateBindingsAndRecalculateFlag;
 
             // For values changed in PropertyDataGrid TextBox
-            PropertyItem<double>.PropertyChanged += RefreshXamlBindings;
-            PropertyItem<SubConstructionDirection>.PropertyChanged += RefreshXamlBindings;
-            PropertyItem<bool>.PropertyChanged += RefreshXamlBindings;
+            PropertyItem<double>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
+            PropertyItem<SubConstructionDirection>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
+            PropertyItem<bool>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
         }
         
         /*
@@ -85,35 +84,35 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void DeleteSubConstructionLayer()
         {
             UserSaved.SelectedLayer.RemoveSubConstruction();
-            RefreshXamlBindings();
+            UpdateBindingsAndRecalculateFlag();
         }
 
         [RelayCommand]
         private void DeleteLayer()
         {
             UserSaved.SelectedElement.RemoveLayer(UserSaved.SelectedLayerId);
-            RefreshXamlBindings();
+            UpdateBindingsAndRecalculateFlag();
         }
         
         [RelayCommand]
         private void DuplicateLayer()
         {
             UserSaved.SelectedElement.DuplicateLayer(UserSaved.SelectedLayerId);
-            RefreshXamlBindings();
+            UpdateBindingsAndRecalculateFlag();
         }
 
         [RelayCommand]
         private void MoveLayerDown()
         {
             UserSaved.SelectedElement.MoveLayerPositionToOutside(UserSaved.SelectedLayerId);
-            RefreshXamlBindings();
+            UpdateBindingsAndRecalculateFlag();
         }
 
         [RelayCommand]
         private void MoveLayerUp()
         {
             UserSaved.SelectedElement.MoveLayerPositionToInside(UserSaved.SelectedLayerId);
-            RefreshXamlBindings();
+            UpdateBindingsAndRecalculateFlag();
         }
         
         // This method will be called whenever SelectedListViewItem changes
@@ -347,8 +346,13 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Custom Methods
          */
 
-        private void RefreshXamlBindings()
+        /// <summary>
+        /// Updates XAML Bindings and the Reset Calculation Flag
+        /// </summary>
+        private void UpdateBindingsAndRecalculateFlag()
         {
+            UserSaved.Recalculate = true;
+
             _drawingService.UpdateDrawings();
 
             LayerList = null;

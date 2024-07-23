@@ -1,150 +1,176 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
-using Geometry;
+using BT.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BT.Logging;
 
 namespace BauphysikToolWPF.Calculations
 {
     public class ThermalValuesCalc
     {
-        private List<Layer> _relevantLayers = new List<Layer>();
+        
         private Rectangle _calculationAreaBounds = new Rectangle();
         private readonly Dictionary<string, object> _layerMapping = new Dictionary<string, object>();
         private readonly Dictionary<int, List<string>> _areaToLayerPathCombinations = new Dictionary<int, List<string>>();
         private readonly Dictionary<string, int[]> _layerToAreasMapping = new Dictionary<string, int[]>();
         private readonly Dictionary<int, Rectangle> _areaRectangleMapping = new Dictionary<int, Rectangle>();
         private readonly Dictionary<int, double> _areaSharesMapping = new Dictionary<int, double>();
+        
+        public Element Element { get; } = new Element();
+        public List<Layer> RelevantLayers { get; } = new List<Layer>();
+        public double Ti { get; }
+        public double Te { get; }
+        public double Rsi { get; }
+        public double Rse { get; }
 
+        // Calculated Properties
         public double UValue { get; private set; }
         public double RTotal { get; private set; }
         public double RGes { get; private set; }
+        public double QValue { get; private set; }
         public double ErrorEstimation { get; private set; }
         public bool ErrorEstimationOk { get; private set; }
-        public Element Element { get; } = new Element();
-        public double Rsi { get; }
-        public double Rse { get; }
-        public bool IsValid { get; }
+        public bool IsValid { get; private set; }
 
         public ThermalValuesCalc() { }
 
-        public ThermalValuesCalc(Element element, double rsi, double rse)
+        public ThermalValuesCalc(Element element, double rsi, double rse, double ti, double te)
         {
             if (element.Layers.Count == 0 || element is null) return;
             Element = element;
+            RelevantLayers = Element.SortLayers().Layers.Where(l => l.IsEffective).ToList();
             Rsi = Math.Max(0, rsi);
             Rse = Math.Max(0, rse);
-            Element.SortLayers();
-            SetRelevantLayers();
+            Ti = ti;
+            Te = te;
+
             if (Element.IsInhomogeneous) CalculateInhomogeneous();
             else CalculateHomogeneous();
-            IsValid = true;
         }
 
         private void CalculateHomogeneous()
         {
-            double rGes = 0.0;
-            foreach (var layer in _relevantLayers)
+            try
             {
-                rGes += layer.R_Value;
+                Logger.LogInfo($"Start calculating homogeneous Element: {Element}");
+                double rGes = 0.0;
+                foreach (var layer in RelevantLayers)
+                {
+                    rGes += layer.R_Value;
+                }
+                RGes = Math.Round(rGes, 2);
+                RTotal = Math.Round(Rsi + rGes + Rse, 2);
+                UValue = Math.Round(1 / (Rsi + rGes + Rse), 2);
+                QValue = Math.Round(UValue * (Ti - Te), 2);
+                ErrorEstimation = 0;
+                ErrorEstimationOk = true;
+                Logger.LogInfo($"Successfully calculated homogeneous Element: {Element}");
             }
-            RGes = Math.Round(rGes, 2);
-            RTotal = Math.Round(Rsi + rGes + Rse, 2);
-            UValue = Math.Round(1 / (Rsi + rGes + Rse), 2);
+            catch (Exception ex)
+            {
+                Logger.LogError($"Error calculating homogeneous Element: {Element}, {ex.Message}");
+            }
         }
 
         private void CalculateInhomogeneous()
         {
-            PrepareMappingsForInhomogeneous();
-
-            // R_upper via cross section
-            
-            double r_tot_upper = 0.0;
-            double r_ges_upper = 0.0;
-            foreach (var kvp in _areaToLayerPathCombinations)
+            try
             {
-                var area = kvp.Key;
-                var layerPathCombo = kvp.Value;
-                double r_tot_area = Rsi + Rse;
-                double r_ges_area = 0;
+                Logger.LogInfo($"Start calculating Inhomogenous Element: {Element}");
 
-                foreach (var layerString in layerPathCombo)
+                PrepareMappingsForInhomogeneous();
+
+                // R_upper via cross section
+                double r_tot_upper = 0.0;
+                double r_ges_upper = 0.0;
+                foreach (var kvp in _areaToLayerPathCombinations)
                 {
-                    // Check the Type: Use the is keyword to check the type or the as keyword to attempt a cast.
-                    if (_layerMapping[layerString] is Layer layer)
-                    {
-                        r_tot_area += layer.R_Value;
-                        r_ges_area += layer.R_Value;
-                    }
-                    else if (_layerMapping[layerString] is LayerSubConstruction layerSubConstr)
-                    {
-                        r_tot_area += layerSubConstr.R_Value;
-                        r_ges_area += layerSubConstr.R_Value;
-                    }
-                    else throw new Exception("Typ konnte nicht aufgelöst werden");
-                }
-                r_tot_upper += _areaSharesMapping[area] / r_tot_area;
-                r_ges_upper += _areaSharesMapping[area] / r_ges_area;
-            }
-            r_tot_upper = Math.Pow(r_tot_upper, -1);
-            r_ges_upper = Math.Pow(r_ges_upper, -1);
+                    var area = kvp.Key;
+                    var layerPathCombo = kvp.Value;
+                    double r_tot_area = Rsi + Rse;
+                    double r_ges_area = 0;
 
-            // R_lower via vertical cut
-            double r_tot_lower = Rsi + Rse;
-            double r_ges_lower = 0.0;
-            foreach (var layer in _relevantLayers)
+                    foreach (var layerString in layerPathCombo)
+                    {
+                        // Check the Type: Use the is keyword to check the type or the as keyword to attempt a cast.
+                        if (_layerMapping[layerString] is Layer layer)
+                        {
+                            r_tot_area += layer.R_Value;
+                            r_ges_area += layer.R_Value;
+                        }
+                        else if (_layerMapping[layerString] is LayerSubConstruction layerSubConstr)
+                        {
+                            r_tot_area += layerSubConstr.R_Value;
+                            r_ges_area += layerSubConstr.R_Value;
+                        }
+                        else throw new Exception("Typ konnte nicht aufgelöst werden");
+                    }
+                    r_tot_upper += _areaSharesMapping[area] / r_tot_area;
+                    r_ges_upper += _areaSharesMapping[area] / r_ges_area;
+                }
+                r_tot_upper = Math.Pow(r_tot_upper, -1);
+                r_ges_upper = Math.Pow(r_ges_upper, -1);
+
+                // R_lower via vertical cut
+                double r_tot_lower = Rsi + Rse;
+                double r_ges_lower = 0.0;
+                foreach (var layer in RelevantLayers)
+                {
+                    if (layer.HasSubConstructions)
+                    {
+                        string mainLayer = $"{layer.LayerPosition}";
+                        string subLayer = $"{layer.LayerPosition}b";
+                        var correspAreasMainLayer = _layerToAreasMapping[mainLayer];
+                        var correspAreasSubLayer = _layerToAreasMapping[subLayer];
+
+                        double combinedAreaMainLayer = 0.0;
+                        foreach (var area in correspAreasMainLayer)
+                        {
+                            combinedAreaMainLayer += _areaSharesMapping[area];
+                        }
+                        double combinedAreaSubLayer = 0.0;
+
+                        foreach (var area in correspAreasSubLayer)
+                        {
+                            combinedAreaSubLayer += _areaSharesMapping[area];
+                        }
+                        double r_area = (combinedAreaMainLayer / layer.R_Value) + (combinedAreaSubLayer / layer.SubConstruction.R_Value);
+                        r_area = Math.Pow(r_area, -1);
+                        r_tot_lower += r_area;
+                        r_ges_lower += r_area;
+                    }
+                    else
+                    {
+                        r_tot_lower += layer.R_Value;
+                        r_ges_lower += layer.R_Value;
+                    }
+                }
+                // R_ges (without Rsi, Rse)
+                double r_ges = (r_ges_upper + r_ges_lower) / 2;
+                RGes = r_ges;
+
+                // R_tot (including Rsi, Rse)
+                double r_tot = (r_tot_upper + r_tot_lower) / 2;
+                RTotal = r_tot;
+
+                // U-Value
+                double uValue = Math.Pow(r_tot, -1);
+                UValue = uValue;
+
+                QValue = Math.Round(uValue * (Ti - Te), 2);
+
+                // Fehlerabschätzung
+                double e = r_tot != 0 ? (r_tot_upper - r_tot_lower) / (2 * r_tot) : 0;
+                ErrorEstimation = e * 100;
+                ErrorEstimationOk = e * 100 <= 20;
+                Logger.LogInfo($"Successfully calculated Inhomogeneous Element: {Element}");
+            }
+            catch (Exception ex)
             {
-                if (layer.HasSubConstructions)
-                {
-                    string mainLayer = $"{layer.LayerPosition}";
-                    string subLayer = $"{layer.LayerPosition}b";
-                    var correspAreasMainLayer = _layerToAreasMapping[mainLayer];
-                    var correspAreasSubLayer = _layerToAreasMapping[subLayer];
-
-                    double combinedAreaMainLayer = 0.0;
-                    foreach (var area in correspAreasMainLayer)
-                    {
-                        combinedAreaMainLayer += _areaSharesMapping[area];
-                    }
-                    double combinedAreaSubLayer = 0.0;
-
-                    foreach (var area in correspAreasSubLayer)
-                    {
-                        combinedAreaSubLayer += _areaSharesMapping[area];
-                    }
-                    double r_area = (combinedAreaMainLayer / layer.R_Value) + (combinedAreaSubLayer / layer.SubConstruction.R_Value);
-                    r_area = Math.Pow(r_area, -1);
-                    r_tot_lower += r_area;
-                    r_ges_lower += r_area;
-                }
-                else
-                {
-                    r_tot_lower += layer.R_Value;
-                    r_ges_lower += layer.R_Value;
-                }
+                Logger.LogError($"Error calculating Inhomogeneous Element: {Element}, {ex.Message}");
             }
-            // R_ges (without Rsi, Rse)
-            double r_ges = (r_ges_upper + r_ges_lower) / 2;
-            RGes = r_ges;
-
-            // R_tot (including Rsi, Rse)
-            double r_tot = (r_tot_upper + r_tot_lower) / 2;
-            RTotal = r_tot;
-
-            // U-Value
-            double uValue = Math.Pow(r_tot, -1);
-            UValue = uValue;
-
-            // Fehlerabschätzung
-            double e = r_tot != 0 ? (r_tot_upper - r_tot_lower) / (2 * r_tot) : 0;
-            ErrorEstimation = e * 100;
-            ErrorEstimationOk = e * 100 <= 20;
-        }
-
-        private void SetRelevantLayers()
-        {
-            _relevantLayers = Element.Layers.Where(l => l.IsEffective).ToList();
         }
 
         private void PrepareMappingsForInhomogeneous()
@@ -169,13 +195,13 @@ namespace BauphysikToolWPF.Calculations
         
         private void CreateLayerPathCombinations(int i, List<string> currentCombination)
         {
-            if (i == _relevantLayers.Count)
+            if (i == RelevantLayers.Count)
             {
                 _areaToLayerPathCombinations.Add(_areaToLayerPathCombinations.Count + 1, currentCombination);
                 return;
             }
 
-            var layer = _relevantLayers[i];
+            var layer = RelevantLayers[i];
                 
             if (layer.HasSubConstructions)
             {
@@ -190,7 +216,7 @@ namespace BauphysikToolWPF.Calculations
 
         private void CreateLayerMapping()
         {
-            foreach (var layer in _relevantLayers)
+            foreach (var layer in RelevantLayers)
             {
                 _layerMapping.Add($"{layer.LayerPosition}", layer);
                 if (layer.HasSubConstructions)
@@ -219,7 +245,7 @@ namespace BauphysikToolWPF.Calculations
 
         private void CreateCalculationAreaBoundaries()
         {
-            var subConstr = _relevantLayers.Where(l => l.SubConstruction != null).Select(l => l.SubConstruction).ToList();
+            var subConstr = RelevantLayers.Where(l => l.SubConstruction != null).Select(l => l.SubConstruction).ToList();
             double maxWidth = 0.0;
             double maxHeight = 0.0;
 

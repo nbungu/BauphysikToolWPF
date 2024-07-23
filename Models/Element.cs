@@ -160,8 +160,7 @@ namespace BauphysikToolWPF.Models
                 if (Layers.Count == 0) return fullWidth;
                 foreach (Layer layer in Layers)
                 {
-                    if (!layer.IsEffective)
-                        continue;
+                    if (!layer.IsEffective) continue;
                     fullWidth += layer.Sd_Thickness;
                 }
                 return Math.Round(fullWidth, 2);
@@ -205,28 +204,16 @@ namespace BauphysikToolWPF.Models
                     else val += layer.ArealHeatCapacity;
                 }
                 return Math.Round(val, 2);
+
             }
         }
 
         [Ignore, JsonIgnore]
-        public double RGesValue // R_ges in m²K/W
-        {
-            get
-            {
-                if (Layers.Count == 0) return 0;
-                return new ThermalValuesCalc(this, UserSaved.Rsi, UserSaved.Rse).RGes;
-            }
-        }
+        public double RGesValue => UserSaved.CalcResults.RGes; // R_ges in m²K/W
 
         [Ignore, JsonIgnore]
-        public double RTotValue // R_tot in m²K/W
-        {
-            get
-            {
-                if (Layers.Count == 0) return 0;
-                return new ThermalValuesCalc(this, UserSaved.Rsi, UserSaved.Rse).RTotal;
-            }
-        }
+        public double RTotValue => UserSaved.CalcResults.RTotal; // R_tot in m²K/W
+
 
         //------Konstruktor-----//
 
