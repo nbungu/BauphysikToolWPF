@@ -18,7 +18,26 @@ namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class Page_DynamicResults_VM : ObservableObject
     {
-        private readonly DynamicTempCalc _dynamicTempCalc = Page_DynamicResults.DynamicTempCalculation;
+        //private readonly DynamicTempCalc _dynamicTempCalc = Page_DynamicResults.DynamicTempCalculation;
+
+        // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
+        // Manually Trigger Calculation
+        private static DynamicTempCalc _dynamicTempCalc;
+
+        public Page_DynamicResults_VM()
+        {
+            if (_dynamicTempCalc != null && !UserSaved.Recalculate) return;
+            _dynamicTempCalc = new DynamicTempCalc()
+            {
+                Element = UserSaved.SelectedElement,
+                Rsi = UserSaved.Rsi,
+                Rse = UserSaved.Rse,
+                Ti = UserSaved.Ti,
+                Te = UserSaved.Te
+            };
+            _dynamicTempCalc.CalculateHomogeneous();
+            _dynamicTempCalc.CalculateDynamicValues();
+        }
 
         /*
          * Regular Instance Variables

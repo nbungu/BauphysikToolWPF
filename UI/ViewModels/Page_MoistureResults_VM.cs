@@ -21,10 +21,11 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private readonly GlaserCalc _glaser;
+        private static GlaserCalc _glaser;
 
         public Page_MoistureResults_VM()
         {
+            if (_glaser != null && !UserSaved.Recalculate) return;
             _glaser = new GlaserCalc()
             {
                 Element = UserSaved.SelectedElement,

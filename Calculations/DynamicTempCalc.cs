@@ -23,23 +23,24 @@ namespace BauphysikToolWPF.Calculations
         private List<HeatTransferMatrix> _zLayers = new List<HeatTransferMatrix>();
         private ThermalAdmittanceMatrix _yElement = new ThermalAdmittanceMatrix();
 
-        // public fields as Properties
-        public Element Element { get; } = new Element();
-        public double DynamicRValue { get; } // R_dyn [m²K/W]
-        public double DynamicUValue { get; } // U_dyn [W/m²K]
-        public double DecrementFactor { get; } // f [-] - Abminderungsfaktor
-        public double TAD { get; } // υ [-] - Temperaturamplitudendämpfung: Verhältnis zwischen den Amplituden der Aussenlufttemperatur und denjenigen der inneren Wandoberflächentemperatur 
-        public double TAV { get; } // [-] - Kehrwert der TAD: multipliziert mit 100 enpricht es dem %-Wert der Wärmeamplitude welche innen noch ankommt, aufgrund einer Schwankung außen.
+        public Element Element { get; set; } = new Element();
+
+        // Calculated Properties
+        public double DynamicRValue { get; private set; } // R_dyn [m²K/W]
+        public double DynamicUValue { get; private set; } // U_dyn [W/m²K]
+        public double DecrementFactor { get; private set; } // f [-] - Abminderungsfaktor
+        public double TAD { get; private set; } // υ [-] - Temperaturamplitudendämpfung: Verhältnis zwischen den Amplituden der Aussenlufttemperatur und denjenigen der inneren Wandoberflächentemperatur 
+        public double TAV { get; private set; } // [-] - Kehrwert der TAD: multipliziert mit 100 enpricht es dem %-Wert der Wärmeamplitude welche innen noch ankommt, aufgrund einer Schwankung außen.
         //public double PenetrationDepth { get; } // δ [m] periodische Eindringtiefe 
-        public int TimeShift { get; } // [s] - Phasenverschiebung: Zeitverschiebung des Wärmedurchgangs durch das Bauteil
-        public int TimeShift_i { get; } // [s] - Zeitverschiebung der Wärmeaufnahme innen
-        public int TimeShift_e { get; } // [s] - Zeitverschiebung der Wärmeaufnahme außen
-        public double ThermalAdmittance_i { get; } // [W/m²K] - describes the ability of a surface to absorb and release heat (energy) upon a periodic sinusoidal temperature swing with a period of 24h. 
-        public double ThermalAdmittance_e { get; } // [W/m²K] - describes the ability to buffer heat upon external temperature swings. Again, it is assumed that the temperature on the opposite side is held constant.
-        public double ArealHeatCapacity_i { get; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
-        public double ArealHeatCapacity_e { get; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
-        public double EffectiveThermalMass { get; } // M [kg/m²]
-        public bool IsValid { get; }
+        public int TimeShift { get; private set; } // [s] - Phasenverschiebung: Zeitverschiebung des Wärmedurchgangs durch das Bauteil
+        public int TimeShift_i { get; private set; } // [s] - Zeitverschiebung der Wärmeaufnahme innen
+        public int TimeShift_e { get; private set; } // [s] - Zeitverschiebung der Wärmeaufnahme außen
+        public double ThermalAdmittance_i { get; private set; } // [W/m²K] - describes the ability of a surface to absorb and release heat (energy) upon a periodic sinusoidal temperature swing with a period of 24h. 
+        public double ThermalAdmittance_e { get; private set; } // [W/m²K] - describes the ability to buffer heat upon external temperature swings. Again, it is assumed that the temperature on the opposite side is held constant.
+        public double ArealHeatCapacity_i { get; private set; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
+        public double ArealHeatCapacity_e { get; private set; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
+        public double EffectiveThermalMass { get; private set; } // M [kg/m²]
+        public bool IsValid { get; private set; }
 
         public DynamicTempCalc() {}
 
@@ -48,6 +49,11 @@ namespace BauphysikToolWPF.Calculations
         {
             if (element.Layers.Count == 0 || element is null) return;
 
+            CalculateDynamicValues();
+        }
+
+        public void CalculateDynamicValues()
+        {
             // Calculated parameters (private setter)
             _zLayers = CreateLayerMatrices(RelevantLayers);
             _zElement = CreateElementMatrix(_zLayers, Rsi, Rse);

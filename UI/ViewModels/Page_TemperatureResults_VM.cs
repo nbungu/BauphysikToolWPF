@@ -23,10 +23,11 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private readonly TemperatureCurveCalc _tempCalc;
+        private static TemperatureCurveCalc _tempCalc;
 
         public Page_TemperatureResults_VM()
         {
+            if (_tempCalc != null && !UserSaved.Recalculate) return;
             _tempCalc = new TemperatureCurveCalc()
             {
                 Element = UserSaved.SelectedElement,

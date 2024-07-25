@@ -1,6 +1,4 @@
-﻿using BauphysikToolWPF.Calculations;
-using BauphysikToolWPF.SessionData;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
 {
@@ -9,12 +7,8 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class Page_DynamicResults : UserControl
     {
-        public static DynamicTempCalc DynamicTempCalculation { get; private set; } = new DynamicTempCalc();
-
         public Page_DynamicResults()
         {
-            DynamicTempCalculation = new DynamicTempCalc(UserSaved.SelectedElement, UserSaved.Rsi, UserSaved.Rse, UserSaved.Ti, UserSaved.Te);
-
             InitializeComponent();
             // -> Initializes xaml objects
             // -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
