@@ -84,6 +84,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedElement.Thickness),
             new PropertyItem<double>(Symbol.RValueElement, () => UserSaved.SelectedElement.RGesValue),
             new PropertyItem<double>(Symbol.RValueTotal, () => UserSaved.SelectedElement.RTotValue),
+            new PropertyItem<double>(Symbol.UValue, () => UserSaved.SelectedElement.UValue),
+            new PropertyItem<double>(Symbol.HeatFluxDensity, () => UserSaved.SelectedElement.QValue),
             new PropertyItem<double>(Symbol.SdThickness, () => UserSaved.SelectedElement.SdThickness),
             new PropertyItem<double>(Symbol.AreaMassDensity, () => UserSaved.SelectedElement.AreaMassDens),
             new PropertyItem<double>(Symbol.ArealHeatCapacity, () => UserSaved.SelectedElement.ArealHeatCapacity),

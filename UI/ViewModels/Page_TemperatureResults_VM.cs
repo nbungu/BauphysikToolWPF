@@ -21,18 +21,34 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_TemperatureResults.cs: Used in xaml as "DataContext"
     public partial class Page_TemperatureResults_VM : ObservableObject
     {
-        private readonly TemperatureCurveCalc _tempCalc = UserSaved.CalcResults;
+        // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
+        // Manually Trigger Calculation
+        private readonly TemperatureCurveCalc _tempCalc;
+
+        public Page_TemperatureResults_VM()
+        {
+            _tempCalc = new TemperatureCurveCalc()
+            {
+                Element = UserSaved.SelectedElement,
+                Rsi = UserSaved.Rsi,
+                Rse = UserSaved.Rse,
+                Ti = UserSaved.Ti,
+                Te = UserSaved.Te
+            };
+            _tempCalc.CalculateHomogeneous();
+            _tempCalc.CalculateTemperatureCurve();
+        }
 
         /*
          * Regular Instance Variables as Properties
          * 
          * Not depending on UI changes. No Observable function.
          */
-        public string Title => "Temperature";
-        public double Ti { get; private set; } = UserSaved.Ti;
-        public double Te { get; private set; } = UserSaved.Te;
-        public double Rsi { get; private set; } = UserSaved.Rsi;
-        public double Rse { get; private set; } = UserSaved.Rse;
+        public string Title = "Temperature Curve";
+        public double Ti => _tempCalc.Ti;
+        public double Te => _tempCalc.Te;
+        public double Rsi => _tempCalc.Rsi;
+        public double Rse => _tempCalc.Rse;
         public ISeries[] DataPoints => GetDataPoints();
         public RectangularSection[] LayerSections => DrawLayerSections();
         public Axis[] XAxes => DrawXAxes();
@@ -153,8 +169,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (!_tempCalc.IsValid) return Array.Empty<ISeries>();
 
-            double tsi_Pos = _tempCalc.LayerTemps.First().Key;
-            double tsi = _tempCalc.LayerTemps.First().Value;
+            double tsi_Pos = 0;
+            double tsi = _tempCalc.Tsi;
             double deltaTi = Math.Abs(Ti - tsi);
 
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -203,7 +219,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             };
 
             double tse_Pos = _tempCalc.LayerTemps.Last().Key;
-            double tse = _tempCalc.LayerTemps.Last().Value;
+            double tse = _tempCalc.Tse;
             double deltaTe = Math.Abs(Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {

@@ -59,7 +59,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
             <ColumnDefinition Width=".6*" MinWidth="448"/>
-            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="400"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
@@ -71,7 +71,7 @@
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
             <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
             <Button Content="Speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveProjectCommand}"/>
-            <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Open_Flat}" Margin="0,0,0,16"/>
+            <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_FileFolder_Flat}" Margin="0,0,0,16"/>
         </StackPanel>
 
         <!-- Middle  -->

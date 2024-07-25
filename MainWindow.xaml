@@ -430,16 +430,13 @@
     </Window.InputBindings>
 
     <Border Name="RootGrid" Style="{StaticResource WindowMainPanelStyle}">
-        
-        <Grid Name="ContentGrid">
 
+        <Grid Name="ContentGrid">
             <Grid.RowDefinitions>
                 <!--  Title bar  -->
                 <RowDefinition Height="30" />
-
                 <!-- Main Grid for Content -->
                 <RowDefinition Height="*" />
-
             </Grid.RowDefinitions>
             
             <!-- Title bar -->
@@ -448,7 +445,7 @@
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                     <Image Source="{StaticResource AppIcon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4,16,4"/>
                     <Button Content="Speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}"/>
-                    <Button Content="Öffnen"  Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Open_Flat}" Command="{Binding OpenFileCommand}"/>
+                    <Button Content="Öffnen"  Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_FileFolder_Flat}" Command="{Binding OpenFileCommand}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
@@ -491,7 +488,6 @@
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -500,7 +496,7 @@
                 </Grid.RowDefinitions>
 
                 <!-- Left Selection Box Top-->
-                <Border x:Name="ProjectBoxHeader" Grid.Column="1" Grid.Row="0" Background="{StaticResource PrimaryDarkHighlightBrush}" BorderThickness="0">
+                <Border x:Name="ProjectBoxHeader" Grid.Column="0" Grid.Row="0" Background="{StaticResource PrimaryDarkHighlightBrush}" BorderThickness="0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" MaxHeight="120"/>
@@ -519,7 +515,7 @@
 
                 <!--Left Selection Box Bottom-->
                 <ListBox x:Name="NavigationMenuListBox"
-                         Grid.Column="1"
+                         Grid.Column="0"
                          Grid.Row="1"                 
                          Style="{StaticResource NavigationMenuListBoxStyle}"
                          ItemsSource="{StaticResource NavigationMenuItems}"
@@ -527,7 +523,10 @@
                          ItemTemplate="{DynamicResource NavigationMenuItemTemplate}"/>
 
                 <!--The Actual Pages shown here-->
-                <ContentControl x:Name="MainWindowContent" Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
+                <ContentControl x:Name="MainWindowContent" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
+
+                <!--Toast Notification-->
+                <controls:ToastNotification x:Name="Toast" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             </Grid>
 
 

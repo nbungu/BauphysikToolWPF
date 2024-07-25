@@ -9,6 +9,8 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.UI.CustomControls;
+using MeasurementChain = BauphysikToolWPF.UI.Drawing.MeasurementChain;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -194,7 +196,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {
-            new PropertyItem<string>("Material", () => UserSaved.SelectedLayer.Material.Name),
             new PropertyItem<string>("Kategorie", () => UserSaved.SelectedLayer.Material.CategoryName),
             new PropertyItem<string>("Materialquelle", () => UserSaved.SelectedLayer.Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
             new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedLayer.Thickness, value => UserSaved.SelectedLayer.Thickness = value),
@@ -238,6 +239,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerPosition}b"
             },
+            new PropertyItem<bool>("Wirksame Schicht", () => UserSaved.SelectedLayer.SubConstruction.IsEffective, value => UserSaved.SelectedLayer.SubConstruction.IsEffective = value)
         } : new List<IPropertyItem>();
 
         public List<string> TiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Select(e => e.Comment).ToList();

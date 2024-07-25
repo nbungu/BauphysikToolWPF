@@ -62,8 +62,17 @@ namespace BauphysikToolWPF.Models
         [Ignore, JsonIgnore]
         public bool IsSelected { get; set; } // For UI Purposes 
 
+        private bool _isEffective = true;
         [Ignore, JsonIgnore]
-        public bool IsEffective { get; set; } = true;
+        public bool IsEffective
+        {
+            get => _isEffective;
+            set
+            {
+                _isEffective = value;
+                if (HasSubConstructions) SubConstruction.IsEffective = value;
+            }
+        }
 
         // Readonly Properties
 

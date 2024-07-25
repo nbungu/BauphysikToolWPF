@@ -60,14 +60,14 @@ namespace BauphysikToolWPF.SessionData
 
         // Use GlaserCalc as Collection for Results due to Polymorphism;
         // You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.
-        private static GlaserCalc _calcResults = new GlaserCalc();
-        public static GlaserCalc CalcResults
+        private static ThermalValuesCalc _calcResults = new ThermalValuesCalc();
+        public static ThermalValuesCalc CalcResults
         {
             get
             {
                 if (Recalculate)
                 {
-                    _calcResults = new GlaserCalc(SelectedElement, Rsi, Rse, Ti, Te, Rel_Fi, Rel_Fe);
+                    _calcResults = new ThermalValuesCalc(SelectedElement, Rsi, Rse, Ti, Te);
                     Recalculate = false;
                 }
                 return _calcResults;
@@ -84,6 +84,7 @@ namespace BauphysikToolWPF.SessionData
             get => _recalculate;
             set
             {
+                if (value == _recalculate) return;
                 _recalculate = value;
                 Logger.LogInfo($"Set Recalculate flag to: {value}");
             }

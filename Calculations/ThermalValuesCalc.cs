@@ -1,16 +1,15 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BT.Geometry;
+using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BT.Logging;
 
 namespace BauphysikToolWPF.Calculations
 {
     public class ThermalValuesCalc
     {
-        
         private Rectangle _calculationAreaBounds = new Rectangle();
         private readonly Dictionary<string, object> _layerMapping = new Dictionary<string, object>();
         private readonly Dictionary<int, List<string>> _areaToLayerPathCombinations = new Dictionary<int, List<string>>();
@@ -18,14 +17,14 @@ namespace BauphysikToolWPF.Calculations
         private readonly Dictionary<int, Rectangle> _areaRectangleMapping = new Dictionary<int, Rectangle>();
         private readonly Dictionary<int, double> _areaSharesMapping = new Dictionary<int, double>();
         
-        public Element Element { get; } = new Element();
-        public List<Layer> RelevantLayers { get; } = new List<Layer>();
-        public double Ti { get; }
-        public double Te { get; }
-        public double Rsi { get; }
-        public double Rse { get; }
+        public Element Element { get; set; } = new Element();
+        public double Ti { get; set; }
+        public double Te { get; set; }
+        public double Rsi { get; set; }
+        public double Rse { get; set; }
 
         // Calculated Properties
+        public List<Layer> RelevantLayers { get; private set; } = new List<Layer>();
         public double UValue { get; private set; }
         public double RTotal { get; private set; }
         public double RGes { get; private set; }
@@ -35,12 +34,10 @@ namespace BauphysikToolWPF.Calculations
         public bool IsValid { get; private set; }
 
         public ThermalValuesCalc() { }
-
         public ThermalValuesCalc(Element element, double rsi, double rse, double ti, double te)
         {
             if (element.Layers.Count == 0 || element is null) return;
             Element = element;
-            RelevantLayers = Element.SortLayers().Layers.Where(l => l.IsEffective).ToList();
             Rsi = Math.Max(0, rsi);
             Rse = Math.Max(0, rse);
             Ti = ti;
@@ -50,8 +47,9 @@ namespace BauphysikToolWPF.Calculations
             else CalculateHomogeneous();
         }
 
-        private void CalculateHomogeneous()
+        public void CalculateHomogeneous()
         {
+            RelevantLayers = Element.SortLayers().Layers.Where(l => l.IsEffective).ToList();
             try
             {
                 double rGes = 0.0;
@@ -59,22 +57,25 @@ namespace BauphysikToolWPF.Calculations
                 {
                     rGes += layer.R_Value;
                 }
-                RGes = Math.Round(rGes, 2);
-                RTotal = Math.Round(Rsi + rGes + Rse, 2);
-                UValue = Math.Round(1 / (Rsi + rGes + Rse), 2);
-                QValue = Math.Round(UValue * (Ti - Te), 2);
+                RGes = Math.Round(rGes, 3);
+                RTotal = Math.Round(Rsi + rGes + Rse, 3);
+                UValue = Math.Round(1 / (Rsi + rGes + Rse), 3);
+                QValue = Math.Round(UValue * (Ti - Te), 3);
                 ErrorEstimation = 0;
                 ErrorEstimationOk = true;
+                IsValid = true;
                 Logger.LogInfo($"Successfully calculated homogeneous Element: {Element}");
             }
             catch (Exception ex)
             {
+                IsValid = false;
                 Logger.LogError($"Error calculating homogeneous Element: {Element}, {ex.Message}");
             }
         }
 
-        private void CalculateInhomogeneous()
+        public void CalculateInhomogeneous()
         {
+            RelevantLayers = Element.SortLayers().Layers.Where(l => l.IsEffective).ToList();
             try
             {
                 PrepareMappingsForInhomogeneous();
@@ -146,26 +147,28 @@ namespace BauphysikToolWPF.Calculations
                 }
                 // R_ges (without Rsi, Rse)
                 double r_ges = (r_ges_upper + r_ges_lower) / 2;
-                RGes = r_ges;
+                RGes = Math.Round(r_ges, 3);
 
                 // R_tot (including Rsi, Rse)
                 double r_tot = (r_tot_upper + r_tot_lower) / 2;
-                RTotal = r_tot;
+                RTotal = Math.Round(r_tot, 3);
 
                 // U-Value
                 double uValue = Math.Pow(r_tot, -1);
-                UValue = uValue;
+                UValue = Math.Round(uValue, 3);
 
-                QValue = Math.Round(uValue * (Ti - Te), 2);
+                QValue = Math.Round(uValue * (Ti - Te), 3);
 
                 // Fehlerabschätzung
                 double e = r_tot != 0 ? (r_tot_upper - r_tot_lower) / (2 * r_tot) : 0;
                 ErrorEstimation = e * 100;
                 ErrorEstimationOk = e * 100 <= 20;
+                IsValid = true;
                 Logger.LogInfo($"Successfully calculated Inhomogeneous Element: {Element}");
             }
             catch (Exception ex)
             {
+                IsValid = false;
                 Logger.LogError($"Error calculating Inhomogeneous Element: {Element}, {ex.Message}");
             }
         }

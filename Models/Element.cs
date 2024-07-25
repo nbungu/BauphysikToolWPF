@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.Services;
+using BauphysikToolWPF.SessionData;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
@@ -8,8 +9,6 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Calculations;
-using BauphysikToolWPF.SessionData;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
@@ -210,9 +209,12 @@ namespace BauphysikToolWPF.Models
 
         [Ignore, JsonIgnore]
         public double RGesValue => UserSaved.CalcResults.RGes; // R_ges in m²K/W
-
         [Ignore, JsonIgnore]
         public double RTotValue => UserSaved.CalcResults.RTotal; // R_tot in m²K/W
+        [Ignore, JsonIgnore]
+        public double QValue => UserSaved.CalcResults.QValue; // q in W/m²
+        [Ignore, JsonIgnore]
+        public double UValue => UserSaved.CalcResults.UValue; // q in W/m²
 
 
         //------Konstruktor-----//

@@ -9,6 +9,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Xml.Linq;
+using BauphysikToolWPF.UI.CustomControls;
+using BT.Logging;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -82,6 +84,28 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
+        private void DeleteMaterial()
+        {
+            if (SelectedListViewItem.IsUserDefined)
+            {
+                if (IsUsedInLayer || IsUsedInSubConstr)
+                {
+                    AddLayerWindow.ShowToast($"Cannot delete custom Material: {SelectedListViewItem}. It is still being used!", ToastType.Warning);
+                    Logger.LogWarning($"Cannot delete custom Material: {SelectedListViewItem}. It is still being used!");
+                }
+                else
+                {
+                    DatabaseAccess.DeleteMaterial(SelectedListViewItem);
+                    SelectedListViewItem = new Material();
+                    AddLayerWindow.ShowToast($"Deleted custom Material: {SelectedListViewItem}", ToastType.Success);
+                    Logger.LogInfo($"Deleted custom Material: {SelectedListViewItem}");
+                    SelectedCategory = SelectedListViewItem.Category;
+                    SelectedTabIndex = _selectedTabIndex;
+                }
+            }
+        }
+
+        [RelayCommand]
         private void ResetMaterialList()
         {
             SearchString = "";
@@ -92,7 +116,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (value is null) return;
             Thickness = Material.DefaultLayerWidthForCategory(value.Category);
         }
-
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
@@ -113,10 +136,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
+        [NotifyPropertyChangedFor(nameof(CustomCategories))]
         private int _selectedTabIndex;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(MaterialProperties))]
+        [NotifyPropertyChangedFor(nameof(AllowDelete))]
         private Material _selectedListViewItem = new Material();
 
         /*
@@ -125,17 +150,20 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public List<IPropertyItem> MaterialProperties => _selectedListViewItem is null ? new List<IPropertyItem>() : new List<IPropertyItem>()
         {
-            new PropertyItem<string>("Material", () => _selectedListViewItem.Name),
-            new PropertyItem<string>("Kategorie", () => _selectedListViewItem.CategoryName),
+            new PropertyItem<string>("Materialbezeichnung", () => _selectedListViewItem.Name, value => _selectedListViewItem.Name = value),
             new PropertyItem<double>(Symbol.ThermalConductivity, () => _selectedListViewItem.ThermalConductivity, value => _selectedListViewItem.ThermalConductivity = value),
             new PropertyItem<int>(Symbol.RawDensity, () => _selectedListViewItem.BulkDensity, value => _selectedListViewItem.BulkDensity = value),
             new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => _selectedListViewItem.SpecificHeatCapacity, value => _selectedListViewItem.SpecificHeatCapacity = value),
             new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => _selectedListViewItem.DiffusionResistance, value => _selectedListViewItem.DiffusionResistance = value),
+            new PropertyItem<bool>("Material in Benutzung", () => IsUsedInLayer || IsUsedInSubConstr),
         };
 
-        public List<MaterialCategory> CustomCategories => DatabaseAccess.GetMaterialsQuery().Where(m => m.IsUserDefined).Select(m => m.Category).ToList();
+        public List<MaterialCategory> CustomCategories => DatabaseAccess.GetMaterialsQuery().Where(m => m.IsUserDefined).Select(m => m.Category).Distinct().ToList();
         public List<Material> Materials => GetMaterials();
-        
+        public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
+        public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => l.MaterialId == SelectedListViewItem.Id);
+        public bool IsUsedInSubConstr => DatabaseAccess.GetSubConstructionQuery().Any(s => s.MaterialId == SelectedListViewItem.Id);
+
 
         // TODO: implement QueryFilterConfig...
         private List<Material> GetMaterials()

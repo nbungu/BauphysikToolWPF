@@ -176,7 +176,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
             <ColumnDefinition Width=".6*" MinWidth="448"/>
-            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="400"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
         </Grid.ColumnDefinitions>
 
         <!-- Top -->

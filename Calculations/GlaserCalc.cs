@@ -14,8 +14,8 @@ namespace BauphysikToolWPF.Calculations
     public class GlaserCalc : TemperatureCurveCalc
     {
         // private fields as Instance Variables
-        public double RelFi { get; private set; }
-        public double RelFe { get; private set; }
+        public double RelFi { get; set; }
+        public double RelFe { get; set; }
 
         // public fields as Properties
         public double PhiMax { get; private set; }
@@ -35,10 +35,9 @@ namespace BauphysikToolWPF.Calculations
             RelFi = Math.Max(0, relFi);
             RelFe = Math.Max(0, relFe);
 
-            Calculate();
+            CalculateGlaser();
         }
-
-        private void Calculate()
+        public void CalculateGlaser()
         {
             try
             {
@@ -63,7 +62,7 @@ namespace BauphysikToolWPF.Calculations
         {
             //Dictionary is not ordered: Instead use List as ordered collection
             var p_sat_List = new SortedDictionary<double, double>(); //new Methode(): Konstruktoren aufruf
-
+            
             //Starting from inner side
             double widthPosition = 0;
             for (int i = 0; i < LayerTemps.Count; i++)
@@ -87,8 +86,10 @@ namespace BauphysikToolWPF.Calculations
         //Bestimmung des Wasserdampfpartialdrucks innen und außen. Gleichung 2.3 umgestellt nach p
         private SortedDictionary<double, double> GetLayerP(double relFi, double relFe, double ti, double te, double sdThickness)
         {
-            double pi = Math.Round((relFi / 100) * P_sat(ti), 1);
-            double pe = Math.Round((relFe / 100) * P_sat(te), 1);
+            if (sdThickness == 0) return new SortedDictionary<double, double>();
+
+            double pi = Math.Round((relFi / 100) * P_sat(ti), 2);
+            double pe = Math.Round((relFe / 100) * P_sat(te), 2);
 
             return new SortedDictionary<double, double>
             {
@@ -102,7 +103,7 @@ namespace BauphysikToolWPF.Calculations
             double b = (temperature < 0) ? 1.486 : 1.098;
             double n = (temperature < 0) ? 12.3 : 8.02;
             double p_sat = a * Math.Pow(b + (temperature / 100), n);
-            return Math.Round(p_sat, 1);
+            return Math.Round(p_sat, 2);
         }
 
         // public static, avoid full instance creation process if only a single Value needs to be Calculated 
@@ -111,12 +112,12 @@ namespace BauphysikToolWPF.Calculations
             /* if (FRsi * (Ti - Te) >= 0 && FRsi * (Ti - Te) <= 30)
              {
                  double phiMax = 0.8 * Math.Pow((109.8 + FRsi * (Ti - Te) + Te) / (109.8 + Ti), 8.02) * 100;
-                 return Math.Round(phiMax, 1);
+                 return Math.Round(phiMax, 2);
              }
              throw new ArgumentException("Randbedingung zur Berechnung nicht erfüllt."); //TODO Rechnung erlauben, jedoch Hinweis entsprechend einblenden
             */
             double phiMax = 0.8 * Math.Pow((109.8 + fRsi * (ti - te) + te) / (109.8 + ti), 8.02) * 100;
-            return Math.Round(phiMax, 1);
+            return Math.Round(phiMax, 2);
         }
         public static double GetMaxTaupunkt_i(double ti, double rel_fi) // Taupunkttemperatur Luft innenseite
         {
@@ -125,7 +126,7 @@ namespace BauphysikToolWPF.Calculations
                 // Sublimationskurve 
             }
             double theta_T_i = Math.Pow(rel_fi / 100, 0.1247) * (109.8 + ti) - 109.8;
-            return Math.Round(theta_T_i, 2);
+            return Math.Round(theta_T_i, 3);
         }
     }
 }

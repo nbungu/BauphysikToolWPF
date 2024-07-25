@@ -19,7 +19,27 @@ namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class Page_MoistureResults_VM : ObservableObject
     {
-        private readonly GlaserCalc _glaser = UserSaved.CalcResults;
+        // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
+        // Manually Trigger Calculation
+        private readonly GlaserCalc _glaser;
+
+        public Page_MoistureResults_VM()
+        {
+            _glaser = new GlaserCalc()
+            {
+                Element = UserSaved.SelectedElement,
+                Rsi = UserSaved.Rsi,
+                Rse = UserSaved.Rse,
+                Ti = UserSaved.Ti,
+                Te = UserSaved.Te,
+                RelFi = UserSaved.Rel_Fi,
+                RelFe = UserSaved.Rel_Fe
+            };
+            _glaser.CalculateHomogeneous(); // Bauteil berechnen
+            _glaser.CalculateTemperatureCurve(); // Temperaturkurve
+            _glaser.CalculateGlaser(); // Glaser Kurve
+        }
+
 
         /*
          * Regular Instance Variables as Properties
@@ -27,11 +47,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not depending on UI changes. No Observable function.
          */
 
-        public string Title => "Moisture";
-        public double Ti { get; private set; } = UserSaved.Ti;
-        public double Te { get; private set; } = UserSaved.Te;
-        public double Rel_Fi { get; private set; } = UserSaved.Rel_Fi;
-        public double Rel_Fe { get; private set; } = UserSaved.Rel_Fe;
+        public string Title = "Moisture";
+        public double Ti => _glaser.Ti;
+        public double Te => _glaser.Te;
+        public double Rel_Fi => _glaser.RelFi;
+        public double Rel_Fe => _glaser.RelFe;
         public List<OverviewItem> OverviewItems => GetOverviewItemsList();
         public ISeries[] DataPoints => GetDataPoints();
         public RectangularSection[] LayerSections => DrawLayerSections();

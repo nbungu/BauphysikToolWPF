@@ -42,7 +42,7 @@
 
     </Window.Resources>
 
-    <Grid Background="{StaticResource PrimaryLightBrush}" Margin="8">
+    <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height=".8*"/>
             <RowDefinition Height="Auto"/>
@@ -51,13 +51,13 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="160" MaxWidth="480"/>
             <ColumnDefinition Width=".50*" MinWidth="200"/>
-            <ColumnDefinition Width=".30*" MinWidth="160" MaxWidth="480"/>
+            <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
         <!--Left Column: Material Category-->
         <Grid Grid.Column="0" Margin="8" Grid.RowSpan="3">
             <Grid.RowDefinitions>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
@@ -94,14 +94,14 @@
         <!--Center Column: Material Selection-->
         <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Margin="8,8,16,8">
             <Grid.RowDefinitions>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Label Content="Material Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
-            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,8">
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="4,0,0,8">
                 <TextBox Text="{Binding SearchString}" TextAlignment="Left" MaxLength="320" Width="320" Margin="0,0,8,0"/>
                 <Button Tag="{StaticResource ButtonIcon_Cancel_B}" Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding ResetMaterialListCommand}" Margin="-40,0,8,0"/>
                 <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle03_Mini}" Margin="0,0,8,0"/>
@@ -111,30 +111,38 @@
         </Grid>
 
         <!--Grid Splitter-->
-        <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
+        <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,8,0,8"/>
 
         <!--Right Column: Dimensions-->
 
         <!--Left Column: Material Category-->
         <Grid Grid.Row="0" Grid.Column="2" Margin="16,8,8,8" Grid.RowSpan="3">
             <Grid.RowDefinitions>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Label Content="Material bearbeiten" FontWeight="Bold" HorizontalAlignment="Left"/>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                        Command="{Binding DeleteMaterialCommand}"
+                        Tag="{StaticResource ButtonIcon_Delete_B}"
+                        Margin="0,0,8,0"
+                        IsEnabled="{Binding AllowDelete}"
+                        ToolTip="Schicht löschen"/>
+            </StackPanel>
 
-            <controls:PropertyDataGrid Grid.Row="1" Properties="{Binding MaterialProperties}" />
+            <controls:PropertyDataGrid Grid.Row="1" Properties="{Binding MaterialProperties}" Margin="0, 8,0,0"/>
 
-            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,16,0,16">
+            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,16,0,16">
                 <Label Content="Schichtdicke" FontWeight="Bold" HorizontalAlignment="Left"/>
                 <TextBox Text="{Binding Thickness, Converter={StaticResource DoubleToStringConverter}}" TextAlignment="Center" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
                 <Label Content="cm" FontWeight="Bold"/>
             </StackPanel>
 
-            <Button Grid.Row="3"
+            <Button Grid.Row="4"
                     Content="Übernehmen"
                     VerticalAlignment="Bottom"
                     Command="{Binding AddLayerCommand}"
@@ -144,7 +152,8 @@
         </Grid>
 
 
-        
+        <!--Toast Notification-->
+        <controls:ToastNotification x:Name="Toast" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
 
     </Grid>
 

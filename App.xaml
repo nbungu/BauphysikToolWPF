@@ -107,13 +107,25 @@
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
 
         <!--Flat Style by https://www.flaticon.com/authors/srip -->
-        <BitmapImage x:Key="ButtonIcon_Save_Flat" UriSource="/Resources/Icons/floppy-disk.png"/>
-        <BitmapImage x:Key="ButtonIcon_Open_Flat" UriSource="/Resources/Icons/file-folder.png"/>
-        <BitmapImage x:Key="ButtonIcon_Settings_Flat" UriSource="/Resources/Icons/setting.png"/>
+        <BitmapImage x:Key="ButtonIcon_Database_Flat" UriSource="/Resources/Icons/Flat/database.png"/>
+        <BitmapImage x:Key="ButtonIcon_DatabaseOK_Flat" UriSource="/Resources/Icons/Flat/database_ok.png"/>
+        <BitmapImage x:Key="ButtonIcon_Error_Flat" UriSource="/Resources/Icons/Flat/error.png"/>
+        <BitmapImage x:Key="ButtonIcon_FileFolder_Flat" UriSource="/Resources/Icons/Flat/file-folder.png"/>
+        <BitmapImage x:Key="ButtonIcon_Info_Flat" UriSource="/Resources/Icons/Flat/info.png"/>
+        <BitmapImage x:Key="ButtonIcon_Layers_Flat" UriSource="/Resources/Icons/Flat/layers.png"/>
+        <BitmapImage x:Key="ButtonIcon_Save_Flat" UriSource="/Resources/Icons/Flat/save.png"/>
+        <BitmapImage x:Key="ButtonIcon_Settings_Flat" UriSource="/Resources/Icons/Flat/setting.png"/>
+        <BitmapImage x:Key="ButtonIcon_Success_Flat" UriSource="/Resources/Icons/Flat/success.png"/>
+        <BitmapImage x:Key="ButtonIcon_User_Flat" UriSource="/Resources/Icons/Flat/user.png"/>
+        <BitmapImage x:Key="ButtonIcon_Warning_Flat" UriSource="/Resources/Icons/Flat/warning.png"/>
 
         <!--Application Icon -->
         <BitmapImage x:Key="AppIcon" UriSource="/Resources/Icons/Ordner_Icon.ico"/>
 
+        <Style x:Key="{x:Type Image}" TargetType="{x:Type Image}">
+            <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+        </Style>
 
         <!-- Defines the type of UIElement used in the ItemsPanel-->
         <ItemsPanelTemplate x:Key="Canvas">

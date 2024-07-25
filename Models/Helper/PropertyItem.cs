@@ -43,8 +43,12 @@ namespace BauphysikToolWPF.Models.Helper
 
         ThermalConductivity,                // λ
         SpecificHeatCapacity,               // c
-        VolumetricHeatCapacity,              // C_V
-        ArealHeatCapacity                   // C_i
+        VolumetricHeatCapacity,             // C_V
+        ArealHeatCapacity,                  // C_i
+        HeatFluxDensity,                    // q
+        FRsi,
+
+
     }
 
     public enum Unit
@@ -135,7 +139,7 @@ namespace BauphysikToolWPF.Models.Helper
         JoulesPerKilogramKelvin,       // J/(kg·K) - Specific Heat Capacity
         WattsPerMeterKelvin,           // W/(m·K) - Thermal Conductivity
         WattsPerSquareMeterKelvin,     // W/(m²·K) - Thermal Transmittance (U-value)
-        WattsPerSquareMeter,           // W/m² - Heat Flux
+        WattsPerSquareMeter,           // W/m² - Heat Flux Density
         KilojoulesPerSquareMeterKelvin,// kJ/(m²·K) - Heat Storage Capacity
         SquareMeterKelvinPerWatt,      // m²·K/W - Thermal Resistance (R-value)
         KilojoulesPerCubicMeterKelvin, // kJ/(m³·K) - Volumetric Heat Capacity
@@ -283,25 +287,26 @@ namespace BauphysikToolWPF.Models.Helper
                 { Symbol.Height, (Unit.Centimeter, "h", "", "cm", "", "Höhe", "") },
                 { Symbol.TemperatureInterior, (Unit.Celsius, "θ", "i", "°C", "", "Raumtemperatur", "") },
                 { Symbol.TemperatureExterior, (Unit.Celsius, "θ", "e", "°C", "", "Außentemperatur", "") },
-                { Symbol.TemperatureSurfaceInterior, (Unit.Celsius, "θ", "si", "°C", "", "Oberflächentemperatur (innen)", "") },
-                { Symbol.TemperatureSurfaceExterior, (Unit.Celsius, "θ", "se", "°C", "", "Oberflächentemperatur (außen)", "") },
+                { Symbol.TemperatureSurfaceInterior, (Unit.Celsius, "θ", "si", "°C", "", "Oberflächentemperatur, Innen", "") },
+                { Symbol.TemperatureSurfaceExterior, (Unit.Celsius, "θ", "se", "°C", "", "Oberflächentemperatur, Außen", "") },
                 { Symbol.RValueLayer, (Unit.SquareMeterKelvinPerWatt, "R", "i", "m²K", "W", "R-Wert", "Wärmedurchlasswiderstand") },
-                { Symbol.RValueElement, (Unit.SquareMeterKelvinPerWatt, "R", "ges", "m²K", "W", "R-Wert", "Wärmedurchlasswiderstand") },
-                { Symbol.RValueTotal, (Unit.SquareMeterKelvinPerWatt, "R", "T", "m²K", "W", "R-Wert", "Wärmedurchlasswiderstand") },
-                { Symbol.TransferResistanceSurfaceInterior, (Unit.SquareMeterKelvinPerWatt, "R", "si", "m²K", "W", "Wärmeübergangswiderstand (innen)", "") },
-                { Symbol.TransferResistanceSurfaceExterior, (Unit.SquareMeterKelvinPerWatt, "R", "se", "m²K", "W", "Wärmeübergangswiderstand (außen)", "") },
+                { Symbol.RValueElement, (Unit.SquareMeterKelvinPerWatt, "R", "ges", "m²K", "W", "R-Wert Bauteil", "Wärmedurchlasswiderstand") },
+                { Symbol.RValueTotal, (Unit.SquareMeterKelvinPerWatt, "R", "T", "m²K", "W", "R-Total", "Wärmedurchlasswiderstand") },
+                { Symbol.TransferResistanceSurfaceInterior, (Unit.SquareMeterKelvinPerWatt, "R", "si", "m²K", "W", "Wärmeübergangswiderstand, Innen", "") },
+                { Symbol.TransferResistanceSurfaceExterior, (Unit.SquareMeterKelvinPerWatt, "R", "se", "m²K", "W", "Wärmeübergangswiderstand, Außen", "") },
                 { Symbol.UValue, (Unit.WattsPerSquareMeterKelvin, "U", "", "W", "m²K", "Wärmedurchgangskoeffizient", "U-Wert") },
                 { Symbol.RawDensity, (Unit.KilogramPerCubicMeter, "ρ", "", "kg", "m³", "Rohdichte", "") },
-                { Symbol.AreaMassDensity, (Unit.KilogramPerSquareMeter, "m'", "", "kg", "m²", "Flächenbezogene Masse", "") },
+                { Symbol.AreaMassDensity, (Unit.KilogramPerSquareMeter, "m'", "", "kg", "m²", "Flächenbez. Masse", "") },
                 { Symbol.SdThickness, (Unit.KilogramPerSquareMeter, "s", "d", "m", "", "sd-Wert", "Wasserdampfdiffusionsäquivalente Luftschichtdicke") },
                 { Symbol.RelativeHumidity, (Unit.Percent, "φ", "", "%", "", "Rel. Luftfeuchtigkeit", "") },
-                { Symbol.RelativeHumidityInterior, (Unit.Percent, "φ", "i", "%", "", "Rel. Luftfeuchtigkeit (innen)", "") },
-                { Symbol.RelativeHumidityExterior, (Unit.Percent, "φ", "e", "%", "", "Rel. Luftfeuchtigkeit (außen)", "") },
+                { Symbol.RelativeHumidityInterior, (Unit.Percent, "φ", "i", "%", "", "Rel. Luftfeuchtigkeit, Innen", "") },
+                { Symbol.RelativeHumidityExterior, (Unit.Percent, "φ", "e", "%", "", "Rel. Luftfeuchtigkeit, Außen", "") },
                 { Symbol.VapourDiffusionResistance, (Unit.None, "µ", "", "-", "", "µ-Wert", "Wasserdampfdiffusionswiderstandszahl (trocken)") },
                 { Symbol.ThermalConductivity, (Unit.WattsPerMeterKelvin, "λ", "", "W", "mK", "Wärmeleitfähigkeit", "Bemessungswert der Wärmeleitfähigkeit (WLF)") },
-                { Symbol.SpecificHeatCapacity, (Unit.JoulesPerKilogramKelvin, "c", "", "J", "kgK", "spezifische Wärmekapazität", "") },
-                { Symbol.VolumetricHeatCapacity, (Unit.KilojoulesPerCubicMeterKelvin, "C", "V", "kJ", "m³K", "Vol.bezogene Wärmekapazität", "") },
-                { Symbol.ArealHeatCapacity, (Unit.KilojoulesPerCubicMeterKelvin, "C", "", "kJ", "m²K", "Flächenbezogene Wärmekapazität", "") },
+                { Symbol.SpecificHeatCapacity, (Unit.JoulesPerKilogramKelvin, "c", "", "J", "kgK", "Spezifische Wärmekapazität", "") },
+                { Symbol.VolumetricHeatCapacity, (Unit.KilojoulesPerCubicMeterKelvin, "C", "V", "kJ", "m³K", "Volumenbez. Wärmekapazität", "") },
+                { Symbol.ArealHeatCapacity, (Unit.KilojoulesPerCubicMeterKelvin, "C", "", "kJ", "m²K", "Flächenbez. Wärmekapazität", "") },
+                { Symbol.HeatFluxDensity, (Unit.WattsPerSquareMeter, "q", "", "W", "m²", "Wärmestromdichte", "") },
             };
 
             // Get the corresponding properties for the given symbol

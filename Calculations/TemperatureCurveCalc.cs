@@ -18,23 +18,24 @@ namespace BauphysikToolWPF.Calculations
         public double TsiMin { get; private set; }
         public double Tsi { get; private set; }
         public double Tse { get; private set; }
-        public SortedDictionary<double, double> LayerTemps { get; private set; } // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
+        public SortedDictionary<double, double> LayerTemps { get; private set; } = new SortedDictionary<double, double>(); // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
 
         // Constructors
-        public TemperatureCurveCalc() {}
+        public TemperatureCurveCalc() : base() {}
         public TemperatureCurveCalc(Element element, double rsi, double rse, double ti, double te) : base(element, rsi, rse, ti, te)
         {
             if (element.Layers.Count == 0 || element is null) return;
-            Calculate();
+            
+            CalculateTemperatureCurve();
         }
         
-        private void Calculate()
+        public void CalculateTemperatureCurve()
         {
             CalculateLayerTemps();  // Bsp. S.33
             CalculatefRsiValue();   // Gl. 3-1; S.36. Schimmelwahrscheinlichkeit
             CalculateTsiMin();      // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7. Schimmelwahrscheinlichkeit
         }
-
+        
         private void CalculateLayerTemps()
         {
             try
@@ -43,7 +44,7 @@ namespace BauphysikToolWPF.Calculations
                 var tempList = new SortedDictionary<double, double>();
 
                 // first tempValue (Tsi)
-                double tsi = Math.Round(Ti - Rsi * QValue, 2);
+                double tsi = Math.Round(Ti - Rsi * QValue, 3);
                 tempList.Add(0, tsi); // key, value
 
                 // Starting from inner side
@@ -53,18 +54,13 @@ namespace BauphysikToolWPF.Calculations
                     widthPosition += RelevantLayers[i].Thickness;
                     if (RelevantLayers[i].Thickness <= 0) continue;
 
-                    double tempValue = Math.Round(tempList.ElementAt(i).Value - RelevantLayers[i].R_Value * QValue, 2);
+                    double tempValue = Math.Round(tempList.ElementAt(i).Value - RelevantLayers[i].R_Value * QValue, 3);
                     tempList.Add(widthPosition, tempValue);
                 }
                 LayerTemps = tempList;
                 Tsi = tsi;
                 Tse = LayerTemps.Last().Value;
                 Logger.LogInfo($"Successfully calculated Layer Temparatures of Element: {Element}");
-
-                // TODO implement 
-                /*if (widthPosition == 0)
-                    return temp_List;
-                else throw new ArgumentOutOfRangeException("calculation failed");*/
             }
             catch (Exception ex)
             {
@@ -76,13 +72,12 @@ namespace BauphysikToolWPF.Calculations
         {
             // Durch 0 teilen abfangen
             if (Ti - Te == 0) FRsi = 0;
-            else FRsi = Math.Round((Tsi - Te) / (Ti - Te), 2);
+            else FRsi = Math.Round((Tsi - Te) / (Ti - Te), 3);
         }
         private void CalculateTsiMin()
         {
-            TsiMin = Math.Round(0.7 * (Ti - Te) + Te, 2);
+            TsiMin = Math.Round(0.7 * (Ti - Te) + Te, 3);
         }
-
 
         /* Hardcoded example:
          double tsiVal = tiVal - SurfaceResistance.selectedRsi * qValue;
