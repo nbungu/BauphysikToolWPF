@@ -118,6 +118,7 @@
         <BitmapImage x:Key="ButtonIcon_Success_Flat" UriSource="/Resources/Icons/Flat/success.png"/>
         <BitmapImage x:Key="ButtonIcon_User_Flat" UriSource="/Resources/Icons/Flat/user.png"/>
         <BitmapImage x:Key="ButtonIcon_Warning_Flat" UriSource="/Resources/Icons/Flat/warning.png"/>
+        <BitmapImage x:Key="ButtonIcon_Summary_Flat" UriSource="/Resources/Icons/Flat/summary.png"/>
 
         <!--Application Icon -->
         <BitmapImage x:Key="AppIcon" UriSource="/Resources/Icons/Ordner_Icon.ico"/>

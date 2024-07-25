@@ -234,11 +234,11 @@
                     <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="LayerSetup">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Layer_W}"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Layers_Flat}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Erstellen"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Summary">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_EnvVar_W}"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Summary_Flat}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Zusammenfassung"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Header2">

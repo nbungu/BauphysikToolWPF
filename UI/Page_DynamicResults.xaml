@@ -156,18 +156,8 @@
                         DrawMargin="{Binding ChartMargin_i}"
                         Margin="8,8,0,8"/>
 
-                    <!-- Elements inside of ViewBox are dynamically sizable-->
-                    <Viewbox Grid.Column="1" VerticalAlignment="Top">
-                        <!-- "Layers Canvas" -->
-                        <ItemsControl 
-                            x:Name="layers_ItemsControl"
-                            Width="360"
-                            Height="450"                                 
-                            ItemsSource="{Binding LayerGeometries}"
-                            ItemsPanel="{StaticResource Canvas}"
-                            ItemContainerStyle="{StaticResource CanvasContainerStyle}"
-                            ItemTemplate="{StaticResource CanvasLayerItemStyle}"/>
-                    </Viewbox>
+                    <!-- "Layers Canvas" -->
+                    <controls:LayersCanvas x:Name="LayersCanvasVerticalCut" Grid.Column="1" VerticalAlignment="Top" Width="{Binding CanvasSizeVerticalCut.Width}" Height="{Binding CanvasSizeVerticalCut.Height}" DrawingGeometries="{Binding VerticalCutDrawing}"/>
 
                     <lvc:CartesianChart
                         Grid.Column="2"

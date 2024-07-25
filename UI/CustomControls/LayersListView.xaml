@@ -62,7 +62,7 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                                     <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
 
                                     <!-- StackPanel for the Edit and Delete buttons -->
-                                    <StackPanel x:Name="EditDeletePanel" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed" Margin="64,0,0,0">
+                                    <StackPanel x:Name="EditDeletePanel" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed" Margin="4,0,0,0">
                                         <Label x:Name="LabelBalkenlage" Content="Balkenlage:" FontSize="12" Foreground="{StaticResource PrimaryBorderBrush}">
                                             <Label.Style>
                                                 <Style TargetType="Label">

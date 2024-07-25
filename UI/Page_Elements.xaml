@@ -281,6 +281,10 @@
                         <Label Content="{Binding SelectedElement.RGesValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal">
+                        <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.UValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
                         <Label Content="sd-Wert:" HorizontalAlignment="Left" Width="96"/>
                         <Label Content="{Binding SelectedElement.SdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
                     </StackPanel>

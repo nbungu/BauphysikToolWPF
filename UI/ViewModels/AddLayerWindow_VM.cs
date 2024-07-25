@@ -2,15 +2,13 @@
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.CustomControls;
+using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Xml.Linq;
-using BauphysikToolWPF.UI.CustomControls;
-using BT.Logging;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -19,6 +17,13 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
         public string Title = "AddLayerWindow";
+
+        public AddLayerWindow_VM()
+        {
+            PropertyItem<string>.PropertyChanged += MaterialPropertiesChanged;
+            PropertyItem<int>.PropertyChanged += MaterialPropertiesChanged;
+            PropertyItem<double>.PropertyChanged += MaterialPropertiesChanged;
+        }
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -96,13 +101,37 @@ namespace BauphysikToolWPF.UI.ViewModels
                 else
                 {
                     DatabaseAccess.DeleteMaterial(SelectedListViewItem);
-                    SelectedListViewItem = new Material();
                     AddLayerWindow.ShowToast($"Deleted custom Material: {SelectedListViewItem}", ToastType.Success);
                     Logger.LogInfo($"Deleted custom Material: {SelectedListViewItem}");
-                    SelectedCategory = SelectedListViewItem.Category;
-                    SelectedTabIndex = _selectedTabIndex;
+                    SelectedListViewItem = null;
+                    SelectedTabIndex = -1;
+                    SelectedTabIndex = 1;
                 }
             }
+        }
+        [RelayCommand]
+        private void CreateMaterial()
+        {
+            Material newMaterial;
+            if (SelectedListViewItem != null)
+            {
+                newMaterial = SelectedListViewItem.Copy();
+                newMaterial.IsUserDefined = true;
+                newMaterial.Name += " (Kopie)";
+            }
+            else
+            {
+                newMaterial = new Material()
+                {
+                    Name = "Neu erstelltes Material",
+                    IsUserDefined = true,
+                    Category = SelectedCategory
+                };
+            }
+            DatabaseAccess.CreateMaterial(newMaterial);
+            SelectedTabIndex = -1;
+            SelectedTabIndex = 1;
+            SelectedListViewItem = newMaterial;
         }
 
         [RelayCommand]
@@ -135,20 +164,21 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static MaterialCategory _selectedCategory = MaterialCategory.NotDefined;
 
         [ObservableProperty]
+        //[NotifyPropertyChangedFor(nameof(CustomCategories))]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        [NotifyPropertyChangedFor(nameof(CustomCategories))]
-        private int _selectedTabIndex;
+        [NotifyPropertyChangedFor(nameof(AllowCreate))]
+        private static int _selectedTabIndex;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(MaterialProperties))]
         [NotifyPropertyChangedFor(nameof(AllowDelete))]
-        private Material _selectedListViewItem = new Material();
+        [NotifyPropertyChangedFor(nameof(MaterialProperties))]
+        private Material? _selectedListViewItem;
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public List<IPropertyItem> MaterialProperties => _selectedListViewItem is null ? new List<IPropertyItem>() : new List<IPropertyItem>()
+        public List<IPropertyItem> MaterialProperties => SelectedListViewItem is null ? new List<IPropertyItem>() : new List<IPropertyItem>()
         {
             new PropertyItem<string>("Materialbezeichnung", () => _selectedListViewItem.Name, value => _selectedListViewItem.Name = value),
             new PropertyItem<double>(Symbol.ThermalConductivity, () => _selectedListViewItem.ThermalConductivity, value => _selectedListViewItem.ThermalConductivity = value),
@@ -158,13 +188,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<bool>("Material in Benutzung", () => IsUsedInLayer || IsUsedInSubConstr),
         };
 
-        public List<MaterialCategory> CustomCategories => DatabaseAccess.GetMaterialsQuery().Where(m => m.IsUserDefined).Select(m => m.Category).Distinct().ToList();
+        //public List<MaterialCategory> CustomCategories => DatabaseAccess.GetMaterialsQuery().Where(m => m.IsUserDefined).Select(m => m.Category).Distinct().ToList();
         public List<Material> Materials => GetMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
+        public bool AllowCreate => SelectedTabIndex == 1;
         public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => l.MaterialId == SelectedListViewItem.Id);
         public bool IsUsedInSubConstr => DatabaseAccess.GetSubConstructionQuery().Any(s => s.MaterialId == SelectedListViewItem.Id);
-
-
+        
         // TODO: implement QueryFilterConfig...
         private List<Material> GetMaterials()
         {
@@ -192,6 +222,16 @@ namespace BauphysikToolWPF.UI.ViewModels
                     m.IsUserDefined == (SelectedTabIndex == 1) &&
                     m.Category == SelectedCategory).ToList();
             }
+        }
+
+        private void MaterialPropertiesChanged()
+        {
+            if (SelectedListViewItem is null || !SelectedListViewItem.IsUserDefined) return;
+            DatabaseAccess.UpdateMaterial(SelectedListViewItem);
+            SelectedListViewItem = null;
+
+
+
         }
     }
 }

@@ -59,19 +59,19 @@ namespace BauphysikToolWPF.UI.CustomControls
             switch (ToastType)
             {
                 case ToastType.Info:
-                    RootGrid.Background = new SolidColorBrush(Colors.LightBlue);
+                    RootGrid.Background = new SolidColorBrush(Colors.AliceBlue);
                     ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/auge.png"));
                     break;
                 case ToastType.Success:
-                    RootGrid.Background = new SolidColorBrush(Colors.Green);
+                    RootGrid.Background = new SolidColorBrush(Colors.AliceBlue);
                     ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/auge.png"));
                     break;
                 case ToastType.Warning:
-                    RootGrid.Background = new SolidColorBrush(Colors.Orange);
+                    RootGrid.Background = new SolidColorBrush(Colors.LightGoldenrodYellow);
                     ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/auge.png"));
                     break;
                 case ToastType.Error:
-                    RootGrid.Background = new SolidColorBrush(Colors.Red);
+                    RootGrid.Background = new SolidColorBrush(Colors.LightGoldenrodYellow);
                     ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/auge.png"));
                     break;
             }
