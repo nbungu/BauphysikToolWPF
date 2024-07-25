@@ -167,6 +167,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         //[NotifyPropertyChangedFor(nameof(CustomCategories))]
         [NotifyPropertyChangedFor(nameof(Materials))]
         [NotifyPropertyChangedFor(nameof(AllowCreate))]
+        [NotifyPropertyChangedFor(nameof(MaterialProperties))]
         private static int _selectedTabIndex;
 
         [ObservableProperty]
@@ -187,11 +188,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => _selectedListViewItem.DiffusionResistance, value => _selectedListViewItem.DiffusionResistance = value),
             new PropertyItem<bool>("Material in Benutzung", () => IsUsedInLayer || IsUsedInSubConstr),
         };
-
-        //public List<MaterialCategory> CustomCategories => DatabaseAccess.GetMaterialsQuery().Where(m => m.IsUserDefined).Select(m => m.Category).Distinct().ToList();
         public List<Material> Materials => GetMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
         public bool AllowCreate => SelectedTabIndex == 1;
+        public bool ItemSelected => SelectedListViewItem != null;
         public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => l.MaterialId == SelectedListViewItem.Id);
         public bool IsUsedInSubConstr => DatabaseAccess.GetSubConstructionQuery().Any(s => s.MaterialId == SelectedListViewItem.Id);
         
@@ -228,10 +228,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (SelectedListViewItem is null || !SelectedListViewItem.IsUserDefined) return;
             DatabaseAccess.UpdateMaterial(SelectedListViewItem);
-            SelectedListViewItem = null;
-
-
-
+            SelectedTabIndex = -1;
+            SelectedTabIndex = 1;
         }
     }
 }
