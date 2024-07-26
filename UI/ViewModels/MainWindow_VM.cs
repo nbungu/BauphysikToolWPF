@@ -3,7 +3,7 @@ using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
+using System.Collections.ObjectModel;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -26,28 +26,28 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         
         [RelayCommand]
-        private void OpenFile()
+        private void New()
+        {
+
+        }
+
+        [RelayCommand]
+        private void Save()
+        {
+            ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
+
+            string filePath = @"C:\Users\arnes\Desktop\project.btk";
+            ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
+        }
+
+        [RelayCommand]
+        private void Open()
         {
             string filePath = @"C:\Users\arnes\Desktop\project.btk";
             Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
             UserSaved.SelectedProject = loadedProject;
         }
 
-        [RelayCommand]
-        private void SaveFile()
-        {
-            throw new NotImplementedException();
-        }
-
-        [RelayCommand]
-        private void Save()
-        {
-            
-            ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
-
-            string filePath = @"C:\Users\arnes\Desktop\project.btk";
-            ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
-        }
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend

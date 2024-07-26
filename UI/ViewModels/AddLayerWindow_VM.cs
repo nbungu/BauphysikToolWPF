@@ -16,10 +16,17 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title = "AddLayerWindow";
+        public string Title => EditSelectedLayer ? $"Ausgewählte Schicht bearbeiten: {UserSaved.SelectedLayer}" : "Neue Schicht erstellen";
 
         public AddLayerWindow_VM()
         {
+            if (EditSelectedLayer)
+            {
+                SelectedTabIndex = UserSaved.SelectedLayer.Material.IsUserDefined ? 1 : 0;
+                SelectedCategory = UserSaved.SelectedLayer.Material.Category;
+                SelectedListViewItem = UserSaved.SelectedLayer.Material;
+            }
+            
             PropertyItem<string>.PropertyChanged += MaterialPropertiesChanged;
             PropertyItem<int>.PropertyChanged += MaterialPropertiesChanged;
             PropertyItem<double>.PropertyChanged += MaterialPropertiesChanged;
@@ -32,28 +39,29 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void AddLayer()
+        private void ApplyChanges()
         {
-            if (Thickness <= 0) return;
+            if (Thickness <= 0 || SelectedListViewItem is null) return;
 
             int materialId;
             Material material;
 
-            if (_selectedListViewItem.IsUserDefined)
+            // Update or Create new Material if necessary
+            if (SelectedListViewItem.IsUserDefined)
             {
-                DatabaseAccess.UpdateMaterial(_selectedListViewItem);
-                materialId = _selectedListViewItem.Id;
-                material = _selectedListViewItem;
+                DatabaseAccess.UpdateMaterial(SelectedListViewItem);
+                materialId = SelectedListViewItem.Id;
+                material = SelectedListViewItem;
             }
             else
             {
                 // Check if current Material from Database List was edited
-                var dbMaterial = DatabaseAccess.GetMaterialsQuery().First(m => m.Id == _selectedListViewItem.Id);
-                if (!_selectedListViewItem.Equals(dbMaterial))
+                var dbMaterial = DatabaseAccess.GetMaterialsQuery().First(m => m.Id == SelectedListViewItem.Id);
+                if (!SelectedListViewItem.Equals(dbMaterial))
                 {
                     // Create new Material
-                    var customMaterial = _selectedListViewItem.Copy();
-                    customMaterial.Name = _selectedListViewItem.Name + " (Edited)";
+                    var customMaterial = SelectedListViewItem.Copy();
+                    customMaterial.Name = SelectedListViewItem.Name + " (Edited)";
                     customMaterial.IsUserDefined = true;
                     // Create in Database
                     DatabaseAccess.CreateMaterial(customMaterial);
@@ -62,30 +70,38 @@ namespace BauphysikToolWPF.UI.ViewModels
                 }
                 else
                 {
-                    materialId = _selectedListViewItem.Id;
-                    material = _selectedListViewItem;
+                    materialId = SelectedListViewItem.Id;
+                    material = SelectedListViewItem;
                 }
             }
-            
-            // LayerPosition is always at end of List 
-            int layerCount = UserSaved.SelectedElement.Layers.Count;
 
-            Layer layer = new Layer
+            // Update Material in existing Layer or Add new Layer
+            if (EditSelectedLayer)
             {
-                //LayerId gets set by SQLite DB (AutoIncrement)
-                LayerPosition = layerCount,
-                InternalId = layerCount,
-                Thickness = Convert.ToDouble(Thickness),
-                IsEffective = true,
-                MaterialId = materialId,
-                Material = material,
-                ElementId = UserSaved.SelectedElement.Id,
-                Element = UserSaved.SelectedElement
-            };
-            UserSaved.SelectedElement.AddLayer(layer);
+                UserSaved.SelectedLayer.Material = material;
+            }
+            else
+            {
+                // LayerPosition is always at end of List 
+                int layerCount = UserSaved.SelectedElement.Layers.Count;
 
+                Layer layer = new Layer
+                {
+                    //LayerId gets set by SQLite DB (AutoIncrement)
+                    LayerPosition = layerCount,
+                    InternalId = layerCount,
+                    Thickness = Convert.ToDouble(Thickness),
+                    IsEffective = true,
+                    MaterialId = materialId,
+                    Material = material,
+                    ElementId = UserSaved.SelectedElement.Id,
+                    Element = UserSaved.SelectedElement
+                };
+                UserSaved.SelectedElement.AddLayer(layer);
+            }
             // Trigger Event to Update Layer Window
             UserSaved.OnSelectedElementChanged();
+
         }
 
         [RelayCommand]
@@ -191,7 +207,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<Material> Materials => GetMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
         public bool AllowCreate => SelectedTabIndex == 1;
-        public bool ItemSelected => SelectedListViewItem != null;
+        public bool EditSelectedLayer => UserSaved.SelectedLayer != null && UserSaved.SelectedLayer.IsValid;
+        public string ButtonText => EditSelectedLayer ? "Änderung übernehmen" : "Schicht hinzufügen";
         public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => l.MaterialId == SelectedListViewItem.Id);
         public bool IsUsedInSubConstr => DatabaseAccess.GetSubConstructionQuery().Any(s => s.MaterialId == SelectedListViewItem.Id);
         

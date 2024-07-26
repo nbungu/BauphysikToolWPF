@@ -6,6 +6,8 @@ using System.Linq;
 using SQLiteNetExtensions.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 
 namespace BauphysikToolWPF.Services
@@ -29,10 +31,12 @@ namespace BauphysikToolWPF.Services
                 string jsonString = JsonSerializer.Serialize(project, options);
                 File.WriteAllText(filePath, jsonString);
                 Logger.LogInfo($"Successfully saved project to file: {filePath}");
+                MainWindow.ShowToast($"Projekt '{UserSaved.SelectedProject.Name}' gespeichert unter {filePath}.", ToastType.Success);
             }
             catch (Exception e)
             {
                 Logger.LogError($"Error saving project to file: {filePath}, {e.Message}");
+                MainWindow.ShowToast($"Projekt '{UserSaved.SelectedProject.Name}' konnte nicht gespeichert werden: {e.Message}.", ToastType.Error);
             }
         }
 

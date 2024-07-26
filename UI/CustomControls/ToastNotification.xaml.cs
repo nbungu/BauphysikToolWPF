@@ -76,5 +76,10 @@ namespace BauphysikToolWPF.UI.CustomControls
                     break;
             }
         }
+
+        private void ButtonBase_OnClick(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Collapsed;
+        }
     }
 }

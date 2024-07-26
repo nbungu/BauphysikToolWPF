@@ -1,10 +1,14 @@
-﻿using BauphysikToolWPF.Models;
+﻿using System;
+using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Windows;
 using BauphysikToolWPF.Services;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
+using BT.Logging;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -69,6 +73,20 @@ namespace BauphysikToolWPF.UI.ViewModels
             window?.Close();
         }
 
+        [RelayCommand]
+        private void OpenLinkedFile(string filePath)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+                Logger.LogError($"Failed to open linked file: {ex.Message}");
+            }
+        }
+
         partial void OnAuthorNameChanged(string value)
         {
             UserSaved.SelectedProject.UserName = value;
@@ -93,6 +111,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private string _authorName = UserSaved.SelectedProject.UserName;
+
+        [ObservableProperty]
+        private ObservableCollection<string> _filePaths = new ObservableCollection<string>();
 
         private void RefreshXamlBindings()
         {

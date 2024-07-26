@@ -248,15 +248,15 @@
                     <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Temperature">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Temperature_W}"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_LayerTemps_Flat}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Temperaturkurve"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Moisture">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Moisture_W}"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Glaser_Flat}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Glaser-Diagramm"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Dynamic">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Moisture_W}"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Dynamic_Flat}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Dynamic"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Test">
@@ -367,7 +367,7 @@
                         <!--Element appearance with behaviour of a 'Button'-->
                         <Border CornerRadius="0" Background="{TemplateBinding Background}">
                             <StackPanel Orientation="Horizontal">
-                                <Image x:Name="ButtonIcon" Source="{TemplateBinding Tag}" Stretch="Fill" Width="16" Height="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0"/>
+                                <Image x:Name="ButtonIcon" Source="{TemplateBinding Tag}" Stretch="Fill" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0"/>
                                 <Label x:Name="ButtonLabel" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" FontSize="12" Margin="0,0,8,0"/>
                             </StackPanel>
                         </Border>
@@ -412,20 +412,20 @@
 
     <Window.InputBindings>
         <KeyBinding
-            Key="O"
-            Command="{Binding OpenFileCommand}"
+            Key="N"
+            Command="{Binding NewCommand}"
             Modifiers="Control" />
         <KeyBinding
-            Key="F"
-            Command="{Binding OpenFileCommand}"
-            Modifiers="Control" />
-        <KeyBinding
-            Key="Q"
-            Command="{Binding OpenFileCommand}"
+            Key="S"
+            Command="{Binding SaveCommand}"
             Modifiers="Control" />
         <KeyBinding
             Key="O"
-            Command="{Binding OpenFileCommand}"
+            Command="{Binding OpenCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="O"
+            Command="{Binding OpenCommand}"
             Modifiers="Control+Shift" />
     </Window.InputBindings>
 
@@ -444,8 +444,9 @@
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                     <Image Source="{StaticResource AppIcon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4,16,4"/>
-                    <Button Content="Speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}"/>
-                    <Button Content="Öffnen"  Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_FileFolder_Flat}" Command="{Binding OpenFileCommand}"/>
+                    <Button ToolTip="Neues Projekt" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Command="{Binding NewCommand}"/>
+                    <Button ToolTip="Projekt speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}"/>
+                    <Button ToolTip="Projekt öffnen" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_FileFolder_Flat}" Command="{Binding OpenCommand}"/>
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">

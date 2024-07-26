@@ -7,4 +7,8 @@ https://www.flaticon.com/authors/srip
 Flat Style
 <a href="https://www.flaticon.com/free-icons/folder" title="folder icons">Folder icons created by srip - Flaticon</a>
 
+<a href="https://www.flaticon.com/free-icons/waveform" title="waveform icons">Waveform icons created by Upnow Graphic - Flaticon</a>
+
+<a href="https://www.flaticon.com/free-icons/blank-page" title="blank-page icons">Blank-page icons created by apien - Flaticon</a>
+
 NuGet Packages	

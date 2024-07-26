@@ -113,12 +113,16 @@
         <BitmapImage x:Key="ButtonIcon_FileFolder_Flat" UriSource="/Resources/Icons/Flat/file-folder.png"/>
         <BitmapImage x:Key="ButtonIcon_Info_Flat" UriSource="/Resources/Icons/Flat/info.png"/>
         <BitmapImage x:Key="ButtonIcon_Layers_Flat" UriSource="/Resources/Icons/Flat/layers.png"/>
+        <BitmapImage x:Key="ButtonIcon_LayerTemps_Flat" UriSource="/Resources/Icons/Flat/layer-temps.png"/>
         <BitmapImage x:Key="ButtonIcon_Save_Flat" UriSource="/Resources/Icons/Flat/save.png"/>
         <BitmapImage x:Key="ButtonIcon_Settings_Flat" UriSource="/Resources/Icons/Flat/setting.png"/>
         <BitmapImage x:Key="ButtonIcon_Success_Flat" UriSource="/Resources/Icons/Flat/success.png"/>
         <BitmapImage x:Key="ButtonIcon_User_Flat" UriSource="/Resources/Icons/Flat/user.png"/>
         <BitmapImage x:Key="ButtonIcon_Warning_Flat" UriSource="/Resources/Icons/Flat/warning.png"/>
         <BitmapImage x:Key="ButtonIcon_Summary_Flat" UriSource="/Resources/Icons/Flat/summary.png"/>
+        <BitmapImage x:Key="ButtonIcon_Glaser_Flat" UriSource="/Resources/Icons/Flat/water-drop.png"/>
+        <BitmapImage x:Key="ButtonIcon_Dynamic_Flat" UriSource="/Resources/Icons/Flat/dynamic.png"/>
+        <BitmapImage x:Key="ButtonIcon_NewProject_Flat" UriSource="/Resources/Icons/Flat/new-project.png"/>
 
         <!--Application Icon -->
         <BitmapImage x:Key="AppIcon" UriSource="/Resources/Icons/Ordner_Icon.ico"/>

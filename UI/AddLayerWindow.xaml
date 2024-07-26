@@ -8,7 +8,10 @@
         xmlns:models="clr-namespace:BauphysikToolWPF.Models"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="AddLayerWindow" Background="{StaticResource PrimaryLightBrush}" Height="480" Width="1060">
+        Title="{Binding Title}"
+        Background="{StaticResource PrimaryLightBrush}"
+        Height="480"
+        Width="1060">
 
     <Window.DataContext>
         <!-- AddLayerWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
@@ -51,36 +54,13 @@
                 <Setter.Value>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <Image Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabItem}}, Path=Tag}"/>
+                            <Image Width="16" Height="16" Margin="0,0,8,0" Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabItem}}, Path=Tag}"/>
                             <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
                         </StackPanel>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TabItem">
-                        <Grid>
-                            <Border Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0" CornerRadius="4,4,0,0" Padding="8,4">
-                                <ContentPresenter x:Name="ContentSite"
-                                                  VerticalAlignment="Center"
-                                                  HorizontalAlignment="Center"
-                                                  ContentSource="Header"/>
-                            </Border>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="Border" Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
-                                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="False">
-                                <Setter TargetName="Border" Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
-                                <Setter TargetName="Border" Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            
         </Style>
 
         <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
@@ -130,7 +110,7 @@
             <Label Content="Kategorie Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
             <TabControl Grid.Row="1" Height="Auto" Width="Auto" SelectedIndex="{Binding SelectedTabIndex}">
-                <TabItem Header="Datenbank" Tag="{StaticResource ButtonIcon_Accepted_B}" Padding="8">
+                <TabItem Header="Datenbank" Tag="{StaticResource ButtonIcon_Database_Flat}" Padding="8">
                     <ListView x:Name="CategoryListView"
                               ItemsSource="{Binding Source={StaticResource CategoryTypeValues}}"
                               View="{StaticResource CategoryGridViewColumns}"
@@ -140,7 +120,7 @@
                               BorderThickness="0"
                               Margin="-2"/>
                 </TabItem>
-                <TabItem Header="Eigene Materialien"  Tag="{StaticResource ButtonIcon_Accepted_B}"  Padding="8">
+                <TabItem Header="Eigene Materialien"  Tag="{StaticResource ButtonIcon_User_Flat}"  Padding="8">
                     <ListView x:Name="CategoryListViewCustom"
                               ItemsSource="{Binding Source={StaticResource CategoryTypeValues}}"
                               View="{StaticResource CategoryGridViewColumns2}"
@@ -223,9 +203,9 @@
             </StackPanel>
 
             <Button Grid.Row="3"
-                    Content="Übernehmen"
+                    Content="{Binding ButtonText}"
                     VerticalAlignment="Bottom"
-                    Command="{Binding AddLayerCommand}"
+                    Command="{Binding ApplyChangesCommand}"
                     CommandParameter="{Binding ElementName=AddLayerSubConstructionWindowControl}"
                     Style="{StaticResource ButtonStyle03_A}"
                     Tag="{StaticResource ButtonIcon_AddLayer_W}"/>

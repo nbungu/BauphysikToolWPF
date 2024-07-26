@@ -52,7 +52,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElementId = selectedInternalId;
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new EditElementWindow().ShowDialog();
+            new AddElementWindow().ShowDialog();
         }
 
         [RelayCommand]

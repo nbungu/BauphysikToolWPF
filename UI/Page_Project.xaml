@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="700" d:DesignWidth="1200">
 
@@ -14,7 +15,45 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
-        
+
+        <controls:FileTypeToIconConverter x:Key="FileTypeToIconConverter"/>
+
+        <Style x:Key="{x:Type ListBoxItem}" TargetType="ListBoxItem">
+            <Setter Property="SnapsToDevicePixels" Value="true" />
+            <Setter Property="OverridesDefaultStyle" Value="true" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border x:Name="Border" Padding="2" SnapsToDevicePixels="true" Background="AliceBlue">
+
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="SelectionStates">
+                                    <VisualState x:Name="Unselected" />
+                                    <VisualState x:Name="Selected">
+                                        <Storyboard>
+                                            <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
+                                                Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                <EasingColorKeyFrame KeyTime="0" Value="{StaticResource SelectedBackgroundColor}" />
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="SelectedUnfocused">
+                                        <Storyboard>
+                                            <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
+                                                <EasingColorKeyFrame KeyTime="0" Value="{StaticResource SelectedUnfocusedColor}" />
+                                            </ColorAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
         <!--Custom RadioButton01_A: Exclusive Group, Checkstates etc.-->
         <Style x:Key="RadioButton01_A" TargetType="{x:Type RadioButton}">
             <!--Set default properties of the button-->
@@ -31,7 +70,7 @@
                         <Border CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="4">
                             <StackPanel Orientation="Vertical">
                                 <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="40" Height="40" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="16"/>
+                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
                                 <Label Content="{TemplateBinding Content}"/>
                             </StackPanel>
                         </Border>
@@ -69,7 +108,7 @@
 
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
-            <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
+            <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Margin="0,0,0,16"/>
             <Button Content="Speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveProjectCommand}"/>
             <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_FileFolder_Flat}" Margin="0,0,0,16"/>
         </StackPanel>
@@ -77,6 +116,9 @@
         <!-- Middle  -->
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -105,10 +147,81 @@
             <Label Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="0" Content="Alter des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
             <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding CurrentProject.IsNewConstruction}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge1" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
             <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding CurrentProject.IsExistingConstruction}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge0" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
-        </Grid>
 
+            <Label Grid.Row="8" Grid.ColumnSpan="2" Grid.Column="0" Content="Kommentar" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+            <TextBox Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" TextAlignment="Left" Text="{Binding CurrentProject.Comment}" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="120" FontSize="14" FontFamily="Consolas" MaxLength="800" Margin="0,4,0,0"/>
+
+            <Label Grid.Row="10" Grid.Column="0" Content="Dateien mit diesem Projekt verknüpfen" HorizontalAlignment="Left" Margin="0,16,0,0"/>
+            <Label Grid.Row="10" Grid.Column="1" Content="{Binding FilePaths.Count}" HorizontalAlignment="Right" Margin="0,8,0,0"/>
+            <controls:FileDropArea Grid.Row="11" Grid.Column="0" FilePaths="{Binding FilePaths, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="160" Margin="0,8,8,0" />
+            <ListBox Grid.Row="11" Grid.Column="1" ItemsSource="{Binding FilePaths}" 
+                     Margin="8,8,0,0" 
+                     BorderThickness="0"
+                     VerticalAlignment="Stretch"
+                     HorizontalAlignment="Stretch"
+                     MinHeight="100"
+                     Background="Transparent"
+                     IsHitTestVisible="True">
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Background" Value="Red"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                        <Setter Property="Padding" Value="0"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
+                                        <Border.Style>
+                                            <Style TargetType="Border">
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter Property="Background" Value="LightBlue"/>
+                                                    </Trigger>
+                                                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation To="DarkGray" Duration="0:0:0.1" Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                    <EventTrigger RoutedEvent="MouseLeftButtonUp">
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation To="LightGray" Duration="0:0:0.1" Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </EventTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Border.Style>
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Width="32" Height="32" Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" Margin="8"/>
+                                            <TextBlock Text="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                            <Button Content="Öffnen" HorizontalAlignment="Right" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
+                                        </StackPanel>
+                                    </Border>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Style.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="BorderThickness" Value="0"/>
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+            </ListBox>
+
+        </Grid>
+    
         <!-- Right -->
         <!-- Project "Toolbar" Buttons -->
+
 
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="16">
             <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}"/>
