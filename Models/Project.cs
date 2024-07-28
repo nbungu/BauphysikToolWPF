@@ -2,6 +2,8 @@
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace BauphysikToolWPF.Models
@@ -36,11 +38,17 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public int BuildingAge { get; set; }
 
+
+        public string Comment { get; set; } = string.Empty;
+
+        public string LinkedFilePaths { get; set; } = string.Empty;
+
         [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
+
 
 
         //------Not part of the Database-----//
@@ -83,6 +91,21 @@ namespace BauphysikToolWPF.Models
             set => BuildingAge = (value) ? 0 : 1;
         }
 
+        [Ignore]
+        public List<string> LinkedFilesList // Converts string of LinkedFiles, separated by Comma, to a List of LinkedFiles
+        {
+            get
+            {
+                if (LinkedFilePaths == string.Empty) return new List<string>();
+                return LinkedFilePaths.Split(',').ToList(); // Splits elements of a string into a List
+            }
+            set
+            {
+                if (value != null) LinkedFilePaths = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
+                else LinkedFilePaths = "";
+            }
+        }
+
         //------Konstruktor-----//
 
         // has to be default parameterless constructor when used as DB
@@ -98,6 +121,7 @@ namespace BauphysikToolWPF.Models
             copy.UserName = this.UserName;
             copy.BuildingAge = this.BuildingAge;
             copy.BuildingUsage = this.BuildingUsage;
+            copy.LinkedFilePaths = this.LinkedFilePaths;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.Elements = this.Elements;

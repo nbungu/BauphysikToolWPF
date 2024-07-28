@@ -123,6 +123,21 @@
         <BitmapImage x:Key="ButtonIcon_Glaser_Flat" UriSource="/Resources/Icons/Flat/water-drop.png"/>
         <BitmapImage x:Key="ButtonIcon_Dynamic_Flat" UriSource="/Resources/Icons/Flat/dynamic.png"/>
         <BitmapImage x:Key="ButtonIcon_NewProject_Flat" UriSource="/Resources/Icons/Flat/new-project.png"/>
+        <BitmapImage x:Key="ButtonIcon_External_Flat" UriSource="/Resources/Icons/Flat/external.png"/>
+
+        <!--Filetypes by https://www.flaticon.com/authors/Dimitry-Miroliubov -->
+        <BitmapImage x:Key="FiletypeIcon_CAD" UriSource="/Resources/Icons/Filetypes/cad.png"/>
+        <BitmapImage x:Key="FiletypeIcon_DMG" UriSource="/Resources/Icons/Filetypes/dmg.png"/>
+        <BitmapImage x:Key="FiletypeIcon_DOC" UriSource="/Resources/Icons/Filetypes/doc.png"/>
+        <BitmapImage x:Key="FiletypeIcon_ANY" UriSource="/Resources/Icons/Filetypes/file.png"/>
+        <BitmapImage x:Key="FiletypeIcon_JPG" UriSource="/Resources/Icons/Filetypes/jpg.png"/>
+        <BitmapImage x:Key="FiletypeIcon_PDF" UriSource="/Resources/Icons/Filetypes/pdf.png"/>
+        <BitmapImage x:Key="FiletypeIcon_PNG" UriSource="/Resources/Icons/Filetypes/png.png"/>
+        <BitmapImage x:Key="FiletypeIcon_PPT" UriSource="/Resources/Icons/Filetypes/ppt.png"/>
+        <BitmapImage x:Key="FiletypeIcon_TXT" UriSource="/Resources/Icons/Filetypes/txt.png"/>
+        <BitmapImage x:Key="FiletypeIcon_XLS" UriSource="/Resources/Icons/Filetypes/xls.png"/>
+        <BitmapImage x:Key="FiletypeIcon_XML" UriSource="/Resources/Icons/Filetypes/xml.png"/>
+
 
         <!--Application Icon -->
         <BitmapImage x:Key="AppIcon" UriSource="/Resources/Icons/Ordner_Icon.ico"/>
@@ -655,6 +670,7 @@
             <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
             <Setter Property="Foreground" Value="White"/>
             <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Padding" Value="12,0"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="FontSize" Value="14"/>

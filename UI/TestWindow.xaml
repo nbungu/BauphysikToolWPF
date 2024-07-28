@@ -59,57 +59,49 @@
                 <ColumnDefinition Width=".4*" MinWidth="160"/>
             </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="1" Grid.Row="0" Margin="16,0,16,16">
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+            <ListBox Grid.Row="11"
+                    Grid.Column="1"
+                    ItemsSource="{Binding FilePaths}" 
+                    Margin="8,8,0,0" 
+                    BorderThickness="0"
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Stretch"
+                    MinHeight="100"
+                    Background="Transparent"
+                    IsHitTestVisible="True">
+                <ListBox.Resources>
+                    <!-- Style for ListBox -->
+                    <Style TargetType="ListBox">
+                        <Setter Property="Background" Value="Transparent"/>
+                        <Setter Property="BorderThickness" Value="0"/>
+                    </Style>
 
-                    <!-- Elements inside of ViewBox are dynamically sizable-->
-                    <Label Grid.Row="0" Grid.Column="1" Content="Vertikalschnitt" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    <Label Grid.Row="1" Grid.Column="0" Content="Innen" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                    <Label Grid.Row="1" Grid.Column="2" Content="Außen" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                    <Viewbox Grid.Row="1" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
-                        <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                        <Grid Margin="8">
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto"/>
-                            </Grid.RowDefinitions>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-
-                            <!-- "Layers Canvas" -->
-                            <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="1" Grid.Column="1" Width="{Binding CanvasSize.Width}" Height="{Binding CanvasSize.Height}" DrawingGeometries="{Binding DrawingGeometries}"/>
-
-                            <!-- "Vertical Measurement Grid" -->
-                            <controls:MeasurementChain Grid.Row="2" Grid.Column="1" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding LayerMeasurement}" Margin="0,16,0,16"/>
-
-                            <!-- "Vertical Measurement Grid Full" -->
-                            <controls:MeasurementChain Grid.Row="3" Grid.Column="1" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="0,16,0,16"/>
-
-                            <!-- "Horizontal Measurement Grid Test" 
-                            <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurement}" Margin="0,16,0,16"/>
-                            -->
-                        </Grid>
-                    </Viewbox>
-
-                </Grid>
-
-
-            </Grid>
+                    <!-- ItemContainerStyle for ListBox -->
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="4"/>
+                        <Setter Property="Margin" Value="2"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <Border Name="LbiBorder" CornerRadius="4" BorderThickness="0" Background="{StaticResource PrimaryMediumBrush}">
+                                        <StackPanel Orientation="Horizontal">
+                                            <Image Width="32" Height="32" Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" Margin="8"/>
+                                            <TextBlock Text="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
+                                            <Button Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle03_Mini}" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
+                                        </StackPanel>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="LbiBorder" Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </ListBox.Resources>
+            </ListBox>
 
             <!--Grid Splitter-->
             <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="0,16,0,16"/>

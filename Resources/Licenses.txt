@@ -11,4 +11,5 @@ Flat Style
 
 <a href="https://www.flaticon.com/free-icons/blank-page" title="blank-page icons">Blank-page icons created by apien - Flaticon</a>
 
+<a href="https://www.flaticon.com/free-icons/pdf" title="pdf icons">Pdf icons created by Dimitry Miroliubov - Flaticon</a>
 NuGet Packages	

@@ -18,13 +18,38 @@ namespace BauphysikToolWPF.UI.CustomControls
 
             switch (extension)
             {
-                case ".txt":
-                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/placeholder_256px.png"));
+                case ".dgn":
+                case ".dwf":
+                case ".dwg":
+                case ".dxf":
+                case ".ifc":
+                case ".rvt":
+                case ".rfa":
+                case ".rte":
+                case ".rft":
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/cad.png"));
+                case ".doc":
+                case ".docx":
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/doc.png"));
+                case ".jpg":
+                case ".jpeg":
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/jpg.png"));
                 case ".pdf":
-                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/placeholder_256px.png"));
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/pdf.png"));
+                case ".png":
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/png.png"));
+                case ".ppt":
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/ppt.png"));
+                case ".txt":
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/txt.png"));
+                case ".xls":
+                case ".xlsx":
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/xls.png"));
+                case ".xml":
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/xml.png"));
                 // Add more cases for different file types
                 default:
-                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/placeholder_256px.png"));
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/file.png"));
             }
         }
 

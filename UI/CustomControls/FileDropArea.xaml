@@ -12,7 +12,6 @@
 
         <Border AllowDrop="True"
                 DragEnter="Border_DragEnter"
-                DragLeave="Border_DragLeave"
                 Drop="Border_Drop"
                 BorderThickness="2"
                 CornerRadius="16"
@@ -40,7 +39,7 @@
                 <TextBlock Text="Drag and drop" 
                            VerticalAlignment="Center" HorizontalAlignment="Center"
                            FontStyle="Italic" Foreground="Gray"/>
-                <TextBlock Text="Pläne, Gutachten, Produktdatenblätter etc." 
+                <TextBlock Text="Pläne, Gutachten, Datenblätter etc." 
                            VerticalAlignment="Center" HorizontalAlignment="Center"
                            FontStyle="Italic" Foreground="Gray" Margin="0,8,0,0"/>
             </StackPanel>

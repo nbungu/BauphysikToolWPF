@@ -1,14 +1,15 @@
-﻿using System;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
+﻿using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
+using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Windows;
-using BauphysikToolWPF.Services;
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
-using BT.Logging;
+using System.Linq;
+using System.Windows;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -78,6 +79,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             try
             {
+                Logger.LogInfo("Sie werden weitergeleitet...");
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
             }
             catch (Exception ex)
@@ -86,14 +88,23 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Logger.LogError($"Failed to open linked file: {ex.Message}");
             }
         }
+        [RelayCommand]
+        private void DeleteLinkedFile(string file)
+        {
+            DroppedFilePaths.Remove(file);
+            UserSaved.SelectedProject.LinkedFilesList = DroppedFilePaths.ToList();
+        }
+
 
         partial void OnAuthorNameChanged(string value)
         {
+            if (value is null) return;
             UserSaved.SelectedProject.UserName = value;
         }
 
         partial void OnProjectNameChanged(string value)
         {
+            if (value is null) return;
             UserSaved.SelectedProject.Name = value;
         }
 
@@ -102,7 +113,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
-        
+
         [ObservableProperty]
         private Project _currentProject = UserSaved.SelectedProject;
 
@@ -113,9 +124,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         private string _authorName = UserSaved.SelectedProject.UserName;
 
         [ObservableProperty]
-        private ObservableCollection<string> _filePaths = new ObservableCollection<string>();
+        private ObservableCollection<string> _droppedFilePaths = new ObservableCollection<string>(UserSaved.SelectedProject.LinkedFilesList);
 
-        private void RefreshXamlBindings()
+        public void RefreshXamlBindings()
         {
             CurrentProject = null;
             CurrentProject = UserSaved.SelectedProject;

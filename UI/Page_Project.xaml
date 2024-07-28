@@ -7,7 +7,7 @@
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="1200">
+             d:DesignHeight="1200" d:DesignWidth="1200">
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
@@ -17,14 +17,15 @@
     <UserControl.Resources>
 
         <controls:FileTypeToIconConverter x:Key="FileTypeToIconConverter"/>
+        <controls:FilePathToFileNameConverter x:Key="FilePathToFileNameConverter"/>
 
-        <Style x:Key="{x:Type ListBoxItem}" TargetType="ListBoxItem">
+        <Style x:Key="{x:Type ListBoxItem}" TargetType="{x:Type ListBoxItem}">
             <Setter Property="SnapsToDevicePixels" Value="true" />
-            <Setter Property="OverridesDefaultStyle" Value="true" />
+
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border x:Name="Border" Padding="2" SnapsToDevicePixels="true" Background="AliceBlue">
+                        <Border x:Name="Border" Padding="2" SnapsToDevicePixels="true" Background="Red">
 
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="SelectionStates">
@@ -127,7 +128,8 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".5*" MinWidth="64"/>
@@ -152,76 +154,65 @@
             <TextBox Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" TextAlignment="Left" Text="{Binding CurrentProject.Comment}" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="120" FontSize="14" FontFamily="Consolas" MaxLength="800" Margin="0,4,0,0"/>
 
             <Label Grid.Row="10" Grid.Column="0" Content="Dateien mit diesem Projekt verknüpfen" HorizontalAlignment="Left" Margin="0,16,0,0"/>
-            <Label Grid.Row="10" Grid.Column="1" Content="{Binding FilePaths.Count}" HorizontalAlignment="Right" Margin="0,8,0,0"/>
-            <controls:FileDropArea Grid.Row="11" Grid.Column="0" FilePaths="{Binding FilePaths, Mode=OneWay}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="160" Margin="0,8,8,0" />
-            <ListBox Grid.Row="11" Grid.Column="1" ItemsSource="{Binding FilePaths}" 
-                     Margin="8,8,0,0" 
-                     BorderThickness="0"
-                     VerticalAlignment="Stretch"
-                     HorizontalAlignment="Stretch"
-                     MinHeight="100"
-                     Background="Transparent"
-                     IsHitTestVisible="True">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                        <Setter Property="Background" Value="Red"/>
+
+            <!--Expose the FilePaths Property to a ViewModel property for monitoring and event handling-->
+            <controls:FileDropArea x:Name="FileDropArea" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" FilePaths="{Binding DroppedFilePaths, NotifyOnSourceUpdated=True}" SourceUpdated="FileDropArea_OnSourceUpdated" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="200" Margin="0,8" />
+
+            <!--OneWay Binding: source control (FileDropArea) updates the target control (ListBox)-->
+            <ListBox Grid.Row="12"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    ItemsSource="{Binding ElementName=FileDropArea, Path=FilePaths, Mode=OneWay}"
+                    Margin="8,8,0,0" 
+                    VerticalAlignment="Stretch"
+                    HorizontalAlignment="Center"
+                    Background="Transparent"
+                    MinHeight="100"
+                    MinWidth="100">
+                <ListBox.Resources>
+                    <!-- Style for ListBox -->
+                    <Style TargetType="ListBox">
+                        <Setter Property="Background" Value="Transparent"/>
                         <Setter Property="BorderThickness" Value="0"/>
-                        <Setter Property="Padding" Value="0"/>
+                    </Style>
+
+                    <!-- ItemContainerStyle for ListBox -->
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Padding" Value="4"/>
+                        <Setter Property="Margin" Value="0,0,0,8"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <Border CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}">
-                                        <Border.Style>
-                                            <Style TargetType="Border">
-                                                <Style.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter Property="Background" Value="LightBlue"/>
-                                                    </Trigger>
-                                                    <EventTrigger RoutedEvent="MouseLeftButtonDown">
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <ColorAnimation To="DarkGray" Duration="0:0:0.1" Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </EventTrigger>
-                                                    <EventTrigger RoutedEvent="MouseLeftButtonUp">
-                                                        <BeginStoryboard>
-                                                            <Storyboard>
-                                                                <ColorAnimation To="LightGray" Duration="0:0:0.1" Storyboard.TargetProperty="(Background).(SolidColorBrush.Color)"/>
-                                                            </Storyboard>
-                                                        </BeginStoryboard>
-                                                    </EventTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </Border.Style>
-                                        <StackPanel Orientation="Horizontal">
-                                            <Image Width="32" Height="32" Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" Margin="8"/>
-                                            <TextBlock Text="{Binding}" VerticalAlignment="Center" HorizontalAlignment="Stretch"/>
-                                            <Button Content="Öffnen" HorizontalAlignment="Right" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
-                                        </StackPanel>
+                                    <Border Name="LbiBorder" HorizontalAlignment="Stretch" CornerRadius="8" BorderThickness="0" Background="{StaticResource PrimaryMediumBrush}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <Image Grid.Column="0" Width="32" Height="32" Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" Margin="8"/>
+                                            <TextBlock Grid.Column="1" FontWeight="DemiBold" Text="{Binding Converter={StaticResource FilePathToFileNameConverter}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="8,0,32,0"/>
+                                            <Button Grid.Column="2" Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle02_A}" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                            <Button Grid.Column="3" Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" Command="{Binding DataContext.DeleteLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
+                                        </Grid>
                                     </Border>
+                                    <!--
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsMouseOver" Value="True">
+                                            <Setter TargetName="LbiBorder" Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                                        </Trigger>  
+                                    </ControlTemplate.Triggers>
+                                    -->
                                 </ControlTemplate>
                             </Setter.Value>
                         </Setter>
-                        <Style.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter Property="Background" Value="Transparent"/>
-                                <Setter Property="BorderThickness" Value="0"/>
-                            </Trigger>
-                        </Style.Triggers>
                     </Style>
-                </ListBox.ItemContainerStyle>
+                </ListBox.Resources>
             </ListBox>
 
         </Grid>
-    
-        <!-- Right -->
-        <!-- Project "Toolbar" Buttons -->
-
 
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="16">
             <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}"/>
