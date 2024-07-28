@@ -35,6 +35,8 @@ namespace BauphysikToolWPF.SessionData
             EnvVarsChanged?.Invoke(); // if EnvVarsChanged is not null then call delegate
         }
 
+        public static string ProjectFilePath { get; set; } = "Startprojekt aus Datenbank";
+
         public static Project SelectedProject;
 
         /// <summary>

@@ -168,7 +168,6 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -176,24 +175,22 @@
                 </Grid.RowDefinitions>
 
                 <!--Gewählte Schicht + Eigenschaften-->
-                <Label Grid.Row="0" Content="Gewählte Schicht" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
-
-                <Expander Grid.Row="1" Header="Eigenschaften" IsExpanded="True" Margin="0,8,0,0">
+                <Expander Grid.Row="0" Header="Schicht-Eigenschaften" IsExpanded="True" Margin="0,8,0,0">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
                         <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid" Properties="{Binding LayerProperties}"/>
                     </ScrollViewer>
                 </Expander>
 
-                <Expander Grid.Row="2" Header="Balkenlage" IsExpanded="False" IsEnabled="{Binding ShowSubConstructionExpander}" Margin="0,8,0,0">
+                <Expander Grid.Row="1" Header="Schicht-Balkenlage" IsExpanded="False" IsEnabled="{Binding ShowSubConstructionExpander}" Margin="0,8,0,0">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
                         <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
                     </ScrollViewer>
                 </Expander>
 
                 <!--Umgebungsbedingungen-->
-                <Label Grid.Row="4" Content="Umgebungsrandbedingungen" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
+                <Label Grid.Row="3" Content="Umgebungsrandbedingungen" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold" Margin="0,8,0,0"/>
 
-                <Expander Grid.Row="5" Header="Innenseite" IsExpanded="True" Margin="0,8,0,0">
+                <Expander Grid.Row="4" Header="Innenseite" IsExpanded="True" Margin="0,8,0,0">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
                         <Border CornerRadius="8" HorizontalAlignment="Stretch">
                             <Grid HorizontalAlignment="Stretch">
@@ -231,7 +228,7 @@
                     </ScrollViewer>
                 </Expander>
 
-                <Expander Grid.Row="6" Header="Außenseite" IsExpanded="True" Margin="0,8,0,0">
+                <Expander Grid.Row="5" Header="Außenseite" IsExpanded="True" Margin="0,8,0,0">
                     <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
                         <Border CornerRadius="8" HorizontalAlignment="Stretch">
                             <Grid HorizontalAlignment="Stretch">

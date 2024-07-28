@@ -18,42 +18,17 @@
 
         <controls:FileTypeToIconConverter x:Key="FileTypeToIconConverter"/>
         <controls:FilePathToFileNameConverter x:Key="FilePathToFileNameConverter"/>
+        <controls:FilePathToIsFoundConverter x:Key="FilePathToIsFoundConverter"/>
 
-        <Style x:Key="{x:Type ListBoxItem}" TargetType="{x:Type ListBoxItem}">
-            <Setter Property="SnapsToDevicePixels" Value="true" />
-
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="ListBoxItem">
-                        <Border x:Name="Border" Padding="2" SnapsToDevicePixels="true" Background="Red">
-
-                            <VisualStateManager.VisualStateGroups>
-                                <VisualStateGroup x:Name="SelectionStates">
-                                    <VisualState x:Name="Unselected" />
-                                    <VisualState x:Name="Selected">
-                                        <Storyboard>
-                                            <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border"
-                                                Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                                <EasingColorKeyFrame KeyTime="0" Value="{StaticResource SelectedBackgroundColor}" />
-                                            </ColorAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                    <VisualState x:Name="SelectedUnfocused">
-                                        <Storyboard>
-                                            <ColorAnimationUsingKeyFrames Storyboard.TargetName="Border" Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)">
-                                                <EasingColorKeyFrame KeyTime="0" Value="{StaticResource SelectedUnfocusedColor}" />
-                                            </ColorAnimationUsingKeyFrames>
-                                        </Storyboard>
-                                    </VisualState>
-                                </VisualStateGroup>
-                            </VisualStateManager.VisualStateGroups>
-                            <ContentPresenter />
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+        <!-- Custom ScrollViewer Style -->
+        <Style x:Key="CustomScrollViewerStyle" TargetType="ScrollViewer">
+            <Setter Property="Padding" Value="0"/>
+            <Style.Triggers>
+                <Trigger Property="ComputedVerticalScrollBarVisibility" Value="Visible">
+                    <Setter Property="Padding" Value="0,0,16,0"/>
+                </Trigger>
+            </Style.Triggers>
         </Style>
-
 
         <!--Custom RadioButton01_A: Exclusive Group, Checkstates etc.-->
         <Style x:Key="RadioButton01_A" TargetType="{x:Type RadioButton}">
@@ -110,56 +85,59 @@
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
             <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Margin="0,0,0,16"/>
-            <Button Content="Speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveProjectCommand}"/>
-            <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_FileFolder_Flat}" Margin="0,0,0,16"/>
+            <Button Content="Speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveCommand}"/>
+            <Button Content="Speichern unter" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveToCommand}"/>
+            <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_FileFolder_Flat}" Margin="0,0,0,16" Command="{Binding OpenCommand}"/>
         </StackPanel>
 
         <!-- Middle  -->
-        <Grid Grid.Row="1" Grid.Column="1" Margin="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=".5*" MinWidth="64"/>
-                <ColumnDefinition Width=".5*" MinWidth="64"/>
-            </Grid.ColumnDefinitions>
 
-            <Label Grid.ColumnSpan="2" Content="Projektname:" HorizontalAlignment="Left"/>
-            <TextBox Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectName_TextBox" Text="{Binding ProjectName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
+        <ScrollViewer Grid.Row="1" Grid.Column="1" Style="{StaticResource CustomScrollViewerStyle}" Margin="16" VerticalScrollBarVisibility="Auto">
+            <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width=".5*" MinWidth="64"/>
+                    <ColumnDefinition Width=".5*" MinWidth="64"/>
+                </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Content="Bearbeiter:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <TextBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectUser_TextBox" Text="{Binding AuthorName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
+                <Label Grid.ColumnSpan="2" Content="Projektname:" HorizontalAlignment="Left"/>
+                <TextBox Grid.Row="1" Grid.ColumnSpan="2" Grid.Column="0" Text="{Binding ProjectName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
-            <Label Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0" Content="Nutzungsart des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding IsResidentialUsageChecked}" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,4,4,0"/>
-            <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsNonResidentialUsageChecked}" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_Office_B}" Margin="4,4,0,0"/>
+                <Label Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0" Content="Bearbeiter:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+                <TextBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" Text="{Binding AuthorName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
-            <Label Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="0" Content="Alter des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding IsNewConstrChecked}" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
-            <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsExistingConstrChecked}" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
+                <Label Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0" Content="Nutzungsart des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+                <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding IsResidentialUsageChecked}" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,4,4,0"/>
+                <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsNonResidentialUsageChecked}" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_Office_B}" Margin="4,4,0,0"/>
 
-            <Label Grid.Row="8" Grid.ColumnSpan="2" Grid.Column="0" Content="Kommentar" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <TextBox Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" TextAlignment="Left" Text="{Binding CurrentProject.Comment}" Background="{StaticResource SecondaryLightBlueBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="120" FontSize="14" FontFamily="Consolas" MaxLength="800" Margin="0,4,0,0"/>
+                <Label Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="0" Content="Alter des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+                <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding IsNewConstrChecked}" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
+                <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsExistingConstrChecked}" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
 
-            <Label Grid.Row="10" Grid.Column="0" Content="Dateien mit diesem Projekt verknüpfen" HorizontalAlignment="Left" Margin="0,16,0,0"/>
+                <Label Grid.Row="8" Grid.ColumnSpan="2" Grid.Column="0" Content="Kommentar" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+                <TextBox Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" TextAlignment="Left" Text="{Binding CurrentProject.Comment}" Background="{StaticResource SecondaryLightBlueBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="800" Margin="0,4,0,0"/>
 
-            <!--Expose the FilePaths Property to a ViewModel property for monitoring and event handling-->
-            <controls:FileDropArea x:Name="FileDropArea" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" FilePaths="{Binding DroppedFilePaths, NotifyOnSourceUpdated=True}" SourceUpdated="FileDropArea_OnSourceUpdated" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="200" Margin="0,8" />
+                <Label Grid.Row="10" Grid.Column="0" Content="Dateien mit diesem Projekt verknüpfen" HorizontalAlignment="Left" Margin="0,16,0,0"/>
 
-            <!--OneWay Binding: source control (FileDropArea) updates the target control (ListBox)-->
-            <ListBox Grid.Row="12"
+                <!--Expose the FilePaths Property to a ViewModel property for monitoring and event handling-->
+                <controls:FileDropArea x:Name="FileDropArea" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" FilePaths="{Binding DroppedFilePaths, NotifyOnSourceUpdated=True}" SourceUpdated="FileDropArea_OnSourceUpdated" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="160" Margin="0,8" />
+
+                <!--OneWay Binding: source control (FileDropArea) updates the target control (ListBox)-->
+                <ListBox Grid.Row="12"
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
                     ItemsSource="{Binding ElementName=FileDropArea, Path=FilePaths, Mode=OneWay}"
@@ -169,55 +147,59 @@
                     Background="Transparent"
                     MinHeight="100"
                     MinWidth="100">
-                <ListBox.Resources>
-                    <!-- Style for ListBox -->
-                    <Style TargetType="ListBox">
-                        <Setter Property="Background" Value="Transparent"/>
-                        <Setter Property="BorderThickness" Value="0"/>
-                    </Style>
+                    <ListBox.Resources>
+                        <!-- Style for ListBox -->
+                        <Style TargetType="ListBox">
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                        </Style>
 
-                    <!-- ItemContainerStyle for ListBox -->
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Padding" Value="4"/>
-                        <Setter Property="Margin" Value="0,0,0,8"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate TargetType="ListBoxItem">
-                                    <Border Name="LbiBorder" HorizontalAlignment="Stretch" CornerRadius="8" BorderThickness="0" Background="{StaticResource PrimaryMediumBrush}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="Auto"/>
-                                                <RowDefinition Height="Auto"/>
-                                            </Grid.RowDefinitions>
+                        <!-- ItemContainerStyle for ListBox -->
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Padding" Value="4"/>
+                            <Setter Property="Margin" Value="0,0,0,8"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border Name="LbiBorder" HorizontalAlignment="Stretch" CornerRadius="8" BorderThickness="0" Background="{StaticResource PrimaryMediumBrush}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="Auto"/>
+                                                    <RowDefinition Height="Auto"/>
+                                                </Grid.RowDefinitions>
 
-                                            <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="32" Height="32" Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" Margin="8"/>
-                                            <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="DemiBold" FontSize="14" Text="{Binding Converter={StaticResource FilePathToFileNameConverter}}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="8,0,32,0"/>
-                                            <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" ToolTip="Verknüpfte Datei öffnen" Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle02_A}" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                                            <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" ToolTip="Verknüpfte Datei aus Liste entfernen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" Command="{Binding DataContext.DeleteLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
-                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding}" VerticalAlignment="Top" FontSize="11" HorizontalAlignment="Left" Margin="8,0,32,0"/>
-                                        </Grid>
-                                    </Border>
-                                    <!--
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter TargetName="LbiBorder" Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                                        </Trigger>  
-                                    </ControlTemplate.Triggers>
-                                    -->
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListBox.Resources>
-            </ListBox>
+                                                <Image Name="FileTypeImage" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="32" Height="32" Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" Margin="8"/>
+                                                <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="DemiBold" FontSize="14" Text="{Binding Converter={StaticResource FilePathToFileNameConverter}}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="8,0,32,0"/>
+                                                <Button Name="OpenLinkedFileButton" Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" ToolTip="Verknüpfte Datei öffnen" Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle02_A}" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                                <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" ToolTip="Verknüpfte Datei aus Liste entfernen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" Command="{Binding DataContext.DeleteLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
+                                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding}" VerticalAlignment="Top" FontSize="11" HorizontalAlignment="Left" Margin="8,0,32,0"/>
+                                            </Grid>
+                                        </Border>
+                                        
+                                        <ControlTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding Converter={StaticResource FilePathToIsFoundConverter}}" Value="False">
+                                                <Setter TargetName="OpenLinkedFileButton" Property="IsEnabled" Value="False"/>
+                                                <Setter TargetName="OpenLinkedFileButton" Property="Content" Value="Datei nicht gefunden"/>
+                                                <Setter TargetName="LbiBorder" Property="Background" Value="{StaticResource SecondaryLightRedBrush}"/>
+                                            </DataTrigger>
+                                        </ControlTemplate.Triggers>
+                            
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.Resources>
+                </ListBox>
 
-        </Grid>
+            </Grid>
+        </ScrollViewer>
+        
 
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="16">
             <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}"/>

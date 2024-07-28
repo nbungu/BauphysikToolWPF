@@ -103,22 +103,22 @@
             <Label Content="Kategorie Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
             <TabControl Grid.Row="1" Height="Auto" Width="Auto" SelectedIndex="{Binding SelectedTabIndex}">
-                <TabItem Header="Datenbank" Tag="{StaticResource ButtonIcon_Database_Flat}" Padding="8">
-                    <ListView x:Name="CategoryListView"
+                <TabItem Header="{Binding Tab0Header}" Tag="{StaticResource ButtonIcon_Database_Flat}" Padding="8">
+                    <ListView Name="CategoryListView"
                               ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
                               View="{StaticResource CategoryGridViewColumns}"
                               ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
-                              SelectedItem="{Binding SelectedCategory}"
+                              SelectedIndex="{Binding SelectedCategoryIndex}"
                               Style="{StaticResource ListViewStyle01}"
                               BorderThickness="0"
                               Margin="-2"/>
                 </TabItem>
-                <TabItem Header="Eigene Materialien" Tag="{StaticResource ButtonIcon_User_Flat}"  Padding="8">
-                    <ListView x:Name="CategoryListViewCustom"
+                <TabItem Header="{Binding Tab1Header}" Tag="{StaticResource ButtonIcon_User_Flat}"  Padding="8">
+                    <ListView Name="CategoryListViewCustom"
                               ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
                               View="{StaticResource CategoryGridViewColumns2}"
                               ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
-                              SelectedItem="{Binding SelectedCategory}"
+                              SelectedIndex="{Binding SelectedCategoryIndex}"
                               Style="{StaticResource ListViewStyle01}"
                               BorderThickness="0"
                               Margin="-2"/>

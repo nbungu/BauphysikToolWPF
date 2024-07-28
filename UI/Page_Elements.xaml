@@ -267,7 +267,7 @@
                         <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
                         <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20"/>
                     </StackPanel>
-                    <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" Margin="0,16,0,16"/>
+                    <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" Margin="0,8,0,8"/>
                     <StackPanel Orientation="Horizontal">
                         <Label Content="Typ:" HorizontalAlignment="Left" Width="96"/>
                         <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>

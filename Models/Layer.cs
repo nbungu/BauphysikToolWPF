@@ -113,7 +113,7 @@ namespace BauphysikToolWPF.Models
         {
             get
             {
-                if (!Material.IsValid) return 0;
+                if (!Material.IsValid || !IsEffective) return 0;
                 return Math.Round((this.Thickness / 100) * Material.DiffusionResistance, 3);
             }
         }

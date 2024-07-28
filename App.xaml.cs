@@ -32,6 +32,7 @@ namespace BauphysikToolWPF
                         // Load the project from the specified file
                         Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
                         UserSaved.SelectedProject = loadedProject;
+                        UserSaved.ProjectFilePath = filePath;
                         Logger.LogInfo($"Loaded Project: '{UserSaved.SelectedProject}' from Arguments!");
                     }
                     catch (Exception ex)

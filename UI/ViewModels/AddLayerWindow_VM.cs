@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (EditSelectedLayer)
             {
                 SelectedTabIndex = UserSaved.SelectedLayer.Material.IsUserDefined ? 1 : 0;
-                SelectedCategory = UserSaved.SelectedLayer.Material.Category;
+                SelectedCategoryIndex = (int)UserSaved.SelectedLayer.Material.Category;
                 SelectedListViewItem = UserSaved.SelectedLayer.Material;
             }
             
@@ -122,6 +122,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                     SelectedListViewItem = null;
                     SelectedTabIndex = -1;
                     SelectedTabIndex = 1;
+                    Tab0Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
+                    Tab1Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
                 }
             }
         }
@@ -141,13 +143,15 @@ namespace BauphysikToolWPF.UI.ViewModels
                 {
                     Name = "Neu erstelltes Material",
                     IsUserDefined = true,
-                    Category = SelectedCategory
+                    Category = (MaterialCategory)SelectedCategoryIndex
                 };
             }
             DatabaseAccess.CreateMaterial(newMaterial);
             SelectedTabIndex = -1;
             SelectedTabIndex = 1;
             SelectedListViewItem = newMaterial;
+            Tab0Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
+            Tab1Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
         }
 
         [RelayCommand]
@@ -177,7 +181,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private static MaterialCategory _selectedCategory = MaterialCategory.NotDefined;
+        private static int _selectedCategoryIndex = (int)MaterialCategory.NotDefined;
 
         [ObservableProperty]
         //[NotifyPropertyChangedFor(nameof(CustomCategories))]
@@ -190,6 +194,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(AllowDelete))]
         [NotifyPropertyChangedFor(nameof(MaterialProperties))]
         private Material? _selectedListViewItem;
+
+        [ObservableProperty]
+        private string _tab0Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
+
+        [ObservableProperty]
+        private string _tab1Header = $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
@@ -204,6 +214,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => _selectedListViewItem.DiffusionResistance, value => _selectedListViewItem.DiffusionResistance = value),
             new PropertyItem<bool>("Material in Benutzung", () => IsUsedInLayer || IsUsedInSubConstr),
         };
+
         public List<Material> Materials => GetMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
         public bool AllowCreate => SelectedTabIndex == 1;
@@ -215,7 +226,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         // TODO: implement QueryFilterConfig...
         private List<Material> GetMaterials()
         {
-            if (SelectedCategory == MaterialCategory.NotDefined)
+            if (SelectedCategoryIndex == (int)MaterialCategory.NotDefined)
             {
                 if (SearchString != "")
                 {
@@ -232,12 +243,12 @@ namespace BauphysikToolWPF.UI.ViewModels
                 {
                     return DatabaseAccess.GetMaterialsQuery().Where(m =>
                         m.IsUserDefined == (SelectedTabIndex == 1) &&
-                        m.Category == SelectedCategory &&
+                        m.Category == (MaterialCategory)SelectedCategoryIndex &&
                         m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
                 }
                 return DatabaseAccess.GetMaterialsQuery().Where(m =>
                     m.IsUserDefined == (SelectedTabIndex == 1) &&
-                    m.Category == SelectedCategory).ToList();
+                    m.Category == (MaterialCategory)SelectedCategoryIndex).ToList();
             }
         }
 

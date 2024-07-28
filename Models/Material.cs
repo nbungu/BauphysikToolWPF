@@ -48,7 +48,7 @@ namespace BauphysikToolWPF.Models
         public int InternalId { get; set; }
 
         [Ignore, JsonIgnore]
-        public bool IsValid => BulkDensity > 0 && ThermalConductivity > 0;
+        public bool IsValid => BulkDensity > 0 && Name != "";
 
         [Ignore, JsonIgnore]
         public string CategoryName => TranslateToCategoryName(Category);

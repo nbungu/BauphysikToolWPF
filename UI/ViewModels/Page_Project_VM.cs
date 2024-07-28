@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.Dialogs;
 using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -8,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Windows;
 
@@ -16,11 +18,13 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_Elements.xaml: Used in xaml as "DataContext"
     public partial class Page_Project_VM : ObservableObject
     {
+        private readonly IFileDialogService _fileDialogService;
         public Page_Project_VM()
         {
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
+            _fileDialogService = new FileDialogService();
         }
 
         // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
@@ -38,34 +42,45 @@ namespace BauphysikToolWPF.UI.ViewModels
             MainWindow.SetPage(desiredPage);
         }
 
-        //// TODO: use Enums as parameter
-        //[RelayCommand]
-        //private void ChangeBuildingStats(string property = "")
-        //{
-        //    switch (property)
-        //    {
-        //        case "BuildingUsage0":
-        //            UserSaved.SelectedProject.IsNonResidentialUsage = true;
-        //            break;
-        //        case "BuildingUsage1":
-        //            UserSaved.SelectedProject.IsResidentialUsage = true;
-        //            break;
-        //        case "BuildingAge0":
-        //            UserSaved.SelectedProject.IsExistingConstruction = true;
-        //            break;
-        //        case "BuildingAge1":
-        //            UserSaved.SelectedProject.IsNewConstruction = true;
-        //            break;
-        //        default:
-        //            return;
-        //    }
-        //    RefreshXamlBindings();
-        //}
+        [RelayCommand]
+        private void Save()
+        {
+            if (!File.Exists(UserSaved.ProjectFilePath))
+            {
+                SaveTo();
+            }
+            else
+            {
+                ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
+                ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, UserSaved.ProjectFilePath);
+                UserSaved.OnSelectedProjectChanged();
+            }
+        }
 
         [RelayCommand]
-        private void SaveProject()
+        private void SaveTo()
         {
             ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
+
+            string? filePath = _fileDialogService.ShowSaveFileDialog("project.btk", "BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
+            if (filePath != null)
+            {
+                ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
+                UserSaved.OnSelectedProjectChanged();
+            }
+        }
+        [RelayCommand]
+        private void Open()
+        {
+            string? filePath = _fileDialogService.ShowOpenFileDialog("BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
+            if (filePath != null)
+            {
+                Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
+                UserSaved.SelectedProject = loadedProject;
+                UserSaved.ProjectFilePath = filePath;
+                UserSaved.OnSelectedProjectChanged();
+                SwitchPage(NavigationContent.ProjectPage);
+            }
         }
 
         [RelayCommand]
@@ -158,8 +173,14 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public void RefreshXamlBindings()
         {
-            CurrentProject = null;
             CurrentProject = UserSaved.SelectedProject;
+            ProjectName = UserSaved.SelectedProject.Name;
+            AuthorName = UserSaved.SelectedProject.UserName;
+            DroppedFilePaths = new ObservableCollection<string>(UserSaved.SelectedProject.LinkedFilesList);
+            IsResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.Residential;
+            IsNonResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;
+            IsNewConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.New;
+            IsExistingConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.Existing;
         }
     }
 }
