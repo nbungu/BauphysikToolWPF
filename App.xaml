@@ -110,11 +110,11 @@
         <BitmapImage x:Key="ButtonIcon_Database_Flat" UriSource="/Resources/Icons/Flat/database.png"/>
         <BitmapImage x:Key="ButtonIcon_DatabaseOK_Flat" UriSource="/Resources/Icons/Flat/database_ok.png"/>
         <BitmapImage x:Key="ButtonIcon_Error_Flat" UriSource="/Resources/Icons/Flat/error.png"/>
-        <BitmapImage x:Key="ButtonIcon_FileFolder_Flat" UriSource="/Resources/Icons/Flat/file-folder.png"/>
         <BitmapImage x:Key="ButtonIcon_Info_Flat" UriSource="/Resources/Icons/Flat/info.png"/>
         <BitmapImage x:Key="ButtonIcon_Layers_Flat" UriSource="/Resources/Icons/Flat/layers.png"/>
         <BitmapImage x:Key="ButtonIcon_LayerTemps_Flat" UriSource="/Resources/Icons/Flat/layer-temps.png"/>
         <BitmapImage x:Key="ButtonIcon_Save_Flat" UriSource="/Resources/Icons/Flat/save.png"/>
+        <BitmapImage x:Key="ButtonIcon_SaveTo_Flat" UriSource="/Resources/Icons/Flat/saveTo.png"/>
         <BitmapImage x:Key="ButtonIcon_Settings_Flat" UriSource="/Resources/Icons/Flat/setting.png"/>
         <BitmapImage x:Key="ButtonIcon_Success_Flat" UriSource="/Resources/Icons/Flat/success.png"/>
         <BitmapImage x:Key="ButtonIcon_User_Flat" UriSource="/Resources/Icons/Flat/user.png"/>
@@ -123,7 +123,9 @@
         <BitmapImage x:Key="ButtonIcon_Glaser_Flat" UriSource="/Resources/Icons/Flat/water-drop.png"/>
         <BitmapImage x:Key="ButtonIcon_Dynamic_Flat" UriSource="/Resources/Icons/Flat/dynamic.png"/>
         <BitmapImage x:Key="ButtonIcon_NewProject_Flat" UriSource="/Resources/Icons/Flat/new-project.png"/>
-        <BitmapImage x:Key="ButtonIcon_External_Flat" UriSource="/Resources/Icons/Flat/external.png"/>
+        <BitmapImage x:Key="ButtonIcon_ExportPdf_Flat" UriSource="/Resources/Icons/Flat/export-pdf.png"/>
+        <BitmapImage x:Key="ButtonIcon_OpenFile_Flat" UriSource="/Resources/Icons/Flat/open-file.png"/>
+        <BitmapImage x:Key="ButtonIcon_LinkedFile_Flat" UriSource="/Resources/Icons/Flat/linked-file.png"/>
 
         <!--Filetypes by https://www.flaticon.com/authors/Dimitry-Miroliubov -->
         <BitmapImage x:Key="FiletypeIcon_CAD" UriSource="/Resources/Icons/Filetypes/cad.png"/>

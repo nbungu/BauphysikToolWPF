@@ -354,8 +354,8 @@
             <Setter Property="Content" Value=""/>
             <Setter Property="Tag" Value=""/>
             <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="MinWidth" Value="20"/>
-            <Setter Property="MinHeight" Value="20"/>
+            <Setter Property="MinWidth" Value="16"/>
+            <Setter Property="MinHeight" Value="16"/>
             <Setter Property="HorizontalContentAlignment" Value="Center"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Margin" Value="0"/>
@@ -443,11 +443,12 @@
             <Grid Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Top">
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <Image Source="{StaticResource AppIcon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4,16,4"/>
+                    <Image Source="{StaticResource AppIcon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4"/>
+                    <Label Content="BauphysikTool v0.1.0" FontSize="12" VerticalAlignment="Center" Margin="0,0,32,0"/>
                     <Button ToolTip="Neues Projekt" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Command="{Binding NewCommand}"/>
                     <Button ToolTip="Projekt speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}"/>
-                    <Button ToolTip="Projekt speichern unter" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveToCommand}"/>
-                    <Button ToolTip="Projekt öffnen" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_FileFolder_Flat}" Command="{Binding OpenCommand}"/>
+                    <Button ToolTip="Projekt speichern unter" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Command="{Binding SaveToCommand}"/>
+                    <Button ToolTip="Projekt öffnen" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Command="{Binding OpenCommand}"/>
                     <Label Content="{Binding Title}" FontSize="12" VerticalAlignment="Center" Margin="64,0"/>
                 </StackPanel>
 

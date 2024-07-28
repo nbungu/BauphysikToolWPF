@@ -64,6 +64,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (filePath != null)
             {
                 ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
+                UserSaved.ProjectFilePath = filePath;
                 UserSaved.OnSelectedProjectChanged();
             }
         }

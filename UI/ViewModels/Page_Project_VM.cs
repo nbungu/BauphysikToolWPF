@@ -66,6 +66,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (filePath != null)
             {
                 ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
+                UserSaved.ProjectFilePath = filePath;
                 UserSaved.OnSelectedProjectChanged();
             }
         }
@@ -120,6 +121,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (value is null) return;
             UserSaved.SelectedProject.Name = value;
+            // To Update title bar
+            UserSaved.OnSelectedProjectChanged();
         }
 
         partial void OnIsNewConstrCheckedChanged(bool value)
@@ -171,7 +174,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, No direct User Input involved
          */
 
-        public void RefreshXamlBindings()
+        private void RefreshXamlBindings()
         {
             CurrentProject = UserSaved.SelectedProject;
             ProjectName = UserSaved.SelectedProject.Name;
