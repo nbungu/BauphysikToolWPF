@@ -134,6 +134,9 @@
                     <Setter Property="Cursor" Value="Arrow"/>
                     <Setter Property="Focusable" Value="False"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
+                    <Setter Property="Background" Value="LightGoldenrodYellow"/>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 

@@ -2,7 +2,6 @@
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json.Serialization;
 
@@ -33,11 +32,10 @@ namespace BauphysikToolWPF.Models
         public string UserName { get; set; } = string.Empty;
 
         [NotNull]
-        public int BuildingUsage { get; set; }
+        public BuildingUsageType BuildingUsage { get; set; }
 
         [NotNull]
-        public int BuildingAge { get; set; }
-
+        public BuildingAgeType BuildingAge { get; set; }
 
         public string Comment { get; set; } = string.Empty;
 
@@ -48,8 +46,6 @@ namespace BauphysikToolWPF.Models
 
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-
-
 
         //------Not part of the Database-----//
 
@@ -65,31 +61,31 @@ namespace BauphysikToolWPF.Models
         [Ignore, OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
         public List<Element> Elements { get; set; } = new List<Element>();
 
-        // Encapsulate/Hide BuildingUsage and BuildingAge to convert to bool
-        [Ignore, JsonIgnore]
-        public bool IsResidentialUsage // true = 1
-        {
-            get => BuildingUsage == (int)BuildingUsageType.Residential;
-            set => BuildingUsage = (value) ? 1 : 0;
-        }
-        [Ignore, JsonIgnore]
-        public bool IsNonResidentialUsage // = 0
-        {
-            get => BuildingUsage == (int)BuildingUsageType.NonResidential;
-            set => BuildingUsage = (value) ? 0 : 1;
-        }
-        [Ignore, JsonIgnore]
-        public bool IsNewConstruction // = 1
-        {
-            get => BuildingAge == (int)BuildingAgeType.New;
-            set => BuildingAge = (value) ? 1 : 0;
-        }
-        [Ignore, JsonIgnore]
-        public bool IsExistingConstruction // = 0
-        {
-            get => BuildingAge == (int)BuildingAgeType.Existing;
-            set => BuildingAge = (value) ? 0 : 1;
-        }
+        //// Encapsulate/Hide BuildingUsage and BuildingAge to convert to bool
+        //[Ignore, JsonIgnore]
+        //public bool IsResidentialUsage // true = 1
+        //{
+        //    get => BuildingUsage == BuildingUsageType.Residential;
+        //    set => BuildingUsage = value;
+        //}
+        //[Ignore, JsonIgnore]
+        //public bool IsNonResidentialUsage // = 0
+        //{
+        //    get => BuildingUsage == BuildingUsageType.NonResidential;
+        //    set => BuildingUsage = (value) ? 0 : 1;
+        //}
+        //[Ignore, JsonIgnore]
+        //public bool IsNewConstruction // = 1
+        //{
+        //    get => BuildingAge == BuildingAgeType.New;
+        //    set => BuildingAge = (value) ? 1 : 0;
+        //}
+        //[Ignore, JsonIgnore]
+        //public bool IsExistingConstruction // = 0
+        //{
+        //    get => BuildingAge == BuildingAgeType.Existing;
+        //    set => BuildingAge = (value) ? 0 : 1;
+        //}
 
         [Ignore]
         public List<string> LinkedFilesList // Converts string of LinkedFiles, separated by Comma, to a List of LinkedFiles
@@ -122,16 +118,11 @@ namespace BauphysikToolWPF.Models
             copy.BuildingAge = this.BuildingAge;
             copy.BuildingUsage = this.BuildingUsage;
             copy.LinkedFilePaths = this.LinkedFilePaths;
+            copy.Comment = this.Comment;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.Elements = this.Elements;
-
             return copy;
-        }
-
-        public IRepositoryEntity<Project> Convert()
-        {
-            throw new System.NotImplementedException();
         }
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 

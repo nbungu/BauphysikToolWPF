@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using BauphysikToolWPF.Models;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI.CustomControls
@@ -14,7 +15,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty LayersProperty =
-            DependencyProperty.Register(nameof(Layers), typeof(object), typeof(LayersListView), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(Layers), typeof(object), typeof(LayersListView), new FrameworkPropertyMetadata(null));
 
         public object Layers
         {
@@ -23,7 +24,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty SelectedLayerProperty =
-            DependencyProperty.Register(nameof(SelectedLayer), typeof(object), typeof(LayersListView), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(SelectedLayer), typeof(object), typeof(LayersListView), new FrameworkPropertyMetadata(new Layer(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public object SelectedLayer
         {

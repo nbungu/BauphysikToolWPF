@@ -54,18 +54,18 @@ namespace BauphysikToolWPF.Calculations
             if (constructionRequirements is null || constructionRequirements.Count == 0) return -1;
 
             // b) Select relevant Source based off Building Age and Usage
-            if (_currentProject.IsNewConstruction)
+            if (_currentProject.BuildingAge == BuildingAgeType.New)
             {
-                if (_currentProject.IsResidentialUsage)
+                if (_currentProject.BuildingUsage == BuildingUsageType.Residential)
                 {
                     requirementSourceId = (int)RequirementSourceType.GEG_Anlage1;
                 }
-                else if (_currentProject.IsNonResidentialUsage)
+                else if (_currentProject.BuildingUsage == BuildingUsageType.NonResidential)
                 {
                     requirementSourceId = (int)RequirementSourceType.GEG_Anlage2;
                 }
             }
-            else if (_currentProject.IsExistingConstruction)
+            else if (_currentProject.BuildingAge == BuildingAgeType.Existing)
             {
                 requirementSourceId = (int)RequirementSourceType.GEG_Anlage7;
             }

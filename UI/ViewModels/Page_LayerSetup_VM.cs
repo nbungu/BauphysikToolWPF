@@ -249,7 +249,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string> RelFiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Select(e => e.Comment).ToList();
         public List<string> RelFeKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Select(e => e.Comment).ToList();
 
-        public string TiValue
+        public double TiValue
         {
             get
             {
@@ -261,85 +261,85 @@ namespace BauphysikToolWPF.UI.ViewModels
                 //Get corresp Value
                 double? value = (_ti_Index == -1) ? UserSaved.Ti : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Find(e => e.Comment == TiKeys[_ti_Index])?.Value;
                 // Save SessionData
-                UserSaved.Ti = value ?? 0;
+                UserSaved.Ti = value ?? 0.0;
                 // Return value to UIElement
-                return value.ToString() ?? string.Empty;
+                return UserSaved.Ti;
             }
             set
             {
                 // Save custom user input
-                UserSaved.Ti = Convert.ToDouble(value);
+                UserSaved.Ti = value;
                 // Changing ti_Index Triggers TiValue getter due to NotifyProperty
                 Ti_Index = -1;
             }
         }
-        public string TeValue
+        public double TeValue
         {
             get
             {
                 double? value = (_te_Index == -1) ? UserSaved.Te : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Find(e => e.Comment == TeKeys[_te_Index])?.Value;
-                UserSaved.Te = value ?? 0;
-                return value.ToString() ?? string.Empty;
+                UserSaved.Te = value ?? 0.0;
+                return UserSaved.Te;
             }
             set
             {
-                UserSaved.Te = Convert.ToDouble(value);
+                UserSaved.Te = value;
                 Te_Index = -1;
             }
         }
-        public string RsiValue
+        public double RsiValue
         {
             get
             {
                 double? value = (_rsi_Index == -1) ? UserSaved.Rsi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Comment == RsiKeys[_rsi_Index])?.Value;
-                UserSaved.Rsi = value ?? 0;
-                return value.ToString() ?? string.Empty;
+                UserSaved.Rsi = value ?? 0.0;
+                return UserSaved.Rsi;
             }
             set
             {
-                UserSaved.Rsi = Convert.ToDouble(value);
+                UserSaved.Rsi = value;
                 Rsi_Index = -1;
             }
         }
-        public string RseValue
+        public double RseValue
         {
             get
             {
                 double? value = (_rse_Index == -1) ? UserSaved.Rse : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Comment == RseKeys[_rse_Index])?.Value;
-                UserSaved.Rse = value ?? 0;
-                return value.ToString() ?? string.Empty;
+                UserSaved.Rse = value ?? 0.0;
+                return UserSaved.Rse;
             }
             set
             {
-                UserSaved.Rse = Convert.ToDouble(value);
+                UserSaved.Rse = value;
                 Rse_Index = -1;
             }
         }
-        public string RelFiValue
+        public double RelFiValue
         {
             get
             {
                 double? value = (_rel_fi_Index == -1) ? UserSaved.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Comment == RelFiKeys[_rel_fi_Index])?.Value;
-                UserSaved.Rel_Fi = value ?? 0;
-                return value.ToString() ?? string.Empty;
+                UserSaved.Rel_Fi = value ?? 0.0;
+                return UserSaved.Rel_Fi;
             }
             set
             {
-                UserSaved.Rel_Fi = Convert.ToDouble(value);
+                UserSaved.Rel_Fi = value;
                 Rel_fi_Index = -1;
             }
         }
-        public string RelFeValue
+        public double RelFeValue
         {
             get
             {
                 double? value = (_rel_fe_Index == -1) ? UserSaved.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Comment == RelFeKeys[_rel_fe_Index])?.Value;
-                UserSaved.Rel_Fe = value ?? 0;
-                return value.ToString() ?? string.Empty;
+                UserSaved.Rel_Fe = value ?? 0.0;
+                return UserSaved.Rel_Fe;
             }
             set
             {
-                UserSaved.Rel_Fe = Convert.ToDouble(value);
+                UserSaved.Rel_Fe = value;
                 Rel_fe_Index = -1;
             }
         }

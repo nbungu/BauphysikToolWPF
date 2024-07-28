@@ -38,29 +38,29 @@ namespace BauphysikToolWPF.UI.ViewModels
             MainWindow.SetPage(desiredPage);
         }
 
-        // TODO: use Enums as parameter
-        [RelayCommand]
-        private void ChangeBuildingStats(string property = "")
-        {
-            switch (property)
-            {
-                case "BuildingUsage0":
-                    UserSaved.SelectedProject.IsNonResidentialUsage = true;
-                    break;
-                case "BuildingUsage1":
-                    UserSaved.SelectedProject.IsResidentialUsage = true;
-                    break;
-                case "BuildingAge0":
-                    UserSaved.SelectedProject.IsExistingConstruction = true;
-                    break;
-                case "BuildingAge1":
-                    UserSaved.SelectedProject.IsNewConstruction = true;
-                    break;
-                default:
-                    return;
-            }
-            RefreshXamlBindings();
-        }
+        //// TODO: use Enums as parameter
+        //[RelayCommand]
+        //private void ChangeBuildingStats(string property = "")
+        //{
+        //    switch (property)
+        //    {
+        //        case "BuildingUsage0":
+        //            UserSaved.SelectedProject.IsNonResidentialUsage = true;
+        //            break;
+        //        case "BuildingUsage1":
+        //            UserSaved.SelectedProject.IsResidentialUsage = true;
+        //            break;
+        //        case "BuildingAge0":
+        //            UserSaved.SelectedProject.IsExistingConstruction = true;
+        //            break;
+        //        case "BuildingAge1":
+        //            UserSaved.SelectedProject.IsNewConstruction = true;
+        //            break;
+        //        default:
+        //            return;
+        //    }
+        //    RefreshXamlBindings();
+        //}
 
         [RelayCommand]
         private void SaveProject()
@@ -95,7 +95,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedProject.LinkedFilesList = DroppedFilePaths.ToList();
         }
 
-
         partial void OnAuthorNameChanged(string value)
         {
             if (value is null) return;
@@ -106,6 +105,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (value is null) return;
             UserSaved.SelectedProject.Name = value;
+        }
+
+        partial void OnIsNewConstrCheckedChanged(bool value)
+        {
+            UserSaved.SelectedProject.BuildingAge = value ? BuildingAgeType.New : BuildingAgeType.Existing;
+            IsNewConstrChecked = value;
+            IsExistingConstrChecked = !value;
+        }
+        partial void OnIsResidentialUsageCheckedChanged(bool value)
+        {
+            UserSaved.SelectedProject.BuildingUsage = value ? BuildingUsageType.Residential : BuildingUsageType.NonResidential;
+            IsResidentialUsageChecked = value;
+            IsNonResidentialUsageChecked = !value;
         }
 
         /*
@@ -125,6 +137,24 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private ObservableCollection<string> _droppedFilePaths = new ObservableCollection<string>(UserSaved.SelectedProject.LinkedFilesList);
+
+        [ObservableProperty]
+        private bool _isResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.Residential;
+
+        [ObservableProperty]
+        private bool _isNewConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.New;
+
+        [ObservableProperty]
+        private bool _isNonResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;
+
+        [ObservableProperty]
+        private bool _isExistingConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.Existing;
+
+        /*
+         * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
+         * 
+         * Not Observable, No direct User Input involved
+         */
 
         public void RefreshXamlBindings()
         {

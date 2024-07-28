@@ -20,13 +20,8 @@
 
     <Window.Resources>
 
-        <!-- TabItem Header Template -->
-        <DataTemplate x:Key="TabItemHeaderTemplate">
-            <StackPanel Orientation="Horizontal">
-                <Image Width="16" Height="16" Source="{Binding Tag}"/>
-                <TextBlock Text="{Binding Header}" VerticalAlignment="Center"/>
-            </StackPanel>
-        </DataTemplate>
+        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+        <controls:CategoryEnumToStringConverter x:Key="CategoryEnumToStringConverter" />
 
         <!-- Style for TabControl -->
         <Style TargetType="{x:Type TabControl}">
@@ -62,8 +57,6 @@
             </Setter>
             
         </Style>
-
-        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
 
         <!-- Style to collapse the GridView column headers -->
         <Style x:Key="InvisibleHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
@@ -112,7 +105,7 @@
             <TabControl Grid.Row="1" Height="Auto" Width="Auto" SelectedIndex="{Binding SelectedTabIndex}">
                 <TabItem Header="Datenbank" Tag="{StaticResource ButtonIcon_Database_Flat}" Padding="8">
                     <ListView x:Name="CategoryListView"
-                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}}"
+                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
                               View="{StaticResource CategoryGridViewColumns}"
                               ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
                               SelectedItem="{Binding SelectedCategory}"
@@ -120,9 +113,9 @@
                               BorderThickness="0"
                               Margin="-2"/>
                 </TabItem>
-                <TabItem Header="Eigene Materialien"  Tag="{StaticResource ButtonIcon_User_Flat}"  Padding="8">
+                <TabItem Header="Eigene Materialien" Tag="{StaticResource ButtonIcon_User_Flat}"  Padding="8">
                     <ListView x:Name="CategoryListViewCustom"
-                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}}"
+                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
                               View="{StaticResource CategoryGridViewColumns2}"
                               ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
                               SelectedItem="{Binding SelectedCategory}"
@@ -161,7 +154,7 @@
                         Margin="0,0,8,0"
                         IsEnabled="{Binding AllowDelete}"
                         ToolTip="Material löschen"/>
-                <TextBox Text="{Binding SearchString}" TextAlignment="Left" MaxLength="320" Width="240" Margin="0,0,8,0"/>
+                <TextBox Text="{Binding SearchString}" TextAlignment="Left" Background="{StaticResource SecondaryLightBlueBrush}" MaxLength="320" Width="240" Margin="0,0,8,0"/>
                 <Button Tag="{StaticResource ButtonIcon_Cancel_B}" Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding ResetMaterialListCommand}" Margin="-40,0,8,0"/>
                 <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle03_Mini}" Margin="0,0,8,0"/>
 

@@ -51,7 +51,7 @@ namespace BauphysikToolWPF.Models
         public bool IsValid => BulkDensity > 0 && ThermalConductivity > 0;
 
         [Ignore, JsonIgnore]
-        public string CategoryName => TranslateToCategoryName();
+        public string CategoryName => TranslateToCategoryName(Category);
 
         [Ignore, JsonIgnore]
         public Color Color // HEX ColorCode (e.g. #dddddd) to 'Color' Type
@@ -103,9 +103,9 @@ namespace BauphysikToolWPF.Models
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
 
-        private string TranslateToCategoryName()
+        public static string TranslateToCategoryName(MaterialCategory category)
         {
-            switch (Category)
+            switch (category)
             {
                 case MaterialCategory.Insulation:
                     return "Wärmedämmung";
@@ -121,6 +121,8 @@ namespace BauphysikToolWPF.Models
                     return "Luftschicht";
                 case MaterialCategory.Masonry:
                     return "Mauerwerk";
+                case MaterialCategory.NotDefined:
+                    return "Alle";
                 default:
                     return "Ohne";
             }

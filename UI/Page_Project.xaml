@@ -143,15 +143,15 @@
             <TextBox Grid.Row="3" Grid.ColumnSpan="2" Grid.Column="0" x:Name="projectUser_TextBox" Text="{Binding AuthorName}" HorizontalContentAlignment="Left" FontSize="14" Height="32" Margin="0,4,0,0"/>
 
             <Label Grid.Row="4" Grid.ColumnSpan="2" Grid.Column="0" Content="Nutzungsart des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding CurrentProject.IsResidentialUsage}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage1" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,4,4,0"/>
-            <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding CurrentProject.IsNonResidentialUsage}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingUsage0" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_Office_B}" Margin="4,4,0,0"/>
+            <RadioButton Grid.Row="5" Grid.Column="0" IsChecked="{Binding IsResidentialUsageChecked}" GroupName="BuildingUsage" Content="Wohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,4,4,0"/>
+            <RadioButton Grid.Row="5" Grid.Column="1" IsChecked="{Binding IsNonResidentialUsageChecked}" GroupName="BuildingUsage" Content="Nichtwohngebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_Office_B}" Margin="4,4,0,0"/>
 
             <Label Grid.Row="6" Grid.ColumnSpan="2" Grid.Column="0" Content="Alter des Gebäudes:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding CurrentProject.IsNewConstruction}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge1" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
-            <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding CurrentProject.IsExistingConstruction}" Command="{Binding ChangeBuildingStatsCommand}" CommandParameter="BuildingAge0" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
+            <RadioButton Grid.Row="7" Grid.Column="0" IsChecked="{Binding IsNewConstrChecked}" GroupName="BuildingAge" Content="Neubau" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_New_B}" Margin="0,4,4,0"/>
+            <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsExistingConstrChecked}" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
 
             <Label Grid.Row="8" Grid.ColumnSpan="2" Grid.Column="0" Content="Kommentar" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <TextBox Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" TextAlignment="Left" Text="{Binding CurrentProject.Comment}" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="120" FontSize="14" FontFamily="Consolas" MaxLength="800" Margin="0,4,0,0"/>
+            <TextBox Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" TextAlignment="Left" Text="{Binding CurrentProject.Comment}" Background="{StaticResource SecondaryLightBlueBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="120" FontSize="14" FontFamily="Consolas" MaxLength="800" Margin="0,4,0,0"/>
 
             <Label Grid.Row="10" Grid.Column="0" Content="Dateien mit diesem Projekt verknüpfen" HorizontalAlignment="Left" Margin="0,16,0,0"/>
 
@@ -191,11 +191,16 @@
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition Height="Auto"/>
+                                            </Grid.RowDefinitions>
 
-                                            <Image Grid.Column="0" Width="32" Height="32" Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" Margin="8"/>
-                                            <TextBlock Grid.Column="1" FontWeight="DemiBold" Text="{Binding Converter={StaticResource FilePathToFileNameConverter}}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Margin="8,0,32,0"/>
-                                            <Button Grid.Column="2" Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle02_A}" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                                            <Button Grid.Column="3" Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" Command="{Binding DataContext.DeleteLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
+                                            <Image Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="32" Height="32" Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" Margin="8"/>
+                                            <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="DemiBold" FontSize="14" Text="{Binding Converter={StaticResource FilePathToFileNameConverter}}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="8,0,32,0"/>
+                                            <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" ToolTip="Verknüpfte Datei öffnen" Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle02_A}" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                            <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" ToolTip="Verknüpfte Datei aus Liste entfernen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" Command="{Binding DataContext.DeleteLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
+                                            <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding}" VerticalAlignment="Top" FontSize="11" HorizontalAlignment="Left" Margin="8,0,32,0"/>
                                         </Grid>
                                     </Border>
                                     <!--

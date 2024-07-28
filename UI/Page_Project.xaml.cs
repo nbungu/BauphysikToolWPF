@@ -17,7 +17,6 @@ namespace BauphysikToolWPF.UI
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
         }
-
         
         private void FileDropArea_OnSourceUpdated(object? sender, DataTransferEventArgs e)
         {
