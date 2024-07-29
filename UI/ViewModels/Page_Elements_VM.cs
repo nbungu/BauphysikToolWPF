@@ -90,6 +90,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.OnSelectedElementChanged(false);
         }
 
+        [RelayCommand]
+        private void ElementDoubleClick()
+        {
+            SwitchPage(NavigationContent.LayerSetup);
+        }
+
         // This method will be called whenever SortingPropertyIndex changes
         // Workaround since Combobox has no Command or Click option
         partial void OnSortingPropertyIndexChanged(int value)

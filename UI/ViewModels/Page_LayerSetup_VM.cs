@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.CustomControls;
 using BauphysikToolWPF.UI.Drawing;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -114,6 +115,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElement.MoveLayerPositionToInside(UserSaved.SelectedLayerId);
             UserSaved.OnSelectedLayerChanged();
+        }
+
+        [RelayCommand]
+        private void LayerDoubleClick()
+        {
+            if (SelectedListViewItem is null) return;
+            EditLayer();
         }
         
         // This method will be called whenever SelectedListViewItem changes

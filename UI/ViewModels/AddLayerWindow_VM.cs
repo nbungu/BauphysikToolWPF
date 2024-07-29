@@ -195,15 +195,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(MaterialProperties))]
         private Material? _selectedListViewItem;
 
-        [ObservableProperty]
-        private string _tab0Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
-
-        [ObservableProperty]
-        private string _tab1Header = $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
-
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
+
+        public string Tab0Header { get; set; } = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
+
+        public string Tab1Header { get; set; } = $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
 
         public List<IPropertyItem> MaterialProperties => SelectedListViewItem is null ? new List<IPropertyItem>() : new List<IPropertyItem>()
         {

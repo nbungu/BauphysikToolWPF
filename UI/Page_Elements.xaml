@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="700"
@@ -107,8 +108,13 @@
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
                         CommandParameter="{Binding InternalId}"
                         Content="{Binding}"
-                        Style="{StaticResource ButtonStyleWrapPanel}"
-                        MouseDoubleClick="Button_MouseDoubleClick">
+                        Style="{StaticResource ButtonStyleWrapPanel}">
+                    <!-- EventToCommand behavior to bind the double-click event to the command-->
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.ElementDoubleClickCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
                     <Button.ContextMenu>
                         <!--ContextMenu does not inherit the DataContext from its parent element-> DataContext is not available.
                         Need to pass the DataContext in a different way: e.g. using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
