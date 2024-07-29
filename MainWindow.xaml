@@ -61,9 +61,6 @@
         <DataTemplate x:Key="FO4_Dynamic">
             <ui:Page_DynamicResults/>
         </DataTemplate>
-        <DataTemplate x:Key="TestWindow">
-            <ui:TestWindow/>
-        </DataTemplate>
 
         <!--Content Pages on right side-->
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
@@ -95,9 +92,6 @@
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Dynamic">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO4_Dynamic}"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Test">
-                    <Setter Property="ContentTemplate" Value="{StaticResource TestWindow}"/>
-                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -114,7 +108,6 @@
             <system:String>Temperature</system:String> <!--SelectedIndex: 4-->
             <system:String>Moisture</system:String>    <!--SelectedIndex: 5-->
             <system:String>Dynamic</system:String>    <!--SelectedIndex: 6-->
-            <system:String>Test</system:String>
         </x:Array>
 
         <!--NavigationMenu ListBox appearance: Used in ListBox as Style -->
@@ -258,10 +251,6 @@
                 <DataTrigger Binding="{Binding}" Value="Dynamic">
                     <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Dynamic_Flat}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Dynamic"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="Test">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Hide_W}"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Test"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>

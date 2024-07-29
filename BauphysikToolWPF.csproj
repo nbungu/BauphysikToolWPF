@@ -351,9 +351,6 @@
     <Compile Update="UI\AddLayerSubConstructionWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\TestWindow.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -367,9 +364,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\AddLayerSubConstructionWindow.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UI\TestWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
