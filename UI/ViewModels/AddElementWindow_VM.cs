@@ -103,8 +103,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                 };
                 UserSaved.SelectedProject.Elements.Add(newElem);
             }
-
-            
             UserSaved.OnSelectedElementChanged();
 
             window.Close();

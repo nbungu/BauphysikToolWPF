@@ -142,7 +142,7 @@
 
 
         <!--Application Icon -->
-        <BitmapImage x:Key="AppIcon" UriSource="/Resources/Icons/Ordner_Icon.ico"/>
+        <BitmapImage x:Key="AppIcon" UriSource="/Resources/appicon.ico"/>
 
         <Style x:Key="{x:Type Image}" TargetType="{x:Type Image}">
             <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>

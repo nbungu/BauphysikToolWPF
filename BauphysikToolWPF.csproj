@@ -5,7 +5,7 @@
     <UseWPF>true</UseWPF>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <WindowsPackageType>None</WindowsPackageType>
-    <ApplicationIcon>Ordner_Icon.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\appicon.ico</ApplicationIcon>
 	  <Nullable>enable</Nullable>
 	  <UseWindowsForms>False</UseWindowsForms>
 	  <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
@@ -43,6 +43,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\appicon.ico" />
     <None Remove="Resources\Icons\add_element.png" />
     <None Remove="Resources\Icons\add_element_w.png" />
     <None Remove="Resources\Icons\add_layer.png" />
@@ -151,7 +152,6 @@
     <None Remove="Resources\Icons\office_w.png" />
     <None Remove="Resources\Icons\open_project.png" />
     <None Remove="Resources\Icons\open_project_w.png" />
-    <None Remove="Resources\Icons\Ordner_Icon.ico" />
     <None Remove="Resources\Icons\placeholder_256px.png" />
     <None Remove="Resources\Icons\placeholder_256px_light.png" />
     <None Remove="Resources\Icons\plus.png" />
@@ -210,6 +210,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Resources\appicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Icons\add_element.png" />
     <Resource Include="Resources\Icons\add_element_w.png" />
     <Resource Include="Resources\Icons\add_layer.png" />
@@ -260,7 +263,6 @@
     <Resource Include="Resources\Icons\Flat\user.png" />
     <Resource Include="Resources\Icons\Flat\warning.png" />
     <Resource Include="Resources\Icons\Flat\water-drop.png" />
-    <Resource Include="Resources\Icons\Ordner_Icon.ico" />
     <Resource Include="Resources\Icons\placeholder_256px.png" />
     <Resource Include="Resources\Icons\delete-2.png" />
     <Resource Include="Resources\Icons\edit.png" />

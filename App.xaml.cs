@@ -19,10 +19,11 @@ namespace BauphysikToolWPF
             base.OnStartup(e);
 
             Logger.SetLogFilePath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "bauphysikTool.log"));
+            Logger.ClearLog();
 
             if (e.Args.Length > 0)
             {
-                Logger.LogInfo($"Opened Application with Arguments: {e.Args}");
+                Logger.LogInfo($"Opening Application with Arguments: {e.Args}");
 
                 string filePath = e.Args[0];
                 if (File.Exists(filePath))
@@ -51,6 +52,11 @@ namespace BauphysikToolWPF
                 UserSaved.SelectedProject = DatabaseAccess.QueryProjectById(1);
                 Logger.LogInfo($"Loaded Project: '{UserSaved.SelectedProject}' from Database!");
             }
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Logger.LogInfo($"Closing Application with ExitCode: {e.ApplicationExitCode}");
         }
 
         // cmd test:

@@ -23,6 +23,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
             UserSaved.SelectedLayerChanged += RefreshXamlBindings;
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
+
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
         }
@@ -53,6 +54,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                         break;
                     case MessageBoxResult.No:
                         ApplicationServices.CreateNewProject();
+                        UserSaved.OnSelectedProjectChanged(false);
                         SwitchPage(NavigationContent.ProjectPage);
                         break;
                     case MessageBoxResult.Cancel:
@@ -63,6 +65,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             else
             {
                 ApplicationServices.CreateNewProject();
+                UserSaved.OnSelectedProjectChanged(false);
                 SwitchPage(NavigationContent.ProjectPage);
             }
         }
@@ -108,6 +111,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 UserSaved.SelectedProject = loadedProject;
                 UserSaved.SelectedProject.IsModified = false;
                 UserSaved.ProjectFilePath = filePath;
+                UserSaved.OnSelectedProjectChanged(false);
                 SwitchPage(NavigationContent.ProjectPage);
             }
         }

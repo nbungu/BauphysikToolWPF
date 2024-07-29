@@ -24,6 +24,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
+
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
         }
@@ -116,12 +117,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void Close(Window? window)
-        {
-            window?.Close();
-        }
-
-        [RelayCommand]
         private void OpenLinkedFile(string filePath)
         {
             try
@@ -140,39 +135,50 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             DroppedFilePaths.Remove(file);
             UserSaved.SelectedProject.LinkedFilesList = DroppedFilePaths.ToList();
-            UserSaved.OnSelectedProjectChanged();
+            // Here: Dont call OnProjectChanged to avoid loop
+            UserSaved.SelectedProject.IsModified = true;
+            RefreshXamlBindings();
         }
 
         partial void OnAuthorNameChanged(string value)
         {
             if (value is null) return;
             UserSaved.SelectedProject.UserName = value;
-            UserSaved.OnSelectedProjectChanged();
+            // Here: Dont call OnProjectChanged to avoid loop
+            UserSaved.SelectedProject.IsModified = true;
+            RefreshXamlBindings();
         }
 
         partial void OnProjectNameChanged(string value)
         {
             if (value is null) return;
             UserSaved.SelectedProject.Name = value;
-            UserSaved.OnSelectedProjectChanged();
+            // Here: Dont call OnProjectChanged to avoid loop
+            UserSaved.SelectedProject.IsModified = true;
+            RefreshXamlBindings();
         }
 
         partial void OnCommentChanged(string value)
         {
             if (value is null) return;
             UserSaved.SelectedProject.Comment = value;
-            UserSaved.OnSelectedProjectChanged();
+            UserSaved.SelectedProject.IsModified = true;
+            RefreshXamlBindings();
         }
 
         partial void OnIsNewConstrCheckedChanged(bool value)
         {
             UserSaved.SelectedProject.BuildingAge = value ? BuildingAgeType.New : BuildingAgeType.Existing;
-            UserSaved.OnSelectedProjectChanged();
+            // Here: Dont call OnProjectChanged to avoid loop
+            UserSaved.SelectedProject.IsModified = true;
+            RefreshXamlBindings();
         }
         partial void OnIsResidentialUsageCheckedChanged(bool value)
         {
             UserSaved.SelectedProject.BuildingUsage = value ? BuildingUsageType.Residential : BuildingUsageType.NonResidential;
-            UserSaved.OnSelectedProjectChanged();
+            // Here: Dont call OnProjectChanged to avoid loop
+            UserSaved.SelectedProject.IsModified = true;
+            RefreshXamlBindings();
         }
 
         /*

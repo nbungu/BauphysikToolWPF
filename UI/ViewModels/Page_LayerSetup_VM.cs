@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.UI.CustomControls;
 using MeasurementChain = BauphysikToolWPF.UI.Drawing.MeasurementChain;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -86,35 +85,35 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void DeleteSubConstructionLayer()
         {
             UserSaved.SelectedLayer.RemoveSubConstruction();
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
         private void DeleteLayer()
         {
             UserSaved.SelectedElement.RemoveLayer(UserSaved.SelectedLayerId);
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
         }
         
         [RelayCommand]
         private void DuplicateLayer()
         {
             UserSaved.SelectedElement.DuplicateLayer(UserSaved.SelectedLayerId);
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
         private void MoveLayerDown()
         {
             UserSaved.SelectedElement.MoveLayerPositionToOutside(UserSaved.SelectedLayerId);
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
         private void MoveLayerUp()
         {
             UserSaved.SelectedElement.MoveLayerPositionToInside(UserSaved.SelectedLayerId);
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
         }
         
         // This method will be called whenever SelectedListViewItem changes

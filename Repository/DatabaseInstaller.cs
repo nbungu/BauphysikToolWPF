@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BT.Logging;
+using System;
 using System.IO;
 
 namespace BauphysikToolWPF.Repository
@@ -42,12 +43,13 @@ namespace BauphysikToolWPF.Repository
                     File.Delete(databaseFilePath);
                     File.Copy(sourceDatabasePath, databaseFilePath);
                 }
+                Logger.LogInfo($"Connecting Database from: {databaseFilePath}");
                 return databaseFilePath;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                Logger.LogError($"Could not get installed Database Path: {e.Message}");
+                return BuildDirectoryDBFile;
             }
         }
 
@@ -57,6 +59,7 @@ namespace BauphysikToolWPF.Repository
         /// <returns>Connection string linked to the InitialDB.db file which is at the 'BauphysikToolWPF/Repository' directory</returns>
         public static string GetInitialDatabase()
         {
+            Logger.LogInfo($"Connecting Database from: {RootProjectDBFile}");
             return RootProjectDBFile;
         }
 
@@ -67,6 +70,7 @@ namespace BauphysikToolWPF.Repository
         /// <returns>Connection string linked to the InitialDB.db file which is at the 'BauphysikToolWPF/bin/Debug/net8.0-windows10.0.22621.0/Repository' directory</returns>
         public static string GetInitialDatabaseFromBuildPath()
         {
+            Logger.LogInfo($"Connecting Database from: {RootProjectDBFile}");
             return BuildDirectoryDBFile;
         }
 

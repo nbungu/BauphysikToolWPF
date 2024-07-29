@@ -86,6 +86,7 @@ namespace BauphysikToolWPF.Services
         {
             try
             {
+                Logger.LogInfo($"Start saving project to Database: {DatabaseAccess.ConnectionString}");
                 project.UpdateTimestamp();
                 DatabaseAccess.Database.Update(project);
 
