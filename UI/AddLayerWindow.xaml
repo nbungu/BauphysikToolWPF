@@ -3,163 +3,210 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:BauphysikToolWPF.UI"
+        xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+        xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+        xmlns:models="clr-namespace:BauphysikToolWPF.Models"
+        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="AddLayerWindow" Background="{StaticResource PrimaryLightBrush}" Height="488" Width="880">
+        Title="{Binding Title}"
+        Background="{StaticResource PrimaryLightBrush}"
+        Height="480"
+        Width="1060">
+
+    <Window.DataContext>
+        <!-- AddLayerWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
+        <vm:AddLayerWindow_VM/>
+    </Window.DataContext>
 
     <Window.Resources>
 
-        <!--Custom Button04: rounded corners, click effects, materialUI -->
-        <Style x:Key="ButtonStyle04" TargetType="{x:Type Button}">
-            <Setter Property="SnapsToDevicePixels" Value="True"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="FontSize" Value="14"/>
+        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+        <controls:CategoryEnumToStringConverter x:Key="CategoryEnumToStringConverter" />
+
+        <!-- Style for TabControl -->
+        <Style TargetType="{x:Type TabControl}">
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border x:Name="border" CornerRadius="6" Background="{TemplateBinding Background}" BorderThickness="1">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
+                    <ControlTemplate TargetType="{x:Type TabControl}">
+                        <Grid KeyboardNavigation.TabNavigation="Local">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <TabPanel Grid.Row="0" IsItemsHost="True" Panel.ZIndex="1" />
+                            <Border Grid.Row="1" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="0">
+                                <ContentPresenter ContentSource="SelectedContent" Margin="{TemplateBinding Padding}" />
+                            </Border>
+                        </Grid>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".6"/>
-                </Setter.Value>
-            </Setter>
-            <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
-            <Setter Property="RenderTransform">
-                <Setter.Value>
-                    <ScaleTransform ScaleX="1" ScaleY="1" />
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FF6DD46D"/>
-                </Trigger>
-                <Trigger Property="IsPressed" Value="True">
-                    <Setter Property="RenderTransform">
-                        <Setter.Value>
-                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
-                        </Setter.Value>
-                    </Setter>
-                </Trigger>
-                <DataTrigger Binding="{Binding Source={x:Reference thickness_TextBox}, Path=Text.Length}" Value="0">
-                    <!--These setters are for the trigger values-->
-                    <Setter Property="IsEnabled" Value="False"/>
-                    <Setter Property="Foreground" Value="Gray"/>
-                    <Setter Property="Effect">
-                        <Setter.Value>
-                            <DropShadowEffect BlurRadius="10" ShadowDepth="1" Color="LightSlateGray" Opacity=".2"/>
-                        </Setter.Value>
-                    </Setter>
-                </DataTrigger>
-            </Style.Triggers>
         </Style>
 
-        <DataTemplate x:Key="CategoriesListViewTemplate">
-            <Grid Margin="4">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="24"/>
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <!--Here Binding is from: ItemsSource="{Binding DistinctCategories}" -->
-                <Label Content="{Binding}" Height="28"/>
-            </Grid>
-        </DataTemplate>
+        <!-- Style for TabItem -->
+        <Style TargetType="{x:Type TabItem}">
+            <Setter Property="HeaderTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Width="16" Height="16" Margin="0,0,8,0" Source="{Binding RelativeSource={RelativeSource AncestorType={x:Type TabItem}}, Path=Tag}"/>
+                            <TextBlock Text="{Binding}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+            
+        </Style>
 
-        <DataTemplate x:Key="MaterialListViewTemplate">
-            <Grid Margin="4">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="24" />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="200"/>
-                    <ColumnDefinition Width="116"/>
-                    <ColumnDefinition Width="116"/>
-                    <ColumnDefinition Width="116"/>
-                    <ColumnDefinition Width="116"/>
-                </Grid.ColumnDefinitions>
-                <!--Binding reference are the ListViewItems-->
-                <Label Content="{Binding Name}" Height="28" FontWeight="Bold" HorizontalAlignment="Left"/>
-                <Label Grid.Column="1" Content="{Binding BulkDensity}" ContentStringFormat='ρ = {0} kg/m³' Height="28" HorizontalAlignment="Left"/>
-                <Label Grid.Column="2" Content="{Binding ThermalConductivity}" ContentStringFormat='λ = {0} W/(m·K)' Height="28" HorizontalAlignment="Left"/>
-                <Label Grid.Column="3" Content="{Binding SpecificHeatCapacity}" ContentStringFormat='c = {0} J/(kg·K)' Height="28" HorizontalAlignment="Left"/>
-                <Label Grid.Column="4" Content="{Binding DiffusionResistance}" ContentStringFormat='µ = {0}' Height="28" HorizontalAlignment="Left"/>
-            </Grid>
-        </DataTemplate>
+        <!-- Style to collapse the GridView column headers -->
+        <Style x:Key="InvisibleHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+
+        <GridView x:Key="CategoryGridViewColumns" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource InvisibleHeaderStyle}">
+            <!--Here: Binding source are Items from the ItemsSource Property-->
+            <GridViewColumn DisplayMemberBinding="{Binding }" Header="Name" Width="Auto"/>
+        </GridView>
+        <GridView x:Key="CategoryGridViewColumns2" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource InvisibleHeaderStyle}">
+            <!--Here: Binding source are Items from the ItemsSource Property-->
+            <GridViewColumn DisplayMemberBinding="{Binding }" Header="Name" Width="Auto"/>
+        </GridView>
+
+        <!--populate the items of a ComboBox with all elements from an enum-->
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="CategoryTypeValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="models:MaterialCategory"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
 
     </Window.Resources>
 
-    <Grid Background="{StaticResource PrimaryLightBrush}" Margin="8">
+    <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height=".8*"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height=".2*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=".25*"/>
-            <ColumnDefinition Width=".75*"/>
+            <ColumnDefinition Width=".2*" MinWidth="160" MaxWidth="480"/>
+            <ColumnDefinition Width=".50*" MinWidth="200"/>
+            <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
-        <Grid Grid.Column="0" Margin="8" Grid.RowSpan="2">
+        <!--Left Column: Material Category-->
+        <Grid Grid.Column="0" Margin="8" Grid.RowSpan="3">
             <Grid.RowDefinitions>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Label Content="Kategorie Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
-            <ListView x:Name="collectionView_Categories"
-                      ItemsSource="{Binding DistinctCategories}"
-                      ItemTemplate="{StaticResource CategoriesListViewTemplate}"
-                      SelectionMode="Single"
-                      ScrollViewer.CanContentScroll="False"
-                      Grid.Row="1"
-                      SelectionChanged="collectionView_Categories_SelectionChanged">
-            </ListView>
+            <TabControl Grid.Row="1" Height="Auto" Width="Auto" SelectedIndex="{Binding SelectedTabIndex}">
+                <TabItem Header="{Binding Tab0Header}" Tag="{StaticResource ButtonIcon_Database_Flat}" Padding="8">
+                    <ListView Name="CategoryListView"
+                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
+                              View="{StaticResource CategoryGridViewColumns}"
+                              ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
+                              SelectedIndex="{Binding SelectedCategoryIndex}"
+                              Style="{StaticResource ListViewStyle01}"
+                              BorderThickness="0"
+                              Margin="-2"/>
+                </TabItem>
+                <TabItem Header="{Binding Tab1Header}" Tag="{StaticResource ButtonIcon_User_Flat}"  Padding="8">
+                    <ListView Name="CategoryListViewCustom"
+                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
+                              View="{StaticResource CategoryGridViewColumns2}"
+                              ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
+                              SelectedIndex="{Binding SelectedCategoryIndex}"
+                              Style="{StaticResource ListViewStyle01}"
+                              BorderThickness="0"
+                              Margin="-2"/>
+                </TabItem>
+            </TabControl>
+            
         </Grid>
-        
-        <Grid Grid.Column="1" Margin="8">
+
+        <!--Grid Splitter-->
+        <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" Margin="-4,8,0,8" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+
+        <!--Center Column: Material Selection-->
+        <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="3" Margin="8,8,16,8">
             <Grid.RowDefinitions>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <Label Content="Material Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
-            <Grid Grid.Row="1" Margin="0,0,0,8">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width=".7*"/>
-                    <ColumnDefinition Width=".3*"/>
-                </Grid.ColumnDefinitions>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="4,0,0,8">
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                        Background="{StaticResource PrimaryHighlightBrush}"
+                        Command="{Binding CreateMaterialCommand}"
+                        Tag="{StaticResource ButtonIcon_Add_W}"
+                        IsEnabled="{Binding AllowCreate}"
+                        Margin="0,0,8,0"
+                        ToolTip="Eigenes Material erstellen"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                        Command="{Binding DeleteMaterialCommand}"
+                        Tag="{StaticResource ButtonIcon_Delete_B}"
+                        Margin="0,0,8,0"
+                        IsEnabled="{Binding AllowDelete}"
+                        ToolTip="Material löschen"/>
+                <TextBox Text="{Binding SearchString}" TextAlignment="Left" Background="{StaticResource SecondaryLightBlueBrush}" MaxLength="320" Width="240" Margin="0,0,8,0"/>
+                <Button Tag="{StaticResource ButtonIcon_Cancel_B}" Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding ResetMaterialListCommand}" Margin="-40,0,8,0"/>
+                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle03_Mini}" Margin="0,0,8,0"/>
 
-                <TextBox x:Name="searchBar_Materials" Grid.Column="0" VerticalContentAlignment="Center" TextChanged="searchBar_TextChanged" FontSize="14" Height="32"/>
-                <Button x:Name="button_CreateMaterial" Grid.Column="1" Content="Material erstellen" Click="button_CreateMaterial_Clicked" Height="32" FontSize="14" Margin="8,0,0,0"/>
-            </Grid>
+            </StackPanel>
 
-            <ListView x:Name="collectionView_Materials"
-                      Grid.Row="2"       
-                      ScrollViewer.CanContentScroll="False"
-                      SelectionMode="Single"
-                      ItemTemplate="{StaticResource MaterialListViewTemplate}"/>
-                  <!--ItemsSource gets set by backend, based on selected category-->
+            <controls:MaterialsListView Grid.Row="2"
+                                        Materials="{Binding Materials}"
+                                        SelectedMaterial="{Binding SelectedListViewItem, Mode=TwoWay}"/>
         </Grid>
 
-        <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1" Margin="8">
-            <Label Content="Schichtdicke angeben: " FontWeight="Bold" HorizontalAlignment="Left"/>
-            <TextBox x:Name="thickness_TextBox" Text="" VerticalContentAlignment="Center" FontSize="14" HorizontalContentAlignment="Center" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput" Height="32" Width="56"/>
-            <Label Content="cm" FontWeight="SemiBold"/>
-        </StackPanel>
+        <!--Grid Splitter-->
+        <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,8,0,8"/>
 
-        <Grid Grid.Row="2" Grid.ColumnSpan="2" Margin="8">
-            <Button Content="Schicht dem Bauteil hinzufügen" Click="AddLayer_Clicked" Style="{StaticResource ButtonStyle04}"/>
+        <!--Right Column: Dimensions-->
+
+        <!--Left Column: Material Category-->
+        <Grid Grid.Row="0" Grid.Column="2" Margin="16,8,8,8" Grid.RowSpan="3">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!--Gewählte Schicht + Eigenschaften-->
+            <Label Grid.Row="0" Content="Gewähltes Material" HorizontalAlignment="Left" FontWeight="Bold"/>
+
+            <Expander Grid.Row="1" Header="Eigenschaften" IsExpanded="True" Margin="0,8,0,0">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                    <controls:PropertyDataGrid Properties="{Binding MaterialProperties}" Margin="0, 8,0,0"/>
+                </ScrollViewer>
+            </Expander>
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,16,0,16">
+                <Label Content="Schichtdicke" FontWeight="Bold" HorizontalAlignment="Left"/>
+                <TextBox Text="{Binding Thickness, Converter={StaticResource DoubleToStringConverter}}" TextAlignment="Center" MaxLength="5" PreviewTextInput="numericData_PreviewTextInput"/>
+                <Label Content="cm" FontWeight="Bold"/>
+            </StackPanel>
+
+            <Button Grid.Row="3"
+                    Content="{Binding ButtonText}"
+                    VerticalAlignment="Bottom"
+                    Command="{Binding ApplyChangesCommand}"
+                    CommandParameter="{Binding ElementName=AddLayerSubConstructionWindowControl}"
+                    Style="{StaticResource ButtonStyle03_A}"
+                    Tag="{StaticResource ButtonIcon_AddLayer_W}"/>
         </Grid>
+
+
+        <!--Toast Notification-->
+        <controls:ToastNotification x:Name="Toast" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
 
     </Grid>
 

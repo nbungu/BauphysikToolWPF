@@ -8,11 +8,28 @@
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        d:DataContext="{d:DesignInstance vm:MainWindow_VM}"
         mc:Ignorable="d"
-        Title="MainWindow" Height="700" Width="1200" Background="{StaticResource PrimaryLightBrush}" WindowStartupLocation="CenterScreen">
+        Title="{Binding Title}"
+        Height="700"
+        Width="1280"
+        Background="{StaticResource PrimaryLightBrush}"
+        WindowStartupLocation="CenterScreen"
+        Closing="MainWindow_OnClosing"
+        Loaded="MainWindow_OnLoaded"
+        StateChanged="MainWindow_StateChanged"
+        TextOptions.TextFormattingMode="Display"
+        WindowStyle="None">
 
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="32" ResizeBorderThickness="{x:Static SystemParameters.WindowResizeBorderThickness}" />
+    </WindowChrome.WindowChrome>
+
+    <!--
+    Additionally added: d:DataContext="{d:DesignInstance vm:MainWindow_VM}"
+    to the xaml constructor to be able to acces Named Elements in code behind
+    -->
     <Window.DataContext>
-        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
         <vm:MainWindow_VM/>
     </Window.DataContext>
 
@@ -24,22 +41,28 @@
 
         <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page-->
         <DataTemplate x:Key="FO0_ProjectPage">
-            <ui:FO0_ProjectPage/>
+            <ui:Page_Project/>
         </DataTemplate>
-        <DataTemplate x:Key="FO0_LandingPage">
-            <ui:FO0_LandingPage/>
+        <DataTemplate x:Key="FO1_ElementsPage">
+            <ui:Page_Elements/>
         </DataTemplate>
-        <DataTemplate x:Key="FO1_SetupLayer">
-            <ui:FO1_SetupLayer/>
+        <DataTemplate x:Key="FO1_LayerSetup">
+            <ui:Page_LayerSetup/>
         </DataTemplate>
-        <DataTemplate x:Key="FO1_SetupEnv">
-            <ui:FO1_SetupEnv/>
+        <DataTemplate x:Key="FO1_Summary">
+            <ui:Page_Summary/>
         </DataTemplate>
         <DataTemplate x:Key="FO2_Temperature">
-            <ui:FO2_Temperature/>
+            <ui:Page_TemperatureResults/>
         </DataTemplate>
         <DataTemplate x:Key="FO3_Moisture">
-            <ui:FO3_Moisture/>
+            <ui:Page_MoistureResults/>
+        </DataTemplate>
+        <DataTemplate x:Key="FO4_Dynamic">
+            <ui:Page_DynamicResults/>
+        </DataTemplate>
+        <DataTemplate x:Key="TestWindow">
+            <ui:TestWindow/>
         </DataTemplate>
 
         <!--Content Pages on right side-->
@@ -55,19 +78,25 @@
                     <Setter Property="ContentTemplate" Value="{StaticResource FO0_ProjectPage}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=ProjectBoxHeader, Path=Tag}" Value="LandingPage">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO0_LandingPage}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_ElementsPage}"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupLayer">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_SetupLayer}"/>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="LayerSetup">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_LayerSetup}"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="SetupEnv">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_SetupEnv}"/>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Summary">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_Summary}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Temperature">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO2_Temperature}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Moisture">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO3_Moisture}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Dynamic">
+                    <Setter Property="ContentTemplate" Value="{StaticResource FO4_Dynamic}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Test">
+                    <Setter Property="ContentTemplate" Value="{StaticResource TestWindow}"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -79,15 +108,17 @@
         -->
         <x:Array x:Key="NavigationMenuItems" Type="system:String">
             <system:String>Header1</system:String>
-            <system:String>SetupLayer</system:String>  <!--SelectedIndex: 1-->
-            <system:String>SetupEnv</system:String>    <!--SelectedIndex: 2-->
+            <system:String>LayerSetup</system:String>  <!--SelectedIndex: 1-->
+            <system:String>Summary</system:String>    <!--SelectedIndex: 2-->
             <system:String>Header2</system:String>
             <system:String>Temperature</system:String> <!--SelectedIndex: 4-->
             <system:String>Moisture</system:String>    <!--SelectedIndex: 5-->
+            <system:String>Dynamic</system:String>    <!--SelectedIndex: 6-->
+            <system:String>Test</system:String>
         </x:Array>
 
         <!--NavigationMenu ListBox appearance: Used in ListBox as Style -->
-        <Style x:Key="NavigationListBoxStyle" TargetType="{x:Type ListBox}">
+        <Style x:Key="NavigationMenuListBoxStyle" TargetType="{x:Type ListBox}">
             <Setter Property="Background" Value="{StaticResource PrimaryDarkBrush}"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
@@ -121,7 +152,7 @@
         </Style>
 
         <!--NavigationMenu ListBox entry appearance and behaviour: Used in ListBox as ItemContainerStyle-->
-        <Style x:Key="NavigationListBoxItemStyle" TargetType="{x:Type ListBoxItem}">
+        <Style x:Key="NavigationMenuItemStyle" TargetType="{x:Type ListBoxItem}">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="{StaticResource PrimaryLightBrush}"/>
             <Setter Property="Margin" Value="0,0,0,8"/>
@@ -180,16 +211,16 @@
 
         <!--
         ListBox entry content: Used in ListBox as ItemTemplate
-        The Content Located inside of 'NavigationListBoxItemStyle'
+        The Content Located inside of 'NavigationMenuItemStyle'
         -->
-        <DataTemplate x:Key="NavigationDataTemplate">
+        <DataTemplate x:Key="NavigationMenuItemTemplate">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <Image x:Name="MenuItemIcon" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4" MaxWidth="24"/>
-                <Label x:Name="MenuItemLabel" Grid.Column="1" VerticalAlignment="Center" HorizontalContentAlignment="Center" Foreground="White" FontSize="14" Margin="0,4,4,4"/>
+                <Label x:Name="MenuItemLabel" Grid.Column="1" HorizontalContentAlignment="Center" Foreground="White" FontSize="14" Margin="0,4,4,4"/>
             </Grid>
             <!--
             Binding is ItemsSource from 'NavigationMenuListBox'
@@ -202,13 +233,13 @@
                     <Setter TargetName="MenuItemLabel" Property="FontWeight" Value="Bold"/>
                     <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="SetupLayer">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Layer_W}"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Schichtaufbau"/>
+                <DataTrigger Binding="{Binding}" Value="LayerSetup">
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Layers_Flat}"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Erstellen"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="SetupEnv">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_EnvVar_W}"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Umgebung"/>
+                <DataTrigger Binding="{Binding}" Value="Summary">
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Summary_Flat}"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Zusammenfassung"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Header2">
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="ERGEBNISSE"/>
@@ -217,57 +248,294 @@
                     <Setter TargetName="MenuItemLabel" Property="FontSize" Value="12"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Temperature">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Temperature_W}"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_LayerTemps_Flat}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Temperaturkurve"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding}" Value="Moisture">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Moisture_W}"/>
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Glaser_Flat}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Glaser-Diagramm"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="Dynamic">
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Dynamic_Flat}"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Dynamic"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding}" Value="Test">
+                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Hide_W}"/>
+                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Test"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
-        
+
+        <Style x:Key="WindowMainPanelStyle" TargetType="{x:Type Border}">
+            <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Window}}, Path=WindowState}" Value="Maximized">
+                    <Setter Property="BorderThickness" Value="0" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TitleBarButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource WindowTextBrush}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="border"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            SnapsToDevicePixels="true">
+                            <ContentPresenter
+                                x:Name="contentPresenter"
+                                Margin="0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Focusable="False"
+                                RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryMediumBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryHoverBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TitleBarCloseButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <Setter Property="IsTabStop" Value="False" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border
+                            x:Name="border"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            SnapsToDevicePixels="true">
+                            <ContentPresenter
+                                x:Name="contentPresenter"
+                                Margin="0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Focusable="False"
+                                RecognizesAccessKey="True" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryMediumBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource MouseOverWindowCloseButtonForegroundBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource PrimaryHighlightBrush}" />
+                                <Setter Property="Foreground" Value="{DynamicResource MouseOverWindowCloseButtonForegroundBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Custom Toolbar Button: Text Only -->
+        <Style x:Key="TitleBarButtonStyle_B" TargetType="{x:Type Button}">
+            <!--Set default properties of the button-->
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Content" Value=""/>
+            <Setter Property="Tag" Value=""/>
+            <Setter Property="Foreground" Value="Black"/>
+            <Setter Property="MinWidth" Value="16"/>
+            <Setter Property="MinHeight" Value="16"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+            <!--Set appearance of the element-->
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border CornerRadius="0" Background="{TemplateBinding Background}">
+                            <StackPanel Orientation="Horizontal">
+                                <Image x:Name="ButtonIcon" Source="{TemplateBinding Tag}" Stretch="Fill" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10,0,10,0"/>
+                                <Label x:Name="ButtonLabel" Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" FontSize="12" Margin="0,0,8,0"/>
+                            </StackPanel>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Content" Value="">
+                                <Setter TargetName="ButtonLabel" Property="Visibility" Value="Collapsed"/>
+                                <Setter TargetName="ButtonLabel" Property="Margin" Value="0"/>
+                                <Setter TargetName="ButtonLabel" Property="Padding" Value="0"/>
+                            </Trigger>
+                            <Trigger Property="Tag" Value="">
+                                <Setter TargetName="ButtonIcon" Property="Visibility" Value="Collapsed"/>
+                                <Setter TargetName="ButtonIcon" Property="Margin" Value="0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <!--Set Triggers and Effects-->
+            <Style.Triggers>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryBorderBrush}"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                    <Setter Property="BorderThickness" Value="4"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryDarkBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Opacity" Value="0.5"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="RenderTransform">
+                        <Setter.Value>
+                            <ScaleTransform ScaleX=".96" ScaleY=".96" />
+                        </Setter.Value>
+                    </Setter>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
     </Window.Resources>
 
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition Width="*"/>
-        </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        
+    <Window.InputBindings>
+        <KeyBinding
+            Key="N"
+            Command="{Binding NewCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="S"
+            Command="{Binding SaveCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="O"
+            Command="{Binding OpenCommand}"
+            Modifiers="Control" />
+        <KeyBinding
+            Key="O"
+            Command="{Binding OpenCommand}"
+            Modifiers="Control+Shift" />
+    </Window.InputBindings>
 
-        <Border x:Name="ProjectBoxHeader" Grid.Column="1" Grid.Row="0" Background="{StaticResource PrimaryDarkHighlightBrush}" BorderThickness="0">
-            <Grid>
+    <Border Name="RootGrid" Style="{StaticResource WindowMainPanelStyle}">
+
+        <Grid Name="ContentGrid">
+            <Grid.RowDefinitions>
+                <!--  Title bar  -->
+                <RowDefinition Height="30" />
+                <!-- Main Grid for Content -->
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            
+            <!-- Title bar -->
+            <Grid Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Top">
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                    <Image Source="{StaticResource AppIcon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4"/>
+                    <Label Content="BauphysikTool v0.1.0" FontSize="12" VerticalAlignment="Center" Margin="0,0,32,0"/>
+                    <Button ToolTip="Neues Projekt" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Command="{Binding NewCommand}" Margin="4,0"/>
+                    <Button ToolTip="Projekt speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}" Margin="4,0"/>
+                    <Button ToolTip="Projekt speichern unter" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Command="{Binding SaveToCommand}" Margin="4,0"/>
+                    <Button ToolTip="Projekt öffnen" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Command="{Binding OpenCommand}" Margin="4,0"/>
+                    <Label Content="{Binding Title}" FontSize="12" VerticalAlignment="Center" Margin="64,0"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Click="MinimizeCommand" RenderOptions.EdgeMode="Aliased" Style="{StaticResource TitleBarButtonStyle}">
+                        <Path
+                            Width="46"
+                            Height="32"
+                            Data="M 18,15 H 28"
+                            Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                            StrokeThickness="1" />
+                    </Button>
+                    <Button Name="MaximizeButton" Click="MaximizeCommand" Style="{StaticResource TitleBarButtonStyle}">
+                        <Path
+                            Width="46"
+                            Height="32"
+                            Data="M 18.5,10.5 H 27.5 V 19.5 H 18.5 Z"
+                            Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                            StrokeThickness="1" />
+                    </Button>
+                    <Button Name="RestoreButton" Click="MaximizeCommand" Style="{StaticResource TitleBarButtonStyle}">
+                        <Path
+                            Width="46"
+                            Height="32"
+                            Data="M 18.5,12.5 H 25.5 V 19.5 H 18.5 Z M 20.5,12.5 V 10.5 H 27.5 V 17.5 H 25.5"
+                            Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                            StrokeThickness="1" />
+                    </Button>
+                    <Button Name="CloseButton" Click="CloseCommand" Style="{StaticResource TitleBarCloseButtonStyle}">
+                        <Path
+                            Width="46"
+                            Height="32"
+                            Data="M 18,11 27,20 M 18,20 27,11"
+                            Stroke="{Binding Path=Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                            StrokeThickness="1" />
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <!-- Main Grid for Content -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="56"/>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
-                <StackPanel Orientation="Vertical" Margin="16,16,16,0">
-                    <Label Content="Projekt:" Foreground="White" Margin="-4"/>
-                    <Label Content="Wohnhaus 1" FontSize="14" FontWeight="Bold" Foreground="White" Margin="-4"/>
-                </StackPanel>
-                <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Project_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
-                <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
+                <!-- Left Selection Box Top-->
+                <Border x:Name="ProjectBoxHeader" Grid.Column="0" Grid.Row="0" Background="{StaticResource PrimaryDarkHighlightBrush}" BorderThickness="0">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" MaxHeight="120"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Vertical" Margin="16,16,16,0">
+                            <Label Content="Projekt:" Foreground="White" Margin="-4"/>
+                            <TextBlock Text="{Binding ProjectName}" MaxWidth="152" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="14"/>
+                        </StackPanel>
+                        <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_House_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
+                        <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
+                    </Grid>
+                </Border>
+
+                <!--Left Selection Box Bottom-->
+                <ListBox x:Name="NavigationMenuListBox"
+                         Grid.Column="0"
+                         Grid.Row="1"                 
+                         Style="{StaticResource NavigationMenuListBoxStyle}"
+                         ItemsSource="{StaticResource NavigationMenuItems}"
+                         ItemContainerStyle="{DynamicResource NavigationMenuItemStyle}"
+                         ItemTemplate="{DynamicResource NavigationMenuItemTemplate}"/>
+
+                <!--The Actual Pages shown here-->
+                <ContentControl x:Name="MainWindowContent" Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
+
+                <!--Toast Notification-->
+                <controls:ToastNotification x:Name="Toast" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             </Grid>
-        </Border>
 
-        <!--The Selection Box on the left side-->
-        <ListBox x:Name="NavigationMenuListBox"
-                 Grid.Column="1"
-                 Grid.Row="1"                 
-                 Style="{StaticResource NavigationListBoxStyle}"
-                 ItemsSource="{StaticResource NavigationMenuItems}"
-                 ItemContainerStyle="{DynamicResource NavigationListBoxItemStyle}"
-                 ItemTemplate="{DynamicResource NavigationDataTemplate}"/>
 
-        <!--The Actual Pages shown here-->
-        <ContentControl x:Name="MainWindowContent" Grid.Column="2" Grid.RowSpan="2" Style="{StaticResource NavigationContentStyle}"/>
-    </Grid>
+        </Grid>
+
+    </Border>
+
 </Window>

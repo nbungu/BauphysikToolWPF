@@ -1,113 +1,64 @@
-﻿using BauphysikToolWPF.SQLiteRepo;
+﻿using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.CustomControls;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using System.Windows.Threading;
 
 namespace BauphysikToolWPF.UI
 {
     public partial class AddLayerWindow : Window
     {
-        private List<string>? distinctCategories;
-        private string? selectedCategory;
-        public AddLayerWindow()
+        private static ToastNotification? _toastNotification;
+        public static bool AddNewLayer;
+
+        public AddLayerWindow(bool addNew = true)
         {
+            AddNewLayer = addNew;
+
             InitializeComponent();
-            // Call these Methods only once when Constructor is invoked (Categories stay constant)
-            LoadDistinctCategories();
-            LoadCategoriesList();
-
-            LoadMaterialsByCategory(); // Update Material List, based on selected Category
-        }
-
-        private void LoadDistinctCategories()
-        {
-            //The lambda operator =>, may be read as “goes to” or “becomes”. Lambda function = anonymous function (function without a name)
-            List<string> allCategories = DatabaseAccess.GetMaterials().Select(m => m.CategoryName).ToList();
-            distinctCategories = allCategories.Distinct().ToList();
-        }
-
-        private void LoadCategoriesList()
-        {
-            if (distinctCategories != null)
-            {
-                List<string> categoryList = new List<string>(distinctCategories);
-                categoryList.Insert(0, "Alle anzeigen");
-                collectionView_Categories.ItemsSource = categoryList;
-            }
-        }
-        private void LoadMaterialsByCategory(string category = "*")
-        {
-            collectionView_Materials.ItemsSource = DatabaseAccess.QueryMaterialByCategory(category);
-        }
-
-        private void LoadMaterialsFromQuery(string searchQuery)
-        {
-            collectionView_Materials.ItemsSource = DatabaseAccess.QueryMaterialBySearchString(searchQuery);
-        }
-
-        private void AddLayer_Clicked(object sender, EventArgs e)
-        {
-            if (collectionView_Materials.SelectedItem is null)
-                return;
-
-            //ItemsSource of collectionView holds the List<Material>. 
-            var material = collectionView_Materials.SelectedItem as Material;
-            if (material is null)
-            {
-                return;
-            }
-            else
-            {
-                // LayerPosition is always at end of List 
-                int layerCount = DatabaseAccess.QueryLayersByElementId(FO0_LandingPage.SelectedElementId).Count;
-
-                Layer layer = new Layer()
-                {
-                    //LayerId gets set by SQLite DB (AutoIncrement)
-                    LayerPosition = layerCount,
-                    LayerThickness = Convert.ToDouble(thickness_TextBox.Text),
-                    MaterialId = material.MaterialId,
-                    ElementId = FO0_LandingPage.SelectedElementId,
-                };
-                DatabaseAccess.CreateLayer(layer);
-                this.Close();
-            }
-        }
-
-        private void searchBar_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            LoadMaterialsFromQuery(searchBar_Materials.Text);
-        }
-
-        private void button_CreateMaterial_Clicked(object sender, EventArgs e)
-        {
-            // TODO
-            //this.ShowPopup(new CreateMaterialPopup(distinctCategories));
-        }
-
-        private void collectionView_Categories_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (collectionView_Categories.SelectedItem is null)
-                return;
-
-            selectedCategory = collectionView_Categories.SelectedItem.ToString();
-            if (selectedCategory is null)
-                return;
-
-            if (selectedCategory == "Alle anzeigen")
-                LoadMaterialsByCategory();
-            else
-                LoadMaterialsByCategory(selectedCategory);
+            _toastNotification = this.Toast;
         }
 
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            Regex regex = new Regex("[^0-9.,]+"); //regex that matches disallowed text
-            e.Handled = regex.IsMatch(e.Text);
+            e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
+        }
+
+        // Example usage
+        public static void ShowToast(string message, ToastType toastType)
+        {
+            if (_toastNotification is null || _toastNotification.Visibility == Visibility.Visible) return;
+
+            _toastNotification.Message = message;
+            _toastNotification.ToastType = toastType;
+            _toastNotification.Visibility = Visibility.Visible;
+
+            switch (toastType)
+            {
+                case ToastType.Info:
+                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/info.png"));
+                    break;
+                case ToastType.Success:
+                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/success.png"));
+                    break;
+                case ToastType.Warning:
+                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/warning.png"));
+                    break;
+                case ToastType.Error:
+                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/error.png"));
+                    break;
+            }
+
+            // Hide the toast after 3 seconds
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+            timer.Tick += (s, e) =>
+            {
+                _toastNotification.Visibility = Visibility.Collapsed;
+                timer.Stop();
+            };
+            timer.Start();
         }
     }
 }

@@ -6,6 +6,62 @@
     Just for Storage Purposes
     
     -->
+    <!--START: ListBox with Grouping-->
+    <ScrollViewer Visibility="Hidden" x:Name="ListBox_ScrollViewer" Grid.Row="2" Grid.Column="1" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <ListBox Width="{Binding ElementName=ListBox_ScrollViewer, Path=ActualWidth}"
+                     ItemsSource="{Binding Source={StaticResource groupedSampleData}}"
+                     ItemsPanel="{StaticResource WrapPanel_Template}"
+                     ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
+                     Background="Transparent"
+                     BorderThickness="0">
+            <ItemsControl.GroupStyle>
+                <GroupStyle ContainerStyle="{StaticResource GroupingHeader}">
+                    <GroupStyle.Panel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </GroupStyle.Panel>
+                </GroupStyle>
+            </ItemsControl.GroupStyle>
+        </ListBox>
+    </ScrollViewer>
+    
+    <CollectionViewSource x:Key="groupedSampleData" Source="{Binding Elements}">
+        <CollectionViewSource.GroupDescriptions>
+            <PropertyGroupDescription PropertyName="Construction.TypeName" />
+        </CollectionViewSource.GroupDescriptions>
+    </CollectionViewSource>
+    
+    <Style x:Key="GroupingHeader" TargetType="{x:Type GroupItem}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <!-- Header Binding 'Name' is ´'PropertyName' from PropertyGroupDescription -->
+                    <Expander Header="{Binding Name}" FontSize="14" FontWeight="Bold" IsExpanded="True" Margin="0,0,0,8">
+                        <ItemsPresenter/>
+                    </Expander>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
+    <ItemsPanelTemplate x:Key="WrapPanel_Template">
+        <WrapPanel ItemWidth="144" ItemHeight="208" SnapsToDevicePixels="True"/>
+    </ItemsPanelTemplate>
+    <!--END: ListBox with Grouping-->
+
+    <!--START: WrapPanel with DataBinding-->
+    <ScrollViewer Visibility="Hidden" x:Name="WrapPanel_ScrollViewer" Grid.Row="2" Grid.Column="1" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <ItemsControl Width="{Binding ElementName=WrapPanel_ScrollViewer, Path=ActualWidth}"
+                          ItemsSource="{Binding Elements}"
+                          ItemsPanel="{StaticResource WrapPanel_Template}"
+                          ItemTemplate="{StaticResource WrapPanelItem_DesignTemplate}"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          Tag="{Binding}"/>
+    </ScrollViewer>
+    <!--END: WrapPanel with DataBinding-->
+
     <!--Bind Command to Events-->
     <Button>
         <Interaction.Triggers>
@@ -14,6 +70,29 @@
             </EventTrigger>
         </Interaction.Triggers>
     </Button>
+
+    <!-- Blinking Ellipse-->
+    <Ellipse Fill="Red" Width="20" Height="20" Margin="0,0,8,0">
+        <Ellipse.Triggers>
+            <EventTrigger RoutedEvent="Ellipse.Loaded">
+                <EventTrigger.Actions>
+                    <BeginStoryboard>
+                        <Storyboard>
+                            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Ellipse.Fill).(SolidColorBrush.Color)"
+                                                      Duration="0:0:2"
+                                                      FillBehavior="HoldEnd"
+                                                      RepeatBehavior="Forever">
+                                <ColorAnimationUsingKeyFrames.KeyFrames>
+                                    <DiscreteColorKeyFrame KeyTime="0:0:0" Value="Red"/>
+                                    <DiscreteColorKeyFrame KeyTime="0:0:1" Value="Blue"/>
+                                </ColorAnimationUsingKeyFrames.KeyFrames>
+                            </ColorAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </BeginStoryboard>
+                </EventTrigger.Actions>
+            </EventTrigger>
+        </Ellipse.Triggers>
+    </Ellipse>
 
     <!-- TEST Custom ComboBox Style: ... -->
     <Style x:Key="ComboBoxStyle_TEST" TargetType="{x:Type ComboBox}">
@@ -63,7 +142,7 @@
                                                 <SolidColorBrush Color="#FFE8EDF9"/>
                                             </Border.Background>
                                         </Border>
-                                        <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" >
+                                        <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z_Element" >
                                             <Path.Fill>
                                                 <SolidColorBrush Color="Black"/>
                                             </Path.Fill>
@@ -271,3 +350,5 @@
     </x:Array>
     
 </ResourceDictionary>
+    
+    

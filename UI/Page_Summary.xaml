@@ -1,0 +1,169 @@
+﻿<UserControl x:Class="BauphysikToolWPF.UI.Page_Summary"
+            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+            xmlns:local="clr-namespace:BauphysikToolWPF"
+            xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+            xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+            mc:Ignorable="d"
+            d:DesignHeight="700" d:DesignWidth="1200">
+
+    <UserControl.DataContext>
+        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
+        <vm:Page_Summary_VM/>
+    </UserControl.DataContext>
+
+    <!--
+    the DataContext is used to specify the data source for a UI element,
+    while the ItemsSource is used to specify the data source for a list of items.
+    Both can be used for binding to display and modify data in the UI.
+    -->
+
+    <!--Main Grid: 3x2-->
+    <Grid Background="{StaticResource PrimaryLightBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height=".35*" MinHeight="320"/>
+            <RowDefinition Height=".55*" MinHeight="320"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" MinWidth="320"/>
+            <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
+        </Grid.ColumnDefinitions>
+
+        <!--Top -->
+        <Border Grid.ColumnSpan="2" Background="{StaticResource PrimaryMediumBrush}">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Label Content="Zurück"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20" Margin="0,0,8,0"/>
+                    <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
+                    <Label Content="{Binding SelectedElement.Construction.TypeName}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="0,0,8,0"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Weiter"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!--Cross Section Image-->
+        <Grid Grid.Column="0" Grid.Row="1" Margin="32,32,32,16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="Querschnitt" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+
+                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
+                    <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- "Layers Canvas" -->
+                        <controls:LayersCanvas x:Name="LayersCanvasCrossSection" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeCrossSection.Width}" Height="{Binding CanvasSizeCrossSection.Height}" DrawingGeometries="{Binding CrossSectionDrawing}"/>
+
+                        <!-- "Vertical Measurement Grid" -->
+                        <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvasCrossSection, Path=Height}" DrawingGeometry="{Binding LayerMeasurementCrossSection}" Margin="32,0,32,0"/>
+
+                        <!-- "Vertical Measurement Grid Full" -->
+                        <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvasCrossSection, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFullCrossSection}" Margin="32,0,32,0"/>
+
+                        <!-- "Horizontal Measurement Grid Test" -->
+                        <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvasCrossSection, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurementCrossSection}" Margin="0,32,0,32"/>
+
+                    </Grid>
+                </Viewbox>
+
+            </Grid>
+
+        </Grid>
+
+        <!--Vertical Cut Image-->
+        <Grid Grid.Column="0" Grid.Row="2" Margin="32,16,32,32">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="Vertikalschnitt" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
+                    <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
+                    <Grid Margin="8">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- "Layers Canvas" -->
+                        <controls:LayersCanvas x:Name="LayersCanvasVerticalCut" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeVerticalCut.Width}" Height="{Binding CanvasSizeVerticalCut.Height}" DrawingGeometries="{Binding VerticalCutDrawing}"/>
+
+                        <!-- "Horizontal Measurement for Layers" -->
+                        <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvasVerticalCut, Path=Width}" DrawingGeometry="{Binding LayerMeasurementVerticalCut}" Margin="0,32,0,32"/>
+
+                        <!-- "Horizontal Measurement for Element" -->
+                        <controls:MeasurementChain Grid.Row="2" Grid.Column="0" Width="{Binding ElementName=LayersCanvasVerticalCut, Path=Width}" DrawingGeometry="{Binding LayerMeasurementFullVerticalCut}" Margin="0,32,0,32"/>
+
+                        <!-- "Vertical Measurement for SubConstructions" -->
+                        <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvasVerticalCut, Path=Height}" DrawingGeometry="{Binding SubConstructionMeasurementVerticalCut}" Margin="32,0,32,0"/>
+
+                    </Grid>
+                </Viewbox>
+            </Grid>
+        </Grid>
+
+        <!--Grid Splitter-->
+        <GridSplitter Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
+
+        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!--Eigenschaften-->
+            <Expander Grid.Row="0" Header="Bauteil" IsExpanded="True" Margin="0,8,0,0">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                    <controls:PropertyDataGrid x:Name="ElementPropertiesDataGrid" Properties="{Binding ElementProperties}"/>
+                </ScrollViewer>
+            </Expander>
+
+            <Expander Grid.Row="1" Header="Gewählte Randbedingungen" IsExpanded="True" Margin="0,8,0,0">
+                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                    <controls:PropertyDataGrid x:Name="EnvironmentPropertiesDataGrid" Properties="{Binding EnvironmentProperties}"/>
+                </ScrollViewer>
+            </Expander>
+
+        </Grid>
+
+
+
+    </Grid>
+
+</UserControl>

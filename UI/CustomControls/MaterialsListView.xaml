@@ -1,0 +1,56 @@
+﻿<UserControl x:Class="BauphysikToolWPF.UI.CustomControls.MaterialsListView"
+             x:Name="MaterialsListViewControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             mc:Ignorable="d"
+             d:DesignHeight="320"
+             d:DesignWidth="320"
+             d:Background="White">
+
+    <UserControl.Resources>
+
+        <!--
+        https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
+        https://github.com/mochan-b/GridViewCellFormatting
+        Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD of ItemTemplate
+        -->
+        <GridView x:Key="MaterialGridViewColumns" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
+            <!--Here: Binding source are Items (typeof 'Material') from the ItemsSource Property-->
+            <GridViewColumn Header="Materialbezeichnung" Width="Auto">
+                <!--Custom Column Style for Column 0-->
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <Grid>
+                            <Rectangle Fill="{Binding ColorCode}" Margin="-6,-4,0,-4" Width="8" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
+                            <Label x:Name="MaterialLabel" Content="{Binding Name}" FontWeight="DemiBold" FontSize="12" Margin="8,0,0,0"/>
+                        </Grid>
+                        <DataTemplate.Triggers>
+                            <!-- Trigger to change label color when ListViewItem is selected -->
+                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
+                                <Setter TargetName="MaterialLabel" Property="Foreground" Value="White"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+            </GridViewColumn>
+            <GridViewColumn DisplayMemberBinding="{Binding BulkDensity}" Header="ρ [kg/m³]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding ThermalConductivity}" Header="λ [W/(m·K)]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding SpecificHeatCapacity}" Header="c [J/(kg·K)]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding DiffusionResistance}" Header="µ (trocken) [-]" Width="Auto"/>
+        </GridView>
+
+    </UserControl.Resources>
+
+    <Grid>
+        <ListView x:Name="MaterialsListViewElement"
+                  ItemsSource="{Binding Materials, ElementName=MaterialsListViewControl}"
+                  View="{StaticResource MaterialGridViewColumns}"
+                  ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
+                  Style="{StaticResource ListViewStyle01}"
+                  SelectedItem="{Binding SelectedMaterial, ElementName=MaterialsListViewControl, Mode=TwoWay}"/>
+    </Grid>
+
+</UserControl>

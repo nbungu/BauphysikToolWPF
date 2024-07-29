@@ -1,0 +1,167 @@
+﻿<UserControl x:Class="BauphysikToolWPF.UI.Page_TemperatureResults"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:BauphysikToolWPF"
+      xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+      xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+      mc:Ignorable="d" 
+      d:DesignHeight="700" d:DesignWidth="1200">
+
+    <UserControl.DataContext>
+        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
+        <vm:Page_TemperatureResults_VM/>
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+
+        <!--OverviewListBox appearance: Used in ListBox as Style -->
+        <Style x:Key="OverviewListBoxStyle" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <!-- Creates Column Headers for the Items-->
+                    <ControlTemplate TargetType="{x:Type ListBox}">
+                        <DockPanel>
+                            <!-- Define SharedSizeScope in Parent Element which contains the shared sizing objects-->
+                            <!--Shared Sizing object 1: Header-->
+                            <Grid DockPanel.Dock="Top" Height="40" Margin="6,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition Width="32"/>
+                                    <ColumnDefinition MinWidth="96"/>
+                                    <ColumnDefinition MinWidth="96"/>
+                                </Grid.ColumnDefinitions>
+                                <Border Grid.ColumnSpan="4" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="0,0,0,2"/>
+                                <Label Grid.Column="2" Content="Ist-Wert" HorizontalAlignment="Left"/>
+                                <Label Grid.Column="3" Content="Soll-Wert" HorizontalAlignment="Left"/>
+                            </Grid>
+                            <!--Shared Sizing object 2: The Items of the List-->
+                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                        </DockPanel>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Style and behaviour of the ListBoxItem Container, NOT the Data inside!-->
+        <Style x:Key="OverviewItemContainerStyle" TargetType="{x:Type ListBoxItem}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+        </Style>
+
+        <!-- ListBoxItem Data Template for ItemsSource: 'OverviewItems'-->
+        <DataTemplate x:Key="OverviewItemDataTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition Width="32"/>
+                    <ColumnDefinition MinWidth="96"/>
+                    <ColumnDefinition MinWidth="96"/>
+                </Grid.ColumnDefinitions>
+                <!--Here: Binding source are Items from the ItemsSource Property-->
+                <Ellipse Fill="{Binding Color}" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}" HorizontalAlignment="Right"/>
+                <StackPanel Grid.Column="2" Orientation="Horizontal">
+                    <Label Content="{Binding Value}" ContentStringFormat="= {0}" FontWeight="Bold"/>
+                    <Label Content="{Binding Unit}" HorizontalAlignment="Left" Margin="-4,0,0,0" FontWeight="Bold"/>
+                </StackPanel>
+                <StackPanel Grid.Column="3" Orientation="Horizontal">
+                    <Label Content="{Binding RequirementStatement}"/>
+                    <Label Content="{Binding Unit}" HorizontalAlignment="Left"/>
+                </StackPanel>
+            </Grid>
+        </DataTemplate>
+
+    </UserControl.Resources>
+
+    <!--Main Grid 2x2-->
+    <Grid Background="{StaticResource PrimaryLightBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="360"/>
+        </Grid.ColumnDefinitions>
+
+        <!--Top -->
+        <Border Grid.ColumnSpan="2" Background="{StaticResource PrimaryMediumBrush}">
+            <Grid>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.Summary}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Label Content="Zurück"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20" Margin="0,0,8,0"/>
+                    <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
+                    <Label Content="{Binding SelectedElement.Construction.TypeName}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="0,0,8,0"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Weiter"/>
+                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        
+        <!--Bottom Left-->
+        <Grid Grid.Row="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="32"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" CornerRadius="8">
+                <Grid>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
+                        <Label Content="Innen" FontWeight="Bold"/>
+                        <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding Ti}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
+                        <controls:EquationLabel BaseText="R" SubscriptText="si" Value="{Binding Rsi}" ValueUnit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
+                        <controls:EquationLabel BaseText="R" SubscriptText="se" Value="{Binding Rse}" ValueUnit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding Te}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
+                        <Label Content="Außen" FontWeight="Bold"/>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0" CornerRadius="8">
+                <lvc:CartesianChart
+                    Grid.Row="1"
+                    ClipToBounds="True"
+                    Series="{Binding DataPoints}"
+                    Sections="{Binding LayerSections}"
+                    XAxes="{Binding XAxes}"
+                    YAxes="{Binding YAxes}"   
+                    EasingFunction="{x:Null}"
+                    TooltipPosition="Top"
+                    TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
+                    TooltipTextPaint="{Binding TooltipTextPaint}"
+                    TooltipTextSize="14"
+                    Background="White"
+                    ZoomMode="Both"
+                    Margin="8,4,4,8"/>
+            </Border>
+        </Grid>
+
+        <!--Bottom Right-->       
+        <Grid Grid.Column="1" Grid.Row="1" Margin="16">
+            <ListBox Style="{StaticResource OverviewListBoxStyle}"
+                     ItemsSource="{Binding OverviewItems}"
+                     ItemTemplate="{StaticResource OverviewItemDataTemplate}"
+                     ItemContainerStyle="{StaticResource OverviewItemContainerStyle}"
+                     SnapsToDevicePixels="True"/>
+        </Grid>
+        <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+    </Grid>
+</UserControl>

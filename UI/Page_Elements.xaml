@@ -1,0 +1,328 @@
+﻿<UserControl x:Class="BauphysikToolWPF.UI.Page_Elements"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:BauphysikToolWPF"
+             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             mc:Ignorable="d" 
+             d:DesignHeight="700"
+             d:DesignWidth="1200">
+
+    <UserControl.DataContext>
+        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
+        <vm:Page_Elements_VM/> 
+    </UserControl.DataContext>
+
+    <UserControl.Resources>
+
+        <!-- Checks if Element of WrapPanel is currently SelectedElement -->
+        <controls:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
+
+        <!--Custom ButtonGridPanel: light rounded corners, click effects-->
+        <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
+        <Style x:Key="ButtonStyleWrapPanel" TargetType="{x:Type Button}">
+            <Setter Property="Content" Value="{Binding InternalId}"/>
+            <Setter Property="BorderThickness" Value="2"/>
+            <Setter Property="BorderBrush" Value="{StaticResource PrimaryMediumBrush}"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <!--Element appearance with behaviour of a 'Button'-->
+                        <Border x:Name="btn_border" CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+                            <Grid Margin="8">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="24"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="20">
+                                    <Ellipse x:Name="ellipse_icon" Fill="{Binding ColorCode}" Width="20" Height="20" Margin="0,0,4,0"/>
+                                    <Image x:Name="comment_icon" Source="{StaticResource ButtonIcon_Comment_B}" Margin="0,0,4,0"/>
+                                    <Image x:Name="tag_icon" Source="{StaticResource ButtonIcon_Tags_B}" Margin="0,0,4,0"/>
+                                </StackPanel>
+                                <Label Grid.Row="0" Content="{Binding InternalId}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
+                                <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <!--You can bind to a property on a named element, but the named element must be in scope!
+                            Define these Triggers in Scope of ControlTemplate instead of 'Style' scope-->
+                            <DataTrigger Binding="{Binding TagList.Count}" Value="0">
+                                <Setter TargetName="tag_icon" Property="Visibility" Value="Hidden"/>
+                                <Setter TargetName="tag_icon" Property="Width" Value="0"/>
+                                <Setter TargetName="tag_icon" Property="Height" Value="0"/>
+                                <Setter TargetName="tag_icon" Property="Margin" Value="0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding Comment}" Value="">
+                                <Setter TargetName="comment_icon" Property="Visibility" Value="Hidden"/>
+                                <Setter TargetName="comment_icon" Property="Width" Value="0"/>
+                                <Setter TargetName="comment_icon" Property="Height" Value="0"/>
+                                <Setter TargetName="tag_icon" Property="Margin" Value="0"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding ColorCode}" Value="#00FFFFFF">
+                                <Setter TargetName="ellipse_icon" Property="Visibility" Value="Hidden"/>
+                                <Setter TargetName="ellipse_icon" Property="Width" Value="0"/>
+                                <Setter TargetName="ellipse_icon" Property="Height" Value="0"/>
+                                <Setter TargetName="ellipse_icon" Property="Margin" Value="0"/>
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <!--Triggers for this Style w/o scope relevance (e.g. global Triggers for this Style)-->
+            <Style.Triggers>
+                <!-- Converter checks if currentElementId equals selectedElementId,
+                where selectedElementId is MVVM ObservableProperty for Notification when Selected Element changes -->
+                <DataTrigger Value="True">
+                    <DataTrigger.Binding>
+                        <MultiBinding Converter="{StaticResource IsSelectedElementConverter}">
+                            <Binding RelativeSource="{RelativeSource Self}" Path="DataContext.InternalId" Mode="OneWay"/>
+                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" Path="Tag.SelectedElement.InternalId" Mode="OneWay"/>
+                        </MultiBinding>
+                    </DataTrigger.Binding>
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
+                </DataTrigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <ItemsPanelTemplate x:Key="WrapPanelTemplate">
+            <WrapPanel ItemWidth="144" ItemHeight="208" SnapsToDevicePixels="True"/>
+        </ItemsPanelTemplate>
+        
+        <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
+        <DataTemplate x:Key="WrapPanelItemDesignTemplate">
+            <Grid Margin="8">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="148"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <!--'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
+                Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
+                <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                        Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
+                        CommandParameter="{Binding InternalId}"
+                        Content="{Binding}"
+                        Style="{StaticResource ButtonStyleWrapPanel}"
+                        MouseDoubleClick="Button_MouseDoubleClick">
+                    <Button.ContextMenu>
+                        <!--ContextMenu does not inherit the DataContext from its parent element-> DataContext is not available.
+                        Need to pass the DataContext in a different way: e.g. using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
+                        The Tag Property can be used to hold any kind of user specified Data.-->
+                        <ContextMenu x:Name="WrapPanel_ContextMenu">
+                            <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Edit_B}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Copy_B}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Exportieren">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Export_B}"/>
+                                </MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                <MenuItem.Icon>
+                                    <Image Source="{StaticResource ButtonIcon_Delete_B}" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+                        </ContextMenu>
+                    </Button.ContextMenu>
+                </Button>
+                <TextBlock Grid.Row="1" Text="{Binding Name}" FontWeight="Normal" Foreground="Black" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" Margin="0,4,0,0"/>
+            </Grid>
+        </DataTemplate>
+
+        <ItemsPanelTemplate x:Key="TagsWrapPanelTemplate">
+            <WrapPanel ItemWidth="Auto" ItemHeight="Auto" SnapsToDevicePixels="True"/>
+        </ItemsPanelTemplate>
+        
+        <!--Here: Binding (DataContext) is typeof 'TagList' set by ItemsSource Property-->
+        <DataTemplate x:Key="TagsWrapPanelItemDesignTemplate">
+            <Grid Margin="4">
+                <Button Content="{Binding}" Style="{StaticResource ButtonStyle05_Tag_B}"/>
+            </Grid>
+        </DataTemplate>
+        
+        <Style x:Key="WrapPanelGroupingHeader" TargetType="{x:Type GroupItem}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <!-- Header Binding 'Name' binds to 'PropertyName' from PropertyGroupDescription -->
+                        <Expander Header="{Binding Name}" FontSize="14" FontWeight="Bold" IsExpanded="True" Margin="0,0,0,8">
+                            <ItemsPresenter/>
+                            <!-- Displays the WrapPanel Items-->
+                        </Expander>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource PrimaryLightBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
+            <ColumnDefinition Width=".6*" MinWidth="448"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Top -->
+        <Border Grid.ColumnSpan="3" Background="{StaticResource PrimaryMediumBrush}">
+            <Label Content="Bauteilkatalog" FontSize="18" FontWeight="Bold" FontStretch="Expanded" HorizontalAlignment="Center"/>
+        </Border>
+
+        <!-- Left -->
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
+            <Button Content="Neues Bauteil" Command="{Binding AddNewElementCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
+            <Button Content="Bauteil importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
+            <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
+            <Button Content="PDF erstellen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
+        </StackPanel>
+        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
+            <Button Content="Katalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
+        </StackPanel>
+
+        <!-- Middle -->
+        <Grid Grid.Row="1" Grid.Column="1" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+
+            <!-- Sorting functions, Button Row -->
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                <Label Content="Sortieren nach" Margin="0,0,8,0"/>
+                <ComboBox Name="SortingComboBox" Background="Transparent" Width="240" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" Margin="0,0,8,0"/>
+                <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <Label Content="Gruppieren nach" Margin="0,0,8,0"/>
+                <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" Margin="0,0,8,0"/>
+            </StackPanel>
+
+            <ScrollViewer x:Name="WrapPanelScrollViewer" Grid.Row="2" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                <ItemsControl x:Name="ElementsControl" Width="{Binding ElementName=WrapPanelScrollViewer, Path=ActualWidth}"
+                          ItemsPanel="{StaticResource WrapPanelTemplate}"
+                          ItemTemplate="{StaticResource WrapPanelItemDesignTemplate}"
+                          Background="Transparent"
+                          BorderThickness="0"
+                          Tag="{Binding}">
+                    <ItemsControl.GroupStyle>
+                        <GroupStyle ContainerStyle="{StaticResource WrapPanelGroupingHeader}">
+                            <GroupStyle.Panel>
+                                <ItemsPanelTemplate>
+                                    <VirtualizingStackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </GroupStyle.Panel>
+                        </GroupStyle>
+                    </ItemsControl.GroupStyle>
+                    <ItemsControl.Style>
+                        <Style TargetType="{x:Type ItemsControl}">
+                            <Setter Property="ItemsSource" Value="{Binding Elements}"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsGroupingEnabled}" Value="True">
+                                    <Setter Property="ItemsSource" Value="{Binding GroupedElements}"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ItemsControl.Style>
+                </ItemsControl>
+            </ScrollViewer>
+        </Grid>
+        
+        <!-- Right -->
+        <Grid Grid.Row="1" Grid.Column="2" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Content="Ausgewähltes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+
+            <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Export_B}" ToolTip="Exportieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+            </StackPanel>
+
+            <Border x:Name="Test" Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderThickness="0">
+                <StackPanel Margin="16">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
+                        <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20"/>
+                    </StackPanel>
+                    <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" Margin="0,8,0,8"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Typ:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.OrientationType}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.RGesValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.UValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="sd-Wert:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.SdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="m':" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.AreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Erstellt:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.CreatedAtString}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Gerändert:" HorizontalAlignment="Left" Width="96"/>
+                        <Label Content="{Binding SelectedElement.UpdatedAtString}" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        <Image Source="{StaticResource ButtonIcon_Tags_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
+                        <Label Content="Tags:" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding SelectedElement.TagList}"
+                        ItemsPanel="{StaticResource TagsWrapPanelTemplate}"
+                        ItemTemplate="{StaticResource TagsWrapPanelItemDesignTemplate}"
+                        Background="Transparent"                          
+                        BorderThickness="0"
+                        Margin="0,8,0,8"/>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{StaticResource ButtonIcon_Comment_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
+                        <Label Content="Kommentar:" HorizontalAlignment="Left"/>
+                    </StackPanel>
+                    <TextBlock TextAlignment="Left" Text="{Binding SelectedElement.Comment}" Background="Transparent" TextWrapping="Wrap" FontSize="14" FontFamily="Consolas" Margin="0,8,0,8"/>
+                </StackPanel>
+                <!--Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.
+                Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string-->
+            </Border>
+            <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Bottom">
+                <Button Content="Schichtaufbau" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LayerSetup}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Layer_W}" IsEnabled="{Binding ElementToolsAvailable}" />
+            </StackPanel>
+        </Grid>
+        <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+    </Grid>
+</UserControl>

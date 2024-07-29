@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="BauphysikToolWPF.UI.CustomControls.ToastNotification"
+             x:Name="ToastNotificationControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="66"
+             d:DesignWidth="800">
+
+    <Border x:Name="RootGrid" Background="{StaticResource PrimaryHoverBrush}" BorderThickness="1" BorderBrush="{StaticResource PrimaryBorderBrush}" CornerRadius="8" Height="48" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8">
+        <Grid >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <Image x:Name="ToastIcon" Width="28" Height="28" VerticalAlignment="Stretch" Margin="24,4"/>
+
+            <TextBlock x:Name="ToastText" Text="This is a Toast Notification" Grid.Column="1" VerticalAlignment="Center" Margin="8,0" Foreground="Black" FontWeight="Bold"/>
+
+            <Button Grid.Column="2"
+                    Tag="{StaticResource ButtonIcon_Cancel_B}"
+                    Style="{StaticResource ButtonStyle03_IconMini}"
+                    Click="ButtonBase_OnClick"
+                    Margin="16,8"/>
+        </Grid>
+    </Border>
+
+    
+
+</UserControl>

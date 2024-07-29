@@ -3,4 +3,15 @@
 Uicons by <a href="https://www.flaticon.com/uicons">Flaticon</a>
 
 
-NuGet Packages
+https://www.flaticon.com/authors/srip
+Srip Flat Style
+<a href="https://www.flaticon.com/free-icons/folder" title="folder icons">Folder icons created by srip - Flaticon</a>
+
+FileType Icons
+<a href="https://www.flaticon.com/free-icons/pdf" title="pdf icons">Pdf icons created by Dimitry Miroliubov - Flaticon</a>
+
+JuicyFish Flat Style
+<a href="https://www.flaticon.com/free-icons/save" title="save icons">Save icons created by juicy_fish - Flaticon</a>
+
+
+NuGet Packages	

@@ -6,12 +6,11 @@ namespace BauphysikToolWPF.UI.CustomControls
 {
     public class IsSelectedElementConverter : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[]? values, Type targetType, object parameter, CultureInfo culture)
         {
             // values are the objects from the MultiBindings (Paths), "ElementId" and "SelectedElementId"
             // parameter is from ConverterParameter Property if set.
-            if (values is null)
-                return false;
+            if (values is null) return false;
 
             int currentElement = -1;
             int selectedElement = -1;
@@ -29,7 +28,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             return currentElement == selectedElement;
 
             // If the WrapPanel Button (an Element) is currently the SelectedElement, return true.
-            //return FO0_LandingPage.SelectedElementId == (int)values ? true : false;
+            //return Page_Elements.SelectedElementId == (int)values ? true : false;
         }
 
         public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)

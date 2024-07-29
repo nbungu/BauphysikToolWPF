@@ -1,0 +1,33 @@
+﻿<UserControl x:Class="BauphysikToolWPF.UI.CustomControls.MeasurementChain"
+             x:Name="MeasurementChainControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d"
+             d:DesignHeight="320"
+             d:DesignWidth="640"
+             d:Background="White">
+
+    <UserControl.Resources>
+        <!-- Content and Styling of a Canvas Item (Measurement Marker Line) -->
+        <DataTemplate x:Key="MeasurementItemStyle">
+            <Grid Width="{Binding Rectangle.Width}"
+                  Height="{Binding Rectangle.Height}">
+                <Rectangle x:Name="MeasurementDrawing" Fill="{Binding DrawingBrush}"/>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+
+    <Grid>
+        <!-- "Measurement Chain" -->
+        <ItemsControl x:Name="MeasurementChainElement"
+            Height="{Binding Height, ElementName=MeasurementChainControl}"
+            Width="{Binding Width, ElementName=MeasurementChainControl}"
+            ItemsSource="{Binding DrawingGeometry, ElementName=MeasurementChainControl}"
+            ItemsPanel="{StaticResource Canvas}"
+            ItemContainerStyle="{StaticResource CanvasContainerStyle}"
+            ItemTemplate="{StaticResource MeasurementItemStyle}"/>
+    </Grid>
+
+</UserControl>
