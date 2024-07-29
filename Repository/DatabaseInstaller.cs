@@ -19,9 +19,9 @@ namespace BauphysikToolWPF.Repository
             try
             {
                 // Set the path to C:\ProgramData\BauphysikTool
-                string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+                //string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
                 // Or for user-specific AppData folder
-                // string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+                string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); //%appdata%/BauphysikTool
                 string appFolder = Path.Combine(programDataPath, "BauphysikTool");
                 string databaseFilePath = Path.Combine(appFolder, "BauDB.db");
 
@@ -32,7 +32,8 @@ namespace BauphysikToolWPF.Repository
                 }
 
                 // Example: Copy the database from the output folder to ProgramData if it doesn't already exist
-                string sourceDatabasePath = BuildDirectoryDBFile; //Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DemoDB.db");
+                string sourceDatabasePath = copyFromBuildPath ? BuildDirectoryDBFile : RootProjectDBFile; //Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "DemoDB.db");
+                Logger.LogInfo($"Copying Database from: {sourceDatabasePath} to {databaseFilePath}");
 
                 if (!File.Exists(databaseFilePath))
                 {
@@ -43,12 +44,12 @@ namespace BauphysikToolWPF.Repository
                     File.Delete(databaseFilePath);
                     File.Copy(sourceDatabasePath, databaseFilePath);
                 }
-                Logger.LogInfo($"Connecting Database from: {databaseFilePath}");
+                Logger.LogInfo($"Connecting to Database: {databaseFilePath}");
                 return databaseFilePath;
             }
             catch (Exception e)
             {
-                Logger.LogError($"Could not get installed Database Path: {e.Message}");
+                Logger.LogError($"Could not get installed Database: {e.Message}");
                 return BuildDirectoryDBFile;
             }
         }
@@ -59,7 +60,7 @@ namespace BauphysikToolWPF.Repository
         /// <returns>Connection string linked to the InitialDB.db file which is at the 'BauphysikToolWPF/Repository' directory</returns>
         public static string GetInitialDatabase()
         {
-            Logger.LogInfo($"Connecting Database from: {RootProjectDBFile}");
+            Logger.LogInfo($"Connecting to Database: {RootProjectDBFile}");
             return RootProjectDBFile;
         }
 
@@ -70,7 +71,7 @@ namespace BauphysikToolWPF.Repository
         /// <returns>Connection string linked to the InitialDB.db file which is at the 'BauphysikToolWPF/bin/Debug/net8.0-windows10.0.22621.0/Repository' directory</returns>
         public static string GetInitialDatabaseFromBuildPath()
         {
-            Logger.LogInfo($"Connecting Database from: {RootProjectDBFile}");
+            Logger.LogInfo($"Connecting to Database: {RootProjectDBFile}");
             return BuildDirectoryDBFile;
         }
 
