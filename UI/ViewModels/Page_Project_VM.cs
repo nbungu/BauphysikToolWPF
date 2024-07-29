@@ -6,7 +6,6 @@ using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
@@ -19,11 +18,13 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class Page_Project_VM : ObservableObject
     {
         private readonly IFileDialogService _fileDialogService;
+        private readonly IDialogService _dialogService;
         public Page_Project_VM()
         {
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
+            _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
         }
 
@@ -43,6 +44,34 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
+        private void New()
+        {
+            if (UserSaved.SelectedProject.IsModified)
+            {
+                MessageBoxResult result = _dialogService.ShowSaveConfirmationDialog();
+
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        Save();
+                        break;
+                    case MessageBoxResult.No:
+                        ApplicationServices.CreateNewProject();
+                        UserSaved.OnSelectedProjectChanged(false);
+                        break;
+                    case MessageBoxResult.Cancel:
+                        // Do nothing, user cancelled the action
+                        break;
+                }
+            }
+            else
+            {
+                ApplicationServices.CreateNewProject();
+                UserSaved.OnSelectedProjectChanged(false);
+            }
+        }
+
+        [RelayCommand]
         private void Save()
         {
             if (!File.Exists(UserSaved.ProjectFilePath))
@@ -53,7 +82,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
                 ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, UserSaved.ProjectFilePath);
-                UserSaved.OnSelectedProjectChanged();
+                UserSaved.SelectedProject.IsModified = false;
+                UserSaved.OnSelectedProjectChanged(false);
             }
         }
 
@@ -67,7 +97,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
                 UserSaved.ProjectFilePath = filePath;
-                UserSaved.OnSelectedProjectChanged();
+                UserSaved.SelectedProject.IsModified = false;
+                UserSaved.OnSelectedProjectChanged(false);
             }
         }
         [RelayCommand]
@@ -79,8 +110,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
                 UserSaved.SelectedProject = loadedProject;
                 UserSaved.ProjectFilePath = filePath;
-                UserSaved.OnSelectedProjectChanged();
-                SwitchPage(NavigationContent.ProjectPage);
+                UserSaved.SelectedProject.IsModified = false;
+                UserSaved.OnSelectedProjectChanged(false);
             }
         }
 
@@ -95,8 +126,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             try
             {
-                Logger.LogInfo("Sie werden weitergeleitet...");
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
+                Logger.LogInfo($"Opened linked file: {filePath}");
             }
             catch (Exception ex)
             {
@@ -109,33 +140,39 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             DroppedFilePaths.Remove(file);
             UserSaved.SelectedProject.LinkedFilesList = DroppedFilePaths.ToList();
+            UserSaved.OnSelectedProjectChanged();
         }
 
         partial void OnAuthorNameChanged(string value)
         {
             if (value is null) return;
             UserSaved.SelectedProject.UserName = value;
+            UserSaved.OnSelectedProjectChanged();
         }
 
         partial void OnProjectNameChanged(string value)
         {
             if (value is null) return;
             UserSaved.SelectedProject.Name = value;
-            // To Update title bar
+            UserSaved.OnSelectedProjectChanged();
+        }
+
+        partial void OnCommentChanged(string value)
+        {
+            if (value is null) return;
+            UserSaved.SelectedProject.Comment = value;
             UserSaved.OnSelectedProjectChanged();
         }
 
         partial void OnIsNewConstrCheckedChanged(bool value)
         {
             UserSaved.SelectedProject.BuildingAge = value ? BuildingAgeType.New : BuildingAgeType.Existing;
-            IsNewConstrChecked = value;
-            IsExistingConstrChecked = !value;
+            UserSaved.OnSelectedProjectChanged();
         }
         partial void OnIsResidentialUsageCheckedChanged(bool value)
         {
             UserSaved.SelectedProject.BuildingUsage = value ? BuildingUsageType.Residential : BuildingUsageType.NonResidential;
-            IsResidentialUsageChecked = value;
-            IsNonResidentialUsageChecked = !value;
+            UserSaved.OnSelectedProjectChanged();
         }
 
         /*
@@ -145,13 +182,13 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Project _currentProject = UserSaved.SelectedProject;
-
-        [ObservableProperty]
         private string _projectName = UserSaved.SelectedProject.Name;
 
         [ObservableProperty]
         private string _authorName = UserSaved.SelectedProject.UserName;
+
+        [ObservableProperty]
+        private string _comment = UserSaved.SelectedProject.Comment;
 
         [ObservableProperty]
         private ObservableCollection<string> _droppedFilePaths = new ObservableCollection<string>(UserSaved.SelectedProject.LinkedFilesList);
@@ -176,9 +213,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-            CurrentProject = UserSaved.SelectedProject;
             ProjectName = UserSaved.SelectedProject.Name;
             AuthorName = UserSaved.SelectedProject.UserName;
+            Comment = UserSaved.SelectedProject.Comment;
             DroppedFilePaths = new ObservableCollection<string>(UserSaved.SelectedProject.LinkedFilesList);
             IsResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.Residential;
             IsNonResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;

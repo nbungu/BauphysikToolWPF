@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Windows;
 using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
@@ -12,13 +13,17 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class MainWindow_VM : ObservableObject
     {
         private readonly IFileDialogService _fileDialogService;
+        private readonly IDialogService _dialogService;
 
         // Called by 'InitializeComponent()' from MainWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
+        public string Title => UserSaved.SelectedProject.IsModified ? $"'{UserSaved.SelectedProject.Name}' *Bearbeitet* - {UserSaved.ProjectFilePath}" : $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
 
         public MainWindow_VM()
         {
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
+            UserSaved.SelectedLayerChanged += RefreshXamlBindings;
+            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+            _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
         }
 
@@ -37,7 +42,29 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void New()
         {
+            if (UserSaved.SelectedProject.IsModified)
+            {
+                MessageBoxResult result = _dialogService.ShowSaveConfirmationDialog();
 
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        Save();
+                        break;
+                    case MessageBoxResult.No:
+                        ApplicationServices.CreateNewProject();
+                        SwitchPage(NavigationContent.ProjectPage);
+                        break;
+                    case MessageBoxResult.Cancel:
+                        // Do nothing, user cancelled the action
+                        break;
+                }
+            }
+            else
+            {
+                ApplicationServices.CreateNewProject();
+                SwitchPage(NavigationContent.ProjectPage);
+            }
         }
 
         [RelayCommand]
@@ -51,7 +78,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
                 ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, UserSaved.ProjectFilePath);
-                UserSaved.OnSelectedProjectChanged();
+                UserSaved.SelectedProject.IsModified = false;
+                UserSaved.OnSelectedProjectChanged(false);
             }
         }
 
@@ -65,7 +93,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
                 UserSaved.ProjectFilePath = filePath;
-                UserSaved.OnSelectedProjectChanged();
+                UserSaved.SelectedProject.IsModified = false;
+                UserSaved.OnSelectedProjectChanged(false);
             }
         }
 
@@ -77,8 +106,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
                 UserSaved.SelectedProject = loadedProject;
+                UserSaved.SelectedProject.IsModified = false;
                 UserSaved.ProjectFilePath = filePath;
-                UserSaved.OnSelectedProjectChanged();
                 SwitchPage(NavigationContent.ProjectPage);
             }
         }
@@ -92,12 +121,13 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Title))]
-        private Project _currentProject = UserSaved.SelectedProject;
+        private string _projectName = UserSaved.SelectedProject.Name;
 
         private void RefreshXamlBindings()
         {
-            CurrentProject = null;
-            CurrentProject = UserSaved.SelectedProject;
+            ProjectName = "";
+            ProjectName = UserSaved.SelectedProject.Name;
+            // Title gets auto-updated by ProjectName
         }
     }
 }

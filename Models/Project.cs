@@ -57,6 +57,9 @@ namespace BauphysikToolWPF.Models
         [Ignore, JsonIgnore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
 
+        [Ignore, JsonIgnore]
+        public bool IsModified { get; set; } = false;
+
         // 1:n relationship with Element
         [Ignore, OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
         public List<Element> Elements { get; set; } = new List<Element>();

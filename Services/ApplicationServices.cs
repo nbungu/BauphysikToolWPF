@@ -67,6 +67,16 @@ namespace BauphysikToolWPF.Services
             }
         }
 
+        public static void CreateNewProject()
+        {
+            UserSaved.SelectedProject = new Project()
+            {
+                Name = "Neues Projekt",
+                IsModified = false,
+            };
+            UserSaved.ProjectFilePath = "";
+        }
+
         public static void WriteToConnectedDatabase(Project project)
         {
             UpdateFullProject(project);
@@ -150,11 +160,11 @@ namespace BauphysikToolWPF.Services
                         }
                     }
                 }
+                Logger.LogInfo($"Successfully saved project to internal database");
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                Logger.LogError($"Error saving project to database: {e.Message}");
             }
         }
 

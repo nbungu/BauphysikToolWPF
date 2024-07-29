@@ -84,7 +84,7 @@
 
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
-            <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Margin="0,0,0,16"/>
+            <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Margin="0,0,0,16" Command="{Binding NewCommand}"/>
             <Button Content="Speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveCommand}"/>
             <Button Content="Speichern unter" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Margin="0,0,0,16" Command="{Binding SaveToCommand}"/>
             <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Margin="0,0,0,16" Command="{Binding OpenCommand}"/>
@@ -129,7 +129,7 @@
                 <RadioButton Grid.Row="7" Grid.Column="1" IsChecked="{Binding IsExistingConstrChecked}" GroupName="BuildingAge" Content="Bestandsgebäude" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_ExistingHouse_B}" Margin="4,4,0,0"/>
 
                 <Label Grid.Row="8" Grid.ColumnSpan="2" Grid.Column="0" Content="Kommentar" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-                <TextBox Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" TextAlignment="Left" Text="{Binding CurrentProject.Comment}" Background="{StaticResource SecondaryLightBlueBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="800" Margin="0,4,0,0"/>
+                <TextBox Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" TextAlignment="Left" Text="{Binding Comment}" Background="{StaticResource SecondaryLightBlueBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="800" Margin="0,4,0,0"/>
 
                 <Label Grid.Row="10" Grid.Column="0" Content="Dateien mit diesem Projekt verknüpfen" HorizontalAlignment="Left" Margin="0,16,0,0"/>
 

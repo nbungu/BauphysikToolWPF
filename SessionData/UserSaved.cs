@@ -18,16 +18,19 @@ namespace BauphysikToolWPF.SessionData
         public static event Notify? EnvVarsChanged; // event
 
         // event handlers - publisher
-        public static void OnSelectedProjectChanged() //protected virtual method
+        public static void OnSelectedProjectChanged(bool updateIsModified = true) //protected virtual method
         {
+            if (updateIsModified) UserSaved.SelectedProject.IsModified = true;
             SelectedProjectChanged?.Invoke(); //if SelectedProjectChanged is not null then call delegate
         }
-        public static void OnSelectedElementChanged() //protected virtual method
+        public static void OnSelectedElementChanged(bool updateIsModified = true) //protected virtual method
         {
+            if (updateIsModified) UserSaved.SelectedProject.IsModified = true;
             SelectedElementChanged?.Invoke(); //if LayersChanged is not null then call delegate
         }
-        public static void OnSelectedLayerChanged() //protected virtual method
+        public static void OnSelectedLayerChanged(bool updateIsModified = true) //protected virtual method
         {
+            if (updateIsModified) UserSaved.SelectedProject.IsModified = true;
             SelectedLayerChanged?.Invoke(); //if LayersChanged is not null then call delegate
         }
         public static void OnEnvVarsChanged() //protected virtual method
