@@ -43,7 +43,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Resources\appicon.ico" />
     <None Remove="Resources\Icons\add_element.png" />
     <None Remove="Resources\Icons\add_element_w.png" />
     <None Remove="Resources\Icons\add_layer.png" />
@@ -92,6 +91,7 @@
     <None Remove="Resources\Icons\export.png" />
     <None Remove="Resources\Icons\export_w.png" />
     <None Remove="Resources\Icons\file-folder.png" />
+    <None Remove="Resources\Icons\Filetypes\btk.png" />
     <None Remove="Resources\Icons\Filetypes\cad.png" />
     <None Remove="Resources\Icons\Filetypes\corrupt-file.png" />
     <None Remove="Resources\Icons\Filetypes\database.png" />
@@ -213,9 +213,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\appicon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Resource>
     <Resource Include="Resources\Icons\add_element.png" />
     <Resource Include="Resources\Icons\add_element_w.png" />
     <Resource Include="Resources\Icons\add_layer.png" />
@@ -234,6 +231,7 @@
     <Resource Include="Resources\Icons\bookmark.png" />
     <Resource Include="Resources\Icons\comment.png" />
     <Resource Include="Resources\Icons\comment_bold.png" />
+    <Resource Include="Resources\Icons\Filetypes\btk.png" />
     <Resource Include="Resources\Icons\Filetypes\cad.png" />
     <Resource Include="Resources\Icons\Filetypes\corrupt-file.png" />
     <Resource Include="Resources\Icons\Filetypes\database.png" />
