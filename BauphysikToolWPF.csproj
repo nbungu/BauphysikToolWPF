@@ -93,6 +93,8 @@
     <None Remove="Resources\Icons\export_w.png" />
     <None Remove="Resources\Icons\file-folder.png" />
     <None Remove="Resources\Icons\Filetypes\cad.png" />
+    <None Remove="Resources\Icons\Filetypes\corrupt-file.png" />
+    <None Remove="Resources\Icons\Filetypes\database.png" />
     <None Remove="Resources\Icons\Filetypes\dmg.png" />
     <None Remove="Resources\Icons\Filetypes\doc.png" />
     <None Remove="Resources\Icons\Filetypes\file.png" />
@@ -233,6 +235,8 @@
     <Resource Include="Resources\Icons\comment.png" />
     <Resource Include="Resources\Icons\comment_bold.png" />
     <Resource Include="Resources\Icons\Filetypes\cad.png" />
+    <Resource Include="Resources\Icons\Filetypes\corrupt-file.png" />
+    <Resource Include="Resources\Icons\Filetypes\database.png" />
     <Resource Include="Resources\Icons\Filetypes\dmg.png" />
     <Resource Include="Resources\Icons\Filetypes\doc.png" />
     <Resource Include="Resources\Icons\Filetypes\file.png" />

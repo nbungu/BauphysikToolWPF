@@ -40,7 +40,7 @@ namespace BauphysikToolWPF.SessionData
 
         public static string ProjectFilePath { get; set; } = "Startprojekt aus Datenbank";
 
-        public static Project SelectedProject;
+        public static Project SelectedProject = new Project();
 
         /// <summary>
         /// InternalID des ausgewählten Elements

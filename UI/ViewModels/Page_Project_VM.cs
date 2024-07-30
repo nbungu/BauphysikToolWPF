@@ -19,19 +19,17 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         private readonly IFileDialogService _fileDialogService;
         private readonly IDialogService _dialogService;
+
+        // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
         public Page_Project_VM()
         {
-            // Subscribe to Event and Handle
-            // Allow child Windows to trigger RefreshXamlBindings of this Window
+            // Allow other UserControls to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
 
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
         }
-
-        // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
-        public string Title => "ProjectPage";
-
+        
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -117,8 +115,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void OpenLinkedFile(string filePath)
+        private void OpenLinkedFile(string? filePath)
         {
+            if (filePath is null) return;
             try
             {
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
@@ -126,44 +125,48 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             catch (Exception ex)
             {
-                // Handle exceptions
                 Logger.LogError($"Failed to open linked file: {ex.Message}");
             }
         }
         [RelayCommand]
-        private void DeleteLinkedFile(string file)
+        private void DeleteLinkedFile(string? file)
         {
+            if (file is null) return;
             DroppedFilePaths.Remove(file);
             UserSaved.SelectedProject.LinkedFilesList = DroppedFilePaths.ToList();
             // Here: Dont call OnProjectChanged to avoid loop
             UserSaved.SelectedProject.IsModified = true;
-            RefreshXamlBindings();
+            // Update single XAML Binding Property
+            OnPropertyChanged(nameof(DroppedFilePaths));
         }
 
-        partial void OnAuthorNameChanged(string value)
+        partial void OnAuthorNameChanged(string? value)
         {
             if (value is null) return;
             UserSaved.SelectedProject.UserName = value;
             // Here: Dont call OnProjectChanged to avoid loop
             UserSaved.SelectedProject.IsModified = true;
-            RefreshXamlBindings();
+            // Update single XAML Binding Property
+            OnPropertyChanged(nameof(AuthorName));
         }
 
-        partial void OnProjectNameChanged(string value)
+        partial void OnProjectNameChanged(string? value)
         {
             if (value is null) return;
             UserSaved.SelectedProject.Name = value;
             // Here: Dont call OnProjectChanged to avoid loop
             UserSaved.SelectedProject.IsModified = true;
-            RefreshXamlBindings();
+            // Update single XAML Binding Property
+            OnPropertyChanged(nameof(ProjectName));
         }
 
-        partial void OnCommentChanged(string value)
+        partial void OnCommentChanged(string? value)
         {
             if (value is null) return;
             UserSaved.SelectedProject.Comment = value;
             UserSaved.SelectedProject.IsModified = true;
-            RefreshXamlBindings();
+            // Update single XAML Binding Property
+            OnPropertyChanged(nameof(Comment));
         }
 
         partial void OnIsNewConstrCheckedChanged(bool value)
@@ -171,14 +174,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedProject.BuildingAge = value ? BuildingAgeType.New : BuildingAgeType.Existing;
             // Here: Dont call OnProjectChanged to avoid loop
             UserSaved.SelectedProject.IsModified = true;
-            RefreshXamlBindings();
+            // Update single XAML Binding Property
+            OnPropertyChanged(nameof(IsNewConstrChecked));
+            OnPropertyChanged(nameof(IsExistingConstrChecked));
         }
         partial void OnIsResidentialUsageCheckedChanged(bool value)
         {
             UserSaved.SelectedProject.BuildingUsage = value ? BuildingUsageType.Residential : BuildingUsageType.NonResidential;
             // Here: Dont call OnProjectChanged to avoid loop
             UserSaved.SelectedProject.IsModified = true;
-            RefreshXamlBindings();
+            // Update single XAML Binding Property
+            OnPropertyChanged(nameof(IsResidentialUsageChecked));
+            OnPropertyChanged(nameof(IsNonResidentialUsageChecked));
         }
 
         /*

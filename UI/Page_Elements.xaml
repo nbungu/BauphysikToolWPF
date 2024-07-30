@@ -193,9 +193,9 @@
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
             <Button Content="Neues Bauteil" Command="{Binding AddNewElementCommand}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Bauteil importieren" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
+            <Button Content="Bauteil importieren" IsEnabled="False" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            <Button Content="PDF erstellen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
+            <Button Content="PDF erstellen" IsEnabled="False" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
             <Button Content="Katalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Delete_B}"/>

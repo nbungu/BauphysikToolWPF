@@ -23,21 +23,23 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private static TemperatureCurveCalc _tempCalc;
+        private static TemperatureCurveCalc _tempCalc = new TemperatureCurveCalc();
 
         public Page_TemperatureResults_VM()
         {
-            if (_tempCalc != null && !UserSaved.Recalculate) return;
-            _tempCalc = new TemperatureCurveCalc()
+            if (!_tempCalc.IsValid || UserSaved.Recalculate)
             {
-                Element = UserSaved.SelectedElement,
-                Rsi = UserSaved.Rsi,
-                Rse = UserSaved.Rse,
-                Ti = UserSaved.Ti,
-                Te = UserSaved.Te
-            };
-            _tempCalc.CalculateHomogeneous();
-            _tempCalc.CalculateTemperatureCurve();
+                _tempCalc = new TemperatureCurveCalc()
+                {
+                    Element = UserSaved.SelectedElement,
+                    Rsi = UserSaved.Rsi,
+                    Rse = UserSaved.Rse,
+                    Ti = UserSaved.Ti,
+                    Te = UserSaved.Te
+                };
+                _tempCalc.CalculateHomogeneous();
+                _tempCalc.CalculateTemperatureCurve();
+            }
         }
 
         /*
@@ -45,7 +47,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Not depending on UI changes. No Observable function.
          */
-        public string Title = "Temperature Curve";
         public double Ti => _tempCalc.Ti;
         public double Te => _tempCalc.Te;
         public double Rsi => _tempCalc.Rsi;
@@ -170,7 +171,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (!_tempCalc.IsValid) return Array.Empty<ISeries>();
 
-            double tsi_Pos = 0;
+            double tsiPos = 0;
             double tsi = _tempCalc.Tsi;
             double deltaTi = Math.Abs(Ti - tsi);
 
@@ -178,11 +179,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 Values = new ObservablePoint[]
                 {
-                    new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
+                    new ObservablePoint(tsiPos-0.8, tsi+0.9*deltaTi),
                     new ObservablePoint(), // null cuts the line between the points // TODO check if null works
-                    new ObservablePoint(tsi_Pos, tsi),
-                    new ObservablePoint(tsi_Pos-0.8, tsi+0.9*deltaTi),
-                    new ObservablePoint(tsi_Pos-2, Ti)
+                    new ObservablePoint(tsiPos, tsi),
+                    new ObservablePoint(tsiPos-0.8, tsi+0.9*deltaTi),
+                    new ObservablePoint(tsiPos-2, Ti)
                 },
                 Fill = null,
                 LineSmoothness = 0.8,
@@ -219,18 +220,18 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
 
-            double tse_Pos = _tempCalc.LayerTemps.Last().Key;
+            double tsePos = _tempCalc.LayerTemps.Last().Key;
             double tse = _tempCalc.Tse;
             double deltaTe = Math.Abs(Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
                 Values = new ObservablePoint[]
                 {
-                    new ObservablePoint(tse_Pos+2, Te),
-                    new ObservablePoint(tse_Pos+0.8, tse-0.9*deltaTe),
-                    new ObservablePoint(tse_Pos, tse),
+                    new ObservablePoint(tsePos+2, Te),
+                    new ObservablePoint(tsePos+0.8, tse-0.9*deltaTe),
+                    new ObservablePoint(tsePos, tse),
                     new ObservablePoint(), // null cuts the line between the points // TODO check if null works
-                    new ObservablePoint(tse_Pos+0.8, tse+0.9*deltaTe),
+                    new ObservablePoint(tsePos+0.8, tse+0.9*deltaTe),
                 },
                 Fill = null,
                 LineSmoothness = 0.8,

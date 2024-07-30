@@ -438,8 +438,9 @@
                     <Button ToolTip="Projekt speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt speichern unter" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Command="{Binding SaveToCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt öffnen" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Command="{Binding OpenCommand}" Margin="4,0"/>
-                    <Label Content="{Binding Title}" FontSize="12" VerticalAlignment="Center" Margin="64,0"/>
                 </StackPanel>
+
+                <Label Content="{Binding Title}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16,0"/>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Click="MinimizeCommand" RenderOptions.EdgeMode="Aliased" Style="{StaticResource TitleBarButtonStyle}">

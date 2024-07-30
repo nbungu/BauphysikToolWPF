@@ -139,6 +139,8 @@
         <BitmapImage x:Key="FiletypeIcon_TXT" UriSource="/Resources/Icons/Filetypes/txt.png"/>
         <BitmapImage x:Key="FiletypeIcon_XLS" UriSource="/Resources/Icons/Filetypes/xls.png"/>
         <BitmapImage x:Key="FiletypeIcon_XML" UriSource="/Resources/Icons/Filetypes/xml.png"/>
+        <BitmapImage x:Key="FiletypeIcon_DB" UriSource="/Resources/Icons/Filetypes/database.png"/>
+        <BitmapImage x:Key="FiletypeIcon_Corrupt" UriSource="/Resources/Icons/Filetypes/corrupt-file.png"/>
 
 
         <!--Application Icon -->
@@ -369,9 +371,8 @@
         <!-- Applies on every TextBox in this App -->
         <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}">
             <!--These setters are for the default appearance-->
-            <Setter Property="MinWidth" Value="48"/>
-            <Setter Property="MinHeight" Value="32"/>
-            <Setter Property="MaxHeight" Value="32"/>
+            <Setter Property="MinWidth" Value="56"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="MaxLength" Value="80"/>
             <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>

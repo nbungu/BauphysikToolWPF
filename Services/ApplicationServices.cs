@@ -75,6 +75,7 @@ namespace BauphysikToolWPF.Services
                 IsModified = false,
             };
             UserSaved.ProjectFilePath = "";
+            MainWindow.ShowToast("Neues Projekt erstellt!", ToastType.Success);
         }
 
         public static void WriteToConnectedDatabase(Project project)

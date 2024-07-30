@@ -62,7 +62,7 @@
 
                 <Label Grid.Row="0" Content="Querschnitt" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
-                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True">
                     <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
                     <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
                     <Grid Margin="8">
@@ -76,6 +76,12 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform x:Name="Grid1ScaleTransform"/>
+                                <TranslateTransform x:Name="Grid1TranslateTransform"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
 
                         <!-- "Layers Canvas" -->
                         <controls:LayersCanvas x:Name="LayersCanvasCrossSection" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeCrossSection.Width}" Height="{Binding CanvasSizeCrossSection.Height}" DrawingGeometries="{Binding CrossSectionDrawing}"/>
@@ -97,7 +103,7 @@
         </Grid>
 
         <!--Vertical Cut Image-->
-        <Grid Grid.Column="0" Grid.Row="2" Margin="32,16,32,32">
+        <Grid Grid.Column="0" Grid.Row="2" Margin="32,16,32,32" >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -106,10 +112,16 @@
 
                 <Label Grid.Row="0" Content="Vertikalschnitt" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True">
                     <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
                     <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                    <Grid Margin="8">
+                    <Grid x:Name="ZoomableGrid2" Margin="240,8"
+                          MouseWheel="ZoomableGrid2_OnMouseWheel"
+                          MouseMove="ZoomableGrid2_OnMouseMove"
+                          MouseRightButtonDown="ZoomableGrid2_OnMouseRightButtonDown"
+                          MouseLeftButtonDown="ZoomableGrid2_OnMouseLeftButtonDown"
+                          MouseLeftButtonUp="ZoomableGrid2_OnMouseLeftButtonUp"
+                          RenderTransformOrigin="0.0,0.0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
@@ -119,6 +131,12 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform x:Name="Grid2ScaleTransform"/>
+                                <TranslateTransform x:Name="Grid2TranslateTransform"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
 
                         <!-- "Layers Canvas" -->
                         <controls:LayersCanvas x:Name="LayersCanvasVerticalCut" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeVerticalCut.Width}" Height="{Binding CanvasSizeVerticalCut.Height}" DrawingGeometries="{Binding VerticalCutDrawing}"/>

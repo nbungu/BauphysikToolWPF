@@ -21,24 +21,26 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private static GlaserCalc _glaser;
+        private static GlaserCalc _glaser = new GlaserCalc();
 
         public Page_MoistureResults_VM()
         {
-            if (_glaser != null && !UserSaved.Recalculate) return;
-            _glaser = new GlaserCalc()
+            if (!_glaser.IsValid || UserSaved.Recalculate)
             {
-                Element = UserSaved.SelectedElement,
-                Rsi = UserSaved.Rsi,
-                Rse = UserSaved.Rse,
-                Ti = UserSaved.Ti,
-                Te = UserSaved.Te,
-                RelFi = UserSaved.Rel_Fi,
-                RelFe = UserSaved.Rel_Fe
-            };
-            _glaser.CalculateHomogeneous(); // Bauteil berechnen
-            _glaser.CalculateTemperatureCurve(); // Temperaturkurve
-            _glaser.CalculateGlaser(); // Glaser Kurve
+                _glaser = new GlaserCalc()
+                {
+                    Element = UserSaved.SelectedElement,
+                    Rsi = UserSaved.Rsi,
+                    Rse = UserSaved.Rse,
+                    Ti = UserSaved.Ti,
+                    Te = UserSaved.Te,
+                    RelFi = UserSaved.Rel_Fi,
+                    RelFe = UserSaved.Rel_Fe
+                };
+                _glaser.CalculateHomogeneous(); // Bauteil berechnen
+                _glaser.CalculateTemperatureCurve(); // Temperaturkurve
+                _glaser.CalculateGlaser(); // Glaser Kurve
+            }
         }
 
 
@@ -48,7 +50,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not depending on UI changes. No Observable function.
          */
 
-        public string Title = "Moisture";
         public double Ti => _glaser.Ti;
         public double Te => _glaser.Te;
         public double Rel_Fi => _glaser.RelFi;
@@ -140,16 +141,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (!_glaser.IsValid) return Array.Empty<ISeries>();
 
-            ObservablePoint[] p_Curve_Values = new ObservablePoint[_glaser.LayerP.Count()]; // represents the temperature points
+            ObservablePoint[] pCurveValues = new ObservablePoint[_glaser.LayerP.Count()]; // represents the temperature points
             for (int i = 0; i < _glaser.LayerP.Count(); i++)
             {
                 double x = _glaser.LayerP.ElementAt(i).Key; // Position in cm
                 double y = Math.Round(_glaser.LayerP.ElementAt(i).Value, 2); // Temperature in °C
-                p_Curve_Values[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+                pCurveValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
-            LineSeries<ObservablePoint> p_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            LineSeries<ObservablePoint> pCurve = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
-                Values = p_Curve_Values,
+                Values = pCurveValues,
                 Fill = null,
                 LineSmoothness = 0,
                 Stroke = new SolidColorPaint(SKColors.Blue, 2),
@@ -159,16 +160,16 @@ namespace BauphysikToolWPF.UI.ViewModels
                 XToolTipLabelFormatter = (chartPoint) => $"pi: {chartPoint.Coordinate.PrimaryValue} Pa",
                 YToolTipLabelFormatter = null
             };
-            ObservablePoint[] p_sat_Curve_Values = new ObservablePoint[_glaser.LayerPsat.Count()]; // represents the temperature points
+            ObservablePoint[] pSatCurveValues = new ObservablePoint[_glaser.LayerPsat.Count()]; // represents the temperature points
             for (int i = 0; i < _glaser.LayerPsat.Count(); i++)
             {
                 double x = _glaser.LayerPsat.ElementAt(i).Key; // Position in cm
                 double y = Math.Round(_glaser.LayerPsat.ElementAt(i).Value, 2); // Temperature in °C
-                p_sat_Curve_Values[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
+                pSatCurveValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
-            LineSeries<ObservablePoint> p_sat_Curve = new LineSeries<ObservablePoint> // adds the temperature points to the series
+            LineSeries<ObservablePoint> pSatCurve = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
-                Values = p_sat_Curve_Values,
+                Values = pSatCurveValues,
                 Fill = null,
                 LineSmoothness = 0,
                 Stroke = new SolidColorPaint(SKColors.Red, 2),
@@ -178,7 +179,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 XToolTipLabelFormatter = (chartPoint) => $"p_sat_i: {chartPoint.Coordinate.PrimaryValue} Pa",
                 YToolTipLabelFormatter = null
             };
-            return new ISeries[] { p_Curve, p_sat_Curve };
+            return new ISeries[] { pCurve, pSatCurve };
         }
         private Axis[] DrawXAxes()
         {

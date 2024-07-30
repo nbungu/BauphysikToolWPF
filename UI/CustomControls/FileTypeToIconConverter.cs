@@ -18,6 +18,8 @@ namespace BauphysikToolWPF.UI.CustomControls
 
             switch (extension)
             {
+                case ".db":
+                    return new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Filetypes/database.png"));
                 case ".dgn":
                 case ".dwf":
                 case ".dwg":

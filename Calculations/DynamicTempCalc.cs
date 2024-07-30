@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
+using BT.Logging;
 using LiveChartsCore.Defaults;
 using System;
 using System.Collections.Generic;
@@ -23,8 +24,6 @@ namespace BauphysikToolWPF.Calculations
         private List<HeatTransferMatrix> _zLayers = new List<HeatTransferMatrix>();
         private ThermalAdmittanceMatrix _yElement = new ThermalAdmittanceMatrix();
 
-        public Element Element { get; set; } = new Element();
-
         // Calculated Properties
         public double DynamicRValue { get; private set; } // R_dyn [m²K/W]
         public double DynamicUValue { get; private set; } // U_dyn [W/m²K]
@@ -40,7 +39,7 @@ namespace BauphysikToolWPF.Calculations
         public double ArealHeatCapacity_i { get; private set; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
         public double ArealHeatCapacity_e { get; private set; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
         public double EffectiveThermalMass { get; private set; } // M [kg/m²]
-        public bool IsValid { get; private set; }
+        public new bool IsValid { get; private set; } = false;
 
         public DynamicTempCalc() {}
 
@@ -54,24 +53,33 @@ namespace BauphysikToolWPF.Calculations
 
         public void CalculateDynamicValues()
         {
-            // Calculated parameters (private setter)
-            _zLayers = CreateLayerMatrices(RelevantLayers);
-            _zElement = CreateElementMatrix(_zLayers, Rsi, Rse);
-            _yElement = new ThermalAdmittanceMatrix(_zElement);
-            DynamicRValue = GetDynamicRValue(_zElement);
-            DynamicUValue = GetDynamicUValue(DynamicRValue);
-            DecrementFactor = GetDecrement(DynamicUValue);
-            TAD = GetTAD(_zElement);
-            TAV = GetTAV(TAD);
-            TimeShift = GetTimeShift(_yElement);
-            TimeShift_i = GetTimeShift(_yElement, "i");
-            TimeShift_e = GetTimeShift(_yElement, "e");
-            ArealHeatCapacity_i = GetArealHeatCapacity(_zElement, "i");
-            ArealHeatCapacity_e = GetArealHeatCapacity(_zElement, "e");
-            ThermalAdmittance_i = GetThermalAdmittance(_yElement, "i");
-            ThermalAdmittance_e = GetThermalAdmittance(_yElement, "e");
-            EffectiveThermalMass = GetThermalMass(_yElement);
-            IsValid = true;
+            try
+            {
+                // Calculated parameters (private setter)
+                _zLayers = CreateLayerMatrices(RelevantLayers);
+                _zElement = CreateElementMatrix(_zLayers, Rsi, Rse);
+                _yElement = new ThermalAdmittanceMatrix(_zElement);
+                DynamicRValue = GetDynamicRValue(_zElement);
+                DynamicUValue = GetDynamicUValue(DynamicRValue);
+                DecrementFactor = GetDecrement(DynamicUValue);
+                TAD = GetTAD(_zElement);
+                TAV = GetTAV(TAD);
+                TimeShift = GetTimeShift(_yElement);
+                TimeShift_i = GetTimeShift(_yElement, "i");
+                TimeShift_e = GetTimeShift(_yElement, "e");
+                ArealHeatCapacity_i = GetArealHeatCapacity(_zElement, "i");
+                ArealHeatCapacity_e = GetArealHeatCapacity(_zElement, "e");
+                ThermalAdmittance_i = GetThermalAdmittance(_yElement, "i");
+                ThermalAdmittance_e = GetThermalAdmittance(_yElement, "e");
+                EffectiveThermalMass = GetThermalMass(_yElement);
+                IsValid = true;
+                Logger.LogInfo($"Successfully calculated DynamicTempCalc values of Element: {Element}");
+            }
+            catch (Exception ex)
+            {
+                IsValid = false;
+                Logger.LogError($"Error calculating DynamicTempCalc values of Element: {Element}, {ex.Message}");
+            }
         }
 
         // public Instance Methods, when user requires additional Data. 

@@ -16,8 +16,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private readonly IDialogService _dialogService;
 
         // Called by 'InitializeComponent()' from MainWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => UserSaved.SelectedProject.IsModified ? $"'{UserSaved.SelectedProject.Name}' *Bearbeitet* - {UserSaved.ProjectFilePath}" : $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
-
         public MainWindow_VM()
         {
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
@@ -127,6 +125,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(Title))]
         private string _projectName = UserSaved.SelectedProject.Name;
 
+        /*
+         * MVVM Capsulated Properties + Triggered by other Properties
+         * 
+         * Not Observable, because no direct input from User
+         */
+
+        public string Title => UserSaved.SelectedProject.IsModified ? $"'{UserSaved.SelectedProject.Name}' *Bearbeitet* - {UserSaved.ProjectFilePath}" : $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
+        
         private void RefreshXamlBindings()
         {
             ProjectName = "";

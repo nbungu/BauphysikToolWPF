@@ -64,33 +64,7 @@ namespace BauphysikToolWPF.Models
         [Ignore, OneToMany(CascadeOperations = CascadeOperation.All)] // ON DELETE CASCADE (When a Project is removed: Deletes all Elements linked to this 'Project' aswell)
         public List<Element> Elements { get; set; } = new List<Element>();
 
-        //// Encapsulate/Hide BuildingUsage and BuildingAge to convert to bool
-        //[Ignore, JsonIgnore]
-        //public bool IsResidentialUsage // true = 1
-        //{
-        //    get => BuildingUsage == BuildingUsageType.Residential;
-        //    set => BuildingUsage = value;
-        //}
-        //[Ignore, JsonIgnore]
-        //public bool IsNonResidentialUsage // = 0
-        //{
-        //    get => BuildingUsage == BuildingUsageType.NonResidential;
-        //    set => BuildingUsage = (value) ? 0 : 1;
-        //}
-        //[Ignore, JsonIgnore]
-        //public bool IsNewConstruction // = 1
-        //{
-        //    get => BuildingAge == BuildingAgeType.New;
-        //    set => BuildingAge = (value) ? 1 : 0;
-        //}
-        //[Ignore, JsonIgnore]
-        //public bool IsExistingConstruction // = 0
-        //{
-        //    get => BuildingAge == BuildingAgeType.Existing;
-        //    set => BuildingAge = (value) ? 0 : 1;
-        //}
-
-        [Ignore]
+        [Ignore, JsonIgnore]
         public List<string> LinkedFilesList // Converts string of LinkedFiles, separated by Comma, to a List of LinkedFiles
         {
             get

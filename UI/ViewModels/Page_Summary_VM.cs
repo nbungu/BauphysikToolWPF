@@ -14,17 +14,10 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class Page_Summary_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
-        public string Title = "Zusammenfassung";
 
         private readonly CanvasDrawingService _drawingServiceV = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
         private readonly CanvasDrawingService _drawingServiceH = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
 
-        /*
-         * Static Class Properties:
-         * If List<string> is null, then get List from Database. If List is already loaded, use existing List.
-         * To only load Propery once. Every other getter request then uses the static class variable.
-         */
-        
         /*
          * MVVM Commands - UI Interaction with Commands
          * 

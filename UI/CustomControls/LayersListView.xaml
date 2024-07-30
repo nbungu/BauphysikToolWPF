@@ -173,7 +173,7 @@
                             </Style>
                         </MenuItem.Style>
                         <MenuItem.Icon>
-                            <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
+                            <Image Source="{StaticResource ButtonIcon_Add_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
 
