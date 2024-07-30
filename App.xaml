@@ -371,7 +371,7 @@
         <!-- Applies on every TextBox in this App -->
         <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}">
             <!--These setters are for the default appearance-->
-            <Setter Property="MinWidth" Value="56"/>
+            <Setter Property="MinWidth" Value="48"/>
             <Setter Property="Height" Value="32"/>
             <Setter Property="MaxLength" Value="80"/>
             <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
