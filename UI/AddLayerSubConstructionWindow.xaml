@@ -9,10 +9,10 @@
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="AddLayerSubConstructionWindow"
+        Title="{Binding Title}"
         Background="{StaticResource PrimaryLightBrush}"
-        Height="488"
-        Width="880">
+        Height="480"
+        Width="1060">
 
     <Window.DataContext>
         <!-- AddLayerSubConstructionWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
@@ -55,7 +55,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="160" MaxWidth="480"/>
             <ColumnDefinition Width=".55*" MinWidth="200"/>
-            <ColumnDefinition Width=".25*" MinWidth="160" MaxWidth="480"/>
+            <ColumnDefinition Width="360" MaxWidth="440" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
         <!--Left Column: Material Category-->
@@ -106,14 +106,13 @@
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,8">
                 <TextBox Text="{Binding SearchString}" Background="{StaticResource SecondaryLightBlueBrush}" TextAlignment="Left" MaxLength="320" Width="320" Margin="0,0,8,0"/>
-                <Button Tag="{StaticResource ButtonIcon_Cancel_B}" Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding ResetMaterialListCommand}" Margin="-40,0,8,0"/>
-                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle03_Mini}" Margin="0,0,8,0"/>
+                <Button Tag="{StaticResource ButtonIcon_Cancel_B}" Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding ResetMaterialListCommand}" Margin="-40,0,8,0"/>
+                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle01_Mini}" Margin="0,0,8,0"/>
             </StackPanel>
 
             <controls:MaterialsListView Grid.Row="2" Materials="{Binding Materials}" SelectedMaterial="{Binding SelectedListViewItem, Mode=TwoWay}"/>
 
         </Grid>
-
 
         <!--Grid Splitter-->
         <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
@@ -131,10 +130,10 @@
         </Grid>
 
         <Grid Grid.Column="2" Grid.Row="2" Margin="16,8,8,8">
-            <Button Content="Übernehmen"
+            <Button Content="{Binding ButtonText}"
                     Command="{Binding AddSubConstructionLayerCommand}"
                     CommandParameter="{Binding ElementName=AddLayerSubConstructionWindowControl}"
-                    Style="{StaticResource ButtonStyle03_A}"
+                    Style="{StaticResource ButtonStyle01_Highlighted}"
                     Tag="{StaticResource ButtonIcon_AddLayer_W}"/>
         </Grid>
 

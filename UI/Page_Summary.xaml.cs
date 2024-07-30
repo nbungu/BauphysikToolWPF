@@ -74,6 +74,35 @@ namespace BauphysikToolWPF.UI
 
         private void ZoomableGrid2_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            // Zoom In on double Click
+            if (e.ClickCount == 2)
+            {
+                Point mousePosition = e.GetPosition(ZoomableGrid2);
+
+                double zoomFactor = 1.5;
+
+                // Calculate the new scale
+                double newScaleX = Grid2ScaleTransform.ScaleX * zoomFactor;
+                double newScaleY = Grid2ScaleTransform.ScaleY * zoomFactor;
+
+                // Ensure the new scale does not go below the minimum scale factor or above the maximum scale factor
+                if (newScaleX < MinimumScale || newScaleX > MaximumScale || newScaleY < MinimumScale || newScaleY > MaximumScale)
+                {
+                    return;
+                }
+
+                // Calculate the translation to keep the mouse position centered
+                double offsetX = mousePosition.X * (newScaleX - Grid2ScaleTransform.ScaleX);
+                double offsetY = mousePosition.Y * (newScaleY - Grid2ScaleTransform.ScaleY);
+
+                Grid2ScaleTransform.ScaleX = newScaleX;
+                Grid2ScaleTransform.ScaleY = newScaleY;
+
+                Grid2TranslateTransform.X -= offsetX;
+                Grid2TranslateTransform.Y -= offsetY;
+                return;
+            }
+
             // Only allow dragging if the grid is zoomed in
             if (Grid2ScaleTransform.ScaleX > 1.0 || Grid2ScaleTransform.ScaleY > 1.0)
             {

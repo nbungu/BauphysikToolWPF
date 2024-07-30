@@ -192,7 +192,7 @@
     </Style>
 
     <!--Custom Button01: Test-->
-    <Style x:Key="ButtonStyle01" TargetType="{x:Type Button}">
+    <Style x:Key="ButtonStyle01_Highlighted" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontSize" Value="14"/>

@@ -502,8 +502,8 @@
                             <Label Content="Projekt:" Foreground="White" Margin="-4"/>
                             <TextBlock Text="{Binding ProjectName}" MaxWidth="152" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="14"/>
                         </StackPanel>
-                        <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_House_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
-                        <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
+                        <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_House_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
+                        <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
                     </Grid>
                 </Border>
 

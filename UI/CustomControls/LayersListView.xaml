@@ -75,8 +75,8 @@
                                                 </Style>
                                             </Label.Style>
                                         </Label>
-                                        <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
-                                        <Button x:Name="DeleteButtonBalkenlage" HorizontalAlignment="Left" Content="Entfernen" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}" Margin="8,0,0,0"/>
+                                        <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.EditSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                        <Button x:Name="DeleteButtonBalkenlage" HorizontalAlignment="Left" Content="Entfernen" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" Margin="8,0,0,0"/>
                                     </StackPanel>
 
                                 </StackPanel>
@@ -143,17 +143,17 @@
                     <!-- ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
                     Need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
                     The Tag Property can be used to hold any kind of user specified Data.-->
-                    <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Icon>
                             <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Icon>
                             <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Icon>
                             <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
                         </MenuItem.Icon>
@@ -161,13 +161,13 @@
 
                     <Separator Margin="-30,4,0,4" Padding="0" HorizontalAlignment="Stretch" BorderThickness="0.6" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
 
-                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Style>
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage hinzufügen" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstructions, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
-                                        <Setter Property="Header" Value="Balkenlage bearbeiten" />
+                                        <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -177,7 +177,24 @@
                         </MenuItem.Icon>
                     </MenuItem>
 
-                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.EditSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Style>
+                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                <Setter Property="Header" Value="Balkenlage bearbeiten" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstructions, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Style>
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage löschen" />

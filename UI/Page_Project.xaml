@@ -84,10 +84,10 @@
 
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
-            <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Margin="0,0,0,16" Command="{Binding NewCommand}"/>
-            <Button Content="Speichern" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveCommand}"/>
-            <Button Content="Speichern unter" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Margin="0,0,0,16" Command="{Binding SaveToCommand}"/>
-            <Button Content="Öffnen" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Margin="0,0,0,16" Command="{Binding OpenCommand}"/>
+            <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Margin="0,0,0,16" Command="{Binding NewCommand}"/>
+            <Button Content="Speichern" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveCommand}"/>
+            <Button Content="Speichern unter" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Margin="0,0,0,16" Command="{Binding SaveToCommand}"/>
+            <Button Content="Öffnen" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Margin="0,0,0,16" Command="{Binding OpenCommand}"/>
         </StackPanel>
 
         <!-- Middle  -->
@@ -176,8 +176,8 @@
 
                                                 <Image Name="FileTypeImage" Grid.Row="0" Grid.RowSpan="2" Grid.Column="0" Width="32" Height="32" Source="{Binding Converter={StaticResource FileTypeToIconConverter}}" Margin="8"/>
                                                 <TextBlock Grid.Row="0" Grid.Column="1" FontWeight="DemiBold" FontSize="14" Text="{Binding Converter={StaticResource FilePathToFileNameConverter}}" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" Margin="8,0,32,0"/>
-                                                <Button Name="OpenLinkedFileButton" Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" ToolTip="Verknüpfte Datei öffnen" Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle02_A}" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
-                                                <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" ToolTip="Verknüpfte Datei aus Liste entfernen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle03_B_Icon}" Tag="{StaticResource ButtonIcon_Delete_B}" Command="{Binding DataContext.DeleteLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
+                                                <Button Name="OpenLinkedFileButton" Grid.Row="0" Grid.RowSpan="2" Grid.Column="2" ToolTip="Verknüpfte Datei öffnen" Content="Öffnen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle02_Highlighted}" Command="{Binding DataContext.OpenLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}"/>
+                                                <Button Grid.Row="0" Grid.RowSpan="2" Grid.Column="3" ToolTip="Verknüpfte Datei aus Liste entfernen" HorizontalAlignment="Right" Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Delete_B}" Command="{Binding DataContext.DeleteLinkedFileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" Margin="8"/>
                                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding}" VerticalAlignment="Top" FontSize="11" HorizontalAlignment="Left" Margin="8,0,32,0"/>
                                             </Grid>
                                         </Border>
@@ -202,7 +202,7 @@
         
 
         <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="16">
-            <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Style="{StaticResource ButtonStyle03_A}" Tag="{StaticResource ButtonIcon_Next_W}"/>
+            <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_Next_W}"/>
         </StackPanel>
 
     </Grid>

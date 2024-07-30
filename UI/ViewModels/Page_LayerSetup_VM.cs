@@ -59,24 +59,29 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerWindow().ShowDialog();
+            new AddLayerWindow(editExsiting: false).ShowDialog();
         }
-
-        [RelayCommand]
-        private void AddSubConstructionLayer()
-        {
-           
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerSubConstructionWindow().ShowDialog();
-        }
-
         [RelayCommand]
         private void EditLayer()
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerWindow(!IsLayerSelected).ShowDialog();
+            new AddLayerWindow(editExsiting: IsLayerSelected).ShowDialog();
+        }
+
+        [RelayCommand]
+        private void AddSubConstructionLayer()
+        {
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            new AddLayerSubConstructionWindow(editExisting: false).ShowDialog();
+        }
+        [RelayCommand]
+        private void EditSubConstructionLayer()
+        {
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            new AddLayerSubConstructionWindow(editExisting: IsLayerSelected && SelectedListViewItem.HasSubConstructions).ShowDialog();
         }
 
         [RelayCommand]

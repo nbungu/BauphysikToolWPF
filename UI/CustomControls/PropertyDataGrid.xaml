@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              mc:Ignorable="d"
              d:DesignHeight="320"
              d:DesignWidth="320"
@@ -138,6 +139,7 @@
                     <Setter Property="Background" Value="LightGoldenrodYellow"/>
                 </DataTrigger>
             </Style.Triggers>
+
         </Style>
 
         <Style x:Key="DataGridCheckBox" TargetType="{x:Type CheckBox}">
@@ -249,13 +251,15 @@
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
-                                                    <TextBox Grid.Column="0"
+                                                    <TextBox x:Name="DynamicTextBox"
+                                                             Grid.Column="0"
                                                              FontWeight="Normal"
                                                              Text="{Binding Value, Converter={StaticResource DoubleToStringConverter}}"
                                                              Style="{StaticResource DataGridTextBox}"
                                                              IsReadOnly="{Binding IsReadonly}"
-                                                             PreviewTextInput="numericData_PreviewTextInput"
-                                                             LostKeyboardFocus="TextBox_LostKeyboardFocus" />
+                                                             LostKeyboardFocus="TextBox_LostKeyboardFocus"
+                                                             PreviewTextInput="numericData_PreviewTextInput">
+                                                    </TextBox>
                                                     <controls:FractionLabel Grid.Column="1"
                                                                             CounterText="{Binding UnitCounterText}"
                                                                             DenominatorText="{Binding UnitDenominatorText}"

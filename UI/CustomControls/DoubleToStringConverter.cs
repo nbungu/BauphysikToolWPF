@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.UI.CustomControls
                     return result;
                 }
             }
-            return value;
+            return 0.0;
         }
     }
 }

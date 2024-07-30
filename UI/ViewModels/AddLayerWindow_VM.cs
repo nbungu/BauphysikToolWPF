@@ -216,7 +216,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<Material> Materials => GetMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
         public bool AllowCreate => SelectedTabIndex == 1;
-        public bool EditSelectedLayer => !AddLayerWindow.AddNewLayer; // UserSaved.SelectedLayer != null && UserSaved.SelectedLayer.IsValid;
+        public bool EditSelectedLayer => AddLayerWindow.EditExistingLayer;
         public string ButtonText => EditSelectedLayer ? "Änderung übernehmen" : "Schicht hinzufügen";
         public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => l.MaterialId == SelectedListViewItem.Id);
         public bool IsUsedInSubConstr => DatabaseAccess.GetSubConstructionQuery().Any(s => s.MaterialId == SelectedListViewItem.Id);

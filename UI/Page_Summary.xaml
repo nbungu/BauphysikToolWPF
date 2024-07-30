@@ -29,25 +29,25 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="320"/>
-            <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
+            <ColumnDefinition Width="360" MaxWidth="440" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
         <Border Grid.ColumnSpan="2" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20" Margin="0,0,8,0"/>
                     <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
                     <Label Content="{Binding SelectedElement.Construction.TypeName}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -115,7 +115,7 @@
                 <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True">
                     <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
                     <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                    <Grid x:Name="ZoomableGrid2" Margin="240,8"
+                    <Grid x:Name="ZoomableGrid2" Margin="280,8"
                           MouseWheel="ZoomableGrid2_OnMouseWheel"
                           MouseMove="ZoomableGrid2_OnMouseMove"
                           MouseRightButtonDown="ZoomableGrid2_OnMouseRightButtonDown"

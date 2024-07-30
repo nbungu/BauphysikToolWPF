@@ -6,8 +6,12 @@ namespace BauphysikToolWPF.UI
 {
     public partial class AddLayerSubConstructionWindow : Window
     {
-        public AddLayerSubConstructionWindow()
+        public static bool EditExistingSubConstr;
+
+        public AddLayerSubConstructionWindow(bool editExisting = true)
         {
+            EditExistingSubConstr = editExisting;
+
             InitializeComponent();
             // Call these Methods only once when Constructor is invoked (Categories stay constant)
         }
