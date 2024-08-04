@@ -2,9 +2,9 @@
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.Drawing;
+using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using BT.Geometry;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,6 +17,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private readonly CanvasDrawingService _drawingServiceV = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
         private readonly CanvasDrawingService _drawingServiceH = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+
+        public Page_Summary_VM()
+        {
+            // Allow other UserControls to trigger RefreshXamlBindings of this Window
+            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+        }
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -36,9 +42,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new AddElementWindow().ShowDialog();
-
-            // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -93,5 +96,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => UserSaved.Rel_Fi),
             new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => UserSaved.Rel_Fe),
         };
+
+        private void RefreshXamlBindings()
+        {
+            OnPropertyChanged(nameof(SelectedElement));
+        }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
@@ -8,7 +7,6 @@ using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
@@ -50,7 +48,7 @@ namespace BauphysikToolWPF
             if (Updater.CompareSemanticVersions(Updater.LocalUpdaterFile.Current, Updater.LocalUpdaterFile.Latest) < 0)
             {
                 Logger.LogInfo($"Found new Version! Notifying User");
-                ShowToast($"New Version Available: {Updater.LocalUpdaterFile.Latest}", ToastType.Info);
+                ShowToast($"New Version Available: {Updater.LocalUpdaterFile.LatestTag}", ToastType.Info);
                 Updater.LocalUpdaterFile.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
                 Updater.WriteToLocalUpdaterFile(Updater.LocalUpdaterFile);
             }

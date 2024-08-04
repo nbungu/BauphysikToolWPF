@@ -25,6 +25,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Page_MoistureResults_VM()
         {
+            // Allow other UserControls to trigger RefreshXamlBindings of this Window
+            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+
             if (!_glaser.IsValid || UserSaved.Recalculate)
             {
                 _glaser = new GlaserCalc()
@@ -42,7 +45,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                 _glaser.CalculateGlaser(); // Glaser Kurve
             }
         }
-
 
         /*
          * Regular Instance Variables as Properties
@@ -80,9 +82,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new AddElementWindow().ShowDialog();
-
-            // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -98,6 +97,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          * private Methods
          */
 
+        private void RefreshXamlBindings()
+        {
+            OnPropertyChanged(nameof(SelectedElement));
+            OnPropertyChanged(nameof(OverviewItems));
+        }
         private List<OverviewItem> GetOverviewItemsList()
         {
             if (!_glaser.IsValid) return new List<OverviewItem>();

@@ -28,6 +28,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Page_DynamicResults_VM()
         {
+            // Allow other UserControls to trigger RefreshXamlBindings of this Window
+            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+
             if (!_dynamicTempCalc.IsValid || UserSaved.Recalculate)
             {
                 _dynamicTempCalc = new DynamicTempCalc()
@@ -61,9 +64,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new AddElementWindow().ShowDialog();
-
-            // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -120,6 +120,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Axis[] YAxes_i => DrawYAxes();
 
         public Axis[] YAxes_e => DrawYAxes("right");
+
+        /*
+         * private Methods
+         */
+
+        private void RefreshXamlBindings()
+        {
+            OnPropertyChanged(nameof(SelectedElement));
+        }
 
         private ISeries[] GetDataPoints_e()
         {

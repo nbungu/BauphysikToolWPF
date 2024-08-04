@@ -60,10 +60,9 @@ namespace BauphysikToolWPF
 
         protected override void OnExit(ExitEventArgs e)
         {
-            //Logger.LogInfo($"Checking for Updates...");
-            //
-            //Updater.CheckForUpdates();
-            
+            Logger.LogInfo($"Checking for Updates...");
+            Updater.CheckForUpdates();
+
             Logger.LogInfo($"Closing Application with ExitCode: {e.ApplicationExitCode}");
         }
 

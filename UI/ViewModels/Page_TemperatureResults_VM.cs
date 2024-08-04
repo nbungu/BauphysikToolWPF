@@ -25,8 +25,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Manually Trigger Calculation
         private static TemperatureCurveCalc _tempCalc = new TemperatureCurveCalc();
 
+
         public Page_TemperatureResults_VM()
         {
+            // Allow other UserControls to trigger RefreshXamlBindings of this Window
+            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+
             if (!_tempCalc.IsValid || UserSaved.Recalculate)
             {
                 _tempCalc = new TemperatureCurveCalc()
@@ -76,9 +80,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new AddElementWindow().ShowDialog();
-
-            // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -128,6 +129,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * private Methods
          */
+
+        private void RefreshXamlBindings()
+        {
+            OnPropertyChanged(nameof(SelectedElement));
+            OnPropertyChanged(nameof(RequirementValues));
+            OnPropertyChanged(nameof(OverviewItems));
+        }
 
         private RectangularSection[] DrawLayerSections()
         {

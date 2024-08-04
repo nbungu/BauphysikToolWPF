@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BauphysikToolWPF.Services
 {
-    public class Updater : IEquatable<Updater>
+    public class Updater
     {
         public static string InstalledUpdaterFilePath = GetInstalledUpdaterFilePath();
         public static string ServerUpdaterQuery = "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields[0]=semanticVersion&fields[1]=versionTag";
@@ -32,11 +32,12 @@ namespace BauphysikToolWPF.Services
             if (CompareSemanticVersions(updaterLocal.Current, updaterServer.Latest) < 0)
             {
                 Logger.LogInfo($"Found new Version! Writing new Version to local updater file");
-                updaterLocal.Latest = updaterServer.Latest;
-                updaterLocal.LatestTag = updaterServer.LatestTag;
-                updaterLocal.LastUpdateCheck = TimeStamp.GetCurrentUnixTimestamp();
-                WriteToLocalUpdaterFile(updaterLocal);
+                // TODO:
             }
+            updaterLocal.Latest = updaterServer.Latest;
+            updaterLocal.LatestTag = updaterServer.LatestTag;
+            updaterLocal.LastUpdateCheck = TimeStamp.GetCurrentUnixTimestamp();
+            WriteToLocalUpdaterFile(updaterLocal);
         }
         public static async Task<Updater> FetchVersionFromServer(string serverAddress)
         {
@@ -49,6 +50,7 @@ namespace BauphysikToolWPF.Services
             {
                 Logger.LogError($"Error fetching updater file from server: {serverAddress}, {ex.Message}");
             }
+            Logger.LogInfo($"Successfully fetched updater file from server: {serverAddress}");
             return updater;
         }
 
@@ -74,35 +76,40 @@ namespace BauphysikToolWPF.Services
         {
             using (HttpClient client = new HttpClient())
             {
-                client.Timeout = TimeSpan.FromSeconds(10); // Set a 5-second timeout
-                HttpResponseMessage response = await client.GetAsync(url);
-                response.EnsureSuccessStatusCode();
-                Logger.LogInfo($"Got response from URL {url}: {response}");
+                client.Timeout = TimeSpan.FromSeconds(10);
+                var response = client.GetAsync(url).Result;  // Blocking call!
 
-                string jsonString = await response.Content.ReadAsStringAsync();
-
-                var options = new JsonSerializerOptions
+                if (response.IsSuccessStatusCode)
                 {
-                    ReferenceHandler = ReferenceHandler.Preserve,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-                };
+                    Logger.LogInfo($"Received Status Code 200 OK from GET request: {url}");
 
-                JsonResponse jsonResponse = JsonSerializer.Deserialize<JsonResponse>(jsonString, options);
-
-                if (jsonResponse != null && jsonResponse.Data.Length > 0)
-                {
-                    var attributes = jsonResponse.Data[0].Attributes;
-                    var updater = new Updater
+                    // Parse the response body. Blocking!
+                    var jsonString = response.Content.ReadAsStringAsync().Result;
+                    var options = new JsonSerializerOptions
                     {
-                        Latest = attributes.SemanticVersion,
-                        LatestTag = attributes.VersionTag
+                        ReferenceHandler = ReferenceHandler.Preserve,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
                     };
 
-                    Logger.LogInfo($"Successfully deserialized updater file from server: {url}");
-                    return updater;
-                }
+                    JsonResponse jsonResponse = JsonSerializer.Deserialize<JsonResponse>(jsonString, options);
 
-                Logger.LogError($"Could not deserialize the fetched updater file: {url}");
+                    if (jsonResponse != null && jsonResponse.Data.Length > 0)
+                    {
+                        var attributes = jsonResponse.Data[0].Attributes;
+                        var updater = new Updater
+                        {
+                            Latest = attributes.SemanticVersion,
+                            LatestTag = attributes.VersionTag
+                        };
+
+                        Logger.LogInfo($"Successfully deserialized updater file from server");
+                        return updater;
+                    }
+                    Logger.LogWarning($"Could not deserialize the fetched updater file");
+                    return new Updater();
+                }
+                var result = $"{(int)response.StatusCode} ({response.ReasonPhrase})";
+                Logger.LogWarning($"Received invalid Status Code from GET request: {result}");
                 return new Updater();
             }
         }
@@ -186,44 +193,27 @@ namespace BauphysikToolWPF.Services
                 return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Services\\updater.json")); ;
             }
         }
-
-        public bool Equals(Updater? other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Latest == other.Latest && Current == other.Current;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Updater)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Latest, Current);
-        }
     }
     internal class JsonResponse
     {
-        public DataItem[] Data { get; set; }
+        [JsonPropertyName("data")]
+        public DataItem[] Data { get; set; } = Array.Empty<DataItem>();
     }
 
     internal class DataItem
     {
+        [JsonPropertyName("id")]
         public int Id { get; set; }
-        public Attributes Attributes { get; set; }
+        [JsonPropertyName("attributes")]
+        public Attributes Attributes { get; set; } = new Attributes();
     }
 
     internal class Attributes
     {
         [JsonPropertyName("semanticVersion")]
-        public string SemanticVersion { get; set; }
+        public string SemanticVersion { get; set; } = string.Empty;
 
         [JsonPropertyName("versionTag")]
-        public string VersionTag { get; set; }
+        public string VersionTag { get; set; } = string.Empty;
     }
 }
