@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.Calculations
         public double P_sat_e { get; private set; }
         public SortedDictionary<double, double> LayerPsat { get; private set; } = new SortedDictionary<double, double>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P_sat in Pa
         public SortedDictionary<double, double> LayerP { get; private set; } = new SortedDictionary<double, double>(); // Key: Position in m from inner to outer side (0 m), Value: corresponding P in Pa
-        public new bool IsValid { get; private set; }
+        public new bool IsValid { get; private set; } = false;
 
         // (Instance-) Constructor
         public GlaserCalc() {}
@@ -53,6 +53,7 @@ namespace BauphysikToolWPF.Calculations
             }
             catch (Exception ex)
             {
+                IsValid = false;
                 Logger.LogError($"Error calculating Glaser values of Element: {Element}, {ex.Message}");
             }
         }

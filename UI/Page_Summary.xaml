@@ -29,25 +29,25 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="320"/>
-            <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
+            <ColumnDefinition Width="360" MaxWidth="440" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
         <Border Grid.ColumnSpan="2" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                     <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20" Margin="0,0,8,0"/>
                     <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
                     <Label Content="{Binding SelectedElement.Construction.TypeName}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding EditElementCommand}" Tag="{StaticResource ButtonIcon_Edit_B}" Margin="4"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -62,7 +62,7 @@
 
                 <Label Grid.Row="0" Content="Querschnitt" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
-                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True">
                     <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
                     <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
                     <Grid Margin="8">
@@ -76,6 +76,12 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform x:Name="Grid1ScaleTransform"/>
+                                <TranslateTransform x:Name="Grid1TranslateTransform"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
 
                         <!-- "Layers Canvas" -->
                         <controls:LayersCanvas x:Name="LayersCanvasCrossSection" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeCrossSection.Width}" Height="{Binding CanvasSizeCrossSection.Height}" DrawingGeometries="{Binding CrossSectionDrawing}"/>
@@ -97,7 +103,7 @@
         </Grid>
 
         <!--Vertical Cut Image-->
-        <Grid Grid.Column="0" Grid.Row="2" Margin="32,16,32,32">
+        <Grid Grid.Column="0" Grid.Row="2" Margin="32,16,32,32" >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -106,10 +112,16 @@
 
                 <Label Grid.Row="0" Content="Vertikalschnitt" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 
-                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" ClipToBounds="True">
                     <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
                     <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                    <Grid Margin="8">
+                    <Grid x:Name="ZoomableGrid2" Margin="280,8"
+                          MouseWheel="ZoomableGrid2_OnMouseWheel"
+                          MouseMove="ZoomableGrid2_OnMouseMove"
+                          MouseRightButtonDown="ZoomableGrid2_OnMouseRightButtonDown"
+                          MouseLeftButtonDown="ZoomableGrid2_OnMouseLeftButtonDown"
+                          MouseLeftButtonUp="ZoomableGrid2_OnMouseLeftButtonUp"
+                          RenderTransformOrigin="0.0,0.0">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="Auto"/>
@@ -119,6 +131,12 @@
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
+                        <Grid.RenderTransform>
+                            <TransformGroup>
+                                <ScaleTransform x:Name="Grid2ScaleTransform"/>
+                                <TranslateTransform x:Name="Grid2TranslateTransform"/>
+                            </TransformGroup>
+                        </Grid.RenderTransform>
 
                         <!-- "Layers Canvas" -->
                         <controls:LayersCanvas x:Name="LayersCanvasVerticalCut" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeVerticalCut.Width}" Height="{Binding CanvasSizeVerticalCut.Height}" DrawingGeometries="{Binding VerticalCutDrawing}"/>

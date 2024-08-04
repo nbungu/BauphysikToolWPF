@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.Repository
 
     public static class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
-        private static readonly string ConnectionString = DatabaseInstaller.GetInitialDatabase();
+        public static readonly string ConnectionString = DatabaseInstaller.GetInstalledDatabase();
         public static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
 
         //The subscriber class must register to LayerAdded event and handle it with the method whose signature matches Notify delegate

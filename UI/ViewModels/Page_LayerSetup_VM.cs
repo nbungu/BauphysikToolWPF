@@ -9,7 +9,6 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.UI.CustomControls;
 using MeasurementChain = BauphysikToolWPF.UI.Drawing.MeasurementChain;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -17,8 +16,6 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
     public partial class Page_LayerSetup_VM : ObservableObject
     {
-        public static string Title = "LayerSetup";
-
         private readonly CanvasDrawingService _drawingService = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
 
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
@@ -62,63 +59,75 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerWindow().ShowDialog();
+            new AddLayerWindow(editExsiting: false).ShowDialog();
         }
-
-        [RelayCommand]
-        private void AddSubConstructionLayer()
-        {
-           
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerSubConstructionWindow().ShowDialog();
-        }
-
         [RelayCommand]
         private void EditLayer()
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerWindow(!IsLayerSelected).ShowDialog();
+            new AddLayerWindow(editExsiting: IsLayerSelected).ShowDialog();
+        }
+
+        [RelayCommand]
+        private void AddSubConstructionLayer()
+        {
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            new AddLayerSubConstructionWindow(editExisting: false).ShowDialog();
+        }
+        [RelayCommand]
+        private void EditSubConstructionLayer()
+        {
+            // Once a window is closed, the same object instance can't be used to reopen the window.
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            new AddLayerSubConstructionWindow(editExisting: IsLayerSelected && SelectedListViewItem.HasSubConstructions).ShowDialog();
         }
 
         [RelayCommand]
         private void DeleteSubConstructionLayer()
         {
             UserSaved.SelectedLayer.RemoveSubConstruction();
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
         private void DeleteLayer()
         {
             UserSaved.SelectedElement.RemoveLayer(UserSaved.SelectedLayerId);
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
         }
         
         [RelayCommand]
         private void DuplicateLayer()
         {
             UserSaved.SelectedElement.DuplicateLayer(UserSaved.SelectedLayerId);
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
         private void MoveLayerDown()
         {
             UserSaved.SelectedElement.MoveLayerPositionToOutside(UserSaved.SelectedLayerId);
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
         private void MoveLayerUp()
         {
             UserSaved.SelectedElement.MoveLayerPositionToInside(UserSaved.SelectedLayerId);
-            UpdateBindingsAndRecalculateFlag();
+            UserSaved.OnSelectedLayerChanged();
+        }
+
+        [RelayCommand]
+        private void LayerDoubleClick()
+        {
+            if (SelectedListViewItem is null) return;
+            EditLayer();
         }
         
         // This method will be called whenever SelectedListViewItem changes
-        partial void OnSelectedListViewItemChanged(Layer value)
+        partial void OnSelectedListViewItemChanged(Layer? value)
         {
             if (value is null) return;
             UserSaved.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
@@ -157,27 +166,27 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))]
-        private static int _ti_Index; // As Static Class Variable to Save the Selection after Switching Pages!
+        private static int _tiIndex; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TeValue))]
-        private static int _te_Index;
+        private static int _teIndex;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RsiValue))]
-        private static int _rsi_Index;
+        private static int _rsiIndex;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RseValue))]
-        private static int _rse_Index;
+        private static int _rseIndex;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RelFiValue))]
-        private static int _rel_fi_Index;
+        private static int _relFiIndex;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RelFeValue))]
-        private static int _rel_fe_Index;
+        private static int _relFeIndex;
 
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
@@ -259,7 +268,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 // On custom user input
 
                 //Get corresp Value
-                double? value = (_ti_Index == -1) ? UserSaved.Ti : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Find(e => e.Comment == TiKeys[_ti_Index])?.Value;
+                double? value = (_tiIndex == -1) ? UserSaved.Ti : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Find(e => e.Comment == TiKeys[_tiIndex])?.Value;
                 // Save SessionData
                 UserSaved.Ti = value ?? 0.0;
                 // Return value to UIElement
@@ -270,77 +279,77 @@ namespace BauphysikToolWPF.UI.ViewModels
                 // Save custom user input
                 UserSaved.Ti = value;
                 // Changing ti_Index Triggers TiValue getter due to NotifyProperty
-                Ti_Index = -1;
+                TiIndex = -1;
             }
         }
         public double TeValue
         {
             get
             {
-                double? value = (_te_Index == -1) ? UserSaved.Te : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Find(e => e.Comment == TeKeys[_te_Index])?.Value;
+                double? value = (_teIndex == -1) ? UserSaved.Te : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Find(e => e.Comment == TeKeys[_teIndex])?.Value;
                 UserSaved.Te = value ?? 0.0;
                 return UserSaved.Te;
             }
             set
             {
                 UserSaved.Te = value;
-                Te_Index = -1;
+                TeIndex = -1;
             }
         }
         public double RsiValue
         {
             get
             {
-                double? value = (_rsi_Index == -1) ? UserSaved.Rsi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Comment == RsiKeys[_rsi_Index])?.Value;
+                double? value = (_rsiIndex == -1) ? UserSaved.Rsi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Comment == RsiKeys[_rsiIndex])?.Value;
                 UserSaved.Rsi = value ?? 0.0;
                 return UserSaved.Rsi;
             }
             set
             {
                 UserSaved.Rsi = value;
-                Rsi_Index = -1;
+                RsiIndex = -1;
             }
         }
         public double RseValue
         {
             get
             {
-                double? value = (_rse_Index == -1) ? UserSaved.Rse : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Comment == RseKeys[_rse_Index])?.Value;
+                double? value = (_rseIndex == -1) ? UserSaved.Rse : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Comment == RseKeys[_rseIndex])?.Value;
                 UserSaved.Rse = value ?? 0.0;
                 return UserSaved.Rse;
             }
             set
             {
                 UserSaved.Rse = value;
-                Rse_Index = -1;
+                RseIndex = -1;
             }
         }
         public double RelFiValue
         {
             get
             {
-                double? value = (_rel_fi_Index == -1) ? UserSaved.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Comment == RelFiKeys[_rel_fi_Index])?.Value;
+                double? value = (_relFiIndex == -1) ? UserSaved.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Comment == RelFiKeys[_relFiIndex])?.Value;
                 UserSaved.Rel_Fi = value ?? 0.0;
                 return UserSaved.Rel_Fi;
             }
             set
             {
                 UserSaved.Rel_Fi = value;
-                Rel_fi_Index = -1;
+                RelFiIndex = -1;
             }
         }
         public double RelFeValue
         {
             get
             {
-                double? value = (_rel_fe_Index == -1) ? UserSaved.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Comment == RelFeKeys[_rel_fe_Index])?.Value;
+                double? value = (_relFeIndex == -1) ? UserSaved.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Comment == RelFeKeys[_relFeIndex])?.Value;
                 UserSaved.Rel_Fe = value ?? 0.0;
                 return UserSaved.Rel_Fe;
             }
             set
             {
                 UserSaved.Rel_Fe = value;
-                Rel_fe_Index = -1;
+                RelFeIndex = -1;
             }
         }
 

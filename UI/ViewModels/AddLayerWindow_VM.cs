@@ -195,30 +195,28 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(MaterialProperties))]
         private Material? _selectedListViewItem;
 
-        [ObservableProperty]
-        private string _tab0Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
-
-        [ObservableProperty]
-        private string _tab1Header = $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
-
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
+        public string Tab0Header { get; set; } = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
+
+        public string Tab1Header { get; set; } = $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
+
         public List<IPropertyItem> MaterialProperties => SelectedListViewItem is null ? new List<IPropertyItem>() : new List<IPropertyItem>()
         {
-            new PropertyItem<string>("Materialbezeichnung", () => _selectedListViewItem.Name, value => _selectedListViewItem.Name = value),
-            new PropertyItem<double>(Symbol.ThermalConductivity, () => _selectedListViewItem.ThermalConductivity, value => _selectedListViewItem.ThermalConductivity = value),
-            new PropertyItem<int>(Symbol.RawDensity, () => _selectedListViewItem.BulkDensity, value => _selectedListViewItem.BulkDensity = value),
-            new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => _selectedListViewItem.SpecificHeatCapacity, value => _selectedListViewItem.SpecificHeatCapacity = value),
-            new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => _selectedListViewItem.DiffusionResistance, value => _selectedListViewItem.DiffusionResistance = value),
+            new PropertyItem<string>("Materialbezeichnung", () => SelectedListViewItem.Name, value => SelectedListViewItem.Name = value),
+            new PropertyItem<double>(Symbol.ThermalConductivity, () => SelectedListViewItem.ThermalConductivity, value => SelectedListViewItem.ThermalConductivity = value),
+            new PropertyItem<int>(Symbol.RawDensity, () => SelectedListViewItem.BulkDensity, value => SelectedListViewItem.BulkDensity = value),
+            new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => SelectedListViewItem.SpecificHeatCapacity, value => SelectedListViewItem.SpecificHeatCapacity = value),
+            new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => SelectedListViewItem.DiffusionResistance, value => SelectedListViewItem.DiffusionResistance = value),
             new PropertyItem<bool>("Material in Benutzung", () => IsUsedInLayer || IsUsedInSubConstr),
         };
 
         public List<Material> Materials => GetMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
         public bool AllowCreate => SelectedTabIndex == 1;
-        public bool EditSelectedLayer => !AddLayerWindow.AddNewLayer; // UserSaved.SelectedLayer != null && UserSaved.SelectedLayer.IsValid;
+        public bool EditSelectedLayer => AddLayerWindow.EditExistingLayer;
         public string ButtonText => EditSelectedLayer ? "Änderung übernehmen" : "Schicht hinzufügen";
         public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => l.MaterialId == SelectedListViewItem.Id);
         public bool IsUsedInSubConstr => DatabaseAccess.GetSubConstructionQuery().Any(s => s.MaterialId == SelectedListViewItem.Id);

@@ -35,6 +35,7 @@ namespace BauphysikToolWPF.Models.Helper
                 foreach (Layer layer in element.Layers)
                 {
                     if (layer.Material.Category == MaterialCategory.Air)
+
                         foundAirLayer = true;
                     layer.IsEffective = !foundAirLayer;
                     if (layer.HasSubConstructions) layer.SubConstruction.IsEffective = layer.IsEffective;
@@ -48,7 +49,6 @@ namespace BauphysikToolWPF.Models.Helper
             var copy = element.Layers.First(l => l.InternalId == targetLayerId).Copy();
             copy.LayerPosition = element.Layers.Count;
             copy.InternalId = element.Layers.Count;
-
             element.AddLayer(copy);
         }
 

@@ -75,6 +75,7 @@ namespace BauphysikToolWPF.Services
                 IsModified = false,
             };
             UserSaved.ProjectFilePath = "";
+            MainWindow.ShowToast("Neues Projekt erstellt!", ToastType.Success);
         }
 
         public static void WriteToConnectedDatabase(Project project)
@@ -86,6 +87,7 @@ namespace BauphysikToolWPF.Services
         {
             try
             {
+                Logger.LogInfo($"Start saving project to Database: {DatabaseAccess.ConnectionString}");
                 project.UpdateTimestamp();
                 DatabaseAccess.Database.Update(project);
 

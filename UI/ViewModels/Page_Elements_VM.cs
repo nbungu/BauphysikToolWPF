@@ -60,10 +60,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Delete selected Element
             UserSaved.SelectedProject.Elements.RemoveAll(e => e.InternalId == selectedInternalId);
-
             UserSaved.SelectedElementId = -1; // Reset SelectedElement
-
-            RefreshXamlBindings();
+            UserSaved.OnSelectedElementChanged();
         }
 
         [RelayCommand]
@@ -71,18 +69,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Delete all Elements
             UserSaved.SelectedProject.Elements.Clear();
-
             UserSaved.SelectedElementId = -1; // Reset SelectedElement
-
-            RefreshXamlBindings();
-        }
-
-        [RelayCommand]
-        private void SelectElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
-        {
-            UserSaved.SelectedElementId = selectedInternalId;
-            UserSaved.Recalculate = true;
-            RefreshXamlBindings();
+            UserSaved.OnSelectedElementChanged();
         }
 
         [RelayCommand]
@@ -91,7 +79,21 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElementId = selectedInternalId;
             UserSaved.SelectedProject.Elements.Add(UserSaved.SelectedElement.Copy());
             UserSaved.SelectedElementId = -1; // Reset SelectedElement
-            RefreshXamlBindings();
+            UserSaved.OnSelectedElementChanged();
+        }
+
+        [RelayCommand]
+        private void SelectElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        {
+            UserSaved.SelectedElementId = selectedInternalId;
+            UserSaved.Recalculate = true;
+            UserSaved.OnSelectedElementChanged(false);
+        }
+
+        [RelayCommand]
+        private void ElementDoubleClick()
+        {
+            SwitchPage(NavigationContent.LayerSetup);
         }
 
         // This method will be called whenever SortingPropertyIndex changes

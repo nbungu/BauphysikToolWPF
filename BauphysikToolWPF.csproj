@@ -5,7 +5,7 @@
     <UseWPF>true</UseWPF>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <WindowsPackageType>None</WindowsPackageType>
-    <ApplicationIcon>Ordner_Icon.ico</ApplicationIcon>
+    <ApplicationIcon>appicon-64-64.ico</ApplicationIcon>
 	  <Nullable>enable</Nullable>
 	  <UseWindowsForms>False</UseWindowsForms>
 	  <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
@@ -43,6 +43,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appicon-64-64.ico" />
+    <None Remove="appicon.ico" />
     <None Remove="Resources\Icons\add_element.png" />
     <None Remove="Resources\Icons\add_element_w.png" />
     <None Remove="Resources\Icons\add_layer.png" />
@@ -52,6 +54,7 @@
     <None Remove="Resources\Icons\align-bottom.png" />
     <None Remove="Resources\Icons\align-center.png" />
     <None Remove="Resources\Icons\align-top.png" />
+    <None Remove="Resources\Icons\appicon.png" />
     <None Remove="Resources\Icons\auge.png" />
     <None Remove="Resources\Icons\auge_w.png" />
     <None Remove="Resources\Icons\auge_zu.png" />
@@ -90,8 +93,12 @@
     <None Remove="Resources\Icons\export-pdf_w.png" />
     <None Remove="Resources\Icons\export.png" />
     <None Remove="Resources\Icons\export_w.png" />
+    <None Remove="Resources\Icons\favicon.png" />
     <None Remove="Resources\Icons\file-folder.png" />
+    <None Remove="Resources\Icons\Filetypes\btk.png" />
     <None Remove="Resources\Icons\Filetypes\cad.png" />
+    <None Remove="Resources\Icons\Filetypes\corrupt-file.png" />
+    <None Remove="Resources\Icons\Filetypes\database.png" />
     <None Remove="Resources\Icons\Filetypes\dmg.png" />
     <None Remove="Resources\Icons\Filetypes\doc.png" />
     <None Remove="Resources\Icons\Filetypes\file.png" />
@@ -111,6 +118,7 @@
     <None Remove="Resources\Icons\Flat\export-pdf.png" />
     <None Remove="Resources\Icons\Flat\external.png" />
     <None Remove="Resources\Icons\Flat\info.png" />
+    <None Remove="Resources\Icons\Flat\internet.png" />
     <None Remove="Resources\Icons\Flat\layer-temps.png" />
     <None Remove="Resources\Icons\Flat\layers.png" />
     <None Remove="Resources\Icons\Flat\linked-file.png" />
@@ -151,7 +159,6 @@
     <None Remove="Resources\Icons\office_w.png" />
     <None Remove="Resources\Icons\open_project.png" />
     <None Remove="Resources\Icons\open_project_w.png" />
-    <None Remove="Resources\Icons\Ordner_Icon.ico" />
     <None Remove="Resources\Icons\placeholder_256px.png" />
     <None Remove="Resources\Icons\placeholder_256px_light.png" />
     <None Remove="Resources\Icons\plus.png" />
@@ -184,6 +191,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="appicon-64-64.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include=".github\workflows\deploy-bauphysik-tool.yml" />
     <None Include="Resources\Dump.xaml" />
   </ItemGroup>
@@ -191,6 +202,7 @@
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc2" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
     <PackageReference Include="SQLiteNetExtensions" Version="2.1.0" />
@@ -210,6 +222,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="appicon-64-64.ico" />
+    <Resource Include="appicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Icons\add_element.png" />
     <Resource Include="Resources\Icons\add_element_w.png" />
     <Resource Include="Resources\Icons\add_layer.png" />
@@ -219,6 +235,7 @@
     <Resource Include="Resources\Icons\align-bottom.png" />
     <Resource Include="Resources\Icons\align-center.png" />
     <Resource Include="Resources\Icons\align-top.png" />
+    <Resource Include="Resources\Icons\appicon.png" />
     <Resource Include="Resources\Icons\auge.png" />
     <Resource Include="Resources\Icons\auge_w.png" />
     <Resource Include="Resources\Icons\auge_zu.png" />
@@ -228,7 +245,11 @@
     <Resource Include="Resources\Icons\bookmark.png" />
     <Resource Include="Resources\Icons\comment.png" />
     <Resource Include="Resources\Icons\comment_bold.png" />
+    <Resource Include="Resources\Icons\favicon.png" />
+    <Resource Include="Resources\Icons\Filetypes\btk.png" />
     <Resource Include="Resources\Icons\Filetypes\cad.png" />
+    <Resource Include="Resources\Icons\Filetypes\corrupt-file.png" />
+    <Resource Include="Resources\Icons\Filetypes\database.png" />
     <Resource Include="Resources\Icons\Filetypes\dmg.png" />
     <Resource Include="Resources\Icons\Filetypes\doc.png" />
     <Resource Include="Resources\Icons\Filetypes\file.png" />
@@ -247,6 +268,7 @@
     <Resource Include="Resources\Icons\Flat\error.png" />
     <Resource Include="Resources\Icons\Flat\export-pdf.png" />
     <Resource Include="Resources\Icons\Flat\info.png" />
+    <Resource Include="Resources\Icons\Flat\internet.png" />
     <Resource Include="Resources\Icons\Flat\layer-temps.png" />
     <Resource Include="Resources\Icons\Flat\layers.png" />
     <Resource Include="Resources\Icons\Flat\linked-file.png" />
@@ -260,7 +282,6 @@
     <Resource Include="Resources\Icons\Flat\user.png" />
     <Resource Include="Resources\Icons\Flat\warning.png" />
     <Resource Include="Resources\Icons\Flat\water-drop.png" />
-    <Resource Include="Resources\Icons\Ordner_Icon.ico" />
     <Resource Include="Resources\Icons\placeholder_256px.png" />
     <Resource Include="Resources\Icons\delete-2.png" />
     <Resource Include="Resources\Icons\edit.png" />
@@ -348,13 +369,16 @@
     <Compile Update="UI\AddLayerSubConstructionWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="UI\TestWindow.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="btk.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Repository\InitialDB.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Services\updater.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -364,9 +388,6 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Update="UI\AddLayerSubConstructionWindow.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UI\TestWindow.xaml">
       <SubType>Designer</SubType>
     </Page>
   </ItemGroup>

@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
 using System.IO;
@@ -18,11 +19,15 @@ namespace BauphysikToolWPF
         {
             base.OnStartup(e);
 
-            Logger.SetLogFilePath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "bauphysikTool.log"));
+            string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
+            string logFilePath = Path.Combine(appFolder, "bauphysikTool.log");
+            Logger.SetLogFilePath(logFilePath);
+            Logger.ClearLog();
 
             if (e.Args.Length > 0)
             {
-                Logger.LogInfo($"Opened Application with Arguments: {e.Args}");
+                Logger.LogInfo($"Opening Application with Arguments: {e.Args}");
 
                 string filePath = e.Args[0];
                 if (File.Exists(filePath))
@@ -51,6 +56,14 @@ namespace BauphysikToolWPF
                 UserSaved.SelectedProject = DatabaseAccess.QueryProjectById(1);
                 Logger.LogInfo($"Loaded Project: '{UserSaved.SelectedProject}' from Database!");
             }
+        }
+
+        protected override void OnExit(ExitEventArgs e)
+        {
+            Logger.LogInfo($"Checking for Updates...");
+            Updater.CheckForUpdates();
+
+            Logger.LogInfo($"Closing Application with ExitCode: {e.ApplicationExitCode}");
         }
 
         // cmd test:

@@ -29,7 +29,13 @@ namespace BauphysikToolWPF.UI.CustomControls
 
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
+            if (sender is TextBox textBox)
+            {
+                var propertyItem = textBox.DataContext as IPropertyItem ?? null;
+                var type = propertyItem?.Value.GetType();
+                if (type is null) return;
+                if (type == typeof(double) || type == typeof(int)) e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
+            }
         }
 
         private void TextBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

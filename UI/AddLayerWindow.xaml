@@ -1,4 +1,5 @@
 ﻿<Window x:Class="BauphysikToolWPF.UI.AddLayerWindow"
+        x:Name="AddLayerWindowControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -90,7 +91,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="160" MaxWidth="480"/>
             <ColumnDefinition Width=".50*" MinWidth="200"/>
-            <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
+            <ColumnDefinition Width="360" MaxWidth="440" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
         <!--Left Column: Material Category-->
@@ -141,22 +142,21 @@
             <Label Content="Material Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="4,0,0,8">
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}"
-                        Background="{StaticResource PrimaryHighlightBrush}"
+                <Button Style="{StaticResource ButtonStyle01_Mini_Highlighted}"
                         Command="{Binding CreateMaterialCommand}"
                         Tag="{StaticResource ButtonIcon_Add_W}"
                         IsEnabled="{Binding AllowCreate}"
                         Margin="0,0,8,0"
                         ToolTip="Eigenes Material erstellen"/>
-                <Button Style="{StaticResource ButtonStyle03_B_Icon}"
+                <Button Style="{StaticResource ButtonStyle01_Mini}"
                         Command="{Binding DeleteMaterialCommand}"
                         Tag="{StaticResource ButtonIcon_Delete_B}"
                         Margin="0,0,8,0"
                         IsEnabled="{Binding AllowDelete}"
                         ToolTip="Material löschen"/>
                 <TextBox Text="{Binding SearchString}" TextAlignment="Left" Background="{StaticResource SecondaryLightBlueBrush}" MaxLength="320" Width="240" Margin="0,0,8,0"/>
-                <Button Tag="{StaticResource ButtonIcon_Cancel_B}" Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding ResetMaterialListCommand}" Margin="-40,0,8,0"/>
-                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle03_Mini}" Margin="0,0,8,0"/>
+                <Button Tag="{StaticResource ButtonIcon_Cancel_B}" Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding ResetMaterialListCommand}" Margin="-40,0,8,0"/>
+                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle01_Mini}" Margin="0,0,8,0"/>
 
             </StackPanel>
 
@@ -199,8 +199,8 @@
                     Content="{Binding ButtonText}"
                     VerticalAlignment="Bottom"
                     Command="{Binding ApplyChangesCommand}"
-                    CommandParameter="{Binding ElementName=AddLayerSubConstructionWindowControl}"
-                    Style="{StaticResource ButtonStyle03_A}"
+                    CommandParameter="{Binding ElementName=AddLayerWindowControl}"
+                    Style="{StaticResource ButtonStyle01_Highlighted}"
                     Tag="{StaticResource ButtonIcon_AddLayer_W}"/>
         </Grid>
 

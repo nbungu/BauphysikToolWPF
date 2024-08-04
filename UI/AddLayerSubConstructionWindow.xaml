@@ -9,10 +9,10 @@
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
         mc:Ignorable="d"
-        Title="AddLayerSubConstructionWindow"
+        Title="{Binding Title}"
         Background="{StaticResource PrimaryLightBrush}"
-        Height="488"
-        Width="880">
+        Height="480"
+        Width="1060">
 
     <Window.DataContext>
         <!-- AddLayerSubConstructionWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
@@ -21,7 +21,18 @@
     
     <Window.Resources>
 
-       <GridView x:Key="CategoryGridViewColumns" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
+        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+        <controls:CategoryEnumToStringConverter x:Key="CategoryEnumToStringConverter" />
+
+        <Style x:Key="InvisibleHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+
+        <GridView x:Key="CategoryGridViewColumns" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource InvisibleHeaderStyle}">
+            <!--Here: Binding source are Items from the ItemsSource Property-->
+            <GridViewColumn DisplayMemberBinding="{Binding }" Header="Name" Width="Auto"/>
+        </GridView>
+        <GridView x:Key="CategoryGridViewColumns2" AllowsColumnReorder="false" ColumnHeaderContainerStyle="{StaticResource InvisibleHeaderStyle}">
             <!--Here: Binding source are Items from the ItemsSource Property-->
             <GridViewColumn DisplayMemberBinding="{Binding }" Header="Name" Width="Auto"/>
         </GridView>
@@ -30,13 +41,6 @@
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="CategoryTypeValues">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="models:MaterialCategory"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-
-        <!--populate the items of a ComboBox with all elements from an enum-->
-        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="ConstructionDirectionTypeValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="models:SubConstructionDirection"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
@@ -51,7 +55,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="160" MaxWidth="480"/>
             <ColumnDefinition Width=".55*" MinWidth="200"/>
-            <ColumnDefinition Width=".25*" MinWidth="160" MaxWidth="480"/>
+            <ColumnDefinition Width="360" MaxWidth="440" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
         <!--Left Column: Material Category-->
@@ -63,13 +67,28 @@
 
             <Label Content="Kategorie" FontWeight="Bold" HorizontalAlignment="Left"/>
 
-            <ListView x:Name="CategoryListView"
-                      ItemsSource="{Binding Source={StaticResource CategoryTypeValues}}"
-                      View="{StaticResource CategoryGridViewColumns}"
-                      ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
-                      SelectedItem="{Binding SelectedCategory}"
-                      Style="{StaticResource ListViewStyle01}"
-                      Grid.Row="1"/>
+            <TabControl Grid.Row="1" Height="Auto" Width="Auto" SelectedIndex="{Binding SelectedTabIndex}">
+                <TabItem Header="{Binding Tab0Header}" Tag="{StaticResource ButtonIcon_Database_Flat}" Padding="8">
+                    <ListView Name="CategoryListView"
+                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
+                              View="{StaticResource CategoryGridViewColumns}"
+                              ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
+                              SelectedIndex="{Binding SelectedCategoryIndex}"
+                              Style="{StaticResource ListViewStyle01}"
+                              BorderThickness="0"
+                              Margin="-2"/>
+                </TabItem>
+                <TabItem Header="{Binding Tab1Header}" Tag="{StaticResource ButtonIcon_User_Flat}"  Padding="8">
+                    <ListView Name="CategoryListViewCustom"
+                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
+                              View="{StaticResource CategoryGridViewColumns2}"
+                              ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
+                              SelectedIndex="{Binding SelectedCategoryIndex}"
+                              Style="{StaticResource ListViewStyle01}"
+                              BorderThickness="0"
+                              Margin="-2"/>
+                </TabItem>
+            </TabControl>
         </Grid>
 
         <!--Grid Splitter-->
@@ -86,15 +105,14 @@
             <Label Content="Material" FontWeight="Bold" HorizontalAlignment="Left"/>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,8">
-                <TextBox Text="{Binding SearchString}" TextAlignment="Left" MaxLength="320" Width="320" Margin="0,0,8,0"/>
-                <Button Tag="{StaticResource ButtonIcon_Cancel_B}" Style="{StaticResource ButtonStyle03_IconMini}" Command="{Binding ResetMaterialListCommand}" Margin="-40,0,8,0"/>
-                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle03_Mini}" Margin="0,0,8,0"/>
+                <TextBox Text="{Binding SearchString}" Background="{StaticResource SecondaryLightBlueBrush}" TextAlignment="Left" MaxLength="320" Width="320" Margin="0,0,8,0"/>
+                <Button Tag="{StaticResource ButtonIcon_Cancel_B}" Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding ResetMaterialListCommand}" Margin="-40,0,8,0"/>
+                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle01_Mini}" Margin="0,0,8,0"/>
             </StackPanel>
 
             <controls:MaterialsListView Grid.Row="2" Materials="{Binding Materials}" SelectedMaterial="{Binding SelectedListViewItem, Mode=TwoWay}"/>
 
         </Grid>
-
 
         <!--Grid Splitter-->
         <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="3" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
@@ -112,10 +130,10 @@
         </Grid>
 
         <Grid Grid.Column="2" Grid.Row="2" Margin="16,8,8,8">
-            <Button Content="Übernehmen"
+            <Button Content="{Binding ButtonText}"
                     Command="{Binding AddSubConstructionLayerCommand}"
                     CommandParameter="{Binding ElementName=AddLayerSubConstructionWindowControl}"
-                    Style="{StaticResource ButtonStyle03_A}"
+                    Style="{StaticResource ButtonStyle01_Highlighted}"
                     Tag="{StaticResource ButtonIcon_AddLayer_W}"/>
         </Grid>
 

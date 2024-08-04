@@ -3,8 +3,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              mc:Ignorable="d"
              d:DesignHeight="320"
              d:DesignWidth="640"
@@ -13,10 +13,10 @@
     <UserControl.Resources>
 
         <!--
-https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
-https://github.com/mochan-b/GridViewCellFormatting
-Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD of ItemTemplate
--->
+        https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
+        https://github.com/mochan-b/GridViewCellFormatting
+        Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD of ItemTemplate
+        -->
         <GridView x:Key="LayerGridViewColumns" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
             <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
             <GridViewColumn Header="Pos." Width="Auto">
@@ -75,8 +75,8 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                                                 </Style>
                                             </Label.Style>
                                         </Label>
-                                        <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
-                                        <Button x:Name="DeleteButtonBalkenlage" HorizontalAlignment="Left" Content="Entfernen" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}" Margin="8,0,0,0"/>
+                                        <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.EditSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                                        <Button x:Name="DeleteButtonBalkenlage" HorizontalAlignment="Left" Content="Entfernen" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" Margin="8,0,0,0"/>
                                     </StackPanel>
 
                                 </StackPanel>
@@ -129,6 +129,12 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
             ItemContainerStyle="{StaticResource LayerItemContainerStyle}"
             Tag="{Binding}"
             SelectedItem="{Binding SelectedLayer, ElementName=LayersListViewControl, Mode=TwoWay}">
+            <!-- EventToCommand behavior to bind the double-click event to the command-->
+            <i:Interaction.Triggers>
+                <i:EventTrigger EventName="MouseDoubleClick">
+                    <i:InvokeCommandAction Command="{Binding LayerDoubleClickCommand}" />
+                </i:EventTrigger>
+            </i:Interaction.Triggers>
             <!--ItemContainerStyle: Defines the style and behavior of the ListViewItem container itself. This can include properties like margins, padding, selection styles, and triggers based on the ListViewItem state.-->
             <!--ItemTemplate: Defines how the CONTENT of each ListViewItem is displayed. It specifies the visual structure and data bindings for the item content.-->
 
@@ -137,17 +143,17 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                     <!-- ContextMenu isn't a part of the visual tree of this page -> DataContext is not available.
                     Need to pass the data context in a different way, using PlacementTarget and the Tag property to expose the DataBinding (FO1_ViewModel).
                     The Tag Property can be used to hold any kind of user specified Data.-->
-                    <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Header="Bearbeiten" Command="{Binding Path=PlacementTarget.Tag.EditLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Icon>
                             <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Header="Duplizieren" Command="{Binding Path=PlacementTarget.Tag.DuplicateLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Icon>
                             <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
-                    <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Icon>
                             <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
                         </MenuItem.Icon>
@@ -155,23 +161,40 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
 
                     <Separator Margin="-30,4,0,4" Padding="0" HorizontalAlignment="Stretch" BorderThickness="0.6" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
 
-                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Style>
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage hinzufügen" />
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstructions, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
-                                        <Setter Property="Header" Value="Balkenlage bearbeiten" />
+                                        <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </MenuItem.Style>
                         <MenuItem.Icon>
-                            <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
+                            <Image Source="{StaticResource ButtonIcon_Add_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
 
-                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.EditSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                        <MenuItem.Style>
+                            <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
+                                <Setter Property="Header" Value="Balkenlage bearbeiten" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstructions, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </MenuItem.Style>
+                        <MenuItem.Icon>
+                            <Image Source="{StaticResource ButtonIcon_Edit_B}"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Style>
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage löschen" />
@@ -183,7 +206,7 @@ Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD o
                             </Style>
                         </MenuItem.Style>
                         <MenuItem.Icon>
-                            <Image Source="{StaticResource ButtonIcon_Copy_B}"/>
+                            <Image Source="{StaticResource ButtonIcon_Delete_B}"/>
                         </MenuItem.Icon>
                     </MenuItem>
                 </ContextMenu>

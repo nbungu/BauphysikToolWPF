@@ -19,6 +19,7 @@ namespace BauphysikToolWPF.Calculations
         public double Tsi { get; private set; }
         public double Tse { get; private set; }
         public SortedDictionary<double, double> LayerTemps { get; private set; } = new SortedDictionary<double, double>(); // Key: Position in cm from inner to outer side (0 cm), Value: corresponding Temperature in °C
+        public new bool IsValid { get; private set; } = false;
 
         // Constructors
         public TemperatureCurveCalc() : base() {}
@@ -60,10 +61,12 @@ namespace BauphysikToolWPF.Calculations
                 LayerTemps = tempList;
                 Tsi = tsi;
                 Tse = LayerTemps.Last().Value;
+                IsValid = true;
                 Logger.LogInfo($"Successfully calculated Layer Temparatures of Element: {Element}");
             }
             catch (Exception ex)
             {
+                IsValid = false;
                 Logger.LogError($"Error calculating Layer Temparatures of Element: {Element}, {ex.Message}");
             }
 

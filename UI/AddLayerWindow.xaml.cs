@@ -11,11 +11,11 @@ namespace BauphysikToolWPF.UI
     public partial class AddLayerWindow : Window
     {
         private static ToastNotification? _toastNotification;
-        public static bool AddNewLayer;
+        public static bool EditExistingLayer;
 
-        public AddLayerWindow(bool addNew = true)
+        public AddLayerWindow(bool editExsiting = false)
         {
-            AddNewLayer = addNew;
+            EditExistingLayer = editExsiting;
 
             InitializeComponent();
             _toastNotification = this.Toast;

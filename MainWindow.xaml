@@ -61,9 +61,6 @@
         <DataTemplate x:Key="FO4_Dynamic">
             <ui:Page_DynamicResults/>
         </DataTemplate>
-        <DataTemplate x:Key="TestWindow">
-            <ui:TestWindow/>
-        </DataTemplate>
 
         <!--Content Pages on right side-->
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
@@ -95,9 +92,6 @@
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Dynamic">
                     <Setter Property="ContentTemplate" Value="{StaticResource FO4_Dynamic}"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Test">
-                    <Setter Property="ContentTemplate" Value="{StaticResource TestWindow}"/>
-                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -114,7 +108,6 @@
             <system:String>Temperature</system:String> <!--SelectedIndex: 4-->
             <system:String>Moisture</system:String>    <!--SelectedIndex: 5-->
             <system:String>Dynamic</system:String>    <!--SelectedIndex: 6-->
-            <system:String>Test</system:String>
         </x:Array>
 
         <!--NavigationMenu ListBox appearance: Used in ListBox as Style -->
@@ -258,10 +251,6 @@
                 <DataTrigger Binding="{Binding}" Value="Dynamic">
                     <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Dynamic_Flat}"/>
                     <Setter TargetName="MenuItemLabel" Property="Content" Value="Dynamic"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding}" Value="Test">
-                    <Setter TargetName="MenuItemIcon" Property="Source" Value="{StaticResource ButtonIcon_Hide_W}"/>
-                    <Setter TargetName="MenuItemLabel" Property="Content" Value="Test"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -438,19 +427,21 @@
                 <!-- Main Grid for Content -->
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            
-            <!-- Title bar -->
-            <Grid Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Top">
+
+           <!-- Title bar -->
+            <Grid Grid.Row="0" Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Top">
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <Image Source="{StaticResource AppIcon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4"/>
-                    <Label Content="BauphysikTool v0.1.0" FontSize="12" VerticalAlignment="Center" Margin="0,0,32,0"/>
+                    <Image Source="{StaticResource Favicon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4"/>
+                    <Label Content="{Binding VersionString}" FontSize="12" VerticalAlignment="Center" Margin="0,0,32,0"/>
                     <Button ToolTip="Neues Projekt" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Command="{Binding NewCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt speichern unter" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Command="{Binding SaveToCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt öffnen" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Command="{Binding OpenCommand}" Margin="4,0"/>
-                    <Label Content="{Binding Title}" FontSize="12" VerticalAlignment="Center" Margin="64,0"/>
+                    <Button ToolTip="Programm Infos" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Info_Flat}" Command="{Binding ShowInfoCommand}" Margin="4,0"/>
                 </StackPanel>
+
+                <Label Content="{Binding Title}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16,0"/>
 
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Click="MinimizeCommand" RenderOptions.EdgeMode="Aliased" Style="{StaticResource TitleBarButtonStyle}">
@@ -512,8 +503,8 @@
                             <Label Content="Projekt:" Foreground="White" Margin="-4"/>
                             <TextBlock Text="{Binding ProjectName}" MaxWidth="152" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="14"/>
                         </StackPanel>
-                        <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_House_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
-                        <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle03_B}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
+                        <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_House_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
+                        <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
                     </Grid>
                 </Border>
 

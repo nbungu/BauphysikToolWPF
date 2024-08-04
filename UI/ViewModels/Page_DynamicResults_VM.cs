@@ -23,22 +23,27 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private static DynamicTempCalc _dynamicTempCalc;
+        private static DynamicTempCalc _dynamicTempCalc = new DynamicTempCalc();
         private readonly CanvasDrawingService _drawingServiceV = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
 
         public Page_DynamicResults_VM()
         {
-            if (_dynamicTempCalc != null && !UserSaved.Recalculate) return;
-            _dynamicTempCalc = new DynamicTempCalc()
+            // Allow other UserControls to trigger RefreshXamlBindings of this Window
+            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+
+            if (!_dynamicTempCalc.IsValid || UserSaved.Recalculate)
             {
-                Element = UserSaved.SelectedElement,
-                Rsi = UserSaved.Rsi,
-                Rse = UserSaved.Rse,
-                Ti = UserSaved.Ti,
-                Te = UserSaved.Te
-            };
-            _dynamicTempCalc.CalculateHomogeneous();
-            _dynamicTempCalc.CalculateDynamicValues();
+                _dynamicTempCalc = new DynamicTempCalc()
+                {
+                    Element = UserSaved.SelectedElement,
+                    Rsi = UserSaved.Rsi,
+                    Rse = UserSaved.Rse,
+                    Ti = UserSaved.Ti,
+                    Te = UserSaved.Te
+                };
+                _dynamicTempCalc.CalculateHomogeneous();
+                _dynamicTempCalc.CalculateDynamicValues();
+            }
         }
 
         /*
@@ -59,9 +64,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new AddElementWindow().ShowDialog();
-
-            // Update XAML Binding Property by fetching from DB
-            OnPropertyChanged(nameof(SelectedElement));
         }
 
         /*
@@ -118,6 +120,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Axis[] YAxes_i => DrawYAxes();
 
         public Axis[] YAxes_e => DrawYAxes("right");
+
+        /*
+         * private Methods
+         */
+
+        private void RefreshXamlBindings()
+        {
+            OnPropertyChanged(nameof(SelectedElement));
+        }
 
         private ISeries[] GetDataPoints_e()
         {
