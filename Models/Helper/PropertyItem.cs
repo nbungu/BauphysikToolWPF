@@ -216,6 +216,7 @@ namespace BauphysikToolWPF.Models.Helper
 
         //------Not part of the Database-----//
         public bool IsReadonly { get; set; } = true;
+        public int DecimalPlaces { get; set; } = 2;
         public bool TriggerPropertyChanged { get; set; } = true;
         public object[] PropertyValues { get; set; } = Array.Empty<object>();
         public string SymbolBaseText { get; set; } = string.Empty;

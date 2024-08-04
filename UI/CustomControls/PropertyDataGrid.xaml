@@ -13,7 +13,7 @@
 
     <UserControl.Resources>
 
-        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+        <controls:DoubleWithDecimalPlacesConverter x:Key="DoubleWithDecimalPlacesConverter"/>
 
         <!-- 
 
@@ -254,11 +254,16 @@
                                                     <TextBox x:Name="DynamicTextBox"
                                                              Grid.Column="0"
                                                              FontWeight="Normal"
-                                                             Text="{Binding Value, Converter={StaticResource DoubleToStringConverter}}"
                                                              Style="{StaticResource DataGridTextBox}"
                                                              IsReadOnly="{Binding IsReadonly}"
                                                              LostKeyboardFocus="TextBox_LostKeyboardFocus"
                                                              PreviewTextInput="numericData_PreviewTextInput">
+                                                        <TextBox.Text>
+                                                            <MultiBinding Converter="{StaticResource DoubleWithDecimalPlacesConverter}">
+                                                                <Binding Path="Value" />
+                                                                <Binding Path="DecimalPlaces" />
+                                                            </MultiBinding>
+                                                        </TextBox.Text>
                                                     </TextBox>
                                                     <controls:FractionLabel Grid.Column="1"
                                                                             CounterText="{Binding UnitCounterText}"

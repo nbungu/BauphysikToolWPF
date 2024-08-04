@@ -7,11 +7,9 @@
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         mc:Ignorable="d"
         Title="{Binding Title}"
-        ResizeMode="CanResizeWithGrip"
-        Width="320"
-        MinWidth="220"
-        MaxWidth="480"
-        MinHeight="80"
+        ResizeMode="NoResize"
+        Width="360"
+        Height="Auto"
         WindowStartupLocation="CenterOwner"        
         ShowInTaskbar="False"
         WindowStyle="ToolWindow"
@@ -31,15 +29,15 @@
         <Label Content="{Binding ProgramVersion}"/>
         <Label Content="{Binding LatestProgramVersion}"/>
         <Label Content="{Binding ServerStatus}"/>
-        <Label Content="Neue Versionen downloaden und Infos unter:"  Margin="0,16,0,0"/>
+        <Label Content="Neue Versionen und Infos unter:"  Margin="0,16,0,0"/>
         <Button Content="{Binding Website}" HorizontalAlignment="Center" Padding="8,0" Tag="{StaticResource ButtonIcon_Internet_Flat}" Style="{StaticResource ButtonStyle01_Transparent}" Foreground="Blue" Command="{Binding OpenWebsiteCommand}" CommandParameter="{Binding ElementName=InfoWindowControl}"/>
 
         <Separator BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="2" Margin="0,16"/>
         <Label Content="Rechte Dritter:" FontWeight="DemiBold" HorizontalAlignment="Left"/>
-        <Label Content="Free Icons: UIcons created by Flaticon" HorizontalAlignment="Left"/>
-        <Label Content="Free Icons created by juicy_fish - Flaticon" HorizontalAlignment="Left"/>
-        <Label Content="Free Icons created by Dimitry Miroliubov - Flaticon" HorizontalAlignment="Left"/>
-        <Label Content="Free Icons created by srip - Flaticon" HorizontalAlignment="Left"/>
+        <Label Content="Free Icons: UIcons created by Flaticon.com" HorizontalAlignment="Left"/>
+        <Label Content="Free Icons created by juicy_fish - Flaticon.com" HorizontalAlignment="Left"/>
+        <Label Content="Free Icons created by Dimitry Miroliubov - Flaticon.com" HorizontalAlignment="Left"/>
+        <Label Content="Free Icons created by srip - Flaticon.com" HorizontalAlignment="Left"/>
         <Label Content="LiveChartsCore created by BetoRodriguez" HorizontalAlignment="Left"/>
 
         <Separator BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="2" Margin="0,16"/>

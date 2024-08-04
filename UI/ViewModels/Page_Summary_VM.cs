@@ -89,12 +89,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public List<IPropertyItem> EnvironmentProperties => new List<IPropertyItem>
         {
-            new PropertyItem<double>(Symbol.TemperatureInterior, () => UserSaved.Ti),
-            new PropertyItem<double>(Symbol.TemperatureExterior, () => UserSaved.Te),
+            new PropertyItem<double>(Symbol.TemperatureInterior, () => UserSaved.Ti) { DecimalPlaces = 1},
+            new PropertyItem<double>(Symbol.TemperatureExterior, () => UserSaved.Te) { DecimalPlaces = 1},
             new PropertyItem<double>(Symbol.TransferResistanceSurfaceInterior, () => UserSaved.Rsi),
             new PropertyItem<double>(Symbol.TransferResistanceSurfaceExterior, () => UserSaved.Rse),
-            new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => UserSaved.Rel_Fi),
-            new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => UserSaved.Rel_Fe),
+            new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => UserSaved.Rel_Fi) { DecimalPlaces = 1},
+            new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => UserSaved.Rel_Fe) { DecimalPlaces = 1},
         };
 
         private void RefreshXamlBindings()
