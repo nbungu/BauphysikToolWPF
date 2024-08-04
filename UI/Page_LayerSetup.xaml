@@ -56,7 +56,7 @@
         <Grid Grid.Row="1" Margin="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height=".55*" MinHeight="240"/>
-                <RowDefinition Height=".45*" MinHeight="240"/>
+                <RowDefinition Height=".45*" MinHeight="160"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="320"/>
@@ -64,7 +64,7 @@
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
-            <Grid Grid.Row="0" Grid.Column="0" Margin="16">
+            <Grid Grid.Row="0" Grid.Column="0" Margin="16,16,16,8">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
@@ -182,12 +182,12 @@
 
             </Grid>
 
-            <!-- GridSplitter - Horizontal
-            <GridSplitter Grid.Row="1" Grid.Column="0" Height="6" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyle}" />
-            -->
+            <!--GridSplitter - Horizontal-->
+            <GridSplitter Grid.Row="1" Grid.Column="0" Height="6" Margin="16, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
+            
 
             <!--Image-->
-            <Grid Grid.Column="0" Grid.Row="1" Margin="16,0,16,16">
+            <Grid Grid.Column="0" Grid.Row="1" Margin="16,8,16,16">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
