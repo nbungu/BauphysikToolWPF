@@ -1,5 +1,5 @@
 ﻿<Window x:Class="BauphysikToolWPF.UI.AddElementWindow"
-        x:Name="Window"
+        x:Name="AddElementWindowControl"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -163,6 +163,6 @@
             <Label Content="Kommentar" HorizontalAlignment="Left"/>
             <TextBox TextAlignment="Left" Text="{Binding SelectedElementComment}" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="800"/>
         </StackPanel>
-        <Button Margin="0,8,0,0" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=Window}" Style="{StaticResource ButtonStyle02_Highlighted}"/>
+        <Button Margin="0,8,0,0" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=AddElementWindowControl}" Style="{StaticResource ButtonStyle02_Highlighted}"/>
     </StackPanel>
 </Window>

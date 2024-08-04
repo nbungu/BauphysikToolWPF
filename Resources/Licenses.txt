@@ -14,4 +14,4 @@ JuicyFish Flat Style
 <a href="https://www.flaticon.com/free-icons/save" title="save icons">Save icons created by juicy_fish - Flaticon</a>
 
 
-NuGet Packages	
+NuGet Packages

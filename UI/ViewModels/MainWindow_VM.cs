@@ -114,6 +114,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
 
+        [RelayCommand]
+        private void ShowInfo()
+        {
+            new InfoWindow().ShowDialog();
+        }
+
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend

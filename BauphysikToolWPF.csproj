@@ -118,6 +118,7 @@
     <None Remove="Resources\Icons\Flat\export-pdf.png" />
     <None Remove="Resources\Icons\Flat\external.png" />
     <None Remove="Resources\Icons\Flat\info.png" />
+    <None Remove="Resources\Icons\Flat\internet.png" />
     <None Remove="Resources\Icons\Flat\layer-temps.png" />
     <None Remove="Resources\Icons\Flat\layers.png" />
     <None Remove="Resources\Icons\Flat\linked-file.png" />
@@ -267,6 +268,7 @@
     <Resource Include="Resources\Icons\Flat\error.png" />
     <Resource Include="Resources\Icons\Flat\export-pdf.png" />
     <Resource Include="Resources\Icons\Flat\info.png" />
+    <Resource Include="Resources\Icons\Flat\internet.png" />
     <Resource Include="Resources\Icons\Flat\layer-temps.png" />
     <Resource Include="Resources\Icons\Flat\layers.png" />
     <Resource Include="Resources\Icons\Flat\linked-file.png" />

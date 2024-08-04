@@ -438,7 +438,7 @@
                     <Button ToolTip="Projekt speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt speichern unter" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Command="{Binding SaveToCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt öffnen" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Command="{Binding OpenCommand}" Margin="4,0"/>
-                    <Button ToolTip="Programm Infos" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Info_Flat}" Margin="4,0"/>
+                    <Button ToolTip="Programm Infos" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Info_Flat}" Command="{Binding ShowInfoCommand}" Margin="4,0"/>
                 </StackPanel>
 
                 <Label Content="{Binding Title}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16,0"/>

@@ -126,6 +126,7 @@
         <BitmapImage x:Key="ButtonIcon_ExportPdf_Flat" UriSource="/Resources/Icons/Flat/export-pdf.png"/>
         <BitmapImage x:Key="ButtonIcon_OpenFile_Flat" UriSource="/Resources/Icons/Flat/open-file.png"/>
         <BitmapImage x:Key="ButtonIcon_LinkedFile_Flat" UriSource="/Resources/Icons/Flat/linked-file.png"/>
+        <BitmapImage x:Key="ButtonIcon_Internet_Flat" UriSource="/Resources/Icons/Flat/internet.png"/>
 
         <!--Filetypes by https://www.flaticon.com/authors/Dimitry-Miroliubov -->
         <BitmapImage x:Key="FiletypeIcon_CAD" UriSource="/Resources/Icons/Filetypes/cad.png"/>
@@ -806,6 +807,7 @@
         <Style x:Key="ButtonStyle05_Tag" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value="Tag Name"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Foreground" Value="Black"/>
@@ -817,7 +819,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border CornerRadius="16" Background="{TemplateBinding Background}">
+                        <Border CornerRadius="16" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
                             <StackPanel Orientation="Horizontal">
                                 <!--Bind Image via DataContext Property in the Button Element-->
                                 <Label Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
@@ -842,6 +844,7 @@
             <!--Set default properties of the button-->
             <Setter Property="Content" Value="Tag Name"/>
             <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Height" Value="32"/>
@@ -852,7 +855,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
-                        <Border CornerRadius="16" Background="{TemplateBinding Background}">
+                        <Border CornerRadius="16" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}">
                             <StackPanel Orientation="Horizontal">
                                 <Label Content="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" Margin="4,0,4,0"/>
                             </StackPanel>

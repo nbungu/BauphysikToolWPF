@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Security.Policy;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -50,7 +51,6 @@ namespace BauphysikToolWPF.Services
             {
                 Logger.LogError($"Error fetching updater file from server: {serverAddress}, {ex.Message}");
             }
-            Logger.LogInfo($"Successfully fetched updater file from server: {serverAddress}");
             return updater;
         }
 
@@ -70,6 +70,24 @@ namespace BauphysikToolWPF.Services
             }
             Logger.LogWarning($"Could not fetch local version file: {filePath}");
             return new Updater();
+        }
+
+        public static bool CheckServerStatus(string serverAddress)
+        {
+            using (HttpClient client = new HttpClient())
+            {
+                client.Timeout = TimeSpan.FromSeconds(10);
+                try
+                {
+                    var response = client.GetAsync(serverAddress).Result;  // Blocking call!
+                    if (response.IsSuccessStatusCode) return true;
+                }
+                catch (Exception e)
+                {
+                    return false;
+                }
+                return false;
+            }
         }
 
         private static async Task<Updater> FetchAndDeserializeUpdaterAsync(string url)
