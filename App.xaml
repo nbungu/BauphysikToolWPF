@@ -142,9 +142,9 @@
         <BitmapImage x:Key="FiletypeIcon_DB" UriSource="/Resources/Icons/Filetypes/database.png"/>
         <BitmapImage x:Key="FiletypeIcon_Corrupt" UriSource="/Resources/Icons/Filetypes/corrupt-file.png"/>
 
-
         <!--Application Icon -->
-        <BitmapImage x:Key="AppIcon" UriSource="/Resources/appicon.ico"/>
+        <BitmapImage x:Key="AppIcon" UriSource="/Resources/Icons/appicon.png"/>
+        <BitmapImage x:Key="Favicon" UriSource="/Resources/Icons/favicon.png"/>
 
         <Style x:Key="{x:Type Image}" TargetType="{x:Type Image}">
             <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality"/>

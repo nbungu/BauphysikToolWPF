@@ -427,17 +427,18 @@
                 <!-- Main Grid for Content -->
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
-            
-            <!-- Title bar -->
-            <Grid Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Top">
+
+           <!-- Title bar -->
+            <Grid Grid.Row="0" Background="{StaticResource PrimaryLightBrush}" VerticalAlignment="Top">
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
-                    <Image Source="{StaticResource AppIcon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4"/>
+                    <Image Source="{StaticResource Favicon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4"/>
                     <Label Content="BauphysikTool v0.1.0" FontSize="12" VerticalAlignment="Center" Margin="0,0,32,0"/>
                     <Button ToolTip="Neues Projekt" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Command="{Binding NewCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt speichern unter" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Command="{Binding SaveToCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt öffnen" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Command="{Binding OpenCommand}" Margin="4,0"/>
+                    <Button ToolTip="Programm Infos" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Info_Flat}" Margin="4,0"/>
                 </StackPanel>
 
                 <Label Content="{Binding Title}" FontSize="12" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="16,0"/>

@@ -5,7 +5,7 @@
     <UseWPF>true</UseWPF>
     <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
     <WindowsPackageType>None</WindowsPackageType>
-    <ApplicationIcon>Resources\appicon.ico</ApplicationIcon>
+    <ApplicationIcon>appicon-64-64.ico</ApplicationIcon>
 	  <Nullable>enable</Nullable>
 	  <UseWindowsForms>False</UseWindowsForms>
 	  <TargetFramework>net8.0-windows10.0.22621.0</TargetFramework>
@@ -43,6 +43,8 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="appicon-64-64.ico" />
+    <None Remove="appicon.ico" />
     <None Remove="Resources\Icons\add_element.png" />
     <None Remove="Resources\Icons\add_element_w.png" />
     <None Remove="Resources\Icons\add_layer.png" />
@@ -52,6 +54,7 @@
     <None Remove="Resources\Icons\align-bottom.png" />
     <None Remove="Resources\Icons\align-center.png" />
     <None Remove="Resources\Icons\align-top.png" />
+    <None Remove="Resources\Icons\appicon.png" />
     <None Remove="Resources\Icons\auge.png" />
     <None Remove="Resources\Icons\auge_w.png" />
     <None Remove="Resources\Icons\auge_zu.png" />
@@ -90,6 +93,7 @@
     <None Remove="Resources\Icons\export-pdf_w.png" />
     <None Remove="Resources\Icons\export.png" />
     <None Remove="Resources\Icons\export_w.png" />
+    <None Remove="Resources\Icons\favicon.png" />
     <None Remove="Resources\Icons\file-folder.png" />
     <None Remove="Resources\Icons\Filetypes\btk.png" />
     <None Remove="Resources\Icons\Filetypes\cad.png" />
@@ -186,6 +190,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="appicon-64-64.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include=".github\workflows\deploy-bauphysik-tool.yml" />
     <None Include="Resources\Dump.xaml" />
   </ItemGroup>
@@ -213,6 +221,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="appicon-64-64.ico" />
+    <Resource Include="appicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Resources\Icons\add_element.png" />
     <Resource Include="Resources\Icons\add_element_w.png" />
     <Resource Include="Resources\Icons\add_layer.png" />
@@ -222,6 +234,7 @@
     <Resource Include="Resources\Icons\align-bottom.png" />
     <Resource Include="Resources\Icons\align-center.png" />
     <Resource Include="Resources\Icons\align-top.png" />
+    <Resource Include="Resources\Icons\appicon.png" />
     <Resource Include="Resources\Icons\auge.png" />
     <Resource Include="Resources\Icons\auge_w.png" />
     <Resource Include="Resources\Icons\auge_zu.png" />
@@ -231,6 +244,7 @@
     <Resource Include="Resources\Icons\bookmark.png" />
     <Resource Include="Resources\Icons\comment.png" />
     <Resource Include="Resources\Icons\comment_bold.png" />
+    <Resource Include="Resources\Icons\favicon.png" />
     <Resource Include="Resources\Icons\Filetypes\btk.png" />
     <Resource Include="Resources\Icons\Filetypes\cad.png" />
     <Resource Include="Resources\Icons\Filetypes\corrupt-file.png" />
@@ -356,6 +370,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="btk.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Repository\InitialDB.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
