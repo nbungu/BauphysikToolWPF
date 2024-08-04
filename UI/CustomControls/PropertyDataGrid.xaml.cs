@@ -34,7 +34,8 @@ namespace BauphysikToolWPF.UI.CustomControls
                 var propertyItem = textBox.DataContext as IPropertyItem ?? null;
                 var type = propertyItem?.Value.GetType();
                 if (type is null) return;
-                if (type == typeof(double) || type == typeof(int)) e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
+                else if (type == typeof(double)) e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
+                else if (type == typeof(int)) e.Handled = TextInputValidation.IntegerCurrentCulture.IsMatch(e.Text);
             }
         }
 

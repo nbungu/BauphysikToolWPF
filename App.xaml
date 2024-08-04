@@ -693,6 +693,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="Tag" Value="">
                                 <Setter TargetName="ButtonIcon" Property="Visibility" Value="Collapsed"/>
+                                <Setter TargetName="ButtonText" Property="Margin" Value="8, 4"/>
                             </Trigger>
                             <Trigger Property="Content" Value="">
                                 <Setter TargetName="ButtonText" Property="Visibility" Value="Collapsed"/>

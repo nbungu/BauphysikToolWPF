@@ -115,11 +115,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _selectedElementName = UserSaved.SelectedElement.IsValid ? UserSaved.SelectedElement.Name : "Neues Element";
+        private string _selectedElementName = UserSaved.SelectedElement.Name != "" ? UserSaved.SelectedElement.Name : "Neues Element";
         [ObservableProperty]
-        private string _selectedConstruction = UserSaved.SelectedElement.IsValid ? UserSaved.SelectedElement.Construction.TypeName : "Außenwand";
+        private string _selectedConstruction = UserSaved.SelectedElement.Name != "" ? UserSaved.SelectedElement.Construction.TypeName : "Außenwand";
         [ObservableProperty]
-        private OrientationType _selectedOrientation = UserSaved.SelectedElement.IsValid ? UserSaved.SelectedElement.OrientationType : OrientationType.Norden;
+        private OrientationType _selectedOrientation = UserSaved.SelectedElement.Name != "" ? UserSaved.SelectedElement.OrientationType : OrientationType.Norden;
         [ObservableProperty]
         private Visibility _tagBtnVisible = Visibility.Visible;
         [ObservableProperty]

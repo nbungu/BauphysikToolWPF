@@ -2,7 +2,6 @@
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Security.Policy;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -12,7 +11,8 @@ namespace BauphysikToolWPF.Services
     public class Updater
     {
         public static string InstalledUpdaterFilePath = GetInstalledUpdaterFilePath();
-        public static string ServerUpdaterQuery = "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields[0]=semanticVersion&fields[1]=versionTag";
+        public static string ServerUpdaterQuery = "https://bauphysik-tool.de/strapi/api/downloads?sort=publishedAt:desc&fields[0]=semanticVersion&fields[1]=versionTag";
+        
         // testing: curl -v "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields%5B0%5D=semanticVersion&fields%5B1%5D=versionTag"
 
         public static Updater LocalUpdaterFile = FetchLocalVersion(InstalledUpdaterFilePath);

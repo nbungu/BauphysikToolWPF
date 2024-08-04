@@ -17,6 +17,8 @@
 
     <UserControl.Resources>
 
+        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+
         <!--OverviewListBox appearance: Used in ListBox as Style -->
         <Style x:Key="OverviewListBoxStyle" TargetType="{x:Type ListBox}">
             <Setter Property="Background" Value="Transparent"/>
@@ -66,7 +68,7 @@
                 <Ellipse Fill="{Binding Color}" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}" HorizontalAlignment="Right"/>
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Label Content="{Binding Value}" ContentStringFormat="= {0}" FontWeight="Bold"/>
+                    <Label Content="{Binding Value, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat="= {0}" FontWeight="Bold"/>
                     <Label Content="{Binding Unit}" HorizontalAlignment="Left" Margin="-4,0,0,0" FontWeight="Bold"/>
                 </StackPanel>
                 <StackPanel Grid.Column="3" Orientation="Horizontal">
