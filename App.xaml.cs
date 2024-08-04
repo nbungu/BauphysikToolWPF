@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
 using System.IO;
@@ -18,7 +19,10 @@ namespace BauphysikToolWPF
         {
             base.OnStartup(e);
 
-            Logger.SetLogFilePath(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "bauphysikTool.log"));
+            string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
+            string logFilePath = Path.Combine(appFolder, "bauphysikTool.log");
+            Logger.SetLogFilePath(logFilePath);
             Logger.ClearLog();
 
             if (e.Args.Length > 0)
@@ -56,6 +60,10 @@ namespace BauphysikToolWPF
 
         protected override void OnExit(ExitEventArgs e)
         {
+            //Logger.LogInfo($"Checking for Updates...");
+            //
+            //Updater.CheckForUpdates();
+            
             Logger.LogInfo($"Closing Application with ExitCode: {e.ApplicationExitCode}");
         }
 

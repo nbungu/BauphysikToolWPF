@@ -132,7 +132,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public string Title => UserSaved.SelectedProject.IsModified ? $"'{UserSaved.SelectedProject.Name}' *Bearbeitet* - {UserSaved.ProjectFilePath}" : $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
-        
+        public string VersionString => $"Bauphysik Tool {Updater.LocalUpdaterFile.CurrentTag}";
+
         private void RefreshXamlBindings()
         {
             ProjectName = "";

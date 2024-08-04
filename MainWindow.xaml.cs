@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Services;
+using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
@@ -41,12 +42,18 @@ namespace BauphysikToolWPF
 
         public MainWindow()
         {
-            Logger.LogInfo($"Selected Project: {UserSaved.SelectedProject?.ToString() ?? "null"}");
-
             InitializeComponent();
             _navigationMenuListBox = this.NavigationMenuListBox;
             _projectBoxHeader = this.ProjectBoxHeader;
             _toastNotification = this.Toast;
+
+            if (Updater.CompareSemanticVersions(Updater.LocalUpdaterFile.Current, Updater.LocalUpdaterFile.Latest) < 0)
+            {
+                Logger.LogInfo($"Found new Version! Notifying User");
+                ShowToast($"New Version Available: {Updater.LocalUpdaterFile.Latest}", ToastType.Info);
+                Updater.LocalUpdaterFile.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
+                Updater.WriteToLocalUpdaterFile(Updater.LocalUpdaterFile);
+            }
         }
 
         public static void SetPage(NavigationContent page)

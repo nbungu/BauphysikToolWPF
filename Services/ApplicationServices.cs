@@ -16,33 +16,6 @@ namespace BauphysikToolWPF.Services
     {
         // TODO: Dokument erzeugen
 
-        //public static void CheckForUpdates()
-        //{
-        //    try
-        //    {
-        //        Logger.LogInfo($"Start reading project from file: {filePath}");
-        //        string jsonString = File.ReadAllText(filePath);
-        //        var options = new JsonSerializerOptions
-        //        {
-        //            ReferenceHandler = ReferenceHandler.Preserve,
-        //            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-        //        };
-        //        Project project = JsonSerializer.Deserialize<Project>(jsonString, options);
-        //        if (project != null)
-        //        {
-        //            Logger.LogInfo($"Successfully read project from file: {filePath}");
-        //            return project;
-        //        }
-        //        Logger.LogWarning($"Could not read from project file: {filePath}");
-        //        return new Project();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Logger.LogError($"Error saving project to file: {filePath}, {e.Message}");
-        //        MainWindow.ShowToast($"Projekt '{UserSaved.SelectedProject.Name}' konnte nicht gespeichert werden: {e.Message}.", ToastType.Error);
-        //    }
-        //}
-
         public static void SaveProjectToFile(Project project, string filePath)
         {
             try

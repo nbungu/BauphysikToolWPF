@@ -433,7 +433,7 @@
 
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
                     <Image Source="{StaticResource Favicon}" Stretch="Fill" MinWidth="16" MinHeight="16" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8,4"/>
-                    <Label Content="BauphysikTool v0.1.0" FontSize="12" VerticalAlignment="Center" Margin="0,0,32,0"/>
+                    <Label Content="{Binding VersionString}" FontSize="12" VerticalAlignment="Center" Margin="0,0,32,0"/>
                     <Button ToolTip="Neues Projekt" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Command="{Binding NewCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt speichern" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_Save_Flat}" Command="{Binding SaveCommand}" Margin="4,0"/>
                     <Button ToolTip="Projekt speichern unter" Style="{StaticResource TitleBarButtonStyle_B}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Command="{Binding SaveToCommand}" Margin="4,0"/>
