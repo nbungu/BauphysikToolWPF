@@ -23,6 +23,111 @@ namespace BauphysikToolWPF.UI
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
         }
 
+        #region Cross Section Cut
+
+        private void ZoomableGrid1_OnMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            Point mousePosition = e.GetPosition(ZoomableGrid1);
+
+            double zoomFactor = e.Delta > 0 ? 1.1 : 1.0 / 1.1;
+
+            // Calculate the new scale
+            double newScaleX = Grid1ScaleTransform.ScaleX * zoomFactor;
+            double newScaleY = Grid1ScaleTransform.ScaleY * zoomFactor;
+
+            // Ensure the new scale does not go below the minimum scale factor or above the maximum scale factor
+            if (newScaleX < MinimumScale || newScaleX > MaximumScale || newScaleY < MinimumScale || newScaleY > MaximumScale)
+            {
+                return;
+            }
+
+            // Calculate the translation to keep the mouse position centered
+            double offsetX = mousePosition.X * (newScaleX - Grid1ScaleTransform.ScaleX);
+            double offsetY = mousePosition.Y * (newScaleY - Grid1ScaleTransform.ScaleY);
+
+            Grid1ScaleTransform.ScaleX = newScaleX;
+            Grid1ScaleTransform.ScaleY = newScaleY;
+
+            Grid1TranslateTransform.X -= offsetX;
+            Grid1TranslateTransform.Y -= offsetY;
+        }
+
+        private void ZoomableGrid1_OnMouseMove(object sender, MouseEventArgs e)
+        {
+            if (ZoomableGrid1.IsMouseCaptured)
+            {
+                Point p = e.GetPosition(ZoomableGrid1);
+                Vector v = p - _start; // Correct the direction of the movement
+
+                // Adjust the translation based on the scale factor
+                Grid1TranslateTransform.X = _origin.X + v.X;
+                Grid1TranslateTransform.Y = _origin.Y + v.Y;
+            }
+        }
+
+        private void ZoomableGrid1_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Reset transformations on right click
+            Grid1ScaleTransform.ScaleX = 1.0;
+            Grid1ScaleTransform.ScaleY = 1.0;
+            Grid1TranslateTransform.X = 0.0;
+            Grid1TranslateTransform.Y = 0.0;
+        }
+
+        private void ZoomableGrid1_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            // Zoom In on double Click
+            if (e.ClickCount == 2)
+            {
+                Point mousePosition = e.GetPosition(ZoomableGrid1);
+
+                double zoomFactor = 1.5;
+
+                // Calculate the new scale
+                double newScaleX = Grid1ScaleTransform.ScaleX * zoomFactor;
+                double newScaleY = Grid1ScaleTransform.ScaleY * zoomFactor;
+
+                // Ensure the new scale does not go below the minimum scale factor or above the maximum scale factor
+                if (newScaleX < MinimumScale || newScaleX > MaximumScale || newScaleY < MinimumScale || newScaleY > MaximumScale)
+                {
+                    return;
+                }
+
+                // Calculate the translation to keep the mouse position centered
+                double offsetX = mousePosition.X * (newScaleX - Grid1ScaleTransform.ScaleX);
+                double offsetY = mousePosition.Y * (newScaleY - Grid1ScaleTransform.ScaleY);
+
+                Grid1ScaleTransform.ScaleX = newScaleX;
+                Grid1ScaleTransform.ScaleY = newScaleY;
+
+                Grid1TranslateTransform.X -= offsetX;
+                Grid1TranslateTransform.Y -= offsetY;
+                return;
+            }
+
+            // Only allow dragging if the grid is zoomed in
+            if (Grid1ScaleTransform.ScaleX > 1.0 || Grid1ScaleTransform.ScaleY > 1.0)
+            {
+                _start = e.GetPosition(ZoomableGrid1);
+                _origin = new Point(Grid1TranslateTransform.X, Grid1TranslateTransform.Y);
+                ZoomableGrid1.CaptureMouse();
+                ZoomableGrid1.Cursor = Cursors.Hand;
+            }
+        }
+
+        private void ZoomableGrid1_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (ZoomableGrid1.IsMouseCaptured)
+            {
+                ZoomableGrid1.ReleaseMouseCapture();
+                ZoomableGrid1.Cursor = Cursors.Arrow;
+            }
+        }
+
+        #endregion
+
+        #region Vertical Cut
+
         private void ZoomableGrid2_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
             Point mousePosition = e.GetPosition(ZoomableGrid2);
@@ -121,5 +226,7 @@ namespace BauphysikToolWPF.UI
                 ZoomableGrid2.Cursor = Cursors.Arrow;
             }
         }
+
+        #endregion
     }
 }

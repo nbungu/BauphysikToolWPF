@@ -145,7 +145,6 @@
                 <Button Style="{StaticResource ButtonStyle01_Mini_Highlighted}"
                         Command="{Binding CreateMaterialCommand}"
                         Tag="{StaticResource ButtonIcon_Add_W}"
-                        IsEnabled="{Binding AllowCreate}"
                         Margin="0,0,8,0"
                         ToolTip="Eigenes Material erstellen"/>
                 <Button Style="{StaticResource ButtonStyle01_Mini}"

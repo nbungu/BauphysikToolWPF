@@ -46,7 +46,7 @@
 
     </Window.Resources>
 
-    <Grid Background="{StaticResource PrimaryLightBrush}" Margin="8">
+    <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height=".8*"/>
             <RowDefinition Height="Auto"/>
@@ -61,7 +61,7 @@
         <!--Left Column: Material Category-->
         <Grid Grid.Column="0" Margin="8" Grid.RowSpan="3">
             <Grid.RowDefinitions>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 

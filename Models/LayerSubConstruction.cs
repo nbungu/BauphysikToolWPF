@@ -116,6 +116,26 @@ namespace BauphysikToolWPF.Models
 
         //------Methods-----//
 
+        public LayerSubConstruction Copy()
+        {
+            var copy = new LayerSubConstruction();
+            copy.Id = -1;
+            copy.Width = this.Width;
+            copy.Thickness = this.Thickness;
+            copy.Spacing = this.Spacing;
+            copy.SubConstructionDirection = this.SubConstructionDirection;
+            copy.MaterialId = this.MaterialId;
+            copy.Material = this.Material;
+            copy.LayerId = this.LayerId;
+            copy.Layer = this.Layer;
+            copy.IsEffective = this.IsEffective;
+            copy.IsSelected = false;
+            copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.InternalId = this.InternalId;
+            return copy;
+        }
+
         public void UpdateTimestamp()
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
