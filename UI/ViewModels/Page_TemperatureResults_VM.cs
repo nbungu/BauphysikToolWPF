@@ -25,7 +25,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Manually Trigger Calculation
         private static TemperatureCurveCalc _tempCalc = new TemperatureCurveCalc();
 
-
         public Page_TemperatureResults_VM()
         {
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
