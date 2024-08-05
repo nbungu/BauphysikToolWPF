@@ -104,7 +104,7 @@
 
                 <Label Grid.Row="0" Content="Von innen nach außen" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Stretch">
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" VerticalAlignment="Stretch" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                     <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Stretch">
 
                         <controls:LayersListView Layers="{Binding LayerList}" SelectedLayer="{Binding SelectedListViewItem}" MinHeight="200" MaxHeight="800"/>
