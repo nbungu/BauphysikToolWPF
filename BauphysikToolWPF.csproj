@@ -42,12 +42,6 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
-  
-
-  <ItemGroup>
-    <Page Remove="Resources\Dump.xaml" />
-  </ItemGroup>
-
   <ItemGroup>
     <Content Include="appicon-256.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -56,7 +50,6 @@
 
   <ItemGroup>
     <None Include=".github\workflows\deploy-bauphysik-tool.yml" />
-    <None Include="Resources\Dump.xaml" />
   </ItemGroup>
 
   <ItemGroup>
