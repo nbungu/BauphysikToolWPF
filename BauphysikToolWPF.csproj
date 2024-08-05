@@ -42,147 +42,7 @@
     <DebugType>embedded</DebugType>
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Resources\Icons\add_element.png" />
-    <None Remove="Resources\Icons\add_element_w.png" />
-    <None Remove="Resources\Icons\add_layer.png" />
-    <None Remove="Resources\Icons\add_layer_w.png" />
-    <None Remove="Resources\Icons\akzeptiert.png" />
-    <None Remove="Resources\Icons\akzeptiert_w.png" />
-    <None Remove="Resources\Icons\align-bottom.png" />
-    <None Remove="Resources\Icons\align-center.png" />
-    <None Remove="Resources\Icons\align-top.png" />
-    <None Remove="Resources\Icons\appicon.png" />
-    <None Remove="Resources\Icons\auge.png" />
-    <None Remove="Resources\Icons\auge_w.png" />
-    <None Remove="Resources\Icons\auge_zu.png" />
-    <None Remove="Resources\Icons\auge_zu_w.png" />
-    <None Remove="Resources\Icons\ausruf.png" />
-    <None Remove="Resources\Icons\ausruf_w.png" />
-    <None Remove="Resources\Icons\bookmark.png" />
-    <None Remove="Resources\Icons\chart.png" />
-    <None Remove="Resources\Icons\chart_w.png" />
-    <None Remove="Resources\Icons\comment.png" />
-    <None Remove="Resources\Icons\comment_bold.png" />
-    <None Remove="Resources\Icons\copy.png" />
-    <None Remove="Resources\Icons\copy_w.png" />
-    <None Remove="Resources\Icons\delete-2.png" />
-    <None Remove="Resources\Icons\delete.png" />
-    <None Remove="Resources\Icons\delete_element.png" />
-    <None Remove="Resources\Icons\delete_element_w.png" />
-    <None Remove="Resources\Icons\delete_layer.png" />
-    <None Remove="Resources\Icons\delete_layer_w.png" />
-    <None Remove="Resources\Icons\delete_w.png" />
-    <None Remove="Resources\Icons\dokumentieren.png" />
-    <None Remove="Resources\Icons\dokumentieren_w.png" />
-    <None Remove="Resources\Icons\down.png" />
-    <None Remove="Resources\Icons\download.png" />
-    <None Remove="Resources\Icons\download_w.png" />
-    <None Remove="Resources\Icons\edit-2.png" />
-    <None Remove="Resources\Icons\edit.png" />
-    <None Remove="Resources\Icons\edit_w.png" />
-    <None Remove="Resources\Icons\einstellungen-schieberegler.png" />
-    <None Remove="Resources\Icons\einstellungen-schieberegler_w.png" />
-    <None Remove="Resources\Icons\elements.png" />
-    <None Remove="Resources\Icons\elements_w.png" />
-    <None Remove="Resources\Icons\existing_home.png" />
-    <None Remove="Resources\Icons\existing_home_w.png" />
-    <None Remove="Resources\Icons\export-pdf.png" />
-    <None Remove="Resources\Icons\export-pdf_w.png" />
-    <None Remove="Resources\Icons\export.png" />
-    <None Remove="Resources\Icons\export_w.png" />
-    <None Remove="Resources\Icons\favicon.png" />
-    <None Remove="Resources\Icons\file-folder.png" />
-    <None Remove="Resources\Icons\Filetypes\btk.png" />
-    <None Remove="Resources\Icons\Filetypes\cad.png" />
-    <None Remove="Resources\Icons\Filetypes\corrupt-file.png" />
-    <None Remove="Resources\Icons\Filetypes\database.png" />
-    <None Remove="Resources\Icons\Filetypes\dmg.png" />
-    <None Remove="Resources\Icons\Filetypes\doc.png" />
-    <None Remove="Resources\Icons\Filetypes\file.png" />
-    <None Remove="Resources\Icons\Filetypes\jpg.png" />
-    <None Remove="Resources\Icons\Filetypes\pdf.png" />
-    <None Remove="Resources\Icons\Filetypes\png.png" />
-    <None Remove="Resources\Icons\Filetypes\ppt.png" />
-    <None Remove="Resources\Icons\Filetypes\txt.png" />
-    <None Remove="Resources\Icons\Filetypes\xls.png" />
-    <None Remove="Resources\Icons\Filetypes\xml.png" />
-    <None Remove="Resources\Icons\Flat\copy.png" />
-    <None Remove="Resources\Icons\Flat\corrupt-file.png" />
-    <None Remove="Resources\Icons\Flat\database.png" />
-    <None Remove="Resources\Icons\Flat\database_ok.png" />
-    <None Remove="Resources\Icons\Flat\dynamic.png" />
-    <None Remove="Resources\Icons\Flat\error.png" />
-    <None Remove="Resources\Icons\Flat\export-pdf.png" />
-    <None Remove="Resources\Icons\Flat\external.png" />
-    <None Remove="Resources\Icons\Flat\info.png" />
-    <None Remove="Resources\Icons\Flat\internet.png" />
-    <None Remove="Resources\Icons\Flat\layer-temps.png" />
-    <None Remove="Resources\Icons\Flat\layers.png" />
-    <None Remove="Resources\Icons\Flat\linked-file.png" />
-    <None Remove="Resources\Icons\Flat\new-project.png" />
-    <None Remove="Resources\Icons\Flat\open-file.png" />
-    <None Remove="Resources\Icons\Flat\save.png" />
-    <None Remove="Resources\Icons\Flat\saveTo.png" />
-    <None Remove="Resources\Icons\Flat\setting.png" />
-    <None Remove="Resources\Icons\Flat\success.png" />
-    <None Remove="Resources\Icons\Flat\summary.png" />
-    <None Remove="Resources\Icons\Flat\user.png" />
-    <None Remove="Resources\Icons\Flat\warning.png" />
-    <None Remove="Resources\Icons\Flat\water-drop.png" />
-    <None Remove="Resources\Icons\floppy-disk.png" />
-    <None Remove="Resources\Icons\grid.png" />
-    <None Remove="Resources\Icons\grid_w.png" />
-    <None Remove="Resources\Icons\haken.png" />
-    <None Remove="Resources\Icons\haken_g.png" />
-    <None Remove="Resources\Icons\haken_w.png" />
-    <None Remove="Resources\Icons\house.png" />
-    <None Remove="Resources\Icons\house_w.png" />
-    <None Remove="Resources\Icons\kreuz.png" />
-    <None Remove="Resources\Icons\kreuzkreis.png" />
-    <None Remove="Resources\Icons\kreuzkreis_w.png" />
-    <None Remove="Resources\Icons\kreuz_w.png" />
-    <None Remove="Resources\Icons\layer.png" />
-    <None Remove="Resources\Icons\layer_w.png" />
-    <None Remove="Resources\Icons\List.png" />
-    <None Remove="Resources\Icons\List_w.png" />
-    <None Remove="Resources\Icons\loeschen.png" />
-    <None Remove="Resources\Icons\moisture.png" />
-    <None Remove="Resources\Icons\moisture_w.png" />
-    <None Remove="Resources\Icons\new.png" />
-    <None Remove="Resources\Icons\new_w.png" />
-    <None Remove="Resources\Icons\next.png" />
-    <None Remove="Resources\Icons\next_w.png" />
-    <None Remove="Resources\Icons\office.png" />
-    <None Remove="Resources\Icons\office_w.png" />
-    <None Remove="Resources\Icons\open_project.png" />
-    <None Remove="Resources\Icons\open_project_w.png" />
-    <None Remove="Resources\Icons\placeholder_256px.png" />
-    <None Remove="Resources\Icons\placeholder_256px_light.png" />
-    <None Remove="Resources\Icons\plus.png" />
-    <None Remove="Resources\Icons\plus_w.png" />
-    <None Remove="Resources\Icons\prev.png" />
-    <None Remove="Resources\Icons\prev_w.png" />
-    <None Remove="Resources\Icons\project-2.png" />
-    <None Remove="Resources\Icons\project-2_w.png" />
-    <None Remove="Resources\Icons\project.png" />
-    <None Remove="Resources\Icons\projects.png" />
-    <None Remove="Resources\Icons\projects_w.png" />
-    <None Remove="Resources\Icons\project_w.png" />
-    <None Remove="Resources\Icons\save.png" />
-    <None Remove="Resources\Icons\save_w.png" />
-    <None Remove="Resources\Icons\schloss_zu.png" />
-    <None Remove="Resources\Icons\schloss_zu_w.png" />
-    <None Remove="Resources\Icons\search.png" />
-    <None Remove="Resources\Icons\search_bold.png" />
-    <None Remove="Resources\Icons\setting.png" />
-    <None Remove="Resources\Icons\settings.png" />
-    <None Remove="Resources\Icons\settings_Light_b.png" />
-    <None Remove="Resources\Icons\settings_w.png" />
-    <None Remove="Resources\Icons\tags.png" />
-    <None Remove="Resources\Icons\tags_bold.png" />
-    <None Remove="Resources\Icons\up.png" />
-  </ItemGroup>
+  
 
   <ItemGroup>
     <Page Remove="Resources\Dump.xaml" />
@@ -359,15 +219,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="UI\AddElementWindow.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="UI\AddLayerSubConstructionWindow.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Repository\InitialDB.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -375,15 +226,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <ItemGroup>
-    <Page Update="UI\AddElementWindow.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Update="UI\AddLayerSubConstructionWindow.xaml">
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-
 
 </Project>
