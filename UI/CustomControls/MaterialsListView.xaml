@@ -37,8 +37,8 @@
                 </GridViewColumn.CellTemplate>
             </GridViewColumn>
             <GridViewColumn DisplayMemberBinding="{Binding BulkDensity}" Header="ρ [kg/m³]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding ThermalConductivity}" Header="λ [W/(m·K)]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding SpecificHeatCapacity}" Header="c [J/(kg·K)]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding ThermalConductivity}" Header="λ [W/(mK)]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding SpecificHeatCapacity}" Header="c [J/(kgK)]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding DiffusionResistance}" Header="µ (trocken) [-]" Width="Auto"/>
         </GridView>
 

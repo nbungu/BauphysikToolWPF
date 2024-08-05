@@ -230,23 +230,11 @@ namespace BauphysikToolWPF.UI
             GridTranslateTransform.Y = 0.0;
         }
 
-        private void ZoomSlider_OnValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (GridScaleTransform != null)
-            {
-                double zoomFactor = e.NewValue;
-
-                // Calculate the translation to keep the center point stable
-                Point mousePosition = new Point(ZoomableGrid.ActualWidth / 2, ZoomableGrid.ActualHeight / 2);
-                double offsetX = mousePosition.X * (zoomFactor - GridScaleTransform.ScaleX);
-                double offsetY = mousePosition.Y * (zoomFactor - GridScaleTransform.ScaleY);
-
-                GridScaleTransform.ScaleX = zoomFactor;
-                GridScaleTransform.ScaleY = zoomFactor;
-
-                GridTranslateTransform.X -= offsetX;
-                GridTranslateTransform.Y -= offsetY;
-            }
+            ScrollViewer scv = (ScrollViewer)sender;
+            scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
+            e.Handled = true;
         }
     }
 }

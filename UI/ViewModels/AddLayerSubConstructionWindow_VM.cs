@@ -22,9 +22,11 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public AddLayerSubConstructionWindow_VM()
         {
+            PropertyItem<SubConstructionDirection>.PropertyChanged += UpdateXAMLBindings;
+
             if (EditSelectedSubConstr)
             {
-                _tempConstruction = UserSaved.SelectedLayer.SubConstruction;
+                _tempConstruction = UserSaved.SelectedLayer.SubConstruction.Copy();
             }
             else
             {
@@ -39,7 +41,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Layer = UserSaved.SelectedLayer,
                 };
             }
-
             SelectedListViewItem = _tempConstruction.Material;
         }
 
@@ -114,15 +115,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string ButtonText => EditSelectedSubConstr ? "Änderung übernehmen" : "Balkenlage hinzufügen";
         public List<IPropertyItem> SubConstructionProperties => new List<IPropertyItem>()
         {
-            new PropertyItem<string>("Material", () => _tempConstruction.Material.Name) { TriggerPropertyChanged = false },
+            new PropertyItem<string>("Material", () => _tempConstruction.Material.Name),
             new PropertyItem<SubConstructionDirection>("Ausrichtung", () => _tempConstruction.SubConstructionDirection, value => _tempConstruction.SubConstructionDirection = value)
             {
-                PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray(),
-                TriggerPropertyChanged = false,
+                PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray()
             },
-            new PropertyItem<double>(Symbol.Thickness, () => _tempConstruction.Thickness, value => _tempConstruction.Thickness = value) { TriggerPropertyChanged = false },
-            new PropertyItem<double>(Symbol.Width, () => _tempConstruction.Width, value => _tempConstruction.Width = value) { TriggerPropertyChanged = false },
-            new PropertyItem<double>(Symbol.Distance, () => _tempConstruction.Spacing, value => _tempConstruction.Spacing = value) { TriggerPropertyChanged = false },
+            new PropertyItem<double>(Symbol.Thickness, () => _tempConstruction.Thickness, value => _tempConstruction.Thickness = value),
+            new PropertyItem<double>(Symbol.Width, () => _tempConstruction.Width, value => _tempConstruction.Width = value),
+            new PropertyItem<double>(Symbol.Distance, () => _tempConstruction.Spacing, value => _tempConstruction.Spacing = value),
         };
 
         // TODO: implement QueryFilterConfig...
@@ -153,12 +153,13 @@ namespace BauphysikToolWPF.UI.ViewModels
                     m.Category == (MaterialCategory)SelectedCategoryIndex).ToList();
             }
         }
-        private void MaterialPropertiesChanged()
+        
+        /// <summary>
+        /// Updates XAML Bindings
+        /// </summary>
+        private void UpdateXAMLBindings()
         {
-            if (SelectedListViewItem is null || !SelectedListViewItem.IsUserDefined) return;
-            DatabaseAccess.UpdateMaterial(SelectedListViewItem);
-            SelectedTabIndex = -1;
-            SelectedTabIndex = 1;
+            OnPropertyChanged(nameof(SubConstructionProperties));  
         }
     }
 }

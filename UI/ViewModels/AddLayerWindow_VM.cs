@@ -30,6 +30,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             PropertyItem<string>.PropertyChanged += MaterialPropertiesChanged;
             PropertyItem<int>.PropertyChanged += MaterialPropertiesChanged;
             PropertyItem<double>.PropertyChanged += MaterialPropertiesChanged;
+            PropertyItem<MaterialCategory>.PropertyChanged += MaterialPropertiesChanged;
         }
 
         /*
@@ -122,8 +123,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                     SelectedListViewItem = null;
                     SelectedTabIndex = -1;
                     SelectedTabIndex = 1;
-                    Tab0Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
-                    Tab1Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
                 }
             }
         }
@@ -150,8 +149,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedTabIndex = -1;
             SelectedTabIndex = 1;
             SelectedListViewItem = newMaterial;
-            Tab0Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
-            Tab1Header = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
         }
 
         [RelayCommand]
@@ -184,9 +181,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static int _selectedCategoryIndex = (int)MaterialCategory.NotDefined;
 
         [ObservableProperty]
-        //[NotifyPropertyChangedFor(nameof(CustomCategories))]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        [NotifyPropertyChangedFor(nameof(AllowCreate))]
+        [NotifyPropertyChangedFor(nameof(Tab0Header))]
+        [NotifyPropertyChangedFor(nameof(Tab1Header))]
         [NotifyPropertyChangedFor(nameof(MaterialProperties))]
         private static int _selectedTabIndex;
 
@@ -199,13 +196,15 @@ namespace BauphysikToolWPF.UI.ViewModels
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public string Tab0Header { get; set; } = $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
-
-        public string Tab1Header { get; set; } = $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
-
+        public string Tab0Header => $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
+        public string Tab1Header => $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
         public List<IPropertyItem> MaterialProperties => SelectedListViewItem is null ? new List<IPropertyItem>() : new List<IPropertyItem>()
         {
             new PropertyItem<string>("Materialbezeichnung", () => SelectedListViewItem.Name, value => SelectedListViewItem.Name = value),
+            new PropertyItem<MaterialCategory>("Kategorie", () => SelectedListViewItem.Category, value => SelectedListViewItem.Category = value)
+            {
+                PropertyValues = Enum.GetValues(typeof(MaterialCategory)).Cast<object>().ToArray()
+            },
             new PropertyItem<double>(Symbol.ThermalConductivity, () => SelectedListViewItem.ThermalConductivity, value => SelectedListViewItem.ThermalConductivity = value) { DecimalPlaces = 3},
             new PropertyItem<int>(Symbol.RawDensity, () => SelectedListViewItem.BulkDensity, value => SelectedListViewItem.BulkDensity = value),
             new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => SelectedListViewItem.SpecificHeatCapacity, value => SelectedListViewItem.SpecificHeatCapacity = value),
@@ -215,7 +214,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public List<Material> Materials => GetMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
-        public bool AllowCreate => SelectedTabIndex == 1;
         public bool EditSelectedLayer => AddLayerWindow.EditExistingLayer;
         public string ButtonText => EditSelectedLayer ? "Änderung übernehmen" : "Schicht hinzufügen";
         public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => l.MaterialId == SelectedListViewItem.Id);

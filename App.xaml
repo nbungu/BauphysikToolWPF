@@ -545,12 +545,16 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="ToolTip" Value="{Binding}"/>
             <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="Margin" Value="0,0,0,0"/>
-            <Setter Property="Padding" Value="0,4,0,4"/>
+            <Setter Property="MinHeight" Value="32"/>
+            <Setter Property="MaxHeight" Value="48"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Padding" Value="0, 4"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
                         <Border x:Name="listView_Border"
+                                MinHeight="{TemplateBinding MinHeight}"
+                                MaxHeight="{TemplateBinding MaxHeight}"
                                 BorderBrush="{StaticResource PrimaryBorderBrush}"
                                 BorderThickness="0,0,0,1"
                                 Background="{TemplateBinding Background}"
