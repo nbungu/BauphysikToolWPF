@@ -2,7 +2,6 @@
 using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
 using System.IO;
@@ -19,11 +18,15 @@ namespace BauphysikToolWPF
         {
             base.OnStartup(e);
 
-            string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
-            string logFilePath = Path.Combine(appFolder, "bauphysikTool.log");
-            Logger.SetLogFilePath(logFilePath);
-            Logger.ClearLog();
+            try
+            {
+                Logger.SetLogFilePath();
+                Logger.ClearLog();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"Error during Logging Setup: {exception}");
+            }
 
             if (e.Args.Length > 0)
             {

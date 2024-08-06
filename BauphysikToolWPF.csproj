@@ -67,10 +67,10 @@
 
   <ItemGroup>
     <Reference Include="BT.Geometry">
-      <HintPath>..\BT.Geometry\bin\Debug\net8.0\BT.Geometry.dll</HintPath>
+      <HintPath>..\BT.Geometry\bin\Debug\net8.0-windows10.0.22621.0\BT.Geometry.dll</HintPath>
     </Reference>
     <Reference Include="BT.Logging">
-      <HintPath>..\BT.Logging\bin\Debug\net8.0\BT.Logging.dll</HintPath>
+      <HintPath>..\BT.Logging\bin\Debug\net8.0-windows10.0.22621.0\BT.Logging.dll</HintPath>
     </Reference>
   </ItemGroup>
 
