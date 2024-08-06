@@ -30,9 +30,9 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.EnvVarsChanged += UpdateRecalculateFlag;
 
             // For values changed in PropertyDataGrid TextBox
-            PropertyItem<double>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
-            PropertyItem<SubConstructionDirection>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
-            PropertyItem<bool>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
+            PropertyItem<double>.PropertyChanged += ComboUpdate;
+            PropertyItem<SubConstructionDirection>.PropertyChanged += ComboUpdate;
+            PropertyItem<bool>.PropertyChanged += ComboUpdate;
         }
         
         /*
@@ -377,6 +377,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void UpdateRecalculateFlag()
         {
             UserSaved.Recalculate = true;
+        }
+
+        private void ComboUpdate()
+        {
+            UserSaved.OnSelectedLayerChanged();
         }
     }
 }

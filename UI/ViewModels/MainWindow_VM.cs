@@ -127,9 +127,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Initialized and Assigned with Default Values
          */
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(Title))]
-        private string _projectName = UserSaved.SelectedProject.Name;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -137,14 +134,15 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because no direct input from User
          */
 
-        public string Title => UserSaved.SelectedProject.IsModified ? $"'{UserSaved.SelectedProject.Name}' *Bearbeitet* - {UserSaved.ProjectFilePath}" : $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
-        public string VersionString => $"Bauphysik Tool {Updater.LocalUpdaterFile.CurrentTag}";
+        public string Title => $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
+        public string ProjectName => UserSaved.SelectedProject.Name;
+        public string IsEditedTagColorCode => UserSaved.SelectedProject.IsModified ? "#1473e6" : "#00FFFFFF";
 
         private void RefreshXamlBindings()
         {
-            ProjectName = "";
-            ProjectName = UserSaved.SelectedProject.Name;
-            // Title gets auto-updated by ProjectName
+            OnPropertyChanged(nameof(Title));
+            OnPropertyChanged(nameof(ProjectName));            
+            OnPropertyChanged(nameof(IsEditedTagColorCode));
         }
     }
 }

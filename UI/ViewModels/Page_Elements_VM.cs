@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Data;
+using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -87,13 +88,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElementId = selectedInternalId;
             UserSaved.Recalculate = true;
-            UserSaved.OnSelectedElementChanged(false);
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
         private void ElementDoubleClick()
         {
             SwitchPage(NavigationContent.LayerSetup);
+        }
+
+        [RelayCommand]
+        private void CreatePdf()
+        {
+            DocumentDesigner.SingleElementOverview();
         }
 
         // This method will be called whenever SortingPropertyIndex changes
@@ -109,7 +116,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnGroupingPropertyIndexChanged(int value)
         {
             GroupedElements = UpdateGroupedItemsSource();
-            //RefreshXamlBindings();
         }
 
         /*
