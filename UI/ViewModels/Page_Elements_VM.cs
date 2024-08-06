@@ -100,7 +100,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void CreatePdf()
         {
-            DocumentDesigner.SingleElementOverview();
+            DocumentDesigner.SingleElementOverview(_selectedElement);
         }
 
         // This method will be called whenever SortingPropertyIndex changes

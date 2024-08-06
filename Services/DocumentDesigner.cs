@@ -1,4 +1,5 @@
-﻿using PdfSharp.Drawing;
+﻿using BauphysikToolWPF.Models;
+using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using System;
 using System.Diagnostics;
@@ -65,6 +66,113 @@ namespace BauphysikToolWPF.Services
                 {
                     gfx.DrawRectangle(XPens.Black, new XRect(currentX, currentY, columnWidths[col], cellHeight));
                     gfx.DrawString(data[row, col], bodyFont, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
+                    currentX += columnWidths[col];
+                }
+                currentY += cellHeight;
+            }
+
+            // Save the document
+            string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); //%appdata%/BauphysikTool
+            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
+            string pdfFilePath = Path.Combine(appFolder, "ProjectOverview.pdf");
+
+            document.Save(pdfFilePath);
+
+            // Open the document with the default PDF viewer
+            Process.Start(new ProcessStartInfo(pdfFilePath) { UseShellExecute = true });
+        }
+        public static void SingleElementOverview(Element element)
+        {
+            if (element is null) return;
+
+            // Create a new PDF document
+            PdfDocument document = new PdfDocument();
+            document.Info.Title = $"Overview of {element.Name}";
+
+            // Add a page
+            PdfPage page = document.AddPage();
+            page.Size = PdfSharp.PageSize.A4;
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+
+            // Draw Header and Footer
+            DrawHeader(gfx, page, element.Project.Name, DateTime.Now.ToString("yyyy-MM-dd"));
+            DrawFooter(gfx, page, element.Project.UserName, document.PageCount);
+
+            // Define fonts
+            XFont titleFont = new XFont("Verdana", 12, XFontStyleEx.Bold);
+            XFont bodyFont = new XFont("Verdana", 10, XFontStyleEx.Regular);
+            XFont tableHeaderFont = new XFont("Verdana", 9, XFontStyleEx.Bold);
+            XFont tableBodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
+
+            // Draw title
+            gfx.DrawString($"Element Overview: {element.Name}", titleFont, XBrushes.Black,
+                new XRect(50, 50, page.Width - 100, 30), XStringFormats.TopLeft);
+
+            // Draw Element Properties
+            double startY = 80;
+            gfx.DrawString($"Orientation: {element.OrientationType}", bodyFont, XBrushes.Black,
+                new XRect(50, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+
+            gfx.DrawString($"R-Value: {element.RGesValue:0.00} m²K/W", bodyFont, XBrushes.Black,
+                new XRect(50, startY + 20, page.Width - 100, 20), XStringFormats.TopLeft);
+
+            gfx.DrawString($"U-Value: {element.UValue:0.00} W/m²K", bodyFont, XBrushes.Black,
+                new XRect(50, startY + 40, page.Width - 100, 20), XStringFormats.TopLeft);
+
+            gfx.DrawString($"Q-Value: {element.QValue:0.00} W/m²", bodyFont, XBrushes.Black,
+                new XRect(50, startY + 60, page.Width - 100, 20), XStringFormats.TopLeft);
+
+            gfx.DrawString($"Comment: {element.Comment}", bodyFont, XBrushes.Black,
+                new XRect(50, startY + 80, page.Width - 100, 40), XStringFormats.TopLeft);
+
+            // Draw image from Image property
+            double imageHeight = 0;
+            if (element.Image != null && element.Image.Length > 0)
+            {
+                using (MemoryStream ms = new MemoryStream(element.Image, 0, element.Image.Length,false, true))
+                {
+                    ms.Position = 0; // Ensure the stream position is at the start
+                    XImage image = XImage.FromStream(ms);
+                    imageHeight = 160;
+                    gfx.DrawImage(image, 50, startY + 130, imageHeight * 2, imageHeight); // Adjust dimensions as needed
+                    imageHeight += 10; // Adjust to give some margin below the image
+                }
+            }
+
+            // Table data start position
+            double tableStartY = startY + 150 + imageHeight;
+
+            // Draw Layer Information
+            gfx.DrawString("Layer Details", titleFont, XBrushes.Black,
+                new XRect(50, tableStartY, page.Width - 100, 30), XStringFormats.TopLeft);
+
+            string[] headers = { "Layer", "Thickness (cm)", "Density (kg/m³)", "λ (W/mK)", "R (m²K/W)" };
+            string[,] data = GetLayerData(element);
+
+            // Draw table headers
+            double startX = 50;
+            double cellHeight = 20;
+            double[] columnWidths = { 100, 100, 100, 100, 100 };
+
+            double currentY = tableStartY + 30;
+            double currentX = startX;
+
+            for (int i = 0; i < headers.Length; i++)
+            {
+                gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, new XRect(currentX, currentY, columnWidths[i], cellHeight));
+                gfx.DrawString(headers[i], tableHeaderFont, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[i], cellHeight), XStringFormats.TopLeft);
+                currentX += columnWidths[i];
+            }
+
+            // Draw table data
+            currentY += cellHeight;
+            for (int row = 0; row < data.GetLength(0); row++)
+            {
+                currentX = startX;
+                for (int col = 0; col < data.GetLength(1); col++)
+                {
+                    gfx.DrawRectangle(XPens.Black, new XRect(currentX, currentY, columnWidths[col], cellHeight));
+                    gfx.DrawString(data[row, col], tableBodyFont, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
                     currentX += columnWidths[col];
                 }
                 currentY += cellHeight;
@@ -210,6 +318,23 @@ namespace BauphysikToolWPF.Services
 
             // Open the document with the default PDF viewer
             Process.Start(new ProcessStartInfo(pdfFilePath) { UseShellExecute = true });
+        }
+
+        static string[,] GetLayerData(Element element)
+        {
+            var layers = element.Layers;
+            string[,] data = new string[layers.Count, 5];
+
+            for (int i = 0; i < layers.Count; i++)
+            {
+                data[i, 0] = $"Layer {i + 1}";
+                data[i, 1] = layers[i].Thickness.ToString("0.00");
+                data[i, 2] = layers[i].AreaMassDensity.ToString("0.00");
+                data[i, 3] = layers[i].Material.ThermalConductivity.ToString("0.00");
+                data[i, 4] = layers[i].R_Value.ToString("0.00");
+            }
+
+            return data;
         }
 
         static void DrawHeader(XGraphics gfx, PdfPage page, string projectName, string date)
