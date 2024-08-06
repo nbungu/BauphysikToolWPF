@@ -28,22 +28,35 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
 
-            if (!_glaser.IsValid || UserSaved.Recalculate)
+            //if (!_glaser.IsValid || UserSaved.Recalculate)
+            //{
+            //    _glaser = new GlaserCalc()
+            //    {
+            //        Element = UserSaved.SelectedElement,
+            //        Rsi = UserSaved.Rsi,
+            //        Rse = UserSaved.Rse,
+            //        Ti = UserSaved.Ti,
+            //        Te = UserSaved.Te,
+            //        RelFi = UserSaved.Rel_Fi,
+            //        RelFe = UserSaved.Rel_Fe
+            //    };
+            //    _glaser.CalculateHomogeneous(); // Bauteil berechnen
+            //    _glaser.CalculateTemperatureCurve(); // Temperaturkurve
+            //    _glaser.CalculateGlaser(); // Glaser Kurve
+            //}
+            _glaser = new GlaserCalc()
             {
-                _glaser = new GlaserCalc()
-                {
-                    Element = UserSaved.SelectedElement,
-                    Rsi = UserSaved.Rsi,
-                    Rse = UserSaved.Rse,
-                    Ti = UserSaved.Ti,
-                    Te = UserSaved.Te,
-                    RelFi = UserSaved.Rel_Fi,
-                    RelFe = UserSaved.Rel_Fe
-                };
-                _glaser.CalculateHomogeneous(); // Bauteil berechnen
-                _glaser.CalculateTemperatureCurve(); // Temperaturkurve
-                _glaser.CalculateGlaser(); // Glaser Kurve
-            }
+                Element = UserSaved.SelectedElement,
+                Rsi = UserSaved.Rsi,
+                Rse = UserSaved.Rse,
+                Ti = UserSaved.Ti,
+                Te = UserSaved.Te,
+                RelFi = UserSaved.Rel_Fi,
+                RelFe = UserSaved.Rel_Fe
+            };
+            _glaser.CalculateHomogeneous(); // Bauteil berechnen
+            _glaser.CalculateTemperatureCurve(); // Temperaturkurve
+            _glaser.CalculateGlaser(); // Glaser Kurve
         }
 
         /*

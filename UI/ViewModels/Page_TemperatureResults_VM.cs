@@ -25,25 +25,34 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Manually Trigger Calculation
         private static TemperatureCurveCalc _tempCalc = new TemperatureCurveCalc();
 
-
         public Page_TemperatureResults_VM()
         {
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
 
-            if (!_tempCalc.IsValid || UserSaved.Recalculate)
+            //if (!_tempCalc.IsValid || UserSaved.Recalculate)
+            //{
+            //    _tempCalc = new TemperatureCurveCalc()
+            //    {
+            //        Element = UserSaved.SelectedElement,
+            //        Rsi = UserSaved.Rsi,
+            //        Rse = UserSaved.Rse,
+            //        Ti = UserSaved.Ti,
+            //        Te = UserSaved.Te
+            //    };
+            //    _tempCalc.CalculateHomogeneous();
+            //    _tempCalc.CalculateTemperatureCurve();
+            //}
+            _tempCalc = new TemperatureCurveCalc()
             {
-                _tempCalc = new TemperatureCurveCalc()
-                {
-                    Element = UserSaved.SelectedElement,
-                    Rsi = UserSaved.Rsi,
-                    Rse = UserSaved.Rse,
-                    Ti = UserSaved.Ti,
-                    Te = UserSaved.Te
-                };
-                _tempCalc.CalculateHomogeneous();
-                _tempCalc.CalculateTemperatureCurve();
-            }
+                Element = UserSaved.SelectedElement,
+                Rsi = UserSaved.Rsi,
+                Rse = UserSaved.Rse,
+                Ti = UserSaved.Ti,
+                Te = UserSaved.Te
+            };
+            _tempCalc.CalculateHomogeneous();
+            _tempCalc.CalculateTemperatureCurve();
         }
 
         /*

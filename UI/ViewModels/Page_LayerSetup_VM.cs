@@ -27,6 +27,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow child Windows to trigger UpdateBindingsAndRecalculateFlag of this Window
             UserSaved.SelectedElementChanged += UpdateBindingsAndRecalculateFlag;
             UserSaved.SelectedLayerChanged += UpdateBindingsAndRecalculateFlag;
+            UserSaved.EnvVarsChanged += UpdateRecalculateFlag;
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
@@ -372,6 +373,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedElement = UserSaved.SelectedElement;
             SelectedListViewItem = null;
             SelectedListViewItem = UserSaved.SelectedLayer;
+        }
+        private void UpdateRecalculateFlag()
+        {
+            UserSaved.Recalculate = true;
         }
     }
 }
