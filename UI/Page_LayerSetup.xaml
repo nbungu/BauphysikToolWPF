@@ -77,6 +77,12 @@
                             Tag="{StaticResource ButtonIcon_AddLayer_W}"
                             Margin="0,0,8,0"/>
                     <Button Style="{StaticResource ButtonStyle01_Mini}"
+                            Tag="{StaticResource ButtonIcon_Edit_B}"
+                            ToolTip="Schicht bearbeiten"
+                            IsEnabled="{Binding IsLayerSelected}"
+                            Command="{Binding EditLayerCommand}"
+                            Margin="0,0,8,0"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}"
                             Command="{Binding DuplicateLayerCommand}"
                             Tag="{StaticResource ButtonIcon_Copy_B}" 
                             Margin="0,0,8,0"

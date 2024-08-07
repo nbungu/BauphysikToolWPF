@@ -25,7 +25,7 @@
                     <DataTemplate>
                         <Grid>
                             <Ellipse Fill="{Binding Material.ColorCode}" Height="28" Width="28" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <Label Content="{Binding LayerPosition}" Foreground="White" FontWeight="Bold"/>
+                            <Label Content="{Binding Tag}" Foreground="White" FontWeight="Bold"/>
                         </Grid>
                     </DataTemplate>
                 </GridViewColumn.CellTemplate>

@@ -77,10 +77,7 @@ namespace BauphysikToolWPF.Models
         // 1:1 relationship with Construction
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Construction Construction { get; set; } = new Construction();
-
-
-        // Properties
-
+        
         [Ignore, JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
         [Ignore, JsonIgnore]
@@ -101,6 +98,9 @@ namespace BauphysikToolWPF.Models
                 return (Color)ColorConverter.ConvertFromString(ColorCode);
             }
         }
+
+        [Ignore, JsonIgnore]
+        public byte[] FullImage { get; set; } = Array.Empty<byte>();
 
         [Ignore]
         public List<string> TagList // Converts string of Tags, separated by Comma, to a List of Tags
