@@ -13,7 +13,8 @@ namespace BauphysikToolWPF.Models
         //------Eigenschaften-----//
 
         [NotNull, PrimaryKey, AutoIncrement, Unique]
-        public int Id { get; set; }
+        public int Id { get; set; } = -1;
+
         [NotNull]
         public double Value { get; set; }
         [NotNull]
@@ -32,5 +33,18 @@ namespace BauphysikToolWPF.Models
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public DocumentSource DocumentSource { get; set; } = new DocumentSource();
 
+        #region ctors
+        
+        public EnvVars() {}
+
+        public EnvVars(double val, Symbol symbol = Symbol.None, Unit unit = Unit.None, string comment = "")
+        {
+            Value = val;
+            Symbol = symbol;
+            Unit = unit;
+            Comment = comment;
+        }
+
+        #endregion
     }
 }

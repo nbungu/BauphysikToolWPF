@@ -194,12 +194,12 @@
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
             <Button Content="Neues Bauteil" Command="{Binding AddNewElementCommand}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Bauteil importieren" IsEnabled="False" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
+            <Button Content="Bauteil-PDF erstellen" Command="{Binding CreateSingleElementPdfCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            <Button Content="PDF erstellen" Command="{Binding CreatePdfCommand}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
+            <Button Content="Bauteilkatalog erstellen" Command="{Binding CreateFullPdfCommand}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDFFull_B}" Margin="0,0,0,16"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
-            <Button Content="Katalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
+            <Button Content="Bauteilkatalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
         </StackPanel>
 
         <!-- Middle -->
@@ -265,7 +265,6 @@
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
                 <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Export_B}" ToolTip="Exportieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
             

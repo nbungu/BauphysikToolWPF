@@ -43,6 +43,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Icons\export-pdf-full_b.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="appicon-256.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -95,6 +99,7 @@
     <Resource Include="Resources\Icons\bookmark.png" />
     <Resource Include="Resources\Icons\comment.png" />
     <Resource Include="Resources\Icons\comment_bold.png" />
+    <Resource Include="Resources\Icons\export-pdf-full_b.png" />
     <Resource Include="Resources\Icons\favicon.png" />
     <Resource Include="Resources\Icons\Filetypes\btk.png" />
     <Resource Include="Resources\Icons\Filetypes\cad.png" />

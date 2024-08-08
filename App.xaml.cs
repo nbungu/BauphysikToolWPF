@@ -18,6 +18,8 @@ namespace BauphysikToolWPF
         {
             base.OnStartup(e);
 
+            #region Logging Setup
+
             try
             {
                 Logger.SetLogFilePath();
@@ -27,6 +29,8 @@ namespace BauphysikToolWPF
             {
                 Console.WriteLine($"Error during Logging Setup: {exception}");
             }
+
+            #endregion
 
             if (e.Args.Length > 0)
             {
@@ -59,6 +63,7 @@ namespace BauphysikToolWPF
                 UserSaved.SelectedProject = DatabaseAccess.QueryProjectById(1);
                 Logger.LogInfo($"Loaded Project: '{UserSaved.SelectedProject}' from Database!");
             }
+
         }
 
         protected override void OnExit(ExitEventArgs e)

@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BT.Logging;
+using System.Windows.Controls;
 
 namespace BauphysikToolWPF.Services
 {
@@ -36,9 +37,10 @@ namespace BauphysikToolWPF.Services
             encoder.Save(fileStream);
         }*/
 
-        public static byte[] SaveAsBLOB(LayersCanvas target, bool asSquareImage = false)
+        public static byte[] SaveAsBLOB(LayersCanvas? target, bool asSquareImage = false)
         {
-            if (target?.DrawingGeometries == null) return Array.Empty<byte>();
+            if (target is null) return Array.Empty<byte>();
+            if (target?.DrawingGeometries is null) return Array.Empty<byte>();
 
             // Convert the BitmapImage to a byte array
             try
@@ -82,6 +84,52 @@ namespace BauphysikToolWPF.Services
             catch (Exception e)
             {
                 Logger.LogError($"Error creating Image from Canvas: {e.Message}");
+                return Array.Empty<byte>();
+            }
+        }
+        public static byte[] SaveGridAsBLOB(Grid? targetGrid, bool asSquareImage = false)
+        {
+            if (targetGrid == null) return Array.Empty<byte>();
+
+            try
+            {
+                // Calculate the size, including margins and padding
+                double width = targetGrid.ActualWidth + targetGrid.Margin.Left + targetGrid.Margin.Right;
+                double height = targetGrid.ActualHeight + targetGrid.Margin.Top + targetGrid.Margin.Bottom;
+
+                Size size = new Size(width, height);
+                targetGrid.Measure(size);
+                targetGrid.Arrange(new Rect(new Point(0, 0), size));
+
+                // Create a RenderTargetBitmap to capture the grid's visual
+                RenderTargetBitmap bitmap = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96d, 96d, PixelFormats.Default);
+                bitmap.Render(targetGrid);
+
+                // Create an encoder and save the bitmap to a memory stream
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                if (asSquareImage)
+                {
+                    // Optional: Crop to a square image
+                    int offset = Math.Abs((int)size.Width - (int)size.Height) / 2;
+                    int offsetX = (int)size.Width > (int)size.Height ? offset : 0;
+                    int offsetY = (int)size.Width < (int)size.Height ? offset : 0;
+                    int squareSize = Math.Min((int)size.Width, (int)size.Height);
+                    var croppedBitmap = new CroppedBitmap(bitmap, new Int32Rect(offsetX, offsetY, squareSize, squareSize));
+                    encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
+                }
+                else
+                {
+                    encoder.Frames.Add(BitmapFrame.Create(bitmap));
+                }
+
+                using MemoryStream stream = new MemoryStream();
+                encoder.Save(stream);
+                Logger.LogInfo($"Successfully created Image from Grid");
+                return stream.ToArray();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Error creating Image from Grid: {e.Message}");
                 return Array.Empty<byte>();
             }
         }

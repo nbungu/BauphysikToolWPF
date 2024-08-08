@@ -212,6 +212,9 @@ namespace BauphysikToolWPF.Services
             }
         }
     }
+
+    #region Strapi API-Response Structure
+
     internal class JsonResponse
     {
         [JsonPropertyName("data")]
@@ -234,4 +237,6 @@ namespace BauphysikToolWPF.Services
         [JsonPropertyName("versionTag")]
         public string VersionTag { get; set; } = string.Empty;
     }
+
+    #endregion
 }

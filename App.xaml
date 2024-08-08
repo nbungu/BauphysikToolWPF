@@ -92,6 +92,7 @@
         <BitmapImage x:Key="ButtonIcon_Export_B" UriSource="/Resources/Icons/export.png"/>
         <BitmapImage x:Key="ButtonIcon_Export_W" UriSource="/Resources/Icons/export_w.png"/>
         <BitmapImage x:Key="ButtonIcon_ExportPDF_B" UriSource="/Resources/Icons/export-pdf.png"/>
+        <BitmapImage x:Key="ButtonIcon_ExportPDFFull_B" UriSource="/Resources/Icons/export-pdf-full_b.png"/>
         <BitmapImage x:Key="ButtonIcon_ExportPDF_W" UriSource="/Resources/Icons/export-pdf_w.png"/>
         <BitmapImage x:Key="ButtonIcon_List_B" UriSource="/Resources/Icons/list.png"/>
         <BitmapImage x:Key="ButtonIcon_List_W" UriSource="/Resources/Icons/list_w.png"/>

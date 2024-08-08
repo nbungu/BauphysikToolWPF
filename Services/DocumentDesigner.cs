@@ -6,12 +6,15 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using BauphysikToolWPF.SessionData;
+using System.Linq;
+using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.Services
 {
     public class DocumentDesigner
     {
-        public static void ElementList()
+        public static void FullCatalogueExport(Project project)
         {
             // Create a new PDF document
             PdfDocument document = new PdfDocument();
@@ -121,16 +124,20 @@ namespace BauphysikToolWPF.Services
             gfx.DrawString($"Ausrichtung: {element.OrientationType}", bodyFont, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"Rges {element.RGesValue:0.00} m²K/W", bodyFont, XBrushes.Black,
+            var str = element.Layers.Any(l => l.HasSubConstructions) ? "Ja" : "Nein";
+            gfx.DrawString($"Inhomogener Schichtaufbau: {str}", bodyFont, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"RT-Wert: {element.RTotValue:0.00} m²K/W", bodyFont, XBrushes.Black,
+            gfx.DrawString($"Rges = {element.RGesValue:0.00} m²K/W (nur Bauteil)", bodyFont, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"U-Value: {element.UValue:0.00} W/m²K", bodyFont, XBrushes.Black,
+            gfx.DrawString($"RT = {element.RTotValue:0.00} m²K/W", bodyFont, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"Q-Value: {element.QValue:0.00} W/m²", bodyFont, XBrushes.Black,
+            gfx.DrawString($"U = {element.UValue:0.00} W/m²K", bodyFont, XBrushes.Black,
+                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+            startY += 16;
+            gfx.DrawString($"q = {element.QValue:0.00} W/m²", bodyFont, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
             startY += 16;
             gfx.DrawString($"Comment: {element.Comment}", bodyFont, XBrushes.Black,
@@ -215,14 +222,31 @@ namespace BauphysikToolWPF.Services
             currentY += cellHeight;
             for (int row = 0; row < data.GetLength(0); row++)
             {
+                var txtColor = data[row, 0][2] == 'b' ? XBrushes.Gray : XBrushes.Black;
                 currentX = startX;
                 for (int col = 0; col < data.GetLength(1); col++)
                 {
-                    gfx.DrawRectangle(XPens.Black, new XRect(currentX, currentY, columnWidths[col], cellHeight));
-                    gfx.DrawString(data[row, col], tableBodyFont, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
+                    //gfx.DrawRectangle(XPens.Black, new XRect(currentX, currentY, columnWidths[col], cellHeight));
+                    
+                    gfx.DrawString(data[row, col], tableBodyFont, txtColor, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
                     currentX += columnWidths[col];
                 }
                 currentY += cellHeight;
+            }
+
+            // Draw a thick line below the table
+            XPen thickPen = new XPen(XColors.Black, 1);
+            gfx.DrawLine(thickPen, startX, currentY, startX + columnWidths.Sum(), currentY);
+
+            // Add the sum row below the thick line
+            currentY += 5; // Space between line and sum row
+            string[] sumValues = { "Summe", element.Thickness.ToString("F2"), "", element.AreaMassDens.ToString("F1"), "", element.RTotValue.ToString("F2") }; // Hardcoded values
+            currentX = startX;
+            for (int col = 0; col < sumValues.Length; col++)
+            {
+                //gfx.DrawRectangle(XPens.Black, new XRect(currentX, currentY, columnWidths[col], cellHeight));
+                gfx.DrawString(sumValues[col], tableBodyFont, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
+                currentX += columnWidths[col];
             }
 
             #endregion
@@ -241,29 +265,44 @@ namespace BauphysikToolWPF.Services
         static string[,] GetLayerData(Element element)
         {
             var layers = element.Layers;
-            string[,] data = new string[layers.Count + 2, 6]; // Zeilen, Spalten
+            var rows = layers.Count + layers.Count(l => l.HasSubConstructions) + 2;
+            string[,] data = new string[rows, 6]; // Zeilen, Spalten
 
-            data[0, 0] = "Rsi";
-            data[0, 1] = "";
-            data[0, 2] = "";
-            data[0, 3] = "";
-            data[0, 4] = "";
-            data[0, 5] = UserSaved.Rsi.ToString("N", CultureInfo.CurrentCulture);
+            int currentRow = 0;
+            data[currentRow, 0] = "Rsi";
+            data[currentRow, 1] = "";
+            data[currentRow, 2] = "";
+            data[currentRow, 3] = "";
+            data[currentRow, 4] = "";
+            data[currentRow, 5] = element.UsedEnvVars[0]?.Value.ToString("N", CultureInfo.CurrentCulture) ?? "";
+            currentRow += 1;
             for (int i = 0; i < layers.Count; i++)
             {
-                data[i + 1, 0] = $"0{i+1} - {layers[i].Material.Name}";
-                data[i + 1, 1] = layers[i].Thickness.ToString("0.00");
-                data[i + 1, 2] = layers[i].Material.BulkDensity.ToString("F0");
-                data[i + 1, 3] = layers[i].AreaMassDensity.ToString("0.0");
-                data[i + 1, 4] = layers[i].Material.ThermalConductivity.ToString("0.000");
-                data[i + 1, 5] = layers[i].R_Value.ToString("0.00");
+                data[currentRow, 0] = $"0{i+1} - {layers[i].Material.Name}";
+                data[currentRow, 1] = layers[i].Thickness.ToString("F2");
+                data[currentRow, 2] = layers[i].Material.BulkDensity.ToString("F0");
+                data[currentRow, 3] = layers[i].AreaMassDensity.ToString("F1");
+                data[currentRow, 4] = layers[i].Material.ThermalConductivity.ToString("F3");
+                data[currentRow, 5] = layers[i].R_Value.ToString("F2");
+                currentRow += 1;
+
+                if (layers[i].HasSubConstructions)
+                {
+                    data[currentRow, 0] = $"0{i + 1}b - {layers[i].SubConstruction.Material.Name}";
+                    data[currentRow, 1] = layers[i].SubConstruction.Thickness.ToString("F2");
+                    data[currentRow, 2] = layers[i].SubConstruction.Material.BulkDensity.ToString("F0");
+                    data[currentRow, 3] = layers[i].SubConstruction.AreaMassDensity.ToString("F1");
+                    data[currentRow, 4] = layers[i].SubConstruction.Material.ThermalConductivity.ToString("F3");
+                    data[currentRow, 5] = layers[i].SubConstruction.R_Value.ToString("F2");
+                    currentRow += 1;
+                }
             }
-            data[layers.Count + 1, 0] = "Rse";
-            data[layers.Count + 1, 1] = "";
-            data[layers.Count + 1, 2] = "";
-            data[layers.Count + 1, 3] = "";
-            data[layers.Count + 1, 4] = "";
-            data[layers.Count + 1, 5] = UserSaved.Rse.ToString("N", CultureInfo.CurrentCulture);
+            data[currentRow, 0] = "Rse";
+            data[currentRow, 1] = "";
+            data[currentRow, 2] = "";
+            data[currentRow, 3] = "";
+            data[currentRow, 4] = "";
+            data[currentRow, 5] = element.UsedEnvVars[1]?.Value.ToString("N", CultureInfo.CurrentCulture) ?? "";
 
             return data;
         }

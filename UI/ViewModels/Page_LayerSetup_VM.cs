@@ -201,7 +201,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<IDrawingGeometry> CrossSectionDrawing => _drawingService.DrawingGeometries;
         public Rectangle CanvasSize => _drawingService.CanvasSize;
         public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
+        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true).ToList();
         public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()

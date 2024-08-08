@@ -97,10 +97,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             SwitchPage(NavigationContent.LayerSetup);
         }
 
+
         [RelayCommand]
-        private void CreatePdf()
+        private void CreateSingleElementPdf(int selectedInternalId)
         {
-            DocumentDesigner.SingleElementOverview(_selectedElement);
+            UserSaved.SelectedElementId = selectedInternalId;
+            DocumentDesigner.SingleElementOverview(UserSaved.SelectedElement);
+        }
+
+        [RelayCommand]
+        private void CreateFullPdf()
+        {
+            DocumentDesigner.FullCatalogueExport(UserSaved.SelectedProject);
         }
 
         // This method will be called whenever SortingPropertyIndex changes

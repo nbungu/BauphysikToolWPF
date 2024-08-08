@@ -42,7 +42,7 @@ namespace BauphysikToolWPF.UI
             if (IsVisible) return;
             UserSaved.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
             UserSaved.SelectedElement.Image = (UserSaved.SelectedElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(LayersCanvas, true) : Array.Empty<byte>();
-            UserSaved.SelectedElement.FullImage = (UserSaved.SelectedElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(LayersCanvas) : Array.Empty<byte>();
+            UserSaved.SelectedElement.FullImage = (UserSaved.SelectedElement.Layers.Count != 0) ? SaveCanvas.SaveGridAsBLOB(ZoomableGrid) : Array.Empty<byte>();
         }
 
         // Handle Custom User Input - Regex Check
