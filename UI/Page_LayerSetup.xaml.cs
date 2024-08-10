@@ -20,6 +20,10 @@ namespace BauphysikToolWPF.UI
         private const double MinimumScale = 0.5;
         private const double MaximumScale = 3.0;
 
+        public static FrameworkElement Canvas { get; private set; }
+        public static FrameworkElement FullCanvas { get; private set; }
+
+
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public Page_LayerSetup()
         {
@@ -30,8 +34,11 @@ namespace BauphysikToolWPF.UI
                 UserSaved.SelectedElement.AssignInternalIdsToLayers();
             }
 
+
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
+            Canvas = LayersCanvas;
+            FullCanvas = ZoomableGrid;
         }
 
         // Save current canvas as image, just before closing Page_LayerSetup Page
@@ -41,8 +48,8 @@ namespace BauphysikToolWPF.UI
             // Only save if leaving this page
             if (IsVisible) return;
             UserSaved.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
-            UserSaved.SelectedElement.Image = (UserSaved.SelectedElement.Layers.Count != 0) ? SaveCanvas.SaveAsBLOB(LayersCanvas, true) : Array.Empty<byte>();
-            UserSaved.SelectedElement.FullImage = (UserSaved.SelectedElement.Layers.Count != 0) ? SaveCanvas.SaveGridAsBLOB(ZoomableGrid) : Array.Empty<byte>();
+            UserSaved.SelectedElement.Image = (UserSaved.SelectedElement.Layers.Count != 0) ? CaptureImage.CaptureVisualAsImage(Canvas, true) : Array.Empty<byte>();
+            UserSaved.SelectedElement.FullImage = (UserSaved.SelectedElement.Layers.Count != 0) ? CaptureImage.CaptureVisualAsImage(FullCanvas) : Array.Empty<byte>();
         }
 
         // Handle Custom User Input - Regex Check

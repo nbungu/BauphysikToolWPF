@@ -5,10 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using BauphysikToolWPF.SessionData;
 using System.Linq;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
 
 namespace BauphysikToolWPF.Services
 {
@@ -76,17 +73,18 @@ namespace BauphysikToolWPF.Services
                 currentY += cellHeight;
             }
 
-            // Save the document
-            string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); //%appdata%/BauphysikTool
-            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
-            string pdfFilePath = Path.Combine(appFolder, "ProjectOverview.pdf");
+            foreach (var element in project.Elements)
+            {
+                AddElementPage(element, document);
+            }
 
-            document.Save(pdfFilePath);
+            var pdfFilePath = SaveDoc(document, $"Bauteilkatalog_{project.Name}");
 
             // Open the document with the default PDF viewer
             Process.Start(new ProcessStartInfo(pdfFilePath) { UseShellExecute = true });
         }
-        public static void SingleElementOverview(Element element)
+
+        public static void CreateSingleElementDocument(Element element)
         {
             if (element is null) return;
 
@@ -94,6 +92,31 @@ namespace BauphysikToolWPF.Services
             PdfDocument document = new PdfDocument();
             document.Info.Title = $"Overview of {element.Name}";
 
+            AddElementPage(element, document);
+
+            var pdfFilePath = SaveDoc(document, element.Name);
+
+            // Open the document with the default PDF viewer
+            Process.Start(new ProcessStartInfo(pdfFilePath) { UseShellExecute = true });
+        }
+        
+        private static string SaveDoc(PdfDocument document, string fileName)
+        {
+            // Save the document
+            string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); //%appdata%/BauphysikTool
+            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
+            string pdfFilePath = Path.Combine(appFolder, "BauphysikTool_export.pdf");
+            if (TextInputValidation.IsValidWindowsFileName($"{fileName}.pdf"))
+            {
+                pdfFilePath = Path.Combine(appFolder, $"{fileName}.pdf");
+            }
+            document.Save(pdfFilePath);
+
+            return pdfFilePath;
+        }
+
+        private static void AddElementPage(Element element, PdfDocument document)
+        {
             // Add a page
             PdfPage page = document.AddPage();
             page.Size = PdfSharp.PageSize.A4;
@@ -152,7 +175,7 @@ namespace BauphysikToolWPF.Services
             gfx.DrawString("von innen nach außen", bodyFont, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
             startY += 16;
-            
+
             #region Image
 
             // Draw image from Image property
@@ -222,12 +245,11 @@ namespace BauphysikToolWPF.Services
             currentY += cellHeight;
             for (int row = 0; row < data.GetLength(0); row++)
             {
-                var txtColor = data[row, 0][2] == 'b' ? XBrushes.Gray : XBrushes.Black;
+                var txtColor = data[row, 0][2] == 'b' ? XBrushes.DarkGray : XBrushes.Black;
                 currentX = startX;
                 for (int col = 0; col < data.GetLength(1); col++)
                 {
                     //gfx.DrawRectangle(XPens.Black, new XRect(currentX, currentY, columnWidths[col], cellHeight));
-                    
                     gfx.DrawString(data[row, col], tableBodyFont, txtColor, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
                     currentX += columnWidths[col];
                 }
@@ -250,19 +272,9 @@ namespace BauphysikToolWPF.Services
             }
 
             #endregion
-
-            // Save the document
-            string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); //%appdata%/BauphysikTool
-            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
-            string pdfFilePath = Path.Combine(appFolder, "ProjectOverview.pdf");
-
-            document.Save(pdfFilePath);
-
-            // Open the document with the default PDF viewer
-            Process.Start(new ProcessStartInfo(pdfFilePath) { UseShellExecute = true });
         }
-        
-        static string[,] GetLayerData(Element element)
+
+        private static string[,] GetLayerData(Element element)
         {
             var layers = element.Layers;
             var rows = layers.Count + layers.Count(l => l.HasSubConstructions) + 2;
@@ -307,14 +319,14 @@ namespace BauphysikToolWPF.Services
             return data;
         }
 
-        static void DrawHeader(XGraphics gfx, PdfPage page, string projectName, string date)
+        private static void DrawHeader(XGraphics gfx, PdfPage page, string projectName, string date)
         {
             XFont headerFont = new XFont("Verdana", 10, XFontStyleEx.Regular);
             gfx.DrawString($"Projekt: {projectName} | Datum: {date}", headerFont, XBrushes.Gray,
                 new XRect(0, 0, page.Width, 30), XStringFormats.TopCenter);
         }
 
-        static void DrawFooter(XGraphics gfx, PdfPage page, string author, int pageNumber)
+        private static void DrawFooter(XGraphics gfx, PdfPage page, string author, int pageNumber)
         {
             XFont footerFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
             gfx.DrawString($"Bearbeiter: {author} | Seite {pageNumber}", footerFont, XBrushes.Gray,

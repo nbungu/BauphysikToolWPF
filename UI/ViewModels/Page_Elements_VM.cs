@@ -96,13 +96,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             SwitchPage(NavigationContent.LayerSetup);
         }
-
-
+        
         [RelayCommand]
         private void CreateSingleElementPdf(int selectedInternalId)
         {
             UserSaved.SelectedElementId = selectedInternalId;
-            DocumentDesigner.SingleElementOverview(UserSaved.SelectedElement);
+            UserSaved.RequestCaptureImage();
+            DocumentDesigner.CreateSingleElementDocument(UserSaved.SelectedElement);
         }
 
         [RelayCommand]

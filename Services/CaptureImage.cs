@@ -1,16 +1,69 @@
-﻿using BauphysikToolWPF.UI.CustomControls;
+﻿using BT.Logging;
 using System;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BT.Logging;
-using System.Windows.Controls;
 
 namespace BauphysikToolWPF.Services
 {
-    public static class SaveCanvas
+    public static class CaptureImage
     {
+        // render relevant visual elements off-screen, when they aren't part of the active visual tree.
+        public static byte[] CaptureVisualAsImage(FrameworkElement target, bool asSquareImage = false, bool includeMargins = false)
+        {
+            if (target == null) return Array.Empty<byte>();
+
+            try
+            {
+                Size size = new Size(target.ActualWidth, target.ActualHeight);
+                if (includeMargins)
+                {
+                    // Calculate the size, including margins and padding
+                    double width = target.ActualWidth + target.Margin.Left + target.Margin.Right;
+                    double height = target.ActualHeight + target.Margin.Top + target.Margin.Bottom;
+                    size = new Size(width, height);
+                }
+                target.Measure(size);
+                target.Arrange(new Rect(size));
+
+                RenderTargetBitmap renderBitmap = new RenderTargetBitmap((int)size.Width, (int)size.Height, 96d, 96d, PixelFormats.Pbgra32);
+                renderBitmap.Render(target);
+
+                BitmapEncoder encoder = new PngBitmapEncoder();
+                if (asSquareImage)
+                {
+                    int offset = Math.Abs((int)size.Width - (int)size.Height) / 2;
+                    int offsetX = (int)size.Width > (int)size.Height ? offset : 0;
+                    int offsetY = (int)size.Width < (int)size.Height ? offset : 0;
+                    int squareSize = Math.Min((int)size.Width, (int)size.Height);
+                    var croppedBitmap = new CroppedBitmap(renderBitmap, new Int32Rect(offsetX, offsetY, squareSize, squareSize));
+                    encoder.Frames.Add(BitmapFrame.Create(croppedBitmap));
+                }
+                else
+                {
+                    encoder.Frames.Add(BitmapFrame.Create(renderBitmap));
+                }
+
+                using MemoryStream stream = new MemoryStream();
+                encoder.Save(stream);
+                Logger.LogInfo($"Successfully captured image of {target.GetType().Name}");
+                return stream.ToArray();
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Error capturing image of {target.GetType().Name}: {e.Message}");
+                return Array.Empty<byte>();
+            }
+        }
+
+        public static void SaveImageToFile(byte[] imageData, string fileName)
+        {
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BauphysikTool", fileName);
+            File.WriteAllBytes(path, imageData);
+            Logger.LogInfo($"Image saved to {path}");
+        }
+
         // TODO adjust offsets like BLOB
         /*public static void SaveAsPNG(ItemsControl target, string path = "C:/Users/arnes/source/repos/BauphysikToolWPF/Resources/ElementImages/")
         {
@@ -37,7 +90,7 @@ namespace BauphysikToolWPF.Services
             encoder.Save(fileStream);
         }*/
 
-        public static byte[] SaveAsBLOB(LayersCanvas? target, bool asSquareImage = false)
+        /*public static byte[] SaveAsBLOB(LayersCanvas? target, bool asSquareImage = false)
         {
             if (target is null) return Array.Empty<byte>();
             if (target?.DrawingGeometries is null) return Array.Empty<byte>();
@@ -132,6 +185,6 @@ namespace BauphysikToolWPF.Services
                 Logger.LogError($"Error creating Image from Grid: {e.Message}");
                 return Array.Empty<byte>();
             }
-        }
+        }*/
     }
 }

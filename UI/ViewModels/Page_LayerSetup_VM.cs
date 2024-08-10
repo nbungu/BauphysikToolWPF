@@ -1,7 +1,9 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
+using BauphysikToolWPF.UI.CustomControls;
 using BauphysikToolWPF.UI.Drawing;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -28,6 +30,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElementChanged += UpdateBindingsAndRecalculateFlag;
             UserSaved.SelectedLayerChanged += UpdateBindingsAndRecalculateFlag;
             UserSaved.EnvVarsChanged += UpdateRecalculateFlag;
+            UserSaved.CaptureImagesRequested += OnCaptureImagesRequested;
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += ComboUpdate;
@@ -382,6 +385,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void ComboUpdate()
         {
             UserSaved.OnSelectedLayerChanged();
+        }
+
+        private void OnCaptureImagesRequested()
+        {
+            // Capture images of UI elements
+            UserSaved.SelectedElement.Image = (UserSaved.SelectedElement.Layers.Count != 0) ? CaptureImage.CaptureVisualAsImage(Page_LayerSetup.Canvas, true) : Array.Empty<byte>();
+            UserSaved.SelectedElement.FullImage = (UserSaved.SelectedElement.Layers.Count != 0) ? CaptureImage.CaptureVisualAsImage(Page_LayerSetup.FullCanvas) : Array.Empty<byte>();
         }
     }
 }

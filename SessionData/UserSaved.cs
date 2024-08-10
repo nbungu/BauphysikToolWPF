@@ -16,6 +16,9 @@ namespace BauphysikToolWPF.SessionData
         public static event Notify? SelectedElementChanged; // event
         public static event Notify? SelectedLayerChanged; // event
         public static event Notify? EnvVarsChanged; // event
+        // Event to notify when to capture images
+        public static event Notify? CaptureImagesRequested;
+
 
         // event handlers - publisher
         public static void OnSelectedProjectChanged(bool updateIsModified = true) //protected virtual method
@@ -36,6 +39,10 @@ namespace BauphysikToolWPF.SessionData
         public static void OnEnvVarsChanged() //protected virtual method
         {
             EnvVarsChanged?.Invoke(); // if EnvVarsChanged is not null then call delegate
+        }
+        public static void RequestCaptureImage() //protected virtual method
+        {
+            CaptureImagesRequested?.Invoke(); // if EnvVarsChanged is not null then call delegate
         }
 
         public static string ProjectFilePath { get; set; } = "Startprojekt aus Datenbank";
