@@ -1,9 +1,7 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Repository;
-using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.CustomControls;
 using BauphysikToolWPF.UI.Drawing;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -18,7 +16,8 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
     public partial class Page_LayerSetup_VM : ObservableObject
     {
-        private readonly CanvasDrawingService _drawingService = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
+
+        private readonly CanvasDrawingService _crossSection = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
 
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
@@ -30,8 +29,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElementChanged += UpdateBindingsAndRecalculateFlag;
             UserSaved.SelectedLayerChanged += UpdateBindingsAndRecalculateFlag;
             UserSaved.EnvVarsChanged += UpdateRecalculateFlag;
-            UserSaved.CaptureImagesRequested += OnCaptureImagesRequested;
-
+            
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += ComboUpdate;
             PropertyItem<SubConstructionDirection>.PropertyChanged += ComboUpdate;
@@ -138,7 +136,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedLayerId = value.InternalId;
             UserSaved.SelectedLayer.IsSelected = true;
 
-            _drawingService.UpdateDrawings();
+            _crossSection.UpdateDrawings();
         }
 
         /*
@@ -201,10 +199,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool IsLayerSelected => SelectedListViewItem != null;
         public bool ShowLayerExpander => IsLayerSelected;
         public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstructions;
-        public List<IDrawingGeometry> CrossSectionDrawing => _drawingService.DrawingGeometries;
-        public Rectangle CanvasSize => _drawingService.CanvasSize;
+        public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
+        public Rectangle CanvasSize => _crossSection.CanvasSize;
         public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true).ToList();
+        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_crossSection.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true).ToList();
         public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
@@ -368,7 +366,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.Recalculate = true;
 
-            _drawingService.UpdateDrawings();
+            _crossSection.UpdateDrawings();
 
             LayerList = null;
             LayerList = UserSaved.SelectedElement.Layers;
@@ -385,13 +383,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void ComboUpdate()
         {
             UserSaved.OnSelectedLayerChanged();
-        }
-
-        private void OnCaptureImagesRequested()
-        {
-            // Capture images of UI elements
-            UserSaved.SelectedElement.Image = (UserSaved.SelectedElement.Layers.Count != 0) ? CaptureImage.CaptureVisualAsImage(Page_LayerSetup.Canvas, true) : Array.Empty<byte>();
-            UserSaved.SelectedElement.FullImage = (UserSaved.SelectedElement.Layers.Count != 0) ? CaptureImage.CaptureVisualAsImage(Page_LayerSetup.FullCanvas) : Array.Empty<byte>();
         }
     }
 }

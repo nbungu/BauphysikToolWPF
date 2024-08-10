@@ -48,8 +48,6 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public string Name { get; set; } = string.Empty;
         [NotNull]
-        public byte[] Image { get; set; } = Array.Empty<byte>();
-        [NotNull]
         public string ColorCode { get; set; } = "#00FFFFFF";
         [NotNull]
         public string Tag { get; set; } = string.Empty;
@@ -102,6 +100,9 @@ namespace BauphysikToolWPF.Models
 
         [Ignore, JsonIgnore]
         public byte[] FullImage { get; set; } = Array.Empty<byte>();
+
+        [Ignore, JsonIgnore]
+        public byte[] Image { get; set; } = Array.Empty<byte>();
 
         [Ignore]
         public List<string> TagList // Converts string of Tags, separated by Comma, to a List of Tags

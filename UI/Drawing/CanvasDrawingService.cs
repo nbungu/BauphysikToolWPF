@@ -31,7 +31,7 @@ namespace BauphysikToolWPF.UI.Drawing
         public Rectangle CanvasSize { get; set; }
         public DrawingType DrawingType { get; set; }
         public AlignmentVariant Alignment { get; set; }
-        public List<IDrawingGeometry> DrawingGeometries { get; private set; } //=> GetCrossSectionDrawing(Element, CanvasSize);
+        public List<IDrawingGeometry> DrawingGeometries { get; private set; }
 
         public CanvasDrawingService(Element element, Rectangle canvasSize, DrawingType drawingType = DrawingType.CrossSection, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {

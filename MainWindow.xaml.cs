@@ -41,6 +41,7 @@ namespace BauphysikToolWPF
         public MainWindow()
         {
             InitializeComponent();
+            // Assign for static usage
             _navigationMenuListBox = this.NavigationMenuListBox;
             _projectBoxHeader = this.ProjectBoxHeader;
             _toastNotification = this.Toast;

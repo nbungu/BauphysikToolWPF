@@ -12,10 +12,9 @@
             IsVisibleChanged="UserControl_IsVisibleChanged">
 
     <UserControl.DataContext>
-        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
         <vm:Page_LayerSetup_VM/>
     </UserControl.DataContext>
-    
+
     <!--
     the DataContext is used to specify the data source for a UI element,
     while the ItemsSource is used to specify the data source for a list of items.

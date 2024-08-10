@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -7,7 +8,6 @@ using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Data;
-using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -101,7 +101,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void CreateSingleElementPdf(int selectedInternalId)
         {
             UserSaved.SelectedElementId = selectedInternalId;
-            UserSaved.RequestCaptureImage();
             DocumentDesigner.CreateSingleElementDocument(UserSaved.SelectedElement);
         }
 
