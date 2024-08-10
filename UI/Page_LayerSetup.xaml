@@ -114,7 +114,7 @@
 
                         <controls:LayersListView Layers="{Binding LayerList}" SelectedLayer="{Binding SelectedListViewItem}" MinHeight="200" MaxHeight="800"/>
 
-                        <Border VerticalAlignment="Center" Padding="8" BorderThickness="1,0,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                        <Border VerticalAlignment="Center" Padding="4" BorderBrush="{StaticResource PrimaryBorderBrush}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -150,7 +150,7 @@
                             </Grid>
                         </Border>
 
-                        <Border VerticalAlignment="Center" Padding="8" BorderThickness="1,0,1,1" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                        <Border VerticalAlignment="Center" Padding="4"  BorderBrush="{StaticResource PrimaryBorderBrush}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto"/>
@@ -251,9 +251,16 @@
                 
             </Grid>
 
-            <!--Grid Splitter-->
-            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
 
+            <controls:ExpandableGridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                                             HorizontalAlignment="Left"
+                                             VerticalAlignment="Stretch"
+                                             Width="24"
+                                             Background="Transparent"
+                                             Margin="-12,16,0,16"/>
+            <!--Grid Splitter
+            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
+-->
             <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="16">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
