@@ -1,7 +1,9 @@
 ﻿using BauphysikToolWPF.Calculations;
 using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.CustomControls;
+using BauphysikToolWPF.UI.Drawing;
+using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -12,9 +14,6 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.UI.Drawing;
-using BT.Geometry;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -31,19 +30,29 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
 
-            if (!_dynamicTempCalc.IsValid || UserSaved.Recalculate)
+            //if (!_dynamicTempCalc.IsValid || UserSaved.Recalculate)
+            //{
+            //    _dynamicTempCalc = new DynamicTempCalc()
+            //    {
+            //        Element = UserSaved.SelectedElement,
+            //        Rsi = UserSaved.Rsi,
+            //        Rse = UserSaved.Rse,
+            //        Ti = UserSaved.Ti,
+            //        Te = UserSaved.Te
+            //    };
+            //    _dynamicTempCalc.CalculateHomogeneous();
+            //    _dynamicTempCalc.CalculateDynamicValues();
+            //}
+            _dynamicTempCalc = new DynamicTempCalc()
             {
-                _dynamicTempCalc = new DynamicTempCalc()
-                {
-                    Element = UserSaved.SelectedElement,
-                    Rsi = UserSaved.Rsi,
-                    Rse = UserSaved.Rse,
-                    Ti = UserSaved.Ti,
-                    Te = UserSaved.Te
-                };
-                _dynamicTempCalc.CalculateHomogeneous();
-                _dynamicTempCalc.CalculateDynamicValues();
-            }
+                Element = UserSaved.SelectedElement,
+                Rsi = UserSaved.Rsi,
+                Rse = UserSaved.Rse,
+                Ti = UserSaved.Ti,
+                Te = UserSaved.Te
+            };
+            _dynamicTempCalc.CalculateHomogeneous();
+            _dynamicTempCalc.CalculateDynamicValues();
         }
 
         /*

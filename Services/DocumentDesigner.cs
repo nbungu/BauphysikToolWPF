@@ -13,6 +13,12 @@ namespace BauphysikToolWPF.Services
     {
         public static void FullCatalogueExport(Project project)
         {
+            XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
+            XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
+            XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
+            XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
+            XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
+
             // Create a new PDF document
             PdfDocument document = new PdfDocument();
             document.Info.Title = "Elements Table";
@@ -23,11 +29,6 @@ namespace BauphysikToolWPF.Services
 
             // Get an XGraphics object for drawing
             XGraphics gfx = XGraphics.FromPdfPage(page);
-
-            // Create fonts
-            XFont titleFont = new XFont("Verdana", 14, XFontStyleEx.Bold);
-            XFont headerFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
-            XFont bodyFont = new XFont("Verdana", 10, XFontStyleEx.Regular);
 
             // Draw title
             gfx.DrawString("5. Übersichtsliste: U- und R-Werte aller Bauteile", titleFont, XBrushes.Black,
@@ -55,7 +56,7 @@ namespace BauphysikToolWPF.Services
             for (int i = 0; i < headers.Length; i++)
             {
                 gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, new XRect(currentX, startY, columnWidths[i], cellHeight));
-                gfx.DrawString(headers[i], headerFont, XBrushes.Black, new XRect(currentX + 2, startY + 3, columnWidths[i], cellHeight), XStringFormats.TopLeft);
+                gfx.DrawString(headers[i], tableHeaderFont, XBrushes.Black, new XRect(currentX + 2, startY + 3, columnWidths[i], cellHeight), XStringFormats.TopLeft);
                 currentX += columnWidths[i];
             }
 
@@ -67,7 +68,7 @@ namespace BauphysikToolWPF.Services
                 for (int col = 0; col < data.GetLength(1); col++)
                 {
                     gfx.DrawRectangle(XPens.Black, new XRect(currentX, currentY, columnWidths[col], cellHeight));
-                    gfx.DrawString(data[row, col], bodyFont, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
+                    gfx.DrawString(data[row, col], tableBodyFont, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
                     currentX += columnWidths[col];
                 }
                 currentY += cellHeight;
@@ -117,6 +118,12 @@ namespace BauphysikToolWPF.Services
 
         private static void AddElementPage(Element element, PdfDocument document)
         {
+            XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
+            XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
+            XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
+            XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
+            XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
+
             // Add a page
             PdfPage page = document.AddPage();
             page.Size = PdfSharp.PageSize.A4;
@@ -125,12 +132,6 @@ namespace BauphysikToolWPF.Services
             // Draw Header and Footer
             DrawHeader(gfx, page, element.Project.Name, DateTime.Now.ToString("yyyy-MM-dd"));
             DrawFooter(gfx, page, element.Project.UserName, document.PageCount);
-
-            // Define fonts
-            XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
-            XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
-            XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
-            XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
 
             double startY = 50;
 
@@ -168,7 +169,7 @@ namespace BauphysikToolWPF.Services
             startY += 40;
 
             // Draw Layer Information
-            gfx.DrawString("Querschnitt", titleFont, XBrushes.Black,
+            gfx.DrawString("Querschnitt", titleFontSm, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 30), XStringFormats.TopLeft);
             startY += 16;
 
@@ -214,7 +215,7 @@ namespace BauphysikToolWPF.Services
             #endregion
 
             // Draw Layer Information
-            gfx.DrawString("Schichtaufbau", titleFont, XBrushes.Black,
+            gfx.DrawString("Schichtaufbau", titleFontSm, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 30), XStringFormats.TopLeft);
             startY += 16;
 

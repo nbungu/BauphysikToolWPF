@@ -20,10 +20,20 @@ namespace BauphysikToolWPF.Services
             {
                 foreach (IDrawingGeometry geometry in drawingService.DrawingGeometries)
                 {
-                    // Draw the rectangle using the properties defined in each IDrawingGeometry
+                    // Adjust the background brush with opacity
+                    Brush backgroundBrush = geometry.BackgroundColor.Clone();
+                    backgroundBrush.Opacity = geometry.Opacity; // Apply opacity
+
+                    // Define the pen with the stroke dash array
+                    Pen rectanglePen = new Pen(geometry.RectangleBorderColor, geometry.RectangleBorderThickness)
+                    {
+                        DashStyle = new DashStyle(geometry.RectangleStrokeDashArray, 0)
+                    };
+
+                    // Draw the rectangle with the adjusted brush and pen
                     drawingContext.DrawRectangle(
-                        geometry.BackgroundColor,
-                        new Pen(geometry.RectangleBorderColor, geometry.RectangleBorderThickness),
+                        backgroundBrush,
+                        rectanglePen,
                         new Rect(
                             geometry.Rectangle.TopLeft.X,
                             geometry.Rectangle.TopLeft.Y,
@@ -34,8 +44,11 @@ namespace BauphysikToolWPF.Services
                     // Optionally draw additional details (like hatch patterns)
                     if (geometry.DrawingBrush != null)
                     {
+                        Brush drawingBrush = geometry.DrawingBrush.Clone();
+                        drawingBrush.Opacity = geometry.Opacity; // Apply opacity to additional details
+
                         drawingContext.DrawRectangle(
-                            geometry.DrawingBrush,
+                            drawingBrush,
                             null,
                             new Rect(
                                 geometry.Rectangle.TopLeft.X,
