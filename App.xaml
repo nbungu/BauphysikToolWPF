@@ -359,7 +359,6 @@
 
         <!--Custom Expander Style-->
         <Style x:Key="{x:Type Expander}" TargetType="{x:Type Expander}">
-            <Setter Property="Foreground" Value="{StaticResource PrimaryHighlightBrush}" />
             <Setter Property="FontWeight" Value="DemiBold"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="BorderBrush" Value="Transparent" />

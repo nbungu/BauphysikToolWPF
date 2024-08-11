@@ -104,36 +104,34 @@
                 <ColumnDefinition Width=".5*"/>
             </Grid.ColumnDefinitions>
 
-            <ListBox Grid.Row="2"
-                ItemsSource="{Binding DynamicThermalValues_i}"
-                ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
-                ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
-                SnapsToDevicePixels="True"
-                Margin="0,0,8,8"
-                Background="Transparent"
-                BorderThickness="0" d:ItemsSource="{d:SampleData ItemCount=5}"/>
+            <ScrollViewer Grid.Column="0" Grid.Row="2"  VerticalScrollBarVisibility="Hidden" CanContentScroll="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Margin="0,0,16,0">
+                <!--Gewählte Schicht + Eigenschaften-->
+                <Expander Header="innen" IsExpanded="True">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+                        <controls:PropertyDataGrid x:Name="DynamicThermalValuesInteriorDataGrid" Properties="{Binding DynamicThermalValuesInterior}"/>
+                    </ScrollViewer>
+                </Expander>
+            </ScrollViewer>
 
-            <ListBox Grid.Column="1"
-                Grid.Row="2"
-                ItemsSource="{Binding DynamicThermalValues}"
-                ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
-                ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
-                SnapsToDevicePixels="True"
-                Margin="0,0,0,8"
-                Background="Transparent"
-                BorderThickness="0"/>
+            <ScrollViewer Grid.Column="1" Grid.Row="2" VerticalScrollBarVisibility="Hidden" CanContentScroll="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                <!--Gewählte Schicht + Eigenschaften-->
+                <Expander Header="dynamisch thermische Kenngrößen" IsExpanded="True">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+                        <controls:PropertyDataGrid x:Name="DynamicThermalValuesDataGrid" Properties="{Binding DynamicThermalValues}"/>
+                    </ScrollViewer>
+                </Expander>
+            </ScrollViewer>
 
-            <ListBox Grid.Column="2"
-                 Grid.Row="2"
-                 ItemsSource="{Binding DynamicThermalValues_e}"
-                 ItemTemplate="{StaticResource DTV_ItemDataTemplate}"
-                 ItemContainerStyle="{StaticResource DTV_ItemContainerStyle}"
-                 SnapsToDevicePixels="True"
-                 Margin="8,0,0,8"
-                 Background="Transparent"
-                 BorderThickness="0"/>
+            <ScrollViewer Grid.Column="2" Grid.Row="2" VerticalScrollBarVisibility="Hidden" CanContentScroll="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel" Margin="16,0,0,0">
+                <!--Gewählte Schicht + Eigenschaften-->
+                <Expander Header="außen" IsExpanded="True">
+                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+                        <controls:PropertyDataGrid x:Name="DynamicThermalValuesExteriorDataGrid" Properties="{Binding DynamicThermalValuesExterior}"/>
+                    </ScrollViewer>
+                </Expander>
+            </ScrollViewer>
 
-            <Border Grid.Row="1" Grid.ColumnSpan="3" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,8,0,8" CornerRadius="8">
+            <Border Grid.Row="1" Grid.ColumnSpan="3" Grid.Column="0" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,8,0,8" CornerRadius="8">
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width=".5*"/>
@@ -177,71 +175,67 @@
                 </Grid>
             </Border>
 
-            <Border Padding="8" CornerRadius="8">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Grid.Column="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                    <Label Content="Simulations-Randbedingungen - Innen" Grid.ColumnSpan="3" HorizontalAlignment="Left" FontWeight="Bold"/>
-                    <Label Grid.Row="1" Content="Raumlufttemperatur" HorizontalAlignment="Left" Height="40"/>
-                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBox Text="{Binding Ti_Mean}" MaxLength="4"/>
-                        <Label Content="°C"/>
-                    </StackPanel>
-                    <Label Grid.Row="2" Content="Temperaturamplitude" HorizontalAlignment="Left" Height="40"/>
-                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBox Text="{Binding Ti_Amplitude}" MaxLength="3"/>
-                        <Label Content="K"/>
-                    </StackPanel>
-                    <Label Grid.Row="3" Content="Übergangswiderstand" HorizontalAlignment="Left" Height="40" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
-                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBox Text="0.13" MaxLength="3" IsEnabled="False" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
-                        <Label Content="W/m²K" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
-                    </StackPanel>
-                    
-                </Grid>
-            </Border>
+                <Label Content="Simulations-Randbedingungen - Innen" Grid.ColumnSpan="3" HorizontalAlignment="Left" FontWeight="Bold"/>
+                <Label Grid.Row="1" Content="Raumlufttemperatur" HorizontalAlignment="Left" Height="40"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBox Text="{Binding Ti_Mean}" MaxLength="4"/>
+                    <Label Content="°C"/>
+                </StackPanel>
+                <Label Grid.Row="2" Content="Temperaturamplitude" HorizontalAlignment="Left" Height="40"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBox Text="{Binding Ti_Amplitude}" MaxLength="3"/>
+                    <Label Content="K"/>
+                </StackPanel>
+                <Label Grid.Row="3" Content="Übergangswiderstand" HorizontalAlignment="Left" Height="40" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBox Text="0.13" MaxLength="3" IsEnabled="False" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                    <Label Content="W/m²K" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                </StackPanel>
+            </Grid>
 
-            <Border Grid.Column="2" Padding="8" CornerRadius="8">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+            <Grid Grid.Row="0" Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                    <Label Content="Simulations-Randbedingungen - Außen" Grid.ColumnSpan="2" HorizontalAlignment="Left" FontWeight="Bold"/>
-                    <Label Grid.Row="1" Content="Außenlufttemperatur" HorizontalAlignment="Left" Height="40"/>
-                    <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBox Text="{Binding Te_Mean}" MaxLength="4"/>
-                        <Label Content="°C"/>
-                    </StackPanel>
-                    <Label Grid.Row="2" Content="Temperaturamplitude" HorizontalAlignment="Left" Height="40"/>
-                    <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBox Text="{Binding Te_Amplitude}" MaxLength="3"/>
-                        <Label Content="K"/>
-                    </StackPanel>
-                    <Label Grid.Row="3" Content="Übergangswiderstand" HorizontalAlignment="Left" Height="40" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
-                    <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                        <TextBox Text="0.04" MaxLength="3" IsEnabled="False" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
-                        <Label Content="W/m²K" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
-                    </StackPanel>
-                </Grid>
-            </Border>
+                <Label Content="Simulations-Randbedingungen - Außen" Grid.ColumnSpan="2" HorizontalAlignment="Left" FontWeight="Bold"/>
+                <Label Grid.Row="1" Content="Außenlufttemperatur" HorizontalAlignment="Left" Height="40"/>
+                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBox Text="{Binding Te_Mean}" MaxLength="4"/>
+                    <Label Content="°C"/>
+                </StackPanel>
+                <Label Grid.Row="2" Content="Temperaturamplitude" HorizontalAlignment="Left" Height="40"/>
+                <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBox Text="{Binding Te_Amplitude}" MaxLength="3"/>
+                    <Label Content="K"/>
+                </StackPanel>
+                <Label Grid.Row="3" Content="Übergangswiderstand" HorizontalAlignment="Left" Height="40" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                    <TextBox Text="0.04" MaxLength="3" IsEnabled="False" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                    <Label Content="W/m²K" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                </StackPanel>
+            </Grid>
+
         </Grid>
     </Grid>
 </UserControl>

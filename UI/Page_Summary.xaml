@@ -52,11 +52,10 @@
             </Grid>
         </Border>
 
-        <!--GridSplitter - Horizontal-->
-        <Label Grid.Column="0" Grid.Row="1" Content="Querschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8,0"/>
+        <Label Grid.Column="0" Grid.Row="1" Content="Querschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16"/>
 
         <!--Cross Section Image-->
-        <Grid Grid.Column="0" Grid.Row="1" Margin="32,32,32,16" ClipToBounds="True">
+        <Grid Grid.Column="0" Grid.Row="1" Margin="16,32,16,16" ClipToBounds="True">
 
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -123,11 +122,11 @@
         </Grid>
 
         <!--GridSplitter - Horizontal-->
-        <GridSplitter Grid.Column="0" Grid.Row="2" Height="6" Margin="120, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
-        <Label Grid.Column="0" Grid.Row="2" Content="Vertikalschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8, -16, 0,0"/>
+        <GridSplitter Grid.Column="0" Grid.Row="2" Height="6" Margin="124, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
+        <Label Grid.Column="0" Grid.Row="2" Content="Vertikalschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16, -16, 0,0"/>
 
         <!--Vertical Cut Image-->
-        <Grid Grid.Column="0" Grid.Row="2" Margin="32, 16" ClipToBounds="True">
+        <Grid Grid.Column="0" Grid.Row="2" Margin="16" ClipToBounds="True">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
