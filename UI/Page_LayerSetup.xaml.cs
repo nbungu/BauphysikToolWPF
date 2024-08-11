@@ -41,8 +41,9 @@ namespace BauphysikToolWPF.UI
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             // Only save if leaving this page
-            if (IsVisible) return;
-            SetNewElementImage();
+            UserSaved.SelectedElement.UnselectAllLayers();
+
+            if (!IsVisible) SetNewElementImage();
         }
         private void SetNewElementImage()
         {
@@ -66,7 +67,7 @@ namespace BauphysikToolWPF.UI
 
         private void ZoomableGrid_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            System.Windows.Point mousePosition = e.GetPosition(ZoomableGrid);
+            Point mousePosition = e.GetPosition(ZoomableGrid);
 
             double zoomFactor = e.Delta > 0 ? 1.1 : 1.0 / 1.1;
 
@@ -96,7 +97,7 @@ namespace BauphysikToolWPF.UI
             // Zoom In on double Click
             if (e.ClickCount == 2)
             {
-                System.Windows.Point mousePosition = e.GetPosition(ZoomableGrid);
+                Point mousePosition = e.GetPosition(ZoomableGrid);
 
                 double zoomFactor = 1.5;
 
@@ -126,7 +127,7 @@ namespace BauphysikToolWPF.UI
             if (GridScaleTransform.ScaleX > 1.0 && GridScaleTransform.ScaleY > 1.0)
             {
                 _start = e.GetPosition(ZoomableGrid);
-                _origin = new System.Windows.Point(GridTranslateTransform.X, GridTranslateTransform.Y);
+                _origin = new Point(GridTranslateTransform.X, GridTranslateTransform.Y);
                 ZoomableGrid.CaptureMouse();
                 ZoomableGrid.Cursor = Cursors.Hand;
                 _isDragging = true;
@@ -137,7 +138,7 @@ namespace BauphysikToolWPF.UI
         {
             if (_isDragging)
             {
-                System.Windows.Point p = e.GetPosition(ZoomableGrid);
+                Point p = e.GetPosition(ZoomableGrid);
                 //if (p.X < 0 || p.X > ZoomableGrid.ActualWidth || p.Y < 0 || p.Y > ZoomableGrid.ActualHeight)
                 //{
                 //    // Stop dragging if the mouse is outside the bounds of the ZoomableGrid
@@ -145,7 +146,7 @@ namespace BauphysikToolWPF.UI
                 //    return;
                 //}
 
-                System.Windows.Vector v = p - _start; // Correct the direction of the movement
+                Vector v = p - _start; // Correct the direction of the movement
 
                 // Adjust the translation based on the scale factor
                 GridTranslateTransform.X = _origin.X + v.X;// / GridScaleTransform.ScaleX;
@@ -174,7 +175,7 @@ namespace BauphysikToolWPF.UI
             if (GridScaleTransform.ScaleX > 1.0 && GridScaleTransform.ScaleY > 1.0)
             {
                 _start = e.GetTouchPoint(ZoomableGrid).Position;
-                _origin = new System.Windows.Point(GridTranslateTransform.X, GridTranslateTransform.Y);
+                _origin = new Point(GridTranslateTransform.X, GridTranslateTransform.Y);
                 ZoomableGrid.CaptureTouch(e.TouchDevice);
                 _isDragging = true;
             }
@@ -184,7 +185,7 @@ namespace BauphysikToolWPF.UI
         {
             if (_isDragging)
             {
-                System.Windows.Point p = e.GetTouchPoint(ZoomableGrid).Position;
+                Point p = e.GetTouchPoint(ZoomableGrid).Position;
                 //if (p.X < 0 || p.X > ZoomableGrid.ActualWidth || p.Y < 0 || p.Y > ZoomableGrid.ActualHeight)
                 //{
                 //    // Stop dragging if the touch is outside the bounds of the ZoomableGrid
@@ -192,7 +193,7 @@ namespace BauphysikToolWPF.UI
                 //    return;
                 //}
 
-                System.Windows.Vector v = p - _start; // Correct the direction of the movement
+                Vector v = p - _start; // Correct the direction of the movement
 
                 // Adjust the translation based on the scale factor
                 GridTranslateTransform.X = _origin.X + v.X;// / GridScaleTransform.ScaleX;

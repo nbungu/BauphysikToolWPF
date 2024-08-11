@@ -59,7 +59,7 @@
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="320"/>
-                <ColumnDefinition Width="360" MaxWidth="440" MinWidth="16"/>
+                <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
             </Grid.ColumnDefinitions>
 
             <!--LayerList-->
@@ -109,105 +109,37 @@
 
                 <Label Grid.Row="0" Content="Von innen nach außen" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
+                <!--Layer ListView-->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" VerticalAlignment="Stretch" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                    <StackPanel Orientation="Vertical" VerticalAlignment="Top" HorizontalAlignment="Stretch">
-
-                        <controls:LayersListView Layers="{Binding LayerList}" SelectedLayer="{Binding SelectedListViewItem}" MinHeight="200" MaxHeight="800"/>
-
-                        <Border VerticalAlignment="Center" Padding="4" BorderBrush="{StaticResource PrimaryBorderBrush}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,24,0">
-                                    <controls:SubscriptLabel Width="18" ToolTip="Raumlufttemperatur" BaseText="θ" SubscriptText="i" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
-                                    <ComboBox Background="Transparent" ToolTip="Raumlufttemperatur" ItemsSource="{Binding TiKeys}" SelectedIndex="{Binding TiIndex}" Width="148"/>
-                                    <TextBox Text="{Binding TiValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
-                                    <Label Content="°C"/>
-                                </StackPanel>
-
-                                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,24,0">
-                                    <controls:SubscriptLabel Width="22" ToolTip="Wärmeübergangswiderstand (Innen)" BaseText="R" SubscriptText="si" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
-                                    <ComboBox Background="Transparent" ToolTip="Wärmeübergangswiderstand (Innen)" ItemsSource="{Binding RsiKeys}" SelectedIndex="{Binding RsiIndex}" Width="120"/>
-                                    <TextBox Text="{Binding RsiValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=2}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
-                                    <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
-                                </StackPanel>
-
-                                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,24,0">
-                                    <controls:SubscriptLabel Width="20" ToolTip="Relative Feuchte (Innen)" BaseText="Φ" SubscriptText="i" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
-                                    <ComboBox Background="Transparent" ToolTip="Relative Feuchte (Innen)" ItemsSource="{Binding RelFiKeys}" SelectedIndex="{Binding RelFiIndex}" Width="140
-                                              "/>
-                                    <TextBox Text="{Binding RelFiValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
-                                    <Label Content="%"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <Border VerticalAlignment="Center" Padding="4"  BorderBrush="{StaticResource PrimaryBorderBrush}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                    <ColumnDefinition Width="Auto"/>
-                                </Grid.ColumnDefinitions>
-
-                                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,24,0">
-                                    <controls:SubscriptLabel Width="18" ToolTip="Außenlufttemperatur" BaseText="θ" SubscriptText="e" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
-                                    <ComboBox Background="Transparent" ToolTip="Außenlufttemperatur" ItemsSource="{Binding TeKeys}" SelectedIndex="{Binding TeIndex}" Width="148"/>
-                                    <TextBox Text="{Binding TeValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
-                                    <Label Content="°C"/>
-                                </StackPanel>
-
-                                <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,24,0">
-                                    <controls:SubscriptLabel Width="22" ToolTip="Wärmeübergangswiderstand (Außen)" BaseText="R" SubscriptText="se" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
-                                    <ComboBox Background="Transparent" ToolTip="Wärmeübergangswiderstand (Außen)" ItemsSource="{Binding RseKeys}" SelectedIndex="{Binding RseIndex}" Width="120"/>
-                                    <TextBox Text="{Binding RseValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=2}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
-                                    <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
-                                    </StackPanel>
-
-                                <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,24,0">
-                                    <controls:SubscriptLabel Width="20" ToolTip="Relative Feuchte (Außen)" BaseText="Φ" SubscriptText="e" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
-                                    <ComboBox Background="Transparent" ToolTip="Relative Feuchte (Außen)" ItemsSource="{Binding RelFeKeys}" SelectedIndex="{Binding RelFeIndex}" Width="140"/>
-                                    <TextBox Text="{Binding RelFeValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
-                                    <Label Content="%"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                    </StackPanel>
+                    <controls:LayersListView Layers="{Binding LayerList}" SelectedLayer="{Binding SelectedListViewItem}" MinHeight="200" MaxHeight="800"/>
                 </ScrollViewer>
-
             </Grid>
 
             <!--GridSplitter - Horizontal-->
-            <GridSplitter Grid.Row="1" Grid.Column="0" Height="6" Margin="104, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
-            <Label Grid.Row="1" Grid.Column="0" Content="Querschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8, -16, 0,0"/>
-
-            <!--Image-->
-            <Grid Grid.Column="0" Grid.Row="1" Margin="8,8,16,16" ClipToBounds="True">
+            <GridSplitter Grid.Row="1" Grid.Column="0" Height="6" Margin="240, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
+            <Label Grid.Row="1" Grid.Column="0" Content="Querschnitt + Randbedingungen" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="8, -16, 0,0"/>
+    
+            
+            <Grid Grid.Row="1" Grid.Column="0" Margin="16" ClipToBounds="True">
                 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <Label Grid.Column="0" Content="Innen" VerticalAlignment="Top" HorizontalAlignment="Left"/>
-                <Label Grid.Column="0" Content="Außen" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-                <Viewbox Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+                <Label Grid.Row="1" Grid.Column="0" Content="Innen" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="Außen" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                
+                <!--Image-->
+                <Viewbox Grid.Row="1" Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center">
                     <!--Keep Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                    <Grid x:Name="ZoomableGrid" Margin="0,16,0,8"
+                    <Grid x:Name="ZoomableGrid" Margin="0"
                           MouseWheel="ZoomableGrid_OnMouseWheel"
                           MouseMove="ZoomableGrid_OnMouseMove"
                           MouseRightButtonDown="ZoomableGrid_OnMouseRightButtonDown"
@@ -238,51 +170,129 @@
                         <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSize.Width}" Height="{Binding CanvasSize.Height}" DrawingGeometries="{Binding CrossSectionDrawing}"/>
 
                         <!-- "Vertical Measurement" -->
-                        <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurement}" Margin="32,0,32,0"/>
+                        <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurement}" Margin="32,0"/>
                         
                         <!-- "Vertical Measurement Full" -->
-                        <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="32,0,32,0"/>
+                        <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="32,0"/>
 
                         <!-- "Horizontal SubConstruction Measurement" -->
-                        <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurement}" Margin="0,32,0,32"/>
+                        <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurement}" Margin="0,32">
+                            <controls:MeasurementChain.Style>
+                                <Style TargetType="controls:MeasurementChain">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SubConstructionMeasurement.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </controls:MeasurementChain.Style>
+                        </controls:MeasurementChain>
 
                     </Grid>
                 </Viewbox>
-                
+
+                <!--EnvVars Innen-->
+                <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="8" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,24,0">
+                            <controls:SubscriptLabel Width="18" ToolTip="Raumlufttemperatur" BaseText="θ" SubscriptText="i" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
+                            <ComboBox Background="Transparent" ToolTip="Raumlufttemperatur" ItemsSource="{Binding TiKeys}" SelectedIndex="{Binding TiIndex}" Width="148"/>
+                            <TextBox Text="{Binding TiValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
+                            <Label Content="°C"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,24,0">
+                            <controls:SubscriptLabel Width="22" ToolTip="Wärmeübergangswiderstand (Innen)" BaseText="R" SubscriptText="si" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
+                            <ComboBox Background="Transparent" ToolTip="Wärmeübergangswiderstand (Innen)" ItemsSource="{Binding RsiKeys}" SelectedIndex="{Binding RsiIndex}" Width="120"/>
+                            <TextBox Text="{Binding RsiValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=2}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
+                            <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,24,0">
+                            <controls:SubscriptLabel Width="20" ToolTip="Relative Feuchte (Innen)" BaseText="Φ" SubscriptText="i" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
+                            <ComboBox Background="Transparent" ToolTip="Relative Feuchte (Innen)" ItemsSource="{Binding RelFiKeys}" SelectedIndex="{Binding RelFiIndex}" Width="140"/>
+                            <TextBox Text="{Binding RelFiValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
+                            <Label Content="%"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+                <!--EnvVars Außen-->
+                <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="8" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,24,0">
+                            <controls:SubscriptLabel Width="18" ToolTip="Außenlufttemperatur" BaseText="θ" SubscriptText="e" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
+                            <ComboBox Background="Transparent" ToolTip="Außenlufttemperatur" ItemsSource="{Binding TeKeys}" SelectedIndex="{Binding TeIndex}" Width="148"/>
+                            <TextBox Text="{Binding TeValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
+                            <Label Content="°C"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,24,0">
+                            <controls:SubscriptLabel Width="22" ToolTip="Wärmeübergangswiderstand (Außen)" BaseText="R" SubscriptText="se" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
+                            <ComboBox Background="Transparent" ToolTip="Wärmeübergangswiderstand (Außen)" ItemsSource="{Binding RseKeys}" SelectedIndex="{Binding RseIndex}" Width="120"/>
+                            <TextBox Text="{Binding RseValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=2}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
+                            <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Bottom" Margin="0,0,24,0">
+                            <controls:SubscriptLabel Width="20" ToolTip="Relative Feuchte (Außen)" BaseText="Φ" SubscriptText="e" FontWeight="DemiBold" FontSize="16" Margin="0,0,4,0"/>
+                            <ComboBox Background="Transparent" ToolTip="Relative Feuchte (Außen)" ItemsSource="{Binding RelFeKeys}" SelectedIndex="{Binding RelFeIndex}" Width="140"/>
+                            <TextBox Text="{Binding RelFeValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="4,0,0,0"/>
+                            <Label Content="%"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
             </Grid>
 
-
+            <!--Grid Splitter-->
             <controls:ExpandableGridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                                              HorizontalAlignment="Left"
                                              VerticalAlignment="Stretch"
-                                             Width="24"
+                                             Width="22"
                                              Background="Transparent"
-                                             Margin="-12,16,0,16"/>
-            <!--Grid Splitter
-            <GridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
--->
+                                             Margin="-11,16,0,16"/>
+
             <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="16">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
 
-                <!--Gewählte Schicht + Eigenschaften-->
-                <Expander Grid.Row="0" Header="Schicht-Eigenschaften" IsExpanded="True" Margin="0,0,0,8">
-                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-                        <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid" Properties="{Binding LayerProperties}"/>
-                    </ScrollViewer>
-                </Expander>
+                <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                    <StackPanel>
+                        <!--Gewählte Schicht + Eigenschaften-->
+                        <Expander Header="Schicht-Eigenschaften" IsExpanded="True" Margin="0,0,0,8">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+                                <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid" Properties="{Binding LayerProperties}"/>
+                            </ScrollViewer>
+                        </Expander>
 
-                <Expander Grid.Row="1" Header="Schicht-Balkenlage" IsExpanded="True" IsEnabled="{Binding ShowSubConstructionExpander}" Margin="0,0,0,8">
-                    <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-                        <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
-                    </ScrollViewer>
-                </Expander>
+                        <Expander Header="Schicht-Balkenlage" IsExpanded="True" IsEnabled="{Binding ShowSubConstructionExpander}" Margin="0,0,0,8">
+                            <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Hidden">
+                                <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
+                            </ScrollViewer>
+                        </Expander>
+                    </StackPanel>
+                </ScrollViewer>
+
+                
 
             </Grid>
 

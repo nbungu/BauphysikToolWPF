@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using Point = System.Windows.Point;
+using BauphysikToolWPF.SessionData;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
@@ -23,6 +24,7 @@ namespace BauphysikToolWPF.UI.Drawing
         public static DrawingGeometry GetMeasurementChain(IEnumerable<Layer> layers, Axis intervalDirection = Axis.Z)
         {
             var intervals = layers.Select(l => l.Convert()).SelectMany(e => new[] { e.Rectangle.Top, e.Rectangle.Bottom }).ToArray();
+            if (intervals.Length == 0) return new DrawingGeometry();
 
             return GetMeasurementDrawing(intervals, intervalDirection);
         }
@@ -30,21 +32,70 @@ namespace BauphysikToolWPF.UI.Drawing
         public static DrawingGeometry GetMeasurementChain(IEnumerable<IDrawingGeometry> geometries, Axis intervalDirection = Axis.Z, bool removeFirstAndLast = false)
         {
             var intervals = GetGeometryIntervals(geometries, intervalDirection);
+            if (intervals.Length == 0) return new DrawingGeometry();
             if (removeFirstAndLast) intervals = RemoveFirstAndLast(intervals);
-
             return GetMeasurementDrawing(intervals, intervalDirection);
         }
 
         public static DrawingGeometry GetMeasurementChain(double[] intervals, Axis intervalDirection = Axis.Z, bool removeFirstAndLast = false)
         {
+            if (intervals.Length == 0) return new DrawingGeometry();
             if (removeFirstAndLast) intervals = RemoveFirstAndLast(intervals);
             return GetMeasurementDrawing(intervals, intervalDirection);
         }
+        
+
+        public static List<DrawingGeometry> GetSubConstructionMeasurementChain(CanvasDrawingService drawingService)
+        {
+            if (drawingService.Element.Layers.Count == 0) return new List<DrawingGeometry>(0);
+            DrawingGeometry chainGeometry = new DrawingGeometry();
+            if (drawingService.DrawingType == DrawingType.CrossSection)
+            {
+                chainGeometry = GetMeasurementChain(drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true);
+            }
+            else if (drawingService.DrawingType == DrawingType.VerticalCut)
+            {
+                chainGeometry = GetMeasurementChain(drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z, true);
+            }
+            if (chainGeometry.IsValid) return chainGeometry.ToList();
+            return new List<DrawingGeometry>(0);
+        }
+        public static List<DrawingGeometry> GetFullLayerMeasurementChain(CanvasDrawingService drawingService)
+        {
+            if (drawingService.Element.Layers.Count == 0) return new List<DrawingGeometry>(0);
+            DrawingGeometry chainGeometry = new DrawingGeometry();
+            if (drawingService.DrawingType == DrawingType.CrossSection)
+            {
+                chainGeometry = GetMeasurementChain(new[] { 0, drawingService.CanvasSize.Height }, Axis.Z);
+            }
+            else if (drawingService.DrawingType == DrawingType.VerticalCut)
+            {
+                chainGeometry = GetMeasurementChain(new[] { 0, drawingService.CanvasSize.Width }, Axis.X);
+            }
+            if (chainGeometry.IsValid) return chainGeometry.ToList();
+            return new List<DrawingGeometry>(0);
+        }
+        public static List<DrawingGeometry> GetLayerMeasurementChain(CanvasDrawingService drawingService)
+        {
+            if (UserSaved.SelectedElement.Layers.Count == 0) return new List<DrawingGeometry>(0);
+            DrawingGeometry chainGeometry = new DrawingGeometry();
+            if (drawingService.DrawingType == DrawingType.CrossSection)
+            {
+                chainGeometry = GetMeasurementChain(drawingService.Element.Layers, Axis.Z);
+            }
+            else if (drawingService.DrawingType == DrawingType.VerticalCut)
+            {
+                chainGeometry = GetMeasurementChain(drawingService.Element.Layers, Axis.X);
+            }
+            if (chainGeometry.IsValid) return chainGeometry.ToList();
+            return new List<DrawingGeometry>(0);
+        }
+
 
         #endregion
 
         #region private Methods
-        
+
         // Top Left is Origin (0,0)
         private static DrawingGeometry GetMeasurementDrawing(double[] intervals, Axis intervalDirection)
         {

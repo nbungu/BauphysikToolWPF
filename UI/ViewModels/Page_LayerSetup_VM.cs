@@ -201,9 +201,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstructions;
         public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
         public Rectangle CanvasSize => _crossSection.CanvasSize;
-        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_crossSection.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true).ToList();
-        public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
+        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetLayerMeasurementChain(_crossSection);
+        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetSubConstructionMeasurementChain(_crossSection);
+        public List<DrawingGeometry> LayerMeasurementFull => MeasurementChain.GetFullLayerMeasurementChain(_crossSection);
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {
@@ -384,5 +384,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.OnSelectedLayerChanged();
         }
+
     }
 }

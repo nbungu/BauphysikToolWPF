@@ -24,15 +24,21 @@
                 <GridViewColumn.CellTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Ellipse Fill="{Binding Material.ColorCode}" Height="28" Width="28" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                            <Label Content="{Binding Tag}" Foreground="White" FontWeight="Bold"/>
+                            <Rectangle x:Name="rectangle" Fill="{Binding Material.ColorCode}" Margin="-6,-4,0,-4" Width="8" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
+                            <Label x:Name="positionLabel" Content="{Binding Tag}" FontWeight="DemiBold" Margin="4,0"/>
                         </Grid>
+                        <DataTemplate.Triggers>
+                            <!-- Trigger to change label color when ListViewItem is selected -->
+                            <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
+                                <Setter TargetName="positionLabel" Property="Foreground" Value="White"/>
+                            </DataTrigger>
+                        </DataTemplate.Triggers>
                     </DataTemplate>
                 </GridViewColumn.CellTemplate>
             </GridViewColumn>
             <GridViewColumn DisplayMemberBinding="{Binding Material.Name}" Header="Material" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Thickness}" Header="d [cm]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="Ri [m²K/W]" Width="Auto"/>
+            <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="R [m²K/W]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding Sd_Thickness}" Header="sd [m]" Width="Auto"/>
             <GridViewColumn DisplayMemberBinding="{Binding AreaMassDensity}" Header="m' [kg/m²]" Width="Auto"/>
         </GridView>

@@ -15,8 +15,8 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
 
-        private readonly CanvasDrawingService _drawingServiceV = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
-        private readonly CanvasDrawingService _drawingServiceH = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+        private readonly CanvasDrawingService _verticalCut = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
+        private readonly CanvasDrawingService _crossSection = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
 
         public Page_Summary_VM()
         {
@@ -61,19 +61,19 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Cross Section
         
-        public List<IDrawingGeometry> CrossSectionDrawing => _drawingServiceH.DrawingGeometries;
-        public Rectangle CanvasSizeCrossSection => _drawingServiceH.CanvasSize;
-        public List<DrawingGeometry> LayerMeasurementCrossSection => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers, Axis.Z).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurementCrossSection => MeasurementChain.GetMeasurementChain(_drawingServiceH.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true).ToList();
-        public List<DrawingGeometry> LayerMeasurementFullCrossSection => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] { 0, 400.0 }).ToList() : new List<DrawingGeometry>();
+        public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
+        public Rectangle CanvasSizeCrossSection => _crossSection.CanvasSize;
+        public List<DrawingGeometry> LayerMeasurementCrossSection => MeasurementChain.GetLayerMeasurementChain(_crossSection);
+        public List<DrawingGeometry> SubConstructionMeasurementCrossSection => MeasurementChain.GetSubConstructionMeasurementChain(_crossSection);
+        public List<DrawingGeometry> LayerMeasurementFullCrossSection => MeasurementChain.GetFullLayerMeasurementChain(_crossSection);
 
         // Vertical Cut
-        public List<IDrawingGeometry> VerticalCutDrawing => _drawingServiceV.DrawingGeometries;
-        public Rectangle CanvasSizeVerticalCut => _drawingServiceV.CanvasSize;
-        public List<DrawingGeometry> LayerMeasurementVerticalCut => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers, Axis.X).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurementVerticalCut => MeasurementChain.GetMeasurementChain(_drawingServiceV.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z, true).ToList();
-        public List<DrawingGeometry> LayerMeasurementFullVerticalCut => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] { 0, 400.0 }, Axis.X).ToList() : new List<DrawingGeometry>();
-        
+        public List<IDrawingGeometry> VerticalCutDrawing => _verticalCut.DrawingGeometries;
+        public Rectangle CanvasSizeVerticalCut => _verticalCut.CanvasSize;
+        public List<DrawingGeometry> LayerMeasurementVerticalCut => MeasurementChain.GetLayerMeasurementChain(_verticalCut);
+        public List<DrawingGeometry> SubConstructionMeasurementVerticalCut => MeasurementChain.GetSubConstructionMeasurementChain(_verticalCut);
+        public List<DrawingGeometry> LayerMeasurementFullVerticalCut => MeasurementChain.GetFullLayerMeasurementChain(_verticalCut);
+
         public List<IPropertyItem> ElementProperties => new List<IPropertyItem>
         {
             new PropertyItem<int>("Schichten", () => UserSaved.SelectedElement.Layers.Count),
