@@ -361,6 +361,7 @@
         <Style x:Key="{x:Type Expander}" TargetType="{x:Type Expander}">
             <Setter Property="FontWeight" Value="DemiBold"/>
             <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Visibility" Value="Visible"/>
             <Setter Property="BorderBrush" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}" />

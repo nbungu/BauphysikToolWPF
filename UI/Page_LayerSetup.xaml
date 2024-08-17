@@ -116,8 +116,8 @@
             </Grid>
 
             <!--GridSplitter - Horizontal-->
-            <GridSplitter Grid.Row="1" Grid.Column="0" Height="6" Margin="244, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
-            <Label Grid.Row="1" Grid.Column="0" Content="Querschnitt + Randbedingungen" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16, -16, 0,0"/>
+            <GridSplitter Grid.Row="1" Grid.Column="0" Height="6" Margin="112, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
+            <Label Grid.Row="1" Grid.Column="0" Content="Querschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16, -16, 0,0"/>
     
             
             <Grid Grid.Row="1" Grid.Column="0" Margin="16" ClipToBounds="True">
@@ -202,12 +202,12 @@
                     <StackPanel>
 
                         <!--Gewählte Schicht + Eigenschaften-->
-                        <Expander Header="Schicht-Eigenschaften" IsExpanded="True" Margin="0,0,0,8">
+                        <Expander Header="Schicht-Eigenschaften" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding LayerPropertiesExpanderVisibility}">
                             <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid" Properties="{Binding LayerProperties}"/>
                         </Expander>
 
                         <!--Balkenlage + Eigenschaften-->
-                        <Expander Header="Schicht-Balkenlage" IsExpanded="True" IsEnabled="{Binding ShowSubConstructionExpander}" Margin="0,0,0,8">
+                        <Expander Header="Schicht-Balkenlage" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding SubConstructionExpanderVisibility}">
                             <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
                         </Expander>
 

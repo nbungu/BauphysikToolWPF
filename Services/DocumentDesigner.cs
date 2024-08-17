@@ -121,6 +121,7 @@ namespace BauphysikToolWPF.Services
             XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
             XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
             XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
+            XFont bodyFontBold = new XFont("Verdana", 9, XFontStyleEx.Bold);
             XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
             XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
 
@@ -142,16 +143,9 @@ namespace BauphysikToolWPF.Services
 
             gfx.DrawString($"Bauteiltyp: \"{element.Construction.TypeName}\"", bodyFont, XBrushes.Black,
                 new XRect(50, startY, page.Width - 100, 20), XStringFormats.TopLeft);
-            startY += 24;
+            startY += 32;
 
             // Draw Element Properties
-            gfx.DrawString($"Ausrichtung: {element.OrientationType}", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
-            startY += 16;
-            var str = element.Layers.Any(l => l.HasSubConstructions) ? "Ja" : "Nein";
-            gfx.DrawString($"Inhomogener Schichtaufbau: {str}", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
-            startY += 16;
             gfx.DrawString($"Rges = {element.RGesValue:0.00} m²K/W (nur Bauteil)", bodyFont, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
             startY += 16;
@@ -163,10 +157,24 @@ namespace BauphysikToolWPF.Services
             startY += 16;
             gfx.DrawString($"q = {element.QValue:0.00} W/m²", bodyFont, XBrushes.Black,
                 new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+            startY += 24;
+
+            gfx.DrawString($"Ausrichtung: {element.OrientationType}", bodyFont, XBrushes.Black,
+                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"Comment: {element.Comment}", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 40), XStringFormats.TopLeft);
-            startY += 40;
+            var str = element.Layers.Any(l => l.HasSubConstructions) ? "Ja" : "Nein";
+            gfx.DrawString($"Inhomogener Schichtaufbau: {str}", bodyFont, XBrushes.Black,
+                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+            startY += 16;
+
+            if (element.Comment != null && element.Comment != string.Empty)
+            {
+                gfx.DrawString($"Kommentar:", bodyFont, XBrushes.Black,
+                    new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                var textBlockHeight = DrawWrappedText(gfx, element.Comment, bodyFont, XBrushes.Black,
+                    new XRect(130, startY, page.Width - 160, 80), bodyFont.GetHeight());
+                startY += textBlockHeight + 16;
+            }
 
             // Draw Layer Information
             gfx.DrawString("Querschnitt", titleFontSm, XBrushes.Black,
@@ -332,6 +340,44 @@ namespace BauphysikToolWPF.Services
             XFont footerFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
             gfx.DrawString($"Bearbeiter: {author} | Seite {pageNumber}", footerFont, XBrushes.Gray,
                 new XRect(0, page.Height - 30, page.Width, 30), XStringFormats.TopCenter);
+        }
+
+        private static double DrawWrappedText(XGraphics gfx, string text, XFont font, XBrush brush, XRect rect, double lineHeight)
+        {
+            // Split the text into words
+            string[] words = text.Split(' ');
+            string currentLine = string.Empty;
+            double currentY = rect.Y;
+            double totalHeight = 0;
+
+            foreach (var word in words)
+            {
+                string testLine = string.IsNullOrEmpty(currentLine) ? word : currentLine + " " + word;
+                double testWidth = gfx.MeasureString(testLine, font).Width;
+
+                // If the line width exceeds the rect width, draw the current line and start a new one
+                if (testWidth > rect.Width)
+                {
+                    gfx.DrawString(currentLine, font, brush, new XRect(rect.X, currentY, rect.Width, lineHeight), XStringFormats.TopLeft);
+                    currentLine = word;
+                    currentY += lineHeight;
+                    totalHeight += lineHeight;
+                }
+                else
+                {
+                    currentLine = testLine;
+                }
+            }
+
+            // Draw the last line
+            if (!string.IsNullOrEmpty(currentLine))
+            {
+                gfx.DrawString(currentLine, font, brush, new XRect(rect.X, currentY, rect.Width, lineHeight), XStringFormats.TopLeft);
+                totalHeight += lineHeight;
+            }
+
+            // Return the total height of the wrapped text block
+            return totalHeight;
         }
     }
 }

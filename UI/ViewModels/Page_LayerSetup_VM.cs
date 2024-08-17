@@ -9,7 +9,9 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using MeasurementChain = BauphysikToolWPF.UI.Drawing.MeasurementChain;
+using Point = BT.Geometry.Point;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -98,6 +100,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElement.RemoveLayer(UserSaved.SelectedLayerId);
             UserSaved.OnSelectedLayerChanged();
+            SelectedListViewItem = null;
         }
         
         [RelayCommand]
@@ -159,8 +162,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
-        [NotifyPropertyChangedFor(nameof(ShowLayerExpander))]
-        [NotifyPropertyChangedFor(nameof(ShowSubConstructionExpander))]
+        [NotifyPropertyChangedFor(nameof(SubConstructionExpanderVisibility))]
+        [NotifyPropertyChangedFor(nameof(LayerPropertiesExpanderVisibility))]
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
         [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
@@ -197,8 +200,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public bool IsLayerSelected => SelectedListViewItem != null;
-        public bool ShowLayerExpander => IsLayerSelected;
-        public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstructions;
+        public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
         public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
         public Rectangle CanvasSize => _crossSection.CanvasSize;
         public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetLayerMeasurementChain(_crossSection);
