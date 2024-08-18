@@ -50,6 +50,7 @@ namespace BauphysikToolWPF.Calculations
         public void CalculateHomogeneous()
         {
             RelevantLayers = Element.SortLayers().Layers.Where(l => l.IsEffective).ToList();
+            if (RelevantLayers.Count == 0) return;
             try
             {
                 double rGes = 0.0;
@@ -76,6 +77,7 @@ namespace BauphysikToolWPF.Calculations
         public void CalculateInhomogeneous()
         {
             RelevantLayers = Element.SortLayers().Layers.Where(l => l.IsEffective).ToList();
+            if (RelevantLayers.Count == 0) return;
             try
             {
                 PrepareMappingsForInhomogeneous();

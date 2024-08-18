@@ -196,7 +196,7 @@
             <Button Content="Neues Bauteil" Command="{Binding AddNewElementCommand}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
             <Button Content="Bauteil-PDF erstellen" Command="{Binding CreateSingleElementPdfCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            <Button Content="Bauteilkatalog erstellen" Command="{Binding CreateFullPdfCommand}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDFFull_B}" Margin="0,0,0,16"/>
+            <Button Content="Bauteilkatalog erstellen" Command="{Binding CreateFullPdfCommand}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDFFull_B}" Margin="0,0,0,16"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
             <Button Content="Bauteilkatalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
@@ -215,13 +215,13 @@
             <!-- Sorting functions, Button Row -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left">
                 <Label Content="Sortieren nach" Margin="0,0,8,0"/>
-                <ComboBox Name="SortingComboBox" Background="Transparent" Width="240" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" Margin="0,0,8,0"/>
+                <ComboBox Name="SortingComboBox" Background="Transparent" Width="240" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Margin="0,0,8,0"/>
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <Label Content="Gruppieren nach" Margin="0,0,8,0"/>
-                <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" Margin="0,0,8,0"/>
+                <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
 
-            <ScrollViewer x:Name="WrapPanelScrollViewer" Grid.Row="2" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="WrapPanelScrollViewer" Grid.Row="2" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" ClipToBounds="True">
                 <ItemsControl x:Name="ElementsControl" Width="{Binding ElementName=WrapPanelScrollViewer, Path=ActualWidth}"
                           ItemsPanel="{StaticResource WrapPanelTemplate}"
                           ItemTemplate="{StaticResource WrapPanelItemDesignTemplate}"
@@ -269,7 +269,7 @@
             </StackPanel>
             
             <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" Margin="0,0,0,8">
-                <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="8,4,8,8">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="8,4,8,8" ClipToBounds="True">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
