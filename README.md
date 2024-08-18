@@ -1,20 +1,28 @@
 # BauphysikToolWPF
 
-## Landing Page
-- Overview of recently created building elements
-- Saved persistent via built in SQLite Database
-![alt text](./Resources/MarkdownImages/FO0_LandingPage.png "Landing Page")
 
-## Setup Page
-- Build and edit the building element
-- Set environment variables
-![alt text](./Resources/MarkdownImages/FO1_SetupLayer.png "Edit Element & Environment Variables")
+Installer der neuestes Version: [v0.1.0-alpha](https://bauphysik-tool.de/strapi/uploads/Bauphysik_Tool_Installer_v0_1_0_alpha_be64462fbc.msi) oder auf [bauphysik-tool.de](https://bauphysik-tool.de/downloads)
 
-## Stationary Temparature Curve
-![alt text](./Resources/MarkdownImages/FO2_Temperature.png "Temperature Curve")
+## Bauteile organisieren
+- Alle projektbezogenen Elemente auf einen Blick
+- Bauteilkatalog-Export als PDF (ab v0.2.0)
+![alt text](./Resources/MarkdownImages/bauteilkatalog-organisieren.png "Elemente Übersicht")
 
-## Glaser Curve
-![alt text](./Resources/MarkdownImages/FO3_Moisture.png "Glaser Curve")
+## Element erstellen
+- Bauteilschichten hinzufügen und bearbeiten
+- Umgebungsrandbedingungen festlegen
+![alt text](./Resources/MarkdownImages/bauteile-bearbeiten.png "Edit Element & Environment Variables")
+
+## Zusammenfassung
+- Darstellung im Querschnitt
+- Darstellung im Vertikalschnitt
+- Übersicht aller relevanten thermischen Eigenschaften des Bauteils
+![alt text](./Resources/MarkdownImages/rwert-uwert-zusammenfassung.png "Zusammenfassung")
+
+## Temperaturverlauf
+- Stationärer Zustand
+- Überprüfung auf Mindestwärmeschutzwerte nach DIN 4108-2 und GEG2023
+![alt text](./Resources/MarkdownImages/temperaturverlauf.png "Temperaturverlauf")
 
 
 # DEPLOYMENT
