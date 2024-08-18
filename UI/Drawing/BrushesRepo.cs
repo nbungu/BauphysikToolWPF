@@ -176,6 +176,7 @@ namespace BauphysikToolWPF.UI.Drawing
         {
             bool isVertical = rectangle.Height > rectangle.Width;
             double w_h_ratio = isVertical ? (rectangle.Width / rectangle.Height) : (rectangle.Height / rectangle.Width);
+            w_h_ratio = Math.Max(0.0005, Math.Abs(w_h_ratio));
 
             //Imaginary 60x60 Rectangle
             double arcRad = 10;
@@ -187,7 +188,9 @@ namespace BauphysikToolWPF.UI.Drawing
             PathFigure pathFigure = new PathFigure();
             pathFigure.StartPoint = new Point(0, 0); // Startpoint of the segment series
 
-            int iMax = Math.Max(4, Convert.ToInt32(-20 * w_h_ratio + 25)); //increase the number of loops for narrow rectangles; decrease for broader ones
+
+            int iMax = Math.Max(6, Convert.ToInt32(-20 * Math.Log(2*w_h_ratio)));
+            //int iMax = Math.Max(6, Convert.ToInt32(-40 * w_h_ratio*w_h_ratio + 40)); //increase the number of loops for narrow rectangles; decrease for broader ones
             for (int i = 0; i < iMax; i++)
             {
                 currentY_Left += arcRad;

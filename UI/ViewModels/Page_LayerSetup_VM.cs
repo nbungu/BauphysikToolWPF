@@ -9,14 +9,17 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using MeasurementChain = BauphysikToolWPF.UI.Drawing.MeasurementChain;
+using Point = BT.Geometry.Point;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
     public partial class Page_LayerSetup_VM : ObservableObject
     {
-        private readonly CanvasDrawingService _drawingService = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
+
+        private readonly CanvasDrawingService _crossSection = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
 
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
@@ -28,11 +31,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElementChanged += UpdateBindingsAndRecalculateFlag;
             UserSaved.SelectedLayerChanged += UpdateBindingsAndRecalculateFlag;
             UserSaved.EnvVarsChanged += UpdateRecalculateFlag;
-
+            
             // For values changed in PropertyDataGrid TextBox
-            PropertyItem<double>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
-            PropertyItem<SubConstructionDirection>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
-            PropertyItem<bool>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
+            PropertyItem<double>.PropertyChanged += ComboUpdate;
+            PropertyItem<SubConstructionDirection>.PropertyChanged += ComboUpdate;
+            PropertyItem<bool>.PropertyChanged += ComboUpdate;
         }
         
         /*
@@ -97,6 +100,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElement.RemoveLayer(UserSaved.SelectedLayerId);
             UserSaved.OnSelectedLayerChanged();
+            SelectedListViewItem = null;
         }
         
         [RelayCommand]
@@ -135,7 +139,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedLayerId = value.InternalId;
             UserSaved.SelectedLayer.IsSelected = true;
 
-            _drawingService.UpdateDrawings();
+            _crossSection.UpdateDrawings();
         }
 
         /*
@@ -158,8 +162,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
-        [NotifyPropertyChangedFor(nameof(ShowLayerExpander))]
-        [NotifyPropertyChangedFor(nameof(ShowSubConstructionExpander))]
+        [NotifyPropertyChangedFor(nameof(SubConstructionExpanderVisibility))]
+        [NotifyPropertyChangedFor(nameof(LayerPropertiesExpanderVisibility))]
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
         [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
@@ -196,13 +200,13 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public bool IsLayerSelected => SelectedListViewItem != null;
-        public bool ShowLayerExpander => IsLayerSelected;
-        public bool ShowSubConstructionExpander => IsLayerSelected && SelectedListViewItem.HasSubConstructions;
-        public List<IDrawingGeometry> CrossSectionDrawing => _drawingService.DrawingGeometries;
-        public Rectangle CanvasSize => _drawingService.CanvasSize;
-        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetMeasurementChain(UserSaved.SelectedElement.Layers).ToList();
-        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetMeasurementChain(_drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X).ToList();
-        public List<DrawingGeometry> LayerMeasurementFull => UserSaved.SelectedElement.Layers.Count > 1 ? MeasurementChain.GetMeasurementChain(new[] {0, 400.0 }).ToList() : new List<DrawingGeometry>();
+        public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
+        public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
+        public Rectangle CanvasSize => _crossSection.CanvasSize;
+        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetLayerMeasurementChain(_crossSection);
+        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetSubConstructionMeasurementChain(_crossSection);
+        public List<DrawingGeometry> LayerMeasurementFull => MeasurementChain.GetFullLayerMeasurementChain(_crossSection);
 
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {
@@ -365,7 +369,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.Recalculate = true;
 
-            _drawingService.UpdateDrawings();
+            _crossSection.UpdateDrawings();
 
             LayerList = null;
             LayerList = UserSaved.SelectedElement.Layers;
@@ -378,5 +382,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.Recalculate = true;
         }
+
+        private void ComboUpdate()
+        {
+            UserSaved.OnSelectedLayerChanged();
+        }
+
     }
 }

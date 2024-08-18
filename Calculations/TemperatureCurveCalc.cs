@@ -32,6 +32,7 @@ namespace BauphysikToolWPF.Calculations
         
         public void CalculateTemperatureCurve()
         {
+            if (RelevantLayers.Count == 0) return;
             CalculateLayerTemps();  // Bsp. S.33
             CalculatefRsiValue();   // Gl. 3-1; S.36. Schimmelwahrscheinlichkeit
             CalculateTsiMin();      // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7. Schimmelwahrscheinlichkeit

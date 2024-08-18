@@ -18,6 +18,7 @@ namespace BauphysikToolWPF.UI.Drawing
         public double Opacity { get; set; } = 1.0;
         public int ZIndex { get; set; } = 0;
         public object Tag { get; set; }
+        public bool IsValid => Rectangle != Rectangle.Empty;
 
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
         {

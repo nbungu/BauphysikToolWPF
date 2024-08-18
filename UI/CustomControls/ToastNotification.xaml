@@ -8,7 +8,7 @@
              d:DesignHeight="66"
              d:DesignWidth="800">
 
-    <Border x:Name="RootGrid" Background="{StaticResource PrimaryHoverBrush}" BorderThickness="1" BorderBrush="{StaticResource PrimaryBorderBrush}" CornerRadius="8" Height="48" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8">
+    <Border x:Name="RootGrid" Background="{StaticResource PrimaryHoverBrush}" BorderThickness="0,0,0,2" BorderBrush="{StaticResource PrimaryBorderBrush}" CornerRadius="8" Height="48" Width="Auto" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8">
         <Grid >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
@@ -18,7 +18,7 @@
 
             <Image x:Name="ToastIcon" Width="28" Height="28" VerticalAlignment="Stretch" Margin="24,4"/>
 
-            <TextBlock x:Name="ToastText" Text="This is a Toast Notification" Grid.Column="1" VerticalAlignment="Center" Margin="8,0" Foreground="Black" FontWeight="Bold"/>
+            <TextBlock x:Name="ToastText" Text="This is a Toast Notification" Grid.Column="1" VerticalAlignment="Center" Margin="8,0" FontWeight="DemiBold" FontSize="14"/>
 
             <Button Grid.Column="2"
                     Tag="{StaticResource ButtonIcon_Cancel_B}"

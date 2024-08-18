@@ -1,7 +1,9 @@
 ﻿using BauphysikToolWPF.Calculations;
 using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.CustomControls;
+using BauphysikToolWPF.UI.Drawing;
+using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -12,9 +14,6 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.UI.Drawing;
-using BT.Geometry;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -24,26 +23,36 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
         private static DynamicTempCalc _dynamicTempCalc = new DynamicTempCalc();
-        private readonly CanvasDrawingService _drawingServiceV = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
+        private readonly CanvasDrawingService _verticalCut = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
 
         public Page_DynamicResults_VM()
         {
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
 
-            if (!_dynamicTempCalc.IsValid || UserSaved.Recalculate)
+            //if (!_dynamicTempCalc.IsValid || UserSaved.Recalculate)
+            //{
+            //    _dynamicTempCalc = new DynamicTempCalc()
+            //    {
+            //        Element = UserSaved.SelectedElement,
+            //        Rsi = UserSaved.Rsi,
+            //        Rse = UserSaved.Rse,
+            //        Ti = UserSaved.Ti,
+            //        Te = UserSaved.Te
+            //    };
+            //    _dynamicTempCalc.CalculateHomogeneous();
+            //    _dynamicTempCalc.CalculateDynamicValues();
+            //}
+            _dynamicTempCalc = new DynamicTempCalc()
             {
-                _dynamicTempCalc = new DynamicTempCalc()
-                {
-                    Element = UserSaved.SelectedElement,
-                    Rsi = UserSaved.Rsi,
-                    Rse = UserSaved.Rse,
-                    Ti = UserSaved.Ti,
-                    Te = UserSaved.Te
-                };
-                _dynamicTempCalc.CalculateHomogeneous();
-                _dynamicTempCalc.CalculateDynamicValues();
-            }
+                Element = UserSaved.SelectedElement,
+                Rsi = UserSaved.Rsi,
+                Rse = UserSaved.Rse,
+                Ti = UserSaved.Ti,
+                Te = UserSaved.Te
+            };
+            _dynamicTempCalc.CalculateHomogeneous();
+            _dynamicTempCalc.CalculateDynamicValues();
         }
 
         /*
@@ -110,16 +119,42 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         // Vertical Cut
-        public List<IDrawingGeometry> VerticalCutDrawing => _drawingServiceV.DrawingGeometries;
-        public Rectangle CanvasSizeVerticalCut => _drawingServiceV.CanvasSize;
-
+        public List<IDrawingGeometry> VerticalCutDrawing => _verticalCut.DrawingGeometries;
+        public Rectangle CanvasSizeVerticalCut => _verticalCut.CanvasSize;
         public ISeries[] DataPoints_i => GetDataPoints_i();
-
         public ISeries[] DataPoints_e => GetDataPoints_e();
-
         public Axis[] YAxes_i => DrawYAxes();
-
         public Axis[] YAxes_e => DrawYAxes("right");
+
+        public List<IPropertyItem> DynamicThermalValues => new List<IPropertyItem>()
+        {
+            new PropertyItem<double>(Symbol.RValueDynamic, () => _dynamicTempCalc.DynamicRValue),
+            new PropertyItem<double>(Symbol.UValueDynamic, () => _dynamicTempCalc.DynamicUValue),
+            new PropertyItem<double>(Symbol.TemperatureAmplitudeDamping, () => _dynamicTempCalc.TAD),
+            new PropertyItem<double>(Symbol.TemperatureAmplitudeRatio, () => _dynamicTempCalc.TAV),
+            new PropertyItem<double>(Symbol.TimeShift, () => Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift) / 3600, 2)),
+            new PropertyItem<double>(Symbol.EffectiveThermalMass, () => _dynamicTempCalc.EffectiveThermalMass),
+            new PropertyItem<double>(Symbol.DecrementFactor, () => _dynamicTempCalc.DecrementFactor),
+        };
+        public List<IPropertyItem> DynamicThermalValuesInterior => new List<IPropertyItem>()
+        {
+            new PropertyItem<double>(Symbol.TimeShift, () => Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift_i) / 3600, 2)) { SymbolSubscriptText = "1"},
+            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => _dynamicTempCalc.ArealHeatCapacity_i) { SymbolBaseText = "K" , SymbolSubscriptText = "1"},
+            new PropertyItem<double>(Symbol.ThermalAdmittance, () => _dynamicTempCalc.ThermalAdmittance_i) { SymbolSubscriptText = "11"},
+            new PropertyItem<double>(Symbol.DynamicThermalAdmittance, () => _dynamicTempCalc.DynamicThermalAdmittance_i) { SymbolSubscriptText = "12"},
+        };
+        public List<IPropertyItem> DynamicThermalValuesExterior => new List<IPropertyItem>()
+        {
+            new PropertyItem<double>(Symbol.TimeShift, () => Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift_e) / 3600, 2)) { SymbolSubscriptText = "2" },
+            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => _dynamicTempCalc.ArealHeatCapacity_e) { SymbolBaseText = "K", SymbolSubscriptText = "2"},
+            new PropertyItem<double>(Symbol.ThermalAdmittance, () => _dynamicTempCalc.ThermalAdmittance_e) { SymbolSubscriptText = "22" },
+        };
+
+        public LiveChartsCore.Measure.Margin ChartMargin_i { get; private set; } = new LiveChartsCore.Measure.Margin(64, 16, 0, 64);
+        public LiveChartsCore.Measure.Margin ChartMargin_e { get; private set; } = new LiveChartsCore.Measure.Margin(0, 16, 64, 64);
+        public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
+        public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
+        public Axis[] XAxes => DrawXAxes();
 
         /*
          * private Methods
@@ -242,55 +277,5 @@ namespace BauphysikToolWPF.UI.ViewModels
                 }
             };
         }
-
-        public List<OverviewItem> DynamicThermalValues
-        {
-            get
-            {
-                if (!_dynamicTempCalc.IsValid) return new List<OverviewItem>();
-                return new List<OverviewItem>(7)
-                {
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "dyn", Value = _dynamicTempCalc.DynamicRValue, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "dyn", Value = _dynamicTempCalc.DynamicUValue, Unit = "W/m²K" },
-                    new OverviewItem { SymbolBase = "TAD", Value = _dynamicTempCalc.TAD },
-                    new OverviewItem { SymbolBase = "TAV", Value = _dynamicTempCalc.TAV, Comment = "Temperaturamplitudenverhältnis" },
-                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "f", Value = Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift) / 3600, 2), Unit = "h", Comment = "Phasenverschiebung" },
-                    new OverviewItem { SymbolBase = "M", Value = _dynamicTempCalc.EffectiveThermalMass, Unit = "kg/m²", Comment = "speicherwirksame Masse" },
-                    new OverviewItem { SymbolBase = "f", Value = _dynamicTempCalc.DecrementFactor, Comment = "Dekrement" }
-                };
-            }
-        }
-        public List<OverviewItem> DynamicThermalValues_i
-        {
-            get
-            {
-                if (!_dynamicTempCalc.IsValid) return new List<OverviewItem>();
-                return new List<OverviewItem>(6)
-                {
-                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "1", Value = Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift_i) / 3600, 2), Unit = "h" },
-                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "1", Value = _dynamicTempCalc.ArealHeatCapacity_i, Unit = "kJ/(m²K)" },
-                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "1", Value = _dynamicTempCalc.ThermalAdmittance_i, Unit = "W/(m²K)" },
-                };
-            }
-        }
-        public List<OverviewItem> DynamicThermalValues_e
-        {
-            get
-            {
-                if (!_dynamicTempCalc.IsValid) return new List<OverviewItem>();
-                return new List<OverviewItem>(6)
-                {
-                    new OverviewItem { SymbolBase = "Δt", SymbolSubscript = "2", Value = Math.Round(Convert.ToDouble(_dynamicTempCalc.TimeShift_e) / 3600, 2), Unit = "h" },
-                    new OverviewItem { SymbolBase = "Κ", SymbolSubscript = "2", Value = _dynamicTempCalc.ArealHeatCapacity_e, Unit = "kJ/(m²K)" },
-                    new OverviewItem { SymbolBase = "Y", SymbolSubscript = "2", Value = _dynamicTempCalc.ThermalAdmittance_e, Unit = "W/(m²K)" },
-                };
-            }
-        }
-
-        public LiveChartsCore.Measure.Margin ChartMargin_i { get; private set; } = new LiveChartsCore.Measure.Margin(64, 16, 0, 64);
-        public LiveChartsCore.Measure.Margin ChartMargin_e { get; private set; } = new LiveChartsCore.Measure.Margin(0, 16, 64, 64);
-        public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
-        public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
-        public Axis[] XAxes => DrawXAxes();
     }
 }

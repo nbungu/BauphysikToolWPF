@@ -43,6 +43,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Icons\error.png" />
+    <None Remove="Resources\Icons\export-pdf-full_b.png" />
+    <None Remove="Resources\Icons\info_b.png" />
+    <None Remove="Resources\Icons\triangle-warning.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="appicon-256.ico">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -57,6 +64,7 @@
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc2" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="PDFsharp" Version="6.1.1" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
     <PackageReference Include="SQLiteNetExtensions" Version="2.1.0" />
     <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.8" />
@@ -67,10 +75,10 @@
 
   <ItemGroup>
     <Reference Include="BT.Geometry">
-      <HintPath>..\BT.Geometry\bin\Debug\net8.0\BT.Geometry.dll</HintPath>
+      <HintPath>..\BT.Geometry\bin\Debug\net8.0-windows10.0.22621.0\BT.Geometry.dll</HintPath>
     </Reference>
     <Reference Include="BT.Logging">
-      <HintPath>..\BT.Logging\bin\Debug\net8.0\BT.Logging.dll</HintPath>
+      <HintPath>..\BT.Logging\bin\Debug\net8.0-windows10.0.22621.0\BT.Logging.dll</HintPath>
     </Reference>
   </ItemGroup>
 
@@ -94,6 +102,8 @@
     <Resource Include="Resources\Icons\bookmark.png" />
     <Resource Include="Resources\Icons\comment.png" />
     <Resource Include="Resources\Icons\comment_bold.png" />
+    <Resource Include="Resources\Icons\error.png" />
+    <Resource Include="Resources\Icons\export-pdf-full_b.png" />
     <Resource Include="Resources\Icons\favicon.png" />
     <Resource Include="Resources\Icons\Filetypes\btk.png" />
     <Resource Include="Resources\Icons\Filetypes\cad.png" />
@@ -131,6 +141,7 @@
     <Resource Include="Resources\Icons\Flat\user.png" />
     <Resource Include="Resources\Icons\Flat\warning.png" />
     <Resource Include="Resources\Icons\Flat\water-drop.png" />
+    <Resource Include="Resources\Icons\info_b.png" />
     <Resource Include="Resources\Icons\placeholder_256px.png" />
     <Resource Include="Resources\Icons\delete-2.png" />
     <Resource Include="Resources\Icons\edit.png" />
@@ -202,6 +213,7 @@
     <Resource Include="Resources\Icons\settings_w.png" />
     <Resource Include="Resources\Icons\tags.png" />
     <Resource Include="Resources\Icons\tags_bold.png" />
+    <Resource Include="Resources\Icons\triangle-warning.png" />
     <Resource Include="Resources\Icons\up.png" />
     <Resource Include="Resources\Icons\down.png" />
     <Resource Include="Resources\Icons\export-pdf.png" />

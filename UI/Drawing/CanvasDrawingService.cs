@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.UI.Drawing
     {
         //private Rectangle _defaultCrossSectionRectangle = new Rectangle(new Point(0, 0), 880, 400);
         //private Rectangle _defaultVerticalCutRectangle = new Rectangle(new Point(0, 0), 400, 880);
-        private bool _isOverflowing = false;
+        private bool _isOverflowing;
 
         // Static, because globally valid for all Intstances
         public static double SizeOf1Cm = 16.0; // starting value
@@ -31,7 +31,7 @@ namespace BauphysikToolWPF.UI.Drawing
         public Rectangle CanvasSize { get; set; }
         public DrawingType DrawingType { get; set; }
         public AlignmentVariant Alignment { get; set; }
-        public List<IDrawingGeometry> DrawingGeometries { get; private set; } //=> GetCrossSectionDrawing(Element, CanvasSize);
+        public List<IDrawingGeometry> DrawingGeometries { get; private set; }
 
         public CanvasDrawingService(Element element, Rectangle canvasSize, DrawingType drawingType = DrawingType.CrossSection, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {
@@ -270,7 +270,7 @@ namespace BauphysikToolWPF.UI.Drawing
             layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
-            layer.Tag = layer.LayerPosition.ToString();
+            layer.Tag = (layer.LayerPosition + 1).ToString();
         }
 
         private void UpdateSubConstructionGeometry(Layer layer)
@@ -279,7 +279,7 @@ namespace BauphysikToolWPF.UI.Drawing
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
             subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.Category, 0.5, subConstruction.Rectangle);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            subConstruction.Tag = $"{layer.LayerPosition}b";
+            subConstruction.Tag = $"{layer.LayerPosition + 1}b";
         }
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BauphysikToolWPF.Models.Helper;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
@@ -47,8 +48,6 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public string Name { get; set; } = string.Empty;
         [NotNull]
-        public byte[] Image { get; set; } = Array.Empty<byte>();
-        [NotNull]
         public string ColorCode { get; set; } = "#00FFFFFF";
         [NotNull]
         public string Tag { get; set; } = string.Empty;
@@ -78,9 +77,6 @@ namespace BauphysikToolWPF.Models
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public Construction Construction { get; set; } = new Construction();
 
-
-        // Properties
-
         [Ignore, JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
         [Ignore, JsonIgnore]
@@ -101,6 +97,12 @@ namespace BauphysikToolWPF.Models
                 return (Color)ColorConverter.ConvertFromString(ColorCode);
             }
         }
+
+        [Ignore, JsonIgnore]
+        public byte[] FullImage { get; set; } = Array.Empty<byte>();
+
+        [Ignore, JsonIgnore]
+        public byte[] Image { get; set; } = Array.Empty<byte>();
 
         [Ignore]
         public List<string> TagList // Converts string of Tags, separated by Comma, to a List of Tags
@@ -207,6 +209,8 @@ namespace BauphysikToolWPF.Models
             }
         }
 
+        #region Thermal Calculations
+
         [Ignore, JsonIgnore]
         public double RGesValue => UserSaved.CalcResults.RGes; // R_ges in m²K/W
         [Ignore, JsonIgnore]
@@ -216,6 +220,16 @@ namespace BauphysikToolWPF.Models
         [Ignore, JsonIgnore]
         public double UValue => UserSaved.CalcResults.UValue; // q in W/m²
 
+        [Ignore, JsonIgnore]
+        public List<EnvVars> UsedEnvVars => new List<EnvVars>()
+        {
+            new EnvVars(UserSaved.CalcResults.Rsi, Symbol.TransferResistanceSurfaceInterior, Unit.SquareMeterKelvinPerWatt),
+            new EnvVars(UserSaved.CalcResults.Rse, Symbol.TransferResistanceSurfaceExterior, Unit.SquareMeterKelvinPerWatt),
+            new EnvVars(UserSaved.CalcResults.Ti, Symbol.TemperatureInterior, Unit.Celsius),
+            new EnvVars(UserSaved.CalcResults.Te, Symbol.TemperatureExterior, Unit.Celsius)
+        };
+
+        #endregion
 
         //------Konstruktor-----//
 

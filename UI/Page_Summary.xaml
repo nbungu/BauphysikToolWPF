@@ -24,12 +24,12 @@
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
-            <RowDefinition Height=".35*" MinHeight="320"/>
-            <RowDefinition Height=".55*" MinHeight="320"/>
+            <RowDefinition Height=".35*" MinHeight="240"/>
+            <RowDefinition Height=".55*" MinHeight="240"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="320"/>
-            <ColumnDefinition Width="360" MaxWidth="440" MinWidth="16"/>
+            <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
@@ -52,15 +52,19 @@
             </Grid>
         </Border>
 
+        <Label Grid.Column="0" Grid.Row="1" Content="Querschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16"/>
+
         <!--Cross Section Image-->
-        <Grid Grid.Column="0" Grid.Row="1" Margin="32,32,32,16" ClipToBounds="True">
-            
+        <Grid Grid.Column="0" Grid.Row="1" Margin="16,32,16,16" ClipToBounds="True">
+
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <Label Grid.Row="0" Content="Querschnitt" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+            <Label Grid.Row="0" Content="Innen" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+            <Label Grid.Row="2" Content="Außen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
             <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
@@ -94,29 +98,46 @@
                     <controls:LayersCanvas x:Name="LayersCanvasCrossSection" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeCrossSection.Width}" Height="{Binding CanvasSizeCrossSection.Height}" DrawingGeometries="{Binding CrossSectionDrawing}"/>
 
                     <!-- "Vertical Measurement Grid" -->
-                    <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvasCrossSection, Path=Height}" DrawingGeometry="{Binding LayerMeasurementCrossSection}" Margin="32,0,32,0"/>
+                    <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvasCrossSection, Path=Height}" DrawingGeometry="{Binding LayerMeasurementCrossSection}" Margin="32,0"/>
 
                     <!-- "Vertical Measurement Grid Full" -->
-                    <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvasCrossSection, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFullCrossSection}" Margin="32,0,32,0"/>
+                    <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvasCrossSection, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFullCrossSection}" Margin="32,0"/>
 
                     <!-- "Horizontal Measurement Grid Test" -->
-                    <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvasCrossSection, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurementCrossSection}" Margin="0,32,0,32"/>
+                    <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvasCrossSection, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurementCrossSection}" Margin="0,32">
+                        <controls:MeasurementChain.Style>
+                            <Style TargetType="controls:MeasurementChain">
+                                <Setter Property="Visibility" Value="Visible"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SubConstructionMeasurementCrossSection.Count}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </controls:MeasurementChain.Style>
+                    </controls:MeasurementChain>
 
                 </Grid>
             </Viewbox>
         </Grid>
 
+        <!--GridSplitter - Horizontal-->
+        <GridSplitter Grid.Column="0" Grid.Row="2" Height="6" Margin="124, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
+        <Label Grid.Column="0" Grid.Row="2" Content="Vertikalschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16, -16, 0,0"/>
+
         <!--Vertical Cut Image-->
-        <Grid Grid.Column="0" Grid.Row="2" Margin="32,16,32,32" ClipToBounds="True">
+        <Grid Grid.Column="0" Grid.Row="2" Margin="16" ClipToBounds="True">
             <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                <Label Grid.Row="0" Content="Vertikalschnitt" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                <Label Grid.Column="0" Content="Innen" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                <Label Grid.Column="2" Content="Außen" VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
-                <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" >
+                <Viewbox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" >
                     <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
                     <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
                     <Grid x:Name="ZoomableGrid2" Margin="8"
@@ -146,13 +167,24 @@
                         <controls:LayersCanvas x:Name="LayersCanvasVerticalCut" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeVerticalCut.Width}" Height="{Binding CanvasSizeVerticalCut.Height}" DrawingGeometries="{Binding VerticalCutDrawing}"/>
 
                         <!-- "Horizontal Measurement for Layers" -->
-                        <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvasVerticalCut, Path=Width}" DrawingGeometry="{Binding LayerMeasurementVerticalCut}" Margin="0,32,0,32"/>
+                        <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvasVerticalCut, Path=Width}" DrawingGeometry="{Binding LayerMeasurementVerticalCut}" Margin="0,32"/>
 
                         <!-- "Horizontal Measurement for Element" -->
-                        <controls:MeasurementChain Grid.Row="2" Grid.Column="0" Width="{Binding ElementName=LayersCanvasVerticalCut, Path=Width}" DrawingGeometry="{Binding LayerMeasurementFullVerticalCut}" Margin="0,32,0,32"/>
+                        <controls:MeasurementChain Grid.Row="2" Grid.Column="0" Width="{Binding ElementName=LayersCanvasVerticalCut, Path=Width}" DrawingGeometry="{Binding LayerMeasurementFullVerticalCut}" Margin="0,32"/>
 
                         <!-- "Vertical Measurement for SubConstructions" -->
-                        <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvasVerticalCut, Path=Height}" DrawingGeometry="{Binding SubConstructionMeasurementVerticalCut}" Margin="32,0,32,0"/>
+                        <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvasVerticalCut, Path=Height}" DrawingGeometry="{Binding SubConstructionMeasurementVerticalCut}" Margin="32,0">
+                            <controls:MeasurementChain.Style>
+                                <Style TargetType="controls:MeasurementChain">
+                                    <Setter Property="Visibility" Value="Visible"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SubConstructionMeasurementVerticalCut.Count}" Value="0">
+                                            <Setter Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </controls:MeasurementChain.Style>
+                        </controls:MeasurementChain>
 
                     </Grid>
                 </Viewbox>
@@ -160,31 +192,31 @@
         </Grid>
 
         <!--Grid Splitter-->
-        <GridSplitter Grid.Column="1" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" Width="6" Style="{StaticResource GridSplitterStyleDotted}" Margin="-3,16,0,16"/>
+        <controls:ExpandableGridSplitter Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Stretch"
+                                         Width="22"
+                                         Background="Transparent"
+                                         Margin="-11,16,0,16"/>
 
         <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                <StackPanel>
+                    <!--Eigenschaften-->
+                    <Expander Header="Bauteil" IsExpanded="True" Margin="0,0,0,8">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                            <controls:PropertyDataGrid x:Name="ElementPropertiesDataGrid" Properties="{Binding ElementProperties}"/>
+                        </ScrollViewer>
+                    </Expander>
 
-            <!--Eigenschaften-->
-            <Expander Grid.Row="0" Header="Bauteil" IsExpanded="True" Margin="0,0,0,8">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-                    <controls:PropertyDataGrid x:Name="ElementPropertiesDataGrid" Properties="{Binding ElementProperties}"/>
-                </ScrollViewer>
-            </Expander>
-
-            <Expander Grid.Row="1" Header="Gewählte Randbedingungen" IsExpanded="True" Margin="0,0,0,8">
-                <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-                    <controls:PropertyDataGrid x:Name="EnvironmentPropertiesDataGrid" Properties="{Binding EnvironmentProperties}"/>
-                </ScrollViewer>
-            </Expander>
-
+                    <Expander Header="Gewählte Randbedingungen" IsExpanded="True" Margin="0,0,0,8">
+                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
+                            <controls:PropertyDataGrid x:Name="EnvironmentPropertiesDataGrid" Properties="{Binding EnvironmentProperties}"/>
+                        </ScrollViewer>
+                    </Expander>
+                </StackPanel>
+            </ScrollViewer>
         </Grid>
-
-
 
     </Grid>
 

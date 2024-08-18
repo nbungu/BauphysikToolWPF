@@ -8,5 +8,13 @@ namespace BauphysikToolWPF.Services
         public static Regex NumericCurrentCulture = new Regex("[^0-9,]+"); //regex that matches disallowed text
 
         public static Regex IntegerCurrentCulture = new Regex("[^0-9]+"); //regex that matches disallowed text
+        public static bool IsValidWindowsFileName(string fileName)
+        {
+            // Regular expression to validate Windows file names
+            string pattern = @"^(?!^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\..*)?$)[^\x00-\x1F<>:""/\\|?*]+(?<![ .])$";
+
+            // Match the pattern with the file name and ensure it's not too long
+            return fileName.Length <= 255 && Regex.IsMatch(fileName, pattern, RegexOptions.IgnoreCase);
+        }
     }
 }

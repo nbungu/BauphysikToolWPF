@@ -35,6 +35,7 @@ namespace BauphysikToolWPF.Calculations
         public int TimeShift_i { get; private set; } // [s] - Zeitverschiebung der Wärmeaufnahme innen
         public int TimeShift_e { get; private set; } // [s] - Zeitverschiebung der Wärmeaufnahme außen
         public double ThermalAdmittance_i { get; private set; } // [W/m²K] - describes the ability of a surface to absorb and release heat (energy) upon a periodic sinusoidal temperature swing with a period of 24h. 
+        public double DynamicThermalAdmittance_i { get; private set; } // [W/m²K] - describes the ability of a surface to absorb and release heat (energy) upon a periodic sinusoidal temperature swing with a period of 24h. 
         public double ThermalAdmittance_e { get; private set; } // [W/m²K] - describes the ability to buffer heat upon external temperature swings. Again, it is assumed that the temperature on the opposite side is held constant.
         public double ArealHeatCapacity_i { get; private set; } // K1 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität innen
         public double ArealHeatCapacity_e { get; private set; } // K2 [kJ/(m²K)] - flächenbezogene (spezifische) Wärmekapazität außen
@@ -70,6 +71,7 @@ namespace BauphysikToolWPF.Calculations
                 ArealHeatCapacity_i = GetArealHeatCapacity(_zElement, "i");
                 ArealHeatCapacity_e = GetArealHeatCapacity(_zElement, "e");
                 ThermalAdmittance_i = GetThermalAdmittance(_yElement, "i");
+                DynamicThermalAdmittance_i = GetDynamicThermalAdmittance(_yElement, "i");
                 ThermalAdmittance_e = GetThermalAdmittance(_yElement, "e");
                 EffectiveThermalMass = GetThermalMass(_yElement);
                 IsValid = true;
@@ -259,6 +261,14 @@ namespace BauphysikToolWPF.Calculations
 
             if (side == "e")
                 result = Math.Round(matrix.Y22.Magnitude, 2);
+
+            return result;
+        }
+        private double GetDynamicThermalAdmittance(ThermalAdmittanceMatrix matrix, string side)
+        {
+            double result = 0;
+            if (side == "i")
+                result = Math.Round(matrix.Y12.Magnitude, 2);
 
             return result;
         }

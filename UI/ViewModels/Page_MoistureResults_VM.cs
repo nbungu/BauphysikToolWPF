@@ -60,24 +60,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         /*
-         * Regular Instance Variables as Properties
-         * 
-         * Not depending on UI changes. No Observable function.
-         */
-
-        public double Ti => _glaser.Ti;
-        public double Te => _glaser.Te;
-        public double Rel_Fi => _glaser.RelFi;
-        public double Rel_Fe => _glaser.RelFe;
-        public List<OverviewItem> OverviewItems => GetOverviewItemsList();
-        public ISeries[] DataPoints => GetDataPoints();
-        public RectangularSection[] LayerSections => DrawLayerSections();
-        public Axis[] XAxes => DrawXAxes();
-        public Axis[] YAxes => DrawYAxes();
-        public SolidColorPaint TooltipBackgroundPaint { get; set; } = new SolidColorPaint(new SKColor(255, 255, 255));
-        public SolidColorPaint TooltipTextPaint { get; set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
-
-        /*
          * MVVM Commands - UI Interaction with Commands
          * 
          * Update ONLY UI-Used Values by fetching from Database!
@@ -105,6 +87,25 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private Element _selectedElement = UserSaved.SelectedElement;
+
+        /*
+         * MVVM Capsulated Properties + Triggered by other Properties
+         * 
+         * Not Observable, because Triggered and Changed by the Values above
+         */
+
+        public double Ti => _glaser.Ti;
+        public double Te => _glaser.Te;
+        public double Rel_Fi => _glaser.RelFi;
+        public double Rel_Fe => _glaser.RelFe;
+        public List<OverviewItem> OverviewItems => GetOverviewItemsList();
+        public ISeries[] DataPoints => GetDataPoints();
+        public RectangularSection[] LayerSections => DrawLayerSections();
+        public Axis[] XAxes => DrawXAxes();
+        public Axis[] YAxes => DrawYAxes();
+        public SolidColorPaint TooltipBackgroundPaint { get; set; } = new SolidColorPaint(new SKColor(255, 255, 255));
+        public SolidColorPaint TooltipTextPaint { get; set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
+
 
         /*
          * private Methods

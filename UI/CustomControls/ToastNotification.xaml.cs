@@ -59,20 +59,20 @@ namespace BauphysikToolWPF.UI.CustomControls
             switch (ToastType)
             {
                 case ToastType.Info:
-                    RootGrid.Background = new SolidColorBrush(Colors.AliceBlue);
-                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/auge.png"));
+                    //RootGrid.Background = new SolidColorBrush(Colors.LightGray);
+                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/info_b.png"));
                     break;
                 case ToastType.Success:
-                    RootGrid.Background = new SolidColorBrush(Colors.AliceBlue);
-                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/auge.png"));
+                    //RootGrid.Background = new SolidColorBrush(Colors.LightGray);
+                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/haken.png"));
                     break;
                 case ToastType.Warning:
-                    RootGrid.Background = new SolidColorBrush(Colors.LightGoldenrodYellow);
-                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/auge.png"));
+                    //RootGrid.Background = new SolidColorBrush(Colors.LightGray);
+                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/triangle-warning.png"));
                     break;
                 case ToastType.Error:
-                    RootGrid.Background = new SolidColorBrush(Colors.LightGoldenrodYellow);
-                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/auge.png"));
+                    //RootGrid.Background = new SolidColorBrush(Colors.LightGray);
+                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/error.png"));
                     break;
             }
         }

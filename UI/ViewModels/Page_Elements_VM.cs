@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -21,9 +22,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
-        public string Title => "LandingPage";
-        public List<string> SortingProperties => ElementComparer.SortingTypes; // Has to match ElementSortingType enum values (+Order)
-        public List<string> GroupingProperties => ElementComparer.GroupingTypes; // Has to match ElementSortingType enum values (+Order)
         
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -87,13 +85,26 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElementId = selectedInternalId;
             UserSaved.Recalculate = true;
-            UserSaved.OnSelectedElementChanged(false);
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
         private void ElementDoubleClick()
         {
             SwitchPage(NavigationContent.LayerSetup);
+        }
+        
+        [RelayCommand]
+        private void CreateSingleElementPdf(int selectedInternalId)
+        {
+            UserSaved.SelectedElementId = selectedInternalId;
+            DocumentDesigner.CreateSingleElementDocument(UserSaved.SelectedElement);
+        }
+
+        [RelayCommand]
+        private void CreateFullPdf()
+        {
+            DocumentDesigner.FullCatalogueExport(UserSaved.SelectedProject);
         }
 
         // This method will be called whenever SortingPropertyIndex changes
@@ -109,7 +120,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnGroupingPropertyIndexChanged(int value)
         {
             GroupedElements = UpdateGroupedItemsSource();
-            //RefreshXamlBindings();
         }
 
         /*
@@ -134,6 +144,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static Element? _selectedElement; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ExportPdfCatalogueAvailable))]
         private List<Element> _elements = UserSaved.SelectedProject.Elements;
 
         [ObservableProperty]
@@ -146,14 +157,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public bool ElementToolsAvailable => SelectedElement != null;
+        public bool ExportPdfCatalogueAvailable => Elements.Count > 0;
 
         // Returns False if Index is 0. Index 0 means without Grouping, since "Ohne" is first entry in Combobox
         public bool IsGroupingEnabled => GroupingPropertyIndex > 0;
 
         // For Grouping and Sorting of WrapPanel: Expose as Static for 'GroupingTypeToPropertyName' Converter
         public static ElementSortingType SelectedSorting => (ElementSortingType)_sortingPropertyIndex;
-
         public static ElementGroupingType SelectedGrouping => (ElementGroupingType)_groupingPropertyIndex;
+        public List<string> SortingProperties => ElementComparer.SortingTypes; // Has to match ElementSortingType enum values (+Order)
+        public List<string> GroupingProperties => ElementComparer.GroupingTypes; // Has to match ElementSortingType enum values (+Order)
 
 
         private void RefreshXamlBindings()
@@ -163,10 +176,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // Trigger re-grouping
             OnGroupingPropertyIndexChanged(_groupingPropertyIndex);
+            
             Elements = new List<Element>();
             Elements = UserSaved.SelectedProject.Elements;
+
             SelectedElement = null;
-            SelectedElement = UserSaved.SelectedElement;
+            SelectedElement = UserSaved.SelectedElementId == -1 ? null : UserSaved.SelectedElement;
         }
 
         private ICollectionView UpdateGroupedItemsSource()

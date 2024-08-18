@@ -41,6 +41,7 @@ namespace BauphysikToolWPF
         public MainWindow()
         {
             InitializeComponent();
+            // Assign for static usage
             _navigationMenuListBox = this.NavigationMenuListBox;
             _projectBoxHeader = this.ProjectBoxHeader;
             _toastNotification = this.Toast;
@@ -48,7 +49,7 @@ namespace BauphysikToolWPF
             if (Updater.CompareSemanticVersions(Updater.LocalUpdaterFile.Current, Updater.LocalUpdaterFile.Latest) < 0)
             {
                 Logger.LogInfo($"Found new Version! Notifying User");
-                ShowToast($"New Version Available: {Updater.LocalUpdaterFile.LatestTag}", ToastType.Info);
+                ShowToast($"New Version Available: {Updater.LocalUpdaterFile.LatestTag}. Besuchen Sie bauphysik-tool.de für ein kostenloses Update!", ToastType.Info, 6);
                 Updater.LocalUpdaterFile.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
                 Updater.WriteToLocalUpdaterFile(Updater.LocalUpdaterFile);
             }
@@ -96,7 +97,7 @@ namespace BauphysikToolWPF
             }
         }
 
-        public static void ShowToast(string message, ToastType toastType)
+        public static void ShowToast(string message, ToastType toastType, int durationInSeconds = 3)
         {
             if (_toastNotification is null || _toastNotification.Visibility == Visibility.Visible) return;
 
@@ -107,21 +108,21 @@ namespace BauphysikToolWPF
             switch (toastType)
             {
                 case ToastType.Info:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/info.png"));
+                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/info_b.png"));
                     break;
                 case ToastType.Success:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/success.png"));
+                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/haken.png"));
                     break;
                 case ToastType.Warning:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/warning.png"));
+                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/triangle-warning.png"));
                     break;
                 case ToastType.Error:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/error.png"));
+                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/error.png"));
                     break;
             }
 
             // Hide the toast after 3 seconds
-            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };
+            var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(durationInSeconds) };
             timer.Tick += (s, e) =>
             {
                 _toastNotification.Visibility = Visibility.Collapsed;

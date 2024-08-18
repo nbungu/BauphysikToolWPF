@@ -39,6 +39,7 @@ namespace BauphysikToolWPF.Calculations
         }
         public void CalculateGlaser()
         {
+            if (RelevantLayers.Count == 0) return;
             try
             {
                 // Calculated parameters (private setter)

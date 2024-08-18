@@ -20,6 +20,7 @@
 
         <!-- Checks if Element of WrapPanel is currently SelectedElement -->
         <controls:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
+        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
 
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
@@ -193,12 +194,12 @@
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
             <Button Content="Neues Bauteil" Command="{Binding AddNewElementCommand}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
-            <Button Content="Bauteil importieren" IsEnabled="False" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Download_B}" Margin="0,0,0,16"/>
+            <Button Content="Bauteil-PDF erstellen" Command="{Binding CreateSingleElementPdfCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            <Button Content="PDF erstellen" IsEnabled="False" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
+            <Button Content="Bauteilkatalog erstellen" Command="{Binding CreateFullPdfCommand}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDFFull_B}" Margin="0,0,0,16"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
-            <Button Content="Katalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
+            <Button Content="Bauteilkatalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
         </StackPanel>
 
         <!-- Middle -->
@@ -214,13 +215,13 @@
             <!-- Sorting functions, Button Row -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left">
                 <Label Content="Sortieren nach" Margin="0,0,8,0"/>
-                <ComboBox Name="SortingComboBox" Background="Transparent" Width="240" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" Margin="0,0,8,0"/>
+                <ComboBox Name="SortingComboBox" Background="Transparent" Width="240" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Margin="0,0,8,0"/>
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <Label Content="Gruppieren nach" Margin="0,0,8,0"/>
-                <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" Margin="0,0,8,0"/>
+                <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
 
-            <ScrollViewer x:Name="WrapPanelScrollViewer" Grid.Row="2" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+            <ScrollViewer x:Name="WrapPanelScrollViewer" Grid.Row="2" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" ClipToBounds="True">
                 <ItemsControl x:Name="ElementsControl" Width="{Binding ElementName=WrapPanelScrollViewer, Path=ActualWidth}"
                           ItemsPanel="{StaticResource WrapPanelTemplate}"
                           ItemTemplate="{StaticResource WrapPanelItemDesignTemplate}"
@@ -256,6 +257,7 @@
                 <RowDefinition Height="56"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Label Grid.Row="0" Content="Ausgewähltes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
@@ -263,72 +265,75 @@
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
                 <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Export_B}" ToolTip="Exportieren" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
+            
+            <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" Margin="0,0,0,8">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="8,4,8,8" ClipToBounds="True">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
+                            <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20"/>
+                        </StackPanel>
 
-            <Border x:Name="Test" Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" BorderThickness="0">
-                <StackPanel Margin="16">
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
-                        <Ellipse Fill="{Binding SelectedElement.ColorCode}" Width="20" Height="20"/>
-                    </StackPanel>
-                    <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" Margin="0,8,0,8"/>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Typ:" HorizontalAlignment="Left" Width="96"/>
                         <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>
+
+                        <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" Margin="0,8,0,8"/>
+
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>
+                            <Label Content="{Binding SelectedElement.OrientationType}" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96"/>
+                            <Label Content="{Binding SelectedElement.RGesValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96"/>
+                            <Label Content="{Binding SelectedElement.UValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="sd-Wert:" HorizontalAlignment="Left" Width="96"/>
+                            <Label Content="{Binding SelectedElement.SdThickness, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="m':" HorizontalAlignment="Left" Width="96"/>
+                            <Label Content="{Binding SelectedElement.AreaMassDens, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Erstellt:" HorizontalAlignment="Left" Width="96"/>
+                            <Label Content="{Binding SelectedElement.CreatedAtString}" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Content="Gerändert:" HorizontalAlignment="Left" Width="96"/>
+                            <Label Content="{Binding SelectedElement.UpdatedAtString}" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                            <Image Source="{StaticResource ButtonIcon_Tags_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
+                            <Label Content="Tags:" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <ItemsControl ItemsSource="{Binding SelectedElement.TagList}"
+                            ItemsPanel="{StaticResource TagsWrapPanelTemplate}"
+                            ItemTemplate="{StaticResource TagsWrapPanelItemDesignTemplate}"
+                            Background="Transparent"                          
+                            BorderThickness="0"
+                            Margin="0,8,0,8"/>
+                        <StackPanel Orientation="Horizontal">
+                            <Image Source="{StaticResource ButtonIcon_Comment_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
+                            <Label Content="Kommentar:" HorizontalAlignment="Left"/>
+                        </StackPanel>
+                        <TextBlock TextAlignment="Left" Text="{Binding SelectedElement.Comment}" Background="Transparent" TextWrapping="Wrap" FontSize="14" FontFamily="Consolas" Margin="0,8,0,8"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>
-                        <Label Content="{Binding SelectedElement.OrientationType}" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96"/>
-                        <Label Content="{Binding SelectedElement.RGesValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96"/>
-                        <Label Content="{Binding SelectedElement.UValue}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="sd-Wert:" HorizontalAlignment="Left" Width="96"/>
-                        <Label Content="{Binding SelectedElement.SdThickness}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="m':" HorizontalAlignment="Left" Width="96"/>
-                        <Label Content="{Binding SelectedElement.AreaMassDens}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Erstellt:" HorizontalAlignment="Left" Width="96"/>
-                        <Label Content="{Binding SelectedElement.CreatedAtString}" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
-                        <Label Content="Gerändert:" HorizontalAlignment="Left" Width="96"/>
-                        <Label Content="{Binding SelectedElement.UpdatedAtString}" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
-                        <Image Source="{StaticResource ButtonIcon_Tags_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
-                        <Label Content="Tags:" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <ItemsControl ItemsSource="{Binding SelectedElement.TagList}"
-                        ItemsPanel="{StaticResource TagsWrapPanelTemplate}"
-                        ItemTemplate="{StaticResource TagsWrapPanelItemDesignTemplate}"
-                        Background="Transparent"                          
-                        BorderThickness="0"
-                        Margin="0,8,0,8"/>
-                    <StackPanel Orientation="Horizontal">
-                        <Image Source="{StaticResource ButtonIcon_Comment_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
-                        <Label Content="Kommentar:" HorizontalAlignment="Left"/>
-                    </StackPanel>
-                    <TextBlock TextAlignment="Left" Text="{Binding SelectedElement.Comment}" Background="Transparent" TextWrapping="Wrap" FontSize="14" FontFamily="Consolas" Margin="0,8,0,8"/>
-                </StackPanel>
+                </ScrollViewer>
                 <!--Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.
                 Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string-->
             </Border>
-            <StackPanel Grid.Row="2" Orientation="Vertical" VerticalAlignment="Bottom">
-                <Button Content="Schichtaufbau" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LayerSetup}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_Layer_W}" IsEnabled="{Binding ElementToolsAvailable}" />
-            </StackPanel>
+
+            <Button Grid.Row="3" Content="Schichtaufbau" VerticalAlignment="Bottom" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LayerSetup}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_Layer_W}" IsEnabled="{Binding ElementToolsAvailable}" />
+
         </Grid>
+
         <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+
     </Grid>
 </UserControl>
