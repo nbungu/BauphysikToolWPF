@@ -6,6 +6,7 @@ namespace BauphysikToolWPF.UI.Drawing
 {
     public class DrawingGeometry : IDrawingGeometry
     {
+        public int InternalId { get; set; } = -1;
         // Rectangle on 2D Canvas. Drawing Origin (0,0) is top left corner.
         public Rectangle Rectangle { get; set; } = Rectangle.Empty; // in [px]
 
@@ -23,6 +24,7 @@ namespace BauphysikToolWPF.UI.Drawing
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
         {
             if (drawingGeometry is null) return;
+            InternalId = drawingGeometry.InternalId;
             Rectangle = drawingGeometry.Rectangle;
             BackgroundColor = drawingGeometry.BackgroundColor;
             DrawingBrush = drawingGeometry.DrawingBrush;

@@ -285,12 +285,12 @@
                             <Label Content="{Binding SelectedElement.OrientationType}" HorizontalAlignment="Left"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.RGesValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                            <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96" FontWeight="DemiBold"/>
+                            <Label Content="{Binding SelectedElement.RGesValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left" FontWeight="DemiBold"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.UValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                            <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96" FontWeight="DemiBold"/>
+                            <Label Content="{Binding SelectedElement.UValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left" FontWeight="DemiBold"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="sd-Wert:" HorizontalAlignment="Left" Width="96"/>

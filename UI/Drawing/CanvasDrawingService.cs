@@ -32,6 +32,7 @@ namespace BauphysikToolWPF.UI.Drawing
         public DrawingType DrawingType { get; set; }
         public AlignmentVariant Alignment { get; set; }
         public List<IDrawingGeometry> DrawingGeometries { get; private set; }
+        public bool LastDrawingSuccessful { get; private set; }
 
         public CanvasDrawingService(Element element, Rectangle canvasSize, DrawingType drawingType = DrawingType.CrossSection, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {
@@ -47,15 +48,27 @@ namespace BauphysikToolWPF.UI.Drawing
             DrawingGeometries = GetDrawing();
         }
 
+        public void UpdateSingleDrawing(Layer layer)
+        {
+            if (LastDrawingSuccessful)
+            {
+                var tag = $"{layer.LayerPosition + 1}";
+                var selectedGeometry = DrawingGeometries.FindIndex(g => (string)g.Tag == tag);
+                if (selectedGeometry != -1)
+                {
+                    DrawingGeometries[selectedGeometry] = UpdateLayerGeometry(layer).Convert();
+                }
+            }
+            else UpdateDrawings();
+        }
+
         // Vertikalschnitt, Canvas in PX
         // Querschnitt, Canvas in PX
         private List<IDrawingGeometry> GetDrawing()
         {
-            if (DrawingType == DrawingType.CrossSection) SizeOf1Cm = CanvasSize.Height / Element.Thickness;
-            else if (DrawingType == DrawingType.VerticalCut) SizeOf1Cm = CanvasSize.Width / Element.Thickness;
-            else SizeOf1Cm = 16.67;
-
             if (!Element.IsValid) return new List<IDrawingGeometry>();
+
+            SetUpPixelResolution();
 
             // Draw Layers
             UpdateGeometries();
@@ -65,9 +78,19 @@ namespace BauphysikToolWPF.UI.Drawing
 
             // Sort Ascending by ZIndex
             layerDrawings.Sort(new DrawingGeometryComparer(sortingType: DrawingGeometrySortingType.ZIndexAscending));
+
+            LastDrawingSuccessful = layerDrawings.Count > 0;
+
             return layerDrawings;
             
             // TODO: Add Ellipses and Arrows to the drawing geometries
+        }
+
+        private void SetUpPixelResolution()
+        {
+            if (DrawingType == DrawingType.CrossSection) SizeOf1Cm = CanvasSize.Height / Element.Thickness;
+            else if (DrawingType == DrawingType.VerticalCut) SizeOf1Cm = CanvasSize.Width / Element.Thickness;
+            else SizeOf1Cm = 16.67;
         }
         
         private List<IDrawingGeometry> Stacking()
@@ -263,7 +286,7 @@ namespace BauphysikToolWPF.UI.Drawing
             }
         }
 
-        private void UpdateLayerGeometry(Layer layer)
+        private IDrawingGeometry UpdateLayerGeometry(Layer layer)
         {
             layer.BackgroundColor = new SolidColorBrush(layer.Material.Color);
             layer.DrawingBrush = BrushesRepo.GetHatchPattern(layer.Material.Category, 0.5, layer.Rectangle);
@@ -271,15 +294,17 @@ namespace BauphysikToolWPF.UI.Drawing
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
             layer.Tag = (layer.LayerPosition + 1).ToString();
+            return layer;
         }
 
-        private void UpdateSubConstructionGeometry(Layer layer)
+        private IDrawingGeometry UpdateSubConstructionGeometry(Layer layer)
         {
             var subConstruction = layer.SubConstruction;
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
             subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.Category, 0.5, subConstruction.Rectangle);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             subConstruction.Tag = $"{layer.LayerPosition + 1}b";
+            return subConstruction;
         }
     }
 }

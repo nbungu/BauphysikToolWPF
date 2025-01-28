@@ -14,5 +14,13 @@ namespace BauphysikToolWPF.UI
         {
             e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
         }
+
+        private void AddElementWindowControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                this.Close(); // Close the window
+            }
+        }
     }
 }

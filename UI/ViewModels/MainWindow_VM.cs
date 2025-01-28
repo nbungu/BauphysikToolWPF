@@ -110,7 +110,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 UserSaved.SelectedProject.IsModified = false;
                 UserSaved.ProjectFilePath = filePath;
                 UserSaved.OnSelectedProjectChanged(false);
-                SwitchPage(NavigationContent.ProjectPage);
+                SwitchPage(NavigationContent.LandingPage);
             }
         }
 

@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Models;
+﻿using System;
+using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
@@ -7,7 +8,9 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows.Data;
+using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -18,7 +21,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
-            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+            UserSaved.SelectedElementChanged += RefreshXamlBindingsOnElementChanged;
+            UserSaved.SelectedProjectChanged += RefreshXamlBindingsOnProjectChanged;
         }
 
         // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
@@ -42,6 +46,9 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElementId = -1; // Reset SelectedElement
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             new AddElementWindow().ShowDialog();
+            // Select newly created element
+            UserSaved.SelectedElementId = UserSaved.SelectedProject.Elements.Last().InternalId;
+            UserSaved.OnSelectedElementChanged();
         }
 
         // Create New Element / Edit Existing Element
@@ -85,7 +92,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedElementId = selectedInternalId;
             UserSaved.Recalculate = true;
-            RefreshXamlBindings();
+            RefreshXamlBindingsOnElementChanged();
         }
 
         [RelayCommand]
@@ -112,7 +119,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnSortingPropertyIndexChanged(int value)
         {
             UserSaved.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
-            RefreshXamlBindings();
+            RefreshXamlBindingsOnElementChanged();
         }
         
         // This method will be called whenever SortingPropertyIndex changes
@@ -168,8 +175,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string> SortingProperties => ElementComparer.SortingTypes; // Has to match ElementSortingType enum values (+Order)
         public List<string> GroupingProperties => ElementComparer.GroupingTypes; // Has to match ElementSortingType enum values (+Order)
 
-
-        private void RefreshXamlBindings()
+        private void RefreshXamlBindingsOnElementChanged()
         {
             // Update InternalIds and reset SelectedElement
             UserSaved.SelectedProject.AssignInternalIdsToElements();
@@ -182,6 +188,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             SelectedElement = null;
             SelectedElement = UserSaved.SelectedElementId == -1 ? null : UserSaved.SelectedElement;
+        }
+
+        private void RefreshXamlBindingsOnProjectChanged()
+        {
+            UserSaved.SelectedElementId = -1;
+            RefreshXamlBindingsOnElementChanged();
         }
 
         private ICollectionView UpdateGroupedItemsSource()
