@@ -164,7 +164,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public bool ElementToolsAvailable => SelectedElement != null;
-        public bool ExportPdfCatalogueAvailable => Elements.Count > 0;
+        public bool ExportPdfCatalogueAvailable => false; // TODO: Elements.Count > 0;
 
         // Returns False if Index is 0. Index 0 means without Grouping, since "Ohne" is first entry in Combobox
         public bool IsGroupingEnabled => GroupingPropertyIndex > 0;
