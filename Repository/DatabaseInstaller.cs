@@ -1,6 +1,7 @@
 ﻿using BT.Logging;
 using System;
 using System.IO;
+using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.Repository
 {
@@ -21,8 +22,8 @@ namespace BauphysikToolWPF.Repository
                 // Set the path to C:\ProgramData\BauphysikTool
                 //string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
                 // Or for user-specific AppData folder
-                string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); //%appdata%/BauphysikTool
-                string appFolder = Path.Combine(programDataPath, "BauphysikTool");
+
+                string appFolder = ApplicationServices.GetLocalAppDataPath();
                 string databaseFilePath = Path.Combine(appFolder, "BauDB.db");
 
                 // Ensure the directory exists

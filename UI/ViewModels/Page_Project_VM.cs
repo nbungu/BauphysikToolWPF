@@ -123,8 +123,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 if (filePath.Contains("%appdata%", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    string appDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-                    filePath = filePath.Replace("%appdata%", appDataPath, StringComparison.InvariantCultureIgnoreCase);
+                    string programDataPath = ApplicationServices.GetLocalProgramDataPath();
+                    filePath = filePath.Replace("%appdata%", programDataPath, StringComparison.InvariantCultureIgnoreCase);
                 }
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
                 Logger.LogInfo($"Opened linked file: {filePath}");

@@ -181,8 +181,7 @@ namespace BauphysikToolWPF.Services
             try
             {
                 // User-specific AppData folder
-                string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); //%appdata%/BauphysikTool
-                string appFolder = Path.Combine(programDataPath, "BauphysikTool");
+                string appFolder = ApplicationServices.GetLocalAppDataPath();
                 string updaterFilePath = Path.Combine(appFolder, "updater.json");
 
                 // Ensure the directory exists
