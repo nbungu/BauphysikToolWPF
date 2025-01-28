@@ -104,12 +104,11 @@ namespace BauphysikToolWPF.Services
         private static string SaveDoc(PdfDocument document, string fileName)
         {
             // Save the document
-            string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); //%appdata%/BauphysikTool
-            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
-            string pdfFilePath = Path.Combine(appFolder, "BauphysikTool_export.pdf");
+            string downloadFolder = ApplicationServices.GetDownloadsFolderPath();
+            string pdfFilePath = Path.Combine(downloadFolder, "BauphysikTool_export.pdf");
             if (TextInputValidation.IsValidWindowsFileName($"{fileName}.pdf"))
             {
-                pdfFilePath = Path.Combine(appFolder, $"{fileName}.pdf");
+                pdfFilePath = Path.Combine(downloadFolder, $"{fileName}.pdf");
             }
             document.Save(pdfFilePath);
 

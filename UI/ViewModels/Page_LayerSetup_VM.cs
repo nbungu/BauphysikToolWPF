@@ -26,7 +26,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.SelectedLayerId = -1;
 
-            // Subscribe to Event and Handle
             // Allow child Windows to trigger UpdateBindingsAndRecalculateFlag of this Window
             UserSaved.SelectedElementChanged += UpdateBindingsAndRecalculateFlag;
             UserSaved.SelectedLayerChanged += UpdateBindingsAndRecalculateFlag;
@@ -140,12 +139,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedLayer.IsSelected = true;
 
             _crossSection.UpdateDrawings();
+            //_crossSection.UpdateSingleDrawing(UserSaved.SelectedLayer);
         }
 
         /*
          * MVVM Properties: Observable, if user can change these properties via frontend directly
          * 
-         * Initialized and Assigned with Default Values
+         * Every property the user can change directly through input in frontend
          */
 
         [ObservableProperty]
@@ -382,11 +382,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             UserSaved.Recalculate = true;
         }
-
         private void ComboUpdate()
         {
             UserSaved.OnSelectedLayerChanged();
         }
-
     }
 }

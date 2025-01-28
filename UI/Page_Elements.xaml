@@ -196,7 +196,7 @@
             <Button Content="Neues Bauteil" Command="{Binding AddNewElementCommand}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
             <Button Content="Bauteil-PDF erstellen" Command="{Binding CreateSingleElementPdfCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            <Button Content="Bauteilkatalog erstellen" Command="{Binding CreateFullPdfCommand}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDFFull_B}" Margin="0,0,0,16"/>
+            <Button Content="Bauteilkatalog erstellen" Command="{Binding CreateFullPdfCommand}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_ExportPDFFull_B}" Margin="0,0,0,16" ToolTip="Ab Version v0.3.0 verfügbar!"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
             <Button Content="Bauteilkatalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
@@ -285,12 +285,12 @@
                             <Label Content="{Binding SelectedElement.OrientationType}" HorizontalAlignment="Left"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.RGesValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                            <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96" FontWeight="DemiBold"/>
+                            <Label Content="{Binding SelectedElement.RGesValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left" FontWeight="DemiBold"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.UValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left"/>
+                            <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96" FontWeight="DemiBold"/>
+                            <Label Content="{Binding SelectedElement.UValue, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left" FontWeight="DemiBold"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="sd-Wert:" HorizontalAlignment="Left" Width="96"/>

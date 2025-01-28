@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using Windows.UI;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -105,6 +106,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             UserSaved.OnSelectedElementChanged();
 
+            window.Close();
+        }
+
+        [RelayCommand]
+        private void Cancel(Window? window)
+        {
+            // To be able to Close EditElementWindow from within this ViewModel
+            if (window is null) return;
             window.Close();
         }
 

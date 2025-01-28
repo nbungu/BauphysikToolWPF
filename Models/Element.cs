@@ -121,7 +121,7 @@ namespace BauphysikToolWPF.Models
         {
             get
             {
-                if (Image == Array.Empty<byte>() || Image.Length == 0) return new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png"));
+                if (Image == Array.Empty<byte>() || Image.Length == 0) return new BitmapImage();// return new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png"));
 
                 BitmapImage image = new BitmapImage();
                 // use using to call Dispose() after use of unmanaged resources. GC cannot manage this

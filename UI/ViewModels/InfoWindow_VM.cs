@@ -47,6 +47,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Logger.LogWarning("Website URL is not set.");
             }
         }
+
         [RelayCommand]
         private void OpenLicense(Window? window)
         {
@@ -72,6 +73,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 Logger.LogWarning("Website URL is not set.");
             }
+        }
+
+        [RelayCommand]
+        private void Cancel(Window? window)
+        {
+            // To be able to Close EditElementWindow from within this ViewModel
+            if (window is null) return;
+            window.Close();
         }
 
         /*

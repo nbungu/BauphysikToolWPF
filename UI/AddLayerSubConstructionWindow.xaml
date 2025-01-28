@@ -12,7 +12,7 @@
         Title="{Binding Title}"
         Background="{StaticResource PrimaryLightBrush}"
         Height="480"
-        Width="1060">
+        Width="1060" KeyDown="AddLayerSubConstructionWindowControl_KeyDown">
 
     <Window.DataContext>
         <!-- AddLayerSubConstructionWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->

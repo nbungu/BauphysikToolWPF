@@ -60,5 +60,13 @@ namespace BauphysikToolWPF.UI
             };
             timer.Start();
         }
+
+        private void AddLayerWindowControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                this.Close(); // Close the window
+            }
+        }
     }
 }

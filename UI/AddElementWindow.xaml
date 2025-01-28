@@ -16,8 +16,8 @@
         MinHeight="80"
         WindowStartupLocation="CenterOwner"        
         ShowInTaskbar="False"
-        WindowStyle="ToolWindow"
-        SizeToContent="Height">
+        WindowStyle="None"
+        SizeToContent="Height" KeyDown="AddElementWindowControl_KeyDown">
 
     <!--  AddElementWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
     <Window.DataContext>
@@ -164,5 +164,6 @@
             <TextBox TextAlignment="Left" Text="{Binding SelectedElementComment}" Background="{StaticResource PrimaryLightBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="800"/>
         </StackPanel>
         <Button Margin="0,8,0,0" Content="Übernehmen" Command="{Binding ApplyChangesCommand}" CommandParameter="{Binding ElementName=AddElementWindowControl}" Style="{StaticResource ButtonStyle02_Highlighted}"/>
+        <Button Margin="0,8,0,0" Content="Abbrechen" Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=AddElementWindowControl}" Style="{StaticResource ButtonStyle02}"/>
     </StackPanel>
 </Window>

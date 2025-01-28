@@ -12,8 +12,8 @@
         Height="Auto"
         WindowStartupLocation="CenterOwner"        
         ShowInTaskbar="False"
-        WindowStyle="ToolWindow"
-        SizeToContent="Height">
+        WindowStyle="None"
+        SizeToContent="Height" KeyDown="InfoWindowControl_KeyDown">
 
     <!--  InfoWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
     <Window.DataContext>
@@ -43,5 +43,7 @@
         <Separator BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="2" Margin="0,16"/>
         <Label Content="Lizenz zur Nutzung und Weiterverbreitung" FontWeight="DemiBold" HorizontalAlignment="Left"/>
         <Button Content="GPL-3.0 license" HorizontalAlignment="Center" Padding="8,0" Style="{StaticResource ButtonStyle01_Transparent}" Foreground="Blue" Command="{Binding OpenLicenseCommand}" CommandParameter="{Binding ElementName=InfoWindowControl}"/>
+
+        <Button Margin="0,16,0,0" Content="Schließen" Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=InfoWindowControl}" Style="{StaticResource ButtonStyle02}"/>
     </StackPanel>
 </Window>
