@@ -28,7 +28,13 @@
         </StackPanel>
         <Label Content="{Binding ProgramVersion}"/>
         <Label Content="{Binding LatestProgramVersion}"/>
-        <Label Content="{Binding ServerStatus}"/>
+
+        <StackPanel Orientation="Horizontal" Margin="8,0" VerticalAlignment="Center" HorizontalAlignment="Center">
+            <Label Content="{Binding ServerStatusLabel}"/>
+            <Ellipse Fill="{Binding IsServerOnlineColorCode}" Width="12" Height="12" Margin="4,4,0,0"/>
+        </StackPanel>
+
+
         <Label Content="Neue Versionen und Infos unter:"  Margin="0,16,0,0"/>
         <Button Content="{Binding Website}" HorizontalAlignment="Center" Padding="8,0" Tag="{StaticResource ButtonIcon_Internet_Flat}" Style="{StaticResource ButtonStyle01_Transparent}" Foreground="Blue" Command="{Binding OpenWebsiteCommand}" CommandParameter="{Binding ElementName=InfoWindowControl}"/>
 

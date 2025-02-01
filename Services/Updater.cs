@@ -113,11 +113,11 @@ namespace BauphysikToolWPF.Services
 
                     if (jsonResponse != null && jsonResponse.Data.Length > 0)
                     {
-                        var attributes = jsonResponse.Data[0].Attributes;
+                        var data = jsonResponse.Data[0];
                         var updater = new Updater
                         {
-                            Latest = attributes.SemanticVersion,
-                            LatestTag = attributes.VersionTag
+                            Latest = data.SemanticVersion,
+                            LatestTag = data.VersionTag
                         };
 
                         Logger.LogInfo($"Successfully deserialized updater file from server");
@@ -224,17 +224,15 @@ namespace BauphysikToolWPF.Services
     {
         [JsonPropertyName("id")]
         public int Id { get; set; }
-        [JsonPropertyName("attributes")]
-        public Attributes Attributes { get; set; } = new Attributes();
-    }
 
-    internal class Attributes
-    {
         [JsonPropertyName("semanticVersion")]
         public string SemanticVersion { get; set; } = string.Empty;
 
         [JsonPropertyName("versionTag")]
         public string VersionTag { get; set; } = string.Empty;
+
+        [JsonPropertyName("documentId")]
+        public string DocumentId { get; set; } = string.Empty;
     }
 
     #endregion
