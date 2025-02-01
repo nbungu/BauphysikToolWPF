@@ -149,7 +149,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnAuthorNameChanged(string? value)
         {
             if (value is null) return;
-            UserSaved.SelectedProject.UserName = value;
+            UserSaved.SelectedProject.UserName = value == "" ? "unbekannt" : value;
             UserSaved.SelectedProject.IsModified = true;
             // Update single XAML Binding Property
             UserSaved.OnSelectedProjectChanged();
@@ -159,7 +159,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnProjectNameChanged(string? value)
         {
             if (value is null) return;
-            UserSaved.SelectedProject.Name = value;
+            UserSaved.SelectedProject.Name = value == "" ? "unbekannt" : value;
             UserSaved.SelectedProject.IsModified = true;
             // Update single XAML Binding Property
             UserSaved.OnSelectedProjectChanged();

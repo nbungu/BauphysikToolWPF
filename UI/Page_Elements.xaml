@@ -9,7 +9,8 @@
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="700"
-             d:DesignWidth="1200">
+             d:DesignWidth="1200"
+             Focusable="True">
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
@@ -25,7 +26,6 @@
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <Style x:Key="ButtonStyleWrapPanel" TargetType="{x:Type Button}">
-            <Setter Property="Content" Value="{Binding InternalId}"/>
             <Setter Property="BorderThickness" Value="2"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryMediumBrush}"/>
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
@@ -81,7 +81,7 @@
                     <DataTrigger.Binding>
                         <MultiBinding Converter="{StaticResource IsSelectedElementConverter}">
                             <Binding RelativeSource="{RelativeSource Self}" Path="DataContext.InternalId" Mode="OneWay"/>
-                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type ItemsControl}}" Path="Tag.SelectedElement.InternalId" Mode="OneWay"/>
+                            <Binding RelativeSource="{RelativeSource AncestorType=UserControl}" Path="DataContext.SelectedElement.InternalId" Mode="OneWay"/>
                         </MultiBinding>
                     </DataTrigger.Binding>
                     <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
@@ -93,60 +93,60 @@
         </Style>
 
         <ItemsPanelTemplate x:Key="WrapPanelTemplate">
-            <WrapPanel ItemWidth="144" ItemHeight="208" SnapsToDevicePixels="True"/>
+            <WrapPanel ItemWidth="144" ItemHeight="208" SnapsToDevicePixels="True" Focusable="True"/>
         </ItemsPanelTemplate>
         
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
-        <DataTemplate x:Key="WrapPanelItemDesignTemplate">
-            <Grid Margin="8">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="148"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-                <!--'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
-                Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
-                <Button Tag="{Binding Path=Tag, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
-                        Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.SelectElementCommand}"
+            <DataTemplate x:Key="WrapPanelItemDesignTemplate">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="148"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <!--'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
+                    Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
+                <Button Style="{StaticResource ButtonStyleWrapPanel}"
+                        Command="{Binding DataContext.SelectElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
                         CommandParameter="{Binding InternalId}"
-                        Content="{Binding}"
-                        Style="{StaticResource ButtonStyleWrapPanel}">
-                    <!-- EventToCommand behavior to bind the double-click event to the command-->
-                    <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDoubleClick">
-                            <i:InvokeCommandAction Command="{Binding RelativeSource={RelativeSource AncestorType={x:Type UserControl}}, Path=DataContext.ElementDoubleClickCommand}" />
-                        </i:EventTrigger>
-                    </i:Interaction.Triggers>
-                    <Button.ContextMenu>
-                        <!--ContextMenu does not inherit the DataContext from its parent element-> DataContext is not available.
-                        Need to pass the DataContext in a different way: e.g. using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
-                        The Tag Property can be used to hold any kind of user specified Data.-->
-                        <ContextMenu x:Name="WrapPanel_ContextMenu">
-                            <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Edit_B}" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Copy_B}" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Exportieren">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Export_B}"/>
-                                </MenuItem.Icon>
-                            </MenuItem>
-                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.Content.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
-                                <MenuItem.Icon>
-                                    <Image Source="{StaticResource ButtonIcon_Delete_B}" />
-                                </MenuItem.Icon>
-                            </MenuItem>
-                        </ContextMenu>
-                    </Button.ContextMenu>
-                </Button>
-                <TextBlock Grid.Row="1" Text="{Binding Name}" FontWeight="Normal" Foreground="Black" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" Margin="0,4,0,0"/>
-            </Grid>
-        </DataTemplate>
+                        Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                        <!-- EventToCommand behavior to bind the double-click event to the command-->
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <i:InvokeCommandAction Command="{Binding DataContext.ElementDoubleClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <Button.ContextMenu>
+                            <!--ContextMenu does not inherit the DataContext from its parent element-> DataContext is not available.
+                            Need to pass the DataContext in a different way: e.g. using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
+                            The Tag Property can be used to hold any kind of user specified Data.-->
+                            <ContextMenu x:Name="WrapPanel_ContextMenu">
+                            <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <Image Source="{StaticResource ButtonIcon_Edit_B}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <Image Source="{StaticResource ButtonIcon_Copy_B}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            <MenuItem Header="Exportieren" Command="{Binding Path=PlacementTarget.Tag.CreateSingleElementPdfCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <Image Source="{StaticResource ButtonIcon_Export_B}"/>
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            <MenuItem Header="Löschen" Command="{Binding Path=PlacementTarget.Tag.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                                    <MenuItem.Icon>
+                                        <Image Source="{StaticResource ButtonIcon_Delete_B}" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </ContextMenu>
+                        </Button.ContextMenu>
+                    </Button>
+                    <TextBlock Grid.Row="1" Text="{Binding Name}" FontWeight="Normal" Foreground="Black" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" Margin="0,4,0,0"/>
+                </Grid>
+            </DataTemplate>
 
         <ItemsPanelTemplate x:Key="TagsWrapPanelTemplate">
             <WrapPanel ItemWidth="Auto" ItemHeight="Auto" SnapsToDevicePixels="True"/>
@@ -226,8 +226,7 @@
                           ItemsPanel="{StaticResource WrapPanelTemplate}"
                           ItemTemplate="{StaticResource WrapPanelItemDesignTemplate}"
                           Background="Transparent"
-                          BorderThickness="0"
-                          Tag="{Binding}">
+                          BorderThickness="0">
                     <ItemsControl.GroupStyle>
                         <GroupStyle ContainerStyle="{StaticResource WrapPanelGroupingHeader}">
                             <GroupStyle.Panel>

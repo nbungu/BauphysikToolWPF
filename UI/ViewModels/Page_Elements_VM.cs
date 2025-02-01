@@ -11,6 +11,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
+using System.Reflection.Metadata;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Controls;
+using System.Reflection;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -100,7 +105,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             SwitchPage(NavigationContent.LayerSetup);
         }
-        
+
         [RelayCommand]
         private void CreateSingleElementPdf(int selectedInternalId)
         {

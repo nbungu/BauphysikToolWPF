@@ -89,7 +89,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
 
-            string? filePath = _fileDialogService.ShowSaveFileDialog("project.btk", "BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
+            string saveFileName = UserSaved.SelectedProject.Name == "" ? "unbekannt" : UserSaved.SelectedProject.Name;
+            string? filePath = _fileDialogService.ShowSaveFileDialog($"{saveFileName}.btk", "BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
             if (filePath != null)
             {
                 ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
@@ -135,7 +136,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public string Title => $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
-        public string ProjectName => UserSaved.SelectedProject.Name;
+        public string ProjectName => UserSaved.SelectedProject.Name == "" ? "unbekannt" : UserSaved.SelectedProject.Name;
         public string IsEditedTagColorCode => UserSaved.SelectedProject.IsModified ? "#1473e6" : "#00FFFFFF";
 
         private void RefreshXamlBindings()

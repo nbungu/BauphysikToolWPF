@@ -95,7 +95,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
-        public string ServerStatus => Updater.CheckServerStatus(Updater.ServerUpdaterQuery) ? "Server Online" : "Server nicht erreichbar";
+        public bool IsServerOnline => Updater.CheckServerStatus(Updater.ServerUpdaterQuery);
+        public string ServerStatusLabel => IsServerOnline ? "Server Online" : "Server nicht erreichbar";
+        public string IsServerOnlineColorCode => IsServerOnline ? "#2cde00" : "#fc0303";
 
         public string LicensePath => "https://github.com/nbungu/BauphysikToolWPF?tab=GPL-3.0-1-ov-file#readme";
 
