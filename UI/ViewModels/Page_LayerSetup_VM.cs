@@ -54,7 +54,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow().ShowDialog();
+            new AddElementWindow(editExsiting: true).ShowDialog();
         }
 
         [RelayCommand]

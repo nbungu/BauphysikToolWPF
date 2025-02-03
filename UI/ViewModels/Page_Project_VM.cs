@@ -147,7 +147,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         partial void OnAuthorNameChanged(string value)
         {
-            if (value == "") return;
             UserSaved.SelectedProject.UserName = value;
             UserSaved.SelectedProject.IsModified = true;
             UserSaved.OnSelectedProjectChanged();
@@ -155,7 +154,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         partial void OnProjectNameChanged(string value)
         {
-            if (value == "") return;
             UserSaved.SelectedProject.Name = value;
             UserSaved.SelectedProject.IsModified = true;
             UserSaved.OnSelectedProjectChanged();
@@ -163,7 +161,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         partial void OnCommentChanged(string value)
         {
-            if (value == "") return;
             UserSaved.SelectedProject.Comment = value;
             UserSaved.SelectedProject.IsModified = true;
             UserSaved.OnSelectedProjectChanged();
@@ -228,6 +225,15 @@ namespace BauphysikToolWPF.UI.ViewModels
             IsNonResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;
             IsNewConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.New;
             IsExistingConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.Existing;
+
+            //OnPropertyChanged(nameof(DroppedFilePaths));
+            //OnPropertyChanged(nameof(AuthorName));
+            //OnPropertyChanged(nameof(ProjectName));
+            //OnPropertyChanged(nameof(Comment));
+            //OnPropertyChanged(nameof(IsNewConstrChecked));
+            //OnPropertyChanged(nameof(IsExistingConstrChecked));
+            //OnPropertyChanged(nameof(IsResidentialUsageChecked));
+            //OnPropertyChanged(nameof(IsNonResidentialUsageChecked));
         }
     }
 }

@@ -146,7 +146,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public bool EditSelectedElement => UserSaved.SelectedElement != null && UserSaved.SelectedElement.IsValid;
+        public bool EditSelectedElement => AddElementWindow.EditExistingElement;
 
         public List<string> ConstructionTypeList => DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList();
     }
