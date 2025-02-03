@@ -30,7 +30,7 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public double Spacing { get; set; } // cm (innerer Abstand)
         [NotNull]
-        public SubConstructionDirection SubConstructionDirection { get; set; }
+        public SubConstructionDirection Direction { get; set; }
         [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         [NotNull]
@@ -123,7 +123,7 @@ namespace BauphysikToolWPF.Models
             copy.Width = this.Width;
             copy.Thickness = this.Thickness;
             copy.Spacing = this.Spacing;
-            copy.SubConstructionDirection = this.SubConstructionDirection;
+            copy.Direction = this.Direction;
             copy.MaterialId = this.MaterialId;
             copy.Material = this.Material;
             copy.LayerId = this.LayerId;
@@ -170,7 +170,7 @@ namespace BauphysikToolWPF.Models
         [Ignore, JsonIgnore]
         public int ZIndex { get; set; } = 1;
         [Ignore, JsonIgnore]
-        public object Tag { get; set; }
+        public object Tag { get; set; } = new object();
 
         public IDrawingGeometry Convert()
         {

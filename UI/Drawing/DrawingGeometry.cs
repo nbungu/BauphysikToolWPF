@@ -14,16 +14,15 @@ namespace BauphysikToolWPF.UI.Drawing
         public Brush BackgroundColor { get; set; } = Brushes.Transparent;
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
         public Brush RectangleBorderColor { get; set; } = Brushes.Transparent;
-        public double RectangleBorderThickness { get; set; } = 0.0;
+        public double RectangleBorderThickness { get; set; }
         public DoubleCollection RectangleStrokeDashArray { get; set; } = new DoubleCollection();
         public double Opacity { get; set; } = 1.0;
-        public int ZIndex { get; set; } = 0;
-        public object Tag { get; set; }
+        public int ZIndex { get; set; }
+        public object Tag { get; set; } = new object();
         public bool IsValid => Rectangle != Rectangle.Empty;
 
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
         {
-            if (drawingGeometry is null) return;
             InternalId = drawingGeometry.InternalId;
             Rectangle = drawingGeometry.Rectangle;
             BackgroundColor = drawingGeometry.BackgroundColor;

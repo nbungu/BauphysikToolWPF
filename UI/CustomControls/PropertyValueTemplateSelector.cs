@@ -6,9 +6,9 @@ namespace BauphysikToolWPF.UI.CustomControls
 {
     public class PropertyValueTemplateSelector : DataTemplateSelector
     {
-        public DataTemplate TextBoxTemplate { get; set; }
-        public DataTemplate ComboBoxTemplate { get; set; }
-        public DataTemplate CheckBoxTemplate { get; set; }
+        public DataTemplate? TextBoxTemplate { get; set; }
+        public DataTemplate? ComboBoxTemplate { get; set; }
+        public DataTemplate? CheckBoxTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -16,20 +16,15 @@ namespace BauphysikToolWPF.UI.CustomControls
             {
                 if (propertyItem.PropertyValues != null && propertyItem.PropertyValues.Length > 1)
                 {
-                    return ComboBoxTemplate;
+                    return ComboBoxTemplate ?? new DataTemplate();
                 }
-                else if (propertyItem.Value is bool)
+                if (propertyItem.Value is bool)
                 {
-                    return CheckBoxTemplate;
+                    return CheckBoxTemplate ?? new DataTemplate();
                 }
-                else
-                {
-                    return TextBoxTemplate;
-                }
-
-                
+                return TextBoxTemplate ?? new DataTemplate();
             }
-            return base.SelectTemplate(item, container);
+            return base.SelectTemplate(item, container) ?? new DataTemplate();
         }
     }
 }

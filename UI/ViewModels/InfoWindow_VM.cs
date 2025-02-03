@@ -28,7 +28,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 try
                 {
-                    window.Close();
+                    window?.Close();
                     // Use the Process.Start method to open the URL in the default web browser
                     Process.Start(new ProcessStartInfo
                     {
@@ -55,7 +55,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 try
                 {
-                    window.Close();
+                    window?.Close();
                     // Use the Process.Start method to open the URL in the default web browser
                     Process.Start(new ProcessStartInfo
                     {

@@ -99,7 +99,7 @@ namespace BauphysikToolWPF.Models
         }
 
         [Ignore, JsonIgnore]
-        public byte[] FullImage { get; set; } = Array.Empty<byte>();
+        public byte[] DocumentImage { get; set; } = Array.Empty<byte>();
 
         [Ignore, JsonIgnore]
         public byte[] Image { get; set; } = Array.Empty<byte>();
@@ -115,30 +115,9 @@ namespace BauphysikToolWPF.Models
             set => Tag = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
         }
 
-        // Encapsulate 'Image' variable for use in frontend
-        [Ignore, JsonIgnore]
-        public BitmapImage ElementImage
-        {
-            get
-            {
-                if (Image == Array.Empty<byte>() || Image.Length == 0) return new BitmapImage();// return new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png"));
 
-                BitmapImage image = new BitmapImage();
-                // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
-                using (MemoryStream stream = new MemoryStream(Image))
-                {
-                    stream.Position = 0;
-                    image.BeginInit();
-                    image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.UriSource = null;
-                    image.StreamSource = stream;
-                    image.EndInit();
-                }
-                image.Freeze();
-                return image;
-            }
-        }
+        [Ignore, JsonIgnore]
+        public BitmapImage PreviewImage => ImageCreator.ByteArrayToBitmap(Image);
 
         [Ignore, JsonIgnore]
         public double Thickness // d in cm
@@ -177,7 +156,7 @@ namespace BauphysikToolWPF.Models
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    if (layer.HasSubConstructions)
+                    if (layer.HasSubConstructions && layer.SubConstruction != null)
                     {
                         val += layer.AreaMassDensity;
                         val += layer.SubConstruction.AreaMassDensity;
@@ -197,7 +176,7 @@ namespace BauphysikToolWPF.Models
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    if (layer.HasSubConstructions)
+                    if (layer.HasSubConstructions && layer.SubConstruction != null)
                     {
                         val += layer.ArealHeatCapacity;
                         val += layer.SubConstruction.ArealHeatCapacity;

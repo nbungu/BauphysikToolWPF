@@ -52,7 +52,7 @@ namespace BauphysikToolWPF.UI.Drawing
         {
             if (LastDrawingSuccessful)
             {
-                var tag = $"{layer.LayerPosition + 1}";
+                var tag = $"{layer.LayerNumber}";
                 var selectedGeometry = DrawingGeometries.FindIndex(g => (string)g.Tag == tag);
                 if (selectedGeometry != -1)
                 {
@@ -74,7 +74,7 @@ namespace BauphysikToolWPF.UI.Drawing
             UpdateGeometries();
 
             // Stacking
-            var layerDrawings = Stacking();
+            var layerDrawings = ReturnStackedGeometries();
 
             // Sort Ascending by ZIndex
             layerDrawings.Sort(new DrawingGeometryComparer(sortingType: DrawingGeometrySortingType.ZIndexAscending));
@@ -93,7 +93,7 @@ namespace BauphysikToolWPF.UI.Drawing
             else SizeOf1Cm = 16.67;
         }
         
-        private List<IDrawingGeometry> Stacking()
+        private List<IDrawingGeometry> ReturnStackedGeometries()
         {
             var layerDrawings = new List<IDrawingGeometry>();
             // Stacking
@@ -103,24 +103,17 @@ namespace BauphysikToolWPF.UI.Drawing
                 // Main Layer Geometry
                 l.Rectangle = l.Rectangle.MoveTo(ptStart);
                 layerDrawings.Add(l.Convert());
-
-                //var numberBadge = new DrawingGeometry()
-                //{
-                //    Rectangle = new Rectangle(l.Rectangle.TopLeft, 48, 48),
-                //    DrawingBrush = BrushesRepo.CreateCircleWithNumberBrush("2", 24, Brushes.Red, Brushes.Black, 1),
-                //    ZIndex = 3,
-                //};
-                //layerDrawings.Add(numberBadge);
+                layerDrawings.Add(GetLabelForLayer(l, (l.LayerNumber).ToString()));
 
                 // SubConstruction
-                if (l.HasSubConstructions)
+                if (l.HasSubConstructions && l.SubConstruction != null)
                 {
                     double subConstrWidth = l.SubConstruction.Rectangle.Width;
                     double subConstrHeight = l.SubConstruction.Rectangle.Height;
                     double spacing = l.SubConstruction.Spacing * SizeOf1Cm;
 
                     // Only Stack if it shows Faces of Cutted Crossections
-                    if ((int)DrawingType == (int)l.SubConstruction.SubConstructionDirection)
+                    if ((int)DrawingType == (int)l.SubConstruction.Direction)
                     {
                         // Stack Horizontally
                         if (DrawingType == DrawingType.CrossSection)
@@ -167,6 +160,9 @@ namespace BauphysikToolWPF.UI.Drawing
                                 var subConstrGeometry = l.SubConstruction.Convert();
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(x, ptStart.Y));
                                 layerDrawings.Add(subConstrGeometry);
+                                var labelOffset = new Vector(0, 0);
+                                if (l.SubConstruction.Direction == SubConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
+                                layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                             }
                         }
                         // Stack vertically
@@ -212,6 +208,9 @@ namespace BauphysikToolWPF.UI.Drawing
                                 var subConstrGeometry = l.SubConstruction.Convert();
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(ptStart.X, y));
                                 layerDrawings.Add(subConstrGeometry);
+                                var labelOffset = new Vector(0, 0);
+                                if (l.SubConstruction.Direction == SubConstructionDirection.Vertical) labelOffset = new Vector(24, 0);
+                                layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                             }
                         }
                     }
@@ -220,6 +219,10 @@ namespace BauphysikToolWPF.UI.Drawing
                         var subConstrGeometry = l.SubConstruction.Convert();
                         subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(ptStart);
                         layerDrawings.Add(subConstrGeometry);
+                        var labelOffset = new Vector(0, 0);
+                        if (l.SubConstruction.Direction == SubConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
+                        if (l.SubConstruction.Direction == SubConstructionDirection.Vertical) labelOffset = new Vector(0, 24);
+                        layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                     }
                 }
                 // Update Origin
@@ -227,6 +230,43 @@ namespace BauphysikToolWPF.UI.Drawing
                 else if (DrawingType == DrawingType.VerticalCut) ptStart = l.Rectangle.TopRight;
             }
             return layerDrawings;
+        }
+
+        private IDrawingGeometry GetLabelForLayer(IDrawingGeometry layerGeometry, string labelText)
+        {
+            var labelGeometry = new DrawingGeometry()
+            {
+                Rectangle = new Rectangle(
+                    new Point(layerGeometry.Rectangle.Left + layerGeometry.Rectangle.Width / 2 - 10, layerGeometry.Rectangle.Top + layerGeometry.Rectangle.Height / 2 - 10),
+                    20, // Kreis-Durchmesser 20px
+                    20
+                ),
+                BackgroundColor = Brushes.Transparent, // Hintergrund durchsichtig, da Kreis separat gezeichnet wird
+                DrawingBrush = BrushesRepo.CreateCircleWithNumberBrush(labelText, Brushes.White, Brushes.Black, 1, Brushes.Black, new Vector(4,0)),
+                ZIndex = 100,
+                Opacity = 1.0,
+                Tag = $"Label_{labelText}"
+            };
+            return labelGeometry;
+        }
+        private IDrawingGeometry GetLabelForSubContruction(IDrawingGeometry layerGeometry, string labelText, Vector labelOffset = new Vector())
+        {
+            // Label für SubConstruction hinzufügen (mit "b")
+            var subConstrLabel = new DrawingGeometry()
+            {
+                Rectangle = new Rectangle(
+                    new Point(layerGeometry.Rectangle.Left + layerGeometry.Rectangle.Width / 2 - 10 + labelOffset.X,
+                        layerGeometry.Rectangle.Top + layerGeometry.Rectangle.Height / 2 - 10 + labelOffset.Y),
+                    20, // Kreis-Durchmesser
+                    20
+                ),
+                BackgroundColor = Brushes.Transparent,
+                DrawingBrush = BrushesRepo.CreateCircleWithNumberBrush(labelText, Brushes.White, Brushes.Gray, 1, Brushes.Gray, new Vector(8, 0)),
+                ZIndex = 100,
+                Opacity = 1.0,
+                Tag = $"Label_{labelText}"
+            };
+            return subConstrLabel;
         }
 
         private void UpdateGeometries()
@@ -241,12 +281,12 @@ namespace BauphysikToolWPF.UI.Drawing
 
                 UpdateLayerGeometry(l);
 
-                if (l.HasSubConstructions)
+                if (l.HasSubConstructions && l.SubConstruction != null)
                 {
                     if (DrawingType == DrawingType.CrossSection)
                     {
                         // if it shows Faces of Cutted Vertical/Crosssections
-                        if ((int)DrawingType == (int)l.SubConstruction.SubConstructionDirection)
+                        if ((int)DrawingType == (int)l.SubConstruction.Direction)
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Width * SizeOf1Cm, l.SubConstruction.Thickness * SizeOf1Cm);
                             l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
@@ -265,7 +305,7 @@ namespace BauphysikToolWPF.UI.Drawing
                     else if (DrawingType == DrawingType.VerticalCut)
                     {
                         // if it shows Faces of Cutted Vertical/Crosssections
-                        if ((int)DrawingType == (int)l.SubConstruction.SubConstructionDirection)
+                        if ((int)DrawingType == (int)l.SubConstruction.Direction)
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Thickness * SizeOf1Cm, l.SubConstruction.Width * SizeOf1Cm);
                             l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
@@ -293,17 +333,19 @@ namespace BauphysikToolWPF.UI.Drawing
             layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
-            layer.Tag = (layer.LayerPosition + 1).ToString();
+            layer.Tag = $"Layer_{layer.LayerNumber}";
             return layer;
         }
 
         private IDrawingGeometry UpdateSubConstructionGeometry(Layer layer)
         {
+            if (!layer.HasSubConstructions || layer.SubConstruction is null) return new DrawingGeometry();
+
             var subConstruction = layer.SubConstruction;
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
             subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.Category, 0.5, subConstruction.Rectangle);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            subConstruction.Tag = $"{layer.LayerPosition + 1}b";
+            subConstruction.Tag = $"Layer_{layer.LayerNumber}b";
             return subConstruction;
         }
     }

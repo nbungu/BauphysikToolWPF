@@ -4,6 +4,7 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using Point = System.Windows.Point;
+using Vector = BT.Geometry.Vector;
 
 namespace BauphysikToolWPF.UI.Drawing
 {
@@ -289,9 +290,53 @@ namespace BauphysikToolWPF.UI.Drawing
             };
         }
 
+        public static DrawingBrush CreateCircleWithNumberBrush(string text, Brush backgroundColor, Brush borderBrush, double borderThickness, Brush textColor, Vector textOffset = new Vector())
+        {
+            double radius = 10; // Kleinerer Kreis mit 20px Durchmesser
+
+            // Kreis-Geometrie
+            EllipseGeometry circleGeometry = new EllipseGeometry(new Point(radius, radius), radius, radius);
+
+            // Text-Formatierung
+            FormattedText formattedText = new FormattedText(
+                text,
+                System.Globalization.CultureInfo.CurrentCulture,
+                FlowDirection.LeftToRight,
+                new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
+                14, // Schriftgröße
+                textColor,
+                1.0 // PixelsPerDip
+            )
+            {
+                TextAlignment = TextAlignment.Center
+            };
+
+            // Zeichnung erstellen
+            DrawingGroup drawingGroup = new DrawingGroup();
+
+            // Kreis-Hintergrund
+            drawingGroup.Children.Add(new GeometryDrawing(backgroundColor, new Pen(borderBrush, borderThickness), circleGeometry));
+
+            // Text als gezeichnetes Bild einfügen (kein Geometry)
+            DrawingVisual visual = new DrawingVisual();
+            using (DrawingContext ctx = visual.RenderOpen())
+            {
+                ctx.DrawText(formattedText, new Point(radius - formattedText.Width / 2 + textOffset.X, radius - formattedText.Height / 2 + textOffset.Y));
+            }
+            drawingGroup.Children.Add(visual.Drawing);
+
+            return new DrawingBrush
+            {
+                Drawing = drawingGroup,
+                TileMode = TileMode.None,
+                Viewport = new Rect(0, 0, radius * 2, radius * 2),
+                ViewportUnits = BrushMappingMode.Absolute
+            };
+        }
+
         //public static DrawingBrush CreateCircleWithNumberBrush(string text, double radius, Brush backgroundColor, Brush borderBrush, double borderThickness)
         //{
-        
+
         //}
     }
 }

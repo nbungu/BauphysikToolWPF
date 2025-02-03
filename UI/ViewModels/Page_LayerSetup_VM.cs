@@ -167,7 +167,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(LayerProperties))]
         [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
-        private Layer _selectedListViewItem;
+        private Layer? _selectedListViewItem;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))]
@@ -216,7 +216,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.ThermalConductivity, () => UserSaved.SelectedLayer.Material.ThermalConductivity) { DecimalPlaces = 3},
             new PropertyItem<double>(Symbol.RValueLayer, () => UserSaved.SelectedLayer.R_Value)
             {
-                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerPosition}"
+                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerNumber}"
             },
             new PropertyItem<int>(Symbol.RawDensity, () => UserSaved.SelectedLayer.Material.BulkDensity),
             new PropertyItem<double>(Symbol.AreaMassDensity, () => UserSaved.SelectedLayer.AreaMassDensity),
@@ -225,7 +225,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => UserSaved.SelectedLayer.Material.SpecificHeatCapacity),
             new PropertyItem<double>(Symbol.ArealHeatCapacity, () => UserSaved.SelectedLayer.ArealHeatCapacity)
             {
-                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerPosition}"
+                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerNumber}"
             },
             new PropertyItem<bool>("Wirksame Schicht", () => UserSaved.SelectedLayer.IsEffective, value => UserSaved.SelectedLayer.IsEffective = value)
         };
@@ -234,7 +234,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             new PropertyItem<string>("Material", () => UserSaved.SelectedLayer.SubConstruction.Material.Name),
             new PropertyItem<string>("Kategorie", () => UserSaved.SelectedLayer.SubConstruction.Material.CategoryName),
-            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => UserSaved.SelectedLayer.SubConstruction.SubConstructionDirection, value => UserSaved.SelectedLayer.SubConstruction.SubConstructionDirection = value)
+            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => UserSaved.SelectedLayer.SubConstruction.Direction, value => UserSaved.SelectedLayer.SubConstruction.Direction = value)
             {
                 PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray(),
             },
@@ -245,13 +245,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.ThermalConductivity, () => UserSaved.SelectedLayer.SubConstruction.Material.ThermalConductivity) { DecimalPlaces = 3},
             new PropertyItem<double>(Symbol.RValueLayer, () => UserSaved.SelectedLayer.SubConstruction.R_Value)
             {
-                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerPosition}b"
+                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerNumber}b"
             },
             new PropertyItem<double>(Symbol.AreaMassDensity, () => UserSaved.SelectedLayer.SubConstruction.AreaMassDensity),
             new PropertyItem<double>(Symbol.SdThickness, () => UserSaved.SelectedLayer.SubConstruction.Sd_Thickness),
             new PropertyItem<double>(Symbol.ArealHeatCapacity, () => UserSaved.SelectedLayer.SubConstruction.ArealHeatCapacity)
             {
-                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerPosition}b"
+                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerNumber}b"
             },
             new PropertyItem<bool>("Wirksame Schicht", () => UserSaved.SelectedLayer.SubConstruction.IsEffective, value => UserSaved.SelectedLayer.SubConstruction.IsEffective = value)
         } : new List<IPropertyItem>();
@@ -367,7 +367,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         /// </summary>
         private void UpdateBindingsAndRecalculateFlag()
         {
-            UserSaved.Recalculate = true;
+            UpdateRecalculateFlag();
 
             _crossSection.UpdateDrawings();
 

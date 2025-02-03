@@ -34,18 +34,17 @@ namespace BauphysikToolWPF.Models.Helper
                 bool foundAirLayer = false;
                 foreach (Layer layer in element.Layers)
                 {
-                    if (layer.Material.Category == MaterialCategory.Air)
+                    if (layer.Material.Category == MaterialCategory.Air) foundAirLayer = true;
 
-                        foundAirLayer = true;
                     layer.IsEffective = !foundAirLayer;
-                    if (layer.HasSubConstructions) layer.SubConstruction.IsEffective = layer.IsEffective;
+                    if (layer.HasSubConstructions && layer.SubConstruction != null) layer.SubConstruction.IsEffective = layer.IsEffective;
                 }
             }
         }
 
         public static void DuplicateLayer(this Element element, int targetLayerId)
         {
-            if (element is null || element.Layers.Count == 0) return;
+            if (element.Layers.Count == 0) return;
             var copy = element.Layers.First(l => l.InternalId == targetLayerId).Copy();
             copy.LayerPosition = element.Layers.Count;
             copy.InternalId = element.Layers.Count;
@@ -54,12 +53,13 @@ namespace BauphysikToolWPF.Models.Helper
 
         public static void MoveLayerPositionToInside(this Element element, int targetLayerId)
         {
-            if (element is null || element.Layers.Count == 0) return;
+            if (element.Layers.Count == 0) return;
             var targetLayer = element.Layers.First(l => l.InternalId == targetLayerId);
             // When Layer is already at the top of the List (first in the List)
             if (targetLayer.LayerPosition == 0) return;
             // Change Positions
-            Layer neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition - 1);
+            Layer? neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition - 1);
+            if (neighbour == null) return;
             neighbour.LayerPosition += 1;
             targetLayer.LayerPosition -= 1;
             
@@ -70,12 +70,13 @@ namespace BauphysikToolWPF.Models.Helper
 
         public static void MoveLayerPositionToOutside(this Element element, int targetLayerId)
         {
-            if (element is null || element.Layers.Count == 0) return;
+            if (element.Layers.Count == 0) return;
             var targetLayer = element.Layers.First(l => l.InternalId == targetLayerId);
             // When Layer is already at the bottom of the List (last in the List)
             if (targetLayer.LayerPosition == element.Layers.Count - 1) return;
             // Change Positions
-            Layer neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition + 1);
+            Layer? neighbour = element.Layers.Find(l => l.LayerPosition == targetLayer.LayerPosition + 1);
+            if (neighbour == null) return;
             neighbour.LayerPosition -= 1;
             targetLayer.LayerPosition += 1;
 
@@ -86,7 +87,7 @@ namespace BauphysikToolWPF.Models.Helper
 
         public static void RemoveLayer(this Element element, int targetLayerId)
         {
-            if (element is null || element.Layers.Count == 0) return;
+            if (element.Layers.Count == 0) return;
             var targetLayer = element.Layers.First(l => l.InternalId == targetLayerId);
             element.Layers.Remove(targetLayer);
             //
@@ -97,18 +98,13 @@ namespace BauphysikToolWPF.Models.Helper
 
         public static void AddLayer(this Element element, Layer newLayer)
         {
-            if (element is null) return;
-
             element.Layers.Add(newLayer);
-            //
             element.SortLayers();
             element.AssignInternalIdsToLayers();
             element.AssignEffectiveLayers();
         }
         public static void UnselectAllLayers(this Element element)
         {
-            if (element is null) return;
-
             element.Layers.ForEach(l => l.IsSelected = false);
         }
     }

@@ -108,7 +108,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DeleteMaterial()
         {
-            if (SelectedListViewItem.IsUserDefined)
+            if (SelectedListViewItem != null && SelectedListViewItem.IsUserDefined)
             {
                 if (IsUsedInLayer || IsUsedInSubConstr)
                 {
@@ -157,7 +157,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             SearchString = "";
         }
 
-        partial void OnSelectedListViewItemChanged(Material value)
+        partial void OnSelectedListViewItemChanged(Material? value)
         {
             if (value is null) return;
             Thickness = Material.DefaultLayerWidthForCategory(value.Category);
@@ -216,8 +216,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
         public bool EditSelectedLayer => AddLayerWindow.EditExistingLayer;
         public string ButtonText => EditSelectedLayer ? "Änderung übernehmen" : "Schicht hinzufügen";
-        public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => l.MaterialId == SelectedListViewItem.Id);
-        public bool IsUsedInSubConstr => DatabaseAccess.GetSubConstructionQuery().Any(s => s.MaterialId == SelectedListViewItem.Id);
+        public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => SelectedListViewItem != null && l.MaterialId == SelectedListViewItem.Id);
+        public bool IsUsedInSubConstr => DatabaseAccess.GetSubConstructionQuery().Any(s => SelectedListViewItem != null && s.MaterialId == SelectedListViewItem.Id);
         
         // TODO: implement QueryFilterConfig...
         private List<Material> GetMaterials()

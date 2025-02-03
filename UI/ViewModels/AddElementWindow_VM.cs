@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using Windows.UI;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -87,6 +86,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 UserSaved.SelectedElement.Comment = SelectedElementComment;
                 UserSaved.SelectedElement.ColorCode = SelectedElementColor;
                 UserSaved.SelectedElement.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+                UserSaved.OnSelectedElementChanged();
             }
             else
             {
@@ -103,8 +103,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                     ColorCode = SelectedElementColor
                 };
                 UserSaved.SelectedProject.Elements.Add(newElem);
+                UserSaved.OnNewElementAdded();
             }
-            UserSaved.OnSelectedElementChanged();
 
             window.Close();
         }

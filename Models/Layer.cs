@@ -25,7 +25,7 @@ namespace BauphysikToolWPF.Models
         public int Id { get; set; } = -1; // -1 means: Is not part of Database yet
 
         [NotNull]
-        public int LayerPosition { get; set; } // Inside = 1
+        public int LayerPosition { get; set; } // Inside = 0
 
         [NotNull, ForeignKey(typeof(Element))] // FK for the n:1 relationship with Element
         public int ElementId { get; set; }
@@ -70,7 +70,7 @@ namespace BauphysikToolWPF.Models
             set
             {
                 _isEffective = value;
-                if (HasSubConstructions) SubConstruction.IsEffective = value;
+                if (HasSubConstructions && SubConstruction != null) SubConstruction.IsEffective = value;
             }
         }
 
@@ -84,6 +84,8 @@ namespace BauphysikToolWPF.Models
         public bool HasSubConstructions => SubConstructions.Count > 0;
         [Ignore, JsonIgnore]
         public bool IsValid => LayerPosition >= 0 && Thickness > 0 && Material.IsValid;
+        [Ignore, JsonIgnore]
+        public int LayerNumber => LayerPosition + 1;
 
         // Workaround: Currently only 1 SubConstruction supported
         [Ignore, JsonIgnore]
@@ -124,7 +126,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                if (HasSubConstructions)
+                if (HasSubConstructions && SubConstruction != null)
                 {
                     var partialAreaOfLayer = 1 - (SubConstruction.Width / (SubConstruction.Width + SubConstruction.Spacing));
                     return Math.Round((this.Thickness / 100) * Material.BulkDensity * partialAreaOfLayer, 3);
@@ -139,7 +141,7 @@ namespace BauphysikToolWPF.Models
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                if (HasSubConstructions)
+                if (HasSubConstructions && SubConstruction != null)
                 {
                     var partialAreaOfLayer = 1 - (SubConstruction.Width / (SubConstruction.Width + SubConstruction.Spacing));
                     return (this.Thickness / 100) * Material.VolumetricHeatCapacity * partialAreaOfLayer;
@@ -222,7 +224,7 @@ namespace BauphysikToolWPF.Models
         [Ignore, JsonIgnore]
         public int ZIndex { get; set; } = 0;
         [Ignore, JsonIgnore]
-        public object Tag { get; set; }
+        public object Tag { get; set; } = new object();
 
         public IDrawingGeometry Convert()
         {

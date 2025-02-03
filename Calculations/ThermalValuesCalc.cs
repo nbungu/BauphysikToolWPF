@@ -83,42 +83,42 @@ namespace BauphysikToolWPF.Calculations
                 PrepareMappingsForInhomogeneous();
 
                 // R_upper via cross section
-                double r_tot_upper = 0.0;
-                double r_ges_upper = 0.0;
+                double rTotUpper = 0.0;
+                double rGesUpper = 0.0;
                 foreach (var kvp in _areaToLayerPathCombinations)
                 {
                     var area = kvp.Key;
                     var layerPathCombo = kvp.Value;
-                    double r_tot_area = Rsi + Rse;
-                    double r_ges_area = 0;
+                    double rTotArea = Rsi + Rse;
+                    double rGesArea = 0;
 
                     foreach (var layerString in layerPathCombo)
                     {
                         // Check the Type: Use the is keyword to check the type or the as keyword to attempt a cast.
                         if (_layerMapping[layerString] is Layer layer)
                         {
-                            r_tot_area += layer.R_Value;
-                            r_ges_area += layer.R_Value;
+                            rTotArea += layer.R_Value;
+                            rGesArea += layer.R_Value;
                         }
                         else if (_layerMapping[layerString] is LayerSubConstruction layerSubConstr)
                         {
-                            r_tot_area += layerSubConstr.R_Value;
-                            r_ges_area += layerSubConstr.R_Value;
+                            rTotArea += layerSubConstr.R_Value;
+                            rGesArea += layerSubConstr.R_Value;
                         }
                         else throw new Exception("Typ konnte nicht aufgelöst werden");
                     }
-                    r_tot_upper += _areaSharesMapping[area] / r_tot_area;
-                    r_ges_upper += _areaSharesMapping[area] / r_ges_area;
+                    rTotUpper += _areaSharesMapping[area] / rTotArea;
+                    rGesUpper += _areaSharesMapping[area] / rGesArea;
                 }
-                r_tot_upper = Math.Pow(r_tot_upper, -1);
-                r_ges_upper = Math.Pow(r_ges_upper, -1);
+                rTotUpper = Math.Pow(rTotUpper, -1);
+                rGesUpper = Math.Pow(rGesUpper, -1);
 
                 // R_lower via vertical cut
-                double r_tot_lower = Rsi + Rse;
-                double r_ges_lower = 0.0;
+                double rTotLower = Rsi + Rse;
+                double rGesLower = 0.0;
                 foreach (var layer in RelevantLayers)
                 {
-                    if (layer.HasSubConstructions)
+                    if (layer.HasSubConstructions && layer.SubConstruction != null)
                     {
                         string mainLayer = $"{layer.LayerPosition}";
                         string subLayer = $"{layer.LayerPosition}b";
@@ -136,33 +136,33 @@ namespace BauphysikToolWPF.Calculations
                         {
                             combinedAreaSubLayer += _areaSharesMapping[area];
                         }
-                        double r_area = (combinedAreaMainLayer / layer.R_Value) + (combinedAreaSubLayer / layer.SubConstruction.R_Value);
-                        r_area = Math.Pow(r_area, -1);
-                        r_tot_lower += r_area;
-                        r_ges_lower += r_area;
+                        double rArea = (combinedAreaMainLayer / layer.R_Value) + (combinedAreaSubLayer / layer.SubConstruction.R_Value);
+                        rArea = Math.Pow(rArea, -1);
+                        rTotLower += rArea;
+                        rGesLower += rArea;
                     }
                     else
                     {
-                        r_tot_lower += layer.R_Value;
-                        r_ges_lower += layer.R_Value;
+                        rTotLower += layer.R_Value;
+                        rGesLower += layer.R_Value;
                     }
                 }
                 // R_ges (without Rsi, Rse)
-                double r_ges = (r_ges_upper + r_ges_lower) / 2;
-                RGes = Math.Round(r_ges, 3);
+                double rGes = (rGesUpper + rGesLower) / 2;
+                RGes = Math.Round(rGes, 3);
 
                 // R_tot (including Rsi, Rse)
-                double r_tot = (r_tot_upper + r_tot_lower) / 2;
-                RTotal = Math.Round(r_tot, 3);
+                double rTot = (rTotUpper + rTotLower) / 2;
+                RTotal = Math.Round(rTot, 3);
 
                 // U-Value
-                double uValue = Math.Pow(r_tot, -1);
+                double uValue = Math.Pow(rTot, -1);
                 UValue = Math.Round(uValue, 3);
 
                 QValue = Math.Round(uValue * (Ti - Te), 3);
 
                 // Fehlerabschätzung
-                double e = r_tot != 0 ? (r_tot_upper - r_tot_lower) / (2 * r_tot) : 0;
+                double e = rTot != 0 ? (rTotUpper - rTotLower) / (2 * rTot) : 0;
                 ErrorEstimation = e * 100;
                 ErrorEstimationOk = e * 100 <= 20;
                 IsValid = true;
@@ -221,7 +221,7 @@ namespace BauphysikToolWPF.Calculations
             foreach (var layer in RelevantLayers)
             {
                 _layerMapping.Add($"{layer.LayerPosition}", layer);
-                if (layer.HasSubConstructions)
+                if (layer.HasSubConstructions && layer.SubConstruction != null)
                 {
                     _layerMapping.Add($"{layer.LayerPosition}b", layer.SubConstruction);
                 }
@@ -253,10 +253,10 @@ namespace BauphysikToolWPF.Calculations
 
             if (subConstr.Count > 0)
             {
-                var vSubs = subConstr.Where(s => s.SubConstructionDirection == SubConstructionDirection.Vertical).ToList();
+                var vSubs = subConstr.Where(s => s.Direction == SubConstructionDirection.Vertical).ToList();
                 if (vSubs.Count > 0) maxWidth = vSubs.Max(s => s.Width + s.Spacing);
 
-                var hSubs = subConstr.Where(s => s.SubConstructionDirection == SubConstructionDirection.Horizontal).ToList();
+                var hSubs = subConstr.Where(s => s.Direction == SubConstructionDirection.Horizontal).ToList();
                 if (hSubs.Count > 0) maxHeight = hSubs.Max(s => s.Width + s.Spacing);
             }
             //  whether exactly ONE of maxWidth or maxHeight is equal to zero
@@ -290,12 +290,12 @@ namespace BauphysikToolWPF.Calculations
                     if (_layerMapping[layerString] is Layer layer)
                     {
                         // Check: has vertical sub constr
-                        if (layer.SubConstruction?.SubConstructionDirection == SubConstructionDirection.Vertical) currentMinWidth = Math.Min(layer.SubConstruction.Spacing, currentMinWidth);
+                        if (layer.SubConstruction?.Direction == SubConstructionDirection.Vertical) currentMinWidth = Math.Min(layer.SubConstruction.Spacing, currentMinWidth);
                     }
                     else if (_layerMapping[layerString] is LayerSubConstruction layerSubConstr)
                     {
                         // Check: has vertical sub constr
-                        if (layerSubConstr.SubConstructionDirection == SubConstructionDirection.Vertical) currentMinWidth = Math.Min(layerSubConstr.Width, currentMinWidth);
+                        if (layerSubConstr.Direction == SubConstructionDirection.Vertical) currentMinWidth = Math.Min(layerSubConstr.Width, currentMinWidth);
                     }
                     else throw new Exception("Typ konnte nicht aufgelöst werden");
                 }
@@ -319,12 +319,12 @@ namespace BauphysikToolWPF.Calculations
                     if (_layerMapping[layerString] is Layer layer)
                     {
                         // Check: has horizontal sub constr
-                        if (layer.SubConstruction?.SubConstructionDirection == SubConstructionDirection.Horizontal) currentMinHeight = Math.Min(layer.SubConstruction.Spacing, currentMinHeight);
+                        if (layer.SubConstruction?.Direction == SubConstructionDirection.Horizontal) currentMinHeight = Math.Min(layer.SubConstruction.Spacing, currentMinHeight);
                     }
                     else if (_layerMapping[layerString] is LayerSubConstruction layerSubConstr)
                     {
                         // Check: has horizontal sub constr
-                        if (layerSubConstr.SubConstructionDirection == SubConstructionDirection.Horizontal) currentMinHeight = Math.Min(layerSubConstr.Width, currentMinHeight);
+                        if (layerSubConstr.Direction == SubConstructionDirection.Horizontal) currentMinHeight = Math.Min(layerSubConstr.Width, currentMinHeight);
                     }
                     else throw new Exception("Typ konnte nicht aufgelöst werden");
                 }

@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Windows.Media.Protection.PlayReady;
 
 namespace BauphysikToolWPF.Services
 {
@@ -13,6 +14,9 @@ namespace BauphysikToolWPF.Services
         public static string InstalledUpdaterFilePath = GetInstalledUpdaterFilePath();
         public static string ServerUpdaterQuery = "https://bauphysik-tool.de/strapi/api/downloads?sort=publishedAt:desc&fields[0]=semanticVersion&fields[1]=versionTag";
         
+        // HttpClient should be a singleton to avoid socket exhaustion
+        private static readonly HttpClient _client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+
         // testing: curl -v "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields%5B0%5D=semanticVersion&fields%5B1%5D=versionTag"
 
         public static Updater LocalUpdaterFile = FetchLocalVersion(InstalledUpdaterFilePath);
@@ -56,80 +60,196 @@ namespace BauphysikToolWPF.Services
 
         public static Updater FetchLocalVersion(string filePath)
         {
-            string jsonString = File.ReadAllText(filePath);
-            var options = new JsonSerializerOptions
+            if (!File.Exists(filePath))
             {
-                ReferenceHandler = ReferenceHandler.Preserve,
-                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-            };
-            Updater updater = JsonSerializer.Deserialize<Updater>(jsonString, options);
-            if (updater != null)
-            {
-                Logger.LogInfo($"Successfully fetched local version file: {filePath}");
-                return updater;
+                Logger.LogWarning($"Local version file not found: {filePath}");
+                return new Updater();
             }
-            Logger.LogWarning($"Could not fetch local version file: {filePath}");
+
+            try
+            {
+                string jsonString = File.ReadAllText(filePath);
+
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+                };
+
+                var updater = JsonSerializer.Deserialize<Updater>(jsonString, options);
+
+                if (updater != null)
+                {
+                    Logger.LogInfo($"Successfully fetched local version file: {filePath}");
+                    return updater;
+                }
+
+                Logger.LogWarning($"Failed to deserialize local version file: {filePath}");
+            }
+            catch (IOException e)
+            {
+                Logger.LogError($"I/O error while reading local version file: {e.Message}");
+            }
+            catch (JsonException e)
+            {
+                Logger.LogError($"JSON deserialization error for local version file: {e.Message}");
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Unexpected error while fetching local version file: {e.Message}");
+            }
+
             return new Updater();
         }
 
+        //public static Updater FetchLocalVersion(string filePath)
+        //{
+        //    string jsonString = File.ReadAllText(filePath);
+        //    var options = new JsonSerializerOptions
+        //    {
+        //        ReferenceHandler = ReferenceHandler.Preserve,
+        //        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+        //    };
+        //    Updater updater = JsonSerializer.Deserialize<Updater>(jsonString, options);
+        //    if (updater != null)
+        //    {
+        //        Logger.LogInfo($"Successfully fetched local version file: {filePath}");
+        //        return updater;
+        //    }
+        //    Logger.LogWarning($"Could not fetch local version file: {filePath}");
+        //    return new Updater();
+        //}
+
+        //public static bool CheckServerStatus(string serverAddress)
+        //{
+        //    using (HttpClient client = new HttpClient())
+        //    {
+        //        client.Timeout = TimeSpan.FromSeconds(10);
+        //        try
+        //        {
+        //            var response = client.GetAsync(serverAddress).Result;  // Blocking call!
+        //            if (response.IsSuccessStatusCode) return true;
+        //        }
+        //        catch (Exception e)
+        //        {
+        //            return false;
+        //        }
+        //        return false;
+        //    }
+        //}
+
         public static bool CheckServerStatus(string serverAddress)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                client.Timeout = TimeSpan.FromSeconds(10);
-                try
+                return Task.Run(async () =>
                 {
-                    var response = client.GetAsync(serverAddress).Result;  // Blocking call!
-                    if (response.IsSuccessStatusCode) return true;
-                }
-                catch (Exception e)
-                {
-                    return false;
-                }
+                    using var response = await _client.GetAsync(serverAddress);
+                    return response.IsSuccessStatusCode;
+                }).GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException)
+            {
+                return false;
+            }
+            catch (TaskCanceledException)
+            {
                 return false;
             }
         }
 
-        private static async Task<Updater> FetchAndDeserializeUpdaterAsync(string url)
+        //private static async Task<Updater> FetchAndDeserializeUpdaterAsync(string url)
+        //{
+        //    using (HttpClient client = new HttpClient())
+        //    {
+        //        client.Timeout = TimeSpan.FromSeconds(10);
+        //        var response = client.GetAsync(url).Result;  // Blocking call!
+
+        //        if (response.IsSuccessStatusCode)
+        //        {
+        //            Logger.LogInfo($"Received Status Code 200 OK from GET request: {url}");
+
+        //            // Parse the response body. Blocking!
+        //            var jsonString = response.Content.ReadAsStringAsync().Result;
+        //            var options = new JsonSerializerOptions
+        //            {
+        //                ReferenceHandler = ReferenceHandler.Preserve,
+        //                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+        //            };
+
+        //            JsonResponse jsonResponse = JsonSerializer.Deserialize<JsonResponse>(jsonString, options);
+
+        //            if (jsonResponse != null && jsonResponse.Data.Length > 0)
+        //            {
+        //                var data = jsonResponse.Data[0];
+        //                var updater = new Updater
+        //                {
+        //                    Latest = data.SemanticVersion,
+        //                    LatestTag = data.VersionTag
+        //                };
+
+        //                Logger.LogInfo($"Successfully deserialized updater file from server");
+        //                return updater;
+        //            }
+        //            Logger.LogWarning($"Could not deserialize the fetched updater file");
+        //            return new Updater();
+        //        }
+        //        var result = $"{(int)response.StatusCode} ({response.ReasonPhrase})";
+        //        Logger.LogWarning($"Received invalid Status Code from GET request: {result}");
+        //        return new Updater();
+        //    }
+        //}
+        public static async Task<Updater> FetchAndDeserializeUpdaterAsync(string url)
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                client.Timeout = TimeSpan.FromSeconds(10);
-                var response = client.GetAsync(url).Result;  // Blocking call!
+                using var response = await _client.GetAsync(url);
 
-                if (response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                 {
-                    Logger.LogInfo($"Received Status Code 200 OK from GET request: {url}");
-
-                    // Parse the response body. Blocking!
-                    var jsonString = response.Content.ReadAsStringAsync().Result;
-                    var options = new JsonSerializerOptions
-                    {
-                        ReferenceHandler = ReferenceHandler.Preserve,
-                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-                    };
-
-                    JsonResponse jsonResponse = JsonSerializer.Deserialize<JsonResponse>(jsonString, options);
-
-                    if (jsonResponse != null && jsonResponse.Data.Length > 0)
-                    {
-                        var data = jsonResponse.Data[0];
-                        var updater = new Updater
-                        {
-                            Latest = data.SemanticVersion,
-                            LatestTag = data.VersionTag
-                        };
-
-                        Logger.LogInfo($"Successfully deserialized updater file from server");
-                        return updater;
-                    }
-                    Logger.LogWarning($"Could not deserialize the fetched updater file");
+                    Logger.LogWarning($"Received invalid status code: {(int)response.StatusCode} ({response.ReasonPhrase})");
                     return new Updater();
                 }
-                var result = $"{(int)response.StatusCode} ({response.ReasonPhrase})";
-                Logger.LogWarning($"Received invalid Status Code from GET request: {result}");
-                return new Updater();
+
+                Logger.LogInfo($"Received Status Code 200 OK from GET request: {url}");
+
+                var jsonString = await response.Content.ReadAsStringAsync();
+
+                var options = new JsonSerializerOptions
+                {
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+                };
+
+                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(jsonString, options);
+
+                if (jsonResponse?.Data?.Length > 0)
+                {
+                    var data = jsonResponse.Data[0];
+                    Logger.LogInfo("Successfully deserialized updater file from server");
+
+                    return new Updater
+                    {
+                        Latest = data.SemanticVersion,
+                        LatestTag = data.VersionTag
+                    };
+                }
+
+                Logger.LogWarning("Could not deserialize the fetched updater file");
             }
+            catch (HttpRequestException e)
+            {
+                Logger.LogError($"Network error fetching updater: {e.Message}");
+            }
+            catch (TaskCanceledException)
+            {
+                Logger.LogError("Request timeout when fetching updater.");
+            }
+            catch (JsonException e)
+            {
+                Logger.LogError($"JSON deserialization error: {e.Message}");
+            }
+            return new Updater(); // Fallback on failure
         }
 
         public static void WriteToLocalUpdaterFile(Updater localUpdaterFile, string filePath = "")

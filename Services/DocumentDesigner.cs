@@ -14,8 +14,8 @@ namespace BauphysikToolWPF.Services
         public static void FullCatalogueExport(Project project)
         {
             XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
-            XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
-            XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
+            //XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
+            //XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
             XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
             XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
 
@@ -87,8 +87,6 @@ namespace BauphysikToolWPF.Services
 
         public static void CreateSingleElementDocument(Element element)
         {
-            if (element is null) return;
-
             // Create a new PDF document
             PdfDocument document = new PdfDocument();
             document.Info.Title = $"Overview of {element.Name}";
@@ -120,7 +118,7 @@ namespace BauphysikToolWPF.Services
             XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
             XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
             XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
-            XFont bodyFontBold = new XFont("Verdana", 9, XFontStyleEx.Bold);
+            //XFont bodyFontBold = new XFont("Verdana", 9, XFontStyleEx.Bold);
             XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
             XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
 
@@ -137,97 +135,114 @@ namespace BauphysikToolWPF.Services
 
             // Draw title
             gfx.DrawString($"Bauteil: {element.Name}", titleFont, XBrushes.Black,
-                new XRect(50, startY, page.Width - 100, 30), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(50), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(30)), XStringFormats.TopLeft);
             startY += 16;
 
             gfx.DrawString($"Bauteiltyp: \"{element.Construction.TypeName}\"", bodyFont, XBrushes.Black,
-                new XRect(50, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(50), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 32;
 
             // Draw Element Properties
             gfx.DrawString($"Rges = {element.RGesValue:0.00} m²K/W (nur Bauteil)", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
             gfx.DrawString($"RT = {element.RTotValue:0.00} m²K/W", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
             gfx.DrawString($"U = {element.UValue:0.00} W/m²K", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
             gfx.DrawString($"q = {element.QValue:0.00} W/m²", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 24;
 
             gfx.DrawString($"Ausrichtung: {element.OrientationType}", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
             var str = element.Layers.Any(l => l.HasSubConstructions) ? "Ja" : "Nein";
             gfx.DrawString($"Inhomogener Schichtaufbau: {str}", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
 
-            if (element.Comment != null && element.Comment != string.Empty)
+            if (element.Comment != string.Empty)
             {
                 gfx.DrawString($"Kommentar:", bodyFont, XBrushes.Black,
-                    new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                    new XRect(new XUnitPt(70), new XUnitPt(startY),
+                        new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
                 var textBlockHeight = DrawWrappedText(gfx, element.Comment, bodyFont, XBrushes.Black,
-                    new XRect(130, startY, page.Width - 160, 80), bodyFont.GetHeight());
+                    new XRect(new XUnitPt(130), new XUnitPt(startY),
+                        new XUnitPt(page.Width - 160), new XUnitPt(80)), bodyFont.GetHeight());
                 startY += textBlockHeight + 16;
             }
 
             // Draw Layer Information
             gfx.DrawString("Querschnitt", titleFontSm, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 30), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(30)), XStringFormats.TopLeft);
             startY += 16;
 
             gfx.DrawString("von innen nach außen", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
 
             #region Image
 
             // Draw image from Image property
-            double imageHeight = 0;
-            if (element.FullImage != null && element.FullImage.Length > 0)
+            double imageHeight;
+
+            var imgToDraw = element.DocumentImage;
+            // Use small image if big one is not available
+            if (imgToDraw.Length == 0) imgToDraw = element.Image;
+
+            using (MemoryStream ms = new MemoryStream(imgToDraw, 0, imgToDraw.Length, false, true))
             {
-                using (MemoryStream ms = new MemoryStream(element.FullImage, 0, element.FullImage.Length, false, true))
-                {
-                    ms.Position = 0; // Ensure the stream position is at the start
-                    XImage image = XImage.FromStream(ms);
+                ms.Position = 0; // Ensure the stream position is at the start
+                XImage image = XImage.FromStream(ms);
 
-                    // Get the original width and height of the image
-                    double originalWidth = image.PixelWidth;
-                    double originalHeight = image.PixelHeight;
+                // Get the original width and height of the image
+                double originalWidth = image.PixelWidth;
+                double originalHeight = image.PixelHeight;
 
-                    // Define the maximum dimensions based on page size and desired margins
-                    double maxWidth = page.Width - 100; // Leave 50 units of margin on each side
-                    double maxHeight = page.Height - 200; // Leave 100 units of margin at top and bottom
+                // Define the maximum dimensions based on page size and desired margins
+                double maxWidth = page.Width - 100; // Leave 50 units of margin on each side
+                double maxHeight = page.Height - 200; // Leave 100 units of margin at top and bottom
 
-                    // Calculate the scaling factor
-                    double scale = Math.Min(maxWidth / originalWidth, maxHeight / originalHeight);
+                // Calculate the scaling factor
+                double scale = Math.Min(maxWidth / originalWidth, maxHeight / originalHeight);
 
-                    // Scale the width and height based on the scaling factor
-                    double scaledWidth = originalWidth * scale;
-                    double scaledHeight = originalHeight * scale;
+                // Scale the width and height based on the scaling factor
+                double scaledWidth = originalWidth * scale;
+                double scaledHeight = originalHeight * scale;
 
-                    // Draw the image with scaled dimensions
-                    gfx.DrawImage(image, 70, startY, scaledWidth, scaledHeight);
+                // Draw the image with scaled dimensions
+                gfx.DrawImage(image, 70, startY, scaledWidth, scaledHeight);
 
-                    // Update imageHeight for subsequent content positioning
-                    imageHeight = scaledHeight + 10; // Add margin below the image
-                }
+                // Update imageHeight for subsequent content positioning
+                imageHeight = scaledHeight + 10; // Add margin below the image
             }
+            
             startY += imageHeight + 20;
 
             #endregion
 
             // Draw Layer Information
             gfx.DrawString("Schichtaufbau", titleFontSm, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 30), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(30)), XStringFormats.TopLeft);
             startY += 16;
 
             gfx.DrawString("von innen nach außen", bodyFont, XBrushes.Black,
-                new XRect(70, startY, page.Width - 100, 20), XStringFormats.TopLeft);
+                new XRect(new XUnitPt(70), new XUnitPt(startY),
+                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
 
             #region Table
@@ -294,7 +309,7 @@ namespace BauphysikToolWPF.Services
             data[currentRow, 2] = "";
             data[currentRow, 3] = "";
             data[currentRow, 4] = "";
-            data[currentRow, 5] = element.UsedEnvVars[0]?.Value.ToString("N", CultureInfo.CurrentCulture) ?? "";
+            data[currentRow, 5] = element.UsedEnvVars[0].Value.ToString("N", CultureInfo.CurrentCulture);
             currentRow += 1;
             for (int i = 0; i < layers.Count; i++)
             {
@@ -308,12 +323,12 @@ namespace BauphysikToolWPF.Services
 
                 if (layers[i].HasSubConstructions)
                 {
-                    data[currentRow, 0] = $"0{i + 1}b - {layers[i].SubConstruction.Material.Name}";
-                    data[currentRow, 1] = layers[i].SubConstruction.Thickness.ToString("F2");
-                    data[currentRow, 2] = layers[i].SubConstruction.Material.BulkDensity.ToString("F0");
-                    data[currentRow, 3] = layers[i].SubConstruction.AreaMassDensity.ToString("F1");
-                    data[currentRow, 4] = layers[i].SubConstruction.Material.ThermalConductivity.ToString("F3");
-                    data[currentRow, 5] = layers[i].SubConstruction.R_Value.ToString("F2");
+                    data[currentRow, 0] = $"0{i + 1}b - {layers[i].SubConstruction?.Material.Name}";
+                    data[currentRow, 1] = layers[i].SubConstruction?.Thickness.ToString("F2") ?? "";
+                    data[currentRow, 2] = layers[i].SubConstruction?.Material.BulkDensity.ToString("F0") ?? "";
+                    data[currentRow, 3] = layers[i].SubConstruction?.AreaMassDensity.ToString("F1") ?? "";
+                    data[currentRow, 4] = layers[i].SubConstruction?.Material.ThermalConductivity.ToString("F3") ?? "";
+                    data[currentRow, 5] = layers[i].SubConstruction?.R_Value.ToString("F2") ?? "";
                     currentRow += 1;
                 }
             }
@@ -322,7 +337,7 @@ namespace BauphysikToolWPF.Services
             data[currentRow, 2] = "";
             data[currentRow, 3] = "";
             data[currentRow, 4] = "";
-            data[currentRow, 5] = element.UsedEnvVars[1]?.Value.ToString("N", CultureInfo.CurrentCulture) ?? "";
+            data[currentRow, 5] = element.UsedEnvVars[1].Value.ToString("N", CultureInfo.CurrentCulture);
 
             return data;
         }
@@ -331,14 +346,16 @@ namespace BauphysikToolWPF.Services
         {
             XFont headerFont = new XFont("Verdana", 10, XFontStyleEx.Regular);
             gfx.DrawString($"Projekt: {projectName} | Datum: {date}", headerFont, XBrushes.Gray,
-                new XRect(0, 0, page.Width, 30), XStringFormats.TopCenter);
+                new XRect(new XUnitPt(0), new XUnitPt(0),
+                    new XUnitPt(page.Width), new XUnitPt(30)), XStringFormats.TopCenter);
         }
 
         private static void DrawFooter(XGraphics gfx, PdfPage page, string author, int pageNumber)
         {
             XFont footerFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
             gfx.DrawString($"Bearbeiter: {author} | Seite {pageNumber}", footerFont, XBrushes.Gray,
-                new XRect(0, page.Height - 30, page.Width, 30), XStringFormats.TopCenter);
+                new XRect(new XUnitPt(0), new XUnitPt(page.Height - 30),
+                    new XUnitPt(page.Width), new XUnitPt(30)), XStringFormats.TopCenter);
         }
 
         private static double DrawWrappedText(XGraphics gfx, string text, XFont font, XBrush brush, XRect rect, double lineHeight)

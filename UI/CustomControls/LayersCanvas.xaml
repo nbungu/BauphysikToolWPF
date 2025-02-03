@@ -21,14 +21,6 @@
                            Fill="{Binding DrawingBrush}"
                            Stroke="{Binding RectangleBorderColor}"
                            StrokeThickness="{Binding RectangleBorderThickness}"/>
-                <Ellipse Fill="White"
-                         Width="20"
-                         Height="20"
-                         Stroke="{Binding RectangleBorderColor}"
-                         StrokeThickness="1"
-                         HorizontalAlignment="Center"
-                         Margin="-8"/>
-                <Label Content="{Binding Tag}" Margin="-8"/>
             </Grid>
         </DataTemplate>
     </UserControl.Resources>

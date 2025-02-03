@@ -25,7 +25,7 @@
                     <DataTemplate>
                         <Grid>
                             <Rectangle x:Name="rectangle" Fill="{Binding Material.ColorCode}" Margin="-6,-4,0,-4" Width="8" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
-                            <Label x:Name="positionLabel" Content="{Binding Tag}" FontWeight="DemiBold" Margin="4,0"/>
+                            <Label x:Name="positionLabel" Content="{Binding LayerNumber}" FontWeight="DemiBold" Margin="4,0"/>
                         </Grid>
                         <DataTemplate.Triggers>
                             <!-- Trigger to change label color when ListViewItem is selected -->

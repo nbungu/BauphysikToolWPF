@@ -33,8 +33,7 @@ namespace BauphysikToolWPF.UI.CustomControls
 
         private static void OnIconSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as IconLabel;
-            control.Icon.Source = e.NewValue as ImageSource;
+            if (d is IconLabel control) control.Icon.Source = e.NewValue as ImageSource;
         }
 
         public static readonly DependencyProperty TextProperty =
@@ -48,8 +47,7 @@ namespace BauphysikToolWPF.UI.CustomControls
 
         private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as IconLabel;
-            control.Label.Content = e.NewValue as string;
+            if (d is IconLabel control) control.Label.Content = e.NewValue as string;
         }
 
         public static readonly DependencyProperty TypeProperty =
@@ -63,8 +61,7 @@ namespace BauphysikToolWPF.UI.CustomControls
 
         private static void OnStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as IconLabel;
-            control.UpdateBackground();
+            if (d is IconLabel control) control.UpdateBackground();
         }
 
         private void UpdateBackground()
