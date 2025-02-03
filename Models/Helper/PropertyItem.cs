@@ -201,6 +201,9 @@ namespace BauphysikToolWPF.Models.Helper
             get => _getter != null ? (object)_getter() : _value;
             set
             {
+                // Ensure value is not null if Value is non-nullable
+                if (value == null) throw new ArgumentNullException(nameof(value), "Value cannot be null.");
+
                 if (Equals(Value, value)) return;
 
                 if (_setter != null)
@@ -216,12 +219,12 @@ namespace BauphysikToolWPF.Models.Helper
             }
         }
         [NotNull]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         [NotNull]
         public Symbol Symbol { get; set; }
         [NotNull]
         public Unit Unit { get; set; }
-        public string Comment { get; set; }
+        public string Comment { get; set; } = string.Empty;
 
         //------Not part of the Database-----//
         public bool IsReadonly { get; set; } = true;

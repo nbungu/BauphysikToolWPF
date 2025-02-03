@@ -1,15 +1,14 @@
-﻿using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Models.Helper;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
@@ -99,7 +98,7 @@ namespace BauphysikToolWPF.Models
         }
 
         [Ignore, JsonIgnore]
-        public byte[] FullImage { get; set; } = Array.Empty<byte>();
+        public byte[] DocumentImage { get; set; } = Array.Empty<byte>();
 
         [Ignore, JsonIgnore]
         public byte[] Image { get; set; } = Array.Empty<byte>();
@@ -115,30 +114,9 @@ namespace BauphysikToolWPF.Models
             set => Tag = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
         }
 
-        // Encapsulate 'Image' variable for use in frontend
-        [Ignore, JsonIgnore]
-        public BitmapImage ElementImage
-        {
-            get
-            {
-                if (Image == Array.Empty<byte>() || Image.Length == 0) return new BitmapImage();// return new BitmapImage(new Uri("pack://application:,,,/Resources/Icons/placeholder_256px_light.png"));
 
-                BitmapImage image = new BitmapImage();
-                // use using to call Dispose() after use of unmanaged resources. GC cannot manage this
-                using (MemoryStream stream = new MemoryStream(Image))
-                {
-                    stream.Position = 0;
-                    image.BeginInit();
-                    image.CreateOptions = BitmapCreateOptions.PreservePixelFormat;
-                    image.CacheOption = BitmapCacheOption.OnLoad;
-                    image.UriSource = null;
-                    image.StreamSource = stream;
-                    image.EndInit();
-                }
-                image.Freeze();
-                return image;
-            }
-        }
+        [Ignore, JsonIgnore]
+        public BitmapImage PreviewImage => ImageCreator.ByteArrayToBitmap(Image);
 
         [Ignore, JsonIgnore]
         public double Thickness // d in cm
@@ -177,7 +155,7 @@ namespace BauphysikToolWPF.Models
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    if (layer.HasSubConstructions)
+                    if (layer.HasSubConstructions && layer.SubConstruction != null)
                     {
                         val += layer.AreaMassDensity;
                         val += layer.SubConstruction.AreaMassDensity;
@@ -197,7 +175,7 @@ namespace BauphysikToolWPF.Models
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    if (layer.HasSubConstructions)
+                    if (layer.HasSubConstructions && layer.SubConstruction != null)
                     {
                         val += layer.ArealHeatCapacity;
                         val += layer.SubConstruction.ArealHeatCapacity;
@@ -241,19 +219,21 @@ namespace BauphysikToolWPF.Models
             var copy = new Element();
             copy.Id = -1;
             copy.ConstructionId = this.ConstructionId;
-            copy.Construction = this.Construction;
+            copy.Construction = this.Construction; // TODO Check: Keep Reference, No Deep Copy
             copy.OrientationType = this.OrientationType;
             copy.ProjectId = this.ProjectId;
-            copy.Project = this.Project;
+            copy.Project = this.Project; // TODO Check: Keep Reference, No Deep Copy
             copy.Name = this.Name + "-Copy";
             copy.Image = this.Image;
+            copy.DocumentImage = this.DocumentImage;
             copy.ColorCode = this.ColorCode;
             copy.Tag = this.Tag;
             copy.Comment = this.Comment;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.Layers = this.Layers;
             copy.InternalId = this.InternalId;
+            // Deep copy of the Layers list
+            copy.Layers = this.Layers.Select(layer => layer.CopyToNewElement(copy)).ToList();
             return copy;
         }
 

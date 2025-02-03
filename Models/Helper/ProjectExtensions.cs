@@ -1,4 +1,8 @@
-﻿namespace BauphysikToolWPF.Models.Helper
+﻿using BauphysikToolWPF.Services;
+using System;
+using System.Linq;
+
+namespace BauphysikToolWPF.Models.Helper
 {
     public static class ProjectExtensions
     {
@@ -6,6 +10,15 @@
         {
             int index = 0; // Start at 0
             project.Elements.ForEach(e => e.InternalId = index++);
+        }
+        public static void RenderMissingElementImages(this Project project)
+        {
+            var elementsWithoutImage = project.Elements.Where(e => e.Image == Array.Empty<byte>()).ToList();
+            elementsWithoutImage.ForEach(ImageCreator.RenderElementPreviewImage);
+        }
+        public static void RenderAllElementImages(this Project project)
+        {
+            project.Elements.ForEach(ImageCreator.RenderElementPreviewImage);
         }
     }
 }

@@ -133,7 +133,7 @@
                 <!--Image-->
                 <Viewbox Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center">
                     <!--Keep Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                    <Grid x:Name="ZoomableGrid" Margin="0"
+                    <Grid x:Name="ZoomableGrid" Margin="8"
                           MouseWheel="ZoomableGrid_OnMouseWheel"
                           MouseMove="ZoomableGrid_OnMouseMove"
                           MouseRightButtonDown="ZoomableGrid_OnMouseRightButtonDown"

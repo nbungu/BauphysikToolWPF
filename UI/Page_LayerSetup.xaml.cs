@@ -1,7 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Helper;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -43,19 +42,12 @@ namespace BauphysikToolWPF.UI
             // Only save if leaving this page
             UserSaved.SelectedElement.UnselectAllLayers();
 
-            if (!IsVisible) SetNewElementImage();
-        }
-        private void SetNewElementImage()
-        {
-            if (UserSaved.SelectedElement.IsValid)
+            if (!IsVisible && UserSaved.SelectedElement.IsValid)
             {
-                UserSaved.SelectedElement.Image = CaptureImage.CaptureUIElementAsImage(LayersCanvas, true);
-                UserSaved.SelectedElement.FullImage = CaptureImage.CaptureUIElementAsImage(ZoomableGrid);
-            }
-            else
-            {
-                UserSaved.SelectedElement.Image = Array.Empty<byte>();
-                UserSaved.SelectedElement.FullImage = Array.Empty<byte>();
+                UserSaved.SelectedElement.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
+                
+                ImageCreator.RenderElementPreviewImage(UserSaved.SelectedElement);
+                //UserSaved.SelectedElement.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
             }
         }
 

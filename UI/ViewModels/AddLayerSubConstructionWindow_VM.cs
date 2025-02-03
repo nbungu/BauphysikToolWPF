@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             PropertyItem<SubConstructionDirection>.PropertyChanged += UpdateXAMLBindings;
 
-            if (EditSelectedSubConstr)
+            if (EditSelectedSubConstr && UserSaved.SelectedLayer.SubConstruction != null)
             {
                 _tempConstruction = UserSaved.SelectedLayer.SubConstruction.Copy();
             }
@@ -116,7 +116,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<IPropertyItem> SubConstructionProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Material", () => _tempConstruction.Material.Name),
-            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => _tempConstruction.SubConstructionDirection, value => _tempConstruction.SubConstructionDirection = value)
+            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => _tempConstruction.Direction, value => _tempConstruction.Direction = value)
             {
                 PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray()
             },

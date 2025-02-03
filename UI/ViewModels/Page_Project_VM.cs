@@ -24,8 +24,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Page_Project_VM()
         {
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
-            
-            //UserSaved.SelectedProjectChanged += RefreshXamlBindings;
+            UserSaved.SelectedProjectChanged += RefreshXamlBindings;
+            UserSaved.NewProjectAdded += RefreshXamlBindings;
 
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
@@ -57,7 +57,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                         break;
                     case MessageBoxResult.No:
                         ApplicationServices.CreateNewProject();
-                        UserSaved.OnSelectedProjectChanged(false);
+                        UserSaved.OnNewProjectAdded(false);
                         break;
                     case MessageBoxResult.Cancel:
                         // Do nothing, user cancelled the action
@@ -67,7 +67,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             else
             {
                 ApplicationServices.CreateNewProject();
-                UserSaved.OnSelectedProjectChanged(false);
+                UserSaved.OnNewProjectAdded(false);
             }
         }
 
@@ -108,10 +108,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (filePath != null)
             {
                 Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
+
                 UserSaved.SelectedProject = loadedProject;
                 UserSaved.ProjectFilePath = filePath;
                 UserSaved.SelectedProject.IsModified = false;
-                UserSaved.OnSelectedProjectChanged(false);
+                UserSaved.OnNewProjectAdded(false);
             }
         }
 
@@ -141,58 +142,44 @@ namespace BauphysikToolWPF.UI.ViewModels
             DroppedFilePaths.Remove(file);
             UserSaved.SelectedProject.LinkedFilesList = DroppedFilePaths.ToList();
             UserSaved.SelectedProject.IsModified = true;
-            // Update single XAML Binding Property
             UserSaved.OnSelectedProjectChanged();
-            OnPropertyChanged(nameof(DroppedFilePaths));
         }
 
-        partial void OnAuthorNameChanged(string? value)
+        partial void OnAuthorNameChanged(string value)
         {
-            if (value is null) return;
-            UserSaved.SelectedProject.UserName = value == "" ? "unbekannt" : value;
+            if (value == "") return;
+            UserSaved.SelectedProject.UserName = value;
             UserSaved.SelectedProject.IsModified = true;
-            // Update single XAML Binding Property
             UserSaved.OnSelectedProjectChanged();
-            OnPropertyChanged(nameof(AuthorName));
         }
 
-        partial void OnProjectNameChanged(string? value)
+        partial void OnProjectNameChanged(string value)
         {
-            if (value is null) return;
-            UserSaved.SelectedProject.Name = value == "" ? "unbekannt" : value;
+            if (value == "") return;
+            UserSaved.SelectedProject.Name = value;
             UserSaved.SelectedProject.IsModified = true;
-            // Update single XAML Binding Property
             UserSaved.OnSelectedProjectChanged();
-            OnPropertyChanged(nameof(ProjectName));
         }
 
-        partial void OnCommentChanged(string? value)
+        partial void OnCommentChanged(string value)
         {
-            if (value is null) return;
+            if (value == "") return;
             UserSaved.SelectedProject.Comment = value;
             UserSaved.SelectedProject.IsModified = true;
-            // Update single XAML Binding Property
             UserSaved.OnSelectedProjectChanged();
-            OnPropertyChanged(nameof(Comment));
         }
 
         partial void OnIsNewConstrCheckedChanged(bool value)
         {
             UserSaved.SelectedProject.BuildingAge = value ? BuildingAgeType.New : BuildingAgeType.Existing;
             UserSaved.SelectedProject.IsModified = true;
-            // Update single XAML Binding Property
             UserSaved.OnSelectedProjectChanged();
-            OnPropertyChanged(nameof(IsNewConstrChecked));
-            OnPropertyChanged(nameof(IsExistingConstrChecked));
         }
         partial void OnIsResidentialUsageCheckedChanged(bool value)
         {
             UserSaved.SelectedProject.BuildingUsage = value ? BuildingUsageType.Residential : BuildingUsageType.NonResidential;
             UserSaved.SelectedProject.IsModified = true;
-            // Update single XAML Binding Property
             UserSaved.OnSelectedProjectChanged();
-            OnPropertyChanged(nameof(IsResidentialUsageChecked));
-            OnPropertyChanged(nameof(IsNonResidentialUsageChecked));
         }
 
         /*
@@ -231,16 +218,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, No direct User Input involved
          */
 
-        //private void RefreshXamlBindings()
-        //{
-        //    ProjectName = UserSaved.SelectedProject.Name;
-        //    AuthorName = UserSaved.SelectedProject.UserName;
-        //    Comment = UserSaved.SelectedProject.Comment;
-        //    DroppedFilePaths = new ObservableCollection<string>(UserSaved.SelectedProject.LinkedFilesList);
-        //    IsResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.Residential;
-        //    IsNonResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;
-        //    IsNewConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.New;
-        //    IsExistingConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.Existing;
-        //}
+        private void RefreshXamlBindings()
+        {
+            ProjectName = UserSaved.SelectedProject.Name;
+            AuthorName = UserSaved.SelectedProject.UserName;
+            Comment = UserSaved.SelectedProject.Comment;
+            DroppedFilePaths = new ObservableCollection<string>(UserSaved.SelectedProject.LinkedFilesList);
+            IsResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.Residential;
+            IsNonResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;
+            IsNewConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.New;
+            IsExistingConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.Existing;
+        }
     }
 }

@@ -35,8 +35,7 @@ namespace BauphysikToolWPF.UI.CustomControls
 
         private static void OnMessageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as ToastNotification;
-            control.ToastText.Text = e.NewValue as string;
+            if (d is ToastNotification control) control.ToastText.Text = e.NewValue as string;
         }
 
         public static readonly DependencyProperty ToastTypeProperty =
@@ -50,8 +49,7 @@ namespace BauphysikToolWPF.UI.CustomControls
 
         private static void OnToastTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as ToastNotification;
-            control.UpdateVisualState();
+            if (d is ToastNotification control) control.UpdateVisualState();
         }
 
         private void UpdateVisualState()

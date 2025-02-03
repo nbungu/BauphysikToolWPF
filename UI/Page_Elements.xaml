@@ -9,8 +9,7 @@
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="700"
-             d:DesignWidth="1200"
-             Focusable="True">
+             d:DesignWidth="1200">
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
@@ -45,7 +44,7 @@
                                     <Image x:Name="tag_icon" Source="{StaticResource ButtonIcon_Tags_B}" Margin="0,0,4,0"/>
                                 </StackPanel>
                                 <Label Grid.Row="0" Content="{Binding InternalId}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
-                                <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding ElementImage}" Margin="8"/>
+                                <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding PreviewImage}" Margin="8"/>
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
@@ -213,12 +212,12 @@
             <Label Grid.Row="0" Content="Zuletzt erstellte Bauteile" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
             <!-- Sorting functions, Button Row -->
-            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left">
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Left" Focusable="True">
                 <Label Content="Sortieren nach" Margin="0,0,8,0"/>
-                <ComboBox Name="SortingComboBox" Background="Transparent" Width="240" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Margin="0,0,8,0"/>
+                <ComboBox Name="SortingComboBox" Background="Transparent" Width="240" ItemsSource="{Binding SortingProperties}" SelectedIndex="{Binding SortingPropertyIndex}" Margin="0,0,8,0"/>
                 <Line Y2="32" Stroke="{StaticResource PrimaryBorderBrush}" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <Label Content="Gruppieren nach" Margin="0,0,8,0"/>
-                <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Margin="0,0,8,0"/>
+                <ComboBox Background="Transparent" ItemsSource="{Binding GroupingProperties}" SelectedIndex="{Binding GroupingPropertyIndex}" Margin="0,0,8,0"/>
             </StackPanel>
 
             <ScrollViewer x:Name="WrapPanelScrollViewer" Grid.Row="2" Margin="0,16,0,0" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto" ClipToBounds="True">
@@ -268,7 +267,7 @@
             </StackPanel>
             
             <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" Margin="0,0,0,8">
-                <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="8,4,8,8" ClipToBounds="True">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="8,4,8,8" ClipToBounds="True" Visibility="{Binding ElementInfoVisibility}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
@@ -277,7 +276,7 @@
 
                         <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>
 
-                        <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.ElementImage}" Margin="0,8,0,8"/>
+                        <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.PreviewImage}" Margin="0,8,0,8"/>
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>

@@ -52,7 +52,7 @@ namespace BauphysikToolWPF.Services
                     ReferenceHandler = ReferenceHandler.Preserve,
                     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
                 };
-                Project project = JsonSerializer.Deserialize<Project>(jsonString, options);
+                Project? project = JsonSerializer.Deserialize<Project>(jsonString, options);
                 if (project != null)
                 {
                     Logger.LogInfo($"Successfully read project from file: {filePath}");
@@ -176,12 +176,12 @@ namespace BauphysikToolWPF.Services
             // Remove all subConstr in DB if Ids of local subConstr is not found in DB
             var localSubConstrIds = layer.SubConstructions.Where(s => s.Id != -1).Select(s => s.Id);
 
-            var subConstrInDB = DatabaseAccess.GetSubConstructionQuery()
+            var subConstrInDb = DatabaseAccess.GetSubConstructionQuery()
                 .Where(s => s.LayerId == layer.Id)
                 .Select(s => s.Id);
 
             // Find layers to delete (layers in DB but not in local project)
-            var subConstrToDelete = subConstrInDB.Except(localSubConstrIds).Cast<object>().ToList();
+            var subConstrToDelete = subConstrInDb.Except(localSubConstrIds).Cast<object>().ToList();
 
             // Delete layers not present in local project
             if (subConstrToDelete.Any()) DatabaseAccess.Database.DeleteAllIds<LayerSubConstruction>(subConstrToDelete);
@@ -192,12 +192,12 @@ namespace BauphysikToolWPF.Services
             // Remove all Layers in DB if LayerIds of local Layers is not found in DB
             var localLayerIds = element.Layers.Where(e => e.Id != -1).Select(e => e.Id);
 
-            var layersInDB = DatabaseAccess.GetLayersQuery()
+            var layersInDb = DatabaseAccess.GetLayersQuery()
                 .Where(l => l.ElementId == element.Id)
                 .Select(l => l.Id);
 
             // Find layers to delete (layers in DB but not in local project)
-            var layersToDelete = layersInDB.Except(localLayerIds).Cast<object>().ToList();
+            var layersToDelete = layersInDb.Except(localLayerIds).Cast<object>().ToList();
 
             // Delete layers not present in local project
             if (layersToDelete.Any()) DatabaseAccess.Database.DeleteAllIds<Layer>(layersToDelete);
@@ -208,12 +208,12 @@ namespace BauphysikToolWPF.Services
             // Remove all deleted Elements in DB if ElementIds of local Elements is not found in DB
             var localElementIds = project.Elements.Where(e => e.Id != -1).Select(e => e.Id);
 
-            var elementsInDB = DatabaseAccess.GetElementsQuery()
+            var elementsInDb = DatabaseAccess.GetElementsQuery()
                 .Where(e => e.ProjectId == project.Id)
                 .Select(e => e.Id);
 
             // Find elements to delete (elements in DB but not in local project)
-            var elementsToDelete = elementsInDB.Except(localElementIds).Cast<object>().ToList();
+            var elementsToDelete = elementsInDb.Except(localElementIds).Cast<object>().ToList();
 
             // Delete elements not present in local project
             if (elementsToDelete.Any()) DatabaseAccess.Database.DeleteAllIds<Element>(elementsToDelete);
@@ -267,7 +267,7 @@ namespace BauphysikToolWPF.Services
 
                 if (result >= 0) // Success
                 {
-                    string path = Marshal.PtrToStringUni(outPath);
+                    string path = Marshal.PtrToStringUni(outPath) ?? String.Empty;
                     Marshal.FreeCoTaskMem(outPath);
                     return path;
                 }

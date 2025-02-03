@@ -13,29 +13,47 @@ namespace BauphysikToolWPF.SessionData
     {
         // The subscriber class must register to these event and handle it with the method whose signature matches Notify delegate
         public static event Notify? SelectedProjectChanged; // event
-        public static event Notify? SelectedElementChanged; // event
-        public static event Notify? SelectedLayerChanged; // event
-        public static event Notify? EnvVarsChanged; // event
+        public static event Notify? NewProjectAdded; // event
+        public static event Notify? SelectedElementChanged;
+        public static event Notify? NewElementAdded;
+        public static event Notify? ElementRemoved;
+        public static event Notify? SelectedLayerChanged;
+        public static event Notify? EnvVarsChanged;
 
         // event handlers - publisher
         public static void OnSelectedProjectChanged(bool updateIsModified = true) //protected virtual method
         {
-            if (updateIsModified) UserSaved.SelectedProject.IsModified = true;
+            if (updateIsModified) SelectedProject.IsModified = true;
             SelectedProjectChanged?.Invoke(); //if SelectedProjectChanged is not null then call delegate
         }
-        public static void OnSelectedElementChanged(bool updateIsModified = true) //protected virtual method
+        public static void OnNewProjectAdded(bool updateIsModified = true)
         {
-            if (updateIsModified) UserSaved.SelectedProject.IsModified = true;
-            SelectedElementChanged?.Invoke(); //if LayersChanged is not null then call delegate
+            if (updateIsModified) SelectedProject.IsModified = true;
+            NewProjectAdded?.Invoke();
         }
-        public static void OnSelectedLayerChanged(bool updateIsModified = true) //protected virtual method
+        public static void OnSelectedElementChanged(bool updateIsModified = true)
         {
-            if (updateIsModified) UserSaved.SelectedProject.IsModified = true;
-            SelectedLayerChanged?.Invoke(); //if LayersChanged is not null then call delegate
+            if (updateIsModified) SelectedProject.IsModified = true;
+            SelectedElementChanged?.Invoke();
         }
-        public static void OnEnvVarsChanged() //protected virtual method
+        public static void OnNewElementAdded(bool updateIsModified = true)
         {
-            EnvVarsChanged?.Invoke(); // if EnvVarsChanged is not null then call delegate
+            if (updateIsModified) SelectedProject.IsModified = true;
+            NewElementAdded?.Invoke();
+        }
+        public static void OnElementRemoved(bool updateIsModified = true)
+        {
+            if (updateIsModified) SelectedProject.IsModified = true;
+            ElementRemoved?.Invoke();
+        }
+        public static void OnSelectedLayerChanged(bool updateIsModified = true)
+        {
+            if (updateIsModified) SelectedProject.IsModified = true;
+            SelectedLayerChanged?.Invoke();
+        }
+        public static void OnEnvVarsChanged()
+        {
+            EnvVarsChanged?.Invoke();
         }
 
         public static string ProjectFilePath { get; set; } = "Startprojekt aus Datenbank";

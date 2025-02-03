@@ -10,9 +10,8 @@ namespace BauphysikToolWPF.UI.CustomControls
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string filePath = value as string;
-            if (filePath == null)
-                return null;
+            string? filePath = value as string;
+            if (filePath == null) return new BitmapImage();
 
             string extension = Path.GetExtension(filePath).ToLower();
 

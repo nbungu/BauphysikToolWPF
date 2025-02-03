@@ -19,6 +19,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public MainWindow_VM()
         {
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
+            UserSaved.NewProjectAdded += RefreshXamlBindings;
             UserSaved.SelectedLayerChanged += RefreshXamlBindings;
             UserSaved.SelectedElementChanged += RefreshXamlBindings;
 
@@ -52,7 +53,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                         break;
                     case MessageBoxResult.No:
                         ApplicationServices.CreateNewProject();
-                        UserSaved.OnSelectedProjectChanged(false);
+                        UserSaved.OnNewProjectAdded(false);
                         SwitchPage(NavigationContent.ProjectPage);
                         break;
                     case MessageBoxResult.Cancel:
@@ -63,7 +64,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             else
             {
                 ApplicationServices.CreateNewProject();
-                UserSaved.OnSelectedProjectChanged(false);
+                UserSaved.OnNewProjectAdded(false);
                 SwitchPage(NavigationContent.ProjectPage);
             }
         }
@@ -110,7 +111,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 UserSaved.SelectedProject = loadedProject;
                 UserSaved.SelectedProject.IsModified = false;
                 UserSaved.ProjectFilePath = filePath;
-                UserSaved.OnSelectedProjectChanged(false);
+                UserSaved.OnNewProjectAdded(false);
                 SwitchPage(NavigationContent.LandingPage);
             }
         }
@@ -120,7 +121,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             new InfoWindow().ShowDialog();
         }
-
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
@@ -136,7 +136,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public string Title => $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
-        public string ProjectName => UserSaved.SelectedProject.Name == "" ? "unbekannt" : UserSaved.SelectedProject.Name;
+        public string ProjectName => UserSaved.SelectedProject.Name == "" ? "-" : UserSaved.SelectedProject.Name;
         public string IsEditedTagColorCode => UserSaved.SelectedProject.IsModified ? "#1473e6" : "#00FFFFFF";
 
         private void RefreshXamlBindings()

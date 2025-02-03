@@ -30,7 +30,7 @@ namespace BauphysikToolWPF.Models
         [NotNull]
         public double Spacing { get; set; } // cm (innerer Abstand)
         [NotNull]
-        public SubConstructionDirection SubConstructionDirection { get; set; }
+        public SubConstructionDirection Direction { get; set; }
         [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         [NotNull]
@@ -123,11 +123,30 @@ namespace BauphysikToolWPF.Models
             copy.Width = this.Width;
             copy.Thickness = this.Thickness;
             copy.Spacing = this.Spacing;
-            copy.SubConstructionDirection = this.SubConstructionDirection;
+            copy.Direction = this.Direction;
             copy.MaterialId = this.MaterialId;
-            copy.Material = this.Material;
+            copy.Material = this.Material; // TODO Check: Keep Reference, No Deep Copy
             copy.LayerId = this.LayerId;
-            copy.Layer = this.Layer;
+            copy.Layer = this.Layer.Copy(); // TODO Check: Deep Copy
+            copy.IsEffective = this.IsEffective;
+            copy.IsSelected = false;
+            copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.InternalId = this.InternalId;
+            return copy;
+        }
+        public LayerSubConstruction CopyToNewLayer(Layer layer)
+        {
+            var copy = new LayerSubConstruction();
+            copy.Id = -1;
+            copy.Width = this.Width;
+            copy.Thickness = this.Thickness;
+            copy.Spacing = this.Spacing;
+            copy.Direction = this.Direction;
+            copy.MaterialId = this.MaterialId;
+            copy.Material = this.Material; // TODO Check: Keep Reference, No Deep Copy
+            copy.LayerId = layer.Id;
+            copy.Layer = layer;
             copy.IsEffective = this.IsEffective;
             copy.IsSelected = false;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
@@ -170,7 +189,7 @@ namespace BauphysikToolWPF.Models
         [Ignore, JsonIgnore]
         public int ZIndex { get; set; } = 1;
         [Ignore, JsonIgnore]
-        public object Tag { get; set; }
+        public object Tag { get; set; } = new object();
 
         public IDrawingGeometry Convert()
         {
