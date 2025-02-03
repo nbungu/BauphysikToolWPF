@@ -18,8 +18,6 @@ namespace BauphysikToolWPF.SessionData
         public static event Notify? NewElementAdded;
         public static event Notify? ElementRemoved;
         public static event Notify? SelectedLayerChanged;
-        public static event Notify? NewLayerAdded;
-        public static event Notify? LayerRemoved;
         public static event Notify? EnvVarsChanged;
 
         // event handlers - publisher
@@ -52,16 +50,6 @@ namespace BauphysikToolWPF.SessionData
         {
             if (updateIsModified) SelectedProject.IsModified = true;
             SelectedLayerChanged?.Invoke();
-        }
-        public static void OnNewLayerAdded(bool updateIsModified = true)
-        {
-            if (updateIsModified) SelectedProject.IsModified = true;
-            NewLayerAdded?.Invoke();
-        }
-        public static void OnLayerRemoved(bool updateIsModified = true)
-        {
-            if (updateIsModified) SelectedProject.IsModified = true;
-            LayerRemoved?.Invoke();
         }
         public static void OnEnvVarsChanged()
         {

@@ -172,16 +172,36 @@ namespace BauphysikToolWPF.Models
             copy.Id = -1;
             copy.LayerPosition = this.LayerPosition;
             copy.ElementId = this.ElementId;
-            copy.Element = this.Element;
+            copy.Element = this.Element; // TODO Check: Keep Reference, No Deep Copy
             copy.MaterialId = this.MaterialId;
-            copy.Material = this.Material;
-            copy.SubConstructions = this.SubConstructions;
+            copy.Material = this.Material; // TODO Check: Keep Reference, No Deep Copy
             copy.Thickness = this.Thickness;
             copy.IsEffective = this.IsEffective;
             copy.IsSelected = false;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.InternalId = this.InternalId;
+            // Deep copy of the SubConstructions list
+            copy.SubConstructions = this.SubConstructions.Select(s => s.CopyToNewLayer(copy)).ToList();
+            return copy;
+        }
+        public Layer CopyToNewElement(Element element)
+        {
+            var copy = new Layer();
+            copy.Id = -1;
+            copy.LayerPosition = this.LayerPosition;
+            copy.ElementId = element.Id;
+            copy.Element = element;
+            copy.MaterialId = this.MaterialId;
+            copy.Material = this.Material; // TODO Check: Keep Reference, No Deep Copy
+            copy.Thickness = this.Thickness;
+            copy.IsEffective = this.IsEffective;
+            copy.IsSelected = false;
+            copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+            copy.InternalId = this.InternalId;
+            // Deep copy of the SubConstructions list
+            copy.SubConstructions = this.SubConstructions.Select(s => s.CopyToNewLayer(copy)).ToList();
             return copy;
         }
 

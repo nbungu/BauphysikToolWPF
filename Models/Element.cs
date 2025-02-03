@@ -1,15 +1,14 @@
-﻿using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Models.Helper;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Models.Helper;
 
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
@@ -220,19 +219,21 @@ namespace BauphysikToolWPF.Models
             var copy = new Element();
             copy.Id = -1;
             copy.ConstructionId = this.ConstructionId;
-            copy.Construction = this.Construction;
+            copy.Construction = this.Construction; // TODO Check: Keep Reference, No Deep Copy
             copy.OrientationType = this.OrientationType;
             copy.ProjectId = this.ProjectId;
-            copy.Project = this.Project;
+            copy.Project = this.Project; // TODO Check: Keep Reference, No Deep Copy
             copy.Name = this.Name + "-Copy";
             copy.Image = this.Image;
+            copy.DocumentImage = this.DocumentImage;
             copy.ColorCode = this.ColorCode;
             copy.Tag = this.Tag;
             copy.Comment = this.Comment;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.Layers = this.Layers;
             copy.InternalId = this.InternalId;
+            // Deep copy of the Layers list
+            copy.Layers = this.Layers.Select(layer => layer.CopyToNewElement(copy)).ToList();
             return copy;
         }
 

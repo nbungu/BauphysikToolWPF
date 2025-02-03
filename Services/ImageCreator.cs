@@ -8,6 +8,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BauphysikToolWPF.Models;
 
 namespace BauphysikToolWPF.Services
 {
@@ -161,24 +162,20 @@ namespace BauphysikToolWPF.Services
             Logger.LogInfo($"Image saved to {path}");
         }
 
-        public static void RenderPreviewImages()
+        public static void RenderElementPreviewImage(Element element)
         {
-            var elementsWithoutImage = UserSaved.SelectedProject.Elements.Where(e => e.Image == Array.Empty<byte>());
-            foreach (var element in elementsWithoutImage)
-            {
-                // Create a CanvasDrawingService for the selected element
-                var canvasSize = new BT.Geometry.Rectangle(new BT.Geometry.Point(0, 0), 880, 400);
-                var drawingService = new CanvasDrawingService(element, canvasSize);
-                var drawingContents = drawingService.DrawingGeometries;
-                var imgWidth = (int)drawingService.CanvasSize.Width;
-                var imgHeight = (int)drawingService.CanvasSize.Height;
+            // Create a CanvasDrawingService for the selected element
+            var canvasSize = new BT.Geometry.Rectangle(new BT.Geometry.Point(0, 0), 880, 400);
+            var drawingService = new CanvasDrawingService(element, canvasSize);
+            var drawingContents = drawingService.DrawingGeometries;
+            var imgWidth = (int)drawingService.CanvasSize.Width;
+            var imgHeight = (int)drawingService.CanvasSize.Height;
 
-                // Capture images using the GeometryRenderer
-                var imageBytes = CaptureOffscreenVisualAsImage(drawingContents, imgWidth, imgHeight);
+            // Capture images using the GeometryRenderer
+            var imageBytes = CaptureOffscreenVisualAsImage(drawingContents, imgWidth, imgHeight);
 
-                // Update the selected element with the captured images
-                element.Image = imageBytes;
-            }
+            // Update the selected element with the captured images
+            element.Image = imageBytes;
         }
 
         public static BitmapImage ByteArrayToBitmap(byte[] imageBytes)

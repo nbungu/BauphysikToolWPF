@@ -27,7 +27,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedElementChanged += UpdateOnElementChanged;
 
             // If Images are not rendered yet
-            UserSaved.SelectedProject.RenderAllElementImages();
+            UserSaved.SelectedProject.RenderMissingElementImages();
         }
 
         // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
