@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Windows.Media.Protection.PlayReady;
 
 namespace BauphysikToolWPF.Services
 {
@@ -177,7 +176,7 @@ namespace BauphysikToolWPF.Services
         //                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
         //            };
 
-        //            JsonResponse jsonResponse = JsonSerializer.Deserialize<JsonResponse>(jsonString, options);
+        //            UpdaterJsonResponse jsonResponse = JsonSerializer.Deserialize<UpdaterJsonResponse>(jsonString, options);
 
         //            if (jsonResponse != null && jsonResponse.Data.Length > 0)
         //            {
@@ -221,9 +220,9 @@ namespace BauphysikToolWPF.Services
                     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
                 };
 
-                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(jsonString, options);
+                var jsonResponse = JsonSerializer.Deserialize<UpdaterJsonResponse>(jsonString, options);
 
-                if (jsonResponse?.Data?.Length > 0)
+                if (jsonResponse?.Data.Length > 0)
                 {
                     var data = jsonResponse.Data[0];
                     Logger.LogInfo("Successfully deserialized updater file from server");
@@ -301,7 +300,7 @@ namespace BauphysikToolWPF.Services
             try
             {
                 // User-specific AppData folder
-                string appFolder = ApplicationServices.GetLocalAppDataPath();
+                string appFolder = ApplicationServices.LocalAppDataPath;
                 string updaterFilePath = Path.Combine(appFolder, "updater.json");
 
                 // Ensure the directory exists
@@ -334,7 +333,7 @@ namespace BauphysikToolWPF.Services
 
     #region Strapi API-Response Structure
 
-    internal class JsonResponse
+    internal class UpdaterJsonResponse
     {
         [JsonPropertyName("data")]
         public DataItem[] Data { get; set; } = Array.Empty<DataItem>();

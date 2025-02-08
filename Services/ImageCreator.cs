@@ -157,7 +157,7 @@ namespace BauphysikToolWPF.Services
 
         public static void SaveImageToFile(byte[] imageData, string fileName)
         {
-            string path = Path.Combine(ApplicationServices.GetLocalProgramDataPath(), "BauphysikTool", fileName);
+            string path = Path.Combine(ApplicationServices.LocalProgramDataPath, "BauphysikTool", fileName);
             File.WriteAllBytes(path, imageData);
             Logger.LogInfo($"Image saved to {path}");
         }

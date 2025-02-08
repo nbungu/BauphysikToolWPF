@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:BauphysikToolWPF"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d" 
@@ -64,6 +65,68 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- ListView Style -->
+        <Style x:Key="ListViewStyleRecentProjects" TargetType="{x:Type ListView}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+        </Style>
+
+        <!-- ListViewItem Style -->
+        <!--defines the styling of the ListViewItem itself (the container that holds the template).-->
+        <Style x:Key="RecentProjectItemContainerStyle" TargetType="{x:Type ListViewItem}">
+            <Setter Property="Margin" Value="0,0,0,8"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border BorderThickness="{TemplateBinding BorderThickness}" 
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Background="{TemplateBinding Background}" 
+                                CornerRadius="0"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- ItemTemplate for ListView -->
+        <!-- Defines the content layout inside each item: Does NOT affect the container (ListViewItem) itself.-->
+        <DataTemplate x:Key="RecentProjectsItemTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Vertical">
+                    <TextBlock Text="{Binding FileName}" FontWeight="Bold"/>
+                    <TextBlock Text="{Binding FilePath}" FontSize="12" Foreground="Gray"/>
+                </StackPanel>
+                <TextBlock Grid.Column="1" Text="{Binding LastOpenedString}" FontSize="12" Foreground="Gray" HorizontalAlignment="Right"/>
+            </Grid>
+        </DataTemplate>
+
+
     </UserControl.Resources>
 
     <Grid Background="{StaticResource PrimaryLightBrush}">
@@ -74,7 +137,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
             <ColumnDefinition Width=".6*" MinWidth="448"/>
-            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="480"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
@@ -85,14 +148,13 @@
         <!-- Left -->
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" VerticalAlignment="Top" Margin="16">
             <Button Content="Neues Projekt"  Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_NewProject_Flat}" Margin="0,0,0,16" Command="{Binding NewCommand}"/>
-            <Button Content="Speichern" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveCommand}"/>
-            <Button Content="Speichern unter" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Margin="0,0,0,16" Command="{Binding SaveToCommand}"/>
+            <Button Content="Speichern" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Save_Flat}" Margin="0,0,0,16" Command="{Binding SaveCommand}" Visibility="{Binding ProjectDataVisibility}"/>
+            <Button Content="Speichern unter" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_SaveTo_Flat}" Margin="0,0,0,16" Command="{Binding SaveToCommand}" Visibility="{Binding ProjectDataVisibility}"/>
             <Button Content="Öffnen" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_OpenFile_Flat}" Margin="0,0,0,16" Command="{Binding OpenCommand}"/>
         </StackPanel>
 
-        <!-- Middle  -->
-
-        <ScrollViewer Grid.Row="1" Grid.Column="1" Style="{StaticResource CustomScrollViewerStyle}" Margin="16" VerticalScrollBarVisibility="Auto">
+        <!-- Middle 1/2 -->
+        <ScrollViewer Grid.Row="1" Grid.Column="1" Style="{StaticResource CustomScrollViewerStyle}" Margin="16" VerticalScrollBarVisibility="Auto" Visibility="{Binding ProjectDataVisibility}">
             <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -199,11 +261,43 @@
 
             </Grid>
         </ScrollViewer>
-        
 
-        <StackPanel Grid.Row="1" Grid.Column="2" Orientation="Vertical" VerticalAlignment="Bottom" Margin="16">
-            <Button Content="Weiter" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_Next_W}"/>
-        </StackPanel>
+        <!-- Middle 2/2  -->
+        <Grid Grid.Row="1" Grid.Column="1" Margin="16" Visibility="{Binding RecentProjectsListVisibility}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Label Grid.Row="0" Content="Zuletzt geöffnete Projekte" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+
+            <ListView Grid.Row="1" ItemsSource="{Binding RecentProjects}" 
+                      SelectedItem="{Binding SelectedListViewItem, Mode=TwoWay}"
+                      ItemTemplate="{StaticResource RecentProjectsItemTemplate}"
+                      ItemContainerStyle="{StaticResource RecentProjectItemContainerStyle}"
+                      Style="{StaticResource ListViewStyleRecentProjects}">
+                    <!-- EventToCommand behavior to bind the double-click event to the command-->
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="MouseDoubleClick">
+                            <i:InvokeCommandAction Command="{Binding RecentProjectDoubleClickCommand}" />
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+            </ListView>
+        </Grid>
+
+        <!-- Right -->
+        <Grid Grid.Row="1" Grid.Column="2" Margin="16">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="48"/>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Button Grid.Row="2" VerticalAlignment="Bottom" Content="Weiter" Command="{Binding NextCommand}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_Next_W}" IsEnabled="{Binding ElementPageAvailable}"/>
+
+        </Grid>
+
+        <GridSplitter Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
 
     </Grid>
 </UserControl>

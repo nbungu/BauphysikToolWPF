@@ -19,5 +19,15 @@ namespace BauphysikToolWPF.Services
 
             return formattedDate;
         }
+        public static string ConvertToNormalTimeDetailed(long unixTimestamp)
+        {
+            // Convert Unix timestamp to DateTime
+            DateTime dateTime = DateTimeOffset.FromUnixTimeSeconds(unixTimestamp).DateTime;
+
+            // Format DateTime to "dd:MM:yyyy, HH:mm"
+            string formattedDate = dateTime.ToString("dd.MM.yyyy HH:mm");
+
+            return formattedDate;
+        }
     }
 }

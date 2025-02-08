@@ -182,7 +182,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
             <ColumnDefinition Width=".6*" MinWidth="448"/>
-            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="320"/>
+            <ColumnDefinition Width=".2*" MinWidth="248" MaxWidth="480"/>
         </Grid.ColumnDefinitions>
 
         <!-- Top -->
@@ -205,7 +205,7 @@
         <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="48"/>
-                <RowDefinition Height="48"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
@@ -252,7 +252,7 @@
         <!-- Right -->
         <Grid Grid.Row="1" Grid.Column="2" Margin="16">
             <Grid.RowDefinitions>
-                <RowDefinition Height="56"/>
+                <RowDefinition Height="48"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />

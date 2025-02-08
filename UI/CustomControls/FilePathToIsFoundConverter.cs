@@ -14,7 +14,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             {
                 if (filePath.Contains("%appdata%", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    string programDataPath = ApplicationServices.GetLocalProgramDataPath();
+                    string programDataPath = ApplicationServices.LocalProgramDataPath;
                     filePath = filePath.Replace("%appdata%", programDataPath, StringComparison.InvariantCultureIgnoreCase);
                 }
 

@@ -25,6 +25,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Page_LayerSetup_VM()
         {
             UserSaved.SelectedLayerId = -1;
+            UserSaved.SelectedElement.SortLayers();
+            UserSaved.SelectedElement.AssignEffectiveLayers();
+            UserSaved.SelectedElement.AssignInternalIdsToLayers();
+            
 
             // Allow child Windows to trigger UpdateBindingsAndRecalculateFlag of this Window
             UserSaved.SelectedElementChanged += UpdateBindingsAndRecalculateFlag;

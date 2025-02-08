@@ -6,11 +6,14 @@ using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using BauphysikToolWPF.Models.JsonDependencies;
+using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -23,6 +26,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
         public Page_Project_VM()
         {
+            UserSaved.SelectedProject.AssignInternalIdsToElements();
+
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             UserSaved.SelectedProjectChanged += RefreshXamlBindings;
             UserSaved.NewProjectAdded += RefreshXamlBindings;
@@ -30,7 +35,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
         }
-        
+
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -41,6 +46,23 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void SwitchPage(NavigationContent desiredPage)
         {
             MainWindow.SetPage(desiredPage);
+        }
+
+        [RelayCommand]
+        private void Next()
+        {
+            if (RecentProjectsListVisibility == Visibility.Visible && SelectedListViewItem != null)
+            {
+                var filePath = SelectedListViewItem.FilePath;
+                Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
+
+                UserSaved.SelectedProject = loadedProject;
+                UserSaved.ProjectFilePath = filePath;
+                UserSaved.SelectedProject.IsModified = false;
+                ApplicationServices.AddRecentProject(filePath);
+                UserSaved.OnNewProjectAdded(false);
+            }
+            SwitchPage(NavigationContent.LandingPage);
         }
 
         [RelayCommand]
@@ -74,10 +96,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void Save()
         {
-            if (!File.Exists(UserSaved.ProjectFilePath))
-            {
-                SaveTo();
-            }
+            if (!File.Exists(UserSaved.ProjectFilePath)) SaveTo();
             else
             {
                 ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
@@ -98,6 +117,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
                 UserSaved.ProjectFilePath = filePath;
                 UserSaved.SelectedProject.IsModified = false;
+                ApplicationServices.AddRecentProject(filePath);
                 UserSaved.OnSelectedProjectChanged(false);
             }
         }
@@ -112,7 +132,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                 UserSaved.SelectedProject = loadedProject;
                 UserSaved.ProjectFilePath = filePath;
                 UserSaved.SelectedProject.IsModified = false;
+                ApplicationServices.AddRecentProject(filePath);
                 UserSaved.OnNewProjectAdded(false);
+                SwitchPage(NavigationContent.LandingPage);
             }
         }
 
@@ -124,7 +146,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 if (filePath.Contains("%appdata%", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    string programDataPath = ApplicationServices.GetLocalProgramDataPath();
+                    string programDataPath = ApplicationServices.LocalProgramDataPath;
                     filePath = filePath.Replace("%appdata%", programDataPath, StringComparison.InvariantCultureIgnoreCase);
                 }
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
@@ -143,6 +165,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             UserSaved.SelectedProject.LinkedFilesList = DroppedFilePaths.ToList();
             UserSaved.SelectedProject.IsModified = true;
             UserSaved.OnSelectedProjectChanged();
+        }
+
+        [RelayCommand]
+        private void RecentProjectDoubleClick()
+        {
+            if (SelectedListViewItem is null) return;
+            Next();
         }
 
         partial void OnAuthorNameChanged(string value)
@@ -209,14 +238,24 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private bool _isExistingConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.Existing;
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ElementPageAvailable))]
+        private RecentProjectJson? _selectedListViewItem;
+
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
          * 
          * Not Observable, No direct User Input involved
          */
 
+        public List<RecentProjectJson> RecentProjects { get; set; } = ApplicationServices.LoadRecentProjects(); // TODO avoid re-serializing json each time
+        public Visibility ProjectDataVisibility => RecentProjects.Count == 0 || UserSaved.SelectedProject.CreatedByUser ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility RecentProjectsListVisibility => ProjectDataVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+        public bool ElementPageAvailable => ProjectDataVisibility == Visibility.Visible || SelectedListViewItem != null;
+
         private void RefreshXamlBindings()
         {
+            // When updating fields/variables
             ProjectName = UserSaved.SelectedProject.Name;
             AuthorName = UserSaved.SelectedProject.UserName;
             Comment = UserSaved.SelectedProject.Comment;
@@ -226,14 +265,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             IsNewConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.New;
             IsExistingConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.Existing;
 
-            //OnPropertyChanged(nameof(DroppedFilePaths));
-            //OnPropertyChanged(nameof(AuthorName));
-            //OnPropertyChanged(nameof(ProjectName));
-            //OnPropertyChanged(nameof(Comment));
-            //OnPropertyChanged(nameof(IsNewConstrChecked));
-            //OnPropertyChanged(nameof(IsExistingConstrChecked));
-            //OnPropertyChanged(nameof(IsResidentialUsageChecked));
-            //OnPropertyChanged(nameof(IsNonResidentialUsageChecked));
+            // When updating properties
+            OnPropertyChanged(nameof(ProjectDataVisibility));
+            OnPropertyChanged(nameof(RecentProjectsListVisibility));
+            OnPropertyChanged(nameof(ElementPageAvailable));
         }
     }
 }

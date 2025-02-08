@@ -97,6 +97,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
                 UserSaved.ProjectFilePath = filePath;
                 UserSaved.SelectedProject.IsModified = false;
+                ApplicationServices.AddRecentProject(filePath);
+
                 UserSaved.OnSelectedProjectChanged(false);
             }
         }
@@ -111,6 +113,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 UserSaved.SelectedProject = loadedProject;
                 UserSaved.SelectedProject.IsModified = false;
                 UserSaved.ProjectFilePath = filePath;
+                ApplicationServices.AddRecentProject(filePath);
+
                 UserSaved.OnNewProjectAdded(false);
                 SwitchPage(NavigationContent.LandingPage);
             }

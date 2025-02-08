@@ -10,12 +10,17 @@ using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System.Runtime.InteropServices;
+using System.Collections.Generic;
+using BauphysikToolWPF.Models.JsonDependencies;
 
 namespace BauphysikToolWPF.Services
 {
     public static class ApplicationServices
     {
-        // TODO: Dokument erzeugen
+        public static string RecentProjectsFilePath = GetRecentProjectsFilePath();
+        public static string DownloadsFolderPath = GetDownloadsFolderPath();
+        public static string LocalAppDataPath = GetLocalAppDataPath();
+        public static string LocalProgramDataPath = GetLocalProgramDataPath();
 
         public static void SaveProjectToFile(Project project, string filePath)
         {
@@ -56,6 +61,7 @@ namespace BauphysikToolWPF.Services
                 if (project != null)
                 {
                     Logger.LogInfo($"Successfully read project from file: {filePath}");
+                    project.CreatedByUser = true;
                     return project;
                 }
                 Logger.LogWarning($"Could not read from project file: {filePath}");
@@ -70,11 +76,8 @@ namespace BauphysikToolWPF.Services
 
         public static void CreateNewProject()
         {
-            UserSaved.SelectedProject = new Project()
-            {
-                Name = "Neues Projekt",
-                IsModified = false,
-            };
+            UserSaved.SelectedProject = new Project();
+            UserSaved.SelectedProject.CreatedByUser = true;
             UserSaved.ProjectFilePath = "";
             MainWindow.ShowToast("Neues Projekt erstellt!", ToastType.Success);
         }
@@ -171,6 +174,7 @@ namespace BauphysikToolWPF.Services
             }
         }
 
+        // TODO: Move 
         private static void RemoveDeletedSubConstructionsFromDb(Layer layer)
         {
             // Remove all subConstr in DB if Ids of local subConstr is not found in DB
@@ -186,7 +190,7 @@ namespace BauphysikToolWPF.Services
             // Delete layers not present in local project
             if (subConstrToDelete.Any()) DatabaseAccess.Database.DeleteAllIds<LayerSubConstruction>(subConstrToDelete);
         }
-
+        // TODO: Move 
         private static void RemoveDeletedLayersFromDb(Element element)
         {
             // Remove all Layers in DB if LayerIds of local Layers is not found in DB
@@ -202,7 +206,7 @@ namespace BauphysikToolWPF.Services
             // Delete layers not present in local project
             if (layersToDelete.Any()) DatabaseAccess.Database.DeleteAllIds<Layer>(layersToDelete);
         }
-
+        // TODO: Move 
         private static void RemoveDeletedElementsFromDb(Project project)
         {
             // Remove all deleted Elements in DB if ElementIds of local Elements is not found in DB
@@ -219,24 +223,62 @@ namespace BauphysikToolWPF.Services
             if (elementsToDelete.Any()) DatabaseAccess.Database.DeleteAllIds<Element>(elementsToDelete);
         }
 
-        /// <summary>
-        /// Path to: %appdata%/BauphysikTool
-        /// </summary>
-        /// <returns></returns>
-        public static string GetLocalAppDataPath()
+        // TODO:
+        public static void AddRecentProject(string filePath)
         {
-            string programDataPath = GetLocalProgramDataPath();
-            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
-            return appFolder;
+            var fileName = Path.GetFileName(filePath);
+            var recentProjects = LoadRecentProjects();
+            var existingEntry = recentProjects.FirstOrDefault(p => p.FilePath == filePath);
+            if (existingEntry != null)
+            {
+                existingEntry.LastOpened = TimeStamp.GetCurrentUnixTimestamp();
+            }
+            else
+            {
+                recentProjects.Insert(0, new RecentProjectJson { FileName = fileName, FilePath = filePath, LastOpened = TimeStamp.GetCurrentUnixTimestamp() });
+            }
+
+            if (recentProjects.Count > 8) recentProjects.RemoveAt(5);
+            SaveRecentProjects(recentProjects);
         }
+        // TODO:
+        public static List<RecentProjectJson> LoadRecentProjects()
+        {
+            if (File.Exists(RecentProjectsFilePath))
+            {
+                string json = File.ReadAllText(RecentProjectsFilePath);
+                var recentEntries = JsonSerializer.Deserialize<List<RecentProjectJson>>(json);
+                if (recentEntries != null) return recentEntries;
+            }
+            return new List<RecentProjectJson>(0);
+        }
+        // TODO:
+        public static void SaveRecentProjects(List<RecentProjectJson> recentProjects)
+        {
+            string json = JsonSerializer.Serialize(recentProjects.ToList());
+            File.WriteAllText(RecentProjectsFilePath, json);
+        }
+
+        #region Paths
 
         /// <summary>
         /// Path to: %appdata%
         /// </summary>
         /// <returns></returns>
-        public static string GetLocalProgramDataPath()
+        private static string GetLocalProgramDataPath()
         {
             return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        }
+
+        /// <summary>
+        /// Path to: %appdata%/BauphysikTool
+        /// </summary>
+        /// <returns></returns>
+        private static string GetLocalAppDataPath()
+        {
+            string programDataPath = GetLocalProgramDataPath();
+            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
+            return appFolder;
         }
 
         /// <summary>
@@ -255,7 +297,7 @@ namespace BauphysikToolWPF.Services
         /// <exception cref="ExternalException">
         /// Thrown if the Windows API fails to retrieve the Downloads folder path.
         /// </exception>
-        public static string GetDownloadsFolderPath()
+        private static string GetDownloadsFolderPath()
         {
             try
             {
@@ -288,11 +330,48 @@ namespace BauphysikToolWPF.Services
             }
         }
 
+        private static string GetRecentProjectsFilePath(bool forceReplace = false)
+        {
+            try
+            {
+                // User-specific AppData folder
+                string appFolder = GetLocalAppDataPath();
+                string recentProjectsFilePath = Path.Combine(appFolder, "recently_used.json");
+
+                // Ensure the directory exists
+                if (!Directory.Exists(appFolder))
+                {
+                    Directory.CreateDirectory(appFolder);
+                }
+
+                // Example: Copy the file from the output folder to ProgramData if it doesn't already exist
+                string sourceRecentProjectFile = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Services\\recently_used.json")); ;
+
+                if (!File.Exists(recentProjectsFilePath))
+                {
+                    File.Copy(sourceRecentProjectFile, recentProjectsFilePath);
+                }
+                if (forceReplace)
+                {
+                    File.Delete(recentProjectsFilePath);
+                    File.Copy(sourceRecentProjectFile, recentProjectsFilePath);
+                }
+                return recentProjectsFilePath;
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Could not get recently used projects file: {e.Message}");
+                return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Services\\recently_used.json")); ;
+            }
+        }
+        
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         private static extern int SHGetKnownFolderPath(
             [MarshalAs(UnmanagedType.LPStruct)] Guid rfid,
             uint dwFlags,
             IntPtr hToken,
             out IntPtr pszPath);
+
+        #endregion
     }
 }

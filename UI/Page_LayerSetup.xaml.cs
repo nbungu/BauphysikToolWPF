@@ -25,13 +25,6 @@ namespace BauphysikToolWPF.UI
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public Page_LayerSetup()
         {
-            if (UserSaved.SelectedElement != null)
-            {
-                UserSaved.SelectedElement.SortLayers();
-                UserSaved.SelectedElement.AssignEffectiveLayers();
-                UserSaved.SelectedElement.AssignInternalIdsToLayers();
-            }
-            
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
         }

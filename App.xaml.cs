@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.Services;
 using BauphysikToolWPF.SessionData;
 using BT.Logging;
@@ -45,6 +44,7 @@ namespace BauphysikToolWPF
                         Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
                         UserSaved.SelectedProject = loadedProject;
                         UserSaved.ProjectFilePath = filePath;
+                        ApplicationServices.AddRecentProject(filePath);
                         Logger.LogInfo($"Loaded Project: '{UserSaved.SelectedProject}' from Arguments!");
                     }
                     catch (Exception ex)
@@ -60,10 +60,8 @@ namespace BauphysikToolWPF
             else
             {
                 Logger.LogInfo("Opened Application without Arguments");
-                UserSaved.SelectedProject = DatabaseAccess.QueryProjectById(1);
-                Logger.LogInfo($"Loaded Project: '{UserSaved.SelectedProject}' from Database!");
+                Logger.LogInfo("Startup without Project selected!");
             }
-
         }
 
         protected override void OnExit(ExitEventArgs e)
