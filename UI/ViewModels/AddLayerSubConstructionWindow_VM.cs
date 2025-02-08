@@ -1,13 +1,13 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
-using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Repository;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.Models;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -15,30 +15,30 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerSubConstructionWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddLayerSubConstructionWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => EditSelectedSubConstr ? $"Ausgewählte Balkenlage bearbeiten: {UserSaved.SelectedLayer.SubConstruction}" : "Neue Balkenlage erstellen";
+        public string Title => EditSelectedSubConstr ? $"Ausgewählte Balkenlage bearbeiten: {Session.SelectedLayer.SubConstruction}" : "Neue Balkenlage erstellen";
         
         // All changes are being made to this Instance first
         private readonly LayerSubConstruction _tempConstruction;
 
         public AddLayerSubConstructionWindow_VM()
         {
-            PropertyItem<SubConstructionDirection>.PropertyChanged += UpdateXAMLBindings;
+            PropertyItem<SubConstructionDirection>.PropertyChanged += UpdateXamlBindings;
 
-            if (EditSelectedSubConstr && UserSaved.SelectedLayer.SubConstruction != null)
+            if (EditSelectedSubConstr && Session.SelectedLayer.SubConstruction != null)
             {
-                _tempConstruction = UserSaved.SelectedLayer.SubConstruction.Copy();
+                _tempConstruction = Session.SelectedLayer.SubConstruction.Copy();
             }
             else
             {
                 _tempConstruction = new LayerSubConstruction()
                 {
                     Width = 4,
-                    Thickness = UserSaved.SelectedLayer.Thickness,
+                    Thickness = Session.SelectedLayer.Thickness,
                     Spacing = 18,
-                    MaterialId = UserSaved.SelectedLayer.MaterialId,
-                    Material = UserSaved.SelectedLayer.Material,
-                    LayerId = UserSaved.SelectedLayer.Id,
-                    Layer = UserSaved.SelectedLayer,
+                    MaterialId = Session.SelectedLayer.MaterialId,
+                    Material = Session.SelectedLayer.Material,
+                    LayerId = Session.SelectedLayer.Id,
+                    Layer = Session.SelectedLayer,
                 };
             }
             SelectedListViewItem = _tempConstruction.Material;
@@ -58,10 +58,10 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             if (!_tempConstruction.IsValid) return;
             // Replace/Add
-            UserSaved.SelectedLayer.SubConstruction = _tempConstruction;
+            Session.SelectedLayer.SubConstruction = _tempConstruction;
 
             // Trigger Event to Update Layer Window
-            UserSaved.OnSelectedLayerChanged();
+            Session.OnSelectedLayerChanged();
             window.Close();
         }
 
@@ -139,25 +139,23 @@ namespace BauphysikToolWPF.UI.ViewModels
                 return DatabaseAccess.GetMaterialsQuery().Where(m =>
                     m.IsUserDefined == (SelectedTabIndex == 1)).ToList();
             }
-            else
+            if (SearchString != "")
             {
-                if (SearchString != "")
-                {
-                    return DatabaseAccess.GetMaterialsQuery().Where(m =>
-                        m.IsUserDefined == (SelectedTabIndex == 1) &&
-                        m.Category == (MaterialCategory)SelectedCategoryIndex &&
-                        m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
-                }
                 return DatabaseAccess.GetMaterialsQuery().Where(m =>
                     m.IsUserDefined == (SelectedTabIndex == 1) &&
-                    m.Category == (MaterialCategory)SelectedCategoryIndex).ToList();
+                    m.Category == (MaterialCategory)SelectedCategoryIndex &&
+                    m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
             }
+            return DatabaseAccess.GetMaterialsQuery().Where(m =>
+                m.IsUserDefined == (SelectedTabIndex == 1) &&
+                m.Category == (MaterialCategory)SelectedCategoryIndex).ToList();
+            
         }
         
         /// <summary>
         /// Updates XAML Bindings
         /// </summary>
-        private void UpdateXAMLBindings()
+        private void UpdateXamlBindings()
         {
             OnPropertyChanged(nameof(SubConstructionProperties));  
         }

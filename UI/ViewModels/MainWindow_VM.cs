@@ -1,9 +1,8 @@
 ﻿using System.IO;
 using System.Windows;
-using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository.Models;
 using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Dialogs;
+using BauphysikToolWPF.UI.Services;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
@@ -18,10 +17,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from MainWindow.cs due to Class-Binding in xaml via DataContext
         public MainWindow_VM()
         {
-            UserSaved.SelectedProjectChanged += RefreshXamlBindings;
-            UserSaved.NewProjectAdded += RefreshXamlBindings;
-            UserSaved.SelectedLayerChanged += RefreshXamlBindings;
-            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+            Session.SelectedProjectChanged += RefreshXamlBindings;
+            Session.NewProjectAdded += RefreshXamlBindings;
+            // TODO: necessary?
+            Session.SelectedLayerChanged += RefreshXamlBindings;
+            Session.SelectedElementChanged += RefreshXamlBindings;
 
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
@@ -42,7 +42,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void New()
         {
-            if (UserSaved.SelectedProject.IsModified)
+            if (Session.SelectedProject.IsModified)
             {
                 MessageBoxResult result = _dialogService.ShowSaveConfirmationDialog();
 
@@ -53,7 +53,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                         break;
                     case MessageBoxResult.No:
                         ApplicationServices.CreateNewProject();
-                        UserSaved.OnNewProjectAdded(false);
+                        Session.OnNewProjectAdded(false);
                         SwitchPage(NavigationContent.ProjectPage);
                         break;
                     case MessageBoxResult.Cancel:
@@ -64,7 +64,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             else
             {
                 ApplicationServices.CreateNewProject();
-                UserSaved.OnNewProjectAdded(false);
+                Session.OnNewProjectAdded(false);
                 SwitchPage(NavigationContent.ProjectPage);
             }
         }
@@ -72,34 +72,34 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void Save()
         {
-            if (!File.Exists(UserSaved.ProjectFilePath))
+            if (!File.Exists(Session.ProjectFilePath))
             {
                 SaveTo();
             }
             else
             {
-                ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
-                ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, UserSaved.ProjectFilePath);
-                UserSaved.SelectedProject.IsModified = false;
-                UserSaved.OnSelectedProjectChanged(false);
+                ApplicationServices.WriteToConnectedDatabase(Session.SelectedProject);
+                ApplicationServices.SaveProjectToFile(Session.SelectedProject, Session.ProjectFilePath);
+                Session.SelectedProject.IsModified = false;
+                Session.OnSelectedProjectChanged(false);
             }
         }
 
         [RelayCommand]
         private void SaveTo()
         {
-            ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
+            ApplicationServices.WriteToConnectedDatabase(Session.SelectedProject);
 
-            string saveFileName = UserSaved.SelectedProject.Name == "" ? "unbekannt" : UserSaved.SelectedProject.Name;
+            string saveFileName = Session.SelectedProject.Name == "" ? "unbekannt" : Session.SelectedProject.Name;
             string? filePath = _fileDialogService.ShowSaveFileDialog($"{saveFileName}.btk", "BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
             if (filePath != null)
             {
-                ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
-                UserSaved.ProjectFilePath = filePath;
-                UserSaved.SelectedProject.IsModified = false;
+                ApplicationServices.SaveProjectToFile(Session.SelectedProject, filePath);
+                Session.ProjectFilePath = filePath;
+                Session.SelectedProject.IsModified = false;
                 ApplicationServices.AddRecentProject(filePath);
 
-                UserSaved.OnSelectedProjectChanged(false);
+                Session.OnSelectedProjectChanged(false);
             }
         }
 
@@ -110,12 +110,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (filePath != null)
             {
                 Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
-                UserSaved.SelectedProject = loadedProject;
-                UserSaved.SelectedProject.IsModified = false;
-                UserSaved.ProjectFilePath = filePath;
+                Session.SelectedProject = loadedProject;
+                Session.SelectedProject.IsModified = false;
+                Session.ProjectFilePath = filePath;
                 ApplicationServices.AddRecentProject(filePath);
 
-                UserSaved.OnNewProjectAdded(false);
+                Session.OnNewProjectAdded(false);
                 SwitchPage(NavigationContent.LandingPage);
             }
         }
@@ -139,9 +139,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because no direct input from User
          */
 
-        public string Title => $"'{UserSaved.SelectedProject.Name}' - {UserSaved.ProjectFilePath}";
-        public string ProjectName => UserSaved.SelectedProject.Name == "" ? "-" : UserSaved.SelectedProject.Name;
-        public string IsEditedTagColorCode => UserSaved.SelectedProject.IsModified ? "#1473e6" : "#00FFFFFF";
+        public string Title => Session.SelectedProject.Name == "" ? $"{Session.ProjectFilePath}" : $"Projekt: {ProjectName}   {Session.ProjectFilePath}";
+        public string ProjectName => Session.SelectedProject.Name == "" ? "-" : Session.SelectedProject.Name;
+        public string IsEditedTagColorCode => Session.SelectedProject.IsModified ? "#1473e6" : "#00FFFFFF";
 
         private void RefreshXamlBindings()
         {

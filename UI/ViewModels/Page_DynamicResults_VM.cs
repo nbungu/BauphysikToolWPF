@@ -1,8 +1,4 @@
 ﻿using BauphysikToolWPF.Calculations;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Drawing;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -14,42 +10,46 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.Models;
+using BauphysikToolWPF.UI.Services;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class Page_DynamicResults_VM : ObservableObject
     {
-        // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
+        // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
         private static DynamicTempCalc _dynamicTempCalc = new DynamicTempCalc();
-        private readonly CanvasDrawingService _verticalCut = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
+        private readonly CrossSectionDrawing _verticalCut = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
 
         public Page_DynamicResults_VM()
         {
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
-            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+            Session.SelectedElementChanged += RefreshXamlBindings;
 
-            //if (!_dynamicTempCalc.IsValid || UserSaved.Recalculate)
+            //if (!_dynamicTempCalc.IsValid || Session.Recalculate)
             //{
             //    _dynamicTempCalc = new DynamicTempCalc()
             //    {
-            //        Element = UserSaved.SelectedElement,
-            //        Rsi = UserSaved.Rsi,
-            //        Rse = UserSaved.Rse,
-            //        Ti = UserSaved.Ti,
-            //        Te = UserSaved.Te
+            //        Element = Session.SelectedElement,
+            //        Rsi = Session.Rsi,
+            //        Rse = Session.Rse,
+            //        Ti = Session.Ti,
+            //        Te = Session.Te
             //    };
             //    _dynamicTempCalc.CalculateHomogeneous();
             //    _dynamicTempCalc.CalculateDynamicValues();
             //}
             _dynamicTempCalc = new DynamicTempCalc()
             {
-                Element = UserSaved.SelectedElement,
-                Rsi = UserSaved.Rsi,
-                Rse = UserSaved.Rse,
-                Ti = UserSaved.Ti,
-                Te = UserSaved.Te
+                Element = Session.SelectedElement,
+                Rsi = Session.Rsi,
+                Rse = Session.Rse,
+                Ti = Session.Ti,
+                Te = Session.Te
             };
             _dynamicTempCalc.CalculateHomogeneous();
             _dynamicTempCalc.CalculateDynamicValues();
@@ -82,7 +82,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Element _selectedElement = UserSaved.SelectedElement;
+        private Element _selectedElement = Session.SelectedElement;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DataPoints_i))]

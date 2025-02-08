@@ -1,6 +1,4 @@
 ﻿using BauphysikToolWPF.Calculations;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,6 +11,8 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Services;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 
@@ -21,35 +21,35 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_TemperatureResults.cs: Used in xaml as "DataContext"
     public partial class Page_TemperatureResults_VM : ObservableObject
     {
-        // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
+        // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
         private static TemperatureCurveCalc _tempCalc = new TemperatureCurveCalc();
 
         public Page_TemperatureResults_VM()
         {
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
-            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+            Session.SelectedElementChanged += RefreshXamlBindings;
 
-            //if (!_tempCalc.IsValid || UserSaved.Recalculate)
+            //if (!_tempCalc.IsValid || Session.Recalculate)
             //{
             //    _tempCalc = new TemperatureCurveCalc()
             //    {
-            //        Element = UserSaved.SelectedElement,
-            //        Rsi = UserSaved.Rsi,
-            //        Rse = UserSaved.Rse,
-            //        Ti = UserSaved.Ti,
-            //        Te = UserSaved.Te
+            //        Element = Session.SelectedElement,
+            //        Rsi = Session.Rsi,
+            //        Rse = Session.Rse,
+            //        Ti = Session.Ti,
+            //        Te = Session.Te
             //    };
             //    _tempCalc.CalculateHomogeneous();
             //    _tempCalc.CalculateTemperatureCurve();
             //}
             _tempCalc = new TemperatureCurveCalc()
             {
-                Element = UserSaved.SelectedElement,
-                Rsi = UserSaved.Rsi,
-                Rse = UserSaved.Rse,
-                Ti = UserSaved.Ti,
-                Te = UserSaved.Te
+                Element = Session.SelectedElement,
+                Rsi = Session.Rsi,
+                Rse = Session.Rse,
+                Ti = Session.Ti,
+                Te = Session.Te
             };
             _tempCalc.CalculateHomogeneous();
             _tempCalc.CalculateTemperatureCurve();
@@ -100,7 +100,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(RequirementValues))]
         [NotifyPropertyChangedFor(nameof(OverviewItems))]
-        private Element _selectedElement = UserSaved.SelectedElement;
+        private Element _selectedElement = Session.SelectedElement;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties

@@ -1,6 +1,4 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Drawing;
-using BT.Logging;
+﻿using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +6,9 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.UI.Models;
+using BauphysikToolWPF.UI.Services;
 
 namespace BauphysikToolWPF.Services
 {
@@ -164,9 +164,9 @@ namespace BauphysikToolWPF.Services
 
         public static void RenderElementPreviewImage(Element element)
         {
-            // Create a CanvasDrawingService for the selected element
+            // Create a CrossSectionDrawing for the selected element
             var canvasSize = new BT.Geometry.Rectangle(new BT.Geometry.Point(0, 0), 880, 400);
-            var drawingService = new CanvasDrawingService(element, canvasSize);
+            var drawingService = new CrossSectionDrawing(element, canvasSize);
             var drawingContents = drawingService.DrawingGeometries;
             var imgWidth = (int)drawingService.CanvasSize.Width;
             var imgHeight = (int)drawingService.CanvasSize.Height;

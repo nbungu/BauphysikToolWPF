@@ -46,7 +46,7 @@ namespace BauphysikToolWPF
             _projectBoxHeader = this.ProjectBoxHeader;
             _toastNotification = this.Toast;
 
-            if (Updater.CompareSemanticVersions(Updater.LocalUpdaterFile.Current, Updater.LocalUpdaterFile.Latest) < 0)
+            if (Updater.NewVersionAvailable)
             {
                 Logger.LogInfo($"Found new Version! Notifying User");
                 ShowToast($"New Version Available: {Updater.LocalUpdaterFile.LatestTag}. Besuchen Sie bauphysik-tool.de für ein kostenloses Update!", ToastType.Info, 6);

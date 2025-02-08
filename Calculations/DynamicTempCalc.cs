@@ -1,10 +1,10 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using BT.Logging;
+﻿using BT.Logging;
 using LiveChartsCore.Defaults;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.UI.Models;
 
 namespace BauphysikToolWPF.Calculations
 {

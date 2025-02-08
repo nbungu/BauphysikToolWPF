@@ -2,8 +2,7 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BauphysikToolWPF"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
@@ -79,7 +78,7 @@
         <!--defines the styling of the ListViewItem itself (the container that holds the template).-->
         <Style x:Key="RecentProjectItemContainerStyle" TargetType="{x:Type ListViewItem}">
             <Setter Property="Margin" Value="0,0,0,8"/>
-            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Padding" Value="12"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Background" Value="Transparent"/>
@@ -91,7 +90,7 @@
                         <Border BorderThickness="{TemplateBinding BorderThickness}" 
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 Background="{TemplateBinding Background}" 
-                                CornerRadius="0"
+                                CornerRadius="8"
                                 Padding="{TemplateBinding Padding}">
                             <ContentPresenter/>
                         </Border>
@@ -105,7 +104,6 @@
                 <Trigger Property="IsSelected" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                     <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
-                    <Setter Property="FontWeight" Value="Bold"/>
                 </Trigger>
             </Style.Triggers>
         </Style>

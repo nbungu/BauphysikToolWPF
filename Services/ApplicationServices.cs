@@ -1,17 +1,16 @@
 ﻿using System;
 using System.IO;
-using BauphysikToolWPF.Models;
 using BauphysikToolWPF.Repository;
 using System.Linq;
 using SQLiteNetExtensions.Extensions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
-using BauphysikToolWPF.Models.JsonDependencies;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Services.Models;
 
 namespace BauphysikToolWPF.Services
 {
@@ -37,12 +36,12 @@ namespace BauphysikToolWPF.Services
                 string jsonString = JsonSerializer.Serialize(project, options);
                 File.WriteAllText(filePath, jsonString);
                 Logger.LogInfo($"Successfully saved project to file: {filePath}");
-                MainWindow.ShowToast($"Projekt '{UserSaved.SelectedProject.Name}' gespeichert unter {filePath}.", ToastType.Success);
+                MainWindow.ShowToast($"Projekt '{Session.SelectedProject.Name}' gespeichert unter {filePath}.", ToastType.Success);
             }
             catch (Exception e)
             {
                 Logger.LogError($"Error saving project to file: {filePath}, {e.Message}");
-                MainWindow.ShowToast($"Projekt '{UserSaved.SelectedProject.Name}' konnte nicht gespeichert werden: {e.Message}.", ToastType.Error);
+                MainWindow.ShowToast($"Projekt '{Session.SelectedProject.Name}' konnte nicht gespeichert werden: {e.Message}.", ToastType.Error);
             }
         }
 
@@ -76,9 +75,9 @@ namespace BauphysikToolWPF.Services
 
         public static void CreateNewProject()
         {
-            UserSaved.SelectedProject = new Project();
-            UserSaved.SelectedProject.CreatedByUser = true;
-            UserSaved.ProjectFilePath = "";
+            Session.SelectedProject = new Project();
+            Session.SelectedProject.CreatedByUser = true;
+            Session.ProjectFilePath = "";
             MainWindow.ShowToast("Neues Projekt erstellt!", ToastType.Success);
         }
 
@@ -223,7 +222,6 @@ namespace BauphysikToolWPF.Services
             if (elementsToDelete.Any()) DatabaseAccess.Database.DeleteAllIds<Element>(elementsToDelete);
         }
 
-        // TODO:
         public static void AddRecentProject(string filePath)
         {
             var fileName = Path.GetFileName(filePath);
@@ -235,25 +233,25 @@ namespace BauphysikToolWPF.Services
             }
             else
             {
-                recentProjects.Insert(0, new RecentProjectJson { FileName = fileName, FilePath = filePath, LastOpened = TimeStamp.GetCurrentUnixTimestamp() });
+                recentProjects.Insert(0, new RecentProjectItem { FileName = fileName, FilePath = filePath, LastOpened = TimeStamp.GetCurrentUnixTimestamp() });
             }
 
             if (recentProjects.Count > 8) recentProjects.RemoveAt(5);
             SaveRecentProjects(recentProjects);
         }
-        // TODO:
-        public static List<RecentProjectJson> LoadRecentProjects()
+
+        public static List<RecentProjectItem> LoadRecentProjects()
         {
             if (File.Exists(RecentProjectsFilePath))
             {
                 string json = File.ReadAllText(RecentProjectsFilePath);
-                var recentEntries = JsonSerializer.Deserialize<List<RecentProjectJson>>(json);
-                if (recentEntries != null) return recentEntries;
+                var recentEntries = JsonSerializer.Deserialize<List<RecentProjectItem>>(json);
+                if (recentEntries != null && recentEntries.All(e => e.IsValid)) return recentEntries;
             }
-            return new List<RecentProjectJson>(0);
+            return new List<RecentProjectItem>(0);
         }
-        // TODO:
-        public static void SaveRecentProjects(List<RecentProjectJson> recentProjects)
+
+        public static void SaveRecentProjects(List<RecentProjectItem> recentProjects)
         {
             string json = JsonSerializer.Serialize(recentProjects.ToList());
             File.WriteAllText(RecentProjectsFilePath, json);
@@ -345,7 +343,7 @@ namespace BauphysikToolWPF.Services
                 }
 
                 // Example: Copy the file from the output folder to ProgramData if it doesn't already exist
-                string sourceRecentProjectFile = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Services\\recently_used.json")); ;
+                string sourceRecentProjectFile = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Services\\recently_used.json"));
 
                 if (!File.Exists(recentProjectsFilePath))
                 {

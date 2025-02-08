@@ -1,7 +1,7 @@
-﻿using BauphysikToolWPF.Models;
+﻿using BauphysikToolWPF.Repository.Models;
 using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Dialogs;
+using BauphysikToolWPF.Services.Models;
+using BauphysikToolWPF.UI.Services;
 using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,8 +12,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Models.JsonDependencies;
-using BauphysikToolWPF.Models.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -26,11 +24,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
         public Page_Project_VM()
         {
-            UserSaved.SelectedProject.AssignInternalIdsToElements();
+            //Session.SelectedProject.AssignInternalIdsToElements();
 
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
-            UserSaved.SelectedProjectChanged += RefreshXamlBindings;
-            UserSaved.NewProjectAdded += RefreshXamlBindings;
+            Session.SelectedProjectChanged += RefreshXamlBindings;
+            Session.NewProjectAdded += RefreshXamlBindings;
 
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
@@ -56,11 +54,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 var filePath = SelectedListViewItem.FilePath;
                 Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
 
-                UserSaved.SelectedProject = loadedProject;
-                UserSaved.ProjectFilePath = filePath;
-                UserSaved.SelectedProject.IsModified = false;
+                Session.SelectedProject = loadedProject;
+                Session.ProjectFilePath = filePath;
+                Session.SelectedProject.IsModified = false;
                 ApplicationServices.AddRecentProject(filePath);
-                UserSaved.OnNewProjectAdded(false);
+                Session.OnNewProjectAdded(false);
             }
             SwitchPage(NavigationContent.LandingPage);
         }
@@ -68,7 +66,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void New()
         {
-            if (UserSaved.SelectedProject.IsModified)
+            if (Session.SelectedProject.IsModified)
             {
                 MessageBoxResult result = _dialogService.ShowSaveConfirmationDialog();
 
@@ -79,7 +77,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                         break;
                     case MessageBoxResult.No:
                         ApplicationServices.CreateNewProject();
-                        UserSaved.OnNewProjectAdded(false);
+                        Session.OnNewProjectAdded(false);
                         break;
                     case MessageBoxResult.Cancel:
                         // Do nothing, user cancelled the action
@@ -89,36 +87,36 @@ namespace BauphysikToolWPF.UI.ViewModels
             else
             {
                 ApplicationServices.CreateNewProject();
-                UserSaved.OnNewProjectAdded(false);
+                Session.OnNewProjectAdded(false);
             }
         }
 
         [RelayCommand]
         private void Save()
         {
-            if (!File.Exists(UserSaved.ProjectFilePath)) SaveTo();
+            if (!File.Exists(Session.ProjectFilePath)) SaveTo();
             else
             {
-                ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
-                ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, UserSaved.ProjectFilePath);
-                UserSaved.SelectedProject.IsModified = false;
-                UserSaved.OnSelectedProjectChanged(false);
+                ApplicationServices.WriteToConnectedDatabase(Session.SelectedProject);
+                ApplicationServices.SaveProjectToFile(Session.SelectedProject, Session.ProjectFilePath);
+                Session.SelectedProject.IsModified = false;
+                Session.OnSelectedProjectChanged(false);
             }
         }
 
         [RelayCommand]
         private void SaveTo()
         {
-            ApplicationServices.WriteToConnectedDatabase(UserSaved.SelectedProject);
+            ApplicationServices.WriteToConnectedDatabase(Session.SelectedProject);
 
             string? filePath = _fileDialogService.ShowSaveFileDialog("project.btk", "BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
             if (filePath != null)
             {
-                ApplicationServices.SaveProjectToFile(UserSaved.SelectedProject, filePath);
-                UserSaved.ProjectFilePath = filePath;
-                UserSaved.SelectedProject.IsModified = false;
+                ApplicationServices.SaveProjectToFile(Session.SelectedProject, filePath);
+                Session.ProjectFilePath = filePath;
+                Session.SelectedProject.IsModified = false;
                 ApplicationServices.AddRecentProject(filePath);
-                UserSaved.OnSelectedProjectChanged(false);
+                Session.OnSelectedProjectChanged(false);
             }
         }
         [RelayCommand]
@@ -129,11 +127,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
 
-                UserSaved.SelectedProject = loadedProject;
-                UserSaved.ProjectFilePath = filePath;
-                UserSaved.SelectedProject.IsModified = false;
+                Session.SelectedProject = loadedProject;
+                Session.ProjectFilePath = filePath;
+                Session.SelectedProject.IsModified = false;
                 ApplicationServices.AddRecentProject(filePath);
-                UserSaved.OnNewProjectAdded(false);
+                Session.OnNewProjectAdded(false);
                 SwitchPage(NavigationContent.LandingPage);
             }
         }
@@ -162,9 +160,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (file is null) return;
             DroppedFilePaths.Remove(file);
-            UserSaved.SelectedProject.LinkedFilesList = DroppedFilePaths.ToList();
-            UserSaved.SelectedProject.IsModified = true;
-            UserSaved.OnSelectedProjectChanged();
+            Session.SelectedProject.LinkedFilesList = DroppedFilePaths.ToList();
+            Session.SelectedProject.IsModified = true;
+            Session.OnSelectedProjectChanged();
         }
 
         [RelayCommand]
@@ -176,36 +174,36 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         partial void OnAuthorNameChanged(string value)
         {
-            UserSaved.SelectedProject.UserName = value;
-            UserSaved.SelectedProject.IsModified = true;
-            UserSaved.OnSelectedProjectChanged();
+            Session.SelectedProject.UserName = value;
+            Session.SelectedProject.IsModified = true;
+            Session.OnSelectedProjectChanged();
         }
 
         partial void OnProjectNameChanged(string value)
         {
-            UserSaved.SelectedProject.Name = value;
-            UserSaved.SelectedProject.IsModified = true;
-            UserSaved.OnSelectedProjectChanged();
+            Session.SelectedProject.Name = value;
+            Session.SelectedProject.IsModified = true;
+            Session.OnSelectedProjectChanged();
         }
 
         partial void OnCommentChanged(string value)
         {
-            UserSaved.SelectedProject.Comment = value;
-            UserSaved.SelectedProject.IsModified = true;
-            UserSaved.OnSelectedProjectChanged();
+            Session.SelectedProject.Comment = value;
+            Session.SelectedProject.IsModified = true;
+            Session.OnSelectedProjectChanged();
         }
 
         partial void OnIsNewConstrCheckedChanged(bool value)
         {
-            UserSaved.SelectedProject.BuildingAge = value ? BuildingAgeType.New : BuildingAgeType.Existing;
-            UserSaved.SelectedProject.IsModified = true;
-            UserSaved.OnSelectedProjectChanged();
+            Session.SelectedProject.BuildingAge = value ? BuildingAgeType.New : BuildingAgeType.Existing;
+            Session.SelectedProject.IsModified = true;
+            Session.OnSelectedProjectChanged();
         }
         partial void OnIsResidentialUsageCheckedChanged(bool value)
         {
-            UserSaved.SelectedProject.BuildingUsage = value ? BuildingUsageType.Residential : BuildingUsageType.NonResidential;
-            UserSaved.SelectedProject.IsModified = true;
-            UserSaved.OnSelectedProjectChanged();
+            Session.SelectedProject.BuildingUsage = value ? BuildingUsageType.Residential : BuildingUsageType.NonResidential;
+            Session.SelectedProject.IsModified = true;
+            Session.OnSelectedProjectChanged();
         }
 
         /*
@@ -215,32 +213,32 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _projectName = UserSaved.SelectedProject.Name;
+        private string _projectName = Session.SelectedProject.Name;
 
         [ObservableProperty]
-        private string _authorName = UserSaved.SelectedProject.UserName;
+        private string _authorName = Session.SelectedProject.UserName;
 
         [ObservableProperty]
-        private string _comment = UserSaved.SelectedProject.Comment;
+        private string _comment = Session.SelectedProject.Comment;
 
         [ObservableProperty]
-        private ObservableCollection<string> _droppedFilePaths = new ObservableCollection<string>(UserSaved.SelectedProject.LinkedFilesList);
+        private ObservableCollection<string> _droppedFilePaths = new ObservableCollection<string>(Session.SelectedProject.LinkedFilesList);
 
         [ObservableProperty]
-        private bool _isResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.Residential;
+        private bool _isResidentialUsageChecked = Session.SelectedProject.BuildingUsage == BuildingUsageType.Residential;
 
         [ObservableProperty]
-        private bool _isNewConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.New;
+        private bool _isNewConstrChecked = Session.SelectedProject.BuildingAge == BuildingAgeType.New;
 
         [ObservableProperty]
-        private bool _isNonResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;
+        private bool _isNonResidentialUsageChecked = Session.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;
 
         [ObservableProperty]
-        private bool _isExistingConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.Existing;
+        private bool _isExistingConstrChecked = Session.SelectedProject.BuildingAge == BuildingAgeType.Existing;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ElementPageAvailable))]
-        private RecentProjectJson? _selectedListViewItem;
+        private RecentProjectItem? _selectedListViewItem;
 
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
@@ -248,22 +246,22 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, No direct User Input involved
          */
 
-        public List<RecentProjectJson> RecentProjects { get; set; } = ApplicationServices.LoadRecentProjects(); // TODO avoid re-serializing json each time
-        public Visibility ProjectDataVisibility => RecentProjects.Count == 0 || UserSaved.SelectedProject.CreatedByUser ? Visibility.Visible : Visibility.Collapsed;
+        public List<RecentProjectItem> RecentProjects { get; set; } = ApplicationServices.LoadRecentProjects();
+        public Visibility ProjectDataVisibility => RecentProjects.Count == 0 || Session.SelectedProject.CreatedByUser ? Visibility.Visible : Visibility.Collapsed;
         public Visibility RecentProjectsListVisibility => ProjectDataVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         public bool ElementPageAvailable => ProjectDataVisibility == Visibility.Visible || SelectedListViewItem != null;
 
         private void RefreshXamlBindings()
         {
             // When updating fields/variables
-            ProjectName = UserSaved.SelectedProject.Name;
-            AuthorName = UserSaved.SelectedProject.UserName;
-            Comment = UserSaved.SelectedProject.Comment;
-            DroppedFilePaths = new ObservableCollection<string>(UserSaved.SelectedProject.LinkedFilesList);
-            IsResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.Residential;
-            IsNonResidentialUsageChecked = UserSaved.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;
-            IsNewConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.New;
-            IsExistingConstrChecked = UserSaved.SelectedProject.BuildingAge == BuildingAgeType.Existing;
+            ProjectName = Session.SelectedProject.Name;
+            AuthorName = Session.SelectedProject.UserName;
+            Comment = Session.SelectedProject.Comment;
+            DroppedFilePaths = new ObservableCollection<string>(Session.SelectedProject.LinkedFilesList);
+            IsResidentialUsageChecked = Session.SelectedProject.BuildingUsage == BuildingUsageType.Residential;
+            IsNonResidentialUsageChecked = Session.SelectedProject.BuildingUsage == BuildingUsageType.NonResidential;
+            IsNewConstrChecked = Session.SelectedProject.BuildingAge == BuildingAgeType.New;
+            IsExistingConstrChecked = Session.SelectedProject.BuildingAge == BuildingAgeType.Existing;
 
             // When updating properties
             OnPropertyChanged(nameof(ProjectDataVisibility));

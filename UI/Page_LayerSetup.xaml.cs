@@ -1,9 +1,8 @@
-﻿using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Services;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BauphysikToolWPF.Repository.Models.Helper;
 
 namespace BauphysikToolWPF.UI
 {
@@ -33,14 +32,14 @@ namespace BauphysikToolWPF.UI
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             // Only save if leaving this page
-            UserSaved.SelectedElement.UnselectAllLayers();
+            Session.SelectedElement.UnselectAllLayers();
 
-            if (!IsVisible && UserSaved.SelectedElement.IsValid)
+            if (!IsVisible && Session.SelectedElement.IsValid)
             {
-                UserSaved.SelectedElement.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
+                Session.SelectedElement.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
                 
-                ImageCreator.RenderElementPreviewImage(UserSaved.SelectedElement);
-                //UserSaved.SelectedElement.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
+                ImageCreator.RenderElementPreviewImage(Session.SelectedElement);
+                //Session.SelectedElement.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
             }
         }
 

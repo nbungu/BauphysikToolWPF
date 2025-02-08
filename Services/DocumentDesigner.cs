@@ -1,11 +1,11 @@
-﻿using BauphysikToolWPF.Models;
-using PdfSharp.Drawing;
+﻿using PdfSharp.Drawing;
 using PdfSharp.Pdf;
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using BauphysikToolWPF.Repository.Models;
 
 namespace BauphysikToolWPF.Services
 {
@@ -128,8 +128,8 @@ namespace BauphysikToolWPF.Services
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
             // Draw Header and Footer
-            DrawHeader(gfx, page, element.Project.Name, DateTime.Now.ToString("yyyy-MM-dd"));
-            DrawFooter(gfx, page, element.Project.UserName, document.PageCount);
+            DrawHeader(gfx, page, Session.SelectedProject.Name, DateTime.Now.ToString("yyyy-MM-dd"));
+            DrawFooter(gfx, page, Session.SelectedProject.UserName, document.PageCount);
 
             double startY = 50;
 

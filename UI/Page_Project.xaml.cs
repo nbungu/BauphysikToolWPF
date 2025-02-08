@@ -1,8 +1,8 @@
-﻿using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.ViewModels;
+﻿using BauphysikToolWPF.UI.ViewModels;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
+using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.UI
 {
@@ -20,7 +20,7 @@ namespace BauphysikToolWPF.UI
             var viewModel = DataContext as Page_Project_VM;
             if (viewModel != null)
             {
-                UserSaved.SelectedProject.LinkedFilesList = viewModel.DroppedFilePaths.ToList();
+                Session.SelectedProject.LinkedFilesList = viewModel.DroppedFilePaths.ToList();
             }
         }
     }

@@ -1,6 +1,4 @@
 ﻿using BauphysikToolWPF.Calculations;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.SessionData;
 using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,32 +11,34 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Services;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class Page_MoistureResults_VM : ObservableObject
     {
-        // Don't use UserSaved.CalcResults: calculate TempCurve always homogeneous;
+        // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
         private static GlaserCalc _glaser = new GlaserCalc();
 
         public Page_MoistureResults_VM()
         {
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
-            UserSaved.SelectedElementChanged += RefreshXamlBindings;
+            Session.SelectedElementChanged += RefreshXamlBindings;
 
-            //if (!_glaser.IsValid || UserSaved.Recalculate)
+            //if (!_glaser.IsValid || Session.Recalculate)
             //{
             //    _glaser = new GlaserCalc()
             //    {
-            //        Element = UserSaved.SelectedElement,
-            //        Rsi = UserSaved.Rsi,
-            //        Rse = UserSaved.Rse,
-            //        Ti = UserSaved.Ti,
-            //        Te = UserSaved.Te,
-            //        RelFi = UserSaved.Rel_Fi,
-            //        RelFe = UserSaved.Rel_Fe
+            //        Element = Session.SelectedElement,
+            //        Rsi = Session.Rsi,
+            //        Rse = Session.Rse,
+            //        Ti = Session.Ti,
+            //        Te = Session.Te,
+            //        RelFi = Session.Rel_Fi,
+            //        RelFe = Session.Rel_Fe
             //    };
             //    _glaser.CalculateHomogeneous(); // Bauteil berechnen
             //    _glaser.CalculateTemperatureCurve(); // Temperaturkurve
@@ -46,13 +46,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             //}
             _glaser = new GlaserCalc()
             {
-                Element = UserSaved.SelectedElement,
-                Rsi = UserSaved.Rsi,
-                Rse = UserSaved.Rse,
-                Ti = UserSaved.Ti,
-                Te = UserSaved.Te,
-                RelFi = UserSaved.Rel_Fi,
-                RelFe = UserSaved.Rel_Fe
+                Element = Session.SelectedElement,
+                Rsi = Session.Rsi,
+                Rse = Session.Rse,
+                Ti = Session.Ti,
+                Te = Session.Te,
+                RelFi = Session.Rel_Fi,
+                RelFe = Session.Rel_Fe
             };
             _glaser.CalculateHomogeneous(); // Bauteil berechnen
             _glaser.CalculateTemperatureCurve(); // Temperaturkurve
@@ -86,7 +86,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Element _selectedElement = UserSaved.SelectedElement;
+        private Element _selectedElement = Session.SelectedElement;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -125,7 +125,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _glaser.Tsi, RequirementValue = _glaser.TaupunktMax_i, IsRequirementMet = _glaser.Tsi >= _glaser.TaupunktMax_i, Unit = "°C" },
                 new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = _glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
                 new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = _glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = _glaser.FRsi >= 0.7 },
-                new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = UserSaved.Rel_Fi, RequirementValue = _glaser.PhiMax, IsRequirementMet = UserSaved.Rel_Fi < _glaser.PhiMax, Unit = "%" }
+                new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = Session.Rel_Fi, RequirementValue = _glaser.PhiMax, IsRequirementMet = Session.Rel_Fi < _glaser.PhiMax, Unit = "%" }
             };
         }
 

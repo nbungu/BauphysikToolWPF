@@ -1,10 +1,9 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Services;
 using BT.Logging;
 using System;
 using System.IO;
 using System.Windows;
+using BauphysikToolWPF.Repository.Models;
 
 namespace BauphysikToolWPF
 {
@@ -42,10 +41,10 @@ namespace BauphysikToolWPF
                     {
                         // Load the project from the specified file
                         Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
-                        UserSaved.SelectedProject = loadedProject;
-                        UserSaved.ProjectFilePath = filePath;
+                        Session.SelectedProject = loadedProject;
+                        Session.ProjectFilePath = filePath;
                         ApplicationServices.AddRecentProject(filePath);
-                        Logger.LogInfo($"Loaded Project: '{UserSaved.SelectedProject}' from Arguments!");
+                        Logger.LogInfo($"Loaded Project: '{Session.SelectedProject}' from Arguments!");
                     }
                     catch (Exception ex)
                     {
