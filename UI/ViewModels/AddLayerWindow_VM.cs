@@ -102,7 +102,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Session.SelectedElement.AddLayer(layer);
             }
             // Trigger Event to Update Layer Window
-            Session.OnSelectedElementChanged();
+            Session.OnSelectedLayerChanged();
 
         }
 
