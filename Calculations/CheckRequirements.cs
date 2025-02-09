@@ -1,7 +1,7 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.SessionData;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Services;
 
 namespace BauphysikToolWPF.Calculations
 {
@@ -14,7 +14,7 @@ namespace BauphysikToolWPF.Calculations
     public class CheckRequirements
     {
         // Always fetch current Project on calling this Class. No need for Notifier or Updater when Project changes
-        private readonly Project _currentProject = UserSaved.SelectedProject;
+        private readonly Project _currentProject = Session.SelectedProject;
 
         public Element Element { get; }
         public double? U_max { get; }
@@ -75,11 +75,11 @@ namespace BauphysikToolWPF.Calculations
             if (specificRequirement is null) return null;
 
             // Check if conditions have to be met
-            if (UserSaved.Ti >= 19)
+            if (Session.Ti >= 19)
             {
                 return specificRequirement.ValueA;
             }
-            else if (UserSaved.Ti > 12 && UserSaved.Ti < 19)
+            else if (Session.Ti > 12 && Session.Ti < 19)
             {
                 return specificRequirement.ValueB ?? specificRequirement.ValueA;
             }
@@ -98,7 +98,7 @@ namespace BauphysikToolWPF.Calculations
             List<Requirement> allRequirements = Element.Construction.Requirements;
 
             // catch constructions with no requirements
-            if (allRequirements is null || allRequirements.Count == 0) return null;
+            if (allRequirements.Count == 0) return null;
 
             // b) Select relevant Source
             int requirementSourceId = (int)RequirementSourceType.DIN_4108_2_Tabelle3;
@@ -115,7 +115,7 @@ namespace BauphysikToolWPF.Calculations
         private double? GetQMax()
         {
             if (U_max is null) return null;
-            return Math.Round(Convert.ToDouble(U_max) * (UserSaved.Ti - UserSaved.Te), 3);
+            return Math.Round(Convert.ToDouble(U_max) * (Session.Ti - Session.Te), 3);
         }
     }
 }

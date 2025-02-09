@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Windows.Data;
-using BauphysikToolWPF.Models;
+using BauphysikToolWPF.Repository.Models;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {

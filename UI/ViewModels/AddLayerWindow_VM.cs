@@ -1,7 +1,4 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
-using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -9,6 +6,10 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Repository.Models.Helper;
+using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.Models;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -16,15 +17,15 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => EditSelectedLayer ? $"Ausgewählte Schicht bearbeiten: {UserSaved.SelectedLayer}" : "Neue Schicht erstellen";
+        public string Title => EditSelectedLayer ? $"Ausgewählte Schicht bearbeiten: {Session.SelectedLayer}" : "Neue Schicht erstellen";
 
         public AddLayerWindow_VM()
         {
             if (EditSelectedLayer)
             {
-                SelectedTabIndex = UserSaved.SelectedLayer.Material.IsUserDefined ? 1 : 0;
-                SelectedCategoryIndex = (int)UserSaved.SelectedLayer.Material.Category;
-                SelectedListViewItem = UserSaved.SelectedLayer.Material;
+                SelectedTabIndex = Session.SelectedLayer.Material.IsUserDefined ? 1 : 0;
+                SelectedCategoryIndex = (int)Session.SelectedLayer.Material.Category;
+                SelectedListViewItem = Session.SelectedLayer.Material;
             }
             
             PropertyItem<string>.PropertyChanged += MaterialPropertiesChanged;
@@ -79,12 +80,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Update Material in existing Layer or Add new Layer
             if (EditSelectedLayer)
             {
-                UserSaved.SelectedLayer.Material = material;
+                Session.SelectedLayer.Material = material;
             }
             else
             {
                 // LayerPosition is always at end of List 
-                int layerCount = UserSaved.SelectedElement.Layers.Count;
+                int layerCount = Session.SelectedElement.Layers.Count;
 
                 Layer layer = new Layer
                 {
@@ -95,13 +96,13 @@ namespace BauphysikToolWPF.UI.ViewModels
                     IsEffective = true,
                     MaterialId = materialId,
                     Material = material,
-                    ElementId = UserSaved.SelectedElement.Id,
-                    Element = UserSaved.SelectedElement
+                    ElementId = Session.SelectedElement.Id,
+                    Element = Session.SelectedElement
                 };
-                UserSaved.SelectedElement.AddLayer(layer);
+                Session.SelectedElement.AddLayer(layer);
             }
             // Trigger Event to Update Layer Window
-            UserSaved.OnSelectedElementChanged();
+            Session.OnSelectedElementChanged();
 
         }
 

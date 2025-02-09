@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.Repository
                 //string programDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
                 // Or for user-specific AppData folder
 
-                string appFolder = ApplicationServices.GetLocalAppDataPath();
+                string appFolder = ApplicationServices.LocalAppDataPath;
                 string databaseFilePath = Path.Combine(appFolder, "BauDB.db");
 
                 // Ensure the directory exists

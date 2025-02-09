@@ -5,9 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
-        xmlns:models="clr-namespace:BauphysikToolWPF.Models"
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
+        xmlns:models1="clr-namespace:BauphysikToolWPF.Repository.Models"
         mc:Ignorable="d"
         Title="{Binding Title}"
         Background="{StaticResource PrimaryLightBrush}"
@@ -40,7 +40,7 @@
         <!--populate the items of a ComboBox with all elements from an enum-->
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="CategoryTypeValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="models:MaterialCategory"/>
+                <x:Type TypeName="models1:MaterialCategory"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 

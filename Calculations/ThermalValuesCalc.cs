@@ -1,10 +1,10 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using BT.Geometry;
+﻿using BT.Geometry;
 using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Repository.Models.Helper;
 
 namespace BauphysikToolWPF.Calculations
 {
@@ -36,7 +36,7 @@ namespace BauphysikToolWPF.Calculations
         public ThermalValuesCalc() { }
         public ThermalValuesCalc(Element element, double rsi, double rse, double ti, double te)
         {
-            if (element.Layers.Count == 0 || element is null) return;
+            if (element.Layers.Count == 0) return;
             Element = element;
             Rsi = Math.Max(0, rsi);
             Rse = Math.Max(0, rse);

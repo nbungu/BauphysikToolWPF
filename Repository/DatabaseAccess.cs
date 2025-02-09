@@ -1,10 +1,10 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using SQLite;
+﻿using SQLite;
 using SQLiteNetExtensions.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.UI.Models;
 
 namespace BauphysikToolWPF.Repository
 {

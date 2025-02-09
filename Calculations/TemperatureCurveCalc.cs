@@ -1,8 +1,8 @@
-﻿using BauphysikToolWPF.Models;
-using BT.Logging;
+﻿using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Repository.Models;
 
 namespace BauphysikToolWPF.Calculations
 {

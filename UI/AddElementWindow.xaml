@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-        xmlns:models="clr-namespace:BauphysikToolWPF.Models"
+        xmlns:models1="clr-namespace:BauphysikToolWPF.Repository.Models"
         mc:Ignorable="d"
         Title="{Binding Title}"
         ResizeMode="CanResizeWithGrip"
@@ -30,7 +30,7 @@
         <!--populate the items of a ComboBox with all elements from an enum-->
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="OrientationTypeValues">
             <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="models:OrientationType"/>
+                <x:Type TypeName="models1:OrientationType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 

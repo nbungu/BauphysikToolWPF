@@ -1,8 +1,8 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Repository.Models.Helper;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {

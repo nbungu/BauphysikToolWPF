@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Windows.Media.Protection.PlayReady;
+using BauphysikToolWPF.Services.Models;
 
 namespace BauphysikToolWPF.Services
 {
@@ -15,11 +15,11 @@ namespace BauphysikToolWPF.Services
         public static string ServerUpdaterQuery = "https://bauphysik-tool.de/strapi/api/downloads?sort=publishedAt:desc&fields[0]=semanticVersion&fields[1]=versionTag";
         
         // HttpClient should be a singleton to avoid socket exhaustion
-        private static readonly HttpClient _client = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+        private static readonly HttpClient _client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
         // testing: curl -v "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields%5B0%5D=semanticVersion&fields%5B1%5D=versionTag"
 
-        public static Updater LocalUpdaterFile = FetchLocalVersion(InstalledUpdaterFilePath);
+        public static Updater LocalUpdaterFile = FetchLocalVersion();
 
         public string Latest { get; set; } = string.Empty;
         public string LatestTag { get; set; } = string.Empty;
@@ -27,14 +27,16 @@ namespace BauphysikToolWPF.Services
         public string CurrentTag { get; set; } = string.Empty;
         public long LastUpdateCheck { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public long LastNotification { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-
+        public static bool NewVersionAvailable => CompareSemanticVersions(LocalUpdaterFile.Current, LocalUpdaterFile.Latest) < 0;
+        public static bool IsServerAvailable => GetServerStatus();
+        
         public static void CheckForUpdates()
         {
             var updaterLocal = LocalUpdaterFile;
             var updaterServer = FetchVersionFromServer(ServerUpdaterQuery).Result;
 
             // If server version is newer
-            if (CompareSemanticVersions(updaterLocal.Current, updaterServer.Latest) < 0)
+            if (NewVersionAvailable)
             {
                 Logger.LogInfo($"Found new Version! Writing new Version to local updater file");
                 // TODO:
@@ -44,7 +46,30 @@ namespace BauphysikToolWPF.Services
             updaterLocal.LastUpdateCheck = TimeStamp.GetCurrentUnixTimestamp();
             WriteToLocalUpdaterFile(updaterLocal);
         }
-        public static async Task<Updater> FetchVersionFromServer(string serverAddress)
+
+        #region private methods
+
+        private static bool GetServerStatus()
+        {
+            try
+            {
+                return Task.Run(async () =>
+                {
+                    using var response = await _client.GetAsync(ServerUpdaterQuery);
+                    return response.IsSuccessStatusCode;
+                }).GetAwaiter().GetResult();
+            }
+            catch (HttpRequestException)
+            {
+                return false;
+            }
+            catch (TaskCanceledException)
+            {
+                return false;
+            }
+        }
+
+        private static async Task<Updater> FetchVersionFromServer(string serverAddress)
         {
             Updater updater = new Updater();
             try
@@ -58,17 +83,16 @@ namespace BauphysikToolWPF.Services
             return updater;
         }
 
-        public static Updater FetchLocalVersion(string filePath)
+        private static Updater FetchLocalVersion()
         {
-            if (!File.Exists(filePath))
+            if (!File.Exists(InstalledUpdaterFilePath))
             {
-                Logger.LogWarning($"Local version file not found: {filePath}");
+                Logger.LogWarning($"Local version file not found: {InstalledUpdaterFilePath}");
                 return new Updater();
             }
-
             try
             {
-                string jsonString = File.ReadAllText(filePath);
+                string jsonString = File.ReadAllText(InstalledUpdaterFilePath);
 
                 var options = new JsonSerializerOptions
                 {
@@ -80,11 +104,11 @@ namespace BauphysikToolWPF.Services
 
                 if (updater != null)
                 {
-                    Logger.LogInfo($"Successfully fetched local version file: {filePath}");
+                    Logger.LogInfo($"Successfully fetched local version file: {InstalledUpdaterFilePath}");
                     return updater;
                 }
 
-                Logger.LogWarning($"Failed to deserialize local version file: {filePath}");
+                Logger.LogWarning($"Failed to deserialize local version file: {InstalledUpdaterFilePath}");
             }
             catch (IOException e)
             {
@@ -120,7 +144,7 @@ namespace BauphysikToolWPF.Services
         //    return new Updater();
         //}
 
-        //public static bool CheckServerStatus(string serverAddress)
+        //public static bool GetServerStatus(string serverAddress)
         //{
         //    using (HttpClient client = new HttpClient())
         //    {
@@ -138,162 +162,46 @@ namespace BauphysikToolWPF.Services
         //    }
         //}
 
-        public static bool CheckServerStatus(string serverAddress)
+        private static async Task<Updater> FetchAndDeserializeUpdaterAsync(string url)
         {
-            try
+            using (HttpClient client = new HttpClient())
             {
-                return Task.Run(async () =>
+                client.Timeout = TimeSpan.FromSeconds(10);
+                var response = client.GetAsync(url).Result;  // Blocking call!
+
+                if (response.IsSuccessStatusCode)
                 {
-                    using var response = await _client.GetAsync(serverAddress);
-                    return response.IsSuccessStatusCode;
-                }).GetAwaiter().GetResult();
-            }
-            catch (HttpRequestException)
-            {
-                return false;
-            }
-            catch (TaskCanceledException)
-            {
-                return false;
-            }
-        }
+                    Logger.LogInfo($"Received Status Code 200 OK from GET request: {url}");
 
-        //private static async Task<Updater> FetchAndDeserializeUpdaterAsync(string url)
-        //{
-        //    using (HttpClient client = new HttpClient())
-        //    {
-        //        client.Timeout = TimeSpan.FromSeconds(10);
-        //        var response = client.GetAsync(url).Result;  // Blocking call!
+                    // Parse the response body. Blocking!
+                    var jsonString = response.Content.ReadAsStringAsync().Result;
+                    var options = new JsonSerializerOptions
+                    {
+                        ReferenceHandler = ReferenceHandler.Preserve,
+                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+                    };
 
-        //        if (response.IsSuccessStatusCode)
-        //        {
-        //            Logger.LogInfo($"Received Status Code 200 OK from GET request: {url}");
+                    ProgramVersionItem jsonResponse = JsonSerializer.Deserialize<ProgramVersionItem>(jsonString, options);
 
-        //            // Parse the response body. Blocking!
-        //            var jsonString = response.Content.ReadAsStringAsync().Result;
-        //            var options = new JsonSerializerOptions
-        //            {
-        //                ReferenceHandler = ReferenceHandler.Preserve,
-        //                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-        //            };
+                    if (jsonResponse != null && jsonResponse.Data.Length > 0)
+                    {
+                        var data = jsonResponse.Data[0];
+                        var updater = new Updater
+                        {
+                            Latest = data.SemanticVersion,
+                            LatestTag = data.VersionTag
+                        };
 
-        //            JsonResponse jsonResponse = JsonSerializer.Deserialize<JsonResponse>(jsonString, options);
-
-        //            if (jsonResponse != null && jsonResponse.Data.Length > 0)
-        //            {
-        //                var data = jsonResponse.Data[0];
-        //                var updater = new Updater
-        //                {
-        //                    Latest = data.SemanticVersion,
-        //                    LatestTag = data.VersionTag
-        //                };
-
-        //                Logger.LogInfo($"Successfully deserialized updater file from server");
-        //                return updater;
-        //            }
-        //            Logger.LogWarning($"Could not deserialize the fetched updater file");
-        //            return new Updater();
-        //        }
-        //        var result = $"{(int)response.StatusCode} ({response.ReasonPhrase})";
-        //        Logger.LogWarning($"Received invalid Status Code from GET request: {result}");
-        //        return new Updater();
-        //    }
-        //}
-        public static async Task<Updater> FetchAndDeserializeUpdaterAsync(string url)
-        {
-            try
-            {
-                using var response = await _client.GetAsync(url);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    Logger.LogWarning($"Received invalid status code: {(int)response.StatusCode} ({response.ReasonPhrase})");
+                        Logger.LogInfo($"Successfully deserialized updater file from server");
+                        return updater;
+                    }
+                    Logger.LogWarning($"Could not deserialize the fetched updater file");
                     return new Updater();
                 }
-
-                Logger.LogInfo($"Received Status Code 200 OK from GET request: {url}");
-
-                var jsonString = await response.Content.ReadAsStringAsync();
-
-                var options = new JsonSerializerOptions
-                {
-                    ReferenceHandler = ReferenceHandler.Preserve,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-                };
-
-                var jsonResponse = JsonSerializer.Deserialize<JsonResponse>(jsonString, options);
-
-                if (jsonResponse?.Data?.Length > 0)
-                {
-                    var data = jsonResponse.Data[0];
-                    Logger.LogInfo("Successfully deserialized updater file from server");
-
-                    return new Updater
-                    {
-                        Latest = data.SemanticVersion,
-                        LatestTag = data.VersionTag
-                    };
-                }
-
-                Logger.LogWarning("Could not deserialize the fetched updater file");
+                var result = $"{(int)response.StatusCode} ({response.ReasonPhrase})";
+                Logger.LogWarning($"Received invalid Status Code from GET request: {result}");
+                return new Updater();
             }
-            catch (HttpRequestException e)
-            {
-                Logger.LogError($"Network error fetching updater: {e.Message}");
-            }
-            catch (TaskCanceledException)
-            {
-                Logger.LogError("Request timeout when fetching updater.");
-            }
-            catch (JsonException e)
-            {
-                Logger.LogError($"JSON deserialization error: {e.Message}");
-            }
-            return new Updater(); // Fallback on failure
-        }
-
-        public static void WriteToLocalUpdaterFile(Updater localUpdaterFile, string filePath = "")
-        {
-            try
-            {
-                if (filePath == "") filePath = GetInstalledUpdaterFilePath();
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    ReferenceHandler = ReferenceHandler.Preserve,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-                };
-                string jsonString = JsonSerializer.Serialize(localUpdaterFile, options);
-                File.WriteAllText(filePath, jsonString);
-                Logger.LogInfo($"Successfully saved local updater to file: {filePath}");
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Error saving local updater file: {filePath}, {e.Message}");
-            }
-        }
-
-        public static int CompareSemanticVersions(string version1, string version2)
-        {
-            if (version1 == "" || version2 == "") return 0;
-
-            // Split the versions into major, minor, and patch components
-            var v1Components = version1.Split('.');
-            var v2Components = version2.Split('.');
-
-            for (int i = 0; i < 3; i++) // Loop through major, minor, and patch
-            {
-                // Parse each component to an integer
-                int v1Part = i < v1Components.Length ? int.Parse(v1Components[i]) : 0;
-                int v2Part = i < v2Components.Length ? int.Parse(v2Components[i]) : 0;
-
-                // Compare each component
-                if (v1Part > v2Part) return 1; // result > 0: version1 is newer
-                if (v1Part < v2Part) return -1; // result < 0: version2 is newer
-            }
-
-            // Versions are equal
-            return 0;
         }
 
         private static string GetInstalledUpdaterFilePath(bool forceReplace = false)
@@ -301,7 +209,7 @@ namespace BauphysikToolWPF.Services
             try
             {
                 // User-specific AppData folder
-                string appFolder = ApplicationServices.GetLocalAppDataPath();
+                string appFolder = ApplicationServices.LocalAppDataPath;
                 string updaterFilePath = Path.Combine(appFolder, "updater.json");
 
                 // Ensure the directory exists
@@ -330,30 +238,52 @@ namespace BauphysikToolWPF.Services
                 return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Services\\updater.json")); ;
             }
         }
+
+        private static int CompareSemanticVersions(string version1, string version2)
+        {
+            if (version1 == "" || version2 == "") return 0;
+
+            // Split the versions into major, minor, and patch components
+            var v1Components = version1.Split('.');
+            var v2Components = version2.Split('.');
+
+            for (int i = 0; i < 3; i++) // Loop through major, minor, and patch
+            {
+                // Parse each component to an integer
+                int v1Part = i < v1Components.Length ? int.Parse(v1Components[i]) : 0;
+                int v2Part = i < v2Components.Length ? int.Parse(v2Components[i]) : 0;
+
+                // Compare each component
+                if (v1Part > v2Part) return 1; // result > 0: version1 is newer
+                if (v1Part < v2Part) return -1; // result < 0: version2 is newer
+            }
+
+            // Versions are equal
+            return 0;
+        }
+
+        #endregion
+
+
+        public static void WriteToLocalUpdaterFile(Updater localUpdaterFile, string filePath = "")
+        {
+            try
+            {
+                if (filePath == "") filePath = GetInstalledUpdaterFilePath();
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+                };
+                string jsonString = JsonSerializer.Serialize(localUpdaterFile, options);
+                File.WriteAllText(filePath, jsonString);
+                Logger.LogInfo($"Successfully saved local updater to file: {filePath}");
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Error saving local updater file: {filePath}, {e.Message}");
+            }
+        }
     }
-
-    #region Strapi API-Response Structure
-
-    internal class JsonResponse
-    {
-        [JsonPropertyName("data")]
-        public DataItem[] Data { get; set; } = Array.Empty<DataItem>();
-    }
-
-    internal class DataItem
-    {
-        [JsonPropertyName("id")]
-        public int Id { get; set; }
-
-        [JsonPropertyName("semanticVersion")]
-        public string SemanticVersion { get; set; } = string.Empty;
-
-        [JsonPropertyName("versionTag")]
-        public string VersionTag { get; set; } = string.Empty;
-
-        [JsonPropertyName("documentId")]
-        public string DocumentId { get; set; } = string.Empty;
-    }
-
-    #endregion
 }

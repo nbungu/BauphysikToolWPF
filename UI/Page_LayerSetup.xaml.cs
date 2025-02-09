@@ -1,9 +1,8 @@
-﻿using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
+﻿using BauphysikToolWPF.Services;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BauphysikToolWPF.Repository.Models.Helper;
 
 namespace BauphysikToolWPF.UI
 {
@@ -25,13 +24,6 @@ namespace BauphysikToolWPF.UI
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public Page_LayerSetup()
         {
-            if (UserSaved.SelectedElement != null)
-            {
-                UserSaved.SelectedElement.SortLayers();
-                UserSaved.SelectedElement.AssignEffectiveLayers();
-                UserSaved.SelectedElement.AssignInternalIdsToLayers();
-            }
-            
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
         }
@@ -40,14 +32,14 @@ namespace BauphysikToolWPF.UI
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             // Only save if leaving this page
-            UserSaved.SelectedElement.UnselectAllLayers();
+            Session.SelectedElement.UnselectAllLayers();
 
-            if (!IsVisible && UserSaved.SelectedElement.IsValid)
+            if (!IsVisible && Session.SelectedElement.IsValid)
             {
-                UserSaved.SelectedElement.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
+                Session.SelectedElement.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
                 
-                ImageCreator.RenderElementPreviewImage(UserSaved.SelectedElement);
-                //UserSaved.SelectedElement.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
+                ImageCreator.RenderElementPreviewImage(Session.SelectedElement);
+                //Session.SelectedElement.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
             }
         }
 

@@ -1,13 +1,12 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using BauphysikToolWPF.Repository.Models;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -15,7 +14,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddElementWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddElementWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => EditSelectedElement ? $"Ausgewähltes Element bearbeiten: {UserSaved.SelectedElement.Name}" : "Neues Element erstellen";
+        public string Title => EditSelectedElement ? $"Ausgewähltes Element bearbeiten: {Session.SelectedElement.Name}" : "Neues Element erstellen";
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -77,16 +76,16 @@ namespace BauphysikToolWPF.UI.ViewModels
             
             if (EditSelectedElement)
             {
-                UserSaved.SelectedElement.Name = SelectedElementName;
-                UserSaved.SelectedElement.ConstructionId = construction.ConstructionId;
-                UserSaved.SelectedElement.Construction = construction;
-                UserSaved.SelectedElement.OrientationType = SelectedOrientation;
-                UserSaved.SelectedElement.ProjectId = UserSaved.SelectedProject.Id;
-                UserSaved.SelectedElement.TagList = TagList;
-                UserSaved.SelectedElement.Comment = SelectedElementComment;
-                UserSaved.SelectedElement.ColorCode = SelectedElementColor;
-                UserSaved.SelectedElement.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-                UserSaved.OnSelectedElementChanged();
+                Session.SelectedElement.Name = SelectedElementName;
+                Session.SelectedElement.ConstructionId = construction.ConstructionId;
+                Session.SelectedElement.Construction = construction;
+                Session.SelectedElement.OrientationType = SelectedOrientation;
+                Session.SelectedElement.ProjectId = Session.SelectedProject.Id;
+                Session.SelectedElement.TagList = TagList;
+                Session.SelectedElement.Comment = SelectedElementComment;
+                Session.SelectedElement.ColorCode = SelectedElementColor;
+                Session.SelectedElement.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+                Session.OnSelectedElementChanged();
             }
             else
             {
@@ -97,13 +96,13 @@ namespace BauphysikToolWPF.UI.ViewModels
                     ConstructionId = construction.ConstructionId,
                     Construction = construction,
                     OrientationType = SelectedOrientation,
-                    ProjectId = UserSaved.SelectedProject.Id,
+                    ProjectId = Session.SelectedProject.Id,
                     TagList = TagList,
                     Comment = SelectedElementComment,
                     ColorCode = SelectedElementColor
                 };
-                UserSaved.SelectedProject.Elements.Add(newElem);
-                UserSaved.OnNewElementAdded();
+                Session.SelectedProject.Elements.Add(newElem);
+                Session.OnNewElementAdded();
             }
 
             window.Close();
@@ -124,11 +123,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _selectedElementName = UserSaved.SelectedElement.Name != "" ? UserSaved.SelectedElement.Name : "Neues Element";
+        private string _selectedElementName = Session.SelectedElement.Name != "" ? Session.SelectedElement.Name : "Neues Element";
         [ObservableProperty]
-        private string _selectedConstruction = UserSaved.SelectedElement.Name != "" ? UserSaved.SelectedElement.Construction.TypeName : "Außenwand";
+        private string _selectedConstruction = Session.SelectedElement.Name != "" ? Session.SelectedElement.Construction.TypeName : "Außenwand";
         [ObservableProperty]
-        private OrientationType _selectedOrientation = UserSaved.SelectedElement.Name != "" ? UserSaved.SelectedElement.OrientationType : OrientationType.Norden;
+        private OrientationType _selectedOrientation = Session.SelectedElement.Name != "" ? Session.SelectedElement.OrientationType : OrientationType.Norden;
         [ObservableProperty]
         private Visibility _tagBtnVisible = Visibility.Visible;
         [ObservableProperty]
@@ -136,17 +135,17 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private Visibility _enterBtnVisible = Visibility.Hidden;
         [ObservableProperty]
-        private List<string> _tagList = UserSaved.SelectedElement.TagList;
+        private List<string> _tagList = Session.SelectedElement.TagList;
         [ObservableProperty]
-        private string _selectedElementComment = UserSaved.SelectedElement.Comment;
+        private string _selectedElementComment = Session.SelectedElement.Comment;
         [ObservableProperty]
-        private string _selectedElementColor = UserSaved.SelectedElement.ColorCode;
+        private string _selectedElementColor = Session.SelectedElement.ColorCode;
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public bool EditSelectedElement => UserSaved.SelectedElement != null && UserSaved.SelectedElement.IsValid;
+        public bool EditSelectedElement => AddElementWindow.EditExistingElement;
 
         public List<string> ConstructionTypeList => DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList();
     }

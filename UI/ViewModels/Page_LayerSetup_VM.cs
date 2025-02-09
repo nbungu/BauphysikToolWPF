@@ -1,8 +1,9 @@
-﻿using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Helper;
-using BauphysikToolWPF.Repository;
-using BauphysikToolWPF.SessionData;
-using BauphysikToolWPF.UI.Drawing;
+﻿using BauphysikToolWPF.Repository;
+using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Repository.Models.Helper;
+using BauphysikToolWPF.Services;
+using BauphysikToolWPF.UI.Models;
+using BauphysikToolWPF.UI.Services;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -10,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using MeasurementChain = BauphysikToolWPF.UI.Drawing.MeasurementChain;
 using Point = BT.Geometry.Point;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -19,22 +19,25 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class Page_LayerSetup_VM : ObservableObject
     {
 
-        private readonly CanvasDrawingService _crossSection = new CanvasDrawingService(UserSaved.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
+        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
 
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
         {
-            UserSaved.SelectedLayerId = -1;
-
-            // Allow child Windows to trigger UpdateBindingsAndRecalculateFlag of this Window
-            UserSaved.SelectedElementChanged += UpdateBindingsAndRecalculateFlag;
-            UserSaved.SelectedLayerChanged += UpdateBindingsAndRecalculateFlag;
-            UserSaved.EnvVarsChanged += UpdateRecalculateFlag;
+            Session.SelectedLayerId = -1;
+            Session.SelectedElement.SortLayers();
+            Session.SelectedElement.AssignEffectiveLayers();
+            Session.SelectedElement.AssignInternalIdsToLayers();
+            
+            // Allow child Windows to trigger UpdateAll of this Window
+            Session.SelectedElementChanged += UpdateElement;
+            Session.SelectedLayerChanged += UpdateAll;
+            Session.EnvVarsChanged += UpdateRecalculateFlag;
             
             // For values changed in PropertyDataGrid TextBox
-            PropertyItem<double>.PropertyChanged += ComboUpdate;
-            PropertyItem<SubConstructionDirection>.PropertyChanged += ComboUpdate;
-            PropertyItem<bool>.PropertyChanged += ComboUpdate;
+            PropertyItem<double>.PropertyChanged += TriggerSelectedLayerChanged;
+            PropertyItem<SubConstructionDirection>.PropertyChanged += TriggerSelectedLayerChanged;
+            PropertyItem<bool>.PropertyChanged += TriggerSelectedLayerChanged;
         }
         
         /*
@@ -54,7 +57,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow().ShowDialog();
+            new AddElementWindow(editExsiting: true).ShowDialog();
         }
 
         [RelayCommand]
@@ -90,37 +93,37 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DeleteSubConstructionLayer()
         {
-            UserSaved.SelectedLayer.RemoveSubConstruction();
-            UserSaved.OnSelectedLayerChanged();
+            Session.SelectedLayer.RemoveSubConstruction();
+            Session.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
         private void DeleteLayer()
         {
-            UserSaved.SelectedElement.RemoveLayer(UserSaved.SelectedLayerId);
-            UserSaved.OnSelectedLayerChanged();
+            Session.SelectedElement.RemoveLayer(Session.SelectedLayerId);
+            Session.OnSelectedLayerChanged();
             SelectedListViewItem = null;
         }
         
         [RelayCommand]
         private void DuplicateLayer()
         {
-            UserSaved.SelectedElement.DuplicateLayer(UserSaved.SelectedLayerId);
-            UserSaved.OnSelectedLayerChanged();
+            Session.SelectedElement.DuplicateLayer(Session.SelectedLayerId);
+            Session.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
         private void MoveLayerDown()
         {
-            UserSaved.SelectedElement.MoveLayerPositionToOutside(UserSaved.SelectedLayerId);
-            UserSaved.OnSelectedLayerChanged();
+            Session.SelectedElement.MoveLayerPositionToOutside(Session.SelectedLayerId);
+            Session.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
         private void MoveLayerUp()
         {
-            UserSaved.SelectedElement.MoveLayerPositionToInside(UserSaved.SelectedLayerId);
-            UserSaved.OnSelectedLayerChanged();
+            Session.SelectedElement.MoveLayerPositionToInside(Session.SelectedLayerId);
+            Session.OnSelectedLayerChanged();
         }
 
         [RelayCommand]
@@ -134,31 +137,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnSelectedListViewItemChanged(Layer? value)
         {
             if (value is null) return;
-            UserSaved.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
-            UserSaved.SelectedLayerId = value.InternalId;
-            UserSaved.SelectedLayer.IsSelected = true;
+            Session.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
+            Session.SelectedLayerId = value.InternalId;
+            Session.SelectedLayer.IsSelected = true;
 
             _crossSection.UpdateDrawings();
-            //_crossSection.UpdateSingleDrawing(UserSaved.SelectedLayer);
+            //_crossSection.UpdateSingleDrawing(Session.SelectedLayer);
         }
 
         /*
-         * MVVM Properties: Observable, if user can change these properties via frontend directly
+         * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
-         * Every property the user can change directly through input in frontend
+         * Everything the user can edit or change: All objects affected by user interaction.
          */
-
-        [ObservableProperty]
-        private Element _selectedElement = UserSaved.SelectedElement;
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(LayerProperties))]
-        [NotifyPropertyChangedFor(nameof(LayerMeasurement))]
-        [NotifyPropertyChangedFor(nameof(LayerMeasurementFull))]
-        [NotifyPropertyChangedFor(nameof(SubConstructionMeasurement))]
-        [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
-        [NotifyPropertyChangedFor(nameof(CanvasSize))]
-        private List<Layer> _layerList = UserSaved.SelectedElement.Layers;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
@@ -168,6 +159,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
         private Layer? _selectedListViewItem;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(LayerMeasurement))]
+        [NotifyPropertyChangedFor(nameof(LayerMeasurementFull))]
+        [NotifyPropertyChangedFor(nameof(SubConstructionMeasurement))]
+        [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
+        [NotifyPropertyChangedFor(nameof(CanvasSize))]
+        private List<Layer> _layerList = Session.SelectedElement.Layers;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))]
@@ -194,66 +193,69 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static int _relFeIndex;
 
         /*
-         * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
-         * 
-         * Not Observable, No direct User Input involved
-         */
+        * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
+        * 
+        * Not Observable, not directly mutated by user input
+        */
 
+        public Element SelectedElement => Session.SelectedElement;
+        //public List<Layer> LayerList => Session.SelectedElement.Layers;
         public bool IsLayerSelected => SelectedListViewItem != null;
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
         public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
         public Rectangle CanvasSize => _crossSection.CanvasSize;
-        public List<DrawingGeometry> LayerMeasurement => MeasurementChain.GetLayerMeasurementChain(_crossSection);
-        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementChain.GetSubConstructionMeasurementChain(_crossSection);
-        public List<DrawingGeometry> LayerMeasurementFull => MeasurementChain.GetFullLayerMeasurementChain(_crossSection);
+        public List<DrawingGeometry> LayerMeasurement => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);
+        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementDrawing.GetSubConstructionMeasurementChain(_crossSection);
+        public List<DrawingGeometry> LayerMeasurementFull => MeasurementDrawing.GetFullLayerMeasurementChain(_crossSection);
 
+        // TODO: On Layer->IsActive change long loading times
         public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
         {
-            new PropertyItem<string>("Kategorie", () => UserSaved.SelectedLayer.Material.CategoryName),
-            new PropertyItem<string>("Materialquelle", () => UserSaved.SelectedLayer.Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
-            new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedLayer.Thickness, value => UserSaved.SelectedLayer.Thickness = value),
-            new PropertyItem<double>(Symbol.ThermalConductivity, () => UserSaved.SelectedLayer.Material.ThermalConductivity) { DecimalPlaces = 3},
-            new PropertyItem<double>(Symbol.RValueLayer, () => UserSaved.SelectedLayer.R_Value)
+            new PropertyItem<string>("Kategorie", () => Session.SelectedLayer.Material.CategoryName),
+            new PropertyItem<string>("Materialquelle", () => Session.SelectedLayer.Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
+            new PropertyItem<double>(Symbol.Thickness, () => Session.SelectedLayer.Thickness, value => Session.SelectedLayer.Thickness = value),
+            new PropertyItem<double>(Symbol.ThermalConductivity, () => Session.SelectedLayer.Material.ThermalConductivity) { DecimalPlaces = 3},
+            new PropertyItem<double>(Symbol.RValueLayer, () => Session.SelectedLayer.R_Value)
             {
-                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerNumber}"
+                SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}"
             },
-            new PropertyItem<int>(Symbol.RawDensity, () => UserSaved.SelectedLayer.Material.BulkDensity),
-            new PropertyItem<double>(Symbol.AreaMassDensity, () => UserSaved.SelectedLayer.AreaMassDensity),
-            new PropertyItem<double>(Symbol.SdThickness, () => UserSaved.SelectedLayer.Sd_Thickness),
-            new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => UserSaved.SelectedLayer.Material.DiffusionResistance),
-            new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => UserSaved.SelectedLayer.Material.SpecificHeatCapacity),
-            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => UserSaved.SelectedLayer.ArealHeatCapacity)
+            new PropertyItem<int>(Symbol.RawDensity, () => Session.SelectedLayer.Material.BulkDensity),
+            new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedLayer.AreaMassDensity),
+            new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedLayer.Sd_Thickness),
+            new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => Session.SelectedLayer.Material.DiffusionResistance),
+            new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => Session.SelectedLayer.Material.SpecificHeatCapacity),
+            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => Session.SelectedLayer.ArealHeatCapacity)
             {
-                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerNumber}"
+                SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}"
             },
-            new PropertyItem<bool>("Wirksame Schicht", () => UserSaved.SelectedLayer.IsEffective, value => UserSaved.SelectedLayer.IsEffective = value)
+            new PropertyItem<bool>("Wirksame Schicht", () => Session.SelectedLayer.IsEffective, value => Session.SelectedLayer.IsEffective = value)
         };
 
-        public List<IPropertyItem> SubConstructionProperties => UserSaved.SelectedLayer.HasSubConstructions ? new List<IPropertyItem>()
+        public List<IPropertyItem> SubConstructionProperties => Session.SelectedLayer.HasSubConstructions ? new List<IPropertyItem>()
         {
-            new PropertyItem<string>("Material", () => UserSaved.SelectedLayer.SubConstruction.Material.Name),
-            new PropertyItem<string>("Kategorie", () => UserSaved.SelectedLayer.SubConstruction.Material.CategoryName),
-            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => UserSaved.SelectedLayer.SubConstruction.Direction, value => UserSaved.SelectedLayer.SubConstruction.Direction = value)
+            new PropertyItem<string>("Material", () => Session.SelectedLayer.SubConstruction.Material.Name),
+            new PropertyItem<string>("Kategorie", () => Session.SelectedLayer.SubConstruction.Material.CategoryName),
+            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => Session.SelectedLayer.SubConstruction.Direction, value => Session.SelectedLayer.SubConstruction.Direction = value)
             {
                 PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray(),
             },
-            new PropertyItem<double>(Symbol.Thickness, () => UserSaved.SelectedLayer.SubConstruction.Thickness, value => UserSaved.SelectedLayer.SubConstruction.Thickness = value),
-            new PropertyItem<double>(Symbol.Width, () => UserSaved.SelectedLayer.SubConstruction.Width, value => UserSaved.SelectedLayer.SubConstruction.Width = value),
-            new PropertyItem<double>(Symbol.Distance, () => UserSaved.SelectedLayer.SubConstruction.Spacing, value => UserSaved.SelectedLayer.SubConstruction.Spacing = value),
-            new PropertyItem<double>("Achsenabstand", Symbol.Distance, () => UserSaved.SelectedLayer.SubConstruction.AxisSpacing, value => UserSaved.SelectedLayer.SubConstruction.AxisSpacing = value),
-            new PropertyItem<double>(Symbol.ThermalConductivity, () => UserSaved.SelectedLayer.SubConstruction.Material.ThermalConductivity) { DecimalPlaces = 3},
-            new PropertyItem<double>(Symbol.RValueLayer, () => UserSaved.SelectedLayer.SubConstruction.R_Value)
+            new PropertyItem<double>(Symbol.Thickness, () => Session.SelectedLayer.SubConstruction.Thickness, value => Session.SelectedLayer.SubConstruction.Thickness = value),
+            new PropertyItem<double>(Symbol.Width, () => Session.SelectedLayer.SubConstruction.Width, value => Session.SelectedLayer.SubConstruction.Width = value),
+            new PropertyItem<double>(Symbol.Distance, () => Session.SelectedLayer.SubConstruction.Spacing, value => Session.SelectedLayer.SubConstruction.Spacing = value),
+            new PropertyItem<double>("Achsenabstand", Symbol.Distance, () => Session.SelectedLayer.SubConstruction.AxisSpacing, value => Session.SelectedLayer.SubConstruction.AxisSpacing = value),
+            new PropertyItem<double>(Symbol.ThermalConductivity, () => Session.SelectedLayer.SubConstruction.Material.ThermalConductivity) { DecimalPlaces = 3},
+            new PropertyItem<double>(Symbol.RValueLayer, () => Session.SelectedLayer.SubConstruction.R_Value)
             {
-                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerNumber}b"
+                SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}b"
             },
-            new PropertyItem<double>(Symbol.AreaMassDensity, () => UserSaved.SelectedLayer.SubConstruction.AreaMassDensity),
-            new PropertyItem<double>(Symbol.SdThickness, () => UserSaved.SelectedLayer.SubConstruction.Sd_Thickness),
-            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => UserSaved.SelectedLayer.SubConstruction.ArealHeatCapacity)
+            new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedLayer.SubConstruction.AreaMassDensity),
+            new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedLayer.SubConstruction.Sd_Thickness),
+            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => Session.SelectedLayer.SubConstruction.ArealHeatCapacity)
             {
-                SymbolSubscriptText = $"{UserSaved.SelectedLayer.LayerNumber}b"
+                SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}b"
             },
-            new PropertyItem<bool>("Wirksame Schicht", () => UserSaved.SelectedLayer.SubConstruction.IsEffective, value => UserSaved.SelectedLayer.SubConstruction.IsEffective = value)
+            new PropertyItem<bool>("Wirksame Schicht", () => Session.SelectedLayer.SubConstruction.IsEffective, value => Session.SelectedLayer.SubConstruction.IsEffective = value)
         } : new List<IPropertyItem>();
 
         public List<string> TiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Select(e => e.Comment).ToList();
@@ -273,16 +275,16 @@ namespace BauphysikToolWPF.UI.ViewModels
                 // On custom user input
 
                 //Get corresp Value
-                double? value = (_tiIndex == -1) ? UserSaved.Ti : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Find(e => e.Comment == TiKeys[_tiIndex])?.Value;
+                double? value = (_tiIndex == -1) ? Session.Ti : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Find(e => e.Comment == TiKeys[_tiIndex])?.Value;
                 // Save SessionData
-                UserSaved.Ti = value ?? 0.0;
+                Session.Ti = value ?? 0.0;
                 // Return value to UIElement
-                return UserSaved.Ti;
+                return Session.Ti;
             }
             set
             {
                 // Save custom user input
-                UserSaved.Ti = value;
+                Session.Ti = value;
                 // Changing ti_Index Triggers TiValue getter due to NotifyProperty
                 TiIndex = -1;
             }
@@ -291,13 +293,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_teIndex == -1) ? UserSaved.Te : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Find(e => e.Comment == TeKeys[_teIndex])?.Value;
-                UserSaved.Te = value ?? 0.0;
-                return UserSaved.Te;
+                double? value = (_teIndex == -1) ? Session.Te : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Find(e => e.Comment == TeKeys[_teIndex])?.Value;
+                Session.Te = value ?? 0.0;
+                return Session.Te;
             }
             set
             {
-                UserSaved.Te = value;
+                Session.Te = value;
                 TeIndex = -1;
             }
         }
@@ -305,13 +307,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_rsiIndex == -1) ? UserSaved.Rsi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Comment == RsiKeys[_rsiIndex])?.Value;
-                UserSaved.Rsi = value ?? 0.0;
-                return UserSaved.Rsi;
+                double? value = (_rsiIndex == -1) ? Session.Rsi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Comment == RsiKeys[_rsiIndex])?.Value;
+                Session.Rsi = value ?? 0.0;
+                return Session.Rsi;
             }
             set
             {
-                UserSaved.Rsi = value;
+                Session.Rsi = value;
                 RsiIndex = -1;
             }
         }
@@ -319,13 +321,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_rseIndex == -1) ? UserSaved.Rse : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Comment == RseKeys[_rseIndex])?.Value;
-                UserSaved.Rse = value ?? 0.0;
-                return UserSaved.Rse;
+                double? value = (_rseIndex == -1) ? Session.Rse : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Comment == RseKeys[_rseIndex])?.Value;
+                Session.Rse = value ?? 0.0;
+                return Session.Rse;
             }
             set
             {
-                UserSaved.Rse = value;
+                Session.Rse = value;
                 RseIndex = -1;
             }
         }
@@ -333,13 +335,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_relFiIndex == -1) ? UserSaved.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Comment == RelFiKeys[_relFiIndex])?.Value;
-                UserSaved.Rel_Fi = value ?? 0.0;
-                return UserSaved.Rel_Fi;
+                double? value = (_relFiIndex == -1) ? Session.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Comment == RelFiKeys[_relFiIndex])?.Value;
+                Session.Rel_Fi = value ?? 0.0;
+                return Session.Rel_Fi;
             }
             set
             {
-                UserSaved.Rel_Fi = value;
+                Session.Rel_Fi = value;
                 RelFiIndex = -1;
             }
         }
@@ -347,44 +349,58 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_relFeIndex == -1) ? UserSaved.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Comment == RelFeKeys[_relFeIndex])?.Value;
-                UserSaved.Rel_Fe = value ?? 0.0;
-                return UserSaved.Rel_Fe;
+                double? value = (_relFeIndex == -1) ? Session.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Comment == RelFeKeys[_relFeIndex])?.Value;
+                Session.Rel_Fe = value ?? 0.0;
+                return Session.Rel_Fe;
             }
             set
             {
-                UserSaved.Rel_Fe = value;
+                Session.Rel_Fe = value;
                 RelFeIndex = -1;
             }
         }
 
         /*
-         * Custom Methods
+         * Trigger Hooks
          */
 
         /// <summary>
         /// Updates XAML Bindings and the Reset Calculation Flag
         /// </summary>
-        private void UpdateBindingsAndRecalculateFlag()
+        private void UpdateAll()
         {
             UpdateRecalculateFlag();
 
             _crossSection.UpdateDrawings();
 
             LayerList = null;
-            LayerList = UserSaved.SelectedElement.Layers;
-            SelectedElement = null;
-            SelectedElement = UserSaved.SelectedElement;
+            LayerList = Session.SelectedElement.Layers;
             SelectedListViewItem = null;
-            SelectedListViewItem = UserSaved.SelectedLayer;
+            SelectedListViewItem = Session.SelectedLayer;
+
+            // For updating MVVM Capsulated Properties
+            OnPropertyChanged(nameof(SelectedElement));
+            OnPropertyChanged(nameof(LayerProperties));
+            OnPropertyChanged(nameof(LayerMeasurement));
+            OnPropertyChanged(nameof(LayerMeasurementFull));
+            OnPropertyChanged(nameof(SubConstructionMeasurement));
+            OnPropertyChanged(nameof(CrossSectionDrawing));
+            OnPropertyChanged(nameof(CanvasSize));
+        }
+        private void UpdateElement()
+        {
+            UpdateRecalculateFlag();
+
+            // For updating MVVM Capsulated Properties
+            OnPropertyChanged(nameof(SelectedElement));
         }
         private void UpdateRecalculateFlag()
         {
-            UserSaved.Recalculate = true;
+            Session.Recalculate = true;
         }
-        private void ComboUpdate()
+        private void TriggerSelectedLayerChanged()
         {
-            UserSaved.OnSelectedLayerChanged();
+            Session.OnSelectedLayerChanged();
         }
     }
 }

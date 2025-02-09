@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Services;
-using BauphysikToolWPF.SessionData;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Diagnostics;
@@ -90,12 +89,12 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _selectedElementName = UserSaved.SelectedElement.IsValid ? UserSaved.SelectedElement.Name : "Neues Element";
+        private string _selectedElementName = Session.SelectedElement.IsValid ? Session.SelectedElement.Name : "Neues Element";
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
-        public bool IsServerOnline => Updater.CheckServerStatus(Updater.ServerUpdaterQuery);
+        public bool IsServerOnline => Updater.IsServerAvailable;
         public string ServerStatusLabel => IsServerOnline ? "Server Online" : "Server nicht erreichbar";
         public string IsServerOnlineColorCode => IsServerOnline ? "#2cde00" : "#fc0303";
 
