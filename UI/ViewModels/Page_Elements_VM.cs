@@ -1,4 +1,6 @@
-﻿using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Repository.Models.Helper;
+using BauphysikToolWPF.Services;
 using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -7,8 +9,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Repository.Models.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -20,11 +20,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             Session.SelectedProject.AssignInternalIdsToElements();
+            Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
 
             Session.NewProjectAdded += UpdateNewProjectAdded;
             Session.NewElementAdded += UpdateOnNewElementAdded;
             Session.ElementRemoved += UpdateOnElementRemoved;
-            Session.SelectedElementChanged += UpdateOnElementChanged;
+            Session.SelectedElementChanged += RefreshXamlBindings;
 
             // If Images are not rendered yet
             Session.SelectedProject.RenderMissingElementImages();
@@ -90,7 +91,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             Session.SelectedElementId = selectedInternalId;
             Session.Recalculate = true;
-            UpdateOnElementChanged();
+            RefreshXamlBindings();
         }
 
         [RelayCommand]
@@ -116,45 +117,37 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Workaround since Combobox has no Command or Click option
         partial void OnSortingPropertyIndexChanged(int value)
         {
-            Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
-            UpdateOnElementChanged();
+            RefreshXamlBindings();
+        }
+        partial void OnGroupingPropertyIndexChanged(int value)
+        {
+            RefreshXamlBindings();
         }
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
-         *
-         * e.g.: Everything the user can edit or change: All objects affected by user interaction.
-         *
-         * Initialized and Assigned with Default Values
+         * 
+         * Everything the user can edit or change: All objects affected by user interaction.
          */
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(SelectedSorting))]
         private static int _sortingPropertyIndex; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsGroupingEnabled))]
-        [NotifyPropertyChangedFor(nameof(SelectedGrouping))]
-        [NotifyPropertyChangedFor(nameof(GroupedElements))]
         private static int _groupingPropertyIndex; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
         [NotifyPropertyChangedFor(nameof(ElementInfoVisibility))]
-        private static Element? _selectedElement; // As Static Class Variable to Save the Selection after Switching Pages!
-
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(ExportPdfCatalogueAvailable))]
-        [NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
-        [NotifyPropertyChangedFor(nameof(ElementInfoVisibility))]
         private List<Element> _elements = Session.SelectedProject.Elements;
 
         /*
-         * MVVM Capsulated Properties + Triggered by other Properties
+         * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
          * 
-         * Not Observable, because Triggered and Changed by the _selection Values above
+         * Not Observable, not directly mutated by user input
          */
 
+        public Element? SelectedElement => Session.SelectedElementId == -1 ? null : Session.SelectedElement; // Cannot be directly mutated via binding like ListViewItems, since ints wrapped as button in a WrapPanel
         public bool ElementToolsAvailable => Session.SelectedElementId != -1;
         public bool ExportPdfCatalogueAvailable => false; // TODO: Elements.Count > 0;
 
@@ -162,18 +155,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool IsGroupingEnabled => GroupingPropertyIndex > 0;
 
         // For Grouping and Sorting of WrapPanel: Expose as Static for 'GroupingTypeToPropertyName' Converter
-        public static ElementSortingType SelectedSorting => (ElementSortingType)_sortingPropertyIndex;
-        public static ElementGroupingType SelectedGrouping => (ElementGroupingType)_groupingPropertyIndex;
+        public ElementSortingType SelectedSorting => (ElementSortingType)_sortingPropertyIndex;
+        public ElementGroupingType SelectedGrouping => (ElementGroupingType)_groupingPropertyIndex;
         public Visibility ElementInfoVisibility => ElementToolsAvailable ? Visibility.Visible : Visibility.Collapsed;
         public List<string> SortingProperties => ElementComparer.SortingTypes; // Has to match ElementSortingType enum values (+Order)
         public List<string> GroupingProperties => ElementComparer.GroupingTypes; // Has to match ElementSortingType enum values (+Order)
-        public ICollectionView? GroupedElements => Session.SelectedProject.Elements.Count > 0 ? GetGroupedItemsSource() : null;
-
-        private void UpdateOnElementChanged()
-        {
-            // only update UI
-            RefreshXamlBindings();
-        }
+        public ICollectionView? GroupedElements => IsGroupingEnabled && Session.SelectedProject.Elements.Count > 0 ? GetGroupedItemsSource() : null;
 
         private void UpdateOnNewElementAdded()
         {
@@ -209,14 +196,18 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-            // Trigger re-grouping
-            OnPropertyChanged(nameof(GroupedElements));
-
-            Elements = new List<Element>();
+            // For Updating MVVM Properties
+            Elements = null;
+            Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
             Elements = Session.SelectedProject.Elements;
 
-            SelectedElement = null;
-            SelectedElement = Session.SelectedElementId == -1 ? null : Session.SelectedElement;
+            // For updating MVVM Capsulated Properties
+            OnPropertyChanged(nameof(IsGroupingEnabled));
+            OnPropertyChanged(nameof(GroupedElements));
+            OnPropertyChanged(nameof(SelectedElement));
+            OnPropertyChanged(nameof(ExportPdfCatalogueAvailable));
+            OnPropertyChanged(nameof(ElementToolsAvailable));
+            OnPropertyChanged(nameof(ElementInfoVisibility));
         }
 
         private ICollectionView GetGroupedItemsSource()

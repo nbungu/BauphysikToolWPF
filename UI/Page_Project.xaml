@@ -276,8 +276,8 @@
                       Style="{StaticResource ListViewStyleRecentProjects}">
                     <!-- EventToCommand behavior to bind the double-click event to the command-->
                     <i:Interaction.Triggers>
-                        <i:EventTrigger EventName="MouseDoubleClick">
-                            <i:InvokeCommandAction Command="{Binding RecentProjectDoubleClickCommand}" />
+                        <i:EventTrigger EventName="MouseUp">
+                            <i:InvokeCommandAction Command="{Binding OpenRecentProjectCommand}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
             </ListView>
@@ -291,7 +291,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <Button Grid.Row="2" VerticalAlignment="Bottom" Content="Weiter" Command="{Binding NextCommand}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_Next_W}" IsEnabled="{Binding ElementPageAvailable}"/>
+            <Button Grid.Row="2" VerticalAlignment="Bottom" Content="Weiter" Command="{Binding NextCommand}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_Next_W}" Visibility="{Binding ProjectDataVisibility}"/>
 
         </Grid>
 

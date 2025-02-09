@@ -49,17 +49,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void Next()
         {
-            if (RecentProjectsListVisibility == Visibility.Visible && SelectedListViewItem != null)
-            {
-                var filePath = SelectedListViewItem.FilePath;
-                Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
-
-                Session.SelectedProject = loadedProject;
-                Session.ProjectFilePath = filePath;
-                Session.SelectedProject.IsModified = false;
-                ApplicationServices.AddRecentProject(filePath);
-                Session.OnNewProjectAdded(false);
-            }
             SwitchPage(NavigationContent.LandingPage);
         }
 
@@ -166,10 +155,20 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void RecentProjectDoubleClick()
+        private void OpenRecentProject()
         {
             if (SelectedListViewItem is null) return;
-            Next();
+
+            var filePath = SelectedListViewItem.FilePath;
+            Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
+
+            Session.SelectedProject = loadedProject;
+            Session.ProjectFilePath = filePath;
+            Session.SelectedProject.IsModified = false;
+            ApplicationServices.AddRecentProject(filePath);
+            Session.OnNewProjectAdded(false);
+
+            SwitchPage(NavigationContent.LandingPage);
         }
 
         partial void OnAuthorNameChanged(string value)
@@ -209,7 +208,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
-         * Initialized and Assigned with Default Values
+         * Everything the user can edit or change: All objects affected by user interaction.
          */
 
         [ObservableProperty]
@@ -243,7 +242,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
          * 
-         * Not Observable, No direct User Input involved
+         * Not Observable, not directly mutated by user input
          */
 
         public List<RecentProjectItem> RecentProjects { get; set; } = ApplicationServices.LoadRecentProjects();
@@ -253,7 +252,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-            // When updating fields/variables
+            // For updating fields/variables
             ProjectName = Session.SelectedProject.Name;
             AuthorName = Session.SelectedProject.UserName;
             Comment = Session.SelectedProject.Comment;
@@ -263,7 +262,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             IsNewConstrChecked = Session.SelectedProject.BuildingAge == BuildingAgeType.New;
             IsExistingConstrChecked = Session.SelectedProject.BuildingAge == BuildingAgeType.Existing;
 
-            // When updating properties
+            // For updating MVVM Capsulated Properties
             OnPropertyChanged(nameof(ProjectDataVisibility));
             OnPropertyChanged(nameof(RecentProjectsListVisibility));
             OnPropertyChanged(nameof(ElementPageAvailable));

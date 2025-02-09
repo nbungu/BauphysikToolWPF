@@ -29,16 +29,15 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.SelectedElement.AssignEffectiveLayers();
             Session.SelectedElement.AssignInternalIdsToLayers();
             
-
-            // Allow child Windows to trigger UpdateBindingsAndRecalculateFlag of this Window
-            Session.SelectedElementChanged += UpdateBindingsAndRecalculateFlag;
-            Session.SelectedLayerChanged += UpdateBindingsAndRecalculateFlag;
+            // Allow child Windows to trigger UpdateAll of this Window
+            Session.SelectedElementChanged += UpdateElement;
+            Session.SelectedLayerChanged += UpdateAll;
             Session.EnvVarsChanged += UpdateRecalculateFlag;
             
             // For values changed in PropertyDataGrid TextBox
-            PropertyItem<double>.PropertyChanged += ComboUpdate;
-            PropertyItem<SubConstructionDirection>.PropertyChanged += ComboUpdate;
-            PropertyItem<bool>.PropertyChanged += UpdateBindingsAndRecalculateFlag;
+            PropertyItem<double>.PropertyChanged += TriggerSelectedLayerChanged;
+            PropertyItem<SubConstructionDirection>.PropertyChanged += TriggerSelectedLayerChanged;
+            PropertyItem<bool>.PropertyChanged += TriggerSelectedLayerChanged;
         }
         
         /*
@@ -147,24 +146,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         /*
-         * MVVM Properties: Observable, if user can change these properties via frontend directly
+         * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
-         * Every property the user can change directly through input in frontend
+         * Everything the user can edit or change: All objects affected by user interaction.
          */
-
-        // TODO: as property?
-        [ObservableProperty]
-        private Element _selectedElement = Session.SelectedElement;
-
-        // TODO: as property?
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(LayerProperties))]
-        [NotifyPropertyChangedFor(nameof(LayerMeasurement))]
-        [NotifyPropertyChangedFor(nameof(LayerMeasurementFull))]
-        [NotifyPropertyChangedFor(nameof(SubConstructionMeasurement))]
-        [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
-        [NotifyPropertyChangedFor(nameof(CanvasSize))]
-        private List<Layer> _layerList = Session.SelectedElement.Layers;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
@@ -174,6 +159,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
         [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
         private Layer? _selectedListViewItem;
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(LayerMeasurement))]
+        [NotifyPropertyChangedFor(nameof(LayerMeasurementFull))]
+        [NotifyPropertyChangedFor(nameof(SubConstructionMeasurement))]
+        [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
+        [NotifyPropertyChangedFor(nameof(CanvasSize))]
+        private List<Layer> _layerList = Session.SelectedElement.Layers;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))]
@@ -200,11 +193,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static int _relFeIndex;
 
         /*
-         * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
-         * 
-         * Not Observable, No direct User Input involved
-         */
+        * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
+        * 
+        * Not Observable, not directly mutated by user input
+        */
 
+        public Element SelectedElement => Session.SelectedElement;
+        //public List<Layer> LayerList => Session.SelectedElement.Layers;
         public bool IsLayerSelected => SelectedListViewItem != null;
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
@@ -366,13 +361,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         /*
-         * Custom Methods
+         * Trigger Hooks
          */
 
         /// <summary>
         /// Updates XAML Bindings and the Reset Calculation Flag
         /// </summary>
-        private void UpdateBindingsAndRecalculateFlag()
+        private void UpdateAll()
         {
             UpdateRecalculateFlag();
 
@@ -380,20 +375,31 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             LayerList = null;
             LayerList = Session.SelectedElement.Layers;
-            SelectedElement = null;
-            SelectedElement = Session.SelectedElement;
             SelectedListViewItem = null;
             SelectedListViewItem = Session.SelectedLayer;
+
+            // For updating MVVM Capsulated Properties
+            OnPropertyChanged(nameof(SelectedElement));
+            OnPropertyChanged(nameof(LayerProperties));
+            OnPropertyChanged(nameof(LayerMeasurement));
+            OnPropertyChanged(nameof(LayerMeasurementFull));
+            OnPropertyChanged(nameof(SubConstructionMeasurement));
+            OnPropertyChanged(nameof(CrossSectionDrawing));
+            OnPropertyChanged(nameof(CanvasSize));
+        }
+        private void UpdateElement()
+        {
+            UpdateRecalculateFlag();
+
+            // For updating MVVM Capsulated Properties
+            OnPropertyChanged(nameof(SelectedElement));
         }
         private void UpdateRecalculateFlag()
         {
             Session.Recalculate = true;
         }
-
-        // TODO: Rework trigger
-        private void ComboUpdate()
+        private void TriggerSelectedLayerChanged()
         {
-            // Trigger SelectedLayerChanged
             Session.OnSelectedLayerChanged();
         }
     }

@@ -105,7 +105,7 @@
                     <!--'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
                     Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
                 <Button Style="{StaticResource ButtonStyleWrapPanel}"
-                        Command="{Binding DataContext.SelectElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" 
+                        Command="{Binding DataContext.SelectElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         CommandParameter="{Binding InternalId}"
                         Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                         <!-- EventToCommand behavior to bind the double-click event to the command-->
@@ -143,7 +143,7 @@
                             </ContextMenu>
                         </Button.ContextMenu>
                     </Button>
-                    <TextBlock Grid.Row="1" Text="{Binding Name}" FontWeight="Normal" Foreground="Black" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" Margin="0,4,0,0"/>
+                <TextBlock Grid.Row="1" Text="{Binding Name}" FontWeight="Normal" Foreground="Black" TextAlignment="Center" HorizontalAlignment="Center" TextWrapping="Wrap" FontSize="14" Margin="0,4,0,0"/>
                 </Grid>
             </DataTemplate>
 
