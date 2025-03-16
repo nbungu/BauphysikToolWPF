@@ -57,9 +57,15 @@ namespace BauphysikToolWPF.Services
             EnvVarsChanged?.Invoke();
         }
 
+        // TODO: TESTNG
+        public static IEnumerable<Element> GetElementsList()
+        {
+            return SelectedProject.Elements;
+        }
+
         public static string ProjectFilePath { get; set; } = string.Empty;
 
-        public static Project SelectedProject = new Project();
+        public static Project SelectedProject { get; set; } = new Project();
 
         /// <summary>
         /// InternalID des ausgewählten Elements

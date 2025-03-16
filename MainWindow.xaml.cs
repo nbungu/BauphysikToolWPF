@@ -22,13 +22,14 @@ namespace BauphysikToolWPF
     public enum NavigationContent
     {
         // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
-        ProjectPage,
-        LandingPage,
-        LayerSetup,
-        Summary,
-        TemperatureCurve,
-        GlaserCurve,
-        DynamicHeatCalc
+        ProjectPage = 0,
+        LandingPage = 1,
+        LayerSetup = 2,
+        Summary = 3,
+        TemperatureCurve = 4,
+        GlaserCurve = 5,
+        DynamicHeatCalc = 6,
+        BuildingEnvelope = 10
     }
     public partial class MainWindow : Window
     {
@@ -75,6 +76,10 @@ namespace BauphysikToolWPF
                 case NavigationContent.LandingPage:
                     _navigationMenuListBox.SelectedIndex = -1;
                     _projectBoxHeader.Tag = "LandingPage";
+                    break;
+                case NavigationContent.BuildingEnvelope:
+                    _navigationMenuListBox.SelectedIndex = -1;
+                    _projectBoxHeader.Tag = "BuildingEnvelope";
                     break;
                 case NavigationContent.LayerSetup:
                     _navigationMenuListBox.SelectedItem = "LayerSetup";

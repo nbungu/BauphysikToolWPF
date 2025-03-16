@@ -43,8 +43,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Resources\Icons\books.png" />
     <None Remove="Resources\Icons\error.png" />
     <None Remove="Resources\Icons\export-pdf-full_b.png" />
+    <None Remove="Resources\Icons\floor-plan-128.png" />
     <None Remove="Resources\Icons\info_b.png" />
     <None Remove="Resources\Icons\triangle-warning.png" />
   </ItemGroup>
@@ -100,6 +102,7 @@
     <Resource Include="Resources\Icons\ausruf.png" />
     <Resource Include="Resources\Icons\ausruf_w.png" />
     <Resource Include="Resources\Icons\bookmark.png" />
+    <Resource Include="Resources\Icons\books.png" />
     <Resource Include="Resources\Icons\comment.png" />
     <Resource Include="Resources\Icons\comment_bold.png" />
     <Resource Include="Resources\Icons\error.png" />
@@ -141,6 +144,7 @@
     <Resource Include="Resources\Icons\Flat\user.png" />
     <Resource Include="Resources\Icons\Flat\warning.png" />
     <Resource Include="Resources\Icons\Flat\water-drop.png" />
+    <Resource Include="Resources\Icons\floor-plan-128.png" />
     <Resource Include="Resources\Icons\info_b.png" />
     <Resource Include="Resources\Icons\placeholder_256px.png" />
     <Resource Include="Resources\Icons\delete-2.png" />

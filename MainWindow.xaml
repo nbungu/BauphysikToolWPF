@@ -40,57 +40,63 @@
         <controls:IsHeaderConverter x:Key="IsHeaderConverter"/>
 
         <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page-->
-        <DataTemplate x:Key="FO0_ProjectPage">
+        <DataTemplate x:Key="M1_ProjectPage">
             <ui:Page_Project/>
         </DataTemplate>
-        <DataTemplate x:Key="FO1_ElementsPage">
+        <DataTemplate x:Key="M2_ElementsPage">
             <ui:Page_Elements/>
         </DataTemplate>
-        <DataTemplate x:Key="FO1_LayerSetup">
+        <DataTemplate x:Key="M3_BuildingEnvelopePage">
+            <ui:Page_BuildingEnvelope/>
+        </DataTemplate>
+        <DataTemplate x:Key="P21_LayerSetup">
             <ui:Page_LayerSetup/>
         </DataTemplate>
-        <DataTemplate x:Key="FO1_Summary">
+        <DataTemplate x:Key="P22_Summary">
             <ui:Page_Summary/>
         </DataTemplate>
-        <DataTemplate x:Key="FO2_Temperature">
+        <DataTemplate x:Key="P23_Temperature">
             <ui:Page_TemperatureResults/>
         </DataTemplate>
-        <DataTemplate x:Key="FO3_Moisture">
+        <DataTemplate x:Key="P24_Moisture">
             <ui:Page_MoistureResults/>
         </DataTemplate>
-        <DataTemplate x:Key="FO4_Dynamic">
+        <DataTemplate x:Key="P25_Dynamic">
             <ui:Page_DynamicResults/>
         </DataTemplate>
 
         <!--Content Pages on right side-->
         <Style x:Key="NavigationContentStyle" TargetType="ContentControl">
             <!--Default First Page-->
-            <Setter Property="ContentTemplate" Value="{StaticResource FO0_ProjectPage}"/>
+            <Setter Property="ContentTemplate" Value="{StaticResource M1_ProjectPage}"/>
             <!--
             Switch between Pages based on 'SelectedItem' of 'NavigationMenuListBox'
             Item value comes from 'ItemsSource' (type of ListBoxItem), or via 'Tag'
             -->
             <Style.Triggers>
                 <DataTrigger Binding="{Binding ElementName=ProjectBoxHeader, Path=Tag}" Value="ProjectPage">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO0_ProjectPage}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource M1_ProjectPage}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=ProjectBoxHeader, Path=Tag}" Value="LandingPage">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_ElementsPage}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource M2_ElementsPage}"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=ProjectBoxHeader, Path=Tag}" Value="BuildingEnvelope">
+                    <Setter Property="ContentTemplate" Value="{StaticResource M3_BuildingEnvelopePage}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="LayerSetup">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_LayerSetup}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource P21_LayerSetup}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Summary">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO1_Summary}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource P22_Summary}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Temperature">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO2_Temperature}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource P23_Temperature}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Moisture">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO3_Moisture}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource P24_Moisture}"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding ElementName=NavigationMenuListBox, Path=SelectedItem}" Value="Dynamic">
-                    <Setter Property="ContentTemplate" Value="{StaticResource FO4_Dynamic}"/>
+                    <Setter Property="ContentTemplate" Value="{StaticResource P25_Dynamic}"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -102,8 +108,8 @@
         -->
         <x:Array x:Key="NavigationMenuItems" Type="system:String">
             <system:String>Header1</system:String>
-            <system:String>LayerSetup</system:String>  <!--SelectedIndex: 1-->
-            <system:String>Summary</system:String>    <!--SelectedIndex: 2-->
+            <system:String>LayerSetup</system:String>  <!--SelectedIndex: 2-->
+            <system:String>Summary</system:String>    <!--SelectedIndex: 3-->
             <system:String>Header2</system:String>
             <system:String>Temperature</system:String> <!--SelectedIndex: 4-->
             <system:String>Moisture</system:String>    <!--SelectedIndex: 5-->
@@ -501,6 +507,7 @@
                             <RowDefinition Height="Auto" MaxHeight="120"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
 
                         <StackPanel Orientation="Vertical" Margin="16,16,16,0">
@@ -509,10 +516,12 @@
                         </StackPanel>
                         <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_House_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" Margin="16"/>
                         <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" Margin="16,0,16,16"/>
+                        <Button Grid.Row="3" Content="Gebäudehülle" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Floor_Plan}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.BuildingEnvelope}" Margin="16,0,16,16"/>
                     </Grid>
                 </Border>
 
                 <!--Left Selection Box Bottom-->
+                <!--TODO: switch Items Source based off of Menu Pages M2 or M3-->
                 <ListBox x:Name="NavigationMenuListBox"
                          Grid.Column="0"
                          Grid.Row="1"                 

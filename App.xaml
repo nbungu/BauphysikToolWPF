@@ -107,6 +107,8 @@
         <BitmapImage x:Key="ButtonIcon_Search_B" UriSource="/Resources/Icons/search.png"/>
         <BitmapImage x:Key="ButtonIcon_Search_Bold_B" UriSource="/Resources/Icons/search_bold.png"/>
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
+        <BitmapImage x:Key="ButtonIcon_Floor_Plan" UriSource="/Resources/Icons/floor-plan-128.png"/>
+        <BitmapImage x:Key="ButtonIcon_Library" UriSource="/Resources/Icons/books.png"/>
 
         <!--Flat Style by https://www.flaticon.com/authors/srip -->
         <BitmapImage x:Key="ButtonIcon_Database_Flat" UriSource="/Resources/Icons/Flat/database.png"/>
