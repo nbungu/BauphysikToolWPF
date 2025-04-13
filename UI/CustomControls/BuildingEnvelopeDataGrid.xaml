@@ -4,7 +4,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:models="clr-namespace:BauphysikToolWPF.Repository.Models"
              xmlns:sys="clr-namespace:System;assembly=System.Runtime"
              xmlns:services="clr-namespace:BauphysikToolWPF.Services"
@@ -14,6 +14,8 @@
              d:Background="White">
 
     <UserControl.Resources>
+
+        <controls:DoubleWithDecimalPlacesConverter x:Key="DoubleWithDecimalPlacesConverter"/>
 
         <!-- Converts the Enum values into a list -->
         <ObjectDataProvider x:Key="UsageZoneValues" MethodName="GetValues" ObjectType="{x:Type sys:Enum}">
@@ -27,7 +29,6 @@
                 <x:Type TypeName="models:OrientationType"/>
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
-
 
         <ObjectDataProvider x:Key="ElementListValues"
                             MethodName="GetElementsList"
@@ -51,32 +52,74 @@
                   BorderThickness="1"
                   RowHeaderWidth="0"
                   HeadersVisibility="Column"
-                  SelectionUnit="FullRow"
+                  SelectionUnit="Cell"
+                  SelectionMode="Single"
                   RowHeight="24"
-                  PreviewMouseLeftButtonDown="BuildingEnvelopeDataGridElement_OnPreviewMouseLeftButtonDown">
+                  DataGridCell.Selected="DataGridCell_Selected">
             <DataGrid.Resources>
-                <!-- Automatically enter edit mode on single-click -->
                 <Style TargetType="DataGridCell">
-                    <EventSetter Event="PreviewMouseLeftButtonDown" Handler="BuildingEnvelopeDataGridElement_OnPreviewMouseLeftButtonDown"/>
+                    <Setter Property="BorderThickness" Value="0"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}" />
+                            <Setter Property="Foreground" Value="Black" />
+                        </Trigger>
+                    </Style.Triggers>
                 </Style>
             </DataGrid.Resources>
+            <DataGrid.RowStyle>
+                <Style TargetType="DataGridRow">
+                    <Setter Property="Background" Value="White"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="LightBlue"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.RowStyle>
             <DataGrid.Columns>
-                <DataGridTemplateColumn Width="26" CanUserResize="False">
-                    <DataGridTemplateColumn.HeaderTemplate>
+
+                <!-- CheckBox Column -->
+                <DataGridCheckBoxColumn CanUserResize="False">
+                    <DataGridCheckBoxColumn.HeaderTemplate>
                         <DataTemplate>
                             <CheckBox IsChecked="{Binding IsAllSelected, Mode=TwoWay}"
                                       HorizontalAlignment="Center"
                                       VerticalAlignment="Center" />
                         </DataTemplate>
-                    </DataGridTemplateColumn.HeaderTemplate>
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <CheckBox IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                    </DataGridCheckBoxColumn.HeaderTemplate>
+
+                    <!-- Cell Style (Background, Border, etc.) -->
+                    <DataGridCheckBoxColumn.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <!-- Conditional Background Change -->
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsValid}" Value="True">
+                                    <DataTrigger.Setters>
+                                        <Setter Property="Background" Value="Green"/>
+                                        <!-- Set background to green when IsValid is true -->
+                                    </DataTrigger.Setters>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridCheckBoxColumn.CellStyle>
+
+                    <DataGridCheckBoxColumn.ElementStyle>
+                        <Style TargetType="CheckBox">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridCheckBoxColumn.ElementStyle>
+                    <DataGridCheckBoxColumn.EditingElementStyle>
+                        <Style TargetType="CheckBox">
+                            <Setter Property="HorizontalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        </Style>
+                    </DataGridCheckBoxColumn.EditingElementStyle>
+                </DataGridCheckBoxColumn>
 
                 <!-- Etage Column -->
                 <DataGridTextColumn Header="Etage" Binding="{Binding FloorLevel}" Width="100">
@@ -87,8 +130,10 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="textData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
@@ -102,14 +147,16 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="textData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
                 <!-- Raumhöhe (m) Column -->
-                <DataGridTextColumn Header="Raumhöhe (m)" Binding="{Binding RoomHeightGross}" Width="100">
+                <DataGridTextColumn Header="Raumhöhe (m)" Binding="{Binding RoomHeightGross, Converter={StaticResource DoubleWithDecimalPlacesConverter}}" Width="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
@@ -117,14 +164,16 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
                 <!-- Raumfläche (m²) Column -->
-                <DataGridTextColumn Header="Raumfläche (m²)" Binding="{Binding RoomAreaGross}" Width="100">
+                <DataGridTextColumn Header="Raumfläche (m²)" Binding="{Binding RoomAreaGross, Converter={StaticResource DoubleWithDecimalPlacesConverter}}" Width="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
@@ -132,14 +181,16 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
                 <!-- Raumvolumen (m³) Column -->
-                <DataGridTextColumn Header="Raumvolumen (m³)" Binding="{Binding RoomVolumeGross}" Width="100">
+                <DataGridTextColumn Header="Raumvolumen (m³)" Binding="{Binding RoomVolumeGross, Converter={StaticResource DoubleWithDecimalPlacesConverter}}" Width="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
@@ -147,14 +198,16 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
                 <!-- Netto Höhe (m) Column -->
-                <DataGridTextColumn Header="Netto Höhe (m)" Binding="{Binding RoomHeightNet}" Width="100">
+                <DataGridTextColumn Header="Netto Höhe (m)" Binding="{Binding RoomHeightNet, Converter={StaticResource DoubleWithDecimalPlacesConverter}}" Width="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
@@ -162,14 +215,16 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
                 <!-- Netto Fläche (m²) Column -->
-                <DataGridTextColumn Header="Netto Fläche (m²)" Binding="{Binding RoomAreaNet}" Width="100">
+                <DataGridTextColumn Header="Netto Fläche (m²)" Binding="{Binding RoomAreaNet, Converter={StaticResource DoubleWithDecimalPlacesConverter}}" Width="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
@@ -177,29 +232,16 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
                 <!-- Netto Volumen (m³) Column -->
-                <DataGridTextColumn Header="Netto Volumen (m³)" Binding="{Binding RoomVolumeNet}" Width="100">
-                    <DataGridTextColumn.ElementStyle>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="Padding" Value="3,0,0,0"/>    
-                        </Style>
-                    </DataGridTextColumn.ElementStyle>
-                    <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                        </Style>
-                    </DataGridTextColumn.EditingElementStyle>
-                </DataGridTextColumn>
-
-                <!-- Bauteilfläche (m²) Column -->
-                <DataGridTextColumn Header="Bauteilfläche (m²)" Binding="{Binding EnvelopeArea}" Width="100">
+                <DataGridTextColumn Header="Netto Volumen (m³)" Binding="{Binding RoomVolumeNet, Converter={StaticResource DoubleWithDecimalPlacesConverter}}" Width="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
@@ -207,36 +249,60 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
+                        </Style>
+                    </DataGridTextColumn.EditingElementStyle>
+                </DataGridTextColumn>
+
+                <!-- Bauteilfläche (m²) Column -->
+                <DataGridTextColumn Header="Bauteilfläche (m²)" Binding="{Binding EnvelopeArea, Converter={StaticResource DoubleWithDecimalPlacesConverter}}" Width="100">
+                    <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="Padding" Value="3,0,0,0"/>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>
+                    <DataGridTextColumn.EditingElementStyle>
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
                 <!-- Ausrichtung Column -->
-                <DataGridComboBoxColumn Header="Ausrichtung"
+                <DataGridComboBoxColumn x:Name="EnvelopeItem_OrientationSelectionColumn"
+                                        Header="Ausrichtung"
                                         SelectedItemBinding="{Binding OrientationType}"
                                         ItemsSource="{Binding Source={StaticResource OrientationTypeValues}}"
                                         Width="96">
                     <DataGridComboBoxColumn.ElementStyle>
-                        <Style TargetType="ComboBox">
+                        <Style TargetType="ComboBox" >
                             <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="Margin" Value="5,0,0,0"/>
                         </Style>
                     </DataGridComboBoxColumn.ElementStyle>
                     <DataGridComboBoxColumn.EditingElementStyle>
                         <Style TargetType="ComboBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Stretch" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Setter Property="BorderThickness" Value="0" />
                         </Style>
                     </DataGridComboBoxColumn.EditingElementStyle>
                 </DataGridComboBoxColumn>
 
                 <!-- Bauteil Column -->
-                <DataGridComboBoxColumn Header="Bauteil"
+                <DataGridComboBoxColumn x:Name="EnvelopeItem_ElementSelectionColumn"
+                                        Header="Bauteil"
                                         SelectedItemBinding="{Binding Element}"
                                         ItemsSource="{Binding Source={StaticResource ElementListValues}}"
                                         DisplayMemberPath="Name"
-                                        Width="96">
+                                        Width="120"
+                                        MinWidth="80">
                     <!-- Anzeige nur des Namens in der normalen Ansicht -->
                     <DataGridComboBoxColumn.ElementStyle>
                         <Style TargetType="ComboBox">
@@ -261,7 +327,9 @@
                     </DataGridComboBoxColumn.ElementStyle>
                     <DataGridComboBoxColumn.EditingElementStyle>
                         <Style TargetType="ComboBox">
-                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="VerticalAlignment" Value="Stretch" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Setter Property="BorderThickness" Value="0" />
                             <Setter Property="ItemTemplate">
                                 <Setter.Value>
                                     <DataTemplate>
@@ -281,9 +349,8 @@
 
                 </DataGridComboBoxColumn>
 
-
                 <!-- U-Wert Column -->
-                <DataGridTextColumn Header="U-Wert (W/m²K)" Binding="{Binding Element.UValue}" Width="100" IsReadOnly="True">
+                <DataGridTextColumn Header="U-Wert (W/m²K)" Binding="{Binding UValue, Converter={StaticResource DoubleWithDecimalPlacesConverter}}" Width="100">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />
@@ -291,26 +358,31 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>
 
                 <!-- Zone Column -->
-                <DataGridComboBoxColumn Header="Zone"
-                                SelectedItemBinding="{Binding Zone}"
-                                ItemsSource="{Binding Source={StaticResource UsageZoneValues}}"
-                                Width="120">
+                <DataGridComboBoxColumn x:Name="EnvelopeItem_ZoneSelectionColumn"
+                                        Header="Zone"
+                                        SelectedItemBinding="{Binding Zone}"
+                                        ItemsSource="{Binding Source={StaticResource UsageZoneValues}}"
+                                        Width="120">
                     <DataGridComboBoxColumn.ElementStyle>
-                        <Style TargetType="ComboBox">
+                        <Style TargetType="ComboBox" >
                             <Setter Property="VerticalAlignment" Value="Center" />
                             <Setter Property="Margin" Value="5,0,0,0"/>
                         </Style>
                     </DataGridComboBoxColumn.ElementStyle>
                     <DataGridComboBoxColumn.EditingElementStyle>
                         <Style TargetType="ComboBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                            <Setter Property="VerticalAlignment" Value="Stretch" />
+                            <Setter Property="BorderBrush" Value="Transparent" />
+                            <Setter Property="BorderThickness" Value="0" />
                         </Style>
                     </DataGridComboBoxColumn.EditingElementStyle>
                 </DataGridComboBoxColumn>
@@ -324,8 +396,10 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox">
-                            <Setter Property="VerticalAlignment" Value="Center" />
+                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                            <Setter Property="VerticalAlignment" Value="Center"/>
+                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+                            <EventSetter Event="PreviewTextInput" Handler="textData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
                 </DataGridTextColumn>

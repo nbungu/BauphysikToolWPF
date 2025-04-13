@@ -1,25 +1,25 @@
-﻿using System;
-using System.IO;
-using BauphysikToolWPF.Repository;
-using System.Linq;
-using SQLiteNetExtensions.Extensions;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using BauphysikToolWPF.UI.CustomControls;
-using BT.Logging;
-using System.Runtime.InteropServices;
-using System.Collections.Generic;
+﻿using BauphysikToolWPF.Repository;
 using BauphysikToolWPF.Repository.Models;
 using BauphysikToolWPF.Services.Models;
+using BauphysikToolWPF.UI.CustomControls;
+using BT.Logging;
+using SQLiteNetExtensions.Extensions;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace BauphysikToolWPF.Services
 {
     public static class ApplicationServices
     {
-        public static string RecentProjectsFilePath = GetRecentProjectsFilePath();
-        public static string DownloadsFolderPath = GetDownloadsFolderPath();
-        public static string LocalAppDataPath = GetLocalAppDataPath();
-        public static string LocalProgramDataPath = GetLocalProgramDataPath();
+        public static readonly string RecentProjectsFilePath = GetRecentProjectsFilePath();
+        public static readonly string DownloadsFolderPath = GetDownloadsFolderPath();
+        public static readonly string LocalAppDataPath = GetLocalAppDataPath();
+        public static readonly string LocalProgramDataPath = GetLocalProgramDataPath();
 
         public static void SaveProjectToFile(Project project, string filePath)
         {

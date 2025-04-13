@@ -1,7 +1,7 @@
-﻿using System.Windows;
+﻿using BauphysikToolWPF.Services;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -33,60 +33,34 @@ namespace BauphysikToolWPF.UI.CustomControls
             set => SetValue(SelectedEnvelopeItemProperty, value);
         }
 
-        public static readonly DependencyProperty ElementCollectionProperty =
-            DependencyProperty.Register(nameof(ElementCollection), typeof(object), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
+        //public static readonly DependencyProperty ElementCollectionProperty =
+        //    DependencyProperty.Register(nameof(ElementCollection), typeof(object), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
 
-        public object ElementCollection
-        {
-            get => GetValue(ElementCollectionProperty);
-            set => SetValue(ElementCollectionProperty, value);
-        }
+        //public object ElementCollection
+        //{
+        //    get => GetValue(ElementCollectionProperty);
+        //    set => SetValue(ElementCollectionProperty, value);
+        //}
 
-        private void BuildingEnvelopeDataGridElement_OnPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void DataGridCell_Selected(object sender, RoutedEventArgs e)
         {
-            if (e.OriginalSource is FrameworkElement fe)
+            // Lookup for the source to be DataGridCell
+            if (e.OriginalSource.GetType() == typeof(DataGridCell))
             {
-                //DataGridCell cell = fe.Parent as DataGridCell;
-                DataGridCell cell = FindParent<DataGridCell>(fe);
-                if (cell != null && !cell.IsEditing && !cell.IsReadOnly)
-                {
-                    // TODO:
-                    // Special handling for ComboBox to open dropdown immediately
-                    if (cell.Content is ComboBox comboBox)
-                    {
-                        comboBox.Focus();
-                        comboBox.IsDropDownOpen = true;
-                    }
-
-                    // Set focus to the cell
-                    cell.Focus();
-
-                    // Force DataGrid into edit mode
-                    DataGrid dataGrid = FindParent<DataGrid>(cell);
-                    if (dataGrid != null)
-                    {
-       
-                        dataGrid.BeginEdit();
-                        e.Handled = true; // Prevent default selection behavior
-
-
-                    }
-
-
-                }
+                // Starts the Edit on the row;
+                DataGrid grd = (DataGrid)sender;
+                grd.BeginEdit(e);
             }
         }
-        // Helper function to find the parent DataGrid
-        private static T FindParent<T>(DependencyObject child) where T : DependencyObject
+
+        private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            DependencyObject parent = VisualTreeHelper.GetParent(child);
-            while (parent != null)
-            {
-                if (parent is T typedParent)
-                    return typedParent;
-                parent = VisualTreeHelper.GetParent(parent);
-            }
-            return null;
+            e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
+        }
+
+        private void textData_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = TextInputValidation.Any.IsMatch(e.Text);
         }
     }
 }

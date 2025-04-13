@@ -51,7 +51,6 @@
                 <controls:BuildingEnvelopeDataGrid
                     EnvelopeItems="{Binding EnvelopeItems}"
                     SelectedEnvelopeItem="{Binding SelectedEnvelopeItem}"
-                    ElementCollection="{Binding ElementIds}"
                     MinHeight="200" MinWidth="200"/>
             </ScrollViewer>
         </Grid>

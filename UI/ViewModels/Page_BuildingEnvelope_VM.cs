@@ -26,6 +26,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         * Not Observable, not directly mutated by user input
         */
 
-        public IEnumerable<int> ElementIds => Session.SelectedProject.Elements.Select(e => e.InternalId);
+        //public IEnumerable<int> ElementIds => Session.SelectedProject.Elements.Select(e => e.InternalId);
     }
 }

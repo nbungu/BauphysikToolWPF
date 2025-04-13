@@ -16,31 +16,46 @@ namespace BauphysikToolWPF.Repository.Models
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; } = -1; // -1 means: Is not part of Database yet
         [NotNull]
-        public string RoomName { get; set; }
+        public string RoomName { get; set; } = string.Empty;
         [NotNull]
-        public string FloorLevel { get; set; }
+        public string FloorLevel { get; set; } = string.Empty;
         [NotNull]
-        public double RoomHeightGross { get; set; }
+        public double RoomHeightGross { get; set; } = 0.0;
         [NotNull]
-        public double RoomAreaGross { get; set; }
+        public double RoomAreaGross { get; set; } = 0.0;
         [NotNull]
-        public double RoomVolumeGross { get; set; }
+        public double RoomVolumeGross { get; set; } = 0.0;
         [NotNull]
-        public double RoomHeightNet { get; set; }
+        public double RoomHeightNet { get; set; } = 0.0;
         [NotNull]
-        public double RoomAreaNet { get; set; }
+        public double RoomAreaNet { get; set; } = 0.0;
         [NotNull]
-        public double RoomVolumeNet { get; set; }
+        public double RoomVolumeNet { get; set; } = 0.0;
         [NotNull]
-        public double EnvelopeArea { get; set; }
+        public double EnvelopeArea { get; set; } = 0.0;
+
         [NotNull, ForeignKey(typeof(Element))] // FK for the n:1 relationship with Element
-        public int ElementId { get; set; }
+        public int ElementId { get; set; } = -1;
+
+        private double _uValue = 0.0;
+        [NotNull]
+        public double UValue
+        {
+            get => Element is null ? _uValue : Element.UValue;
+            set => _uValue = value;
+        }
         [NotNull]
         public string Tag { get; set; } = string.Empty;
         [NotNull]
         public string Comment { get; set; } = string.Empty;
+
+        private OrientationType _orientationType = OrientationType.Norden;
         [NotNull]
-        public OrientationType OrientationType { get; set; } = OrientationType.Norden;
+        public OrientationType OrientationType
+        {
+            get => ElementId == -1 ? _orientationType : Element.OrientationType;
+            set => _orientationType = value;
+        }
         [NotNull]
         public UsageZone Zone { get; set; } = UsageZone.Wohnen;
         [NotNull]
@@ -58,6 +73,9 @@ namespace BauphysikToolWPF.Repository.Models
 
         [Ignore, JsonIgnore]
         public bool IsSelected { get; set; }
+
+        [Ignore, JsonIgnore]
+        public bool IsValid => FloorLevel != string.Empty && RoomName != string.Empty;
 
         // Readonly Properties
 
