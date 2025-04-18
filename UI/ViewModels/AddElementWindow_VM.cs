@@ -1,12 +1,14 @@
-﻿using BauphysikToolWPF.Repository;
-using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Repositories;
+using BauphysikToolWPF.Services.Application;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using BauphysikToolWPF.Repository.Models;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -14,7 +16,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddElementWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddElementWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => EditSelectedElement ? $"Ausgewähltes Element bearbeiten: {Session.SelectedElement.Name}" : "Neues Element erstellen";
+        public string Title => EditSelectedElement && Session.SelectedElement != null ? $"Ausgewähltes Element bearbeiten: {Session.SelectedElement.Name}" : "Neues Element erstellen";
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -70,17 +72,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // To be able to Close EditElementWindow from within this ViewModel
             if (window is null) return;
+            if (Session.SelectedProject == null) return;
             // Avoid empty Input fields
 
-            Construction construction = DatabaseAccess.GetConstructions().FirstOrDefault(e => e.TypeName == SelectedConstruction, new Construction());
+            //Construction construction = DatabaseAccess.GetConstructionsQuery().FirstOrDefault(e => e.Type == (ConstructionType)SelectedConstruction, new Construction());
             
-            if (EditSelectedElement)
+            if (EditSelectedElement && Session.SelectedElement != null)
             {
                 Session.SelectedElement.Name = SelectedElementName;
-                Session.SelectedElement.ConstructionId = construction.ConstructionId;
-                Session.SelectedElement.Construction = construction;
-                Session.SelectedElement.OrientationType = SelectedOrientation;
-                Session.SelectedElement.ProjectId = Session.SelectedProject.Id;
+                Session.SelectedElement.ConstructionId = SelectedConstruction;
+                Session.SelectedElement.OrientationType = (OrientationType)SelectedOrientation;
                 Session.SelectedElement.TagList = TagList;
                 Session.SelectedElement.Comment = SelectedElementComment;
                 Session.SelectedElement.ColorCode = SelectedElementColor;
@@ -93,10 +94,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 {
                     // ElementId gets set by SQLite DB (AutoIncrement)
                     Name = SelectedElementName,
-                    ConstructionId = construction.ConstructionId,
-                    Construction = construction,
-                    OrientationType = SelectedOrientation,
-                    ProjectId = Session.SelectedProject.Id,
+                    ConstructionId = SelectedConstruction,
+                    OrientationType = (OrientationType)SelectedOrientation,
                     TagList = TagList,
                     Comment = SelectedElementComment,
                     ColorCode = SelectedElementColor
@@ -104,7 +103,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Session.SelectedProject.Elements.Add(newElem);
                 Session.OnNewElementAdded();
             }
-
             window.Close();
         }
 
@@ -123,11 +121,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _selectedElementName = Session.SelectedElement.Name != "" ? Session.SelectedElement.Name : "Neues Element";
+        private string _selectedElementName = Session.SelectedElement != null && Session.SelectedElement.Name != "" ? Session.SelectedElement.Name : "Neues Element";
         [ObservableProperty]
-        private string _selectedConstruction = Session.SelectedElement.Name != "" ? Session.SelectedElement.Construction.TypeName : "Außenwand";
+        private int _selectedConstruction = Session.SelectedElement != null ? (int)Session.SelectedElement.Construction.Type : (int)ConstructionType.Aussenwand;
         [ObservableProperty]
-        private OrientationType _selectedOrientation = Session.SelectedElement.Name != "" ? Session.SelectedElement.OrientationType : OrientationType.Norden;
+        private int _selectedOrientation = Session.SelectedElement != null ? (int)Session.SelectedElement.OrientationType : (int)OrientationType.North;
         [ObservableProperty]
         private Visibility _tagBtnVisible = Visibility.Visible;
         [ObservableProperty]
@@ -135,18 +133,20 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private Visibility _enterBtnVisible = Visibility.Hidden;
         [ObservableProperty]
-        private List<string> _tagList = Session.SelectedElement.TagList;
+        private List<string> _tagList = Session.SelectedElement != null ? Session.SelectedElement.TagList : new List<string>(0);
         [ObservableProperty]
-        private string _selectedElementComment = Session.SelectedElement.Comment;
+        private string _selectedElementComment = Session.SelectedElement != null ? Session.SelectedElement.Comment : "";
         [ObservableProperty]
-        private string _selectedElementColor = Session.SelectedElement.ColorCode;
+        private string _selectedElementColor = Session.SelectedElement != null ? Session.SelectedElement.ColorCode : "#00FFFFFF";
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
         public bool EditSelectedElement => AddElementWindow.EditExistingElement;
+        public List<string> OrientationList => OrientationTypeMapping.Values.ToList();
 
-        public List<string> ConstructionTypeList => DatabaseAccess.GetConstructions().Select(e => e.TypeName).ToList();
+        // Database is Source
+        public List<string> ConstructionTypeList => DatabaseAccess.GetConstructionsQuery().Select(e => e.TypeName).ToList();
     }
 }

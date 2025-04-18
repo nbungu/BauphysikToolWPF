@@ -269,7 +269,9 @@
 
             <Label Grid.Row="0" Content="Zuletzt geöffnete Projekte" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
-            <ListView Grid.Row="1" ItemsSource="{Binding RecentProjects}" 
+            <ListView Grid.Row="1"
+                      Visibility="{Binding RecentProjectEntriesVisibility}"
+                      ItemsSource="{Binding RecentProjects}" 
                       SelectedItem="{Binding SelectedListViewItem, Mode=TwoWay}"
                       ItemTemplate="{StaticResource RecentProjectsItemTemplate}"
                       ItemContainerStyle="{StaticResource RecentProjectItemContainerStyle}"
@@ -281,6 +283,14 @@
                         </i:EventTrigger>
                     </i:Interaction.Triggers>
             </ListView>
+            <!-- Label shown when no recent projects exist -->
+            <Label Grid.Row="1"
+                   Visibility="{Binding NoRecentProjectEntriesVisibility}"
+                   Content="Keine zuletzt geöffneten Projekte vorhanden."
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center"
+                   FontStyle="Italic"
+                   Foreground="Gray"/>
         </Grid>
 
         <!-- Right -->

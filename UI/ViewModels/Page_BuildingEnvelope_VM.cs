@@ -1,8 +1,9 @@
-﻿using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Services.Application;
 using CommunityToolkit.Mvvm.ComponentModel;
 using System.Collections.Generic;
 using System.Linq;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -15,17 +16,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private EnvelopeItem? _selectedEnvelopeItem;
-
-        [ObservableProperty]
-        private List<EnvelopeItem> _envelopeItems = new List<EnvelopeItem>();
+        private List<EnvelopeItem> _envelopeItems = Session.SelectedProject?.EnvelopeItems ?? new List<EnvelopeItem>(0);
 
         /*
-        * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
-        * 
-        * Not Observable, not directly mutated by user input
-        */
+         * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
+         * 
+         * Not Observable, not directly mutated by user input
+         */
 
-        //public IEnumerable<int> ElementIds => Session.SelectedProject.Elements.Select(e => e.InternalId);
+        public EnvelopeItem? SelectedEnvelopeItem => Session.SelectedEnvelopeItem; // Cannot be directly mutated via binding like ListViewItems, since ints wrapped as button in a WrapPanel
+
+        public List<string> OrientationTypeList => OrientationTypeMapping.Values.ToList();
     }
 }

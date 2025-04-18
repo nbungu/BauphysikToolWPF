@@ -228,13 +228,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Repository\InitialDB.db">
+    <None Update="Repositories\InitialDB.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Services\recently_used.json">
+    <None Update="Repositories\recent_projects.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Services\updater.json">
+    <None Update="Repositories\updater.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

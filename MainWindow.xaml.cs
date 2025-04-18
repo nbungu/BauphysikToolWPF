@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.Services;
+using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
@@ -9,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF
 {
@@ -47,12 +49,12 @@ namespace BauphysikToolWPF
             _projectBoxHeader = this.ProjectBoxHeader;
             _toastNotification = this.Toast;
 
-            if (Updater.NewVersionAvailable)
+            if (UpdaterManager.NewVersionAvailable)
             {
                 Logger.LogInfo($"Found new Version! Notifying User");
-                ShowToast($"New Version Available: {Updater.LocalUpdaterFile.LatestTag}. Besuchen Sie bauphysik-tool.de für ein kostenloses Update!", ToastType.Info, 6);
-                Updater.LocalUpdaterFile.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
-                Updater.WriteToLocalUpdaterFile(Updater.LocalUpdaterFile);
+                ShowToast($"New Version Available: {UpdaterManager.LocalUpdaterManagerFile.LatestTag}. Besuchen Sie bauphysik-tool.de für ein kostenloses Update!", ToastType.Info, 6);
+                UpdaterManager.LocalUpdaterManagerFile.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
+                UpdaterManager.WriteToLocalUpdaterFile(UpdaterManager.LocalUpdaterManagerFile);
             }
         }
 

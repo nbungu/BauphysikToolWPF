@@ -1,45 +1,47 @@
-﻿using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Models.Database;
+using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Repositories;
+using BauphysikToolWPF.Services.Application;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.UI.Models;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for AddLayerSubConstructionWindow.xaml: Used in xaml as "DataContext"
     public partial class AddLayerSubConstructionWindow_VM : ObservableObject
     {
-        // Called by 'InitializeComponent()' from AddLayerSubConstructionWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => EditSelectedSubConstr ? $"Ausgewählte Balkenlage bearbeiten: {Session.SelectedLayer.SubConstruction}" : "Neue Balkenlage erstellen";
-        
-        // All changes are being made to this Instance first
+        private readonly Layer? _targetLayer = Session.SelectedElement?.Layers.FirstOrDefault(l => l?.InternalId == AddLayerSubConstructionWindow.TargetLayerInternalId, null);
+        private readonly bool _editSelectedSubConstr = AddLayerSubConstructionWindow.EditExistingSubConstr;
         private readonly LayerSubConstruction _tempConstruction;
-
+        
+        // Called by 'InitializeComponent()' from AddLayerSubConstructionWindow.cs due to Class-Binding in xaml via DataContext
         public AddLayerSubConstructionWindow_VM()
         {
-            PropertyItem<SubConstructionDirection>.PropertyChanged += UpdateXamlBindings;
+            if (_targetLayer is null) return;
+            
+            PropertyItem<int>.PropertyChanged += UpdateXamlBindings;
 
-            if (EditSelectedSubConstr && Session.SelectedLayer.SubConstruction != null)
+            if (_editSelectedSubConstr && _targetLayer.SubConstruction != null)
             {
-                _tempConstruction = Session.SelectedLayer.SubConstruction.Copy();
+                _tempConstruction = _targetLayer.SubConstruction.Copy();
             }
             else
             {
                 _tempConstruction = new LayerSubConstruction()
                 {
                     Width = 4,
-                    Thickness = Session.SelectedLayer.Thickness,
+                    Thickness = _targetLayer.Thickness,
                     Spacing = 18,
-                    MaterialId = Session.SelectedLayer.MaterialId,
-                    Material = Session.SelectedLayer.Material,
-                    LayerId = Session.SelectedLayer.Id,
-                    Layer = Session.SelectedLayer,
+                    MaterialId = _targetLayer.MaterialId,
                 };
+
             }
             SelectedListViewItem = _tempConstruction.Material;
         }
@@ -55,10 +57,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // To be able to Close Window from within this ViewModel
             if (window is null) return;
-
             if (!_tempConstruction.IsValid) return;
+            if (_targetLayer is null) return;
+
             // Replace/Add
-            Session.SelectedLayer.SubConstruction = _tempConstruction;
+            _targetLayer.SubConstruction = _tempConstruction;
 
             // Trigger Event to Update Layer Window
             Session.OnSelectedLayerChanged();
@@ -72,11 +75,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         // This method will be called whenever SelectedListViewItem changes
-        partial void OnSelectedListViewItemChanged(Material value)
+        partial void OnSelectedListViewItemChanged(Material? value)
         {
             if (value is null) return;
             _tempConstruction.MaterialId = value.Id;
-            _tempConstruction.Material = value;
         }
 
         /*
@@ -108,23 +110,26 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, No direct User Input involved
          */
 
+        public string Title => _targetLayer != null && _editSelectedSubConstr ? $"Ausgewählte Balkenlage bearbeiten: {_targetLayer.SubConstruction}" : "Neue Balkenlage erstellen";
         public List<Material> Materials => GetMaterials();
         public string Tab0Header => $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
         public string Tab1Header => $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
-        public bool EditSelectedSubConstr => AddLayerSubConstructionWindow.EditExistingSubConstr;
-        public string ButtonText => EditSelectedSubConstr ? "Änderung übernehmen" : "Balkenlage hinzufügen";
+        public string ButtonText => _editSelectedSubConstr ? "Änderung übernehmen" : "Balkenlage hinzufügen";
         public List<IPropertyItem> SubConstructionProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Material", () => _tempConstruction.Material.Name),
-            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => _tempConstruction.Direction, value => _tempConstruction.Direction = value)
+            new PropertyItem<int>("Ausrichtung", () => (int)_tempConstruction.Direction, value => _tempConstruction.Direction = (SubConstructionDirection)value)
             {
-                PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray()
+                PropertyValues = SubConstructionDirectionMapping.Values.Cast<object>().ToArray()
             },
             new PropertyItem<double>(Symbol.Thickness, () => _tempConstruction.Thickness, value => _tempConstruction.Thickness = value),
             new PropertyItem<double>(Symbol.Width, () => _tempConstruction.Width, value => _tempConstruction.Width = value),
             new PropertyItem<double>(Symbol.Distance, () => _tempConstruction.Spacing, value => _tempConstruction.Spacing = value),
         };
 
+        public List<string> MaterialCategoryList => MaterialCategoryMapping.Values.ToList();
+
+        
         // TODO: implement QueryFilterConfig...
         private List<Material> GetMaterials()
         {

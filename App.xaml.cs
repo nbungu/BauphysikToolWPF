@@ -1,9 +1,10 @@
-﻿using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 using System;
 using System.IO;
 using System.Windows;
-using BauphysikToolWPF.Repository.Models;
+using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF
 {
@@ -40,10 +41,10 @@ namespace BauphysikToolWPF
                     try
                     {
                         // Load the project from the specified file
-                        Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
+                        Project loadedProject = DomainModelSerializer.GetProjectFromFile(filePath);
                         Session.SelectedProject = loadedProject;
                         Session.ProjectFilePath = filePath;
-                        ApplicationServices.AddRecentProject(filePath);
+                        RecentProjectsManager.AddRecentProject(filePath);
                         Logger.LogInfo($"Loaded Project: '{Session.SelectedProject}' from Arguments!");
                     }
                     catch (Exception ex)
@@ -66,7 +67,7 @@ namespace BauphysikToolWPF
         protected override void OnExit(ExitEventArgs e)
         {
             Logger.LogInfo($"Checking for Updates...");
-            Updater.CheckForUpdates();
+            UpdaterManager.CheckForUpdates();
 
             Logger.LogInfo($"Closing Application with ExitCode: {e.ApplicationExitCode}");
         }

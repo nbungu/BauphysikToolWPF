@@ -1,10 +1,10 @@
-﻿using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.UI;
 using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BauphysikToolWPF.UI.Models;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -58,6 +58,19 @@ namespace BauphysikToolWPF.UI.CustomControls
             }
         }
 
+        //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (sender is ComboBox comboBox)
+        //    {
+        //        if (comboBox.IsReadOnly) return;
+
+        //        var propertyItem = comboBox.DataContext as IPropertyItem ?? null;
+        //        if (comboBox.SelectedItem != null && propertyItem != null)
+        //        {
+        //            propertyItem.Value = comboBox.SelectedItem;
+        //        }
+        //    }
+        //}
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is ComboBox comboBox)
@@ -67,7 +80,7 @@ namespace BauphysikToolWPF.UI.CustomControls
                 var propertyItem = comboBox.DataContext as IPropertyItem ?? null;
                 if (comboBox.SelectedItem != null && propertyItem != null)
                 {
-                    propertyItem.Value = comboBox.SelectedItem;
+                    propertyItem.Value = comboBox.SelectedIndex;
                 }
             }
         }

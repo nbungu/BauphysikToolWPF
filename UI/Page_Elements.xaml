@@ -267,7 +267,7 @@
             </StackPanel>
             
             <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" Margin="0,0,0,8">
-                <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="8,4,8,8" ClipToBounds="True" Visibility="{Binding ElementInfoVisibility}">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="8" ClipToBounds="True" Visibility="{Binding ElementInfoVisibility}">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="{Binding SelectedElement.Name}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
@@ -280,7 +280,7 @@
 
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.OrientationType}" HorizontalAlignment="Left"/>
+                            <Label Content="{Binding SelectedElement.OrientationTypeName}" HorizontalAlignment="Left"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96" FontWeight="DemiBold"/>

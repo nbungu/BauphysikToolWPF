@@ -1,6 +1,7 @@
-﻿using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Repository.Models.Helper;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services;
+using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -17,6 +18,8 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         public Page_Elements_VM()
         {
+            if (Session.SelectedProject is null) return;
+
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             Session.SelectedProject.AssignInternalIdsToElements();
@@ -66,6 +69,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void DeleteElement(int selectedInternalId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
         {
             // Delete selected Element
+            if (Session.SelectedProject is null) return;
             Session.SelectedProject.Elements.RemoveAll(e => e.InternalId == selectedInternalId);
             Session.OnElementRemoved();
         }
@@ -74,6 +78,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void DeleteAllElements()
         {
             // Delete all Elements
+            if (Session.SelectedProject is null) return;
             Session.SelectedProject.Elements.Clear();
             Session.OnElementRemoved();
         }
@@ -82,6 +87,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void CopyElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
             Session.SelectedElementId = selectedInternalId;
+
+            if (Session.SelectedProject is null) return;
+            if (Session.SelectedElement is null) return;
             Session.SelectedProject.Elements.Add(Session.SelectedElement.Copy());
             Session.OnNewElementAdded();
         }
@@ -104,7 +112,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void CreateSingleElementPdf(int selectedInternalId)
         {
             Session.SelectedElementId = selectedInternalId;
-            DocumentDesigner.CreateSingleElementDocument(Session.SelectedElement);
+            DocumentDesigner.CreateSingleElementDocument(Session.SelectedProject, Session.SelectedElement);
         }
 
         [RelayCommand]
@@ -139,7 +147,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
         [NotifyPropertyChangedFor(nameof(ElementInfoVisibility))]
-        private List<Element> _elements = Session.SelectedProject.Elements;
+        private List<Element> _elements = Session.SelectedProject?.Elements ?? new List<Element>(0);
 
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
@@ -147,7 +155,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, not directly mutated by user input
          */
 
-        public Element? SelectedElement => Session.SelectedElementId == -1 ? null : Session.SelectedElement; // Cannot be directly mutated via binding like ListViewItems, since ints wrapped as button in a WrapPanel
+        public Element? SelectedElement => Session.SelectedElement; // Cannot be directly mutated via binding like ListViewItems, since ints wrapped as button in a WrapPanel
         public bool ElementToolsAvailable => Session.SelectedElementId != -1;
         public bool ExportPdfCatalogueAvailable => false; // TODO: Elements.Count > 0;
 
@@ -160,10 +168,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility ElementInfoVisibility => ElementToolsAvailable ? Visibility.Visible : Visibility.Collapsed;
         public List<string> SortingProperties => ElementComparer.SortingTypes; // Has to match ElementSortingType enum values (+Order)
         public List<string> GroupingProperties => ElementComparer.GroupingTypes; // Has to match ElementSortingType enum values (+Order)
-        public ICollectionView? GroupedElements => IsGroupingEnabled && Session.SelectedProject.Elements.Count > 0 ? GetGroupedItemsSource() : null;
+        public ICollectionView? GroupedElements => IsGroupingEnabled && Session.SelectedProject?.Elements.Count > 0 ? GetGroupedItemsSource() : null;
 
         private void UpdateOnNewElementAdded()
         {
+            if (Session.SelectedProject is null) return;
             // Update InternalIds
             Session.SelectedProject.AssignInternalIdsToElements();
             // Set selected to newest element
@@ -174,6 +183,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateNewProjectAdded()
         {
+            if (Session.SelectedProject is null) return;
+
             // reset SelectedElement
             Session.SelectedElementId = -1;
 
@@ -185,6 +196,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private void UpdateOnElementRemoved()
         {
+            if (Session.SelectedProject is null) return;
+
             // reset SelectedElement
             Session.SelectedElementId = -1;
             // set selected element to last
@@ -196,6 +209,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
+            if (Session.SelectedProject is null) return;
+
             // For Updating MVVM Properties
             Elements = null;
             Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
@@ -212,7 +227,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private ICollectionView GetGroupedItemsSource()
         {
-            var cvs = new CollectionViewSource { Source = Session.SelectedProject.Elements };
+            var cvs = new CollectionViewSource { Source = Session.SelectedProject?.Elements };
             var pgd = new PropertyGroupDescription(".", new GroupingTypeToPropertyName(SelectedGrouping));
             cvs.GroupDescriptions.Add(pgd);
             return cvs.View;

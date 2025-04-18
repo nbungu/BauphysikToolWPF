@@ -2,7 +2,9 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BauphysikToolWPF.Repository.Models.Helper;
+using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 
 namespace BauphysikToolWPF.UI
 {

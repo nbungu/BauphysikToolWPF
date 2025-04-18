@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Data;
-using BauphysikToolWPF.Repository.Models;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -10,15 +11,9 @@ namespace BauphysikToolWPF.UI.CustomControls
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var list = new List<string>();
-            if (value is MaterialCategory[] enumValues)
-            {
-                foreach (var entry in enumValues)
-                {
-                    list.Add(Material.TranslateToCategoryName(entry));
-                }
-            }
-            return list;
+            return value is MaterialCategory[] enumValues
+                ? enumValues.Select(e => MaterialCategoryMapping[e]).ToList()
+                : new List<string>();
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

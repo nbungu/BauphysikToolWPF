@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using BauphysikToolWPF.UI.Models;
+using BauphysikToolWPF.Models.UI;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -14,7 +14,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         {
             if (item is IPropertyItem propertyItem)
             {
-                if (propertyItem.PropertyValues != null && propertyItem.PropertyValues.Length > 1)
+                if (propertyItem.PropertyValues.Length > 1)
                 {
                     return ComboBoxTemplate ?? new DataTemplate();
                 }

@@ -1,16 +1,16 @@
-﻿using BauphysikToolWPF.Repository;
-using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Repository.Models.Helper;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.UI.Models;
-using BauphysikToolWPF.UI.Services;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Repositories;
+using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using Point = BT.Geometry.Point;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -24,6 +24,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
         {
+            if (Session.SelectedProject is null) return;
+            if (Session.SelectedElement is null) return;
+            
             Session.SelectedLayerId = -1;
             Session.SelectedElement.SortLayers();
             Session.SelectedElement.AssignEffectiveLayers();
@@ -36,7 +39,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += TriggerSelectedLayerChanged;
-            PropertyItem<SubConstructionDirection>.PropertyChanged += TriggerSelectedLayerChanged;
+            PropertyItem<int>.PropertyChanged += TriggerSelectedLayerChanged;
             PropertyItem<bool>.PropertyChanged += TriggerSelectedLayerChanged;
         }
         
@@ -76,23 +79,28 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void AddSubConstructionLayer()
+        private void AddSubConstructionLayer(int targetLayerInternalId = -1)
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerSubConstructionWindow(editExisting: false).ShowDialog();
+            if (targetLayerInternalId == -1) targetLayerInternalId = Session.SelectedLayerId;
+            new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId, editExisting: false).ShowDialog();
         }
         [RelayCommand]
-        private void EditSubConstructionLayer()
+        private void EditSubConstructionLayer(int targetLayerInternalId = -1)
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerSubConstructionWindow(editExisting: IsLayerSelected && SelectedListViewItem.HasSubConstructions).ShowDialog();
+            if (targetLayerInternalId == -1) targetLayerInternalId = Session.SelectedLayerId;
+            new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId, editExisting: IsLayerSelected && SelectedListViewItem.HasSubConstructions).ShowDialog();
         }
 
         [RelayCommand]
         private void DeleteSubConstructionLayer()
         {
+            if (Session.SelectedElement is null) return;
+            if (Session.SelectedLayer is null) return;
+
             Session.SelectedLayer.RemoveSubConstruction();
             Session.OnSelectedLayerChanged();
         }
@@ -100,6 +108,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DeleteLayer()
         {
+            if (Session.SelectedElement is null) return;
+            if (Session.SelectedLayer is null) return;
+
             Session.SelectedElement.RemoveLayer(Session.SelectedLayerId);
             Session.OnSelectedLayerChanged();
             SelectedListViewItem = null;
@@ -108,6 +119,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DuplicateLayer()
         {
+            if (Session.SelectedElement is null) return;
+            if (Session.SelectedLayer is null) return;
+
             Session.SelectedElement.DuplicateLayer(Session.SelectedLayerId);
             Session.OnSelectedLayerChanged();
         }
@@ -115,6 +129,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void MoveLayerDown()
         {
+            if (Session.SelectedElement is null) return;
+            if (Session.SelectedLayer is null) return;
+
             Session.SelectedElement.MoveLayerPositionToOutside(Session.SelectedLayerId);
             Session.OnSelectedLayerChanged();
         }
@@ -122,6 +139,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void MoveLayerUp()
         {
+            if (Session.SelectedElement is null) return;
+            if (Session.SelectedLayer is null) return;
+
             Session.SelectedElement.MoveLayerPositionToInside(Session.SelectedLayerId);
             Session.OnSelectedLayerChanged();
         }
@@ -129,7 +149,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void LayerDoubleClick()
         {
-            if (SelectedListViewItem is null) return;
             EditLayer();
         }
         
@@ -137,8 +156,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnSelectedListViewItemChanged(Layer? value)
         {
             if (value is null) return;
+            if (Session.SelectedElement is null) return;
+
             Session.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
             Session.SelectedLayerId = value.InternalId;
+
+            if (Session.SelectedLayer is null) return;
             Session.SelectedLayer.IsSelected = true;
 
             _crossSection.UpdateDrawings();
@@ -166,7 +189,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(SubConstructionMeasurement))]
         [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
         [NotifyPropertyChangedFor(nameof(CanvasSize))]
-        private List<Layer> _layerList = Session.SelectedElement.Layers;
+        private List<Layer>? _layerList = Session.SelectedElement?.Layers;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))]
@@ -198,7 +221,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         * Not Observable, not directly mutated by user input
         */
 
-        public Element SelectedElement => Session.SelectedElement;
+        public Element? SelectedElement => Session.SelectedElement;
         //public List<Layer> LayerList => Session.SelectedElement.Layers;
         public bool IsLayerSelected => SelectedListViewItem != null;
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;
@@ -210,7 +233,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> LayerMeasurementFull => MeasurementDrawing.GetFullLayerMeasurementChain(_crossSection);
 
         // TODO: On Layer->IsActive change long loading times
-        public List<IPropertyItem> LayerProperties => new List<IPropertyItem>()
+        public List<IPropertyItem> LayerProperties => Session.SelectedLayer != null ? new List<IPropertyItem>()
         {
             new PropertyItem<string>("Kategorie", () => Session.SelectedLayer.Material.CategoryName),
             new PropertyItem<string>("Materialquelle", () => Session.SelectedLayer.Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
@@ -230,15 +253,15 @@ namespace BauphysikToolWPF.UI.ViewModels
                 SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}"
             },
             new PropertyItem<bool>("Wirksame Schicht", () => Session.SelectedLayer.IsEffective, value => Session.SelectedLayer.IsEffective = value)
-        };
+        } : new List<IPropertyItem>(0);
 
-        public List<IPropertyItem> SubConstructionProperties => Session.SelectedLayer.HasSubConstructions ? new List<IPropertyItem>()
+        public List<IPropertyItem> SubConstructionProperties => Session.SelectedLayer != null && Session.SelectedLayer.HasSubConstructions ? new List<IPropertyItem>()
         {
             new PropertyItem<string>("Material", () => Session.SelectedLayer.SubConstruction.Material.Name),
             new PropertyItem<string>("Kategorie", () => Session.SelectedLayer.SubConstruction.Material.CategoryName),
-            new PropertyItem<SubConstructionDirection>("Ausrichtung", () => Session.SelectedLayer.SubConstruction.Direction, value => Session.SelectedLayer.SubConstruction.Direction = value)
+            new PropertyItem<int>("Ausrichtung", () => (int)Session.SelectedLayer.SubConstruction.Direction, value => Session.SelectedLayer.SubConstruction.Direction = (SubConstructionDirection)value)
             {
-                PropertyValues = Enum.GetValues(typeof(SubConstructionDirection)).Cast<object>().ToArray(),
+                PropertyValues = SubConstructionDirectionMapping.Values.Cast<object>().ToArray()
             },
             new PropertyItem<double>(Symbol.Thickness, () => Session.SelectedLayer.SubConstruction.Thickness, value => Session.SelectedLayer.SubConstruction.Thickness = value),
             new PropertyItem<double>(Symbol.Width, () => Session.SelectedLayer.SubConstruction.Width, value => Session.SelectedLayer.SubConstruction.Width = value),
@@ -256,7 +279,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}b"
             },
             new PropertyItem<bool>("Wirksame Schicht", () => Session.SelectedLayer.SubConstruction.IsEffective, value => Session.SelectedLayer.SubConstruction.IsEffective = value)
-        } : new List<IPropertyItem>();
+        } : new List<IPropertyItem>(0);
 
         public List<string> TiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Select(e => e.Comment).ToList();
         public List<string> TeKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Select(e => e.Comment).ToList();
@@ -335,13 +358,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_relFiIndex == -1) ? Session.Rel_Fi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Comment == RelFiKeys[_relFiIndex])?.Value;
-                Session.Rel_Fi = value ?? 0.0;
-                return Session.Rel_Fi;
+                double? value = (_relFiIndex == -1) ? Session.RelFi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Comment == RelFiKeys[_relFiIndex])?.Value;
+                Session.RelFi = value ?? 0.0;
+                return Session.RelFi;
             }
             set
             {
-                Session.Rel_Fi = value;
+                Session.RelFi = value;
                 RelFiIndex = -1;
             }
         }
@@ -349,13 +372,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_relFeIndex == -1) ? Session.Rel_Fe : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Comment == RelFeKeys[_relFeIndex])?.Value;
-                Session.Rel_Fe = value ?? 0.0;
-                return Session.Rel_Fe;
+                double? value = (_relFeIndex == -1) ? Session.RelFe : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Comment == RelFeKeys[_relFeIndex])?.Value;
+                Session.RelFe = value ?? 0.0;
+                return Session.RelFe;
             }
             set
             {
-                Session.Rel_Fe = value;
+                Session.RelFe = value;
                 RelFeIndex = -1;
             }
         }
@@ -374,7 +397,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             _crossSection.UpdateDrawings();
 
             LayerList = null;
-            LayerList = Session.SelectedElement.Layers;
+            LayerList = Session.SelectedElement?.Layers;
             SelectedListViewItem = null;
             SelectedListViewItem = Session.SelectedLayer;
 

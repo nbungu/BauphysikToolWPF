@@ -6,8 +6,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
-        xmlns:sys="clr-namespace:System;assembly=System.Runtime"
-        xmlns:models1="clr-namespace:BauphysikToolWPF.Repository.Models"
         mc:Ignorable="d"
         Title="{Binding Title}"
         Background="{StaticResource PrimaryLightBrush}"
@@ -21,9 +19,6 @@
     
     <Window.Resources>
 
-        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
-        <controls:CategoryEnumToStringConverter x:Key="CategoryEnumToStringConverter" />
-
         <Style x:Key="InvisibleHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="Visibility" Value="Collapsed"/>
         </Style>
@@ -36,13 +31,6 @@
             <!--Here: Binding source are Items from the ItemsSource Property-->
             <GridViewColumn DisplayMemberBinding="{Binding }" Header="Name" Width="Auto"/>
         </GridView>
-
-        <!--populate the items of a ComboBox with all elements from an enum-->
-        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="CategoryTypeValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="models1:MaterialCategory"/>
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
 
     </Window.Resources>
 
@@ -70,7 +58,7 @@
             <TabControl Grid.Row="1" Height="Auto" Width="Auto" SelectedIndex="{Binding SelectedTabIndex}">
                 <TabItem Header="{Binding Tab0Header}" Tag="{StaticResource ButtonIcon_Database_Flat}" Padding="8">
                     <ListView Name="CategoryListView"
-                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
+                              ItemsSource="{Binding MaterialCategoryList}"
                               View="{StaticResource CategoryGridViewColumns}"
                               ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
                               SelectedIndex="{Binding SelectedCategoryIndex}"
@@ -80,7 +68,7 @@
                 </TabItem>
                 <TabItem Header="{Binding Tab1Header}" Tag="{StaticResource ButtonIcon_User_Flat}"  Padding="8">
                     <ListView Name="CategoryListViewCustom"
-                              ItemsSource="{Binding Source={StaticResource CategoryTypeValues}, Converter={StaticResource CategoryEnumToStringConverter}}"
+                              ItemsSource="{Binding MaterialCategoryList}"
                               View="{StaticResource CategoryGridViewColumns2}"
                               ItemContainerStyle="{StaticResource ListViewItemContainerStyle01}"
                               SelectedIndex="{Binding SelectedCategoryIndex}"

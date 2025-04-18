@@ -1,11 +1,11 @@
-﻿using BT.Geometry;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
+using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
-using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.UI.Models;
-using BauphysikToolWPF.UI.Services;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -19,6 +19,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Page_Summary_VM()
         {
+            if (Session.SelectedElement is null) return;
+            
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
         }
@@ -73,7 +75,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> SubConstructionMeasurementVerticalCut => MeasurementDrawing.GetSubConstructionMeasurementChain(_verticalCut);
         public List<DrawingGeometry> LayerMeasurementFullVerticalCut => MeasurementDrawing.GetFullLayerMeasurementChain(_verticalCut);
 
-        public List<IPropertyItem> ElementProperties => new List<IPropertyItem>
+        public List<IPropertyItem> ElementProperties => Session.SelectedElement != null ? new List<IPropertyItem>
         {
             new PropertyItem<int>("Schichten", () => Session.SelectedElement.Layers.Count),
             new PropertyItem<double>(Symbol.Thickness, () => Session.SelectedElement.Thickness),
@@ -84,7 +86,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedElement.SdThickness),
             new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedElement.AreaMassDens),
             new PropertyItem<double>(Symbol.ArealHeatCapacity, () => Session.SelectedElement.ArealHeatCapacity),
-        };
+        } : new List<IPropertyItem>(0);
 
         public List<IPropertyItem> EnvironmentProperties => new List<IPropertyItem>
         {
@@ -92,8 +94,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.TemperatureExterior, () => Session.Te) { DecimalPlaces = 1},
             new PropertyItem<double>(Symbol.TransferResistanceSurfaceInterior, () => Session.Rsi),
             new PropertyItem<double>(Symbol.TransferResistanceSurfaceExterior, () => Session.Rse),
-            new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => Session.Rel_Fi) { DecimalPlaces = 1},
-            new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => Session.Rel_Fe) { DecimalPlaces = 1},
+            new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => Session.RelFi) { DecimalPlaces = 1},
+            new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => Session.RelFe) { DecimalPlaces = 1},
         };
 
         private void RefreshXamlBindings()

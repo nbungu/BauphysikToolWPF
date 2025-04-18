@@ -87,8 +87,8 @@
 
                                 </StackPanel>
 
-                                <!-- Button for adding a subconstruction -->
-                                <Button x:Name="AddButton"
+                                <!-- Add Layer SubConstruction -->
+                                <Button x:Name="AddLayerSubConstructionButton"
                                     HorizontalAlignment="Right"
                                     Content="Balkenlage hinzufügen +"
                                     Style="{StaticResource ButtonStyleListViewItem}"
@@ -107,11 +107,11 @@
                             </Trigger>
                             <DataTrigger Binding="{Binding HasSubConstructions}" Value="True">
                                 <Setter TargetName="EditDeletePanel" Property="Visibility" Value="Visible" />
-                                <Setter TargetName="AddButton" Property="Visibility" Value="Collapsed" />
+                                <Setter TargetName="AddLayerSubConstructionButton" Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
                             <DataTrigger Binding="{Binding HasSubConstructions}" Value="False">
                                 <Setter TargetName="EditDeletePanel" Property="Visibility" Value="Collapsed" />
-                                <Setter TargetName="AddButton" Property="Visibility" Value="Visible" />
+                                <Setter TargetName="AddLayerSubConstructionButton" Property="Visibility" Value="Visible" />
                             </DataTrigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>

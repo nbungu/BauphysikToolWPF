@@ -1,4 +1,8 @@
-﻿using BauphysikToolWPF.Calculations;
+﻿using BauphysikToolWPF.Calculation;
+using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -10,10 +14,6 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.UI.Models;
-using BauphysikToolWPF.UI.Services;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -27,6 +27,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Page_DynamicResults_VM()
         {
+            if (Session.SelectedElement is null) return;
+
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 

@@ -283,7 +283,7 @@
                                                     </Grid.ColumnDefinitions>
                                                     <ComboBox Grid.Column="0"
                                                               IsEditable="True"
-                                                              SelectedItem="{Binding Value}"
+                                                              SelectedIndex="{Binding Value}"
                                                               ItemsSource="{Binding PropertyValues}"
                                                               Style="{StaticResource DataGridComboBox}"
                                                               SelectionChanged="ComboBox_SelectionChanged"

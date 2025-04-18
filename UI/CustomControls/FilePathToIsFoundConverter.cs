@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 using BauphysikToolWPF.Services;
+using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -14,7 +15,7 @@ namespace BauphysikToolWPF.UI.CustomControls
             {
                 if (filePath.Contains("%appdata%", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    string programDataPath = ApplicationServices.LocalProgramDataPath;
+                    string programDataPath = PathService.LocalProgramDataPath;
                     filePath = filePath.Replace("%appdata%", programDataPath, StringComparison.InvariantCultureIgnoreCase);
                 }
 

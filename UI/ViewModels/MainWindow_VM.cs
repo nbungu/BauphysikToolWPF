@@ -1,10 +1,11 @@
-﻿using System.IO;
-using System.Windows;
-using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.UI.Services;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.IO;
+using System.Windows;
+using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -42,7 +43,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void New()
         {
-            if (Session.SelectedProject.IsModified)
+            if (Session.SelectedProject != null && Session.SelectedProject.IsModified)
             {
                 MessageBoxResult result = _dialogService.ShowSaveConfirmationDialog();
 
@@ -52,7 +53,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                         Save();
                         break;
                     case MessageBoxResult.No:
-                        ApplicationServices.CreateNewProject();
+                        DomainModelFactory.CreateNewProject();
                         Session.OnNewProjectAdded(false);
                         SwitchPage(NavigationContent.ProjectPage);
                         break;
@@ -63,7 +64,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             else
             {
-                ApplicationServices.CreateNewProject();
+                DomainModelFactory.CreateNewProject();
                 Session.OnNewProjectAdded(false);
                 SwitchPage(NavigationContent.ProjectPage);
             }
@@ -72,14 +73,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void Save()
         {
+            if (Session.SelectedProject is null) return;
+
             if (!File.Exists(Session.ProjectFilePath))
             {
                 SaveTo();
             }
             else
             {
-                ApplicationServices.WriteToConnectedDatabase(Session.SelectedProject);
-                ApplicationServices.SaveProjectToFile(Session.SelectedProject, Session.ProjectFilePath);
+                DomainModelSerializer.SaveProjectToFile(Session.SelectedProject, Session.ProjectFilePath);
                 Session.SelectedProject.IsModified = false;
                 Session.OnSelectedProjectChanged(false);
             }
@@ -88,16 +90,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void SaveTo()
         {
-            ApplicationServices.WriteToConnectedDatabase(Session.SelectedProject);
+            if (Session.SelectedProject is null) return;
 
             string saveFileName = Session.SelectedProject.Name == "" ? "unbekannt" : Session.SelectedProject.Name;
             string? filePath = _fileDialogService.ShowSaveFileDialog($"{saveFileName}.btk", "BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
             if (filePath != null)
             {
-                ApplicationServices.SaveProjectToFile(Session.SelectedProject, filePath);
+                DomainModelSerializer.SaveProjectToFile(Session.SelectedProject, filePath);
                 Session.ProjectFilePath = filePath;
                 Session.SelectedProject.IsModified = false;
-                ApplicationServices.AddRecentProject(filePath);
+                RecentProjectsManager.AddRecentProject(filePath);
 
                 Session.OnSelectedProjectChanged(false);
             }
@@ -109,11 +111,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             string? filePath = _fileDialogService.ShowOpenFileDialog("BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
             if (filePath != null)
             {
-                Project loadedProject = ApplicationServices.LoadProjectFromFile(filePath);
+                Project loadedProject = DomainModelSerializer.GetProjectFromFile(filePath);
                 Session.SelectedProject = loadedProject;
                 Session.SelectedProject.IsModified = false;
                 Session.ProjectFilePath = filePath;
-                ApplicationServices.AddRecentProject(filePath);
+                RecentProjectsManager.AddRecentProject(filePath);
 
                 Session.OnNewProjectAdded(false);
                 SwitchPage(NavigationContent.LandingPage);
@@ -139,15 +141,19 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because no direct input from User
          */
 
-        public string Title => Session.SelectedProject.Name == "" ? $"{Session.ProjectFilePath}" : $"Projekt: {ProjectName}   {Session.ProjectFilePath}";
-        public string ProjectName => Session.SelectedProject.Name == "" ? "-" : Session.SelectedProject.Name;
-        public string IsEditedTagColorCode => Session.SelectedProject.IsModified ? "#1473e6" : "#00FFFFFF";
+        public string Title => Session.SelectedProject != null ? $"Projekt: {ProjectName}   {Session.ProjectFilePath}" : Session.ProjectFilePath;
+        public string ProjectName => Session.SelectedProject != null ? Session.SelectedProject.Name : "Noch kein Projekt geladen";
+        public string IsEditedTagColorCode => Session.SelectedProject != null && Session.SelectedProject.IsModified ? "#1473e6" : "#00FFFFFF";
+        public bool IsProjectLoaded => !Session.SelectedProject?.IsNewEmptyProject ?? false;
+        public Visibility SaveButtonVisibility => IsProjectLoaded ? Visibility.Visible : Visibility.Collapsed;
 
         private void RefreshXamlBindings()
         {
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(ProjectName));            
             OnPropertyChanged(nameof(IsEditedTagColorCode));
+            OnPropertyChanged(nameof(IsProjectLoaded));
+            OnPropertyChanged(nameof(SaveButtonVisibility));
         }
     }
 }

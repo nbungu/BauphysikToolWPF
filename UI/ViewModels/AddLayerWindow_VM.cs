@@ -1,4 +1,9 @@
-﻿using BauphysikToolWPF.Repository;
+﻿using BauphysikToolWPF.Models.Database;
+using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Repositories;
+using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -6,10 +11,8 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Repository.Models.Helper;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.UI.Models;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -17,21 +20,20 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerWindow_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => EditSelectedLayer ? $"Ausgewählte Schicht bearbeiten: {Session.SelectedLayer}" : "Neue Schicht erstellen";
+        public string Title => Session.SelectedLayer != null && EditSelectedLayer ? $"Ausgewählte Schicht bearbeiten: {Session.SelectedLayer}" : "Neue Schicht erstellen";
 
         public AddLayerWindow_VM()
         {
-            if (EditSelectedLayer)
+            if (EditSelectedLayer && Session.SelectedLayer != null)
             {
                 SelectedTabIndex = Session.SelectedLayer.Material.IsUserDefined ? 1 : 0;
-                SelectedCategoryIndex = (int)Session.SelectedLayer.Material.Category;
+                SelectedMaterialCategoryIndex = (int)Session.SelectedLayer.Material.Category;
                 SelectedListViewItem = Session.SelectedLayer.Material;
             }
             
             PropertyItem<string>.PropertyChanged += MaterialPropertiesChanged;
             PropertyItem<int>.PropertyChanged += MaterialPropertiesChanged;
             PropertyItem<double>.PropertyChanged += MaterialPropertiesChanged;
-            PropertyItem<MaterialCategory>.PropertyChanged += MaterialPropertiesChanged;
         }
 
         /*
@@ -46,14 +48,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (Thickness <= 0 || SelectedListViewItem is null) return;
 
             int materialId;
-            Material material;
 
             // Update or Create new Material if necessary
             if (SelectedListViewItem.IsUserDefined)
             {
                 DatabaseAccess.UpdateMaterial(SelectedListViewItem);
                 materialId = SelectedListViewItem.Id;
-                material = SelectedListViewItem;
             }
             else
             {
@@ -68,21 +68,20 @@ namespace BauphysikToolWPF.UI.ViewModels
                     // Create in Database
                     DatabaseAccess.CreateMaterial(customMaterial);
                     materialId = customMaterial.Id;
-                    material = customMaterial;
                 }
                 else
                 {
                     materialId = SelectedListViewItem.Id;
-                    material = SelectedListViewItem;
                 }
             }
 
             // Update Material in existing Layer or Add new Layer
-            if (EditSelectedLayer)
+            if (EditSelectedLayer && Session.SelectedLayer != null)
             {
-                Session.SelectedLayer.Material = material;
+                // TODO: Correct?
+                Session.SelectedLayer.MaterialId = materialId;
             }
-            else
+            else if (Session.SelectedElement != null)
             {
                 // LayerPosition is always at end of List 
                 int layerCount = Session.SelectedElement.Layers.Count;
@@ -95,9 +94,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Thickness = Convert.ToDouble(Thickness),
                     IsEffective = true,
                     MaterialId = materialId,
-                    Material = material,
-                    ElementId = Session.SelectedElement.Id,
-                    Element = Session.SelectedElement
                 };
                 Session.SelectedElement.AddLayer(layer);
             }
@@ -143,7 +139,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 {
                     Name = "Neu erstelltes Material",
                     IsUserDefined = true,
-                    Category = (MaterialCategory)SelectedCategoryIndex
+                    Category = (MaterialCategory)SelectedMaterialCategoryIndex
                 };
             }
             DatabaseAccess.CreateMaterial(newMaterial);
@@ -161,7 +157,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnSelectedListViewItemChanged(Material? value)
         {
             if (value is null) return;
-            Thickness = Material.DefaultLayerWidthForCategory(value.Category);
+            Thickness = DefaultLayerWidthMapping[value.Category];
         }
 
         /*
@@ -179,7 +175,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
-        private static int _selectedCategoryIndex = (int)MaterialCategory.NotDefined;
+        private static int _selectedMaterialCategoryIndex = (int)MaterialCategory.NotDefined;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(Materials))]
@@ -199,31 +195,34 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public string Tab0Header => $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
         public string Tab1Header => $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
-        public List<IPropertyItem> MaterialProperties => SelectedListViewItem is null ? new List<IPropertyItem>() : new List<IPropertyItem>()
+        public List<IPropertyItem> MaterialProperties => SelectedListViewItem != null ? new List<IPropertyItem>()
         {
             new PropertyItem<string>("Materialbezeichnung", () => SelectedListViewItem.Name, value => SelectedListViewItem.Name = value),
-            new PropertyItem<MaterialCategory>("Kategorie", () => SelectedListViewItem.Category, value => SelectedListViewItem.Category = value)
+            new PropertyItem<int>("Kategorie", () => (int)SelectedListViewItem.Category, value => SelectedListViewItem.Category = (MaterialCategory)value)
             {
-                PropertyValues = Enum.GetValues(typeof(MaterialCategory)).Cast<object>().ToArray()
+                PropertyValues = MaterialCategoryMapping.Values.Cast<object>().ToArray()
             },
             new PropertyItem<double>(Symbol.ThermalConductivity, () => SelectedListViewItem.ThermalConductivity, value => SelectedListViewItem.ThermalConductivity = value) { DecimalPlaces = 3},
             new PropertyItem<int>(Symbol.RawDensity, () => SelectedListViewItem.BulkDensity, value => SelectedListViewItem.BulkDensity = value),
             new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => SelectedListViewItem.SpecificHeatCapacity, value => SelectedListViewItem.SpecificHeatCapacity = value),
             new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => SelectedListViewItem.DiffusionResistance, value => SelectedListViewItem.DiffusionResistance = value),
             new PropertyItem<bool>("Material in Benutzung", () => IsUsedInLayer || IsUsedInSubConstr),
-        };
+        } : new List<IPropertyItem>(0);
 
         public List<Material> Materials => GetMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
         public bool EditSelectedLayer => AddLayerWindow.EditExistingLayer;
         public string ButtonText => EditSelectedLayer ? "Änderung übernehmen" : "Schicht hinzufügen";
-        public bool IsUsedInLayer => DatabaseAccess.GetLayersQuery().Any(l => SelectedListViewItem != null && l.MaterialId == SelectedListViewItem.Id);
-        public bool IsUsedInSubConstr => DatabaseAccess.GetSubConstructionQuery().Any(s => SelectedListViewItem != null && s.MaterialId == SelectedListViewItem.Id);
-        
+
+        // TODO: fix -> check only for current project
+        public bool IsUsedInLayer => true; // DatabaseAccess.GetLayersQuery().Any(l => SelectedListViewItem != null && l.MaterialId == SelectedListViewItem.Id);
+        public bool IsUsedInSubConstr => true; //DatabaseAccess.GetSubConstructionQuery().Any(s => SelectedListViewItem != null && s.MaterialId == SelectedListViewItem.Id);
+        public List<string> MaterialCategoryList => MaterialCategoryMapping.Values.ToList();
+
         // TODO: implement QueryFilterConfig...
         private List<Material> GetMaterials()
         {
-            if (SelectedCategoryIndex == (int)MaterialCategory.NotDefined)
+            if (SelectedMaterialCategoryIndex == (int)MaterialCategory.NotDefined)
             {
                 if (SearchString != "")
                 {
@@ -240,12 +239,12 @@ namespace BauphysikToolWPF.UI.ViewModels
                 {
                     return DatabaseAccess.GetMaterialsQuery().Where(m =>
                         m.IsUserDefined == (SelectedTabIndex == 1) &&
-                        m.Category == (MaterialCategory)SelectedCategoryIndex &&
+                        m.Category == (MaterialCategory)SelectedMaterialCategoryIndex &&
                         m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
                 }
                 return DatabaseAccess.GetMaterialsQuery().Where(m =>
                     m.IsUserDefined == (SelectedTabIndex == 1) &&
-                    m.Category == (MaterialCategory)SelectedCategoryIndex).ToList();
+                    m.Category == (MaterialCategory)SelectedMaterialCategoryIndex).ToList();
             }
         }
 

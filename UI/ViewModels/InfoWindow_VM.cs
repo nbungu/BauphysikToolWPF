@@ -1,10 +1,11 @@
-﻿using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Services.Application;
+using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System.Diagnostics;
 using System;
-using BT.Logging;
+using System.Diagnostics;
 using System.Windows;
+using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -75,12 +76,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void Cancel(Window? window)
-        {
-            // To be able to Close EditElementWindow from within this ViewModel
-            if (window is null) return;
-            window.Close();
-        }
+        private void Cancel(Window? window) => window?.Close();  // To be able to Close EditElementWindow from within this ViewModel
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
@@ -89,19 +85,19 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _selectedElementName = Session.SelectedElement.IsValid ? Session.SelectedElement.Name : "Neues Element";
+        private string _selectedElementName = Session.SelectedElement != null && Session.SelectedElement.IsValid ? Session.SelectedElement.Name : "Neues Element";
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
-        public bool IsServerOnline => Updater.IsServerAvailable;
+        public bool IsServerOnline => UpdaterManager.IsServerAvailable;
         public string ServerStatusLabel => IsServerOnline ? "Server Online" : "Server nicht erreichbar";
         public string IsServerOnlineColorCode => IsServerOnline ? "#2cde00" : "#fc0303";
 
         public string LicensePath => "https://github.com/nbungu/BauphysikToolWPF?tab=GPL-3.0-1-ov-file#readme";
 
-        public string ProgramVersion => $"Aktuelle Version: {Updater.LocalUpdaterFile.CurrentTag}";
-        public string LatestProgramVersion => $"Neueste Version: {Updater.LocalUpdaterFile.LatestTag}";
+        public string ProgramVersion => $"Aktuelle Version: {UpdaterManager.LocalUpdaterManagerFile.CurrentTag}";
+        public string LatestProgramVersion => $"Neueste Version: {UpdaterManager.LocalUpdaterManagerFile.LatestTag}";
         public string Website => $"https://bauphysik-tool.de";
     }
 }

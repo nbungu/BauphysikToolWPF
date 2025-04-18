@@ -1,4 +1,6 @@
-﻿using BauphysikToolWPF.Calculations;
+﻿using BauphysikToolWPF.Calculation;
+using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,8 +13,6 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Repository.Models;
-using BauphysikToolWPF.Services;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 
@@ -27,6 +27,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Page_TemperatureResults_VM()
         {
+            if (Session.SelectedElement is null) return;
+            
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 

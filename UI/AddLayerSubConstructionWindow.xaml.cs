@@ -1,4 +1,4 @@
-﻿using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Services.UI;
 using System.Windows;
 using System.Windows.Input;
 
@@ -7,10 +7,12 @@ namespace BauphysikToolWPF.UI
     public partial class AddLayerSubConstructionWindow : Window
     {
         public static bool EditExistingSubConstr;
+        public static int TargetLayerInternalId;
 
-        public AddLayerSubConstructionWindow(bool editExisting = true)
+        public AddLayerSubConstructionWindow(int targetLayerInternalId = -1, bool editExisting = true)
         {
             EditExistingSubConstr = editExisting;
+            TargetLayerInternalId = targetLayerInternalId;
 
             InitializeComponent();
             // Call these Methods only once when Constructor is invoked (Categories stay constant)
