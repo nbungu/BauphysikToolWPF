@@ -81,8 +81,8 @@
                                                 </Style>
                                             </Label.Style>
                                         </Label>
-                                        <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.EditSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                                        <Button x:Name="DeleteButtonBalkenlage" HorizontalAlignment="Left" Content="Entfernen" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" Margin="8,0,0,0"/>
+                                        <Button x:Name="InfoButtonBalkenlage" HorizontalAlignment="Left" Content="{Binding SubConstruction}" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.EditSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}"/>
+                                        <Button x:Name="DeleteButtonBalkenlage" HorizontalAlignment="Left" Content="Entfernen" Style="{StaticResource ButtonStyleListViewItem}" Command="{Binding DataContext.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding InternalId}" Margin="8,0,0,0"/>
                                     </StackPanel>
 
                                 </StackPanel>
@@ -129,12 +129,12 @@
         <!-- ItemsSource gets updated by backend -->
         <!-- This is 'PlacementTarget' as seen from ContextMenu -->
         <ListView x:Name="LayersListViewElement"
-            ItemsSource="{Binding Layers, ElementName=LayersListViewControl}" 
+            ItemsSource="{Binding Layers, ElementName=LayersListViewControl}"
+            SelectedItem="{Binding SelectedLayer, ElementName=LayersListViewControl}"
             View="{StaticResource LayerGridViewColumns}"
             Style="{StaticResource ListViewStyle01}"
             ItemContainerStyle="{StaticResource LayerItemContainerStyle}"
-            Tag="{Binding}"
-            SelectedItem="{Binding SelectedLayer, ElementName=LayersListViewControl, Mode=TwoWay}">
+            Tag="{Binding}">
             <!-- EventToCommand behavior to bind the double-click event to the command-->
             <i:Interaction.Triggers>
                 <i:EventTrigger EventName="MouseDoubleClick">
@@ -216,7 +216,7 @@
 
                     <Separator Margin="-30,4,0,4" Padding="0" HorizontalAlignment="Stretch" BorderThickness="0.6" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
 
-                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Style>
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage hinzufügen" />
@@ -233,7 +233,7 @@
                     </MenuItem>
 
 
-                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.EditSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.EditSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Style>
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage bearbeiten" />
@@ -249,7 +249,7 @@
                         </MenuItem.Icon>
                     </MenuItem>
 
-                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                    <MenuItem Command="{Binding Path=PlacementTarget.Tag.DeleteSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.SelectedItem.InternalId, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                         <MenuItem.Style>
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage löschen" />

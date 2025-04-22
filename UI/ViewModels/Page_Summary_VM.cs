@@ -52,7 +52,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private Element _selectedElement = Session.SelectedElement;
+        private Element? _selectedElement = Session.SelectedElement;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties

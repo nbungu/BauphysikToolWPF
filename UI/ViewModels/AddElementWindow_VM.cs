@@ -92,7 +92,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 Element newElem = new Element
                 {
-                    // ElementId gets set by SQLite DB (AutoIncrement)
                     Name = SelectedElementName,
                     ConstructionId = SelectedConstruction,
                     OrientationType = (OrientationType)SelectedOrientation,

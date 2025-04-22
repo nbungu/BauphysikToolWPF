@@ -1,4 +1,6 @@
 ﻿using BauphysikToolWPF.Services.Application;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json.Serialization;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
@@ -10,15 +12,15 @@ namespace BauphysikToolWPF.Models.Domain
 
         public string RoomName { get; set; } = string.Empty;
         public string FloorLevel { get; set; } = string.Empty;
-        public double RoomHeightGross { get; set; } = 0.0;
-        public double RoomAreaGross { get; set; } = 0.0;
-        public double RoomVolumeGross { get; set; } = 0.0;
-        public double RoomHeightNet { get; set; } = 0.0;
-        public double RoomAreaNet { get; set; } = 0.0;
-        public double RoomVolumeNet { get; set; } = 0.0;
-        public double EnvelopeArea { get; set; } = 0.0;
+        public double RoomHeightGross { get; set; }
+        public double RoomAreaGross { get; set; }
+        public double RoomVolumeGross { get; set; }
+        public double RoomHeightNet { get; set; }
+        public double RoomAreaNet { get; set; }
+        public double RoomVolumeNet { get; set; }
+        public double EnvelopeArea { get; set; }
 
-        private double _uValue = 0.0;
+        private double _uValue;
         public double UValue
         {
             get => Element?.UValue ?? _uValue;
@@ -26,14 +28,8 @@ namespace BauphysikToolWPF.Models.Domain
         }
         public string Tag { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;
-
-        private OrientationType _orientationType = OrientationType.North;
-        public OrientationType OrientationType
-        {
-            get => Element?.OrientationType ?? _orientationType;
-            set => _orientationType = value;
-        }
-        public UsageZone Zone { get; set; } = UsageZone.Wohnen;
+        public OrientationType OrientationType { get; set; } = OrientationType.North;
+        public UsageZone UsageZone { get; set; } = UsageZone.Wohnen;
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
@@ -47,16 +43,41 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public Element? Element { get; set; }
         [JsonIgnore]
-        public bool IsSelected { get; set; }
-        [JsonIgnore]
         public bool IsValid => FloorLevel != string.Empty && RoomName != string.Empty;
         [JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
         [JsonIgnore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
 
+        [JsonIgnore]
+        public string OrientationTypeName
+        {
+            get => OrientationTypeMapping[OrientationType];
+            set
+            {
+                var match = OrientationTypeMapping.FirstOrDefault(x => x.Value == value);
+                if (!match.Equals(default(KeyValuePair<OrientationType, string>)))
+                {
+                    OrientationType = match.Key;
+                }
+            }
+        }
+        [JsonIgnore]
+        public string UsageZoneName
+        {
+            get => UsageZoneMapping[UsageZone];
+            set
+            {
+                var match = UsageZoneMapping.FirstOrDefault(x => x.Value == value);
+                if (!match.Equals(default(KeyValuePair<UsageZone, string>)))
+                {
+                    UsageZone = match.Key;
+                }
+            }
+        }
+
         #endregion
-        
+
         #region ctors
         #endregion
 
@@ -64,10 +85,27 @@ namespace BauphysikToolWPF.Models.Domain
 
         public EnvelopeItem Copy()
         {
-            var copy = new EnvelopeItem();
-            copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.InternalId = this.InternalId;
+            var copy = new EnvelopeItem
+            {
+                InternalId = this.InternalId,
+                Element = this.Element,
+                CreatedAt = this.CreatedAt,
+                UpdatedAt = TimeStamp.GetCurrentUnixTimestamp(),
+
+                RoomName = this.RoomName,
+                FloorLevel = this.FloorLevel,
+                RoomHeightGross = this.RoomHeightGross,
+                RoomAreaGross = this.RoomAreaGross,
+                RoomVolumeGross = this.RoomVolumeGross,
+                RoomHeightNet = this.RoomHeightNet,
+                RoomAreaNet = this.RoomAreaNet,
+                RoomVolumeNet = this.RoomVolumeNet,
+                EnvelopeArea = this.EnvelopeArea,
+                Tag = this.Tag,
+                Comment = this.Comment,
+                OrientationType = this.OrientationType,
+                UsageZone = this.UsageZone,
+            };
 
             return copy;
         }
@@ -79,7 +117,7 @@ namespace BauphysikToolWPF.Models.Domain
 
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
-            return "";
+            return $"[{InternalId}] {RoomName} ({FloorLevel}) - {RoomAreaNet:0.##} m², {RoomVolumeNet:0.##} m³ | U-Value: {UValue:0.##} | {OrientationType} / {UsageZone}";
         }
 
         #endregion

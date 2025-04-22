@@ -18,7 +18,6 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class AddLayerSubConstructionWindow_VM : ObservableObject
     {
         private readonly Layer? _targetLayer = Session.SelectedElement?.Layers.FirstOrDefault(l => l?.InternalId == AddLayerSubConstructionWindow.TargetLayerInternalId, null);
-        private readonly bool _editSelectedSubConstr = AddLayerSubConstructionWindow.EditExistingSubConstr;
         private readonly LayerSubConstruction _tempConstruction;
         
         // Called by 'InitializeComponent()' from AddLayerSubConstructionWindow.cs due to Class-Binding in xaml via DataContext
@@ -28,7 +27,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             
             PropertyItem<int>.PropertyChanged += UpdateXamlBindings;
 
-            if (_editSelectedSubConstr && _targetLayer.SubConstruction != null)
+            if (_targetLayer.HasSubConstructions && _targetLayer.SubConstruction != null)
             {
                 _tempConstruction = _targetLayer.SubConstruction.Copy();
             }
@@ -110,11 +109,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, No direct User Input involved
          */
 
-        public string Title => _targetLayer != null && _editSelectedSubConstr ? $"Ausgewählte Balkenlage bearbeiten: {_targetLayer.SubConstruction}" : "Neue Balkenlage erstellen";
+        public string Title => _targetLayer != null && _targetLayer.HasSubConstructions ? $"Balkenlage bearbeiten: {_targetLayer.SubConstruction} | Schicht: {_targetLayer}" : $"Neue Balkenlage erstellen | Schicht: {_targetLayer}";
         public List<Material> Materials => GetMaterials();
         public string Tab0Header => $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
         public string Tab1Header => $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
-        public string ButtonText => _editSelectedSubConstr ? "Änderung übernehmen" : "Balkenlage hinzufügen";
+        public string ButtonText => _targetLayer.HasSubConstructions ? "Änderung übernehmen" : "Balkenlage hinzufügen";
         public List<IPropertyItem> SubConstructionProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Material", () => _tempConstruction.Material.Name),

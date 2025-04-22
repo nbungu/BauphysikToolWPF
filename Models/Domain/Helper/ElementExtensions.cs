@@ -104,6 +104,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             element.AssignInternalIdsToLayers();
             element.AssignEffectiveLayers();
         }
+
         public static void UnselectAllLayers(this Element element)
         {
             element.Layers.ForEach(l => l.IsSelected = false);

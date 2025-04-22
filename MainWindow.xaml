@@ -8,6 +8,7 @@
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:system="clr-namespace:System;assembly=System.Runtime"
+        xmlns:ui1="clr-namespace:BauphysikToolWPF.Services.UI"
         d:DataContext="{d:DesignInstance vm:MainWindow_VM}"
         mc:Ignorable="d"
         Title="{Binding Title}"
@@ -37,7 +38,7 @@
     <Window.Resources>
         
         <!-- Checks if an ListBoxItem from ItemsSource is a Header or not-->
-        <controls:IsHeaderConverter x:Key="IsHeaderConverter"/>
+        <ui1:IsHeaderConverter x:Key="IsHeaderConverter"/>
 
         <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page-->
         <DataTemplate x:Key="M1_ProjectPage">

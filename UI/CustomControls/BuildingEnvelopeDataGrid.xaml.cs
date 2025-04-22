@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -33,26 +34,6 @@ namespace BauphysikToolWPF.UI.CustomControls
             set => SetValue(SelectedEnvelopeItemProperty, value);
         }
 
-        //public static readonly DependencyProperty ElementCollectionProperty =
-        //    DependencyProperty.Register(nameof(ElementCollection), typeof(object), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
-
-        //public object ElementCollection
-        //{
-        //    get => GetValue(ElementCollectionProperty);
-        //    set => SetValue(ElementCollectionProperty, value);
-        //}
-
-        private void DataGridCell_Selected(object sender, RoutedEventArgs e)
-        {
-            // Lookup for the source to be DataGridCell
-            if (e.OriginalSource.GetType() == typeof(DataGridCell))
-            {
-                // Starts the Edit on the row;
-                DataGrid grd = (DataGrid)sender;
-                grd.BeginEdit(e);
-            }
-        }
-
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
@@ -61,6 +42,57 @@ namespace BauphysikToolWPF.UI.CustomControls
         private void textData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = TextInputValidation.Any.IsMatch(e.Text);
+        }
+
+        private void DataGrid_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var depObj = (DependencyObject)e.OriginalSource;
+
+            while (depObj != null && !(depObj is DataGridCell))
+                depObj = VisualTreeHelper.GetParent(depObj);
+
+            if (depObj is DataGridCell cell)
+            {
+                var dataGrid = (DataGrid)sender;
+                if (!cell.IsEditing)
+                {
+                    if (!cell.IsFocused)
+                    {
+                        cell.Focus();
+                    }
+
+                    var row = DataGridRow.GetRowContainingElement(cell);
+                    if (row != null)
+                    {
+                        dataGrid.SelectedItem = row.Item;
+                    }
+
+                    dataGrid.BeginEdit();
+                    e.Handled = true;
+                }
+            }
+            //if (depObj is DataGridCell cell)
+            //{
+            //    var dataGrid = (DataGrid)sender;
+            //    var row = DataGridRow.GetRowContainingElement(cell);
+
+            //    if (row != null)
+            //    {
+            //        // Force select item manually
+            //        dataGrid.SelectedItem = row.Item;
+
+            //        // Also push to the custom control's property
+            //        SelectedEnvelopeItem = row.Item;
+            //    }
+
+            //    // Begin editing
+            //    if (!cell.IsEditing)
+            //    {
+            //        cell.Focus();
+            //        dataGrid.BeginEdit();
+            //        e.Handled = true;
+            //    }
+            //}
         }
     }
 }

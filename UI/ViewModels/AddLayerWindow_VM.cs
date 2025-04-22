@@ -12,7 +12,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -170,15 +169,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         private double _thickness = 6.0;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(Materials))]
+        [NotifyPropertyChangedFor(nameof(FilteredMaterials))]
         private string _searchString = "";
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(Materials))]
+        [NotifyPropertyChangedFor(nameof(FilteredMaterials))]
         private static int _selectedMaterialCategoryIndex = (int)MaterialCategory.NotDefined;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(Materials))]
+        [NotifyPropertyChangedFor(nameof(FilteredMaterials))]
         [NotifyPropertyChangedFor(nameof(Tab0Header))]
         [NotifyPropertyChangedFor(nameof(Tab1Header))]
         [NotifyPropertyChangedFor(nameof(MaterialProperties))]
@@ -209,18 +208,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<bool>("Material in Benutzung", () => IsUsedInLayer || IsUsedInSubConstr),
         } : new List<IPropertyItem>(0);
 
-        public List<Material> Materials => GetMaterials();
+        public List<Material> FilteredMaterials => GetFilteredMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
         public bool EditSelectedLayer => AddLayerWindow.EditExistingLayer;
         public string ButtonText => EditSelectedLayer ? "Änderung übernehmen" : "Schicht hinzufügen";
-
+        public static IEnumerable<string> GetMaterialCategoryNames() => MaterialCategoryMapping.Values;
+        
         // TODO: fix -> check only for current project
         public bool IsUsedInLayer => true; // DatabaseAccess.GetLayersQuery().Any(l => SelectedListViewItem != null && l.MaterialId == SelectedListViewItem.Id);
         public bool IsUsedInSubConstr => true; //DatabaseAccess.GetSubConstructionQuery().Any(s => SelectedListViewItem != null && s.MaterialId == SelectedListViewItem.Id);
-        public List<string> MaterialCategoryList => MaterialCategoryMapping.Values.ToList();
 
         // TODO: implement QueryFilterConfig...
-        private List<Material> GetMaterials()
+        private List<Material> GetFilteredMaterials()
         {
             if (SelectedMaterialCategoryIndex == (int)MaterialCategory.NotDefined)
             {

@@ -6,12 +6,10 @@ namespace BauphysikToolWPF.UI
 {
     public partial class AddLayerSubConstructionWindow : Window
     {
-        public static bool EditExistingSubConstr;
         public static int TargetLayerInternalId;
 
-        public AddLayerSubConstructionWindow(int targetLayerInternalId = -1, bool editExisting = true)
+        public AddLayerSubConstructionWindow(int targetLayerInternalId = -1)
         {
-            EditExistingSubConstr = editExisting;
             TargetLayerInternalId = targetLayerInternalId;
 
             InitializeComponent();

@@ -1,12 +1,13 @@
 ﻿<UserControl x:Class="BauphysikToolWPF.UI.Page_LayerSetup"
-            xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-            xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-            xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-            xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-            xmlns:local="clr-namespace:BauphysikToolWPF"
-            xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
-            xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
-            mc:Ignorable="d"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:BauphysikToolWPF"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
+             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             mc:Ignorable="d"
             d:DesignHeight="1200"
             d:DesignWidth="1400"
             IsVisibleChanged="UserControl_IsVisibleChanged">
@@ -21,7 +22,7 @@
     Both can be used for binding to display and modify data in the UI.
     -->
     <UserControl.Resources>
-        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+        <ui:NumberConverter x:Key="NumberConverter" />
     </UserControl.Resources>
 
     <!--Main Grid: 2x2-->
@@ -111,8 +112,17 @@
 
                 <!--Layer ListView-->
                 <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" VerticalAlignment="Stretch" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
-                    <controls:LayersListView Layers="{Binding LayerList}" SelectedLayer="{Binding SelectedListViewItem}" MinHeight="200" MaxHeight="800"/>
+                    <controls:LayersListView Layers="{Binding LayerList}"
+                                             SelectedLayer="{Binding SelectedListViewItem, Mode=TwoWay}"
+                                             MinHeight="200"
+                                             MaxHeight="800"/>
                 </ScrollViewer>
+                <Label  Grid.Row="1" Visibility="{Binding NoLayersVisibility}"
+                        Content="Keine Schicht angelegt: Bitte neue Schichten hinzufügen!"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        FontStyle="Italic"
+                        Foreground="Gray"/>
             </Grid>
 
             <!--GridSplitter - Horizontal-->
@@ -218,19 +228,19 @@
                                 <controls:SubscriptLabel BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                                     <ComboBox ItemsSource="{Binding TiKeys}" SelectedIndex="{Binding TiIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding TiValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding TiValue, Converter={StaticResource NumberConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <Label Content="°C" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                                 <controls:SubscriptLabel BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
                                     <ComboBox ItemsSource="{Binding RsiKeys}" SelectedIndex="{Binding RsiIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding RsiValue, Converter={StaticResource DoubleToStringConverter}}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding RsiValue, Converter={StaticResource NumberConverter}}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                                 <controls:SubscriptLabel BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                                     <ComboBox ItemsSource="{Binding RelFiKeys}" SelectedIndex="{Binding RelFiIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding RelFiValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding RelFiValue, Converter={StaticResource NumberConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <Label Content="%" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                             </StackPanel>
@@ -243,19 +253,19 @@
                                 <controls:SubscriptLabel BaseText="θ" SubscriptText="e" AppendText=" - Außenluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                                     <ComboBox ItemsSource="{Binding TeKeys}" SelectedIndex="{Binding TeIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding TeValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding TeValue, Converter={StaticResource NumberConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <Label Content="°C" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                                 <controls:SubscriptLabel BaseText="R" SubscriptText="se" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"  Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                                     <ComboBox ItemsSource="{Binding RseKeys}" SelectedIndex="{Binding RseIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding RseValue, Converter={StaticResource DoubleToStringConverter}}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding RseValue, Converter={StaticResource NumberConverter}}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                                 <controls:SubscriptLabel BaseText="Φ" SubscriptText="e" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="36"  Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" >
                                     <ComboBox ItemsSource="{Binding RelFeKeys}" SelectedIndex="{Binding RelFeIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding RelFeValue, Converter={StaticResource DoubleToStringConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding RelFeValue, Converter={StaticResource NumberConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <Label Content="%" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                             </StackPanel>

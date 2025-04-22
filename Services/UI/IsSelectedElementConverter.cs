@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace BauphysikToolWPF.UI.CustomControls
+namespace BauphysikToolWPF.Services.UI
 {
     public class IsSelectedElementConverter : IMultiValueConverter
     {

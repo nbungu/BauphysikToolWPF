@@ -7,6 +7,7 @@ using System.Windows.Media;
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.UI.CustomControls;
 using BT.Geometry;
 using Point = System.Windows.Point;
 
@@ -20,6 +21,8 @@ namespace BauphysikToolWPF.Services.UI
     }
     public static class MeasurementDrawing
     {
+        
+        
         #region Public Methods
 
         public static DrawingGeometry GetMeasurementChain(IEnumerable<Layer> layers, Axis intervalDirection = Axis.Z)
@@ -120,10 +123,12 @@ namespace BauphysikToolWPF.Services.UI
             {
                 if (i > 0)
                 {
+                    // Draw the Label
                     var intervalWidthInCm = Math.Round(Math.Abs(intervals[i] - selectedInterval) / CrossSectionDrawing.SizeOf1Cm, 2);
                     if (intervalWidthInCm > 0)
                     {
-                        var label = new FormattedText(intervalWidthInCm.ToString(CultureInfo.CurrentCulture), CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 14, Brushes.DimGray, 1.0);
+                        string formattedValueString = NumberConverter.ConvertToString(intervalWidthInCm, 2);
+                        var label = new FormattedText(formattedValueString, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 14, Brushes.DimGray, 1.0);
 
                         // Create the text drawing
                         var labelOrigin = (selectedInterval + intervals[i]) / 2;

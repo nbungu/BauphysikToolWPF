@@ -37,6 +37,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
             { ConstructionType.Kellerdecke, "Kellerdecke" }
         };
 
+
         public enum RequirementSourceType
         {
             NotDefined,

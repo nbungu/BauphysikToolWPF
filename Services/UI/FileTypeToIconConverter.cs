@@ -4,7 +4,7 @@ using System.IO;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
-namespace BauphysikToolWPF.UI.CustomControls
+namespace BauphysikToolWPF.Services.UI
 {
     public class FileTypeToIconConverter : IValueConverter
     {

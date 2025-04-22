@@ -1,13 +1,14 @@
 ﻿<UserControl x:Class="BauphysikToolWPF.UI.Page_TemperatureResults"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:BauphysikToolWPF"
-      xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
-      xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
-      xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-      mc:Ignorable="d" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="clr-namespace:BauphysikToolWPF"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
+             xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             mc:Ignorable="d" 
       d:DesignHeight="700" d:DesignWidth="1200">
 
     <UserControl.DataContext>
@@ -17,7 +18,7 @@
 
     <UserControl.Resources>
 
-        <controls:DoubleToStringConverter x:Key="DoubleToStringConverter" />
+        <ui:NumberConverter x:Key="NumberConverter" />
 
         <!--OverviewListBox appearance: Used in ListBox as Style -->
         <Style x:Key="OverviewListBoxStyle" TargetType="{x:Type ListBox}">
@@ -68,7 +69,7 @@
                 <Ellipse Fill="{Binding Color}" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}" HorizontalAlignment="Right"/>
                 <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Label Content="{Binding Value, Converter={StaticResource DoubleToStringConverter}}" ContentStringFormat="= {0}" FontWeight="Bold"/>
+                    <Label Content="{Binding Value, Converter={StaticResource NumberConverter}}" ContentStringFormat="= {0}" FontWeight="Bold"/>
                     <Label Content="{Binding Unit}" HorizontalAlignment="Left" Margin="-4,0,0,0" FontWeight="Bold"/>
                 </StackPanel>
                 <StackPanel Grid.Column="3" Orientation="Horizontal">

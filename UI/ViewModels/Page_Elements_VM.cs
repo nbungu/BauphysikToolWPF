@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using BauphysikToolWPF.Services.UI;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -169,6 +170,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string> SortingProperties => ElementComparer.SortingTypes; // Has to match ElementSortingType enum values (+Order)
         public List<string> GroupingProperties => ElementComparer.GroupingTypes; // Has to match ElementSortingType enum values (+Order)
         public ICollectionView? GroupedElements => IsGroupingEnabled && Session.SelectedProject?.Elements.Count > 0 ? GetGroupedItemsSource() : null;
+        public Visibility NoElementsVisibility => Elements.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
 
         private void UpdateOnNewElementAdded()
         {
@@ -223,6 +225,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(ExportPdfCatalogueAvailable));
             OnPropertyChanged(nameof(ElementToolsAvailable));
             OnPropertyChanged(nameof(ElementInfoVisibility));
+            OnPropertyChanged(nameof(NoElementsVisibility));
         }
 
         private ICollectionView GetGroupedItemsSource()

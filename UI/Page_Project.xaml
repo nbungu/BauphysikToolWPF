@@ -1,11 +1,12 @@
 ﻿<UserControl x:Class="BauphysikToolWPF.UI.Page_Project"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="1200" d:DesignWidth="1200">
 
@@ -16,9 +17,9 @@
 
     <UserControl.Resources>
 
-        <controls:FileTypeToIconConverter x:Key="FileTypeToIconConverter"/>
-        <controls:FilePathToFileNameConverter x:Key="FilePathToFileNameConverter"/>
-        <controls:FilePathToIsFoundConverter x:Key="FilePathToIsFoundConverter"/>
+        <ui:FileTypeToIconConverter x:Key="FileTypeToIconConverter"/>
+        <ui:FilePathToFileNameConverter x:Key="FilePathToFileNameConverter"/>
+        <ui:FilePathToIsFoundConverter x:Key="FilePathToIsFoundConverter"/>
 
         <!-- Custom ScrollViewer Style -->
         <Style x:Key="CustomScrollViewerStyle" TargetType="ScrollViewer">
@@ -26,41 +27,6 @@
             <Style.Triggers>
                 <Trigger Property="ComputedVerticalScrollBarVisibility" Value="Visible">
                     <Setter Property="Padding" Value="0,0,16,0"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!--Custom RadioButton01_A: Exclusive Group, Checkstates etc.-->
-        <Style x:Key="RadioButton01_A" TargetType="{x:Type RadioButton}">
-            <!--Set default properties of the button-->
-            <Setter Property="BorderThickness" Value="2"/>
-            <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="MinHeight" Value="40"/>
-            <Setter Property="MinWidth" Value="56"/>
-            <!--Set appearance of the element-->
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type RadioButton}">
-                        <!--Element appearance with behaviour of a 'RadioButton'-->
-                        <Border CornerRadius="16" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="4">
-                            <StackPanel Orientation="Vertical">
-                                <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image Source="{TemplateBinding Tag}" Stretch="Fill" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="8"/>
-                                <Label Content="{TemplateBinding Content}"/>
-                            </StackPanel>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <!--Set Triggers and Effects-->
-            <Style.Triggers>
-                <Trigger Property="IsChecked" Value="True">
-                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
-                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
@@ -191,7 +157,7 @@
                 <Label Grid.Row="8" Grid.ColumnSpan="2" Grid.Column="0" Content="Kommentar" HorizontalAlignment="Left" Margin="0,8,0,0"/>
                 <TextBox Grid.Row="9" Grid.ColumnSpan="2" Grid.Column="0" TextAlignment="Left" Text="{Binding Comment}" Background="{StaticResource SecondaryLightBlueBrush}" VerticalContentAlignment="Top" TextWrapping="Wrap" MinHeight="80" FontSize="14" FontFamily="Consolas" MaxLength="800" Margin="0,4,0,0"/>
 
-                <Label Grid.Row="10" Grid.Column="0" Content="Dateien mit diesem Projekt verknüpfen" HorizontalAlignment="Left" Margin="0,16,0,0"/>
+                <Label Grid.Row="10" Grid.Column="0" Grid.ColumnSpan="2" Content="Dateien mit diesem Projekt verknüpfen" HorizontalAlignment="Left" Margin="0,16,0,0"/>
 
                 <!--Expose the FilePaths Property to a ViewModel property for monitoring and event handling-->
                 <controls:FileDropArea x:Name="FileDropArea" Grid.Row="11" Grid.Column="0" Grid.ColumnSpan="2" FilePaths="{Binding DroppedFilePaths, NotifyOnSourceUpdated=True}" SourceUpdated="FileDropArea_OnSourceUpdated" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" MinHeight="160" Margin="0,8" />

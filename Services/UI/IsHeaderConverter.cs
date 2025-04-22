@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows.Data;
 
-namespace BauphysikToolWPF.UI.CustomControls
+namespace BauphysikToolWPF.Services.UI
 {
     public class IsHeaderConverter : IValueConverter
     {

@@ -28,16 +28,16 @@ namespace BauphysikToolWPF.Services.UI
         // Static, because globally valid for all Intstances
         public static double SizeOf1Cm = 16.0; // starting value
 
-        public Element? Element { get; set; }
+        public Element Element { get; set; }
         public Rectangle CanvasSize { get; set; }
         public DrawingType DrawingType { get; set; }
         public AlignmentVariant Alignment { get; set; }
         public List<IDrawingGeometry> DrawingGeometries { get; private set; }
         public bool LastDrawingSuccessful { get; private set; }
 
-        public CrossSectionDrawing(Element? element, Rectangle canvasSize, DrawingType drawingType = DrawingType.CrossSection, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
+        public CrossSectionDrawing(Element? element, Rectangle canvasSize, DrawingType drawingType, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {
-            Element = element;
+            Element = element ?? throw new ArgumentNullException(nameof(element), "Element cannot be null.");
             CanvasSize = canvasSize;
             DrawingType = drawingType;
             Alignment = variant;

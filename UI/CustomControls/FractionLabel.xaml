@@ -5,11 +5,12 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              mc:Ignorable="d">
 
     <UserControl.Resources>
 
-        <controls:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
+        <ui:StringToVisibilityConverter x:Key="StringToVisibilityConverter"/>
 
         <!--Default Values-->
         <Style TargetType="{x:Type controls:FractionLabel}">

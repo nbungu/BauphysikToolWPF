@@ -3,16 +3,13 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 
-namespace BauphysikToolWPF.UI.CustomControls
+namespace BauphysikToolWPF.Services.UI
 {
     public class FilePathToFileNameConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string filePath)
-            {
-                return Path.GetFileName(filePath);
-            }
+            if (value is string filePath) return Path.GetFileName(filePath);
             return value;
         }
 

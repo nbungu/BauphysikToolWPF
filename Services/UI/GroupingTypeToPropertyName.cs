@@ -1,11 +1,10 @@
-﻿using System;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
+using System;
 using System.Globalization;
 using System.Windows.Data;
-using BauphysikToolWPF.Models;
-using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.Domain.Helper;
 
-namespace BauphysikToolWPF.UI.CustomControls
+namespace BauphysikToolWPF.Services.UI
 {
     public class GroupingTypeToPropertyName : IValueConverter
     {

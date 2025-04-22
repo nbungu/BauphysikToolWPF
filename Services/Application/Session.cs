@@ -1,17 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BauphysikToolWPF.Calculation;
+﻿using BauphysikToolWPF.Calculation;
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BT.Logging;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace BauphysikToolWPF.Services.Application
 {
     public delegate void Notify(); // delegate (signature: return type void, no input parameters)
     public static class Session // publisher of 'EnvVarsChanged' event
     {
+        #region EventHandlers
+
         // The subscriber class must register to these event and handle it with the method whose signature matches Notify delegate
         public static event Notify? SelectedProjectChanged; // event
         public static event Notify? NewProjectAdded; // event
@@ -20,6 +22,7 @@ namespace BauphysikToolWPF.Services.Application
         public static event Notify? ElementRemoved;
         public static event Notify? SelectedLayerChanged;
         public static event Notify? EnvVarsChanged;
+        public static event Notify? EnvelopeItemsChanged;
 
         // event handlers - publisher
         public static void OnSelectedProjectChanged(bool updateIsModified = true) //protected virtual method
@@ -62,16 +65,18 @@ namespace BauphysikToolWPF.Services.Application
         {
             EnvVarsChanged?.Invoke();
         }
-
-        public static IEnumerable<Element> GetAllElements()
+        public static void OnEnvelopeItemsChanged(bool updateIsModified = true)
         {
-            if (SelectedProject == null) return Enumerable.Empty<Element>();
-            return SelectedProject.Elements;
+            if (SelectedProject == null) return;
+            if (updateIsModified) SelectedProject.IsModified = true;
+            EnvelopeItemsChanged?.Invoke();
         }
+
+        #endregion
 
         public static string ProjectFilePath { get; set; } = string.Empty;
 
-        public static Project? SelectedProject { get; set; }// = Project.Empty;
+        public static Project? SelectedProject { get; set; }
 
         /// <summary>
         /// InternalID des ausgewählten Elements
@@ -92,17 +97,6 @@ namespace BauphysikToolWPF.Services.Application
         /// Zeigt auf den entsprechenden Layer aus dem aktuellen Element auf Basis der LayerPosition von 'SelectedLayerPosition'
         /// </summary>
         public static Layer? SelectedLayer => SelectedElement?.Layers.FirstOrDefault(e => e?.InternalId == SelectedLayerId, null);
-
-        /// <summary>
-        /// InternalID des ausgewählten EnvelopeItem
-        /// </summary>
-        public static int SelectedEnvelopeItemId { get; set; } = -1;
-
-        /// <summary>
-        /// Zeigt auf den entsprechenden Layer aus dem aktuellen Element auf Basis der LayerPosition von 'SelectedLayerPosition'
-        /// </summary>
-        public static EnvelopeItem? SelectedEnvelopeItem => SelectedProject?.EnvelopeItems.FirstOrDefault(e => e?.InternalId == SelectedEnvelopeItemId, null);
-
 
         // Use GlaserCalc as Collection for Results due to Polymorphism;
         // You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.

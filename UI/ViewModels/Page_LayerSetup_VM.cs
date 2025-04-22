@@ -18,31 +18,30 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
     public partial class Page_LayerSetup_VM : ObservableObject
     {
-
-        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400));
+        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
 
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
         {
             if (Session.SelectedProject is null) return;
             if (Session.SelectedElement is null) return;
-            
+
             Session.SelectedLayerId = -1;
             Session.SelectedElement.SortLayers();
             Session.SelectedElement.AssignEffectiveLayers();
             Session.SelectedElement.AssignInternalIdsToLayers();
-            
+
             // Allow child Windows to trigger UpdateAll of this Window
             Session.SelectedElementChanged += UpdateElement;
             Session.SelectedLayerChanged += UpdateAll;
             Session.EnvVarsChanged += UpdateRecalculateFlag;
-            
+
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += TriggerSelectedLayerChanged;
             PropertyItem<int>.PropertyChanged += TriggerSelectedLayerChanged;
             PropertyItem<bool>.PropertyChanged += TriggerSelectedLayerChanged;
         }
-        
+
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -84,7 +83,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             if (targetLayerInternalId == -1) targetLayerInternalId = Session.SelectedLayerId;
-            new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId, editExisting: false).ShowDialog();
+            new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId).ShowDialog();
         }
         [RelayCommand]
         private void EditSubConstructionLayer(int targetLayerInternalId = -1)
@@ -92,16 +91,15 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             if (targetLayerInternalId == -1) targetLayerInternalId = Session.SelectedLayerId;
-            new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId, editExisting: IsLayerSelected && SelectedListViewItem.HasSubConstructions).ShowDialog();
+            new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId).ShowDialog();
         }
 
         [RelayCommand]
-        private void DeleteSubConstructionLayer()
+        private void DeleteSubConstructionLayer(int targetLayerInternalId = -1)
         {
-            if (Session.SelectedElement is null) return;
-            if (Session.SelectedLayer is null) return;
-
-            Session.SelectedLayer.RemoveSubConstruction();
+            if (targetLayerInternalId == -1) targetLayerInternalId = Session.SelectedLayerId;
+            var targetLayer = Session.SelectedElement?.Layers.FirstOrDefault(l => l?.InternalId == targetLayerInternalId, null);
+            targetLayer?.RemoveSubConstruction();
             Session.OnSelectedLayerChanged();
         }
 
@@ -115,7 +113,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.OnSelectedLayerChanged();
             SelectedListViewItem = null;
         }
-        
+
         [RelayCommand]
         private void DuplicateLayer()
         {
@@ -151,7 +149,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             EditLayer();
         }
-        
+
         // This method will be called whenever SelectedListViewItem changes
         partial void OnSelectedListViewItemChanged(Layer? value)
         {
@@ -222,10 +220,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         */
 
         public Element? SelectedElement => Session.SelectedElement;
-        //public List<Layer> LayerList => Session.SelectedElement.Layers;
         public bool IsLayerSelected => SelectedListViewItem != null;
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility NoLayersVisibility => LayerList?.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
         public Rectangle CanvasSize => _crossSection.CanvasSize;
         public List<DrawingGeometry> LayerMeasurement => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);
@@ -409,6 +407,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(SubConstructionMeasurement));
             OnPropertyChanged(nameof(CrossSectionDrawing));
             OnPropertyChanged(nameof(CanvasSize));
+            OnPropertyChanged(nameof(NoLayersVisibility));
         }
         private void UpdateElement()
         {

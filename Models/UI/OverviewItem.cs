@@ -1,7 +1,7 @@
 ﻿using System.Globalization;
 using System.Windows.Media;
 
-namespace BauphysikToolWPF.UI.CustomControls
+namespace BauphysikToolWPF.Models.UI
 {
     public class OverviewItem
     {

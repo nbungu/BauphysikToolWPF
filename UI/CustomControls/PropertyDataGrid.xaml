@@ -1,9 +1,10 @@
 ﻿<UserControl x:Class="BauphysikToolWPF.UI.CustomControls.PropertyDataGrid"
              x:Name="PropertyDataGridControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d"
              d:DesignHeight="320"
@@ -12,7 +13,7 @@
 
     <UserControl.Resources>
 
-        <controls:DoubleWithDecimalPlacesConverter x:Key="DoubleWithDecimalPlacesConverter"/>
+        <ui:NumberConverter x:Key="NumberConverter"/>
 
         <!-- 
 
@@ -138,7 +139,6 @@
                     <Setter Property="Background" Value="LightGoldenrodYellow"/>
                 </DataTrigger>
             </Style.Triggers>
-
         </Style>
 
         <Style x:Key="DataGridCheckBox" TargetType="{x:Type CheckBox}">
@@ -242,8 +242,8 @@
                         <DataTemplate>
                             <ContentControl Content="{Binding}">
                                 <ContentControl.ContentTemplateSelector>
-                                    <controls:PropertyValueTemplateSelector>
-                                        <controls:PropertyValueTemplateSelector.TextBoxTemplate>
+                                    <ui:PropertyValueTemplateSelector>
+                                        <ui:PropertyValueTemplateSelector.TextBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -258,7 +258,7 @@
                                                              LostKeyboardFocus="TextBox_LostKeyboardFocus"
                                                              PreviewTextInput="numericData_PreviewTextInput">
                                                         <TextBox.Text>
-                                                            <MultiBinding Converter="{StaticResource DoubleWithDecimalPlacesConverter}">
+                                                            <MultiBinding Converter="{StaticResource NumberConverter}">
                                                                 <Binding Path="Value" />
                                                                 <Binding Path="DecimalPlaces" />
                                                             </MultiBinding>
@@ -273,8 +273,8 @@
                                                                             FontWeight="Normal"/>
                                                 </Grid>
                                             </DataTemplate>
-                                        </controls:PropertyValueTemplateSelector.TextBoxTemplate>
-                                        <controls:PropertyValueTemplateSelector.ComboBoxTemplate>
+                                        </ui:PropertyValueTemplateSelector.TextBoxTemplate>
+                                        <ui:PropertyValueTemplateSelector.ComboBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -290,8 +290,8 @@
                                                               FontWeight="Normal"/>
                                                 </Grid>
                                             </DataTemplate>
-                                        </controls:PropertyValueTemplateSelector.ComboBoxTemplate>
-                                        <controls:PropertyValueTemplateSelector.CheckBoxTemplate>
+                                        </ui:PropertyValueTemplateSelector.ComboBoxTemplate>
+                                        <ui:PropertyValueTemplateSelector.CheckBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>
                                                     <CheckBox IsChecked="{Binding Value}"
@@ -301,8 +301,8 @@
                                                               Click="CheckBox_Click"/>
                                                 </Grid>
                                             </DataTemplate>
-                                        </controls:PropertyValueTemplateSelector.CheckBoxTemplate>
-                                    </controls:PropertyValueTemplateSelector>
+                                        </ui:PropertyValueTemplateSelector.CheckBoxTemplate>
+                                    </ui:PropertyValueTemplateSelector>
                                 </ContentControl.ContentTemplateSelector>
                             </ContentControl>
                         </DataTemplate>

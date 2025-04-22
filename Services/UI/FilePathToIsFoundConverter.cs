@@ -1,11 +1,10 @@
-﻿using System;
+﻿using BauphysikToolWPF.Services.Application;
+using System;
 using System.Globalization;
 using System.IO;
 using System.Windows.Data;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.Services.Application;
 
-namespace BauphysikToolWPF.UI.CustomControls
+namespace BauphysikToolWPF.Services.UI
 {
     public class FilePathToIsFoundConverter : IValueConverter
     {
@@ -18,7 +17,6 @@ namespace BauphysikToolWPF.UI.CustomControls
                     string programDataPath = PathService.LocalProgramDataPath;
                     filePath = filePath.Replace("%appdata%", programDataPath, StringComparison.InvariantCultureIgnoreCase);
                 }
-
                 return File.Exists(filePath);
             }
             return false;

@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
 {
@@ -28,12 +27,6 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             { OrientationType.NorthWest, "Nordwesten" }
         };
 
-        // for UI puropses
-        public static IEnumerable<string> GetOrientationTypeList()
-        {
-            return OrientationTypeMapping.Values;
-        }
-
         public enum UsageZone
         {
             Wohnen,
@@ -44,11 +37,6 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             { UsageZone.Wohnen, "Wohnen" },
             { UsageZone.Verkehrsflaechen, "Verkehrsflächen" }
         };
-        // for UI puropses
-        public static IEnumerable<string> GetUsageZoneList()
-        {
-            return UsageZoneMapping.Values;
-        }
 
         public enum SubConstructionDirection
         {
