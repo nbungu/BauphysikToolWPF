@@ -7,10 +7,14 @@ using BauphysikToolWPF.Services.UI;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.UI.Enums;
 using Point = BT.Geometry.Point;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -40,6 +44,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             PropertyItem<double>.PropertyChanged += TriggerSelectedLayerChanged;
             PropertyItem<int>.PropertyChanged += TriggerSelectedLayerChanged;
             PropertyItem<bool>.PropertyChanged += TriggerSelectedLayerChanged;
+
+            // TODO: When Properties are changed -> SelectedListViewItem becomes null and OnSelectedListViewItemChanged never gets called again
         }
 
         /*
@@ -67,14 +73,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerWindow(editExsiting: false).ShowDialog();
+            new AddLayerWindow().ShowDialog();
         }
         [RelayCommand]
         private void EditLayer()
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerWindow(editExsiting: IsLayerSelected).ShowDialog();
+            new AddLayerWindow(SelectedListViewItem?.InternalId ?? -1).ShowDialog();
         }
 
         [RelayCommand]
@@ -82,7 +88,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            if (targetLayerInternalId == -1) targetLayerInternalId = Session.SelectedLayerId;
+            if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
             new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId).ShowDialog();
         }
         [RelayCommand]
@@ -90,14 +96,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            if (targetLayerInternalId == -1) targetLayerInternalId = Session.SelectedLayerId;
+            if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
             new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId).ShowDialog();
         }
 
         [RelayCommand]
-        private void DeleteSubConstructionLayer(int targetLayerInternalId = -1)
+        private void DeleteSubConstructionLayer(int targetLayerInternalId = -1) 
         {
-            if (targetLayerInternalId == -1) targetLayerInternalId = Session.SelectedLayerId;
+            if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
             var targetLayer = Session.SelectedElement?.Layers.FirstOrDefault(l => l?.InternalId == targetLayerInternalId, null);
             targetLayer?.RemoveSubConstruction();
             Session.OnSelectedLayerChanged();
@@ -107,9 +113,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void DeleteLayer()
         {
             if (Session.SelectedElement is null) return;
-            if (Session.SelectedLayer is null) return;
+            if (SelectedListViewItem is null) return;
 
-            Session.SelectedElement.RemoveLayer(Session.SelectedLayerId);
+            Session.SelectedElement.RemoveLayer(SelectedListViewItem.InternalId);
             Session.OnSelectedLayerChanged();
             SelectedListViewItem = null;
         }
@@ -118,9 +124,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void DuplicateLayer()
         {
             if (Session.SelectedElement is null) return;
-            if (Session.SelectedLayer is null) return;
+            if (SelectedListViewItem is null) return;
 
-            Session.SelectedElement.DuplicateLayer(Session.SelectedLayerId);
+            Session.SelectedElement.DuplicateLayer(SelectedListViewItem.InternalId);
             Session.OnSelectedLayerChanged();
         }
 
@@ -128,9 +134,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void MoveLayerDown()
         {
             if (Session.SelectedElement is null) return;
-            if (Session.SelectedLayer is null) return;
+            if (SelectedListViewItem is null) return;
 
-            Session.SelectedElement.MoveLayerPositionToOutside(Session.SelectedLayerId);
+            Session.SelectedElement.MoveLayerPositionToOutside(SelectedListViewItem.InternalId);
             Session.OnSelectedLayerChanged();
         }
 
@@ -138,9 +144,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void MoveLayerUp()
         {
             if (Session.SelectedElement is null) return;
-            if (Session.SelectedLayer is null) return;
+            if (SelectedListViewItem is null) return;
 
-            Session.SelectedElement.MoveLayerPositionToInside(Session.SelectedLayerId);
+            Session.SelectedElement.MoveLayerPositionToInside(SelectedListViewItem.InternalId);
             Session.OnSelectedLayerChanged();
         }
 
@@ -165,7 +171,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             _crossSection.UpdateDrawings();
             //_crossSection.UpdateSingleDrawing(Session.SelectedLayer);
         }
-
+        
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
@@ -218,7 +224,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         * 
         * Not Observable, not directly mutated by user input
         */
-
+       
         public Element? SelectedElement => Session.SelectedElement;
         public bool IsLayerSelected => SelectedListViewItem != null;
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;

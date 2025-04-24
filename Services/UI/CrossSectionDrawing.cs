@@ -1,9 +1,11 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BT.Geometry;
+using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media;
+using BauphysikToolWPF.Services.Application;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Services.UI
@@ -47,6 +49,7 @@ namespace BauphysikToolWPF.Services.UI
         public void UpdateDrawings()
         {
             DrawingGeometries = GetDrawing();
+            Logger.LogInfo($"Updated cross section drawing of element: {Element}.");
         }
 
         public void UpdateSingleDrawing(Layer layer)

@@ -1,4 +1,6 @@
-﻿namespace BauphysikToolWPF.Models.UI
+﻿using static BauphysikToolWPF.Models.UI.Enums;
+
+namespace BauphysikToolWPF.Models.UI
 {
     public interface IPropertyItem
     {

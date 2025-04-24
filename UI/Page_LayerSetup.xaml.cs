@@ -1,10 +1,9 @@
-﻿using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.Services.UI;
 
 namespace BauphysikToolWPF.UI
 {
@@ -33,6 +32,8 @@ namespace BauphysikToolWPF.UI
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+            if (Session.SelectedElement is null) return;
+
             // Only save if leaving this page
             Session.SelectedElement.UnselectAllLayers();
 

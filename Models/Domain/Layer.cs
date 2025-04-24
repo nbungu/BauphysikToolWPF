@@ -8,13 +8,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {
     /// <summary>
     /// Business logic of a Layer
     /// </summary>
-    public partial class Layer : IDrawingGeometry, IEquatable<Layer>
+    public partial class Layer : IDrawingGeometry, IPropertyClass, IEquatable<Layer>
     {
         #region Serialization Objects
 
@@ -38,6 +39,29 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public int InternalId { get; set; } = -1;
+        
+        [JsonIgnore]
+        public IEnumerable<IPropertyItem> PropertyBag => new List<IPropertyItem>()
+        {
+            new PropertyItem<string>("Kategorie", () => Material.CategoryName),
+            new PropertyItem<string>("Materialquelle", () => Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
+            new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
+            new PropertyItem<double>(Symbol.ThermalConductivity, () => Material.ThermalConductivity) { DecimalPlaces = 3},
+            new PropertyItem<double>(Symbol.RValueLayer, () => R_Value)
+            {
+                SymbolSubscriptText = $"{LayerNumber}"
+            },
+            new PropertyItem<int>(Symbol.RawDensity, () => Material.BulkDensity),
+            new PropertyItem<double>(Symbol.AreaMassDensity, () => AreaMassDensity),
+            new PropertyItem<double>(Symbol.SdThickness, () => Sd_Thickness),
+            new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => Material.DiffusionResistance),
+            new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => Material.SpecificHeatCapacity),
+            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => ArealHeatCapacity)
+            {
+                SymbolSubscriptText = $"{LayerNumber}"
+            },
+            new PropertyItem<bool>("Wirksame Schicht", () => IsEffective, value => IsEffective = value)
+        };
 
         [JsonIgnore]
         public static Layer Empty => new Layer(); // Optional static default (for easy reference)

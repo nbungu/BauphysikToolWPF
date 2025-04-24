@@ -12,22 +12,24 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for AddLayerWindow.xaml: Used in xaml as "DataContext"
     public partial class AddLayerWindow_VM : ObservableObject
     {
+        private readonly Layer? _targetLayer = Session.SelectedElement?.Layers.FirstOrDefault(l => l?.InternalId == AddLayerWindow.TargetLayerInternalId, null);
+        
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => Session.SelectedLayer != null && EditSelectedLayer ? $"Ausgewählte Schicht bearbeiten: {Session.SelectedLayer}" : "Neue Schicht erstellen";
-
         public AddLayerWindow_VM()
         {
-            if (EditSelectedLayer && Session.SelectedLayer != null)
+            if (Session.SelectedElement is null) return;
+            if (_targetLayer != null)
             {
-                SelectedTabIndex = Session.SelectedLayer.Material.IsUserDefined ? 1 : 0;
-                SelectedMaterialCategoryIndex = (int)Session.SelectedLayer.Material.Category;
-                SelectedListViewItem = Session.SelectedLayer.Material;
+                SelectedTabIndex = _targetLayer.Material.IsUserDefined ? 1 : 0;
+                SelectedMaterialCategoryIndex = (int)_targetLayer.Material.Category;
+                SelectedListViewItem = _targetLayer.Material;
             }
             
             PropertyItem<string>.PropertyChanged += MaterialPropertiesChanged;
@@ -75,10 +77,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
 
             // Update Material in existing Layer or Add new Layer
-            if (EditSelectedLayer && Session.SelectedLayer != null)
+            if (_targetLayer != null)
             {
                 // TODO: Correct?
-                Session.SelectedLayer.MaterialId = materialId;
+                _targetLayer.MaterialId = materialId;
             }
             else if (Session.SelectedElement != null)
             {
@@ -87,7 +89,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
                 Layer layer = new Layer
                 {
-                    //LayerId gets set by SQLite DB (AutoIncrement)
                     LayerPosition = layerCount,
                     InternalId = layerCount,
                     Thickness = Convert.ToDouble(Thickness),
@@ -96,7 +97,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 };
                 Session.SelectedElement.AddLayer(layer);
             }
-            // Trigger Event to Update Layer Window
+            // Trigger event to update LayerWindow and all subscriber windows
             Session.OnSelectedLayerChanged();
 
         }
@@ -192,6 +193,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
+        public string Title => _targetLayer != null ? $"Ausgewählte Schicht bearbeiten: {_targetLayer}" : "Neue Schicht erstellen";
         public string Tab0Header => $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
         public string Tab1Header => $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
         public List<IPropertyItem> MaterialProperties => SelectedListViewItem != null ? new List<IPropertyItem>()
@@ -210,8 +212,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public List<Material> FilteredMaterials => GetFilteredMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
-        public bool EditSelectedLayer => AddLayerWindow.EditExistingLayer;
-        public string ButtonText => EditSelectedLayer ? "Änderung übernehmen" : "Schicht hinzufügen";
+        public string ButtonText => _targetLayer != null ? "Änderung übernehmen" : "Schicht hinzufügen";
         public static IEnumerable<string> GetMaterialCategoryNames() => MaterialCategoryMapping.Values;
         
         // TODO: fix -> check only for current project

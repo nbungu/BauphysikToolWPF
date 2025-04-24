@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Numerics;
 using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.UI;
 using BT.Logging;
 using LiveChartsCore.Defaults;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {

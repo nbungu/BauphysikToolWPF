@@ -1,9 +1,8 @@
-﻿using BauphysikToolWPF.UI.ViewModels;
+﻿using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.UI.ViewModels;
 using System.Linq;
 using System.Windows.Controls;
 using System.Windows.Data;
-using BauphysikToolWPF.Services;
-using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.UI
 {

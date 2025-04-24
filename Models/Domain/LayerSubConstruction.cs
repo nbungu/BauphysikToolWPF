@@ -4,18 +4,20 @@ using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BT.Geometry;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {
     /// <summary>
     /// Business logic of a LayerSubConstruction
     /// </summary>
-    public partial class LayerSubConstruction : IDrawingGeometry
+    public partial class LayerSubConstruction : IDrawingGeometry, IPropertyClass
     {
         #region Serialization Objects
 
@@ -34,6 +36,36 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public int InternalId { get; set; } = -1;
+
+        [JsonIgnore]
+        public int LayerNumber { get; set; } = -1;
+
+        [JsonIgnore]
+        public IEnumerable<IPropertyItem> PropertyBag => new List<IPropertyItem>()
+        {
+            new PropertyItem<string>("Material", () => Material.Name),
+            new PropertyItem<string>("Kategorie", () => Material.CategoryName),
+            new PropertyItem<int>("Ausrichtung", () => (int)Direction, value => Direction = (SubConstructionDirection)value)
+            {
+                PropertyValues = SubConstructionDirectionMapping.Values.Cast<object>().ToArray()
+            },
+            new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
+            new PropertyItem<double>(Symbol.Width, () => Width, value => Width = value),
+            new PropertyItem<double>(Symbol.Distance, () => Spacing, value => Spacing = value),
+            new PropertyItem<double>("Achsenabstand", Symbol.Distance, () => AxisSpacing, value => AxisSpacing = value),
+            new PropertyItem<double>(Symbol.ThermalConductivity, () => Material.ThermalConductivity) { DecimalPlaces = 3},
+            new PropertyItem<double>(Symbol.RValueLayer, () => R_Value)
+            {
+                SymbolSubscriptText = $"{LayerNumber}b"
+            },
+            new PropertyItem<double>(Symbol.AreaMassDensity, () => AreaMassDensity),
+            new PropertyItem<double>(Symbol.SdThickness, () => Sd_Thickness),
+            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => ArealHeatCapacity)
+            {
+                SymbolSubscriptText = $"{LayerNumber}b"
+            },
+            new PropertyItem<bool>("Wirksame Schicht", () => IsEffective, value => IsEffective = value)
+        };
 
         // 1:1 relationship with Material
         [JsonIgnore]
@@ -120,6 +152,7 @@ namespace BauphysikToolWPF.Models.Domain
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.InternalId = this.InternalId;
+            copy.LayerNumber = this.LayerNumber;
             return copy;
         }
         public LayerSubConstruction CopyToNewLayer(Layer layer)
@@ -135,6 +168,7 @@ namespace BauphysikToolWPF.Models.Domain
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.InternalId = this.InternalId;
+            copy.LayerNumber = this.LayerNumber;
             return copy;
         }
 

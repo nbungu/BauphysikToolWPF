@@ -15,6 +15,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {

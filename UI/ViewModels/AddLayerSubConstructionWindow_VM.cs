@@ -11,6 +11,7 @@ using System.Linq;
 using System.Windows;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -23,6 +24,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from AddLayerSubConstructionWindow.cs due to Class-Binding in xaml via DataContext
         public AddLayerSubConstructionWindow_VM()
         {
+            if (Session.SelectedElement is null) return;
             if (_targetLayer is null) return;
             
             PropertyItem<int>.PropertyChanged += UpdateXamlBindings;
@@ -39,6 +41,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Thickness = _targetLayer.Thickness,
                     Spacing = 18,
                     MaterialId = _targetLayer.MaterialId,
+                    LayerNumber = _targetLayer.LayerNumber,
                 };
 
             }

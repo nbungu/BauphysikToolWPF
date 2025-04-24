@@ -1,11 +1,11 @@
 ﻿using BauphysikToolWPF.Calculation;
 using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Services.Application
 {
@@ -23,6 +23,7 @@ namespace BauphysikToolWPF.Services.Application
         public static event Notify? SelectedLayerChanged;
         public static event Notify? EnvVarsChanged;
         public static event Notify? EnvelopeItemsChanged;
+        public static event Notify? PropertyBagChanged;
 
         // event handlers - publisher
         public static void OnSelectedProjectChanged(bool updateIsModified = true) //protected virtual method
@@ -70,6 +71,12 @@ namespace BauphysikToolWPF.Services.Application
             if (SelectedProject == null) return;
             if (updateIsModified) SelectedProject.IsModified = true;
             EnvelopeItemsChanged?.Invoke();
+        }
+        public static void OnPropertyBagChanged(bool updateIsModified = true)
+        {
+            if (SelectedProject == null) return;
+            if (updateIsModified) SelectedProject.IsModified = true;
+            PropertyBagChanged?.Invoke();
         }
 
         #endregion
