@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.Models.Domain
     /// <summary>
     /// Business logic of a Layer
     /// </summary>
-    public partial class Layer : IDrawingGeometry, IPropertyClass, IEquatable<Layer>
+    public partial class Layer : IDrawingGeometry, IPropertyClass//, IEquatable<Layer>
     {
         #region Serialization Objects
 
@@ -231,29 +231,29 @@ namespace BauphysikToolWPF.Models.Domain
 
         #endregion
 
-        #region IEquatable<Layer> Implementation
+        //#region IEquatable<Layer> Implementation
 
-        public bool Equals(Layer? other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return _isEffective == other._isEffective && LayerPosition == other.LayerPosition && Thickness.Equals(other.Thickness) && MaterialId == other.MaterialId && SubConstructions.Equals(other.SubConstructions) && InternalId == other.InternalId;
-        }
+        //public bool Equals(Layer? other)
+        //{
+        //    if (ReferenceEquals(null, other)) return false;
+        //    if (ReferenceEquals(this, other)) return true;
+        //    return _isEffective == other._isEffective && LayerPosition == other.LayerPosition && Thickness.Equals(other.Thickness) && MaterialId == other.MaterialId && SubConstructions.Equals(other.SubConstructions) && InternalId == other.InternalId;
+        //}
 
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Layer)obj);
-        }
+        //public override bool Equals(object? obj)
+        //{
+        //    if (ReferenceEquals(null, obj)) return false;
+        //    if (ReferenceEquals(this, obj)) return true;
+        //    if (obj.GetType() != this.GetType()) return false;
+        //    return Equals((Layer)obj);
+        //}
 
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(_isEffective, LayerPosition, Thickness, MaterialId, SubConstructions, InternalId);
-        }
+        //public override int GetHashCode()
+        //{
+        //    return HashCode.Combine(_isEffective, LayerPosition, Thickness, MaterialId, SubConstructions, InternalId);
+        //}
 
-        #endregion
+        //#endregion
     }
 
     /// <summary>
