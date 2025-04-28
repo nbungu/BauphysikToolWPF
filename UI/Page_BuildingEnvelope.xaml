@@ -13,7 +13,13 @@
         <vm:Page_BuildingEnvelope_VM/>
     </UserControl.DataContext>
 
-    <!--Main Grid: 3x2-->
+    <UserControl.Resources>
+
+  
+
+    </UserControl.Resources>
+
+    <!--Main Grid: 1x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
@@ -29,80 +35,105 @@
             </Grid>
         </Border>
 
-        <!--Main -->
-        <Grid Grid.Row="1" Margin="16">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+        <!--Content Area-->
+        <Grid Grid.Row="1" Margin="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="320"/>
+                <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
+            </Grid.ColumnDefinitions>
 
-            <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
-                
-                <Button Content="Neuer Bereich"
+            <!--Main, Left -->
+            <Grid Grid.Column="0" Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+
+                    <Button Content="Neuer Bereich"
                         ToolTip="Erstellt einen neuen Bereich der Gebäudehülle"
                         Style="{StaticResource ButtonStyle01_Mini_Highlighted}"
                         Command="{Binding AddEnvelopeItemCommand}"
                         Tag="{StaticResource ButtonIcon_AddLayer_W}"
                         Margin="0,0,8,0"/>
 
-                <Button ToolTip="Bereich duplizieren"
+                    <Button ToolTip="Bereich duplizieren"
                         Style="{StaticResource ButtonStyle01_Mini}"
                         Command="{Binding DuplicateEnvelopeItemCommand}"
                         Tag="{StaticResource ButtonIcon_Copy_B}" 
                         Margin="0,0,8,0"
                         IsEnabled="{Binding IsItemSelected}"/>
 
-                <Button ToolTip="Bereich löschen"
+                    <Button ToolTip="Bereich löschen"
                         Style="{StaticResource ButtonStyle01_Mini}"
                         Tag="{StaticResource ButtonIcon_Delete_B}"
                         IsEnabled="{Binding IsItemSelected}"
                         Command="{Binding DeleteEnvelopeItemCommand}"
                         Margin="0,0,8,0"/>
 
-                
-                <StackPanel Orientation="Horizontal" Margin="32,0,8,0" Visibility="{Binding AnyPresetActive}">
-                    <Image x:Name="ButtonIcon" Source="{StaticResource ButtonIcon_Info_Flat}" Stretch="Fill" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,8,0"/>
-                    <Label x:Name="ButtonLabel" Content="Vorbelegungen aktiv" VerticalAlignment="Center"/>
+                    <StackPanel Orientation="Horizontal" Margin="32,0,8,0" Visibility="{Binding AnyPresetActive}">
+                        <Image x:Name="ButtonIcon" Source="{StaticResource ButtonIcon_Info_Flat}" Stretch="Fill" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                        <Label x:Name="ButtonLabel" Content="Vorbelegungen aktiv" VerticalAlignment="Center"/>
+                    </StackPanel>
+
                 </StackPanel>
 
-            </StackPanel>
+                <Label Grid.Row="0" Content="{Binding ItemsCount}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
-            <Label Grid.Row="0" Content="{Binding ItemsCount}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <!--EnvelopeItem DataGrid-->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" VerticalAlignment="Stretch" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
+                    <controls:BuildingEnvelopeDataGrid
+                        EnvelopeItems="{Binding EnvelopeItems}"
+                        SelectedEnvelopeItem="{Binding SelectedEnvelopeItem, Mode=TwoWay}"
+                        MinHeight="200"
+                        MinWidth="200"/>
+                </ScrollViewer>
 
-            <!--EnvelopeItem DataGrid-->
-            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" VerticalAlignment="Stretch" PreviewMouseWheel="ScrollViewer_PreviewMouseWheel">
-                <controls:BuildingEnvelopeDataGrid
-                    EnvelopeItems="{Binding EnvelopeItems}"
-                    SelectedEnvelopeItem="{Binding SelectedEnvelopeItem, Mode=TwoWay}"
-                    MinHeight="200"
-                    MinWidth="200"/>
-            </ScrollViewer>
-            <Label Grid.Row="1" Visibility="{Binding NoEntriesVisibility}"
+                <Label Grid.Row="1" Visibility="{Binding NoEntriesVisibility}"
                    Content="Keine Bereiche der Gebäudehülle angelegt: Bitte neue Bereiche hinzufügen!"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    FontStyle="Italic"
                    Foreground="Gray"
                    Margin="0,40,0,0"/>
+            </Grid>
 
-            <Label Grid.Row="2" Content="Vorbelegungen beim Hinzufügen eines neuen Bereiches:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-            <StackPanel Grid.Row="3" Orientation="Horizontal">
-                <StackPanel Orientation="Vertical">
-                    <RadioButton IsChecked="{Binding IsInfoPresetChecked}" Background="{StaticResource SecondaryLightBlueBrush}" GroupName="A" Content="Infos" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,0,8,8" Width="160"/>
-                    <RadioButton IsChecked="{Binding IsInfoPresetEmpty}" Background="{StaticResource SecondaryLightBlueBrush}" GroupName="A" Content="Leer" Style="{StaticResource RadioButton01_B}" Margin="0,0,8,0" Width="160"/>
+            <!--Grid Splitter-->
+            <controls:ExpandableGridSplitter Grid.Row="0" Grid.Column="1"
+                                             HorizontalAlignment="Left"
+                                             VerticalAlignment="Stretch"
+                                             Width="22"
+                                             Background="Transparent"
+                                             Margin="-11,16,0,16"/>
+            <!-- Filter, Right -->
+            <Grid Grid.Column="1" Margin="16">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <Label Grid.Row="0" Content="Vorbelegungen beim Hinzufügen eines neuen Bereiches:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
+                
+                <StackPanel Grid.Row="1" Orientation="Vertical">
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,8">
+                        <RadioButton IsChecked="{Binding IsInfoPresetChecked}" Background="{StaticResource SecondaryLightBlueBrush}" GroupName="A" Content="Infos" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,0,0,8"/>
+                        <RadioButton IsChecked="{Binding IsInfoPresetEmpty}" Background="{StaticResource SecondaryLightBlueBrush}" GroupName="A" Content="Leer" Style="{StaticResource RadioButton01_B}" Width="160"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,8">
+                        <RadioButton IsChecked="{Binding IsElementPresetChecked}" Background="{StaticResource SecondaryLightYellowBrush}" GroupName="B" Content="Bauteil" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,0,0,8"/>
+                        <RadioButton IsChecked="{Binding IsElementPresetEmpty}" Background="{StaticResource SecondaryLightYellowBrush}" GroupName="B" Content="Leer" Style="{StaticResource RadioButton01_B}" Width="160"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,8">
+                        <CheckBox Content="Test"></CheckBox>
+                        <RadioButton IsChecked="{Binding IsRoomPresetChecked}" Background="{StaticResource SecondaryLightGreenBrush}" GroupName="C" Content="Raum" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,0,0,8"/>
+                        <RadioButton IsChecked="{Binding IsRoomPresetEmpty}" Background="{StaticResource SecondaryLightGreenBrush}" GroupName="C" Content="Leer" Style="{StaticResource RadioButton01_B}" Width="160"/>
+                    </StackPanel>
+                    
+
                 </StackPanel>
-                <StackPanel Orientation="Vertical">
-                    <RadioButton IsChecked="{Binding IsElementPresetChecked}" Background="{StaticResource SecondaryLightYellowBrush}" GroupName="B" Content="Bauteil" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,0,8,8" Width="160"/>
-                    <RadioButton IsChecked="{Binding IsElementPresetEmpty}" Background="{StaticResource SecondaryLightYellowBrush}" GroupName="B" Content="Leer" Style="{StaticResource RadioButton01_B}" Margin="0,0,8,0" Width="160"/>
-                </StackPanel>
-                <StackPanel Orientation="Vertical">
-                    <RadioButton IsChecked="{Binding IsRoomPresetChecked}" Background="{StaticResource SecondaryLightGreenBrush}" GroupName="C" Content="Raum" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,0,8,8" Width="160"/>
-                    <RadioButton IsChecked="{Binding IsRoomPresetEmpty}" Background="{StaticResource SecondaryLightGreenBrush}" GroupName="C" Content="Leer" Style="{StaticResource RadioButton01_B}" Margin="0,0,8,0" Width="160"/>
-                </StackPanel>
-               
-            </StackPanel>
+
+            </Grid>
 
         </Grid>
 

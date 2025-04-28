@@ -18,7 +18,7 @@ using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain // or core?
 {
-    public class Element : IEquatable<Element>
+    public class Element
     {
         #region Serialization Objects
 
@@ -210,50 +210,6 @@ namespace BauphysikToolWPF.Models.Domain // or core?
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
         
-        #endregion
-
-        #region IEquatable<Element> Implementation
-
-        public bool Equals(Element? other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Name == other.Name && ColorCode == other.ColorCode && Tag == other.Tag && Comment == other.Comment && OrientationType == other.OrientationType && ConstructionId == other.ConstructionId && Layers.Equals(other.Layers) && InternalId == other.InternalId && DocumentImage.Equals(other.DocumentImage) && Image.Equals(other.Image);
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Element)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            var hashCode = new HashCode();
-            hashCode.Add(Name);
-            hashCode.Add(ColorCode);
-            hashCode.Add(Tag);
-            hashCode.Add(Comment);
-            hashCode.Add((int)OrientationType);
-            hashCode.Add(ConstructionId);
-            hashCode.Add(Layers);
-            hashCode.Add(InternalId);
-            hashCode.Add(DocumentImage);
-            hashCode.Add(Image);
-            return hashCode.ToHashCode();
-        }
-
-        // NOTE:
-        // We do NOT use Guid-only comparison for equality because:
-        // - Elements are compared by their property values for calculations and serialization.
-        // - Default instances created with the parameterless constructor will each have a unique Guid,
-        //   making Guid-only Equals return false even if the objects are functionally identical.
-        // - Value-based equality ensures proper behavior when checking against default instances
-        //   and comparing serialized/deserialized objects.
-        // - Same goes for the Timestamp properties.
-
         #endregion
     }
 }

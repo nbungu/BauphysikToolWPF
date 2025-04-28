@@ -141,11 +141,9 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="DataGridCheckBox" TargetType="{x:Type CheckBox}">
-            <Setter Property="VerticalAlignment" Value="Center"/>
+        <Style x:Key="DataGridCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
             <Setter Property="HorizontalAlignment" Value="Right"/>
             <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="0"/>
             <Style.Triggers>
                 <DataTrigger Binding="{Binding IsReadonly}" Value="True">
                     <Setter Property="IsEnabled" Value="False"/>
@@ -296,7 +294,7 @@
                                                 <Grid>
                                                     <CheckBox IsChecked="{Binding Value}"
                                                               Style="{StaticResource DataGridCheckBox}"
-                                                              Margin="4,0,8,0"
+                                                              Margin="0"
                                                               FontWeight="Normal" 
                                                               Click="CheckBox_Click"/>
                                                 </Grid>

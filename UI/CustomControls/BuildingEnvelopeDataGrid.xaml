@@ -142,29 +142,25 @@
             <DataGrid.Columns>
 
                 <!-- CheckBox Column -->
-                <DataGridCheckBoxColumn CanUserResize="False">
+                <DataGridCheckBoxColumn CanUserResize="False" Width="36">
                     <DataGridCheckBoxColumn.HeaderTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding IsAllSelected, Mode=TwoWay}"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center" />
+                            <CheckBox IsChecked="{Binding IsAllSelected, Mode=TwoWay}" Margin="8,0,8,0"/>
                         </DataTemplate>
                     </DataGridCheckBoxColumn.HeaderTemplate>
                     <DataGridCheckBoxColumn.ElementStyle>
-                        <Style TargetType="CheckBox">
-                            <Setter Property="HorizontalAlignment" Value="Center"/>
-                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                            <Setter Property="Margin" Value="8,0,8,0"/>
                         </Style>
                     </DataGridCheckBoxColumn.ElementStyle>
                     <DataGridCheckBoxColumn.EditingElementStyle>
-                        <Style TargetType="CheckBox">
-                            <Setter Property="HorizontalAlignment" Value="Center"/>
-                            <Setter Property="VerticalAlignment" Value="Center"/>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+                            <Setter Property="Margin" Value="8,0,8,0"/>
                         </Style>
                     </DataGridCheckBoxColumn.EditingElementStyle>
                     <DataGridCheckBoxColumn.HeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
-                            <Setter Property="Padding" Value="6"/>
+                            <Setter Property="Padding" Value="0"/>
                             <Setter Property="BorderBrush" Value="Black"/>
                             <Setter Property="BorderThickness" Value="1,0,0,2"/>
                             <Setter Property="Margin" Value="-1,0,0,0"/>

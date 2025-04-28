@@ -2,7 +2,7 @@
 
 namespace BauphysikToolWPF.Models.UI
 {
-    interface IPropertyClass
+    interface IPropertyBag
     {
         // TODO: add notify property changed
         IEnumerable<IPropertyItem> PropertyBag { get; }

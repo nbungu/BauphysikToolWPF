@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.Models.Domain
     /// <summary>
     /// Business logic of a LayerSubConstruction
     /// </summary>
-    public partial class LayerSubConstruction : IDrawingGeometry, IPropertyClass
+    public partial class LayerSubConstruction : IDrawingGeometry, IPropertyBag
     {
         #region Serialization Objects
 

@@ -199,7 +199,7 @@
             </Grid>
 
             <!--Grid Splitter-->
-            <controls:ExpandableGridSplitter Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+            <controls:ExpandableGridSplitter Grid.Row="0" Grid.Column="1" Grid.RowSpan="2"
                                              HorizontalAlignment="Left"
                                              VerticalAlignment="Stretch"
                                              Width="22"

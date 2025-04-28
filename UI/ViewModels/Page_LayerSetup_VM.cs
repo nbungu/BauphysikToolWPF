@@ -7,13 +7,9 @@ using BauphysikToolWPF.Services.UI;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 using Point = BT.Geometry.Point;
 
@@ -44,8 +40,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             PropertyItem<double>.PropertyChanged += TriggerSelectedLayerChanged;
             PropertyItem<int>.PropertyChanged += TriggerSelectedLayerChanged;
             PropertyItem<bool>.PropertyChanged += TriggerSelectedLayerChanged;
-
-            // TODO: When Properties are changed -> SelectedListViewItem becomes null and OnSelectedListViewItemChanged never gets called again
         }
 
         /*
@@ -89,7 +83,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
-            new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId).ShowDialog();
+            new AddLayerSubConstructionWindow(targetLayerInternalId).ShowDialog();
         }
         [RelayCommand]
         private void EditSubConstructionLayer(int targetLayerInternalId = -1)
@@ -97,7 +91,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
-            new AddLayerSubConstructionWindow(targetLayerInternalId: targetLayerInternalId).ShowDialog();
+            new AddLayerSubConstructionWindow(targetLayerInternalId).ShowDialog();
         }
 
         [RelayCommand]
@@ -159,17 +153,17 @@ namespace BauphysikToolWPF.UI.ViewModels
         // This method will be called whenever SelectedListViewItem changes
         partial void OnSelectedListViewItemChanged(Layer? value)
         {
-            if (value is null) return;
+            // Unselect all
             if (Session.SelectedElement is null) return;
-
             Session.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
-            Session.SelectedLayerId = value.InternalId;
 
-            if (Session.SelectedLayer is null) return;
-            Session.SelectedLayer.IsSelected = true;
+            if (value != null)
+            {
+                Session.SelectedLayerId = value.InternalId;
+                Session.SelectedLayer.IsSelected = true;
+            }
 
             _crossSection.UpdateDrawings();
-            //_crossSection.UpdateSingleDrawing(Session.SelectedLayer);
         }
         
         /*
@@ -235,56 +229,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> LayerMeasurement => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);
         public List<DrawingGeometry> SubConstructionMeasurement => MeasurementDrawing.GetSubConstructionMeasurementChain(_crossSection);
         public List<DrawingGeometry> LayerMeasurementFull => MeasurementDrawing.GetFullLayerMeasurementChain(_crossSection);
-
-        // TODO: On Layer->IsActive change long loading times
-        public List<IPropertyItem> LayerProperties => Session.SelectedLayer != null ? new List<IPropertyItem>()
-        {
-            new PropertyItem<string>("Kategorie", () => Session.SelectedLayer.Material.CategoryName),
-            new PropertyItem<string>("Materialquelle", () => Session.SelectedLayer.Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
-            new PropertyItem<double>(Symbol.Thickness, () => Session.SelectedLayer.Thickness, value => Session.SelectedLayer.Thickness = value),
-            new PropertyItem<double>(Symbol.ThermalConductivity, () => Session.SelectedLayer.Material.ThermalConductivity) { DecimalPlaces = 3},
-            new PropertyItem<double>(Symbol.RValueLayer, () => Session.SelectedLayer.R_Value)
-            {
-                SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}"
-            },
-            new PropertyItem<int>(Symbol.RawDensity, () => Session.SelectedLayer.Material.BulkDensity),
-            new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedLayer.AreaMassDensity),
-            new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedLayer.Sd_Thickness),
-            new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => Session.SelectedLayer.Material.DiffusionResistance),
-            new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => Session.SelectedLayer.Material.SpecificHeatCapacity),
-            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => Session.SelectedLayer.ArealHeatCapacity)
-            {
-                SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}"
-            },
-            new PropertyItem<bool>("Wirksame Schicht", () => Session.SelectedLayer.IsEffective, value => Session.SelectedLayer.IsEffective = value)
-        } : new List<IPropertyItem>(0);
-
-        public List<IPropertyItem> SubConstructionProperties => Session.SelectedLayer != null && Session.SelectedLayer.HasSubConstructions ? new List<IPropertyItem>()
-        {
-            new PropertyItem<string>("Material", () => Session.SelectedLayer.SubConstruction.Material.Name),
-            new PropertyItem<string>("Kategorie", () => Session.SelectedLayer.SubConstruction.Material.CategoryName),
-            new PropertyItem<int>("Ausrichtung", () => (int)Session.SelectedLayer.SubConstruction.Direction, value => Session.SelectedLayer.SubConstruction.Direction = (SubConstructionDirection)value)
-            {
-                PropertyValues = SubConstructionDirectionMapping.Values.Cast<object>().ToArray()
-            },
-            new PropertyItem<double>(Symbol.Thickness, () => Session.SelectedLayer.SubConstruction.Thickness, value => Session.SelectedLayer.SubConstruction.Thickness = value),
-            new PropertyItem<double>(Symbol.Width, () => Session.SelectedLayer.SubConstruction.Width, value => Session.SelectedLayer.SubConstruction.Width = value),
-            new PropertyItem<double>(Symbol.Distance, () => Session.SelectedLayer.SubConstruction.Spacing, value => Session.SelectedLayer.SubConstruction.Spacing = value),
-            new PropertyItem<double>("Achsenabstand", Symbol.Distance, () => Session.SelectedLayer.SubConstruction.AxisSpacing, value => Session.SelectedLayer.SubConstruction.AxisSpacing = value),
-            new PropertyItem<double>(Symbol.ThermalConductivity, () => Session.SelectedLayer.SubConstruction.Material.ThermalConductivity) { DecimalPlaces = 3},
-            new PropertyItem<double>(Symbol.RValueLayer, () => Session.SelectedLayer.SubConstruction.R_Value)
-            {
-                SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}b"
-            },
-            new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedLayer.SubConstruction.AreaMassDensity),
-            new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedLayer.SubConstruction.Sd_Thickness),
-            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => Session.SelectedLayer.SubConstruction.ArealHeatCapacity)
-            {
-                SymbolSubscriptText = $"{Session.SelectedLayer.LayerNumber}b"
-            },
-            new PropertyItem<bool>("Wirksame Schicht", () => Session.SelectedLayer.SubConstruction.IsEffective, value => Session.SelectedLayer.SubConstruction.IsEffective = value)
-        } : new List<IPropertyItem>(0);
-
+        public IEnumerable<IPropertyItem> LayerProperties => SelectedListViewItem?.PropertyBag ?? new List<IPropertyItem>(0);
+        public IEnumerable<IPropertyItem> SubConstructionProperties => SelectedListViewItem?.SubConstruction?.PropertyBag ?? new List<IPropertyItem>(0);
         public List<string> TiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Select(e => e.Comment).ToList();
         public List<string> TeKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Select(e => e.Comment).ToList();
         public List<string> RsiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Select(e => e.Comment).ToList();
@@ -401,7 +347,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             _crossSection.UpdateDrawings();
 
             LayerList = null;
-            LayerList = Session.SelectedElement?.Layers;
+            LayerList = SelectedElement?.Layers;
             SelectedListViewItem = null;
             SelectedListViewItem = Session.SelectedLayer;
 
@@ -426,6 +372,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             Session.Recalculate = true;
         }
+
+        // To also trigger the SelectedLayerChanged event for other subscribers
         private void TriggerSelectedLayerChanged()
         {
             Session.OnSelectedLayerChanged();
