@@ -1,4 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -6,22 +8,51 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Models.Domain.Helper;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class Page_BuildingEnvelope_VM : ObservableObject
     {
+        private static readonly EnvelopeItem _presetEnvelopeItem = new EnvelopeItem();
+
         public Page_BuildingEnvelope_VM()
         {
             Session.EnvelopeItemsChanged += UpdateXamlBindings;
+
+            PropertyItem<double>.PropertyChanged += UpdatePresets;
+            PropertyItem<int>.PropertyChanged += UpdatePresets;
+            PropertyItem<string>.PropertyChanged += UpdatePresets;
         }
         
         [RelayCommand]
         private void AddEnvelopeItem()
         {
-            Session.SelectedProject?.AddEnvelopeItem(new EnvelopeItem());
+            var item = EnvelopeItem.Empty;
+            if (IsInfoPresetChecked)
+            {
+                item.FloorLevel = _presetEnvelopeItem.FloorLevel;
+                item.RoomName = _presetEnvelopeItem.RoomName;
+                item.UsageZone = _presetEnvelopeItem.UsageZone;
+            }
+            if (IsElementPresetChecked)
+            {
+                item.EnvelopeArea = _presetEnvelopeItem.EnvelopeArea;
+                item.UValue = _presetEnvelopeItem.UValue;
+                item.ElementIndex = _presetEnvelopeItem.ElementIndex;
+                item.OrientationType = _presetEnvelopeItem.OrientationType;
+            }
+            if (IsRoomPresetChecked)
+            {
+                item.RoomHeightGross = _presetEnvelopeItem.RoomHeightGross;
+                item.RoomAreaGross = _presetEnvelopeItem.RoomAreaGross;
+                item.RoomVolumeGross = _presetEnvelopeItem.RoomVolumeGross;
+                item.RoomHeightNet = _presetEnvelopeItem.RoomHeightNet;
+                item.RoomAreaNet = _presetEnvelopeItem.RoomAreaNet;
+                item.RoomVolumeNet = _presetEnvelopeItem.RoomVolumeNet;
+            }
+            Session.SelectedProject?.AddEnvelopeItem(item);
             Session.OnEnvelopeItemsChanged();
         }
 
@@ -39,6 +70,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.OnEnvelopeItemsChanged();
         }
 
+        partial void OnIsAllSelectedChanged(bool value)
+        {
+            if (Session.SelectedProject != null)
+            {
+                foreach (var item in Session.SelectedProject.EnvelopeItems)
+                {
+                    item.IsSelected = value;
+                }
+                Session.OnEnvelopeItemsChanged();
+            }
+        }
+
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
@@ -46,29 +89,26 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsItemSelected))]
+        [NotifyPropertyChangedFor(nameof(IsRowSelected))]
         private EnvelopeItem? _selectedEnvelopeItem;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(AnyPresetActive))]
+        [NotifyPropertyChangedFor(nameof(PresetActiveVisibility))]
         private static bool _isInfoPresetChecked = false;
 
         [ObservableProperty]
-        private static bool _isInfoPresetEmpty = true;
-
-        [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(AnyPresetActive))]
+        [NotifyPropertyChangedFor(nameof(PresetActiveVisibility))]
         private static bool _isElementPresetChecked = false;
-
-        [ObservableProperty]
-        private static bool _isElementPresetEmpty = true;
-
+        
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(AnyPresetActive))]
-        private static bool _isRoomPresetChecked = true;
+        [NotifyPropertyChangedFor(nameof(PresetActiveVisibility))]
+        private static bool _isRoomPresetChecked = false;
 
         [ObservableProperty]
-        private static bool _isRoomPresetEmpty = false;
+        private static bool _isAllSelected = false;
 
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
@@ -77,10 +117,44 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public ObservableCollection<EnvelopeItem> EnvelopeItems => new ObservableCollection<EnvelopeItem>(Session.SelectedProject?.EnvelopeItems ?? new List<EnvelopeItem>());
-        public bool IsItemSelected => SelectedEnvelopeItem != null;
-        public Visibility AnyPresetActive => IsInfoPresetChecked || IsElementPresetChecked || IsRoomPresetChecked ? Visibility.Visible : Visibility.Collapsed;
+        public bool IsRowSelected => SelectedEnvelopeItem != null;
+        public Visibility PresetActiveVisibility => AnyPresetActive ? Visibility.Visible : Visibility.Collapsed;
+        public bool AnyPresetActive => IsInfoPresetChecked || IsElementPresetChecked || IsRoomPresetChecked;
         public string ItemsCount => $"Bereiche angelegt: {EnvelopeItems.Count}";
+        public string ItemsCheckedCount => $"Bereiche markiert: {EnvelopeItems.Where(e => e.IsSelected).ToList().Count}";
         public Visibility NoEntriesVisibility => EnvelopeItems.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+
+        public IEnumerable<IPropertyItem> InfoPresetProperties => new List<IPropertyItem>()
+        {
+            new PropertyItem<string>("Etage", () => _presetEnvelopeItem.FloorLevel, value => _presetEnvelopeItem.FloorLevel = value),
+            new PropertyItem<string>("Bezeichnung", () => _presetEnvelopeItem.RoomName, value => _presetEnvelopeItem.RoomName = value),
+            new PropertyItem<int>("Zone", () => (int)_presetEnvelopeItem.UsageZone, value => _presetEnvelopeItem.UsageZone = (UsageZone)value)
+            {
+                PropertyValues = UsageZoneMapping.Values.Cast<object>().ToArray()
+            },
+        };
+        public IEnumerable<IPropertyItem> ElementPresetProperties => new List<IPropertyItem>()
+        {
+            new PropertyItem<double>(Symbol.Area, () => _presetEnvelopeItem.EnvelopeArea, value => _presetEnvelopeItem.EnvelopeArea = value),
+            new PropertyItem<double>(Symbol.UValue, () => _presetEnvelopeItem.UValue, value => _presetEnvelopeItem.UValue = value),
+            new PropertyItem<int>("Bauteil", () => _presetEnvelopeItem.ElementIndex, value => _presetEnvelopeItem.ElementIndex = value)
+            {
+                PropertyValues = GetElements().Cast<object>().ToArray()
+            },
+            new PropertyItem<int>("Ausrichtung", () => (int)_presetEnvelopeItem.OrientationType, value => _presetEnvelopeItem.OrientationType = (OrientationType)value)
+            {
+                PropertyValues = OrientationTypeMapping.Values.Cast<object>().ToArray()
+            },
+        };
+        public IEnumerable<IPropertyItem> RoomPresetProperties => new List<IPropertyItem>()
+        {
+            new PropertyItem<double>(Symbol.Length, () => _presetEnvelopeItem.RoomHeightGross, value => _presetEnvelopeItem.RoomHeightGross = value),
+            new PropertyItem<double>(Symbol.Area, () => _presetEnvelopeItem.RoomAreaGross, value => _presetEnvelopeItem.RoomAreaGross = value),
+            new PropertyItem<double>(Symbol.Volume, () => _presetEnvelopeItem.RoomVolumeGross, value => _presetEnvelopeItem.RoomVolumeGross = value),
+            new PropertyItem<double>(Symbol.Length, () => _presetEnvelopeItem.RoomHeightNet, value => _presetEnvelopeItem.RoomHeightNet = value),
+            new PropertyItem<double>(Symbol.Area, () => _presetEnvelopeItem.RoomAreaNet, value => _presetEnvelopeItem.RoomAreaNet = value),
+            new PropertyItem<double>(Symbol.Volume, () => _presetEnvelopeItem.RoomVolumeNet, value => _presetEnvelopeItem.RoomVolumeNet = value),
+        };
 
         public IEnumerable<Element> GetElements() => Session.SelectedProject?.Elements ?? Enumerable.Empty<Element>();
         public IEnumerable<string> GetOrientationTypeNames() => OrientationTypeMapping.Values;
@@ -93,9 +167,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // For updating MVVM Capsulated Properties
             OnPropertyChanged(nameof(EnvelopeItems));
-            OnPropertyChanged(nameof(IsItemSelected));
+            OnPropertyChanged(nameof(IsRowSelected));
+            OnPropertyChanged(nameof(AnyPresetActive));
             OnPropertyChanged(nameof(ItemsCount));
             OnPropertyChanged(nameof(NoEntriesVisibility));
+        }
+
+        private void UpdatePresets()
+        {
+            OnPropertyChanged(nameof(InfoPresetProperties));
+            OnPropertyChanged(nameof(ElementPresetProperties));
         }
     }
 }

@@ -13,12 +13,6 @@
         <vm:Page_BuildingEnvelope_VM/>
     </UserControl.DataContext>
 
-    <UserControl.Resources>
-
-  
-
-    </UserControl.Resources>
-
     <!--Main Grid: 1x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
@@ -63,16 +57,16 @@
                         Command="{Binding DuplicateEnvelopeItemCommand}"
                         Tag="{StaticResource ButtonIcon_Copy_B}" 
                         Margin="0,0,8,0"
-                        IsEnabled="{Binding IsItemSelected}"/>
+                        IsEnabled="{Binding IsRowSelected}"/>
 
                     <Button ToolTip="Bereich löschen"
                         Style="{StaticResource ButtonStyle01_Mini}"
                         Tag="{StaticResource ButtonIcon_Delete_B}"
-                        IsEnabled="{Binding IsItemSelected}"
+                        IsEnabled="{Binding IsRowSelected}"
                         Command="{Binding DeleteEnvelopeItemCommand}"
                         Margin="0,0,8,0"/>
 
-                    <StackPanel Orientation="Horizontal" Margin="32,0,8,0" Visibility="{Binding AnyPresetActive}">
+                    <StackPanel Orientation="Horizontal" Margin="32,0,8,0" Visibility="{Binding PresetActiveVisibility}">
                         <Image x:Name="ButtonIcon" Source="{StaticResource ButtonIcon_Info_Flat}" Stretch="Fill" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,8,0"/>
                         <Label x:Name="ButtonLabel" Content="Vorbelegungen aktiv" VerticalAlignment="Center"/>
                     </StackPanel>
@@ -86,6 +80,7 @@
                     <controls:BuildingEnvelopeDataGrid
                         EnvelopeItems="{Binding EnvelopeItems}"
                         SelectedEnvelopeItem="{Binding SelectedEnvelopeItem, Mode=TwoWay}"
+                        IsAllSelected="{Binding IsAllSelected, Mode=TwoWay}"
                         MinHeight="200"
                         MinWidth="200"/>
                 </ScrollViewer>
@@ -110,28 +105,28 @@
             <Grid Grid.Column="1" Margin="16">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <Label Grid.Row="0" Content="Vorbelegungen beim Hinzufügen eines neuen Bereiches:" HorizontalAlignment="Left" Margin="0,8,0,0"/>
-                
-                <StackPanel Grid.Row="1" Orientation="Vertical">
-                    <StackPanel Orientation="Vertical" Margin="0,0,0,8">
-                        <RadioButton IsChecked="{Binding IsInfoPresetChecked}" Background="{StaticResource SecondaryLightBlueBrush}" GroupName="A" Content="Infos" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,0,0,8"/>
-                        <RadioButton IsChecked="{Binding IsInfoPresetEmpty}" Background="{StaticResource SecondaryLightBlueBrush}" GroupName="A" Content="Leer" Style="{StaticResource RadioButton01_B}" Width="160"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="0,0,0,8">
-                        <RadioButton IsChecked="{Binding IsElementPresetChecked}" Background="{StaticResource SecondaryLightYellowBrush}" GroupName="B" Content="Bauteil" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,0,0,8"/>
-                        <RadioButton IsChecked="{Binding IsElementPresetEmpty}" Background="{StaticResource SecondaryLightYellowBrush}" GroupName="B" Content="Leer" Style="{StaticResource RadioButton01_B}" Width="160"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Vertical" Margin="0,0,0,8">
-                        <CheckBox Content="Test"></CheckBox>
-                        <RadioButton IsChecked="{Binding IsRoomPresetChecked}" Background="{StaticResource SecondaryLightGreenBrush}" GroupName="C" Content="Raum" Style="{StaticResource RadioButton01_A}" Tag="{StaticResource ButtonIcon_House_B}" Margin="0,0,0,8"/>
-                        <RadioButton IsChecked="{Binding IsRoomPresetEmpty}" Background="{StaticResource SecondaryLightGreenBrush}" GroupName="C" Content="Leer" Style="{StaticResource RadioButton01_B}" Width="160"/>
-                    </StackPanel>
-                    
+                <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsInfoPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                <Expander Grid.Row="0" Grid.Column="1" Header="Vorbelegung für Info-Werte" IsExpanded="True" IsEnabled="{Binding IsInfoPresetChecked}"  Margin="0,0,0,8">
+                    <controls:PropertyDataGrid x:Name="InfoPresetDataGrid" Properties="{Binding InfoPresetProperties}"/>
+                </Expander>
 
-                </StackPanel>
+                <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsElementPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                <Expander Grid.Row="1" Grid.Column="1" Header="Vorbelegung für Bauteil-Werte" IsExpanded="True" IsEnabled="{Binding IsElementPresetChecked}" Margin="0,0,0,8">
+                    <controls:PropertyDataGrid x:Name="ElementPresetDataGrid" Properties="{Binding ElementPresetProperties}"/>
+                </Expander>
+
+                <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsRoomPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                <Expander Grid.Row="2" Grid.Column="1" Header="Vorbelegung für Bauteil-Werte" IsExpanded="True" IsEnabled="{Binding IsRoomPresetChecked}" Margin="0,0,0,8">
+                    <controls:PropertyDataGrid x:Name="RoomPresetDataGrid" Properties="{Binding RoomPresetProperties}"/>
+                </Expander>
 
             </Grid>
 

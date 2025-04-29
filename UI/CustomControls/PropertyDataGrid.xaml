@@ -22,7 +22,7 @@
         -->
 
         <!--Custom DataGrid Style-->
-        <Style x:Key="DataGridStyle" TargetType="{x:Type DataGrid}">
+        <Style x:Key="PropertyDataGridStyle" TargetType="{x:Type DataGrid}">
             <Setter Property="AutoGenerateColumns" Value="False"/>
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="1,1,1,0"/>
@@ -42,77 +42,8 @@
             <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource PrimaryBorderBrush}"/>
         </Style>
 
-        <Style x:Key="DataGridComboBox" TargetType="{x:Type ComboBox}">
-            <Setter Property="SnapsToDevicePixels" Value="true" />
-            <Setter Property="OverridesDefaultStyle" Value="true" />
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="Black"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-            <Setter Property="MinHeight" Value="24"/>
-            <Setter Property="MaxDropDownHeight" Value="320"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type ComboBox}">
-                        <Grid>
-                            <!--The DropDownButton when closed-->
-                            <ToggleButton x:Name="ToggleButton" Grid.Column="0" Focusable="False" ClickMode="Press" Background="{TemplateBinding Background}" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-                                <ToggleButton.Template>
-                                    <ControlTemplate TargetType="{x:Type ToggleButton}">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="20" />
-                                            </Grid.ColumnDefinitions>
-                                            <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="0" Background="{TemplateBinding Background}"/>
-                                            <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{StaticResource PrimaryDarkBrush}"/>
-                                        </Grid>
-                                    </ControlTemplate>
-                                </ToggleButton.Template>
-                            </ToggleButton>
-                            <!--Content inside of closed DropDownButton -->
-                            <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
-                                Content="{TemplateBinding SelectionBoxItem}"
-                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                Margin="4,0,0,0"
-                                VerticalAlignment="Center"
-                                HorizontalAlignment="Left"/>
-                            <!-- DropDown Menu / Popup -->
-                            <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
-                                <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                    <Border x:Name="DropDownBorder" BorderThickness="1" Background="{StaticResource PrimaryLightBrush}" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
-                                    <!-- Margin includes 4px Gap between Popup and DropDownButton -->
-                                    <ScrollViewer Margin="4,8,4,4" SnapsToDevicePixels="True">
-                                        <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained"/>
-                                    </ScrollViewer>
-                                </Grid>
-                            </Popup>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ToggleButton" Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                            </Trigger>
-                            <Trigger Property="HasItems" Value="false">
-                                <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
-                            </Trigger>
-                            <Trigger Property="IsGrouping" Value="true">
-                                <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
-                            </Trigger>
-                            <Trigger SourceName="Popup" Property="AllowsTransparency" Value="true">
-                                <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="4" />
-                                <!-- 4px Gap between Popup and DropDownButton -->
-                                <Setter TargetName="DropDownBorder" Property="Margin" Value="0,4,0,0" />
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <Style x:Key="DataGridTextBox" TargetType="{x:Type TextBox}">
+        <!-- TODO: TEST BasedOn="{StaticResource {x:Type TextBox}}"-->
+        <Style x:Key="DataGridTextBox" TargetType="TextBox">
             <Setter Property="MinWidth" Value="32"/>
             <Setter Property="MinHeight" Value="24"/>
             <Setter Property="Background" Value="Transparent"/>
@@ -125,7 +56,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBoxBase}">
                         <Border Background="{TemplateBinding Background}" CornerRadius="0" BorderThickness="0">
-                            <ScrollViewer Margin="0" x:Name="PART_ContentHost" />
+                            <ScrollViewer Margin="0" x:Name="PART_ContentHost" IsEnabled="{TemplateBinding IsEnabled}"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -135,23 +66,9 @@
                     <Setter Property="Cursor" Value="Arrow"/>
                     <Setter Property="Focusable" Value="False"/>
                 </DataTrigger>
-                <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
-                    <Setter Property="Background" Value="LightGoldenrodYellow"/>
-                </DataTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <Style x:Key="DataGridCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
-            <Setter Property="HorizontalAlignment" Value="Right"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsReadonly}" Value="True">
-                    <Setter Property="IsEnabled" Value="False"/>
-                    <Setter Property="Cursor" Value="Arrow"/>
-                </DataTrigger>
-                <DataTrigger Binding="{Binding IsReadonly}" Value="False">
-                    <Setter Property="IsEnabled" Value="True"/>
-                </DataTrigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="Gray"/>
+                </Trigger>
             </Style.Triggers>
         </Style>
 
@@ -160,12 +77,12 @@
             <Setter Property="Focusable" Value="False"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Margin" Value="0,0,0,0"/>
+            <Setter Property="Margin" Value="-1,0,0,0"/>
             <Setter Property="Padding" Value="0,0,0,0"/>
         </Style>
         
         <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
-            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Background" Value="{Binding Background, RelativeSource={RelativeSource AncestorType=DataGrid}}" />
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0,0,0,0" />
@@ -175,8 +92,9 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
             <Style.Triggers>
-                <DataTrigger Binding="{Binding IsReadonly}" Value="False">
-                    <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
+
+                <DataTrigger Binding="{Binding IsReadonly}" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>
@@ -213,11 +131,13 @@
     </UserControl.Resources>
 
     <Grid>
-        <DataGrid ItemsSource="{Binding Properties, ElementName=PropertyDataGridControl}"
-                  Style="{StaticResource DataGridStyle}"    
+        <DataGrid x:Name="PropertyDataGridElement"
+                  ItemsSource="{Binding Properties, ElementName=PropertyDataGridControl}"
+                  Style="{StaticResource PropertyDataGridStyle}"    
                   RowStyle="{StaticResource DataGridRowStyle}"
                   CellStyle="{StaticResource DataGridCellStyle}"
-                  ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}">
+                  ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
+                  Background="{StaticResource SecondaryLightBlueBrush}">
             <DataGrid.Columns>
                 <!-- Left Column -->
                 <DataGridTemplateColumn Width="Auto" IsReadOnly="True" MinWidth="80">
@@ -228,6 +148,9 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
+                                <!--
+                                <Rectangle Grid.Column="0" x:Name="rectangle" Fill="Red" Margin="0" Width="2" VerticalAlignment="Stretch" HorizontalAlignment="Left" Visibility="Visible"/>
+                                -->
                                 <Label Grid.Column="0" Content="{Binding Name}" FontWeight="Normal" ToolTip="{Binding Comment}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
                                 <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBaseText}" SubscriptText="{Binding SymbolSubscriptText}" VerticalAlignment="Stretch" Margin="0,0,8,0" FontWeight="DemiBold" Foreground="{StaticResource PrimaryDarkBrush}"/>
                             </Grid>

@@ -177,6 +177,17 @@
             <Setter Property="HorizontalAlignment" Value="Center"/>
         </Style>
 
+        <Style x:Key="SortArrowPathStyle" TargetType="Path">
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Fill" Value="{StaticResource PrimaryDarkBrush}"/>
+            <Setter Property="Width" Value="8"/>
+            <Setter Property="Height" Value="8"/>
+            <Setter Property="Stretch" Value="Uniform"/>
+            <Setter Property="Data" Value="M 0 0 L 4 4 L 8 0 Z"/>
+        </Style>
+
         <!-- TEST Custom ComboBox Style: ... -->
         <!-- Applies on every ComboBox in this App -->
         <Style x:Key="{x:Type ComboBox}" TargetType="{x:Type ComboBox}">
@@ -205,7 +216,7 @@
                                                 <ColumnDefinition Width="20" />
                                             </Grid.ColumnDefinitions>
                                             <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="4" Background="{TemplateBinding Background}"/>
-                                            <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{StaticResource PrimaryDarkBrush}"/>
+                                            <Path x:Name="SortArrow" Grid.Column="1" Style="{StaticResource SortArrowPathStyle}"/>
                                         </Grid>
                                     </ControlTemplate>
                                 </ToggleButton.Template>
@@ -240,6 +251,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ToggleButton" Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                                <Setter Property="Cursor" Value="Hand"/>
                             </Trigger>
                             <Trigger Property="HasItems" Value="false">
                                 <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
@@ -287,46 +299,53 @@
             </Setter>
         </Style>
 
-        <!-- TEST Custom ComboBox Style: ... -->
-        <Style x:Key="ComboBoxListViewItem" TargetType="{x:Type ComboBox}">
+        <Style x:Key="DataGridComboBox" TargetType="{x:Type ComboBox}">
             <Setter Property="SnapsToDevicePixels" Value="true" />
             <Setter Property="OverridesDefaultStyle" Value="true" />
             <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-            <!-- CanContentScroll = false for smooth scrolling -->
             <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-            <Setter Property="MinWidth" Value="96"/>
-            <Setter Property="MinHeight" Value="16"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="MinWidth" Value="40"/>
+            <Setter Property="VerticalAlignment" Value="Stretch"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="Padding" Value="0,0,0,0"/>
             <Setter Property="MaxDropDownHeight" Value="320"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ComboBox}">
                         <Grid>
                             <!--The DropDownButton when closed-->
-                            <ToggleButton x:Name="ToggleButton" Grid.Column="2" Focusable="false" ClickMode="Press" Background="{TemplateBinding Background}" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+                            <ToggleButton x:Name="ToggleButton" Grid.Column="0" Focusable="False" ClickMode="Press" IsEnabled="{TemplateBinding IsEnabled}" Background="{TemplateBinding Background}" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
                                 <ToggleButton.Template>
                                     <ControlTemplate TargetType="{x:Type ToggleButton}">
                                         <Grid>
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition />
+                                                <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="20" />
                                             </Grid.ColumnDefinitions>
                                             <Border x:Name="Border" Grid.ColumnSpan="2" CornerRadius="0" Background="{TemplateBinding Background}"/>
-                                            <Path x:Name="Arrow" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Data="M 0 0 L 4 4 L 8 0 Z" Fill="{StaticResource PrimaryDarkBrush}"/>
+                                            <Path x:Name="SortArrow" Grid.Column="1" Style="{StaticResource SortArrowPathStyle}"/>
                                         </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsEnabled" Value="False">
+                                                <Setter TargetName="SortArrow" Property="Fill" Value="Gray"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </ToggleButton.Template>
                             </ToggleButton>
                             <!--Content inside of closed DropDownButton -->
                             <ContentPresenter x:Name="ContentSite" IsHitTestVisible="False"
-                                    Content="{TemplateBinding SelectionBoxItem}"
-                                    ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                    ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                    Margin="0"
-                                    VerticalAlignment="Stretch"
-                                    HorizontalAlignment="Left"/>
+                                Content="{TemplateBinding SelectionBoxItem}"
+                                ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
+                                ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                Margin="4,0,0,0"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left"/>
                             <!-- DropDown Menu / Popup -->
                             <Popup x:Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False" PopupAnimation="Slide">
                                 <Grid x:Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
@@ -341,6 +360,7 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ToggleButton" Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                                <Setter Property="Cursor" Value="Hand"/>
                             </Trigger>
                             <Trigger Property="HasItems" Value="false">
                                 <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95" />
@@ -352,6 +372,9 @@
                                 <Setter TargetName="DropDownBorder" Property="CornerRadius" Value="4" />
                                 <!-- 4px Gap between Popup and DropDownButton -->
                                 <Setter TargetName="DropDownBorder" Property="Margin" Value="0,4,0,0" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="Gray"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -493,8 +516,12 @@
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="FontSize" Value="14"/>
-            <Setter Property="Height" Value="24"/>
+            <!--MinWidth/MinHeight is used by whole checkbox container-->
+            <Setter Property="MinHeight" Value="24"/>
             <Setter Property="MinWidth" Value="24"/>
+            <!--Width/Height is only used by actual checkbox border-->
+            <Setter Property="Height" Value="18"/>
+            <Setter Property="Width" Value="18"/>
             <Setter Property="Padding" Value="0"/>
             <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -503,12 +530,12 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="CheckBox">
                         <Grid VerticalAlignment="Center">
-                            <Border x:Name="Border" Width="18" Height="18"
-                            CornerRadius="4"
-                            Background="{StaticResource PrimaryBorderBrush}"
-                            BorderThickness="0"
-                            VerticalAlignment="Center"
-                            HorizontalAlignment="Left">
+                            <Border x:Name="Border" Width="{TemplateBinding Width}" Height="{TemplateBinding Height}"
+                                CornerRadius="4"
+                                Background="{StaticResource PrimaryBorderBrush}"
+                                BorderThickness="0"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Left">
                                 <Path x:Name="CheckMark"
                                       Margin="4"
                                       Data="M 0 6 L 3 9 L 9 0"
@@ -536,6 +563,7 @@
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter TargetName="Border" Property="BorderBrush" Value="Gray"/>
                                 <Setter Property="Foreground" Value="Gray"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
                             </Trigger>
                             <!-- New trigger: when Content is null or empty -->
                             <Trigger Property="Content" Value="{x:Null}">
@@ -548,6 +576,21 @@
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+        </Style>
+
+        <Style x:Key="DataGridCheckBox" TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
+            <Setter Property="HorizontalAlignment" Value="Right"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Width" Value="16"/>
+            <Setter Property="Height" Value="16"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsReadonly}" Value="True">
+                    <Setter Property="IsEnabled" Value="False"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding IsReadonly}" Value="False">
+                    <Setter Property="IsEnabled" Value="True"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
         <!--Custom ContextMenu Style: Used in ContextMenu as 'Style'-->

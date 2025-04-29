@@ -1,8 +1,10 @@
-﻿using BauphysikToolWPF.Services.UI;
+﻿using System.Collections.Generic;
+using BauphysikToolWPF.Services.UI;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using BauphysikToolWPF.Models.Domain;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -17,7 +19,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty EnvelopeItemsProperty =
-            DependencyProperty.Register(nameof(EnvelopeItems), typeof(object), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(EnvelopeItems), typeof(IEnumerable<EnvelopeItem>), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
 
         public object EnvelopeItems
         {
@@ -26,12 +28,21 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty SelectedEnvelopeItemProperty =
-            DependencyProperty.Register(nameof(SelectedEnvelopeItem), typeof(object), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(SelectedEnvelopeItem), typeof(EnvelopeItem), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
 
         public object SelectedEnvelopeItem
         {
             get => GetValue(SelectedEnvelopeItemProperty);
             set => SetValue(SelectedEnvelopeItemProperty, value);
+        }
+
+        public static readonly DependencyProperty IsAllSelectedProperty =
+            DependencyProperty.Register(nameof(IsAllSelected), typeof(bool), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
+
+        public object IsAllSelected
+        {
+            get => GetValue(IsAllSelectedProperty);
+            set => SetValue(IsAllSelectedProperty, value);
         }
 
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -66,7 +77,6 @@ namespace BauphysikToolWPF.UI.CustomControls
                     {
                         dataGrid.SelectedItem = row.Item;
                     }
-
                     dataGrid.BeginEdit();
                     e.Handled = true;
                 }

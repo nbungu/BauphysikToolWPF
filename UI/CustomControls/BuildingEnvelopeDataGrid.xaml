@@ -43,21 +43,8 @@
                             <RowDefinition Height="16" />
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
-                        <ContentPresenter Grid.Row="0"
-                                          VerticalAlignment="Center"
-                                          HorizontalAlignment="Left"
-                                          RecognizesAccessKey="True"/>
-                        <Path x:Name="SortArrow"
-                              Grid.Row="0"
-                              Visibility="Collapsed"
-                              HorizontalAlignment="Right"
-                              VerticalAlignment="Center"
-                              Margin="2"
-                              Fill="{TemplateBinding Foreground}"
-                              Width="8"
-                              Height="8"
-                              Stretch="Uniform"
-                              Data="M 0 0 L 4 4 L 8 0 Z"/>
+                        <ContentPresenter Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True"/>
+                        <Path x:Name="SortArrow" Grid.Row="0" Style="{StaticResource SortArrowPathStyle}"  Visibility="Collapsed" HorizontalAlignment="Right" Fill="{TemplateBinding Foreground}"/>
                         <customControls:FractionLabel Grid.Row="1"
                                                       CounterText="{TemplateBinding Tag}"
                                                       VerticalAlignment="Center"
@@ -142,20 +129,20 @@
             <DataGrid.Columns>
 
                 <!-- CheckBox Column -->
-                <DataGridCheckBoxColumn CanUserResize="False" Width="36">
+                <DataGridCheckBoxColumn CanUserResize="False" Binding="{Binding IsSelected}" Width="36">
                     <DataGridCheckBoxColumn.HeaderTemplate>
                         <DataTemplate>
-                            <CheckBox IsChecked="{Binding IsAllSelected, Mode=TwoWay}" Margin="8,0,8,0"/>
+                            <CheckBox Style="{StaticResource DataGridCheckBox}" IsChecked="{Binding IsAllSelected, ElementName=BuildingEnvelopeDataGridControl}" Margin="9,0,0,0"/>
                         </DataTemplate>
                     </DataGridCheckBoxColumn.HeaderTemplate>
                     <DataGridCheckBoxColumn.ElementStyle>
-                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
-                            <Setter Property="Margin" Value="8,0,8,0"/>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource DataGridCheckBox}">
+                            <Setter Property="Margin" Value="0,0,2,0"/>
                         </Style>
                     </DataGridCheckBoxColumn.ElementStyle>
                     <DataGridCheckBoxColumn.EditingElementStyle>
-                        <Style TargetType="CheckBox" BasedOn="{StaticResource {x:Type CheckBox}}">
-                            <Setter Property="Margin" Value="8,0,8,0"/>
+                        <Style TargetType="CheckBox" BasedOn="{StaticResource DataGridCheckBox}">
+                            <Setter Property="Margin" Value="0,0,2,0"/>
                         </Style>
                     </DataGridCheckBoxColumn.EditingElementStyle>
                     <DataGridCheckBoxColumn.HeaderStyle>
@@ -222,17 +209,10 @@
                                         ItemsSource="{Binding Source={StaticResource UsageZoneNames}}"
                                         Width="120">
                     <DataGridComboBoxColumn.ElementStyle>
-                        <Style TargetType="ComboBox" >
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="Margin" Value="5,0,0,0"/>
-                        </Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}"/>
                     </DataGridComboBoxColumn.ElementStyle>
                     <DataGridComboBoxColumn.EditingElementStyle>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="VerticalAlignment" Value="Stretch" />
-                            <Setter Property="BorderBrush" Value="Transparent" />
-                            <Setter Property="BorderThickness" Value="0" />
-                        </Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}"/>
                     </DataGridComboBoxColumn.EditingElementStyle>
                     <DataGridComboBoxColumn.HeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
@@ -356,17 +336,10 @@
                                         ItemsSource="{Binding Source={StaticResource OrientationTypeNames}}"
                                         Width="88">
                     <DataGridComboBoxColumn.ElementStyle>
-                        <Style TargetType="ComboBox" >
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                            <Setter Property="Margin" Value="5,0,0,0"/>
-                        </Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}"/>
                     </DataGridComboBoxColumn.ElementStyle>
                     <DataGridComboBoxColumn.EditingElementStyle>
-                        <Style TargetType="ComboBox">
-                            <Setter Property="VerticalAlignment" Value="Stretch" />
-                            <Setter Property="BorderBrush" Value="Transparent" />
-                            <Setter Property="BorderThickness" Value="0" />
-                        </Style>
+                        <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}"/>
                     </DataGridComboBoxColumn.EditingElementStyle>
                     <DataGridComboBoxColumn.HeaderStyle>
                         <Style TargetType="DataGridColumnHeader">

@@ -74,7 +74,6 @@ namespace BauphysikToolWPF.Models.Domain
         public bool IsSelected { get; set; } // For UI Purposes 
 
         private bool _isEffective = true;
-
         [JsonIgnore]
         public bool IsEffective
         {

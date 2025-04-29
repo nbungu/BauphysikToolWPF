@@ -42,6 +42,31 @@ namespace BauphysikToolWPF.Models.Domain
         // n:1 relationship with Element
         [JsonIgnore]
         public Element? Element { get; set; }
+
+        [JsonIgnore]
+        public bool IsSelected { get; set; }
+        [JsonIgnore]
+        public bool IsReadonly { get; set; }
+        [JsonIgnore]
+        public static EnvelopeItem Empty => new EnvelopeItem(); // Optional static default (for easy reference)
+
+        [JsonIgnore]
+        public int ElementIndex
+        {
+            get => Element is null ? -1 : Session.SelectedProject?.Elements.IndexOf(Element) ?? -1;
+            set
+            {
+                if (Session.SelectedProject != null && value >= 0)
+                {
+                    Element = Session.SelectedProject.Elements[value];
+                }
+                else if (value == -1)
+                {
+                    Element = null;
+                }
+            }
+        }
+
         [JsonIgnore]
         public bool IsValid => FloorLevel != string.Empty && RoomName != string.Empty;
         [JsonIgnore]
