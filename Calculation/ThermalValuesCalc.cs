@@ -37,19 +37,21 @@ namespace BauphysikToolWPF.Calculation
         public ThermalValuesCalc() { }
         public ThermalValuesCalc(Element? element, double rsi, double rse, double ti, double te)
         {
-            if (element is null || element.Layers.Count == 0) return;
             Element = element;
             Rsi = Math.Max(0, rsi);
             Rse = Math.Max(0, rse);
             Ti = ti;
             Te = te;
 
+            if (Element is null) return;
             if (Element.IsInhomogeneous) CalculateInhomogeneous();
             else CalculateHomogeneous();
         }
 
         public void CalculateHomogeneous()
         {
+            if (Element is null) return;
+
             RelevantLayers = Element.SortLayers().Layers.Where(l => l.IsEffective).ToList();
             if (RelevantLayers.Count == 0) return;
             try
@@ -77,6 +79,8 @@ namespace BauphysikToolWPF.Calculation
 
         public void CalculateInhomogeneous()
         {
+            if (Element is null) return;
+
             RelevantLayers = Element.SortLayers().Layers.Where(l => l.IsEffective).ToList();
             if (RelevantLayers.Count == 0) return;
             try
@@ -176,6 +180,8 @@ namespace BauphysikToolWPF.Calculation
             }
         }
 
+        #region private methods
+        
         private void PrepareMappingsForInhomogeneous()
         {
             CreateCalculationAreaBoundaries();
@@ -342,5 +348,7 @@ namespace BauphysikToolWPF.Calculation
                 _areaSharesMapping.Add(kvp.Key, propotionalAreaShare);
             }
         }
+
+        #endregion
     }
 }

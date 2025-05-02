@@ -178,7 +178,7 @@
 
             <Expander Grid.Row="1" Header="Eigenschaften" IsExpanded="True" Margin="0,8,0,0">
                 <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">
-                    <controls:PropertyDataGrid Properties="{Binding MaterialProperties}" Margin="0, 8,0,0"/>
+                    <controls:PropertyDataGrid Properties="{Binding MaterialProperties}" Margin="0,8,0,0"/>
                 </ScrollViewer>
             </Expander>
 

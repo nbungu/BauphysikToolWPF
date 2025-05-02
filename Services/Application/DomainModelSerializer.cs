@@ -60,6 +60,7 @@ namespace BauphysikToolWPF.Services.Application
                 {
                     Logger.LogInfo($"Successfully read project from file: {filePath}");
                     project.CreatedByUser = true;
+                    project.IsModified = false;
                     return project;
                 }
                 Logger.LogWarning($"Could not read from project file: {filePath}");

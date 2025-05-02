@@ -8,7 +8,7 @@ using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {
-    public class EnvelopeItem : INotifyPropertyChanged
+    public class EnvelopeItem : IDomainObject<EnvelopeItem>, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -28,6 +28,7 @@ namespace BauphysikToolWPF.Models.Domain
         public double RoomAreaNet { get; set; }
         public double RoomVolumeNet { get; set; }
         public double EnvelopeArea { get; set; }
+
         private double _uValue;
         public double UValue
         {
@@ -35,7 +36,17 @@ namespace BauphysikToolWPF.Models.Domain
             set
             {
                 _uValue = value;
-                ElementIndex = -1;
+                ElementInternalId = -1;
+            }
+        }
+        private int _elementInternalId = -1; // For PropertyItem ComboBox selection
+        public int ElementInternalId // For PropertyItem ComboBox selection
+        {
+            get => _elementInternalId;
+            set
+            {
+                _elementInternalId = value;
+                OnPropertyChanged();
             }
         }
 
@@ -54,16 +65,11 @@ namespace BauphysikToolWPF.Models.Domain
         public int InternalId { get; set; } = -1;
 
         // n:1 relationship with Element
-        private Element? _element;
         [JsonIgnore]
         public Element? Element
         {
-            get => _element;
-            set
-            {
-                _element = value;
-                OnPropertyChanged();
-            }
+            get => Session.SelectedProject?.Elements.FirstOrDefault(e => e?.InternalId == ElementInternalId, null);
+            set => ElementInternalId = value?.InternalId ?? -1;
         }
 
         [JsonIgnore]
@@ -72,23 +78,6 @@ namespace BauphysikToolWPF.Models.Domain
         public bool IsReadonly { get; set; }
         [JsonIgnore]
         public static EnvelopeItem Empty => new EnvelopeItem(); // Optional static default (for easy reference)
-        
-        [JsonIgnore]
-        public int ElementIndex // For PropertyItem ComboBox selection
-        {
-            get => Element is null ? -1 : Session.SelectedProject?.Elements.IndexOf(Element) ?? -1;
-            set
-            {
-                if (Session.SelectedProject != null && value >= 0)
-                {
-                    Element = Session.SelectedProject.Elements[value];
-                }
-                else if (value == -1)
-                {
-                    Element = null;
-                }
-            }
-        }
 
         [JsonIgnore]
         public bool IsValid => FloorLevel != string.Empty && RoomName != string.Empty;
@@ -135,7 +124,7 @@ namespace BauphysikToolWPF.Models.Domain
         {
             var copy = new EnvelopeItem
             {
-                Element = this.Element, // shallow copy OK here
+                ElementInternalId = this.ElementInternalId,
                 CreatedAt = this.CreatedAt,
                 UpdatedAt = TimeStamp.GetCurrentUnixTimestamp(),
                 RoomName = this.RoomName,

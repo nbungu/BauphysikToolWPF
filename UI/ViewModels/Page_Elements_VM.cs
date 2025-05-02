@@ -158,7 +158,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Element? SelectedElement => Session.SelectedElement; // Cannot be directly mutated via binding like ListViewItems, since ints wrapped as button in a WrapPanel
         public bool ElementToolsAvailable => Session.SelectedElementId != -1;
-        public bool ExportPdfCatalogueAvailable => false; // TODO: Elements.Count > 0;
+        public bool ExportPdfCatalogueAvailable => Elements.Count > 0;
 
         // Returns False if Index is 0. Index 0 means without Grouping, since "Ohne" is first entry in Combobox
         public bool IsGroupingEnabled => GroupingPropertyIndex > 0;

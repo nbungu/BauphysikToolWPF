@@ -1,7 +1,7 @@
 ﻿using BauphysikToolWPF.Calculation;
 using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -13,7 +13,6 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models.UI;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 
@@ -33,27 +32,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 
-            //if (!_tempCalc.IsValid || Session.Recalculate)
-            //{
-            //    _tempCalc = new TemperatureCurveCalc()
-            //    {
-            //        Element = Session.SelectedElement,
-            //        Rsi = Session.Rsi,
-            //        Rse = Session.Rse,
-            //        Ti = Session.Ti,
-            //        Te = Session.Te
-            //    };
-            //    _tempCalc.CalculateHomogeneous();
-            //    _tempCalc.CalculateTemperatureCurve();
-            //}
             _tempCalc = new TemperatureCurveCalc(Session.SelectedElement, Session.Rsi, Session.Rse, Session.Ti, Session.Te);
-            //{
-            //    Element = Session.SelectedElement,
-            //    Rsi = Session.Rsi,
-            //    Rse = Session.Rse,
-            //    Ti = Session.Ti,
-            //    Te = Session.Te
-            //};
             _tempCalc.CalculateHomogeneous();
             _tempCalc.CalculateTemperatureCurve();
         }

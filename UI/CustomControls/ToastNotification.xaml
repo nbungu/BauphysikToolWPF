@@ -16,7 +16,7 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Image x:Name="ToastIcon" Width="24" Height="24" VerticalAlignment="Stretch" Margin="24,4"/>
+            <Image x:Name="ToastIcon" Width="16" Height="16" VerticalAlignment="Stretch" Margin="32,8,4,8"/>
 
             <TextBlock x:Name="ToastText" Text="This is a Toast Notification" Grid.Column="1" VerticalAlignment="Center" Margin="16,0" FontWeight="DemiBold" FontSize="14"/>
 

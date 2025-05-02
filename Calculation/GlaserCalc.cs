@@ -28,18 +28,17 @@ namespace BauphysikToolWPF.Calculation
 
         // (Instance-) Constructor
         public GlaserCalc() {}
-        public GlaserCalc(Element element, double rsi, double rse, double ti, double te, double relFi, double relFe) : base(element, rsi, rse, ti, te)
+        public GlaserCalc(Element? element, double rsi, double rse, double ti, double te, double relFi, double relFe) : base(element, rsi, rse, ti, te)
         {
-            if (element.Layers.Count == 0 || element is null) return;
-
             RelFi = Math.Max(0, relFi);
             RelFe = Math.Max(0, relFe);
 
+            if (element is null) return;
             CalculateGlaser();
         }
         public void CalculateGlaser()
         {
-            if (RelevantLayers.Count == 0) return;
+            if (Element is null || RelevantLayers.Count == 0) return;
             try
             {
                 // Calculated parameters (private setter)

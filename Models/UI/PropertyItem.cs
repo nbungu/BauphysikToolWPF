@@ -19,7 +19,7 @@ namespace BauphysikToolWPF.Models.UI
      */
 
 
-    public class PropertyItem<T> : IPropertyItem
+    public class PropertyItem<T> : IPropertyItem // constraint for T being value types only
     {
         public static event Notify? PropertyChanged; // event
 

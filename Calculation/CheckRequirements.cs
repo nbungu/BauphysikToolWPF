@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using BauphysikToolWPF.Models.Database;
+﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
+using System;
+using System.Collections.Generic;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 
 namespace BauphysikToolWPF.Calculation
@@ -29,7 +29,7 @@ namespace BauphysikToolWPF.Calculation
 
         public CheckRequirements(Element? element, double uValue, double qValue)
         {
-            if (element == null)
+            if (element is null)
             {
                 Element = new Element();
                 return;

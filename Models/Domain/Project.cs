@@ -7,7 +7,7 @@ using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {
-    public class Project : IEquatable<Project>
+    public class Project : IDomainObject<Project>, IEquatable<Project>
     {
         #region Serialization Objects
 
@@ -26,7 +26,10 @@ namespace BauphysikToolWPF.Models.Domain
         #endregion
 
         #region Non-serialized Properties
-        
+
+        [JsonIgnore]
+        public int InternalId { get; set; } = -1;
+
         [JsonIgnore]
         public static Project Empty => new Project(); // Optional static default (for easy reference)
 
@@ -34,6 +37,8 @@ namespace BauphysikToolWPF.Models.Domain
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
         [JsonIgnore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
+
+        public bool IsValid => true; // TODO: Implement validation logic
 
         [JsonIgnore]
         public bool IsNewEmptyProject => this.Equals(Project.Empty);

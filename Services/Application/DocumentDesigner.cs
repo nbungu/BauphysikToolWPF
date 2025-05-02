@@ -169,7 +169,7 @@ namespace BauphysikToolWPF.Services.Application
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 24;
 
-            gfx.DrawString($"Ausrichtung: {element.OrientationType}", bodyFont, XBrushes.Black,
+            gfx.DrawString($"Ausrichtung: {element.OrientationTypeName}", bodyFont, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;

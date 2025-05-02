@@ -23,16 +23,15 @@ namespace BauphysikToolWPF.Calculation
 
         // Constructors
         public TemperatureCurveCalc() : base() {}
-        public TemperatureCurveCalc(Element element, double rsi, double rse, double ti, double te) : base(element, rsi, rse, ti, te)
+        public TemperatureCurveCalc(Element? element, double rsi, double rse, double ti, double te) : base(element, rsi, rse, ti, te)
         {
-            if (element.Layers.Count == 0 || element is null) return;
-            
+            if (Element is null) return;
             CalculateTemperatureCurve();
         }
         
         public void CalculateTemperatureCurve()
         {
-            if (RelevantLayers.Count == 0) return;
+            if (Element is null || RelevantLayers.Count == 0) return;
             CalculateLayerTemps();  // Bsp. S.33
             CalculatefRsiValue();   // Gl. 3-1; S.36. Schimmelwahrscheinlichkeit
             CalculateTsiMin();      // Gl. 3-1; S.36 umgestellt nach Tsi für fRsi = 0,7. Schimmelwahrscheinlichkeit

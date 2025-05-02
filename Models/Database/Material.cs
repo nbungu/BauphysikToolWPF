@@ -34,9 +34,6 @@ namespace BauphysikToolWPF.Models.Database
         //------Not part of the Database-----//
 
         [Ignore]
-        public int InternalId { get; set; }
-
-        [Ignore]
         public static Material Empty => new Material(); // Optional static default (for easy reference)
 
         [Ignore]
@@ -89,7 +86,6 @@ namespace BauphysikToolWPF.Models.Database
             copy.SpecificHeatCapacity = this.SpecificHeatCapacity;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.InternalId = this.InternalId;
             return copy;
         }
 
@@ -106,7 +102,7 @@ namespace BauphysikToolWPF.Models.Database
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Name == other.Name && Category == other.Category && IsUserDefined == other.IsUserDefined && BulkDensity == other.BulkDensity && ThermalConductivity.Equals(other.ThermalConductivity) && DiffusionResistance.Equals(other.DiffusionResistance) && ColorCode == other.ColorCode && SpecificHeatCapacity == other.SpecificHeatCapacity;
+            return Id == other.Id && Name == other.Name && Category == other.Category && IsUserDefined == other.IsUserDefined && BulkDensity == other.BulkDensity && ThermalConductivity.Equals(other.ThermalConductivity) && DiffusionResistance.Equals(other.DiffusionResistance) && SpecificHeatCapacity == other.SpecificHeatCapacity;
         }
 
         public override bool Equals(object? obj)

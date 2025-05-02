@@ -1,7 +1,5 @@
-﻿using BauphysikToolWPF.Calculation;
-using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Repositories;
-using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,38 +96,7 @@ namespace BauphysikToolWPF.Services.Application
         /// </summary>
         public static Layer? SelectedLayer => SelectedElement?.Layers.FirstOrDefault(e => e?.InternalId == SelectedLayerId, null);
 
-        //// Use GlaserCalc as Collection for Results due to Polymorphism;
-        //// You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.
-        //private static ThermalValuesCalc _calcResults = new ThermalValuesCalc();
-        //public static ThermalValuesCalc CalcResults
-        //{
-        //    get
-        //    {
-        //        if (Recalculate)
-        //        {
-        //            _calcResults = new ThermalValuesCalc(SelectedElement, Rsi, Rse, Ti, Te);
-        //            Recalculate = false;
-        //        }
-        //        return _calcResults;
-        //    }
-        //}
-
-        //private static bool _recalculate = true;
-        ///// <summary>
-        ///// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,
-        ///// which would require a re-calculation, are made there.
-        ///// </summary>
-        //public static bool Recalculate
-        //{
-        //    get => _recalculate;
-        //    set
-        //    {
-        //        if (value == _recalculate) return;
-        //        _recalculate = value;
-        //        Logger.LogInfo($"Set Recalculate flag to: {value}");
-        //    }
-        //}
-
+        
         // Unordered Collection. Key must be unique!
         private static readonly Dictionary<Symbol, double> _userEnvVars = new Dictionary<Symbol, double>(6)
         {

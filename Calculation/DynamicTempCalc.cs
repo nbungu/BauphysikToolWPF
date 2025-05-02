@@ -45,15 +45,16 @@ namespace BauphysikToolWPF.Calculation
         public DynamicTempCalc() {}
 
         // Chose Inheritance approach vs Composition approach 
-        public DynamicTempCalc(Element element, double rsi, double rse, double ti, double te) : base(element, rsi, rse, ti, te)
+        public DynamicTempCalc(Element? element, double rsi, double rse, double ti, double te) : base(element, rsi, rse, ti, te)
         {
-            if (element.Layers.Count == 0 || element is null) return;
-
+            if (element is null) return;
             CalculateDynamicValues();
         }
 
         public void CalculateDynamicValues()
         {
+            if (Element is null) return;
+
             try
             {
                 // Calculated parameters (private setter)

@@ -99,7 +99,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             // Trigger event to update LayerWindow and all subscriber windows
             Session.OnSelectedLayerChanged();
-
         }
 
         [RelayCommand]
@@ -107,7 +106,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (SelectedListViewItem != null && SelectedListViewItem.IsUserDefined)
             {
-                if (IsUsedInLayer || IsUsedInSubConstr)
+                if (IsMaterialInUse)
                 {
                     AddLayerWindow.ShowToast($"Cannot delete custom Material: {SelectedListViewItem}. It is still being used!", ToastType.Warning);
                     Logger.LogWarning($"Cannot delete custom Material: {SelectedListViewItem}. It is still being used!");
@@ -137,7 +136,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 newMaterial = new Material()
                 {
-                    Name = "Neu erstelltes Material",
+                    Name = $"Neues Material ({MaterialCategoryMapping[(MaterialCategory)SelectedMaterialCategoryIndex]})",
                     IsUserDefined = true,
                     Category = (MaterialCategory)SelectedMaterialCategoryIndex
                 };
@@ -207,17 +206,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<int>(Symbol.RawDensity, () => SelectedListViewItem.BulkDensity, value => SelectedListViewItem.BulkDensity = value),
             new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => SelectedListViewItem.SpecificHeatCapacity, value => SelectedListViewItem.SpecificHeatCapacity = value),
             new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => SelectedListViewItem.DiffusionResistance, value => SelectedListViewItem.DiffusionResistance = value),
-            new PropertyItem<bool>("Material in Benutzung", () => IsUsedInLayer || IsUsedInSubConstr),
+            new PropertyItem<bool>("Material in Benutzung", () => IsMaterialInUse),
         } : new List<IPropertyItem>(0);
 
         public List<Material> FilteredMaterials => GetFilteredMaterials();
         public bool AllowDelete => SelectedListViewItem?.IsUserDefined ?? false;
         public string ButtonText => _targetLayer != null ? "Änderung übernehmen" : "Schicht hinzufügen";
         public static IEnumerable<string> GetMaterialCategoryNames() => MaterialCategoryMapping.Values;
-        
-        // TODO: fix -> check only for current project
-        public bool IsUsedInLayer => true; // DatabaseAccess.GetLayersQuery().Any(l => SelectedListViewItem != null && l.MaterialId == SelectedListViewItem.Id);
-        public bool IsUsedInSubConstr => true; //DatabaseAccess.GetSubConstructionQuery().Any(s => SelectedListViewItem != null && s.MaterialId == SelectedListViewItem.Id);
+        public bool IsMaterialInUse => Session.SelectedProject?.IsMaterialInUse(SelectedListViewItem) ?? false;
 
         // TODO: implement QueryFilterConfig...
         private List<Material> GetFilteredMaterials()

@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Services.Application;
 using System;
 using System.Linq;
+using BauphysikToolWPF.Models.Database;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
 {
@@ -39,7 +40,15 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             copy.InternalId = project.EnvelopeItems.Count;
             project.AddEnvelopeItem(copy);
         }
-
+        public static bool IsMaterialInUse(this Project project, Material? material)
+        {
+            if (project.Elements.Count == 0 || material is null) return false;
+            return project.Elements.Any(e =>
+                e.Layers.Any(l =>
+                    Equals(l.Material, material) || Equals(l.SubConstruction?.Material, material)
+                )
+            );
+        }
 
         public static void RenderMissingElementImages(this Project project)
         {

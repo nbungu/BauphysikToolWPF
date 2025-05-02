@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.Repositories
         {
             var fileName = Path.GetFileName(filePath);
             var recentProjects = LoadRecentProjects();
-            var existingEntry = recentProjects.FirstOrDefault(p => p.FilePath == filePath);
+            var existingEntry = recentProjects.FirstOrDefault(p => p?.FilePath == filePath, null);
             if (existingEntry != null)
             {
                 existingEntry.LastOpened = TimeStamp.GetCurrentUnixTimestamp();
@@ -26,7 +26,6 @@ namespace BauphysikToolWPF.Repositories
             {
                 recentProjects.Insert(0, new RecentProjectItem { FileName = fileName, FilePath = filePath, LastOpened = TimeStamp.GetCurrentUnixTimestamp() });
             }
-
             if (recentProjects.Count > 8) recentProjects.RemoveAt(5);
             SaveRecentProjects(recentProjects);
         }
@@ -36,13 +35,16 @@ namespace BauphysikToolWPF.Repositories
             if (File.Exists(RecentProjectsFilePath))
             {
                 string json = File.ReadAllText(RecentProjectsFilePath);
-                var recentEntries = JsonSerializer.Deserialize<List<RecentProjectItem>>(json);
-                if (recentEntries != null && recentEntries.All(e => e.IsValid)) return recentEntries;
+                List<RecentProjectItem>? recentEntries = JsonSerializer.Deserialize<List<RecentProjectItem>>(json);
+                if (recentEntries != null && recentEntries.All(e => e.IsValid)) return recentEntries.OrderByDescending(e => e.LastOpened).ToList();
             }
             return new List<RecentProjectItem>(0);
         }
 
-        public static void SaveRecentProjects(List<RecentProjectItem> recentProjects)
+
+        #region private methods
+        
+        private static void SaveRecentProjects(List<RecentProjectItem> recentProjects)
         {
             string json = JsonSerializer.Serialize(recentProjects.ToList());
             File.WriteAllText(RecentProjectsFilePath, json);
@@ -82,5 +84,7 @@ namespace BauphysikToolWPF.Repositories
                 return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repositories\\recent_projects.json"));
             }
         }
+
+        #endregion
     }
 }

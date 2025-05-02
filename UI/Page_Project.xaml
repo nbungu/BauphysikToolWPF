@@ -236,12 +236,12 @@
             <Label Grid.Row="0" Content="Zuletzt geöffnete Projekte" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
             <ListView Grid.Row="1"
-                      Visibility="{Binding RecentProjectEntriesVisibility}"
                       ItemsSource="{Binding RecentProjects}" 
                       SelectedItem="{Binding SelectedListViewItem, Mode=TwoWay}"
                       ItemTemplate="{StaticResource RecentProjectsItemTemplate}"
                       ItemContainerStyle="{StaticResource RecentProjectItemContainerStyle}"
-                      Style="{StaticResource ListViewStyleRecentProjects}">
+                      Style="{StaticResource ListViewStyleRecentProjects}"
+                      Visibility="{Binding RecentProjectEntriesVisibility}">
                     <!-- EventToCommand behavior to bind the double-click event to the command-->
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="MouseUp">

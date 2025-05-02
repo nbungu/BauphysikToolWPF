@@ -6,7 +6,7 @@ namespace BauphysikToolWPF.Services.Application
     {
         public static long GetCurrentUnixTimestamp()
         {
-            return DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            return DateTimeOffset.Now.ToUnixTimeSeconds();
         }
 
         public static string ConvertToNormalTime(long unixTimestamp)

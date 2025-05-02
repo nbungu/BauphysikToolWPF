@@ -5,13 +5,10 @@ using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Microsoft.Extensions.Logging;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
-using static BauphysikToolWPF.Models.UI.Enums;
 
 
 /* 
@@ -21,7 +18,7 @@ using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain // or core?
 {
-    public class Element
+    public class Element : IDomainObject<Element>
     {
         #region Serialization Objects
 

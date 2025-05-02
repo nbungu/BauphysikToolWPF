@@ -16,7 +16,13 @@ namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class Page_BuildingEnvelope_VM : ObservableObject
     {
-        private static readonly EnvelopeItem _presetEnvelopeItem = new EnvelopeItem();
+        private static readonly EnvelopeItem _presetEnvelopeItem = new EnvelopeItem()
+        {
+            FloorLevel = "EG",
+            RoomName = "Wohnzimmer",
+            UsageZone = UsageZone.Wohnen,
+        };
+
         private EnvelopeItem? _previousItem;
 
         public Page_BuildingEnvelope_VM()
@@ -42,7 +48,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 item.EnvelopeArea = _presetEnvelopeItem.EnvelopeArea;
                 item.UValue = _presetEnvelopeItem.UValue;
-                item.ElementIndex = _presetEnvelopeItem.ElementIndex;
+                item.ElementInternalId = _presetEnvelopeItem.ElementInternalId;
                 item.OrientationType = _presetEnvelopeItem.OrientationType;
             }
             if (IsRoomPresetChecked)
@@ -97,12 +103,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsRowSelected))]
-        private EnvelopeItem? _selectedEnvelopeItem;
+        private static EnvelopeItem? _selectedEnvelopeItem;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(AnyPresetActive))]
         [NotifyPropertyChangedFor(nameof(PresetActiveVisibility))]
-        private static bool _isInfoPresetChecked = false;
+        private static bool _isInfoPresetChecked = true;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(AnyPresetActive))]
@@ -144,7 +150,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             new PropertyItem<double>(Symbol.Area, () => _presetEnvelopeItem.EnvelopeArea, value => _presetEnvelopeItem.EnvelopeArea = value),
             new PropertyItem<double>(Symbol.UValue, () => _presetEnvelopeItem.UValue, value => _presetEnvelopeItem.UValue = value),
-            new PropertyItem<int>("Bauteil", () => _presetEnvelopeItem.ElementIndex, value => _presetEnvelopeItem.ElementIndex = value)
+            new PropertyItem<int>("Bauteil", () => _presetEnvelopeItem.ElementInternalId, value => _presetEnvelopeItem.ElementInternalId = value)
             {
                 PropertyValues = GetElements().Cast<object>().ToArray()
             },
@@ -163,7 +169,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.Volume, () => _presetEnvelopeItem.RoomVolumeNet, value => _presetEnvelopeItem.RoomVolumeNet = value) { SymbolSubscriptText = "netto"},
         };
 
-        public IEnumerable<Element> GetElements() => Session.SelectedProject?.Elements ?? Enumerable.Empty<Element>();
+        public IEnumerable<Element> GetElements() => Session.SelectedProject?.Elements.OrderBy(e => e.InternalId) ?? Enumerable.Empty<Element>();
         public IEnumerable<string> GetOrientationTypeNames() => OrientationTypeMapping.Values;
         public IEnumerable<string> GetUsageZoneNames() => UsageZoneMapping.Values;
 

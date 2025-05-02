@@ -167,7 +167,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             Session.SelectedProject = loadedProject;
             Session.ProjectFilePath = filePath;
-            Session.SelectedProject.IsModified = false;
             RecentProjectsManager.AddRecentProject(filePath);
             Session.OnNewProjectAdded(false);
 
