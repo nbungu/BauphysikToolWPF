@@ -23,7 +23,6 @@ namespace BauphysikToolWPF.Services.Application
         public static event Notify? SelectedLayerChanged;
         public static event Notify? EnvVarsChanged;
         public static event Notify? EnvelopeItemsChanged;
-        public static event Notify? PropertyBagChanged;
 
         // event handlers - publisher
         public static void OnSelectedProjectChanged(bool updateIsModified = true) //protected virtual method
@@ -72,12 +71,6 @@ namespace BauphysikToolWPF.Services.Application
             if (updateIsModified) SelectedProject.IsModified = true;
             EnvelopeItemsChanged?.Invoke();
         }
-        public static void OnPropertyBagChanged(bool updateIsModified = true)
-        {
-            if (SelectedProject == null) return;
-            if (updateIsModified) SelectedProject.IsModified = true;
-            PropertyBagChanged?.Invoke();
-        }
 
         #endregion
 
@@ -105,37 +98,37 @@ namespace BauphysikToolWPF.Services.Application
         /// </summary>
         public static Layer? SelectedLayer => SelectedElement?.Layers.FirstOrDefault(e => e?.InternalId == SelectedLayerId, null);
 
-        // Use GlaserCalc as Collection for Results due to Polymorphism;
-        // You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.
-        private static ThermalValuesCalc _calcResults = new ThermalValuesCalc();
-        public static ThermalValuesCalc CalcResults
-        {
-            get
-            {
-                if (Recalculate)
-                {
-                    _calcResults = new ThermalValuesCalc(SelectedElement, Rsi, Rse, Ti, Te);
-                    Recalculate = false;
-                }
-                return _calcResults;
-            }
-        }
+        //// Use GlaserCalc as Collection for Results due to Polymorphism;
+        //// You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.
+        //private static ThermalValuesCalc _calcResults = new ThermalValuesCalc();
+        //public static ThermalValuesCalc CalcResults
+        //{
+        //    get
+        //    {
+        //        if (Recalculate)
+        //        {
+        //            _calcResults = new ThermalValuesCalc(SelectedElement, Rsi, Rse, Ti, Te);
+        //            Recalculate = false;
+        //        }
+        //        return _calcResults;
+        //    }
+        //}
 
-        private static bool _recalculate = true;
-        /// <summary>
-        /// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,
-        /// which would require a re-calculation, are made there.
-        /// </summary>
-        public static bool Recalculate
-        {
-            get => _recalculate;
-            set
-            {
-                if (value == _recalculate) return;
-                _recalculate = value;
-                Logger.LogInfo($"Set Recalculate flag to: {value}");
-            }
-        }
+        //private static bool _recalculate = true;
+        ///// <summary>
+        ///// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,
+        ///// which would require a re-calculation, are made there.
+        ///// </summary>
+        //public static bool Recalculate
+        //{
+        //    get => _recalculate;
+        //    set
+        //    {
+        //        if (value == _recalculate) return;
+        //        _recalculate = value;
+        //        Logger.LogInfo($"Set Recalculate flag to: {value}");
+        //    }
+        //}
 
         // Unordered Collection. Key must be unique!
         private static readonly Dictionary<Symbol, double> _userEnvVars = new Dictionary<Symbol, double>(6)

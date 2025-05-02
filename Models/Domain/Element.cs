@@ -1,12 +1,15 @@
-﻿using BauphysikToolWPF.Models.Database;
+﻿using BauphysikToolWPF.Calculation;
+using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Microsoft.Extensions.Logging;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
@@ -151,27 +154,46 @@ namespace BauphysikToolWPF.Models.Domain // or core?
                     else val += layer.ArealHeatCapacity;
                 }
                 return Math.Round(val, 2);
-
             }
         }
 
+        #region Calculation Results
+        
         [JsonIgnore]
-        public double RGesValue => Session.CalcResults.RGes; // R_ges in m²K/W
+        public double RGesValue => Results.RGes; // R_ges in m²K/W
         [JsonIgnore]
-        public double RTotValue => Session.CalcResults.RTotal; // R_tot in m²K/W
+        public double RTotValue => Results.RTotal; // R_tot in m²K/W
         [JsonIgnore]
-        public double QValue => Session.CalcResults.QValue; // q in W/m²
+        public double QValue => Results.QValue; // q in W/m²
         [JsonIgnore]
-        public double UValue => Session.CalcResults.UValue; // q in W/m²
+        public double UValue => Results.UValue; // q in W/m²
 
+        /// <summary>
+        /// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,
+        /// which would require a re-calculation, are made there.
+        /// </summary>
         [JsonIgnore]
-        public List<EnvVars> UsedEnvVars => new List<EnvVars>()
+        public bool Recalculate { get; set; } = true;
+
+        // Use GlaserCalc as Collection for Results due to Polymorphism;
+        // You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.
+        private ThermalValuesCalc _results = new ThermalValuesCalc();
+        [JsonIgnore]
+        public ThermalValuesCalc Results
         {
-            new EnvVars(Session.CalcResults.Rsi, Symbol.TransferResistanceSurfaceInterior, Unit.SquareMeterKelvinPerWatt),
-            new EnvVars(Session.CalcResults.Rse, Symbol.TransferResistanceSurfaceExterior, Unit.SquareMeterKelvinPerWatt),
-            new EnvVars(Session.CalcResults.Ti, Symbol.TemperatureInterior, Unit.Celsius),
-            new EnvVars(Session.CalcResults.Te, Symbol.TemperatureExterior, Unit.Celsius)
-        };
+            get
+            {
+                if (Recalculate)
+                {
+                    var newResults = new ThermalValuesCalc(this, Session.Rsi, Session.Rse, Session.Ti, Session.Te);
+                    _results = newResults;
+                    Recalculate = false;
+                }
+                return _results;
+            }
+        }
+        #endregion
+
 
         #endregion
 
@@ -180,7 +202,7 @@ namespace BauphysikToolWPF.Models.Domain // or core?
         #endregion
 
         #region Public Methods
-
+        
         public Element Copy()
         {
             var copy = new Element();
@@ -194,15 +216,20 @@ namespace BauphysikToolWPF.Models.Domain // or core?
             copy.Comment = this.Comment;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.InternalId = this.InternalId;
             // Deep copy of the Layers list
-            copy.Layers = this.Layers.Select(layer => layer.CopyToNewElement(copy)).ToList();
+            this.Layers.ForEach(l => l.CopyToElement(copy));
             return copy;
+        }
+
+        public void CopyToProject(Project project)
+        {
+            var copy = Copy();
+            project.Elements.Add(copy);
         }
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return Name + " - " + Construction.TypeName + " (InternalId: " + InternalId + ")";
+            return Name + " - " + Construction.TypeName;
         }
 
         public void UpdateTimestamp()

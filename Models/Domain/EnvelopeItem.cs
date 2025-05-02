@@ -1,13 +1,22 @@
 ﻿using BauphysikToolWPF.Services.Application;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {
-    public class EnvelopeItem
+    public class EnvelopeItem : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler? PropertyChanged;
+
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         #region Serialization Objects
 
         public string RoomName { get; set; } = string.Empty;
@@ -19,13 +28,17 @@ namespace BauphysikToolWPF.Models.Domain
         public double RoomAreaNet { get; set; }
         public double RoomVolumeNet { get; set; }
         public double EnvelopeArea { get; set; }
-
         private double _uValue;
         public double UValue
         {
             get => Element?.UValue ?? _uValue;
-            set => _uValue = value;
+            set
+            {
+                _uValue = value;
+                ElementIndex = -1;
+            }
         }
+
         public string Tag { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;
         public OrientationType OrientationType { get; set; } = OrientationType.North;
@@ -39,9 +52,19 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public int InternalId { get; set; } = -1;
+
         // n:1 relationship with Element
+        private Element? _element;
         [JsonIgnore]
-        public Element? Element { get; set; }
+        public Element? Element
+        {
+            get => _element;
+            set
+            {
+                _element = value;
+                OnPropertyChanged();
+            }
+        }
 
         [JsonIgnore]
         public bool IsSelected { get; set; }
@@ -49,9 +72,9 @@ namespace BauphysikToolWPF.Models.Domain
         public bool IsReadonly { get; set; }
         [JsonIgnore]
         public static EnvelopeItem Empty => new EnvelopeItem(); // Optional static default (for easy reference)
-
+        
         [JsonIgnore]
-        public int ElementIndex
+        public int ElementIndex // For PropertyItem ComboBox selection
         {
             get => Element is null ? -1 : Session.SelectedProject?.Elements.IndexOf(Element) ?? -1;
             set
@@ -112,11 +135,9 @@ namespace BauphysikToolWPF.Models.Domain
         {
             var copy = new EnvelopeItem
             {
-                InternalId = this.InternalId,
-                Element = this.Element,
+                Element = this.Element, // shallow copy OK here
                 CreatedAt = this.CreatedAt,
                 UpdatedAt = TimeStamp.GetCurrentUnixTimestamp(),
-
                 RoomName = this.RoomName,
                 FloorLevel = this.FloorLevel,
                 RoomHeightGross = this.RoomHeightGross,
@@ -131,8 +152,12 @@ namespace BauphysikToolWPF.Models.Domain
                 OrientationType = this.OrientationType,
                 UsageZone = this.UsageZone,
             };
-
             return copy;
+        }
+        public void CopyToProject(Project project)
+        {
+            var copy = Copy();
+            project.EnvelopeItems.Add(copy);
         }
 
         public void UpdateTimestamp()
@@ -142,7 +167,7 @@ namespace BauphysikToolWPF.Models.Domain
 
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
-            return $"[{InternalId}] {RoomName} ({FloorLevel}) - {RoomAreaNet:0.##} m², {RoomVolumeNet:0.##} m³ | U-Value: {UValue:0.##} | {OrientationType} / {UsageZone}";
+            return $"[{InternalId}] {RoomName} ({FloorLevel}) - Element: {Element} | U-Value: {UValue:0.##} | {OrientationType} / {UsageZone}";
         }
 
         #endregion

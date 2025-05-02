@@ -70,7 +70,6 @@ namespace BauphysikToolWPF.Models.Domain
         public Project Copy()
         {
             var copy = new Project();
-            copy.Guid = this.Guid;
             copy.Name = this.Name;
             copy.UserName = this.UserName;
             copy.BuildingAge = this.BuildingAge;
@@ -79,10 +78,11 @@ namespace BauphysikToolWPF.Models.Domain
             copy.Comment = this.Comment;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.Elements = this.Elements;
-            copy.EnvelopeItems = this.EnvelopeItems;
             copy.IsModified = this.IsModified;
             copy.CreatedByUser = this.CreatedByUser;
+            // Deep copies of the Element and EnvelopItem list
+            this.Elements.ForEach(l => l.CopyToProject(copy));
+            this.EnvelopeItems.ForEach(l => l.CopyToProject(copy));
             return copy;
         }
 

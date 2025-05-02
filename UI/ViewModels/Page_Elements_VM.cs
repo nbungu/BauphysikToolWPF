@@ -99,7 +99,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void SelectElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
             Session.SelectedElementId = selectedInternalId;
-            Session.Recalculate = true;
+            Session.SelectedElement.Recalculate = true;
             RefreshXamlBindings();
         }
 

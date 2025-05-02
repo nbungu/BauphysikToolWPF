@@ -46,14 +46,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             //    _dynamicTempCalc.CalculateHomogeneous();
             //    _dynamicTempCalc.CalculateDynamicValues();
             //}
-            _dynamicTempCalc = new DynamicTempCalc()
-            {
-                Element = Session.SelectedElement,
-                Rsi = Session.Rsi,
-                Rse = Session.Rse,
-                Ti = Session.Ti,
-                Te = Session.Te
-            };
+            _dynamicTempCalc = new DynamicTempCalc(Session.SelectedElement, Session.Rsi, Session.Rse, Session.Ti, Session.Te);
+            //{
+            //    Element = Session.SelectedElement,
+            //    Rsi = Session.Rsi,
+            //    Rse = Session.Rse,
+            //    Ti = Session.Ti,
+            //    Te = Session.Te
+            //};
             _dynamicTempCalc.CalculateHomogeneous();
             _dynamicTempCalc.CalculateDynamicValues();
         }

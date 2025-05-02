@@ -189,25 +189,14 @@ namespace BauphysikToolWPF.Models.Domain
             copy.IsSelected = false;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.InternalId = this.InternalId;
             // Deep copy of the SubConstructions list
-            copy.SubConstructions = this.SubConstructions.Select(s => s.CopyToNewLayer(copy)).ToList();
+            this.SubConstructions.ForEach(sc => sc.CopyToNewLayer(copy));
             return copy;
         }
-        public Layer CopyToNewElement(Element element)
+        public void CopyToElement(Element element)
         {
-            var copy = new Layer();
-            copy.LayerPosition = this.LayerPosition;
-            copy.MaterialId = this.MaterialId;
-            copy.Thickness = this.Thickness;
-            copy.IsEffective = this.IsEffective;
-            copy.IsSelected = false;
-            copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-            copy.InternalId = this.InternalId;
-            // Deep copy of the SubConstructions list
-            copy.SubConstructions = this.SubConstructions.Select(s => s.CopyToNewLayer(copy)).ToList();
-            return copy;
+            var copy = Copy();
+            element.Layers.Add(copy);
         }
 
         public void UpdateTimestamp()

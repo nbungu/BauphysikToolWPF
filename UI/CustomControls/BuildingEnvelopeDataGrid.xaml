@@ -246,7 +246,7 @@
                 <!-- Bauteil Column -->
                 <DataGridComboBoxColumn x:Name="EnvelopeItem_ElementSelectionColumn"
                         Header="zugehöriges Bauteil"
-                        SelectedItemBinding="{Binding Element}"
+                        SelectedItemBinding="{Binding Element, UpdateSourceTrigger=PropertyChanged}"
                         ItemsSource="{Binding Source={StaticResource ElementListValues}}"
                         DisplayMemberPath="Name"
                         Width="132"
@@ -303,7 +303,7 @@
                 </DataGridComboBoxColumn>
 
                 <!-- U-Wert Column -->
-                <DataGridTextColumn Header="U-Wert" Binding="{Binding UValue, Converter={StaticResource NumberConverter}}" Width="88">
+                <DataGridTextColumn x:Name="EnvelopeItem_UValueColumn" Header="U-Wert" Binding="{Binding UValue, Converter={StaticResource NumberConverter}, Mode=TwoWay, UpdateSourceTrigger=LostFocus}" Width="88">
                     <DataGridTextColumn.ElementStyle>
                         <Style TargetType="TextBlock">
                             <Setter Property="VerticalAlignment" Value="Center" />

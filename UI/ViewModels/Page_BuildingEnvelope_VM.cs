@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
@@ -16,6 +17,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class Page_BuildingEnvelope_VM : ObservableObject
     {
         private static readonly EnvelopeItem _presetEnvelopeItem = new EnvelopeItem();
+        private EnvelopeItem? _previousItem;
 
         public Page_BuildingEnvelope_VM()
         {
@@ -80,6 +82,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 }
                 Session.OnEnvelopeItemsChanged();
             }
+        }
+        partial void OnSelectedEnvelopeItemChanged(EnvelopeItem? value)
+        {
+            // Set the PropertyChanged event handler dynamically for the new selected item
+            SetEventHandler(value);
         }
 
         /*
@@ -151,9 +158,9 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.Length, () => _presetEnvelopeItem.RoomHeightGross, value => _presetEnvelopeItem.RoomHeightGross = value),
             new PropertyItem<double>(Symbol.Area, () => _presetEnvelopeItem.RoomAreaGross, value => _presetEnvelopeItem.RoomAreaGross = value),
             new PropertyItem<double>(Symbol.Volume, () => _presetEnvelopeItem.RoomVolumeGross, value => _presetEnvelopeItem.RoomVolumeGross = value),
-            new PropertyItem<double>(Symbol.Length, () => _presetEnvelopeItem.RoomHeightNet, value => _presetEnvelopeItem.RoomHeightNet = value),
-            new PropertyItem<double>(Symbol.Area, () => _presetEnvelopeItem.RoomAreaNet, value => _presetEnvelopeItem.RoomAreaNet = value),
-            new PropertyItem<double>(Symbol.Volume, () => _presetEnvelopeItem.RoomVolumeNet, value => _presetEnvelopeItem.RoomVolumeNet = value),
+            new PropertyItem<double>(Symbol.Length, () => _presetEnvelopeItem.RoomHeightNet, value => _presetEnvelopeItem.RoomHeightNet = value) { SymbolSubscriptText = "netto"},
+            new PropertyItem<double>(Symbol.Area, () => _presetEnvelopeItem.RoomAreaNet, value => _presetEnvelopeItem.RoomAreaNet = value) { SymbolSubscriptText = "netto"},
+            new PropertyItem<double>(Symbol.Volume, () => _presetEnvelopeItem.RoomVolumeNet, value => _presetEnvelopeItem.RoomVolumeNet = value) { SymbolSubscriptText = "netto"},
         };
 
         public IEnumerable<Element> GetElements() => Session.SelectedProject?.Elements ?? Enumerable.Empty<Element>();
@@ -163,6 +170,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         /// <summary>
         /// Updates XAML Bindings and the Reset Calculation Flag
         /// </summary>
+
         private void UpdateXamlBindings()
         {
             // For updating MVVM Capsulated Properties
@@ -172,11 +180,26 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(ItemsCount));
             OnPropertyChanged(nameof(NoEntriesVisibility));
         }
-
         private void UpdatePresets()
         {
             OnPropertyChanged(nameof(InfoPresetProperties));
             OnPropertyChanged(nameof(ElementPresetProperties));
+        }
+
+        private void UpdatePropertyDependencies(object? sender, PropertyChangedEventArgs e)
+        {
+            OnPropertyChanged(nameof(EnvelopeItems));
+        }
+
+        private void SetEventHandler(EnvelopeItem? item)
+        {
+            if (_previousItem != null)
+                _previousItem.PropertyChanged -= UpdatePropertyDependencies;
+
+            _previousItem = item;
+
+            if (item != null)
+                item.PropertyChanged += UpdatePropertyDependencies;
         }
     }
 }

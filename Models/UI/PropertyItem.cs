@@ -1,9 +1,5 @@
 ﻿using BauphysikToolWPF.Services.Application;
 using System;
-using System.ComponentModel;
-using System.Drawing.Imaging;
-using System.Globalization;
-using System.Windows.Controls;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.UI

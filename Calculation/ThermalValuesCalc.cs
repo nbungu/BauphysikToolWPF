@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.Calculation
         private readonly Dictionary<int, Rectangle> _areaRectangleMapping = new Dictionary<int, Rectangle>();
         private readonly Dictionary<int, double> _areaSharesMapping = new Dictionary<int, double>();
         
-        public Element Element { get; set; } = new Element();
+        public Element? Element { get; }
         public double Ti { get; set; }
         public double Te { get; set; }
         public double Rsi { get; set; }

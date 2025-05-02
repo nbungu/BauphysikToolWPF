@@ -46,14 +46,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             //    _tempCalc.CalculateHomogeneous();
             //    _tempCalc.CalculateTemperatureCurve();
             //}
-            _tempCalc = new TemperatureCurveCalc()
-            {
-                Element = Session.SelectedElement,
-                Rsi = Session.Rsi,
-                Rse = Session.Rse,
-                Ti = Session.Ti,
-                Te = Session.Te
-            };
+            _tempCalc = new TemperatureCurveCalc(Session.SelectedElement, Session.Rsi, Session.Rse, Session.Ti, Session.Te);
+            //{
+            //    Element = Session.SelectedElement,
+            //    Rsi = Session.Rsi,
+            //    Rse = Session.Rse,
+            //    Ti = Session.Ti,
+            //    Te = Session.Te
+            //};
             _tempCalc.CalculateHomogeneous();
             _tempCalc.CalculateTemperatureCurve();
         }

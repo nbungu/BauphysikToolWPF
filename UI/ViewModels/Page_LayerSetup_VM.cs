@@ -370,7 +370,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private void UpdateRecalculateFlag()
         {
-            Session.Recalculate = true;
+            Session.SelectedElement.Recalculate = true;
         }
 
         // To also trigger the SelectedLayerChanged event for other subscribers

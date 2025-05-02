@@ -47,16 +47,16 @@ namespace BauphysikToolWPF.UI.ViewModels
             //    _glaser.CalculateTemperatureCurve(); // Temperaturkurve
             //    _glaser.CalculateGlaser(); // Glaser Kurve
             //}
-            _glaser = new GlaserCalc()
-            {
-                Element = Session.SelectedElement,
-                Rsi = Session.Rsi,
-                Rse = Session.Rse,
-                Ti = Session.Ti,
-                Te = Session.Te,
-                RelFi = Session.RelFi,
-                RelFe = Session.RelFe
-            };
+            _glaser = new GlaserCalc(Session.SelectedElement, Session.Rsi, Session.Rse, Session.Ti, Session.Te, Session.RelFi, Rel_Fe);
+            //{
+            //    Element = Session.SelectedElement,
+            //    Rsi = Session.Rsi,
+            //    Rse = Session.Rse,
+            //    Ti = Session.Ti,
+            //    Te = Session.Te,
+            //    RelFi = Session.RelFi,
+            //    RelFe = Session.RelFe
+            //};
             _glaser.CalculateHomogeneous(); // Bauteil berechnen
             _glaser.CalculateTemperatureCurve(); // Temperaturkurve
             _glaser.CalculateGlaser(); // Glaser Kurve
