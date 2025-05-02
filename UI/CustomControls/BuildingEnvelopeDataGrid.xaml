@@ -34,9 +34,9 @@
                     x:Name="HeaderBorder"
                     Background="{TemplateBinding Background}"
                     BorderBrush="{StaticResource PrimaryDarkBrush}"
-                    BorderThickness="1,0,1,2"
-                    Margin="-1,0,0,0"
-                    Padding="6"
+                    BorderThickness="0,0,1,2"
+                    Margin="0"
+                    Padding="4"
                     Tag="{TemplateBinding Tag}">
                     <Grid>
                         <Grid.RowDefinitions>
@@ -143,14 +143,14 @@
                     <DataGridCheckBoxColumn.EditingElementStyle>
                         <Style TargetType="CheckBox" BasedOn="{StaticResource DataGridCheckBox}">
                             <Setter Property="Margin" Value="0,0,2,0"/>
+
                         </Style>
                     </DataGridCheckBoxColumn.EditingElementStyle>
                     <DataGridCheckBoxColumn.HeaderStyle>
                         <Style TargetType="DataGridColumnHeader">
                             <Setter Property="Padding" Value="0"/>
                             <Setter Property="BorderBrush" Value="Black"/>
-                            <Setter Property="BorderThickness" Value="1,0,0,2"/>
-                            <Setter Property="Margin" Value="-1,0,0,0"/>
+                            <Setter Property="BorderThickness" Value="0,0,1,2"/>
                             <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
                         </Style>
                     </DataGridCheckBoxColumn.HeaderStyle>
@@ -165,9 +165,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="textData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -188,9 +187,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="textData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -231,9 +229,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -314,9 +311,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -358,9 +354,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -382,9 +377,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -406,9 +400,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -430,9 +423,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -454,9 +446,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -478,9 +469,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>
@@ -502,9 +492,8 @@
                         </Style>
                     </DataGridTextColumn.ElementStyle>
                     <DataGridTextColumn.EditingElementStyle>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+                        <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
                             <Setter Property="VerticalAlignment" Value="Center"/>
-                            <Setter Property="HorizontalContentAlignment" Value="Left"/>
                             <EventSetter Event="PreviewTextInput" Handler="textData_PreviewTextInput"/>
                         </Style>
                     </DataGridTextColumn.EditingElementStyle>

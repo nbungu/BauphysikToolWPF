@@ -57,20 +57,6 @@ namespace BauphysikToolWPF.UI.CustomControls
                 }
             }
         }
-
-        //private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (sender is ComboBox comboBox)
-        //    {
-        //        if (comboBox.IsReadOnly) return;
-
-        //        var propertyItem = comboBox.DataContext as IPropertyItem ?? null;
-        //        if (comboBox.SelectedItem != null && propertyItem != null)
-        //        {
-        //            propertyItem.Value = comboBox.SelectedItem;
-        //        }
-        //    }
-        //}
         private void ComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (sender is ComboBox comboBox)
@@ -84,7 +70,6 @@ namespace BauphysikToolWPF.UI.CustomControls
                 }
             }
         }
-
         private void CheckBox_Click(object sender, RoutedEventArgs e)
         {
             if (sender is CheckBox checkBox)

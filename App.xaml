@@ -481,14 +481,18 @@
         <Style x:Key="{x:Type TextBox}" TargetType="{x:Type TextBox}">
             <!--These setters are for the default appearance-->
             <Setter Property="MinWidth" Value="48"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="MinHeight" Value="24"/>
+            <Setter Property="MaxHeight" Value="48"/>
             <Setter Property="MaxLength" Value="80"/>
+            <Setter Property="Padding" Value="2,0,0,0"/>
             <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryDarkBrush}"/>
+            <EventSetter Event="PreviewMouseLeftButtonDown" Handler="TextBox_PreviewMouseLeftButtonDown"/>
+            <EventSetter Event="GotKeyboardFocus" Handler="TextBox_GotKeyboardFocus"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type TextBoxBase}">
@@ -499,14 +503,42 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Cursor" Value="Arrow"/>
+                    <Setter Property="Foreground" Value="Gray"/>
+                    <Setter Property="Focusable" Value="False"/>
+                </Trigger>
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
                 </Trigger>
                 <Trigger Property="IsKeyboardFocusWithin" Value="True">
                     <Setter Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}"/>
                 </Trigger>
+                <!--
                 <DataTrigger Binding="{Binding Text, RelativeSource={RelativeSource Self}}" Value="">
                     <Setter Property="Background" Value="LightGoldenrodYellow"/>
+                </DataTrigger>
+                -->
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DataGridTextBox" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type TextBoxBase}">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="0" BorderThickness="0">
+                            <ScrollViewer Margin="0" x:Name="PART_ContentHost" IsEnabled="{TemplateBinding IsEnabled}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsReadonly}" Value="True">
+                    <Setter Property="Cursor" Value="Arrow"/>
+                    <Setter Property="Focusable" Value="False"/>
+                    <Setter Property="Background" Value="Transparent"/>
                 </DataTrigger>
             </Style.Triggers>
         </Style>

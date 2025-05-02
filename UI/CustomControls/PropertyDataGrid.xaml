@@ -25,7 +25,7 @@
         <Style x:Key="PropertyDataGridStyle" TargetType="{x:Type DataGrid}">
             <Setter Property="AutoGenerateColumns" Value="False"/>
             <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="1,1,1,0"/>
+            <Setter Property="BorderThickness" Value="1,1,0,0"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
             <Setter Property="SelectionMode" Value="Single" />
             <Setter Property="ClipToBounds" Value="True" />
@@ -42,42 +42,12 @@
             <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource PrimaryBorderBrush}"/>
         </Style>
 
-        <!-- TODO: TEST BasedOn="{StaticResource {x:Type TextBox}}"-->
-        <Style x:Key="DataGridTextBox" TargetType="TextBox">
-            <Setter Property="MinWidth" Value="32"/>
-            <Setter Property="MinHeight" Value="24"/>
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="VerticalAlignment" Value="Stretch"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="Padding" Value="2,0,0,0"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type TextBoxBase}">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="0" BorderThickness="0">
-                            <ScrollViewer Margin="0" x:Name="PART_ContentHost" IsEnabled="{TemplateBinding IsEnabled}"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-            <Style.Triggers>
-                <DataTrigger Binding="{Binding IsReadonly}" Value="True">
-                    <Setter Property="Cursor" Value="Arrow"/>
-                    <Setter Property="Focusable" Value="False"/>
-                </DataTrigger>
-                <Trigger Property="IsEnabled" Value="False">
-                    <Setter Property="Foreground" Value="Gray"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
         <Style x:Key="DataGridRowStyle" TargetType="{x:Type DataGridRow}">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Focusable" Value="False"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
-            <Setter Property="Margin" Value="-1,0,0,0"/>
+            <Setter Property="Margin" Value="0,0,0,0"/>
             <Setter Property="Padding" Value="0,0,0,0"/>
         </Style>
         
@@ -86,7 +56,7 @@
             <Setter Property="Foreground" Value="Black" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0,0,0,0" />
-            <Setter Property="Margin" Value="1,0,-1,0" />
+            <Setter Property="Margin" Value="0,0,0,0" />
             <Setter Property="IsEditing" Value="False" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
@@ -164,6 +134,7 @@
                             <ContentControl Content="{Binding}">
                                 <ContentControl.ContentTemplateSelector>
                                     <ui:PropertyValueTemplateSelector>
+
                                         <ui:PropertyValueTemplateSelector.TextBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>
@@ -190,11 +161,28 @@
                                                                             DenominatorText="{Binding UnitDenominatorText}"
                                                                             VerticalAlignment="Stretch"
                                                                             Foreground="{StaticResource PrimaryBorderBrush}"
-                                                                            Margin="4,0,8,0"
-                                                                            FontWeight="Normal"/>
+                                                                            Margin="4,-2,8,-2"
+                                                                            FontWeight="Normal">
+                                                        <controls:FractionLabel.Style>
+                                                            <Style TargetType="controls:FractionLabel">
+                                                                <Setter Property="Visibility" Value="Visible"/>
+                                                                <Style.Triggers>
+                                                                    <MultiDataTrigger>
+                                                                        <MultiDataTrigger.Conditions>
+                                                                            <Condition Binding="{Binding UnitCounterText}" Value=""/>
+                                                                            <Condition Binding="{Binding UnitDenominatorText}" Value=""/>
+                                                                        </MultiDataTrigger.Conditions>
+                                                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                                                    </MultiDataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </controls:FractionLabel.Style>
+                                                    </controls:FractionLabel>
                                                 </Grid>
                                             </DataTemplate>
                                         </ui:PropertyValueTemplateSelector.TextBoxTemplate>
+
+
                                         <ui:PropertyValueTemplateSelector.ComboBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>

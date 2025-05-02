@@ -5,6 +5,8 @@ using System;
 using System.IO;
 using System.Windows;
 using BauphysikToolWPF.Repositories;
+using System.Windows.Controls;
+using System.Windows.Input;
 
 namespace BauphysikToolWPF
 {
@@ -72,8 +74,27 @@ namespace BauphysikToolWPF
             Logger.LogInfo($"Closing Application with ExitCode: {e.ApplicationExitCode}");
         }
 
+        private void TextBox_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var textBox = sender as TextBox;
+            if (textBox != null && !textBox.IsKeyboardFocusWithin)
+            {
+                e.Handled = true;
+                textBox.Focus();
+            }
+        }
+        private void TextBox_GotKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (sender is TextBox textBox)
+            {
+                textBox.SelectAll();
+            }
+        }
+
         // cmd test:
         //
         // "C:\Users\arnes\source\repos\BauphysikToolWPF\bin\Debug\net8.0-windows10.0.22621.0\BauphysikToolWPF.exe" "C:\Users\arnes\Desktop\project.btk"
+
+
     }
 }
