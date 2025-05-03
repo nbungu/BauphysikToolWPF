@@ -248,7 +248,7 @@
                 </ItemsControl>
             </ScrollViewer>
             <Label Grid.Row="2" Visibility="{Binding NoElementsVisibility}"
-                   Content="Keine Bauteile angelegt: Bitte neue Bauteile hinzufügen!"
+                   Content="Keine Bauteile vorhanden: Neues Bauteil hinzufügen!"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    FontStyle="Italic"
@@ -294,11 +294,11 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96" FontWeight="DemiBold"/>
-                            <Label Content="{Binding SelectedElement.UValue, Converter={StaticResource NumberConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left" FontWeight="DemiBold"/>
+                            <Label Content="{Binding SelectedElement.UValue, Converter={StaticResource NumberConverter}, ConverterParameter=3}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left" FontWeight="DemiBold"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="sd-Wert:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.SdThickness, Converter={StaticResource NumberConverter}}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
+                            <Label Content="{Binding SelectedElement.SdThickness, Converter={StaticResource NumberConverter}, ConverterParameter=1}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Content="m':" HorizontalAlignment="Left" Width="96"/>

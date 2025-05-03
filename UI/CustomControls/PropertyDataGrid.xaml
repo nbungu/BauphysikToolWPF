@@ -121,7 +121,7 @@
                                 <!--
                                 <Rectangle Grid.Column="0" x:Name="rectangle" Fill="Red" Margin="0" Width="2" VerticalAlignment="Stretch" HorizontalAlignment="Left" Visibility="Visible"/>
                                 -->
-                                <Label Grid.Column="0" Content="{Binding Name}" FontWeight="Normal" ToolTip="{Binding Comment}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
+                                <Label Grid.Column="0" Content="{Binding Name}" FontWeight="Regular" ToolTip="{Binding Comment}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
                                 <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBaseText}" SubscriptText="{Binding SymbolSubscriptText}" VerticalAlignment="Stretch" Margin="0,0,8,0" FontWeight="DemiBold" Foreground="{StaticResource PrimaryDarkBrush}"/>
                             </Grid>
                         </DataTemplate>

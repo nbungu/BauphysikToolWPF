@@ -6,10 +6,10 @@ namespace BauphysikToolWPF.UI
 {
     public partial class AddElementWindow : Window
     {
-        public static bool EditExistingElement;
-        public AddElementWindow(bool editExsiting = false)
+        public static int TargetElementInternalId;
+        public AddElementWindow(int targetElementInternalId = -1)
         {
-            EditExistingElement = editExsiting;
+            TargetElementInternalId = targetElementInternalId;
             InitializeComponent();
         }
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)

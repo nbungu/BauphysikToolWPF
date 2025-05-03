@@ -28,14 +28,14 @@ namespace BauphysikToolWPF.Models.UI
             PropertyChanged?.Invoke(); // if PropertyChanged is not null then call delegate
         }
 
-        //------Variablen-----//
+        //------Fields-----//
 
         // _getter and _setter are delegates used to get and set the Value.
         private Func<T>? _getter;
         private Action<T>? _setter;
         private T _value;
 
-        //------Eigenschaften-----//
+        //------Properties-----//
 
         public object Value
         {
@@ -63,9 +63,8 @@ namespace BauphysikToolWPF.Models.UI
         public Symbol Symbol { get; set; }
         public Unit Unit { get; set; }
         public string Comment { get; set; } = string.Empty;
-
-        //------Not part of the Database-----//
         public bool IsReadonly { get; set; } = true;
+        public bool IsHighlighted { get; set; } = false;
         public int DecimalPlaces { get; set; } = 2;
         public bool TriggerPropertyChanged { get; set; } = true;
         public object[] PropertyValues { get; set; } = Array.Empty<object>();

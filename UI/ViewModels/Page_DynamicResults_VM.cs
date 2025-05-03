@@ -33,27 +33,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 
-            //if (!_dynamicTempCalc.IsValid || Session.Recalculate)
-            //{
-            //    _dynamicTempCalc = new DynamicTempCalc()
-            //    {
-            //        Element = Session.SelectedElement,
-            //        Rsi = Session.Rsi,
-            //        Rse = Session.Rse,
-            //        Ti = Session.Ti,
-            //        Te = Session.Te
-            //    };
-            //    _dynamicTempCalc.CalculateHomogeneous();
-            //    _dynamicTempCalc.CalculateDynamicValues();
-            //}
             _dynamicTempCalc = new DynamicTempCalc(Session.SelectedElement, Session.Rsi, Session.Rse, Session.Ti, Session.Te);
-            //{
-            //    Element = Session.SelectedElement,
-            //    Rsi = Session.Rsi,
-            //    Rse = Session.Rse,
-            //    Ti = Session.Ti,
-            //    Te = Session.Te
-            //};
             _dynamicTempCalc.CalculateHomogeneous();
             _dynamicTempCalc.CalculateDynamicValues();
         }
@@ -75,7 +55,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(editExsiting: true).ShowDialog();
+            new AddElementWindow(Session.SelectedElementId).ShowDialog();
         }
 
         /*
@@ -83,9 +63,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Initialized and Assigned with Default Values
          */
-
-        [ObservableProperty]
-        private Element _selectedElement = Session.SelectedElement;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(DataPoints_i))]
@@ -120,6 +97,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Not Observable, because Triggered and Changed by the Values above
          */
+
+        public Element SelectedElement => Session.SelectedElement;
 
         // Vertical Cut
         public List<IDrawingGeometry> VerticalCutDrawing => _verticalCut.DrawingGeometries;

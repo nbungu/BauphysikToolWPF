@@ -484,6 +484,7 @@
             <Setter Property="MinHeight" Value="24"/>
             <Setter Property="MaxHeight" Value="48"/>
             <Setter Property="MaxLength" Value="80"/>
+            <Setter Property="FontWeight" Value="Regular"/>
             <Setter Property="Padding" Value="2,0,0,0"/>
             <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
@@ -535,11 +536,15 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
+                <DataTrigger Binding="{Binding IsHighlighted}" Value="True">
+                    <Setter Property="FontWeight" Value="Bold"/>
+                </DataTrigger>
                 <DataTrigger Binding="{Binding IsReadonly}" Value="True">
                     <Setter Property="Cursor" Value="Arrow"/>
                     <Setter Property="Focusable" Value="False"/>
                     <Setter Property="Background" Value="Transparent"/>
                 </DataTrigger>
+
             </Style.Triggers>
         </Style>
 

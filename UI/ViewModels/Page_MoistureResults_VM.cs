@@ -1,7 +1,7 @@
 ﻿using BauphysikToolWPF.Calculation;
 using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -13,7 +13,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models.UI;
+using System.Windows;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -31,32 +31,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 
-            //if (!_glaser.IsValid || Session.Recalculate)
-            //{
-            //    _glaser = new GlaserCalc()
-            //    {
-            //        Element = Session.SelectedElement,
-            //        Rsi = Session.Rsi,
-            //        Rse = Session.Rse,
-            //        Ti = Session.Ti,
-            //        Te = Session.Te,
-            //        RelFi = Session.RelFi,
-            //        RelFe = Session.RelFe
-            //    };
-            //    _glaser.CalculateHomogeneous(); // Bauteil berechnen
-            //    _glaser.CalculateTemperatureCurve(); // Temperaturkurve
-            //    _glaser.CalculateGlaser(); // Glaser Kurve
-            //}
             _glaser = new GlaserCalc(Session.SelectedElement, Session.Rsi, Session.Rse, Session.Ti, Session.Te, Session.RelFi, Rel_Fe);
-            //{
-            //    Element = Session.SelectedElement,
-            //    Rsi = Session.Rsi,
-            //    Rse = Session.Rse,
-            //    Ti = Session.Ti,
-            //    Te = Session.Te,
-            //    RelFi = Session.RelFi,
-            //    RelFe = Session.RelFe
-            //};
             _glaser.CalculateHomogeneous(); // Bauteil berechnen
             _glaser.CalculateTemperatureCurve(); // Temperaturkurve
             _glaser.CalculateGlaser(); // Glaser Kurve
@@ -79,7 +54,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(editExsiting: true).ShowDialog();
+            new AddElementWindow(Session.SelectedElementId).ShowDialog();
         }
 
         /*
@@ -88,15 +63,16 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Initialized and Assigned with Default Values
          */
 
-        [ObservableProperty]
-        private Element _selectedElement = Session.SelectedElement;
+
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
          * Not Observable, because Triggered and Changed by the Values above
          */
-
+        public Element SelectedElement => Session.SelectedElement;
+        public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility ResultsChartVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         public double Ti => _glaser.Ti;
         public double Te => _glaser.Te;
         public double Rel_Fi => _glaser.RelFi;

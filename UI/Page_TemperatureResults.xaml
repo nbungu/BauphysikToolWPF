@@ -88,8 +88,8 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"/>
-            <ColumnDefinition Width="360"/>
+            <ColumnDefinition Width="*" MinWidth="320"/>
+            <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
@@ -113,13 +113,13 @@
         </Border>
         
         <!--Bottom Left-->
-        <Grid Grid.Row="1" Margin="16">
+        <Grid Grid.Row="1" Grid.Column="0" Margin="16">
             <Grid.RowDefinitions>
                 <RowDefinition Height="32"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <Border Grid.Row="0" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" CornerRadius="8">
+            <Border Grid.Row="0" Visibility="{Binding ResultsChartVisibility}" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" CornerRadius="8">
                 <Grid>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
                         <Label Content="Innen" FontWeight="Bold"/>
@@ -137,10 +137,9 @@
                     </StackPanel>
                 </Grid>
             </Border>
-
-            <Border Grid.Row="1" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0" CornerRadius="8">
+            <Label Grid.Row="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Ergebnisse verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Border Grid.Row="1" Visibility="{Binding ResultsChartVisibility}" BorderBrush="{StaticResource PrimaryBorderBrush}" Background="White" BorderThickness="1" SnapsToDevicePixels="True" ClipToBounds="True" Margin="0,4,0,0" CornerRadius="8">
                 <lvc:CartesianChart
-                    Grid.Row="1"
                     ClipToBounds="True"
                     Series="{Binding DataPoints}"
                     Sections="{Binding LayerSections}"
@@ -157,6 +156,14 @@
             </Border>
         </Grid>
 
+        <!--Grid Splitter-->
+        <controls:ExpandableGridSplitter Grid.Column="1" Grid.Row="1"
+                                         HorizontalAlignment="Left"
+                                         VerticalAlignment="Stretch"
+                                         Width="22"
+                                         Background="Transparent"
+                                         Margin="-11,16,0,16"/>
+
         <!--Bottom Right-->       
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
             <ListBox Style="{StaticResource OverviewListBoxStyle}"
@@ -165,6 +172,6 @@
                      ItemContainerStyle="{StaticResource OverviewItemContainerStyle}"
                      SnapsToDevicePixels="True"/>
         </Grid>
-        <GridSplitter Grid.Column="1" Grid.RowSpan="2" HorizontalAlignment="Left" Margin="-4,16,0,16" VerticalAlignment="Stretch" Width="8" Background="Transparent"/>
+
     </Grid>
 </UserControl>

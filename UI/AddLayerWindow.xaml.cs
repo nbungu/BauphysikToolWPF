@@ -15,7 +15,6 @@ namespace BauphysikToolWPF.UI
 
         public AddLayerWindow(int targetLayerInternalId = -1)
         {
-
             TargetLayerInternalId = targetLayerInternalId;
 
             InitializeComponent();

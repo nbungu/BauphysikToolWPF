@@ -55,7 +55,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             Session.SelectedElementId = -1;
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(editExsiting: false).ShowDialog();
+            new AddElementWindow().ShowDialog();
         }
 
         [RelayCommand]
@@ -63,7 +63,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             Session.SelectedElementId = selectedInternalId;
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(editExsiting: true).ShowDialog();
+            new AddElementWindow(Session.SelectedElementId).ShowDialog();
         }
 
         [RelayCommand]

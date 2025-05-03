@@ -118,7 +118,7 @@
                                              MaxHeight="800"/>
                 </ScrollViewer>
                 <Label  Grid.Row="1" Visibility="{Binding NoLayersVisibility}"
-                        Content="Keine Schicht angelegt: Bitte neue Schichten hinzufügen!"
+                        Content="Keine Schichten vorhanden: Schicht hinzufügen!"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
                         FontStyle="Italic"
@@ -139,6 +139,7 @@
 
                 <Label Grid.Column="0" Content="Innen" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                 <Label Grid.Column="0" Content="Außen" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
+                <Label Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                 
                 <!--Image-->
                 <Viewbox Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center">

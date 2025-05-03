@@ -42,6 +42,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Spacing = 18,
                     MaterialId = _targetLayer.MaterialId,
                     LayerNumber = _targetLayer.LayerNumber,
+                    IsEffective = _targetLayer.IsEffective,
                 };
 
             }
@@ -68,12 +69,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Trigger Event to Update Layer Window
             Session.OnSelectedLayerChanged();
             window.Close();
-        }
-
-        [RelayCommand]
-        private void ResetMaterialList()
-        {
-            SearchString = "";
         }
 
         // This method will be called whenever SelectedListViewItem changes

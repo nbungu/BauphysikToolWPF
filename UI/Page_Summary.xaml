@@ -65,6 +65,7 @@
 
             <Label Grid.Row="0" Content="Innen" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
             <Label Grid.Row="2" Content="Außen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
+            <Label Grid.Row="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
             <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
@@ -136,6 +137,7 @@
 
                 <Label Grid.Column="0" Content="Innen" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                 <Label Grid.Column="2" Content="Außen" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                <Label Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
                 <Viewbox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" >
                     <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
@@ -192,7 +194,7 @@
         </Grid>
 
         <!--Grid Splitter-->
-        <controls:ExpandableGridSplitter Grid.Column="1" Grid.Row="1" Grid.RowSpan="2"
+        <controls:ExpandableGridSplitter Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"
                                          HorizontalAlignment="Left"
                                          VerticalAlignment="Stretch"
                                          Width="22"

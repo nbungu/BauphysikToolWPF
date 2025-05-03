@@ -24,7 +24,7 @@
                 <GridViewColumn.CellTemplate>
                     <DataTemplate>
                         <Grid>
-                            <Rectangle x:Name="rectangle" Fill="{Binding Material.ColorCode}" Margin="-6,-4,0,-4" Width="8" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
+                            <Rectangle x:Name="rectangle" Fill="{Binding Material.ColorCode}" Margin="-6,-2,0,-2" Width="8" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
                             <Label x:Name="positionLabel" Content="{Binding LayerNumber}" FontWeight="DemiBold" Margin="4,0"/>
                         </Grid>
                         <DataTemplate.Triggers>
@@ -50,7 +50,7 @@
             <Setter Property="ToolTip" Value="{Binding}"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Margin" Value="0,0,0,0"/>
-            <Setter Property="Padding" Value="0,4,0,4"/>
+            <Setter Property="Padding" Value="0,2,0,2"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">

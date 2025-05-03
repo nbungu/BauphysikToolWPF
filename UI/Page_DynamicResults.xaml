@@ -189,19 +189,19 @@
                 </Grid.RowDefinitions>
 
                 <Label Content="Simulations-Randbedingungen - Innen" Grid.ColumnSpan="3" HorizontalAlignment="Left" FontWeight="Bold"/>
-                <Label Grid.Row="1" Content="Raumlufttemperatur" HorizontalAlignment="Left" Height="40"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="Raumlufttemperatur" HorizontalAlignment="Left" Height="40"/>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBox Text="{Binding Ti_Mean}" MaxLength="4"/>
+                    <TextBox Text="{Binding Ti_Mean}" MaxLength="4" Height="32"/>
                     <Label Content="°C"/>
                 </StackPanel>
-                <Label Grid.Row="2" Content="Temperaturamplitude" HorizontalAlignment="Left" Height="40"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="Temperaturamplitude" HorizontalAlignment="Left" Height="40"/>
                 <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBox Text="{Binding Ti_Amplitude}" MaxLength="3"/>
+                    <TextBox Text="{Binding Ti_Amplitude}" MaxLength="3" Height="32"/>
                     <Label Content="K"/>
                 </StackPanel>
-                <Label Grid.Row="3" Content="Übergangswiderstand" HorizontalAlignment="Left" Height="40" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                <Label Grid.Row="3" Grid.Column="0" Content="Übergangswiderstand" HorizontalAlignment="Left" Height="40" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
                 <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBox Text="0.13" MaxLength="3" IsEnabled="False" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                    <TextBox Text="0.13" MaxLength="3" IsEnabled="False" Foreground="{StaticResource PrimaryDarkMediumBrush}" Height="32"/>
                     <Label Content="W/m²K" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
                 </StackPanel>
             </Grid>
@@ -219,19 +219,19 @@
                 </Grid.RowDefinitions>
 
                 <Label Content="Simulations-Randbedingungen - Außen" Grid.ColumnSpan="2" HorizontalAlignment="Left" FontWeight="Bold"/>
-                <Label Grid.Row="1" Content="Außenlufttemperatur" HorizontalAlignment="Left" Height="40"/>
+                <Label Grid.Row="1" Grid.Column="0" Content="Außenlufttemperatur" HorizontalAlignment="Left" Height="40"/>
                 <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBox Text="{Binding Te_Mean}" MaxLength="4"/>
+                    <TextBox Text="{Binding Te_Mean}" MaxLength="4" Height="32"/>
                     <Label Content="°C"/>
                 </StackPanel>
-                <Label Grid.Row="2" Content="Temperaturamplitude" HorizontalAlignment="Left" Height="40"/>
+                <Label Grid.Row="2" Grid.Column="0" Content="Temperaturamplitude" HorizontalAlignment="Left" Height="40"/>
                 <StackPanel Grid.Row="2" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBox Text="{Binding Te_Amplitude}" MaxLength="3"/>
+                    <TextBox Text="{Binding Te_Amplitude}" MaxLength="3" Height="32"/>
                     <Label Content="K"/>
                 </StackPanel>
-                <Label Grid.Row="3" Content="Übergangswiderstand" HorizontalAlignment="Left" Height="40" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                <Label Grid.Row="3" Grid.Column="0" Content="Übergangswiderstand" HorizontalAlignment="Left" Height="40" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
                 <StackPanel Grid.Row="3" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
-                    <TextBox Text="0.04" MaxLength="3" IsEnabled="False" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                    <TextBox Text="0.04" MaxLength="3" IsEnabled="False" Foreground="{StaticResource PrimaryDarkMediumBrush}" Height="32"/>
                     <Label Content="W/m²K" Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
                 </StackPanel>
             </Grid>

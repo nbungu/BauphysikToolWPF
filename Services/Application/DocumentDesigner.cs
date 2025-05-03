@@ -35,7 +35,7 @@ namespace BauphysikToolWPF.Services.Application
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
             // Draw title
-            gfx.DrawString("5. Übersichtsliste: U- und R-Werte aller Bauteile", titleFont, XBrushes.Black,
+            gfx.DrawString("1. Übersichtsliste: U- und R-Werte aller Bauteile", titleFont, XBrushes.Black,
                 new XRect(0, 20, page.Width, 30),
                 XStringFormats.TopCenter);
 
@@ -47,17 +47,18 @@ namespace BauphysikToolWPF.Services.Application
             double cellHeight = 20;
             double maxWidth = page.Width - startX * 2;
 
-            // New headers and adjusted column widths
-            string[] headers = {
-                "Bauteil-\nnummer", "", "Bauteilbezeichnung", "Kategorie", "U-Wert\nGEG\nW/(m²K)",
-                "Ist-Wert", "Soll-Wert\nDIN 4108-2"
-            };
-            string[] secondRowHeaders = { "", "", "", "", "", "Wärmedurchlasswiderstand R\r\n(m²K/W)" }; // New row header for Wärmedurchlasswiderstand
+            var tf = new XTextFormatter(gfx);
 
-            double[] columnWidths = { 50, 30, 100, 60, 56, 72, 72 };
+            // New headers and adjusted column widths
+            string[] headers = { "Nr.", "Bauteilbezeichnung", "", "Kategorie", "U-Wert\nGEG\n[W/(m²K)]", "Wärmedurchlasswiderstand R\n[m²K/W]", "" };
+            string[] secondRowHeaders = { "", "", "", "", "", "Ist-Wert", "Soll-Wert\nDIN 4108-2" }; // New row header for Wärmedurchlasswiderstand
+
+            double[] columnProportions = { 24, 24, 120, 60, 56, 72, 72 }; // Original widths
+            double totalWeight = columnProportions.Sum();
+            double[] columnWidths = columnProportions.Select(p => p / totalWeight * maxWidth).ToArray();
 
             // Adjust data table size to match new header count
-            string[,] data = new string[elements.Count, headers.Length];
+            string[,] data = new string[elements.Count, secondRowHeaders.Length];
 
             for (int i = 0; i < elements.Count; i++)
             {
@@ -66,79 +67,89 @@ namespace BauphysikToolWPF.Services.Application
                 data[i, 1] = ""; // Color visual only
                 data[i, 2] = el.Name; // Bauteilbezeichnung
                 data[i, 3] = el.Construction.TypeName; // Kategorie
-                data[i, 4] = el.UValue.ToString("F3", CultureInfo.InvariantCulture);
-                data[i, 5] = $"R = {el.RTotValue:F2}";
+                data[i, 4] = el.UValue.ToString("F3", CultureInfo.CurrentCulture);
+                data[i, 5] = $"R = {el.RTotValue.ToString("F2", CultureInfo.CurrentCulture)}";
                 data[i, 6] = "R ≥ 1,20";
             }
 
             // Draw table headers with line break support
             double currentX = startX;
 
-            // Draw first row of headers
+            // Draw first row of headers (spanning columns 5 and 6 for Wärmedurchlasswiderstand)
             for (int i = 0; i < headers.Length; i++)
             {
-                var headerRect = new XRect(currentX, startY, columnWidths[i], cellHeight * 2); // taller header for first row
-                gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+                if (headers[i] == "") continue; // Skip empty header
 
-                var tf = new XTextFormatter(gfx);
+                if (i == 1)
+                {
+                    var headerRect = new XRect(currentX, startY, columnWidths[i] + columnWidths[i+1], cellHeight * 3);
+                    gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+                    tf.Alignment = XParagraphAlignment.Center;
+                    var contentRect = new XRect(currentX + 2, startY + 4, headerRect.Width - 4, headerRect.Height - 8);
+                    tf.DrawString(headers[i], tableHeaderFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                    currentX += columnWidths[i] + columnWidths[i+1]; 
+                }
+                // Span "Wärmedurchlasswiderstand" across columns 4 and 5 (columns 5 and 6 span across the two cells)
+                else if (i == 5)
+                {
+                    var headerRect = new XRect(currentX, startY, columnWidths[i] + columnWidths[i+1], cellHeight * 1.5);
+                    gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+                    tf.Alignment = XParagraphAlignment.Center;
+                    var contentRect = new XRect(currentX + 2, startY + 4, headerRect.Width - 4, headerRect.Height - 8);
+                    tf.DrawString(headers[i], tableHeaderFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                    currentX += columnWidths[i] + columnWidths[i+1]; // Skip columns 4 and 5 since they last
+                }
+                else
+                {
+                    var headerRect = new XRect(currentX, startY, columnWidths[i], cellHeight * 3); // taller header for first row
+                    gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+                    var contentRect = new XRect(currentX + 2, startY + 4, headerRect.Width - 4, headerRect.Height - 8);
+                    tf.Alignment = XParagraphAlignment.Center;
+                    tf.DrawString(headers[i], tableHeaderFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                    currentX += columnWidths[i];
+                }
+            }
+            // Draw second row of headers 
+            currentX = startX;
+            for (int i = 0; i < secondRowHeaders.Length; i++)
+            {
+                if (secondRowHeaders[i] == ""){
+                    currentX += columnWidths[i]; // Skip empty header
+                    continue;
+                }
+
+                var headerRect = new XRect(currentX, startY + cellHeight * 1.5, columnWidths[i], cellHeight * 1.5); // normal height for second row
+                gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+                var contentRect = new XRect(headerRect.X + 2, headerRect.Y + 4, headerRect.Width - 4, headerRect.Height - 8);
                 tf.Alignment = XParagraphAlignment.Center;
-                tf.DrawString(headers[i], tableHeaderFont, XBrushes.Black, headerRect, XStringFormats.TopLeft);
+                tf.DrawString(secondRowHeaders[i], tableHeaderFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
 
                 currentX += columnWidths[i];
             }
 
-            // Draw second row of headers (spanning columns 5 and 6 for Wärmedurchlasswiderstand)
-            currentX = startX;
-            for (int i = 0; i < secondRowHeaders.Length; i++)
-            {
-                var headerRect = new XRect(currentX, startY + cellHeight * 2, columnWidths[i], cellHeight); // normal height for second row
-                gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
-
-                var tf = new XTextFormatter(gfx);
-                tf.Alignment = XParagraphAlignment.Center;
-                tf.DrawString(secondRowHeaders[i], tableHeaderFont, XBrushes.Black, headerRect, XStringFormats.TopLeft);
-
-                // Span "Wärmedurchlasswiderstand" across columns 5 and 6 (columns 5 and 6 span across the two cells)
-                if (i == 5)
-                {
-                    var spanRect = new XRect(currentX, startY + cellHeight * 2, columnWidths[5] + columnWidths[6], cellHeight);
-                    gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, spanRect);
-                    tf.Alignment = XParagraphAlignment.Center;
-                    tf.DrawString("Wärmedurchlasswiderstand", tableHeaderFont, XBrushes.Black, spanRect, XStringFormats.TopLeft);
-                    currentX += columnWidths[5] + columnWidths[6]; // Skip columns 5 and 6 since they are merged
-                }
-                else
-                {
-                    currentX += columnWidths[i];
-                }
-            }
-
             // Draw table data with centering and wrapping
-            double currentY = startY + (cellHeight * 2) + cellHeight; // Move below both header rows
+            double currentY = startY + (cellHeight * 3); // Move below both header rows
             for (int row = 0; row < data.GetLength(0); row++)
             {
                 currentX = startX;
                 double rowHeight = cellHeight;
 
                 // Measure row height for wrapping in Bauteilbezeichnung (column 3 after adding "Farbe")
-                var tf = new XTextFormatter(gfx);
+                //var tf = new XTextFormatter(gfx);
                 var nameText = data[row, 3];
-                var nameRect = new XRect(currentX + columnWidths[0] + columnWidths[1] + columnWidths[2] + 2, currentY + 3, columnWidths[3] - 4, double.MaxValue);
                 var nameSize = gfx.MeasureString(nameText, tableBodyFont);
                 var lines = (int)Math.Ceiling(nameSize.Width / columnWidths[3]);
                 rowHeight = Math.Max(rowHeight, lines * 10);
 
                 // Draw each column
-                for (int col = 0; col < headers.Length; col++)
+                for (int col = 0; col < secondRowHeaders.Length; col++)
                 {
                     var rect = new XRect(currentX, currentY, columnWidths[col], rowHeight);
                     gfx.DrawRectangle(XPens.Black, rect);
-
-                    var contentRect = new XRect(currentX + 2, currentY + 3, columnWidths[col] - 4, rowHeight - 6);
-                    tf = new XTextFormatter(gfx);
+                    
 
                     // Center-align everything except Bauteilbezeichnung (for wrapping)
-                    tf.Alignment = (col == 3) ? XParagraphAlignment.Left : XParagraphAlignment.Center;
+                    tf.Alignment = col == 2 ? XParagraphAlignment.Left : XParagraphAlignment.Center;
 
                     // Special case: draw color box for column 1
                     if (col == 1)
@@ -149,10 +160,11 @@ namespace BauphysikToolWPF.Services.Application
                         // Convert to PdfSharp XColor
                         XColor fillColor = XColor.FromArgb(mediaColor.A, mediaColor.R, mediaColor.G, mediaColor.B);
 
-                        gfx.DrawRectangle(new XSolidBrush(fillColor), new XRect(currentX + 5, currentY + 5, 20, rowHeight - 10));
+                        gfx.DrawRectangle(new XSolidBrush(fillColor), new XRect(currentX+0.5, currentY+0.5, columnWidths[col]-1, rowHeight-1));
                     }
                     else
                     {
+                        var contentRect = new XRect(currentX + 4, currentY + 4, columnWidths[col] - 8, rowHeight - 8);
                         tf.DrawString(data[row, col], tableBodyFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
                     }
 
@@ -170,8 +182,6 @@ namespace BauphysikToolWPF.Services.Application
                     currentY = startY;
                 }
             }
-
-            //
 
             foreach (var element in project.Elements)
             {
@@ -221,6 +231,7 @@ namespace BauphysikToolWPF.Services.Application
             XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
             XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
             XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
+            XFont bodyFontItalic = new XFont("Verdana", 9, XFontStyleEx.Italic);
             //XFont bodyFontBold = new XFont("Verdana", 9, XFontStyleEx.Bold);
             XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
             XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
@@ -242,7 +253,7 @@ namespace BauphysikToolWPF.Services.Application
                     new XUnitPt(page.Width - 100), new XUnitPt(30)), XStringFormats.TopLeft);
             startY += 16;
 
-            gfx.DrawString($"Bauteiltyp: \"{element.Construction.TypeName}\"", bodyFont, XBrushes.Black,
+            gfx.DrawString($"Bauteiltyp: \"{element.Construction.TypeName}\"", bodyFontItalic, XBrushes.Black,
                 new XRect(new XUnitPt(50), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 32;
@@ -287,6 +298,7 @@ namespace BauphysikToolWPF.Services.Application
             }
 
             // Draw Layer Information
+            startY += 8; // Extra padding
             gfx.DrawString("Querschnitt", titleFontSm, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(30)), XStringFormats.TopLeft);
@@ -300,41 +312,52 @@ namespace BauphysikToolWPF.Services.Application
             #region Image
 
             // Draw image from Image property
-            double imageHeight;
 
             var imgToDraw = element.DocumentImage;
             // Use small image if big one is not available
             if (imgToDraw.Length == 0) imgToDraw = element.Image;
 
-            using (MemoryStream ms = new MemoryStream(imgToDraw, 0, imgToDraw.Length, false, true))
+            if (imgToDraw.Length == 0)
             {
-                ms.Position = 0; // Ensure the stream position is at the start
-                XImage image = XImage.FromStream(ms);
+                // No image available, skip drawing
+                startY += 16;
+                gfx.DrawString("Keine Abbildung verfügbar", bodyFontItalic, XBrushes.Black,
+                    new XRect(new XUnitPt(70 + 35), new XUnitPt(startY),
+                        new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
+                startY += 32;
+            }
+            else
+            {
+                double imageHeight;
+                using (MemoryStream ms = new MemoryStream(imgToDraw, 0, imgToDraw.Length, false, true))
+                {
+                    ms.Position = 0; // Ensure the stream position is at the start
+                    XImage image = XImage.FromStream(ms);
 
-                // Get the original width and height of the image
-                double originalWidth = image.PixelWidth;
-                double originalHeight = image.PixelHeight;
+                    // Get the original width and height of the image
+                    double originalWidth = image.PixelWidth;
+                    double originalHeight = image.PixelHeight;
 
-                // Define the maximum dimensions based on page size and desired margins
-                double maxWidth = page.Width - 100; // Leave 50 units of margin on each side
-                double maxHeight = page.Height - 200; // Leave 100 units of margin at top and bottom
+                    // Define the maximum dimensions based on page size and desired margins
+                    double maxWidth = page.Width - 100; // Leave 50 units of margin on each side
+                    double maxHeight = page.Height - 200; // Leave 100 units of margin at top and bottom
 
-                // Calculate the scaling factor
-                double scale = Math.Min(maxWidth / originalWidth, maxHeight / originalHeight);
+                    // Calculate the scaling factor
+                    double scale = Math.Min(maxWidth / originalWidth, maxHeight / originalHeight);
 
-                // Scale the width and height based on the scaling factor
-                double scaledWidth = originalWidth * scale;
-                double scaledHeight = originalHeight * scale;
+                    // Scale the width and height based on the scaling factor
+                    double scaledWidth = originalWidth * scale;
+                    double scaledHeight = originalHeight * scale;
 
-                // Draw the image with scaled dimensions
-                gfx.DrawImage(image, 70, startY, scaledWidth, scaledHeight);
+                    // Draw the image with scaled dimensions
+                    gfx.DrawImage(image, 70, startY, scaledWidth, scaledHeight);
 
-                // Update imageHeight for subsequent content positioning
-                imageHeight = scaledHeight + 10; // Add margin below the image
+                    // Update imageHeight for subsequent content positioning
+                    imageHeight = scaledHeight + 10; // Add margin below the image
+                }
+                startY += imageHeight + 8;
             }
             
-            startY += imageHeight + 20;
-
             #endregion
 
             // Draw Layer Information
@@ -416,7 +439,8 @@ namespace BauphysikToolWPF.Services.Application
             currentRow += 1;
             for (int i = 0; i < layers.Count; i++)
             {
-                data[currentRow, 0] = $"0{i+1} - {layers[i].Material.Name}";
+                string numberLayer = i+1 < 10 ? $"0{i + 1}" : $"{i + 1}";
+                data[currentRow, 0] = $"{numberLayer} - {layers[i].Material.Name}";
                 data[currentRow, 1] = layers[i].Thickness.ToString("F2");
                 data[currentRow, 2] = layers[i].Material.BulkDensity.ToString("F0");
                 data[currentRow, 3] = layers[i].AreaMassDensity.ToString("F1");
@@ -426,7 +450,8 @@ namespace BauphysikToolWPF.Services.Application
 
                 if (layers[i].HasSubConstructions)
                 {
-                    data[currentRow, 0] = $"0{i + 1}b - {layers[i].SubConstruction?.Material.Name}";
+                    string numberSubC = i+1 < 10 ? $"0{i + 1}b" : $"{i + 1}b";
+                    data[currentRow, 0] = $"{numberSubC} - {layers[i].SubConstruction?.Material.Name}";
                     data[currentRow, 1] = layers[i].SubConstruction?.Thickness.ToString("F2") ?? "";
                     data[currentRow, 2] = layers[i].SubConstruction?.Material.BulkDensity.ToString("F0") ?? "";
                     data[currentRow, 3] = layers[i].SubConstruction?.AreaMassDensity.ToString("F1") ?? "";

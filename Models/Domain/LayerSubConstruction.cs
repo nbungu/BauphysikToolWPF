@@ -27,8 +27,8 @@ namespace BauphysikToolWPF.Models.Domain
         public SubConstructionDirection Direction { get; set; }
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-        // 1:1 relationship with Material
         public int MaterialId { get; set; } = -1;
+        public int LayerNumber { get; set; } = -1;
 
         #endregion
 
@@ -36,10 +36,7 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public int InternalId { get; set; } = -1;
-
-        [JsonIgnore]
-        public int LayerNumber { get; set; } = -1;
-
+        
         [JsonIgnore]
         public IEnumerable<IPropertyItem> PropertyBag => new List<IPropertyItem>()
         {
@@ -59,7 +56,7 @@ namespace BauphysikToolWPF.Models.Domain
                 SymbolSubscriptText = $"{LayerNumber}b"
             },
             new PropertyItem<double>(Symbol.AreaMassDensity, () => AreaMassDensity),
-            new PropertyItem<double>(Symbol.SdThickness, () => Sd_Thickness),
+            new PropertyItem<double>(Symbol.SdThickness, () => Sd_Thickness) { DecimalPlaces = 1 },
             new PropertyItem<double>(Symbol.ArealHeatCapacity, () => ArealHeatCapacity)
             {
                 SymbolSubscriptText = $"{LayerNumber}b"

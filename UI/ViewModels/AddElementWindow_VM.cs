@@ -15,9 +15,19 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for AddElementWindow.xaml: Used in xaml as "DataContext"
     public partial class AddElementWindow_VM : ObservableObject
     {
-        // Called by 'InitializeComponent()' from AddElementWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => EditSelectedElement && Session.SelectedElement != null ? $"Ausgewähltes Element bearbeiten: {Session.SelectedElement.Name}" : "Neues Element erstellen";
+        private readonly Element? _targetElement = Session.SelectedProject?.Elements.FirstOrDefault(e => e?.InternalId == AddElementWindow.TargetElementInternalId, null);
 
+        // Called by 'InitializeComponent()' from AddElementWindow.cs due to Class-Binding in xaml via DataContext
+        public AddElementWindow_VM()
+        {
+            SelectedElementName = _targetElement != null ? _targetElement.Name : "Neues Element";
+            SelectedConstruction = _targetElement != null ? (int)_targetElement.Construction.Type : (int)ConstructionType.Aussenwand;
+            SelectedOrientation = _targetElement != null ? (int)_targetElement.OrientationType : (int)OrientationType.North;
+            TagList = _targetElement != null ? _targetElement.TagList : new List<string>(0);
+            SelectedElementComment = _targetElement != null ? _targetElement.Comment : "";
+            SelectedElementColor = _targetElement != null ? _targetElement.ColorCode : "#00FFFFFF";
+        }
+        
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -73,19 +83,16 @@ namespace BauphysikToolWPF.UI.ViewModels
             // To be able to Close EditElementWindow from within this ViewModel
             if (window is null) return;
             if (Session.SelectedProject == null) return;
-            // Avoid empty Input fields
 
-            //Construction construction = DatabaseAccess.GetConstructionsQuery().FirstOrDefault(e => e.Type == (ConstructionType)SelectedConstruction, new Construction());
-            
-            if (EditSelectedElement && Session.SelectedElement != null)
+            if (_targetElement != null)
             {
-                Session.SelectedElement.Name = SelectedElementName;
-                Session.SelectedElement.ConstructionId = SelectedConstruction;
-                Session.SelectedElement.OrientationType = (OrientationType)SelectedOrientation;
-                Session.SelectedElement.TagList = TagList;
-                Session.SelectedElement.Comment = SelectedElementComment;
-                Session.SelectedElement.ColorCode = SelectedElementColor;
-                Session.SelectedElement.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+                _targetElement.Name = SelectedElementName;
+                _targetElement.ConstructionId = SelectedConstruction;
+                _targetElement.OrientationType = (OrientationType)SelectedOrientation;
+                _targetElement.TagList = TagList;
+                _targetElement.Comment = SelectedElementComment;
+                _targetElement.ColorCode = SelectedElementColor;
+                _targetElement.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
                 Session.OnSelectedElementChanged();
             }
             else
@@ -120,11 +127,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _selectedElementName = Session.SelectedElement != null && Session.SelectedElement.Name != "" ? Session.SelectedElement.Name : "Neues Element";
+        private string _selectedElementName;
         [ObservableProperty]
-        private int _selectedConstruction = Session.SelectedElement != null ? (int)Session.SelectedElement.Construction.Type : (int)ConstructionType.Aussenwand;
+        private int _selectedConstruction;
         [ObservableProperty]
-        private int _selectedOrientation = Session.SelectedElement != null ? (int)Session.SelectedElement.OrientationType : (int)OrientationType.North;
+        private int _selectedOrientation;
         [ObservableProperty]
         private Visibility _tagBtnVisible = Visibility.Visible;
         [ObservableProperty]
@@ -132,17 +139,18 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private Visibility _enterBtnVisible = Visibility.Hidden;
         [ObservableProperty]
-        private List<string> _tagList = Session.SelectedElement != null ? Session.SelectedElement.TagList : new List<string>(0);
+        private List<string> _tagList;
         [ObservableProperty]
-        private string _selectedElementComment = Session.SelectedElement != null ? Session.SelectedElement.Comment : "";
+        private string _selectedElementComment;
         [ObservableProperty]
-        private string _selectedElementColor = Session.SelectedElement != null ? Session.SelectedElement.ColorCode : "#00FFFFFF";
+        private string _selectedElementColor;
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
 
-        public bool EditSelectedElement => AddElementWindow.EditExistingElement;
+        public string Title => _targetElement != null ? $"Ausgewähltes Element bearbeiten: {_targetElement.Name}" : "Neues Element erstellen";
+
         public List<string> OrientationList => OrientationTypeMapping.Values.ToList();
 
         // Database is Source

@@ -124,7 +124,7 @@
                 </Expander>
 
                 <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsRoomPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="2" Grid.Column="1" Header="Vorbelegung für Bauteil-Werte" IsExpanded="True" IsEnabled="{Binding IsRoomPresetChecked}" Margin="0,0,0,8">
+                <Expander Grid.Row="2" Grid.Column="1" Header="Vorbelegung für Raum-Werte" IsExpanded="True" IsEnabled="{Binding IsRoomPresetChecked}" Margin="0,0,0,8">
                     <controls:PropertyDataGrid x:Name="RoomPresetDataGrid" Properties="{Binding RoomPresetProperties}"/>
                 </Expander>
 

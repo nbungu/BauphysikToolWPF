@@ -6,7 +6,9 @@ using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
+using System.Windows;
 using static BauphysikToolWPF.Models.UI.Enums;
+using Point = BT.Geometry.Point;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -43,7 +45,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(editExsiting: true).ShowDialog();
+            new AddElementWindow(Session.SelectedElementId).ShowDialog();
         }
 
         /*
@@ -52,8 +54,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Initialized and Assigned with Default Values (int default = 0)
          */
 
-        [ObservableProperty]
-        private Element? _selectedElement = Session.SelectedElement;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -61,8 +61,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the _selection Values above
          */
 
+        public Element? SelectedElement => Session.SelectedElement;
+        public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+
         // Cross Section
-        
+
         public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
         public Rectangle CanvasSizeCrossSection => _crossSection.CanvasSize;
         public List<DrawingGeometry> LayerMeasurementCrossSection => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);
@@ -80,23 +83,23 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             new PropertyItem<int>("Schichten", () => Session.SelectedElement.Layers.Count),
             new PropertyItem<double>(Symbol.Thickness, () => Session.SelectedElement.Thickness),
-            new PropertyItem<double>(Symbol.RValueElement, () => Session.SelectedElement.RGesValue),
-            new PropertyItem<double>(Symbol.RValueTotal, () => Session.SelectedElement.RTotValue),
-            new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValue),
+            new PropertyItem<double>(Symbol.RValueElement, () => Session.SelectedElement.RGesValue) { IsHighlighted = true },
+            new PropertyItem<double>(Symbol.RValueTotal, () => Session.SelectedElement.RTotValue) { IsHighlighted = true },
+            new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValue) { DecimalPlaces = 3, IsHighlighted = true },
             new PropertyItem<double>(Symbol.HeatFluxDensity, () => Session.SelectedElement.QValue),
-            new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedElement.SdThickness),
+            new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedElement.SdThickness) { DecimalPlaces = 1 },
             new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedElement.AreaMassDens),
             new PropertyItem<double>(Symbol.ArealHeatCapacity, () => Session.SelectedElement.ArealHeatCapacity),
         } : new List<IPropertyItem>(0);
 
         public List<IPropertyItem> EnvironmentProperties => new List<IPropertyItem>
         {
-            new PropertyItem<double>(Symbol.TemperatureInterior, () => Session.Ti) { DecimalPlaces = 1},
-            new PropertyItem<double>(Symbol.TemperatureExterior, () => Session.Te) { DecimalPlaces = 1},
+            new PropertyItem<double>(Symbol.TemperatureInterior, () => Session.Ti) { DecimalPlaces = 1 },
+            new PropertyItem<double>(Symbol.TemperatureExterior, () => Session.Te) { DecimalPlaces = 1 },
             new PropertyItem<double>(Symbol.TransferResistanceSurfaceInterior, () => Session.Rsi),
             new PropertyItem<double>(Symbol.TransferResistanceSurfaceExterior, () => Session.Rse),
-            new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => Session.RelFi) { DecimalPlaces = 1},
-            new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => Session.RelFe) { DecimalPlaces = 1},
+            new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => Session.RelFi) { DecimalPlaces = 1 },
+            new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => Session.RelFe) { DecimalPlaces = 1 },
         };
 
         private void RefreshXamlBindings()

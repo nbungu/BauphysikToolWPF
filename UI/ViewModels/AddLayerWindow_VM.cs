@@ -79,7 +79,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Update Material in existing Layer or Add new Layer
             if (_targetLayer != null)
             {
-                // TODO: Correct?
                 _targetLayer.MaterialId = materialId;
             }
             else if (Session.SelectedElement != null)
@@ -145,12 +144,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedTabIndex = -1;
             SelectedTabIndex = 1;
             SelectedListViewItem = newMaterial;
-        }
-
-        [RelayCommand]
-        private void ResetMaterialList()
-        {
-            SearchString = "";
         }
 
         partial void OnSelectedListViewItemChanged(Material? value)

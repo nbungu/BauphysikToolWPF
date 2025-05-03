@@ -1,19 +1,17 @@
-﻿using BauphysikToolWPF.Services.Application;
+﻿using BauphysikToolWPF.Repositories;
+using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Diagnostics;
 using System.Windows;
-using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for AddElementWindow.xaml: Used in xaml as "DataContext"
     public partial class InfoWindow_VM : ObservableObject
     {
-        // Called by 'InitializeComponent()' from AddElementWindow.cs due to Class-Binding in xaml via DataContext
-        public string Title => "";
+        // Called by 'InitializeComponent()' from InfoWindow.cs due to Class-Binding in xaml via DataContext
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -90,12 +88,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
+
+        public string Title => "";
         public bool IsServerOnline => UpdaterManager.IsServerAvailable;
         public string ServerStatusLabel => IsServerOnline ? "Server Online" : "Server nicht erreichbar";
         public string IsServerOnlineColorCode => IsServerOnline ? "#2cde00" : "#fc0303";
-
         public string LicensePath => "https://github.com/nbungu/BauphysikToolWPF?tab=GPL-3.0-1-ov-file#readme";
-
         public string ProgramVersion => $"Aktuelle Version: {UpdaterManager.LocalUpdaterManagerFile.CurrentTag}";
         public string LatestProgramVersion => $"Neueste Version: {UpdaterManager.LocalUpdaterManagerFile.LatestTag}";
         public string Website => $"https://bauphysik-tool.de";

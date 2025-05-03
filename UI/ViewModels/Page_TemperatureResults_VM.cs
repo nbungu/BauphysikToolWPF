@@ -13,6 +13,7 @@ using SkiaSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 
@@ -38,22 +39,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         /*
-         * Regular Instance Variables as Properties
-         * 
-         * Not depending on UI changes. No Observable function.
-         */
-        public double Ti => _tempCalc.Ti;
-        public double Te => _tempCalc.Te;
-        public double Rsi => _tempCalc.Rsi;
-        public double Rse => _tempCalc.Rse;
-        public ISeries[] DataPoints => GetDataPoints();
-        public RectangularSection[] LayerSections => DrawLayerSections();
-        public Axis[] XAxes => DrawXAxes();
-        public Axis[] YAxes => DrawYAxes();
-        public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
-        public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
-
-        /*
          * MVVM Commands - UI Interaction with Commands
          * 
          * Update ONLY UI-Used Values by fetching from Database!
@@ -70,7 +55,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
             // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(editExsiting: true).ShowDialog();
+            new AddElementWindow(Session.SelectedElementId).ShowDialog();
         }
 
         /*
@@ -79,16 +64,26 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Initialized and Assigned with Default Values
          */
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(RequirementValues))]
-        [NotifyPropertyChangedFor(nameof(OverviewItems))]
-        private Element _selectedElement = Session.SelectedElement;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
          * 
          * Not Observable, because Triggered and Changed by the elementType Value above
          */
+
+        public Element SelectedElement => Session.SelectedElement;
+        public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility ResultsChartVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        public double Ti => _tempCalc.Ti;
+        public double Te => _tempCalc.Te;
+        public double Rsi => _tempCalc.Rsi;
+        public double Rse => _tempCalc.Rse;
+        public ISeries[] DataPoints => GetDataPoints();
+        public RectangularSection[] LayerSections => DrawLayerSections();
+        public Axis[] XAxes => DrawXAxes();
+        public Axis[] YAxes => DrawYAxes();
+        public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
+        public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
 
         public CheckRequirements RequirementValues
         {
