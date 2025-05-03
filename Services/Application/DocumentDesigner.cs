@@ -6,6 +6,7 @@ using System.Linq;
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Services.UI;
 using PdfSharp.Drawing;
+using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
 
 namespace BauphysikToolWPF.Services.Application
@@ -38,44 +39,139 @@ namespace BauphysikToolWPF.Services.Application
                 new XRect(0, 20, page.Width, 30),
                 XStringFormats.TopCenter);
 
-            // Table data
-            string[] headers = { "Bauteil-nummer", "Kategorie", "Bauteilbezeichnung", "U-Wert", "GEG W/(m²K)", "Wärmedurchlasswiderstand R (m²K/W)", "Ist-Wert", "Soll-Wert", "DIN 4108-2" };
-            string[,] data = {
-                { "FD1", "Flachdach", "Decke über 2.und 3.OG", "0,118", "", "R = 8,32", "R = 8,32", "R ≥ 1,20", "" },
-                { "FD2", "Flachdach", "Terrasse Haus 1", "0,184", "", "R = 5,28", "R = 5,28", "R ≥ 1,20", "" },
-                { "AW1", "Außenwand", "", "0,179", "", "R = 5,42", "R = 5,42", "R ≥ 1,20", "" },
-                { "AW2", "Außenwand gegen TG", "", "0,272", "", "R = 3,51", "R = 3,51", "R ≥ 1,20", "" },
-                // Add more rows as needed...
-            };
+            var elements = project.Elements.ToList();
 
             // Define starting point and table layout
             double startX = 40;
             double startY = 70;
             double cellHeight = 20;
-            double[] columnWidths = { 60, 80, 140, 50, 50, 80, 60, 60, 60 };
+            double maxWidth = page.Width - startX * 2;
 
-            // Draw table headers
+            // New headers and adjusted column widths
+            string[] headers = {
+                "Bauteil-\nnummer", "", "Bauteilbezeichnung", "Kategorie", "U-Wert\nGEG\nW/(m²K)",
+                "Ist-Wert", "Soll-Wert\nDIN 4108-2"
+            };
+            string[] secondRowHeaders = { "", "", "", "", "", "Wärmedurchlasswiderstand R\r\n(m²K/W)" }; // New row header for Wärmedurchlasswiderstand
+
+            double[] columnWidths = { 50, 30, 100, 60, 56, 72, 72 };
+
+            // Adjust data table size to match new header count
+            string[,] data = new string[elements.Count, headers.Length];
+
+            for (int i = 0; i < elements.Count; i++)
+            {
+                var el = elements[i];
+                data[i, 0] = el.InternalId.ToString(); // Bauteilnummer
+                data[i, 1] = ""; // Color visual only
+                data[i, 2] = el.Name; // Bauteilbezeichnung
+                data[i, 3] = el.Construction.TypeName; // Kategorie
+                data[i, 4] = el.UValue.ToString("F3", CultureInfo.InvariantCulture);
+                data[i, 5] = $"R = {el.RTotValue:F2}";
+                data[i, 6] = "R ≥ 1,20";
+            }
+
+            // Draw table headers with line break support
             double currentX = startX;
+
+            // Draw first row of headers
             for (int i = 0; i < headers.Length; i++)
             {
-                gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, new XRect(currentX, startY, columnWidths[i], cellHeight));
-                gfx.DrawString(headers[i], tableHeaderFont, XBrushes.Black, new XRect(currentX + 2, startY + 3, columnWidths[i], cellHeight), XStringFormats.TopLeft);
+                var headerRect = new XRect(currentX, startY, columnWidths[i], cellHeight * 2); // taller header for first row
+                gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+
+                var tf = new XTextFormatter(gfx);
+                tf.Alignment = XParagraphAlignment.Center;
+                tf.DrawString(headers[i], tableHeaderFont, XBrushes.Black, headerRect, XStringFormats.TopLeft);
+
                 currentX += columnWidths[i];
             }
 
-            // Draw table data
-            double currentY = startY + cellHeight;
+            // Draw second row of headers (spanning columns 5 and 6 for Wärmedurchlasswiderstand)
+            currentX = startX;
+            for (int i = 0; i < secondRowHeaders.Length; i++)
+            {
+                var headerRect = new XRect(currentX, startY + cellHeight * 2, columnWidths[i], cellHeight); // normal height for second row
+                gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+
+                var tf = new XTextFormatter(gfx);
+                tf.Alignment = XParagraphAlignment.Center;
+                tf.DrawString(secondRowHeaders[i], tableHeaderFont, XBrushes.Black, headerRect, XStringFormats.TopLeft);
+
+                // Span "Wärmedurchlasswiderstand" across columns 5 and 6 (columns 5 and 6 span across the two cells)
+                if (i == 5)
+                {
+                    var spanRect = new XRect(currentX, startY + cellHeight * 2, columnWidths[5] + columnWidths[6], cellHeight);
+                    gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, spanRect);
+                    tf.Alignment = XParagraphAlignment.Center;
+                    tf.DrawString("Wärmedurchlasswiderstand", tableHeaderFont, XBrushes.Black, spanRect, XStringFormats.TopLeft);
+                    currentX += columnWidths[5] + columnWidths[6]; // Skip columns 5 and 6 since they are merged
+                }
+                else
+                {
+                    currentX += columnWidths[i];
+                }
+            }
+
+            // Draw table data with centering and wrapping
+            double currentY = startY + (cellHeight * 2) + cellHeight; // Move below both header rows
             for (int row = 0; row < data.GetLength(0); row++)
             {
                 currentX = startX;
-                for (int col = 0; col < data.GetLength(1); col++)
+                double rowHeight = cellHeight;
+
+                // Measure row height for wrapping in Bauteilbezeichnung (column 3 after adding "Farbe")
+                var tf = new XTextFormatter(gfx);
+                var nameText = data[row, 3];
+                var nameRect = new XRect(currentX + columnWidths[0] + columnWidths[1] + columnWidths[2] + 2, currentY + 3, columnWidths[3] - 4, double.MaxValue);
+                var nameSize = gfx.MeasureString(nameText, tableBodyFont);
+                var lines = (int)Math.Ceiling(nameSize.Width / columnWidths[3]);
+                rowHeight = Math.Max(rowHeight, lines * 10);
+
+                // Draw each column
+                for (int col = 0; col < headers.Length; col++)
                 {
-                    gfx.DrawRectangle(XPens.Black, new XRect(currentX, currentY, columnWidths[col], cellHeight));
-                    gfx.DrawString(data[row, col], tableBodyFont, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
+                    var rect = new XRect(currentX, currentY, columnWidths[col], rowHeight);
+                    gfx.DrawRectangle(XPens.Black, rect);
+
+                    var contentRect = new XRect(currentX + 2, currentY + 3, columnWidths[col] - 4, rowHeight - 6);
+                    tf = new XTextFormatter(gfx);
+
+                    // Center-align everything except Bauteilbezeichnung (for wrapping)
+                    tf.Alignment = (col == 3) ? XParagraphAlignment.Left : XParagraphAlignment.Center;
+
+                    // Special case: draw color box for column 1
+                    if (col == 1)
+                    {
+                        System.Windows.Media.Color mediaColor = System.Windows.Media.Colors.Transparent;
+                        try { mediaColor = elements[row].Color; } catch { }
+
+                        // Convert to PdfSharp XColor
+                        XColor fillColor = XColor.FromArgb(mediaColor.A, mediaColor.R, mediaColor.G, mediaColor.B);
+
+                        gfx.DrawRectangle(new XSolidBrush(fillColor), new XRect(currentX + 5, currentY + 5, 20, rowHeight - 10));
+                    }
+                    else
+                    {
+                        tf.DrawString(data[row, col], tableBodyFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                    }
+
                     currentX += columnWidths[col];
                 }
-                currentY += cellHeight;
+
+                currentY += rowHeight;
+
+                // Page break
+                if (currentY + cellHeight > page.Height - 50)
+                {
+                    page = document.AddPage();
+                    page.Size = PdfSharp.PageSize.A4;
+                    gfx = XGraphics.FromPdfPage(page);
+                    currentY = startY;
+                }
             }
+
+            //
 
             foreach (var element in project.Elements)
             {
