@@ -9,6 +9,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
@@ -20,7 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             FloorLevel = "EG",
             RoomName = "Wohnzimmer",
-            UsageZone = UsageZone.Wohnen,
+            UsageZone = RoomUsageType.Wohnen,
         };
 
         private EnvelopeItem? _previousItem;
@@ -121,6 +122,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         private static bool _isRoomPresetChecked = false;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(ItemsCheckedCount))]
+        [NotifyPropertyChangedFor(nameof(ItemsCheckedCountString))]
         private static bool _isAllSelected = false;
 
         /*
@@ -133,17 +136,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool IsRowSelected => SelectedEnvelopeItem != null;
         public Visibility PresetActiveVisibility => AnyPresetActive ? Visibility.Visible : Visibility.Collapsed;
         public bool AnyPresetActive => IsInfoPresetChecked || IsElementPresetChecked || IsRoomPresetChecked;
-        public string ItemsCount => $"Bereiche angelegt: {EnvelopeItems.Count}";
-        public string ItemsCheckedCount => $"Bereiche markiert: {EnvelopeItems.Where(e => e.IsSelected).ToList().Count}";
+        public int ItemsCount => EnvelopeItems.Count;
+        public string ItemsCountString => $"Bereiche angelegt: {ItemsCount}";
+        public int ItemsCheckedCount => EnvelopeItems.Where(e => e.IsSelected).ToList().Count;
+        public string ItemsCheckedCountString => $"Zeilen markiert: {ItemsCheckedCount}";
         public Visibility NoEntriesVisibility => EnvelopeItems.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
 
         public IEnumerable<IPropertyItem> InfoPresetProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Etage", () => _presetEnvelopeItem.FloorLevel, value => _presetEnvelopeItem.FloorLevel = value),
             new PropertyItem<string>("Bezeichnung", () => _presetEnvelopeItem.RoomName, value => _presetEnvelopeItem.RoomName = value),
-            new PropertyItem<int>("Zone", () => (int)_presetEnvelopeItem.UsageZone, value => _presetEnvelopeItem.UsageZone = (UsageZone)value)
+            new PropertyItem<int>("Zone", () => (int)_presetEnvelopeItem.UsageZone, value => _presetEnvelopeItem.UsageZone = (RoomUsageType)value)
             {
-                PropertyValues = UsageZoneMapping.Values.Cast<object>().ToArray()
+                PropertyValues = RoomUsageTypeMapping.Values.Cast<object>().ToArray()
             },
         };
         public IEnumerable<IPropertyItem> ElementPresetProperties => new List<IPropertyItem>()
@@ -171,7 +176,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public IEnumerable<Element> GetElements() => Session.SelectedProject?.Elements.OrderBy(e => e.InternalId) ?? Enumerable.Empty<Element>();
         public IEnumerable<string> GetOrientationTypeNames() => OrientationTypeMapping.Values;
-        public IEnumerable<string> GetUsageZoneNames() => UsageZoneMapping.Values;
+        public IEnumerable<string> GetUsageZoneNames() => RoomUsageTypeMapping.Values;
 
         /// <summary>
         /// Updates XAML Bindings and the Reset Calculation Flag
@@ -183,7 +188,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(EnvelopeItems));
             OnPropertyChanged(nameof(IsRowSelected));
             OnPropertyChanged(nameof(AnyPresetActive));
-            OnPropertyChanged(nameof(ItemsCount));
+            OnPropertyChanged(nameof(ItemsCountString));
             OnPropertyChanged(nameof(NoEntriesVisibility));
         }
         private void UpdatePresets()
@@ -199,13 +204,13 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void SetEventHandler(EnvelopeItem? item)
         {
-            if (_previousItem != null)
-                _previousItem.PropertyChanged -= UpdatePropertyDependencies;
+            // Unsubscribe from the previous item's PropertyChanged event if it exists
+            if (_previousItem != null) _previousItem.PropertyChanged -= UpdatePropertyDependencies;
 
             _previousItem = item;
 
-            if (item != null)
-                item.PropertyChanged += UpdatePropertyDependencies;
+            // Subscribe to the new item's PropertyChanged event if it exists
+            if (item != null) item.PropertyChanged += UpdatePropertyDependencies;
         }
     }
 }

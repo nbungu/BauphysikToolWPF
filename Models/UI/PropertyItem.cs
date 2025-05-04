@@ -64,7 +64,6 @@ namespace BauphysikToolWPF.Models.UI
         public Unit Unit { get; set; }
         public string Comment { get; set; } = string.Empty;
         public bool IsReadonly { get; set; } = true;
-        public bool IsHighlighted { get; set; } = false;
         public int DecimalPlaces { get; set; } = 2;
         public bool TriggerPropertyChanged { get; set; } = true;
         public object[] PropertyValues { get; set; } = Array.Empty<object>();

@@ -91,10 +91,21 @@ namespace BauphysikToolWPF
             }
         }
 
+        /// <summary>
+        /// Handles mouse wheel scrolling within a ComboBox dropdown when the ComboBox is placed inside a parent ScrollViewer.
+        /// Without this, mouse wheel events are intercepted by the parent ScrollViewer,
+        /// preventing the dropdown list from scrolling properly. This method reroutes the scroll
+        /// events directly to the inner ScrollViewer of the ComboBox dropdown.
+        /// </summary>
+        private void ComboBoxScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            e.Handled = true;
+            var scrollViewer = (ScrollViewer)sender;
+            scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
+        }
+
         // cmd test:
         //
         // "C:\Users\arnes\source\repos\BauphysikToolWPF\bin\Debug\net8.0-windows10.0.22621.0\BauphysikToolWPF.exe" "C:\Users\arnes\Desktop\project.btk"
-
-
     }
 }

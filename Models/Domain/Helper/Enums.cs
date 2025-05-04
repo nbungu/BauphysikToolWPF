@@ -27,17 +27,6 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             { OrientationType.NorthWest, "Nordwesten" }
         };
 
-        public enum UsageZone
-        {
-            Wohnen,
-            Verkehrsflaechen
-        }
-        public static readonly Dictionary<UsageZone, string> UsageZoneMapping = new()
-        {
-            { UsageZone.Wohnen, "Wohnen" },
-            { UsageZone.Verkehrsflaechen, "Verkehrsflächen" }
-        };
-
         public enum SubConstructionDirection
         {
             Vertical,

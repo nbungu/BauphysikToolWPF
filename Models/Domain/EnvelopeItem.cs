@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
@@ -53,7 +54,7 @@ namespace BauphysikToolWPF.Models.Domain
         public string Tag { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;
         public OrientationType OrientationType { get; set; } = OrientationType.North;
-        public UsageZone UsageZone { get; set; } = UsageZone.Wohnen;
+        public RoomUsageType UsageZone { get; set; } = RoomUsageType.Wohnen;
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
@@ -71,9 +72,9 @@ namespace BauphysikToolWPF.Models.Domain
             get => Session.SelectedProject?.Elements.FirstOrDefault(e => e?.InternalId == ElementInternalId, null);
             set => ElementInternalId = value?.InternalId ?? -1;
         }
-
         [JsonIgnore]
         public bool IsSelected { get; set; }
+
         [JsonIgnore]
         public bool IsReadonly { get; set; }
         [JsonIgnore]
@@ -102,11 +103,11 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public string UsageZoneName
         {
-            get => UsageZoneMapping[UsageZone];
+            get => RoomUsageTypeMapping[UsageZone];
             set
             {
-                var match = UsageZoneMapping.FirstOrDefault(x => x.Value == value);
-                if (!match.Equals(default(KeyValuePair<UsageZone, string>)))
+                var match = RoomUsageTypeMapping.FirstOrDefault(x => x.Value == value);
+                if (!match.Equals(default(KeyValuePair<RoomUsageType, string>)))
                 {
                     UsageZone = match.Key;
                 }

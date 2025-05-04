@@ -10,7 +10,6 @@ namespace BauphysikToolWPF.Models.UI
         object Value { get; set; }
         string Comment { get; set; }
         bool IsReadonly { get; set; }
-        bool IsHighlighted { get; set; }
         bool TriggerPropertyChanged { get; set; }
         object[] PropertyValues { get; set; }
         string SymbolBaseText { get; set; }

@@ -83,9 +83,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             new PropertyItem<int>("Schichten", () => Session.SelectedElement.Layers.Count),
             new PropertyItem<double>(Symbol.Thickness, () => Session.SelectedElement.Thickness),
-            new PropertyItem<double>(Symbol.RValueElement, () => Session.SelectedElement.RGesValue) { IsHighlighted = true },
-            new PropertyItem<double>(Symbol.RValueTotal, () => Session.SelectedElement.RTotValue) { IsHighlighted = true },
-            new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValue) { DecimalPlaces = 3, IsHighlighted = true },
+            new PropertyItem<double>(Symbol.RValueElement, () => Session.SelectedElement.RGesValue),
+            new PropertyItem<double>(Symbol.RValueTotal, () => Session.SelectedElement.RTotValue),
+            new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValue) { DecimalPlaces = 3 },
             new PropertyItem<double>(Symbol.HeatFluxDensity, () => Session.SelectedElement.QValue),
             new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedElement.SdThickness) { DecimalPlaces = 1 },
             new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedElement.AreaMassDens),

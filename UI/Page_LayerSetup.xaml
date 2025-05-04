@@ -111,7 +111,12 @@
                 <Label Grid.Row="0" Content="Von innen nach außen" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <!--Layer ListView-->
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" CanContentScroll="False" VerticalAlignment="Stretch" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                <ScrollViewer Grid.Row="1"
+                              VerticalScrollBarVisibility="Auto"
+                              HorizontalScrollBarVisibility="Disabled"
+                              CanContentScroll="False"
+                              VerticalAlignment="Stretch"
+                              PreviewMouseWheel="LayerListScrollViewer_PreviewMouseWheel">
                     <controls:LayersListView Layers="{Binding LayerList}"
                                              SelectedLayer="{Binding SelectedListViewItem, Mode=TwoWay}"
                                              MinHeight="200"
@@ -209,7 +214,9 @@
 
             <Grid Grid.Row="0" Grid.Column="1" Grid.RowSpan="2" Margin="16">
 
-                <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
+                <ScrollViewer VerticalScrollBarVisibility="Hidden"
+                              CanContentScroll="False"
+                              PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel">
                     <StackPanel>
 
                         <!--Gewählte Schicht + Eigenschaften-->
