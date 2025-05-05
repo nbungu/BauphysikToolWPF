@@ -137,8 +137,19 @@ namespace BauphysikToolWPF.Models.UI
                 Unit = properties.unit;
                 SymbolBaseText = properties.baseText;
                 SymbolSubscriptText = properties.subscriptText;
-                UnitCounterText = properties.counterText;
-                UnitDenominatorText = properties.denominatorText;
+
+                // Get unit display from UnitDisplayMapping
+                if (UnitDisplayMapping.TryGetValue(properties.unit, out var unitDisplay))
+                {
+                    UnitCounterText = unitDisplay.counterText;
+                    UnitDenominatorText = unitDisplay.denominatorText;
+                }
+                else
+                {
+                    UnitCounterText = "";
+                    UnitDenominatorText = "";
+                }
+
                 Comment = properties.comment;
             }
             else

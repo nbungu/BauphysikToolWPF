@@ -118,15 +118,13 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <!--
-                                <Rectangle Grid.Column="0" x:Name="rectangle" Fill="Red" Margin="0" Width="2" VerticalAlignment="Stretch" HorizontalAlignment="Left" Visibility="Visible"/>
-                                -->
                                 <Label Grid.Column="0" Content="{Binding Name}" FontWeight="Regular" ToolTip="{Binding Comment}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
                                 <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBaseText}" SubscriptText="{Binding SymbolSubscriptText}" VerticalAlignment="Stretch" Margin="0,0,8,0" FontWeight="DemiBold" Foreground="{StaticResource PrimaryDarkBrush}"/>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
+
                 <!-- Right Column with DataTemplate -->
                 <DataGridTemplateColumn Width="*" IsReadOnly="False" MinWidth="80">
                     <DataGridTemplateColumn.CellTemplate>
@@ -134,7 +132,6 @@
                             <ContentControl Content="{Binding}">
                                 <ContentControl.ContentTemplateSelector>
                                     <ui:PropertyValueTemplateSelector>
-
                                         <ui:PropertyValueTemplateSelector.TextBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>
@@ -156,17 +153,18 @@
                                                             </MultiBinding>
                                                         </TextBox.Text>
                                                     </TextBox>
-                                                    <controls:FractionLabel Grid.Column="1"
-                                                                            CounterText="{Binding UnitCounterText}"
-                                                                            DenominatorText="{Binding UnitDenominatorText}"
-                                                                            VerticalAlignment="Stretch"
-                                                                            Foreground="{StaticResource PrimaryBorderBrush}"
-                                                                            Margin="4,-2,8,-2"
-                                                                            FontWeight="Normal">
+                                                    <controls:FractionLabel Grid.Column="1" CounterText="{Binding UnitCounterText}" DenominatorText="{Binding UnitDenominatorText}">
                                                         <controls:FractionLabel.Style>
                                                             <Style TargetType="controls:FractionLabel">
+                                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                                <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                                                <Setter Property="Margin" Value="4,-2,8,-2"/>
+                                                                <Setter Property="Foreground" Value="{StaticResource PrimaryDarkMediumBrush}"/>
                                                                 <Setter Property="Visibility" Value="Visible"/>
                                                                 <Style.Triggers>
+                                                                    <Trigger Property="IsEnabled" Value="False">
+                                                                        <Setter Property="Foreground" Value="{StaticResource PrimaryBorderBrush}"/>
+                                                                    </Trigger>
                                                                     <MultiDataTrigger>
                                                                         <MultiDataTrigger.Conditions>
                                                                             <Condition Binding="{Binding UnitCounterText}" Value=""/>
@@ -181,8 +179,6 @@
                                                 </Grid>
                                             </DataTemplate>
                                         </ui:PropertyValueTemplateSelector.TextBoxTemplate>
-
-
                                         <ui:PropertyValueTemplateSelector.ComboBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>

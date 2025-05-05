@@ -16,6 +16,7 @@ namespace BauphysikToolWPF.Models.Domain
         public string UserName { get; set; } = string.Empty;
         public BuildingUsageType BuildingUsage { get; set; }
         public BuildingAgeType BuildingAge { get; set; }
+        public BuildingTypeResidatial BuildingTypeResidatial { get; set; }
         public string Comment { get; set; } = string.Empty;
         public string LinkedFilePaths { get; set; } = string.Empty;
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();

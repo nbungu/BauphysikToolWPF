@@ -38,19 +38,6 @@
             <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
         </Style>
 
-        <Style x:Key="DataGridTextColumn_NumericCentered_ElementStyle" TargetType="TextBlock">
-            <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="HorizontalAlignment" Value="Center" />
-            <Setter Property="Padding" Value="3,0,0,0"/>
-            <Setter Property="Cursor" Value="IBeam"/>
-        </Style>
-        <Style x:Key="DataGridTextColumn_NumericCentered_EditingStyle" TargetType="TextBox" BasedOn="{StaticResource DataGridTextBox}">
-            <Setter Property="VerticalAlignment" Value="Center"/>
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="HorizontalContentAlignment" Value="Center" />
-            <EventSetter Event="PreviewTextInput" Handler="numericData_PreviewTextInput"/>
-        </Style>
-
         <Style x:Key="DataGridTextColumn_ElementStyle" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
             <Setter Property="Padding" Value="3,0,0,0"/>
@@ -114,10 +101,10 @@
                         <customControls:FractionLabel Grid.Row="1"
                                                       CounterText="{TemplateBinding Tag}"
                                                       VerticalAlignment="Center"
-                                                      Foreground="{StaticResource PrimaryBorderBrush}"
+                                                      Foreground="{StaticResource PrimaryDarkMediumBrush}"
                                                       Margin="0,4,0,0"
-                                                      FontWeight="Normal"
-                                                      HorizontalAlignment="Left" />
+                                                      FontWeight="DemiBold"
+                                                      HorizontalAlignment="Left"/>
                     </Grid>
                 </Border>
             </Grid>

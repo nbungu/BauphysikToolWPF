@@ -59,5 +59,21 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             { BuildingAgeType.Existing, "Bestandsgebäude" },
             { BuildingAgeType.New, "Neubau" }
         };
+
+        public enum BuildingTypeResidatial
+        {
+            EFH, // Einfamilienhaus
+            MFH, // Mehrfamilienhaus
+            ZFH, // Zweifamilienhaus
+            RMH  // Reihenmittelhaus
+        }
+        public static readonly Dictionary<BuildingTypeResidatial, string> BuildingTypeResidatialMapping = new()
+        {
+            { BuildingTypeResidatial.EFH, "Einfamilienhaus" },
+            { BuildingTypeResidatial.MFH, "Mehrfamilienhaus" },
+            { BuildingTypeResidatial.ZFH, "Zweifamilienhaus" },
+            { BuildingTypeResidatial.RMH, "Reihenmittelhaus" }
+        };
+
     }
 }

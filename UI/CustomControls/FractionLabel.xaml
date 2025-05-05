@@ -29,7 +29,9 @@
         <!--Custom TextBox for fractions-->
         <TextBlock x:Name="CounterTextBlock"
                    Grid.Row="0"
+                   Foreground="{Binding Foreground, ElementName=FractionLabelControl}"
                    FontSize="{Binding FontSize, ElementName=FractionLabelControl}"
+                   FontWeight="{Binding FontWeight, ElementName=FractionLabelControl}"
                    Text="{Binding CounterText, ElementName=FractionLabelControl}"
                    VerticalAlignment="Center"
                    HorizontalAlignment="Center"
@@ -46,7 +48,9 @@
               Visibility="{Binding DenominatorText, ElementName=FractionLabelControl, Converter={StaticResource StringToVisibilityConverter}}"/>
         <TextBlock x:Name="DenominatorTextBlock"
                    Grid.Row="2"
+                   Foreground="{Binding Foreground, ElementName=FractionLabelControl}"
                    FontSize="{Binding FontSize, ElementName=FractionLabelControl}"
+                   FontWeight="{Binding FontWeight, ElementName=FractionLabelControl}"
                    Text="{Binding DenominatorText, ElementName=FractionLabelControl}"
                    VerticalAlignment="Center"
                    HorizontalAlignment="Center"

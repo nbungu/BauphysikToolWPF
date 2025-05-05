@@ -21,10 +21,19 @@
         </Grid.RowDefinitions>
 
         <!--Top -->
+
         <Border Grid.Row="0" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Label Content="TODO"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Label Content="Zurück"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <Label Content="Eingabe der thermischen Hüllfläche" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Label Content="Weiter"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -86,7 +95,7 @@
 
 
                 <Label Grid.Row="1" Visibility="{Binding NoEntriesVisibility}"
-                   Content="Keine Bereiche der Gebäudehülle angelegt: Bitte neue Bereiche hinzufügen!"
+                   Content="Keine Bereiche der Gebäudehülle angelegt: Neuer Bereich hinzufügen!"
                    HorizontalAlignment="Center"
                    VerticalAlignment="Center"
                    FontStyle="Italic"
