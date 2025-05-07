@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private static TemperatureCurveCalc _tempCalc = new TemperatureCurveCalc();
+        private static TemperatureCurveCalc _tempCurve = new TemperatureCurveCalc();
 
         public Page_TemperatureResults_VM()
         {
@@ -33,9 +33,9 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 
-            _tempCalc = new TemperatureCurveCalc(Session.SelectedElement, Session.Rsi, Session.Rse, Session.Ti, Session.Te);
-            _tempCalc.CalculateHomogeneous();
-            _tempCalc.CalculateTemperatureCurve();
+            _tempCurve = new TemperatureCurveCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
+            _tempCurve.CalculateHomogeneous();
+            _tempCurve.CalculateTemperatureCurve();
         }
 
         /*
@@ -48,14 +48,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void SwitchPage(NavigationContent desiredPage)
         {
             MainWindow.SetPage(desiredPage);
-        }
-
-        [RelayCommand]
-        private void EditElement() // Binding in XAML via 'EditElementCommand'
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(Session.SelectedElementId).ShowDialog();
         }
 
         /*
@@ -71,43 +63,36 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the elementType Value above
          */
 
-        public Element SelectedElement => Session.SelectedElement;
+        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Temperaturverlauf" : "";
+        public Element? SelectedElement => Session.SelectedElement;
         public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility ResultsChartVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        public double Ti => _tempCalc.Ti;
-        public double Te => _tempCalc.Te;
-        public double Rsi => _tempCalc.Rsi;
-        public double Rse => _tempCalc.Rse;
+        public double Ti => _tempCurve.Ti;
+        public double Te => _tempCurve.Te;
+        public double Rsi => _tempCurve.Rsi;
+        public double Rse => _tempCurve.Rse;
         public ISeries[] DataPoints => GetDataPoints();
         public RectangularSection[] LayerSections => DrawLayerSections();
         public Axis[] XAxes => DrawXAxes();
         public Axis[] YAxes => DrawYAxes();
         public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
         public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
-
-        public CheckRequirements RequirementValues
-        {
-            get
-            {
-                if (!_tempCalc.IsValid) return new CheckRequirements(SelectedElement, 0, 0); // TODO: make empty ctor for CheckRequirements
-                return new CheckRequirements(SelectedElement, _tempCalc.UValue, _tempCalc.QValue);
-            }
-        }
+        public CheckRequirements RequirementValues => new CheckRequirements(SelectedElement, Session.CheckRequirementsConfig);
 
         public List<OverviewItem> OverviewItems
         {
             get
             {
-                if (!_tempCalc.IsValid) return new List<OverviewItem>();
+                if (!_tempCurve.IsValid) return new List<OverviewItem>();
                 return new List<OverviewItem>
                 {
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = _tempCalc.Element.RGesValue, RequirementValue = RequirementValues.R_min, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = _tempCalc.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = _tempCalc.UValue, RequirementValue = RequirementValues.U_max, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
-                    new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = _tempCalc.QValue, RequirementValue = RequirementValues.Q_max, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _tempCalc.Tsi, RequirementValue = _tempCalc.TsiMin, IsRequirementMet = _tempCalc.Tsi >= _tempCalc.TsiMin, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = _tempCalc.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = _tempCalc.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCalc.FRsi >= 0.7 },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = _tempCurve.Element.RGesValue, RequirementValue = RequirementValues.RMin >= 0 ? RequirementValues.RMin : null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = _tempCurve.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
+                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = _tempCurve.UValue, RequirementValue = RequirementValues.UMax >= 0 ? RequirementValues.UMax : null, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
+                    new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = _tempCurve.QValue, RequirementValue = RequirementValues.QMax >= 0 ? RequirementValues.QMax : null, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _tempCurve.Tsi, RequirementValue = _tempCurve.TsiMin, IsRequirementMet = _tempCurve.Tsi >= _tempCurve.TsiMin, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = _tempCurve.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = _tempCurve.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCurve.FRsi >= 0.7 },
                 };
             }
         }
@@ -125,12 +110,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private RectangularSection[] DrawLayerSections()
         {
-            if (!_tempCalc.IsValid) return Array.Empty<RectangularSection>();
+            if (!_tempCurve.IsValid) return Array.Empty<RectangularSection>();
 
-            RectangularSection[] rects = new RectangularSection[_tempCalc.Element.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[_tempCurve.Element.Layers.Count];
 
             double left = 0;
-            foreach (Layer layer in _tempCalc.Element.Layers)
+            foreach (Layer layer in _tempCurve.Element.Layers)
             {
                 double layerWidth = layer.Thickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
@@ -163,10 +148,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] GetDataPoints()
         {
-            if (!_tempCalc.IsValid) return Array.Empty<ISeries>();
+            if (!_tempCurve.IsValid) return Array.Empty<ISeries>();
 
             double tsiPos = 0;
-            double tsi = _tempCalc.Tsi;
+            double tsi = _tempCurve.Tsi;
             double deltaTi = Math.Abs(Ti - tsi);
 
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -187,11 +172,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 YToolTipLabelFormatter = null
             };
 
-            ObservablePoint[] tempValues = new ObservablePoint[_tempCalc.LayerTemps.Count]; // represents the temperature points
-            for (int i = 0; i < _tempCalc.LayerTemps.Count; i++)
+            ObservablePoint[] tempValues = new ObservablePoint[_tempCurve.LayerTemps.Count]; // represents the temperature points
+            for (int i = 0; i < _tempCurve.LayerTemps.Count; i++)
             {
-                double x = _tempCalc.LayerTemps.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(_tempCalc.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
+                double x = _tempCurve.LayerTemps.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(_tempCurve.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
                 tempValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             // Set properties & add temperature points to the series
@@ -214,8 +199,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
 
-            double tsePos = _tempCalc.LayerTemps.Last().Key;
-            double tse = _tempCalc.Tse;
+            double tsePos = _tempCurve.LayerTemps.Last().Key;
+            double tse = _tempCurve.Tse;
             double deltaTe = Math.Abs(Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
@@ -238,7 +223,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private Axis[] DrawXAxes()
         {
-            if (!_tempCalc.IsValid) return Array.Empty<Axis>();
+            if (!_tempCurve.IsValid) return Array.Empty<Axis>();
             return new Axis[]
             {
                 new Axis
@@ -251,7 +236,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     TextSize = 14,
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 },
                     MinLimit = - 2,
-                    MaxLimit = _tempCalc.Element.Thickness + 2
+                    MaxLimit = _tempCurve.Element.Thickness + 2
                 }
                 /*new Axis
                 {

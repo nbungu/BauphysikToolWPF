@@ -1,4 +1,4 @@
-﻿using BauphysikToolWPF.Services;
+﻿using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
@@ -10,7 +10,6 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF
 {
@@ -25,7 +24,7 @@ namespace BauphysikToolWPF
     {
         // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
         ProjectPage = 0,
-        LandingPage = 1,
+        ElementCatalogue = 1,
         LayerSetup = 2,
         Summary = 3,
         TemperatureCurve = 4,
@@ -40,6 +39,18 @@ namespace BauphysikToolWPF
         private static ListBox? _navigationMenuListBox;
         private static Border? _projectBoxHeader;
         private static ToastNotification? _toastNotification;
+
+        //public static readonly Dictionary<NavigationContent, string> NavigationContentMapping = new()
+        //{
+        //    { NavigationContent.ProjectData, "Projektdaten"},
+        //    { NavigationContent.ElementCatalogue, "Bauteilkatalog"},
+        //    { NavigationContent.LayerSetup, "Schichtenaufbau"},
+        //    { NavigationContent.Summary, "Zusammenfassung"},
+        //    { NavigationContent.TemperatureCurve, "Temperaturverlauf"},
+        //    { NavigationContent.GlaserCurve, "Glaser-Diagramm"},
+        //    { NavigationContent.DynamicHeatCalc, "Dynamische Wärmeberechnung"},
+        //    { NavigationContent.BuildingEnvelope, "Gebäudehülle"},
+        //};
 
         public MainWindow()
         {
@@ -75,7 +86,7 @@ namespace BauphysikToolWPF
                     _navigationMenuListBox.SelectedIndex = -1;
                     _projectBoxHeader.Tag = "ProjectPage";
                     break;
-                case NavigationContent.LandingPage:
+                case NavigationContent.ElementCatalogue:
                     _navigationMenuListBox.SelectedIndex = -1;
                     _projectBoxHeader.Tag = "LandingPage";
                     break;

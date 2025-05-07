@@ -14,8 +14,8 @@ using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
-using Axis = LiveChartsCore.SkiaSharpView.Axis;
 using static BauphysikToolWPF.Models.UI.Enums;
+using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -33,7 +33,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 
-            _dynamicTempCalc = new DynamicTempCalc(Session.SelectedElement, Session.Rsi, Session.Rse, Session.Ti, Session.Te);
+            _dynamicTempCalc = new DynamicTempCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
             _dynamicTempCalc.CalculateHomogeneous();
             _dynamicTempCalc.CalculateDynamicValues();
         }
@@ -48,14 +48,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void SwitchPage(NavigationContent desiredPage)
         {
             MainWindow.SetPage(desiredPage);
-        }
-
-        [RelayCommand]
-        private void EditElement() // Binding in XAML via 'EditElementCommand'
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(Session.SelectedElementId).ShowDialog();
         }
 
         /*
@@ -98,6 +90,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the Values above
          */
 
+        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Dynamisches Bauteilverhalten" : "";
         public Element SelectedElement => Session.SelectedElement;
 
         // Vertical Cut

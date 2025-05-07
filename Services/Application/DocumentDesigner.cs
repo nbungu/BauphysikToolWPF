@@ -435,7 +435,7 @@ namespace BauphysikToolWPF.Services.Application
             data[currentRow, 2] = "";
             data[currentRow, 3] = "";
             data[currentRow, 4] = "";
-            data[currentRow, 5] = element.Results.Rsi.ToString("N", CultureInfo.CurrentCulture);
+            data[currentRow, 5] = element.ThermalResults.Rsi.ToString("N", CultureInfo.CurrentCulture);
             currentRow += 1;
             for (int i = 0; i < layers.Count; i++)
             {
@@ -465,7 +465,7 @@ namespace BauphysikToolWPF.Services.Application
             data[currentRow, 2] = "";
             data[currentRow, 3] = "";
             data[currentRow, 4] = "";
-            data[currentRow, 5] = element.Results.Rse.ToString("N", CultureInfo.CurrentCulture);
+            data[currentRow, 5] = element.ThermalResults.Rse.ToString("N", CultureInfo.CurrentCulture);
 
             return data;
         }

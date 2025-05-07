@@ -55,14 +55,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void EditElement() // Binding in XAML via 'EditElementCommand'
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(Session.SelectedElementId).ShowDialog();
-        }
-
-        [RelayCommand]
         private void AddLayer()
         {
             // Once a window is closed, the same object instance can't be used to reopen the window.
@@ -219,6 +211,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         * Not Observable, not directly mutated by user input
         */
        
+        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Schichtaufbau " : "";
         public Element? SelectedElement => Session.SelectedElement;
         public bool IsLayerSelected => SelectedListViewItem != null;
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;

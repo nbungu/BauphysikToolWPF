@@ -1,8 +1,8 @@
-﻿using System;
+﻿using BauphysikToolWPF.Models.Domain;
+using BT.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models.Domain;
-using BT.Logging;
 
 namespace BauphysikToolWPF.Calculation
 {
@@ -13,10 +13,6 @@ namespace BauphysikToolWPF.Calculation
      */
     public class GlaserCalc : TemperatureCurveCalc
     {
-        // private fields as Instance Variables
-        public double RelFi { get; set; }
-        public double RelFe { get; set; }
-
         // public fields as Properties
         public double PhiMax { get; private set; }
         public double TaupunktMax_i { get; private set; }
@@ -28,12 +24,10 @@ namespace BauphysikToolWPF.Calculation
 
         // (Instance-) Constructor
         public GlaserCalc() {}
-        public GlaserCalc(Element? element, double rsi, double rse, double ti, double te, double relFi, double relFe) : base(element, rsi, rse, ti, te)
+        public GlaserCalc(Element? element, ThermalValuesCalcConfig config) : base(element, config)
         {
-            RelFi = Math.Max(0, relFi);
-            RelFe = Math.Max(0, relFe);
+            if (Element is null) return;
 
-            if (element is null) return;
             CalculateGlaser();
         }
         public void CalculateGlaser()

@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Services.Application;
+﻿using BauphysikToolWPF.Calculation;
+using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,6 +63,30 @@ namespace BauphysikToolWPF.Models.Domain
             {
                 if (value != null) LinkedFilePaths = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
                 else LinkedFilePaths = "";
+            }
+        }
+
+        /// <summary>
+        /// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,
+        /// which would require a re-calculation, are made there.
+        /// </summary>
+        [JsonIgnore]
+        public bool RecalculateEnvelope { get; set; } = true;
+
+        private EnvelopeCalculation _envelopeResults = new EnvelopeCalculation();
+        
+        [JsonIgnore]
+        public EnvelopeCalculation EnvelopeResults
+        {
+            get
+            {
+                if (RecalculateEnvelope)
+                {
+                    var newResults = new EnvelopeCalculation(EnvelopeItems, Session.EnvelopeCalcConfig);
+                    _envelopeResults = newResults;
+                    RecalculateEnvelope = false;
+                }
+                return _envelopeResults;
             }
         }
 

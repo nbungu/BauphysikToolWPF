@@ -59,7 +59,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             else
             {
                 // Check if current Material from Database List was edited
-                var dbMaterial = DatabaseAccess.GetMaterialsQuery().First(m => m.Id == SelectedListViewItem.Id);
+                var dbMaterial = DatabaseAccess.QueryMaterialById(SelectedListViewItem.Id);
                 if (!SelectedListViewItem.Equals(dbMaterial))
                 {
                     // Create new Material

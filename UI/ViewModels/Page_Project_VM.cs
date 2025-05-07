@@ -51,7 +51,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void Next()
         {
-            SwitchPage(NavigationContent.LandingPage);
+            SwitchPage(NavigationContent.ElementCatalogue);
         }
 
         [RelayCommand]
@@ -122,7 +122,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Session.SelectedProject.IsModified = false;
                 RecentProjectsManager.AddRecentProject(filePath);
                 Session.OnNewProjectAdded(false);
-                SwitchPage(NavigationContent.LandingPage);
+                SwitchPage(NavigationContent.ElementCatalogue);
             }
         }
 
@@ -170,7 +170,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             RecentProjectsManager.AddRecentProject(filePath);
             Session.OnNewProjectAdded(false);
 
-            SwitchPage(NavigationContent.LandingPage);
+            SwitchPage(NavigationContent.ElementCatalogue);
         }
 
         partial void OnAuthorNameChanged(string value)

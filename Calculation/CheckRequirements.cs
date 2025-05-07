@@ -1,10 +1,10 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {
@@ -16,36 +16,42 @@ namespace BauphysikToolWPF.Calculation
 
     public class CheckRequirements
     {
-        // Always fetch current Project on calling this Class. No need for Notifier or UpdaterManager when Project changes
-        private readonly Project _currentProject = Session.SelectedProject;
-
-        public Element Element { get; }
-        public double? U_max { get; }
-        public double? R_min { get; }
-        public double? Q_max { get; }
+        public Element? Element { get; }
+        public BuildingAgeType BuildingAge { get; }
+        public BuildingUsageType BuildingUsage { get; }
+        public double Ti { get; }
+        public double Te { get; }
+        public double UMax { get; private set; } = -1;
+        public double RMin { get; private set; } = -1;
+        public double QMax { get; private set; } = -1;
         public bool IsUValueOk { get; } // GEG Requirements
         public bool IsRValueOk { get; } // DIN 4108-2 Requirements
         public bool IsQValueOk { get; } // Not mandatory as requirement
 
-        public CheckRequirements(Element? element, double uValue, double qValue)
+        public CheckRequirements() { }
+        public CheckRequirements(Element? element, CheckRequirementsConfig config)
         {
-            if (element is null)
-            {
-                Element = new Element();
-                return;
-            }
-
             Element = element;
-            U_max = GetUMax();
-            R_min = GetRMin();
-            Q_max = GetQMax();
-            IsUValueOk = (U_max is null) || uValue <= U_max;
-            IsRValueOk = (R_min is null) || Element.RGesValue >= R_min;
-            IsQValueOk = (Q_max is null) || qValue <= Q_max;
+            if (Element is null) return;
+
+            BuildingAge = config.BuildingAge;
+            BuildingUsage = config.BuildingUsage;
+            Ti = config.Ti;
+            Te = config.Te;
+
+            Element.UpdateResults();
+            SetUMax();
+            SetRMin();
+            SetQMax();
+            IsUValueOk = UMax == -1 || Element.ThermalResults.UValue <= UMax;
+            IsRValueOk = RMin == -1 || Element.RGesValue >= RMin;
+            IsQValueOk = QMax == -1 || Element.ThermalResults.QValue <= QMax;
         }
 
-        private double? GetUMax()
+        private void SetUMax()
         {
+            if (Element is null) return;
+
             // default (irregular) values
             int requirementSourceId = -1;
 
@@ -54,71 +60,71 @@ namespace BauphysikToolWPF.Calculation
             var constructionRequirements = Element.Construction.Requirements;
 
             // catch constructions with no requirements (e.g. Innenwand)
-            if (constructionRequirements is null || constructionRequirements.Count == 0) return null;
+            if (constructionRequirements.Count == 0) return;
 
             // b) Select relevant Source based off Building Age and Usage
-            if (_currentProject.BuildingAge == Enums.BuildingAgeType.New)
+            if (BuildingAge == Enums.BuildingAgeType.New)
             {
-                if (_currentProject.BuildingUsage == Enums.BuildingUsageType.Residential)
+                if (BuildingUsage == Enums.BuildingUsageType.Residential)
                 {
                     requirementSourceId = (int)RequirementSourceType.GEG_Anlage1;
                 }
-                else if (_currentProject.BuildingUsage == Enums.BuildingUsageType.NonResidential)
+                else if (BuildingUsage == Enums.BuildingUsageType.NonResidential)
                 {
                     requirementSourceId = (int)RequirementSourceType.GEG_Anlage2;
                 }
             }
-            else if (_currentProject.BuildingAge == Enums.BuildingAgeType.Existing)
+            else if (BuildingAge == Enums.BuildingAgeType.Existing)
             {
                 requirementSourceId = (int)RequirementSourceType.GEG_Anlage7;
             }
 
             // c) Get specific Requirement from selected RequirementSource
             Requirement? specificRequirement = constructionRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
-            if (specificRequirement is null) return null;
+            if (specificRequirement is null) return;
 
             // Check if conditions have to be met
-            if (Session.Ti >= 19)
+            if (Ti >= 19)
             {
-                return specificRequirement.ValueA;
+                UMax = specificRequirement.ValueA;
             }
-            else if (Session.Ti > 12 && Session.Ti < 19)
+            else if (Ti > 12 && Ti < 19)
             {
-                return specificRequirement.ValueB ?? specificRequirement.ValueA;
+                UMax = specificRequirement.ValueB ?? specificRequirement.ValueA;
             }
             else
             {
                 //TODO
                 // If Room Temperature (inside) is lower than 12 °C it does not specify as 'heated' room. No requirement has to be met!
-                return null;
             }
         }
 
-        private double? GetRMin()
+        private void SetRMin()
         {
+            if (Element is null) return;
+            
             // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
             // via m:n relation of Construction and Requirement.
             List<Requirement> allRequirements = Element.Construction.Requirements;
 
             // catch constructions with no requirements
-            if (allRequirements.Count == 0) return null;
+            if (allRequirements.Count == 0) return;
 
             // b) Select relevant Source
             int requirementSourceId = (int)RequirementSourceType.DIN_4108_2_Tabelle3;
 
             // c) Get specific Requirement from selected RequirementSource
             Requirement? specificRequirement = allRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
-            if (specificRequirement is null) return null;
+            if (specificRequirement is null) return;
 
             // Check if conditions have to be met
-            if (Element.AreaMassDens >= 100) return specificRequirement.ValueA;
+            if (Element.AreaMassDens >= 100) RMin = specificRequirement.ValueA;
             
-            return specificRequirement.ValueB ?? specificRequirement.ValueA;
+            RMin = specificRequirement.ValueB ?? specificRequirement.ValueA;
         }
-        private double? GetQMax()
+        private void SetQMax()
         {
-            if (U_max is null) return null;
-            return Math.Round(Convert.ToDouble(U_max) * (Session.Ti - Session.Te), 3);
+            if (UMax >= 0) QMax = Math.Round(UMax * (Ti - Te), 4);
         }
     }
 }

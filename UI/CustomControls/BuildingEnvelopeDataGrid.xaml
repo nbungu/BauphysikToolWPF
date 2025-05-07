@@ -328,6 +328,21 @@
                         </DataGridTextColumn.HeaderStyle>
                     </DataGridTextColumn>
 
+                    <!-- Bauteilfläche Column -->
+                    <DataGridTextColumn Header="Bauteilfläche"
+                                        Binding="{Binding EnvelopeArea, Converter={StaticResource NumberConverter}}"
+                                        Width="88"
+                                        ElementStyle="{StaticResource DataGridTextColumn_Numeric_ElementStyle}"
+                                        EditingElementStyle="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Tag" Value="m²"/>
+                                <Setter Property="Background" Value="{StaticResource SecondaryLightYellowBrush}"/>
+                                <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
                     <!-- Ausrichtung Column -->
                     <DataGridComboBoxColumn x:Name="EnvelopeItem_OrientationSelectionColumn"
                                             Header="Ausrichtung"
@@ -347,21 +362,6 @@
                             </Style>
                         </DataGridComboBoxColumn.HeaderStyle>
                     </DataGridComboBoxColumn>
-
-                    <!-- Bauteilfläche Column -->
-                    <DataGridTextColumn Header="Bauteilfläche"
-                                        Binding="{Binding EnvelopeArea, Converter={StaticResource NumberConverter}}"
-                                        Width="88"
-                                        ElementStyle="{StaticResource DataGridTextColumn_Numeric_ElementStyle}"
-                                        EditingElementStyle="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
-                        <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Tag" Value="m²"/>
-                                <Setter Property="Background" Value="{StaticResource SecondaryLightYellowBrush}"/>
-                                <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
-                            </Style>
-                        </DataGridTextColumn.HeaderStyle>
-                    </DataGridTextColumn>
 
                     <!-- Netto Höhe Column -->
                     <DataGridTextColumn Header="Höhe"

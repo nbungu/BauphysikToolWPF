@@ -48,11 +48,21 @@ namespace BauphysikToolWPF.Repositories
             Database.Delete(material);
         }
 
+        public static Material QueryMaterialById(int materialId)
+        {
+            return GetMaterialsQuery().FirstOrDefault(m => m.Id == materialId, Material.Empty);
+        }
+
         #endregion
 
         #region Construction
 
         public static IQueryable<Construction> GetConstructionsQuery() => Database.Table<Construction>().AsQueryable();
+
+        public static Construction QueryConstructionById(int constructionId)
+        {
+            return GetConstructionsQuery().FirstOrDefault(c => c.Id == constructionId, new Construction());
+        }
 
         #endregion
 
@@ -75,11 +85,15 @@ namespace BauphysikToolWPF.Repositories
 
         #region DocumentSource
 
-        public static IQueryable<DocumentSource> GetRequirementSourcesQuery() => Database.Table<DocumentSource>().AsQueryable();
+        public static IQueryable<DocumentSource> GetDocumentSourcesQuery() => Database.Table<DocumentSource>().AsQueryable();
 
         public static DocumentSource QueryDocumentSourceBySourceType(RequirementSourceType sourceType)
         {
-            return GetRequirementSourcesQuery().First(r => (int)r.Source == (int)sourceType);
+            return GetDocumentSourcesQuery().FirstOrDefault(r => (int)r.Source == (int)sourceType, new DocumentSource());
+        }
+        public static DocumentSource QueryDocumentSourceById(int desgnDocumentId)
+        {
+            return GetDocumentSourcesQuery().FirstOrDefault(r => r.Id == desgnDocumentId, new DocumentSource());
         }
 
         #endregion
@@ -88,14 +102,14 @@ namespace BauphysikToolWPF.Repositories
 
         public static IQueryable<Requirement> GetRequirementsQuery() => Database.Table<Requirement>().AsQueryable();
 
-        public static List<Requirement> GetRequirements()
-        {
-            return Database.GetAllWithChildren<Requirement>();
-        }
         public static List<Requirement> QueryRequirementsBySourceType(RequirementSourceType sourceType)
         {
-            var requirementSourceId = QueryDocumentSourceBySourceType(sourceType).Id;
-            return GetRequirementsQuery().Where(e => e.DocumentSourceId == requirementSourceId).ToList();
+            var desgnDocumentId = QueryDocumentSourceBySourceType(sourceType).Id;
+            return GetRequirementsQuery().Where(e => e.DocumentSourceId == desgnDocumentId).ToList();
+        }
+        public static List<Requirement> QueryRequirementsByDesignDocumentId(int desgnDocumentId)
+        {
+            return GetRequirementsQuery().Where(e => e.DocumentSourceId == desgnDocumentId).ToList();
         }
 
         #endregion

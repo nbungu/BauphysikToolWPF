@@ -1,8 +1,7 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Services;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.UI.CustomControls;
+using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -10,7 +9,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using BauphysikToolWPF.Services.UI;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {

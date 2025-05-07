@@ -1,10 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BT.Geometry;
 using BT.Logging;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Calculation
@@ -19,10 +20,12 @@ namespace BauphysikToolWPF.Calculation
         private readonly Dictionary<int, double> _areaSharesMapping = new Dictionary<int, double>();
         
         public Element? Element { get; }
-        public double Ti { get; set; }
-        public double Te { get; set; }
-        public double Rsi { get; set; }
-        public double Rse { get; set; }
+        public double Ti { get; }
+        public double Te { get; }
+        public double Rsi { get; }
+        public double Rse { get; }
+        public double RelFi { get; }
+        public double RelFe { get; }
 
         // Calculated Properties
         public List<Layer> RelevantLayers { get; private set; } = new List<Layer>();
@@ -35,15 +38,18 @@ namespace BauphysikToolWPF.Calculation
         public bool IsValid { get; private set; }
 
         public ThermalValuesCalc() { }
-        public ThermalValuesCalc(Element? element, double rsi, double rse, double ti, double te)
+        public ThermalValuesCalc(Element? element, ThermalValuesCalcConfig config)
         {
             Element = element;
-            Rsi = Math.Max(0, rsi);
-            Rse = Math.Max(0, rse);
-            Ti = ti;
-            Te = te;
+            Rsi = Math.Max(0, config.Rsi);
+            Rse = Math.Max(0, config.Rse);
+            Ti = config.Ti;
+            Te = config.Te;
+            RelFi = Math.Max(0, config.RelFi);
+            RelFe = Math.Max(0, config.RelFe);
 
             if (Element is null) return;
+
             if (Element.IsInhomogeneous) CalculateInhomogeneous();
             else CalculateHomogeneous();
         }
@@ -184,7 +190,7 @@ namespace BauphysikToolWPF.Calculation
         
         private void PrepareMappingsForInhomogeneous()
         {
-            CreateCalculationAreaBoundaries();
+            SetCalculationAreaBoundaries();
 
             // Wenn ungültige Bounds ermittelt -> Homogenes Bauteil -> Normale Berechnung des Bauteils!
             if (_calculationAreaBounds.Area == 0)
@@ -252,7 +258,7 @@ namespace BauphysikToolWPF.Calculation
             }
         }
 
-        private void CreateCalculationAreaBoundaries()
+        private void SetCalculationAreaBoundaries()
         {
             var subConstr = RelevantLayers.Where(l => l.SubConstruction != null).Select(l => l.SubConstruction).ToList();
             double maxWidth = 0.0;
@@ -266,7 +272,7 @@ namespace BauphysikToolWPF.Calculation
                 var hSubs = subConstr.Where(s => s.Direction == SubConstructionDirection.Horizontal).ToList();
                 if (hSubs.Count > 0) maxHeight = hSubs.Max(s => s.Width + s.Spacing);
             }
-            //  whether exactly ONE of maxWidth or maxHeight is equal to zero
+            //  when exactly ONE of maxWidth or maxHeight is equal to zero
             if (maxWidth == 0.0 ^ maxHeight == 0.0)
             {
                 _calculationAreaBounds = new Rectangle(0, 0, Math.Max(maxWidth, maxHeight), Math.Max(maxWidth, maxHeight));

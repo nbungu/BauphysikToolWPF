@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.Calculation
 
         // Constructors
         public TemperatureCurveCalc() : base() {}
-        public TemperatureCurveCalc(Element? element, double rsi, double rse, double ti, double te) : base(element, rsi, rse, ti, te)
+        public TemperatureCurveCalc(Element? element, ThermalValuesCalcConfig config) : base(element, config)
         {
             if (Element is null) return;
             CalculateTemperatureCurve();

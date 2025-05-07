@@ -510,13 +510,12 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-
                         <StackPanel Orientation="Vertical" Margin="16,16,16,0">
                             <Label Content="Projekt:" Foreground="White" Margin="-4"/>
-                            <TextBlock Text="{Binding ProjectName}" MaxWidth="152" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="14"/>
+                            <TextBlock Text="{Binding ProjectName}" MaxWidth="152" MaxHeight="58" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="14"/>
                         </StackPanel>
                         <Button Grid.Row="1" Content="Projektdaten" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_House_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ProjectPage}" IsEnabled="{Binding IsProjectLoaded}" Margin="16"/>
-                        <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.LandingPage}" IsEnabled="{Binding IsProjectLoaded}" Margin="16,0,16,16"/>
+                        <Button Grid.Row="2" Content="Bauteilkatalog" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Elements_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.ElementCatalogue}" IsEnabled="{Binding IsProjectLoaded}" Margin="16,0,16,16"/>
                         <Button Grid.Row="3" Content="Gebäudehülle" Style="{StaticResource ButtonStyle01}" Tag="{StaticResource ButtonIcon_Floor_Plan}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.BuildingEnvelope}" IsEnabled="{Binding IsProjectLoaded}" Margin="16,0,16,16"/>
                     </Grid>
                 </Border>

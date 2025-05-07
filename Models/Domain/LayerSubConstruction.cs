@@ -66,7 +66,7 @@ namespace BauphysikToolWPF.Models.Domain
 
         // 1:1 relationship with Material
         [JsonIgnore]
-        public Material Material => DatabaseAccess.GetMaterialsQuery().FirstOrDefault(m => m.Id == MaterialId, Material.Empty);
+        public Material Material => DatabaseAccess.QueryMaterialById(MaterialId);
 
         [JsonIgnore]
         public bool IsValid => Width > 0 && Thickness > 0 && Spacing > 0 && !Material.IsNewEmptyMaterial;

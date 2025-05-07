@@ -1,12 +1,14 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using System.Collections.Generic;
+using System.Linq;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {
     public class EnvelopeCalculation
     {
+        private readonly List<EnvelopeItem> _inputCollection;
         private readonly EnvelopeCalculationConfig _config;
         
         public double HeatedRoomVolume { get; private set; }
@@ -32,10 +34,15 @@ namespace BauphysikToolWPF.Calculation
             new PropertyItem<double>(Symbol.AirExchangeRate, () => AirExchangeRate),
         };
 
-
-        public EnvelopeCalculation(IEnumerable<EnvelopeItem> inputCollection, EnvelopeCalculationConfig config = null)
+        public EnvelopeCalculation()
         {
-            _config = config ?? new EnvelopeCalculationConfig();
+            _inputCollection = new List<EnvelopeItem>();
+            _config = new EnvelopeCalculationConfig();
+        }
+        public EnvelopeCalculation(IEnumerable<EnvelopeItem> inputCollection, EnvelopeCalculationConfig config)
+        {
+            _inputCollection = inputCollection.ToList();
+            _config = config;
         }
 
         public void CalculateEnvelope()

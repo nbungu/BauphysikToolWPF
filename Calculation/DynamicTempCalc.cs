@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Numerics;
-using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Models.Domain;
 using BT.Logging;
 using LiveChartsCore.Defaults;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation
@@ -45,9 +45,10 @@ namespace BauphysikToolWPF.Calculation
         public DynamicTempCalc() {}
 
         // Chose Inheritance approach vs Composition approach 
-        public DynamicTempCalc(Element? element, double rsi, double rse, double ti, double te) : base(element, rsi, rse, ti, te)
+        public DynamicTempCalc(Element? element, ThermalValuesCalcConfig config) : base(element, config)
         {
-            if (element is null) return;
+            if (Element is null) return;
+
             CalculateDynamicValues();
         }
 

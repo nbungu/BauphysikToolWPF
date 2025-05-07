@@ -43,7 +43,7 @@ namespace BauphysikToolWPF.Models.Domain // or core?
         public string OrientationTypeName => OrientationTypeMapping[OrientationType];
 
         [JsonIgnore]
-        public Construction Construction => DatabaseAccess.GetConstructionsQuery().FirstOrDefault(e => e.Id == ConstructionId, Construction.Empty);
+        public Construction Construction => DatabaseAccess.QueryConstructionById(ConstructionId);
 
         [JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
@@ -157,13 +157,13 @@ namespace BauphysikToolWPF.Models.Domain // or core?
         #region Calculation Results
         
         [JsonIgnore]
-        public double RGesValue => Results.RGes; // R_ges in m²K/W
+        public double RGesValue => ThermalResults.RGes; // R_ges in m²K/W
         [JsonIgnore]
-        public double RTotValue => Results.RTotal; // R_tot in m²K/W
+        public double RTotValue => ThermalResults.RTotal; // R_tot in m²K/W
         [JsonIgnore]
-        public double QValue => Results.QValue; // q in W/m²
+        public double QValue => ThermalResults.QValue; // q in W/m²
         [JsonIgnore]
-        public double UValue => Results.UValue; // q in W/m²
+        public double UValue => ThermalResults.UValue; // q in W/m²
 
         /// <summary>
         /// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,
@@ -174,21 +174,22 @@ namespace BauphysikToolWPF.Models.Domain // or core?
 
         // Use GlaserCalc as Collection for Results due to Polymorphism;
         // You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.
-        private ThermalValuesCalc _results = new ThermalValuesCalc();
+        private ThermalValuesCalc _thermalResults = new ThermalValuesCalc();
         [JsonIgnore]
-        public ThermalValuesCalc Results
+        public ThermalValuesCalc ThermalResults
         {
             get
             {
                 if (Recalculate)
                 {
-                    var newResults = new ThermalValuesCalc(this, Session.Rsi, Session.Rse, Session.Ti, Session.Te);
-                    _results = newResults;
+                    var newResults = new ThermalValuesCalc(this, Session.ThermalValuesCalcConfig);
+                    _thermalResults = newResults;
                     Recalculate = false;
                 }
-                return _results;
+                return _thermalResults;
             }
         }
+
         #endregion
 
 
@@ -233,7 +234,12 @@ namespace BauphysikToolWPF.Models.Domain // or core?
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
-        
+
+        public void UpdateResults()
+        {
+            Recalculate = true;
+        }
+
         #endregion
     }
 }

@@ -1,13 +1,13 @@
 ﻿using BauphysikToolWPF.Services.Application;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System;
 using System.Collections.Generic;
+using BauphysikToolWPF.Repositories;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Database
 {
-    public class Construction : IDatabaseObject<Construction>, IEquatable<Construction>
+    public class Construction : IDatabaseObject<Construction>
     {
         //------Variablen-----//
 
@@ -20,12 +20,10 @@ namespace BauphysikToolWPF.Models.Database
         public ConstructionType Type { get; set; }
         [NotNull]
         public string TypeName { get; set; } = string.Empty;
-
+        [NotNull]
         public string TypeDescription { get; set; } = string.Empty;
-
         [NotNull]
         public int IsVertical { get; set; }
-
         [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
         public int DocumentSourceId { get; set; }
         [NotNull]
@@ -37,11 +35,11 @@ namespace BauphysikToolWPF.Models.Database
 
         // n:1 relationship with DocumentSource
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public DocumentSource DocumentSource { get; set; } = new DocumentSource();
+        public DocumentSource DocumentSource => DatabaseAccess.QueryDocumentSourceById(DocumentSourceId);
 
         // m:n relationship with Requirement
         [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
-        public List<Requirement> Requirements { get; set; } = new List<Requirement>();
+        public List<Requirement> Requirements => DatabaseAccess.QueryRequirementsByDesignDocumentId(DocumentSourceId);
 
         [Ignore]
         public bool IsLayoutVertical // true = 1
@@ -49,11 +47,6 @@ namespace BauphysikToolWPF.Models.Database
             get => IsVertical == 1;
             set => IsVertical = (value) ? 1 : 0;
         }
-        [Ignore]
-        public static Construction Empty => new Construction(); // Optional static default (for easy reference)
-
-        [Ignore]
-        public bool IsNewEmptyConstruction => this.Equals(Construction.Empty);
 
         //------Konstruktor-----//
 
@@ -83,29 +76,5 @@ namespace BauphysikToolWPF.Models.Database
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
-
-        #region IEquatable<Construction> Implementation
-
-        public bool Equals(Construction? other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return Id == other.Id && Type == other.Type && TypeName == other.TypeName && TypeDescription == other.TypeDescription && IsVertical == other.IsVertical && DocumentSourceId == other.DocumentSourceId;
-        }
-
-        public override bool Equals(object? obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
-            return Equals((Construction)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            return HashCode.Combine(Id, (int)Type, TypeName, TypeDescription, IsVertical, DocumentSourceId);
-        }
-
-        #endregion
     }
 }

@@ -31,7 +31,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 
-            _glaser = new GlaserCalc(Session.SelectedElement, Session.Rsi, Session.Rse, Session.Ti, Session.Te, Session.RelFi, Rel_Fe);
+            _glaser = new GlaserCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
             _glaser.CalculateHomogeneous(); // Bauteil berechnen
             _glaser.CalculateTemperatureCurve(); // Temperaturkurve
             _glaser.CalculateGlaser(); // Glaser Kurve
@@ -49,14 +49,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             MainWindow.SetPage(desiredPage);
         }
 
-        [RelayCommand]
-        private void EditElement() // Binding in XAML via 'EditElementCommand'
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(Session.SelectedElementId).ShowDialog();
-        }
-
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
@@ -70,6 +62,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Not Observable, because Triggered and Changed by the Values above
          */
+
+        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Glaser-Diagramm" : "";
         public Element SelectedElement => Session.SelectedElement;
         public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility ResultsChartVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;

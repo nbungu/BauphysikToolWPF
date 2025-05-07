@@ -1,8 +1,10 @@
-﻿using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Calculation;
+using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Services.Application
@@ -96,19 +98,31 @@ namespace BauphysikToolWPF.Services.Application
         /// </summary>
         public static Layer? SelectedLayer => SelectedElement?.Layers.FirstOrDefault(e => e?.InternalId == SelectedLayerId, null);
 
-        
-        // Unordered Collection. Key must be unique!
-        private static readonly Dictionary<Symbol, double> _userEnvVars = new Dictionary<Symbol, double>(6)
+        public static ThermalValuesCalcConfig ThermalValuesCalcConfig => new ThermalValuesCalcConfig()
         {
-            {Symbol.TemperatureInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior)[0].Value },
-            {Symbol.TemperatureExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior)[0].Value },
-            {Symbol.TransferResistanceSurfaceInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior)[0].Value },
-            {Symbol.TransferResistanceSurfaceExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior)[0].Value },
-            {Symbol.RelativeHumidityInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior)[0].Value },
-            {Symbol.RelativeHumidityExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior)[0].Value },
+            Ti = Ti,
+            Te = Te,
+            Rsi = Rsi,
+            Rse = Rse,
+            RelFi = RelFi,
+            RelFe = RelFe,
         };
 
-        //------Eigenschaften-----//
+        public static EnvelopeCalculationConfig EnvelopeCalcConfig => new EnvelopeCalculationConfig()
+        {
+            BuildingUsageType = SelectedProject?.BuildingUsage ?? BuildingUsageType.Residential,
+            BuildingTypeResidatial = SelectedProject?.BuildingTypeResidatial ?? BuildingTypeResidatial.EFH,
+            // TODO: ... Add other properties as needed
+        };
+
+        public static CheckRequirementsConfig CheckRequirementsConfig => new CheckRequirementsConfig()
+        {
+            BuildingAge = SelectedProject?.BuildingAge ?? BuildingAgeType.New,
+            BuildingUsage = SelectedProject?.BuildingUsage ?? BuildingUsageType.Residential,
+            Ti = Ti,
+            Te = Te,
+        };
+        
         // Kapselung von _userEnvVars
         public static double Ti
         {
@@ -182,5 +196,20 @@ namespace BauphysikToolWPF.Services.Application
                 }
             }
         }
+
+        #region private 
+
+        // Initialize with default values from the database
+        private static readonly Dictionary<Symbol, double> _userEnvVars = new Dictionary<Symbol, double>(6)
+        {
+            {Symbol.TemperatureInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior)[0].Value },
+            {Symbol.TemperatureExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior)[0].Value },
+            {Symbol.TransferResistanceSurfaceInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior)[0].Value },
+            {Symbol.TransferResistanceSurfaceExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior)[0].Value },
+            {Symbol.RelativeHumidityInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior)[0].Value },
+            {Symbol.RelativeHumidityExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior)[0].Value },
+        };
+
+        #endregion
     }
 }

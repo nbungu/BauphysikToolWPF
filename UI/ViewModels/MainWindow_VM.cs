@@ -118,7 +118,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 RecentProjectsManager.AddRecentProject(filePath);
 
                 Session.OnNewProjectAdded(false);
-                SwitchPage(NavigationContent.LandingPage);
+                SwitchPage(NavigationContent.ElementCatalogue);
             }
         }
 

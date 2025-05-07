@@ -40,14 +40,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             MainWindow.SetPage(desiredPage);
         }
 
-        [RelayCommand]
-        private void EditElement() // Binding in XAML via 'EditElementCommand'
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(Session.SelectedElementId).ShowDialog();
-        }
-
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
@@ -61,6 +53,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the _selection Values above
          */
 
+        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Zusammenfassung " : "";
         public Element? SelectedElement => Session.SelectedElement;
         public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
 
