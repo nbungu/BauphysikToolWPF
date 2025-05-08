@@ -10,7 +10,7 @@ namespace BauphysikToolWPF.Repositories
 {
     public static class DatabaseAccess // publisher of e.g. 'LayersChanged' event
     {
-        public static readonly string ConnectionString = DatabaseInstaller.GetInstalledDatabase(forceReplace: false);
+        public static readonly string ConnectionString = DatabaseInstaller.GetInstalledDatabase(forceReplace: true);
         public static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
 
         /*

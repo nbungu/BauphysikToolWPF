@@ -30,8 +30,6 @@ namespace BauphysikToolWPF.Models.Database
 
         [NotNull]
         public Symbol Symbol { get; set; }
-        [NotNull]
-        public Unit Unit { get; set; }
 
         [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
         public int DocumentSourceId { get; set; }
@@ -71,7 +69,6 @@ namespace BauphysikToolWPF.Models.Database
             copy.ValueB = this.ValueB;
             copy.ValueBCondition = this.ValueBCondition;
             copy.Symbol = this.Symbol;
-            copy.Unit = this.Unit;
             copy.DocumentSourceId = this.DocumentSourceId;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();

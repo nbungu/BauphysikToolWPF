@@ -92,6 +92,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
             { MaterialCategory.Air, 4.0 }
         };
 
+        // DIN V 18599-10 Anhang A
         public enum RoomUsageType
         {
             Wohnen,

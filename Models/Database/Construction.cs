@@ -1,27 +1,20 @@
-﻿using BauphysikToolWPF.Services.Application;
+﻿using BauphysikToolWPF.Repositories;
+using BauphysikToolWPF.Services.Application;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Collections.Generic;
-using BauphysikToolWPF.Repositories;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Database
 {
     public class Construction : IDatabaseObject<Construction>
     {
-        //------Variablen-----//
-
-
-        //------Eigenschaften-----//
-
         [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int Id { get; set; }
         [NotNull]
         public ConstructionType Type { get; set; }
         [NotNull]
         public string TypeName { get; set; } = string.Empty;
-        [NotNull]
-        public string TypeDescription { get; set; } = string.Empty;
         [NotNull]
         public int IsVertical { get; set; }
         [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
@@ -64,7 +57,6 @@ namespace BauphysikToolWPF.Models.Database
             copy.Id = -1;
             copy.Type = this.Type;
             copy.TypeName = this.TypeName;
-            copy.TypeDescription = this.TypeDescription;
             copy.IsVertical = this.IsVertical;
             copy.DocumentSourceId = this.DocumentSourceId;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();

@@ -63,9 +63,6 @@ namespace BauphysikToolWPF.Models.Domain
             new PropertyItem<bool>("Wirksame Schicht", () => IsEffective, value => IsEffective = value)
         };
 
-        [JsonIgnore]
-        public static Layer Empty => new Layer(); // Optional static default (for easy reference)
-
         // 1:1 relationship with Material
         [JsonIgnore]
         public Material Material => DatabaseAccess.QueryMaterialById(MaterialId);
