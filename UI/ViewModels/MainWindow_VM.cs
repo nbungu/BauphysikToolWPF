@@ -1,11 +1,13 @@
 ﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
-using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -18,6 +20,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from MainWindow.cs due to Class-Binding in xaml via DataContext
         public MainWindow_VM()
         {
+            
             Session.SelectedProjectChanged += RefreshXamlBindings;
             Session.NewProjectAdded += RefreshXamlBindings;
             // TODO: necessary?
@@ -35,7 +38,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void SwitchPage(NavigationContent desiredPage)
+        private void SwitchPage(NavigationPage desiredPage)
         {
             MainWindow.SetPage(desiredPage);
         }
@@ -55,7 +58,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     case MessageBoxResult.No:
                         DomainModelFactory.CreateNewProject();
                         Session.OnNewProjectAdded(false);
-                        SwitchPage(NavigationContent.ProjectPage);
+                        SwitchPage(NavigationPage.ProjectPage);
                         break;
                     case MessageBoxResult.Cancel:
                         // Do nothing, user cancelled the action
@@ -66,7 +69,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 DomainModelFactory.CreateNewProject();
                 Session.OnNewProjectAdded(false);
-                SwitchPage(NavigationContent.ProjectPage);
+                SwitchPage(NavigationPage.ProjectPage);
             }
         }
 
@@ -118,7 +121,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 RecentProjectsManager.AddRecentProject(filePath);
 
                 Session.OnNewProjectAdded(false);
-                SwitchPage(NavigationContent.ElementCatalogue);
+                SwitchPage(NavigationPage.ElementCatalogue);
             }
         }
 
@@ -128,12 +131,28 @@ namespace BauphysikToolWPF.UI.ViewModels
             new InfoWindow().ShowDialog();
         }
 
+        partial void OnSelectedParentPageItemChanged(NavigationContent? value)
+        {
+            if (value != null) MainWindow.SetPage(value.Page);
+        }
+
+        partial void OnSelectedChildPageItemChanged(NavigationContent? value)
+        {
+            if (value != null) MainWindow.SetPage(value.Page);
+        }
+
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
          * Initialized and Assigned with Default Values
          */
 
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(AvailableNavigationGroups))]
+        private NavigationContent? _selectedParentPageItem;
+
+        [ObservableProperty]
+        private NavigationContent? _selectedChildPageItem;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -141,6 +160,8 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because no direct input from User
          */
 
+        public List<NavigationContent> ParentPages { get; set; } = MainWindow.NavigationContent;
+        public List<NavigationGroupContent> AvailableNavigationGroups => SelectedParentPageItem?.GroupContent ?? new List<NavigationGroupContent>();
         public string Title => Session.SelectedProject != null ? $"Projekt: {ProjectName}   {Session.ProjectFilePath}" : Session.ProjectFilePath;
         public string ProjectName => Session.SelectedProject != null ? Session.SelectedProject.Name : "Noch kein Projekt geladen";
         public string IsEditedTagColorCode => Session.SelectedProject != null && Session.SelectedProject.IsModified ? "#1473e6" : "#00FFFFFF";
@@ -155,5 +176,20 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(IsProjectLoaded));
             OnPropertyChanged(nameof(SaveButtonVisibility));
         }
+
+        //private void UpdateSelectedChildPages()
+        //{
+        //    AvailableNavigationGroups.Clear();
+        //    if (SelectedParentPageItem?.GroupContent != null)
+        //    {
+        //        foreach (var group in SelectedParentPageItem.GroupContent)
+        //        {
+        //            foreach (var page in group.ChildPages)
+        //            {
+        //                SelectedChildPages.Add(page);
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

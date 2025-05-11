@@ -49,7 +49,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void SwitchPage(NavigationContent desiredPage)
+        private void SwitchPage(NavigationPage desiredPage)
         {
             MainWindow.SetPage(desiredPage);
         }

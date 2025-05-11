@@ -16,7 +16,6 @@ using System.Linq;
 using System.Windows;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
-
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for Page_TemperatureResults.cs: Used in xaml as "DataContext"
@@ -45,7 +44,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void SwitchPage(NavigationContent desiredPage)
+        private void SwitchPage(NavigationPage desiredPage)
         {
             MainWindow.SetPage(desiredPage);
         }

@@ -3,6 +3,7 @@ using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -10,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using BauphysikToolWPF.Models.UI;
 
 namespace BauphysikToolWPF
 {
@@ -20,45 +22,55 @@ namespace BauphysikToolWPF
      */
 
     // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF. Accessible from whole application
-    public enum NavigationContent
+    public enum NavigationPage
     {
         // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
         ProjectPage = 0,
-        ElementCatalogue = 1,
-        LayerSetup = 2,
-        Summary = 3,
-        TemperatureCurve = 4,
-        GlaserCurve = 5,
-        DynamicHeatCalc = 6,
-        BuildingEnvelope = 10
+        ElementCatalogue = 10,
+        LayerSetup = 11,
+        Summary = 12,
+        TemperatureCurve = 13,
+        GlaserCurve = 14,
+        DynamicHeatCalc = 15,
+        BuildingEnvelope = 20,
+        EnvelopeSummary = 21,
     }
     public partial class MainWindow : Window
     {
         public WindowState RestoredWindowState { get; set; }
 
-        private static ListBox? _navigationMenuListBox;
-        private static Border? _projectBoxHeader;
+        private static ContentControl? _mainWindowContent;
         private static ToastNotification? _toastNotification;
 
-        //public static readonly Dictionary<NavigationContent, string> NavigationContentMapping = new()
-        //{
-        //    { NavigationContent.ProjectData, "Projektdaten"},
-        //    { NavigationContent.ElementCatalogue, "Bauteilkatalog"},
-        //    { NavigationContent.LayerSetup, "Schichtenaufbau"},
-        //    { NavigationContent.Summary, "Zusammenfassung"},
-        //    { NavigationContent.TemperatureCurve, "Temperaturverlauf"},
-        //    { NavigationContent.GlaserCurve, "Glaser-Diagramm"},
-        //    { NavigationContent.DynamicHeatCalc, "Dynamische Wärmeberechnung"},
-        //    { NavigationContent.BuildingEnvelope, "Gebäudehülle"},
-        //};
+        public static List<NavigationContent> NavigationContent = new List<NavigationContent>()
+        {
+            new NavigationContent(NavigationPage.ProjectPage),
+            new NavigationContent(NavigationPage.ElementCatalogue)
+            {
+                GroupContent = new List<NavigationGroupContent>()
+                {
+                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(2) { NavigationPage.LayerSetup, NavigationPage.Summary }),
+                    new NavigationGroupContent("ERGEBNISSE", new List<NavigationPage>(3) { NavigationPage.TemperatureCurve, NavigationPage.GlaserCurve, NavigationPage.DynamicHeatCalc }),
+                }
+            },
+            new NavigationContent(NavigationPage.BuildingEnvelope)
+            {
+                GroupContent = new List<NavigationGroupContent>()
+                {
+                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(1) { NavigationPage.EnvelopeSummary }),
+                }
+            }
+        };
+
 
         public MainWindow()
         {
             InitializeComponent();
             // Assign for static usage
-            _navigationMenuListBox = this.NavigationMenuListBox;
-            _projectBoxHeader = this.ProjectBoxHeader;
             _toastNotification = this.Toast;
+            _mainWindowContent = this.MainWindowContent;
+
+            SetPage(NavigationPage.ProjectPage);
 
             if (UpdaterManager.NewVersionAvailable)
             {
@@ -69,50 +81,9 @@ namespace BauphysikToolWPF
             }
         }
 
-        public static void SetPage(NavigationContent page)
+        public static void SetPage(NavigationPage page)
         {
-            if (_navigationMenuListBox is null || _projectBoxHeader is null) return;
-            /*
-             * MainWindow.xaml changes the ContentPage based on the 'SelectedItem' string when toggled from 'NavigationListBox'
-             * The string values of the SelectedItem are defined at 'NavigationMenuItems'
-             * 
-             * Alternatively: MainWindow.xaml changes the ContentPage based on the 'Tag' string when NOT toggled from 'NavigationListBox'
-             * Set 'SelectedItem' or 'SelectedIndex' to null / -1 before!
-             */
-
-            switch (page)
-            {
-                case NavigationContent.ProjectPage:
-                    _navigationMenuListBox.SelectedIndex = -1;
-                    _projectBoxHeader.Tag = "ProjectPage";
-                    break;
-                case NavigationContent.ElementCatalogue:
-                    _navigationMenuListBox.SelectedIndex = -1;
-                    _projectBoxHeader.Tag = "LandingPage";
-                    break;
-                case NavigationContent.BuildingEnvelope:
-                    _navigationMenuListBox.SelectedIndex = -1;
-                    _projectBoxHeader.Tag = "BuildingEnvelope";
-                    break;
-                case NavigationContent.LayerSetup:
-                    _navigationMenuListBox.SelectedItem = "LayerSetup";
-                    break;
-                case NavigationContent.Summary:
-                    _navigationMenuListBox.SelectedItem = "Summary";
-                    break;
-                case NavigationContent.TemperatureCurve:
-                    _navigationMenuListBox.SelectedItem = "Temperature";
-                    break;
-                case NavigationContent.GlaserCurve:
-                    _navigationMenuListBox.SelectedItem = "Moisture";
-                    break;
-                case NavigationContent.DynamicHeatCalc:
-                    _navigationMenuListBox.SelectedItem = "Dynamic";
-                    break;
-                default:
-                    _navigationMenuListBox.SelectedItem = "LandingPage";
-                    break;
-            }
+            _mainWindowContent.Content = page;
         }
 
         public static void ShowToast(string message, ToastType toastType, int durationInSeconds = 3)

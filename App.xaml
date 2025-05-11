@@ -1,11 +1,40 @@
 ﻿<Application x:Class="BauphysikToolWPF.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              StartupUri="MainWindow.xaml">
     
     <!--Sets Resources available for entire Application-->
     <Application.Resources>
+
+
+        <!--The actual content pages: Used in MainWindow.xaml ContentControl to set the current page -->
+        <!-- Key = Enum value of NavigationPage -->
+        <DataTemplate x:Key="0">
+            <ui:Page_Project/>
+        </DataTemplate>
+        <DataTemplate x:Key="10">
+            <ui:Page_Elements/>
+        </DataTemplate>
+        <DataTemplate x:Key="20">
+            <ui:Page_BuildingEnvelope/>
+        </DataTemplate>
+        <DataTemplate x:Key="11">
+            <ui:Page_LayerSetup/>
+        </DataTemplate>
+        <DataTemplate x:Key="12">
+            <ui:Page_Summary/>
+        </DataTemplate>
+        <DataTemplate x:Key="13">
+            <ui:Page_TemperatureResults/>
+        </DataTemplate>
+        <DataTemplate x:Key="14">
+            <ui:Page_MoistureResults/>
+        </DataTemplate>
+        <DataTemplate x:Key="15">
+            <ui:Page_DynamicResults/>
+        </DataTemplate>
 
         <!--Application Color Palette-->
         <SolidColorBrush x:Key="PrimaryDarkBrush" Color="#253858"/>

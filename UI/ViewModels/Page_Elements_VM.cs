@@ -42,7 +42,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void SwitchPage(NavigationContent desiredPage)
+        private void SwitchPage(NavigationPage desiredPage)
         {
             if (SelectedElement is null) return;
             MainWindow.SetPage(desiredPage);
@@ -104,7 +104,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void ElementDoubleClick()
         {
-            SwitchPage(NavigationContent.LayerSetup);
+            SwitchPage(NavigationPage.LayerSetup);
         }
 
         [RelayCommand]
