@@ -11,9 +11,10 @@ namespace BauphysikToolWPF.Models.UI
 
         public NavigationContent() { } // default constructor for XAML binding
         
-        public NavigationContent(NavigationPage page)
+        public NavigationContent(NavigationPage page, bool isEnabled = true)
         {
             Page = page;
+            IsEnabled = isEnabled;
         }
 
         public static readonly Dictionary<NavigationPage, string> NavigationNameMapping = new()
@@ -47,12 +48,12 @@ namespace BauphysikToolWPF.Models.UI
 
         public NavigationGroupContent() { } // default constructor for XAML binding
 
-        public NavigationGroupContent(string groupHeader, List<NavigationPage> pages)
+        public NavigationGroupContent(string groupHeader, List<NavigationPage> pages, bool isGroupEnabled = true)
         {
             GroupHeader = groupHeader;
             foreach (var page in pages)
             {
-                ChildPages.Add(new NavigationContent(page));
+                ChildPages.Add(new NavigationContent(page, isGroupEnabled));
             }
         }
     }

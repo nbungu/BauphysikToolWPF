@@ -42,31 +42,10 @@ namespace BauphysikToolWPF
         private static ContentControl? _mainWindowContent;
         private static ToastNotification? _toastNotification;
 
-        public static List<NavigationContent> NavigationContent = new List<NavigationContent>()
-        {
-            new NavigationContent(NavigationPage.ProjectPage),
-            new NavigationContent(NavigationPage.ElementCatalogue)
-            {
-                GroupContent = new List<NavigationGroupContent>()
-                {
-                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(2) { NavigationPage.LayerSetup, NavigationPage.Summary }),
-                    new NavigationGroupContent("ERGEBNISSE", new List<NavigationPage>(3) { NavigationPage.TemperatureCurve, NavigationPage.GlaserCurve, NavigationPage.DynamicHeatCalc }),
-                }
-            },
-            new NavigationContent(NavigationPage.BuildingEnvelope)
-            {
-                GroupContent = new List<NavigationGroupContent>()
-                {
-                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(1) { NavigationPage.EnvelopeSummary }),
-                }
-            }
-        };
-
-
         public MainWindow()
         {
             InitializeComponent();
-            // Assign for static usage
+
             _toastNotification = this.Toast;
             _mainWindowContent = this.MainWindowContent;
 
