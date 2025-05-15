@@ -36,36 +36,23 @@
         <ui1:PageTemplateSelector x:Key="PageTemplateSelector" />
         
         <DataTemplate x:Key="ParentPageItemTemplate">
-            <StackPanel Orientation="Horizontal">
-                <Image x:Name="MenuItemIcon"
-                       VerticalAlignment="Center"
-                       HorizontalAlignment="Center"
-                       Margin="10"
-                       MaxWidth="20"
-                       MaxHeight="20"
-                       Stretch="Uniform"
-                       Source="{StaticResource ButtonIcon_Accepted_B}" />
-                <TextBlock x:Name="MenuItemLabel"
-                           FontSize="14"
-                           FontWeight="Bold"
-                           VerticalAlignment="Center"
-                           Margin="4,4,16,4"
-                           Text="{Binding PageName}" />
-            </StackPanel>
+            <Button Content="{Binding PageName}"
+                    IsEnabled="{Binding IsEnabled}"
+                    Command="{Binding DataContext.ParentPageButtonClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding Page}"
+                    Style="{StaticResource ButtonStyle01}"
+                    Tag="{StaticResource ButtonIcon_Accepted_B}"/>
         </DataTemplate>
 
         <Style x:Key="ParentPageItemStyle" TargetType="ListBoxItem">
-            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
-            <Setter Property="IsEnabled" Value="{Binding Tag, RelativeSource={RelativeSource AncestorType=ListBox}}"/>
-            <Setter Property="MinHeight" Value="32"/>
-            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Focusable" Value="False"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
                         <Border Name="Bd"
-                                IsEnabled="{TemplateBinding IsEnabled}"
                                 Background="{TemplateBinding Background}"
-                                BorderThickness="2"
+                                BorderThickness="4,0,0,0"
                                 BorderBrush="Transparent"
                                 SnapsToDevicePixels="true"
                                 Margin="16,8,16,8"
@@ -76,42 +63,41 @@
                                 Margin="0"/>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <Trigger Property="IsSelected" Value="True">
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
                                 <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}" />
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="Bd" Property="Background" Value="{StaticResource PrimaryHoverBrush}" />
-                            </Trigger>
-                            <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Focusable" Value="False"/>
-                                <Setter Property="Cursor" Value="Arrow"/>
-                                <Setter Property="Opacity" Value="0.5"/>
-                            </Trigger>
+                            </DataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
+            
         </Style>
 
         <DataTemplate x:Key="ChildPageItemTemplate">
+            <Button Content="{Binding PageName}"
+                    IsEnabled="{Binding IsEnabled}"
+                    Command="{Binding DataContext.ChildPageButtonClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    CommandParameter="{Binding Page}"
+                    Style="{StaticResource ButtonStyle01}"
+                    Tag="{StaticResource ButtonIcon_Accepted_B}"/>
+            <!--
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
+                
                 <Image x:Name="MenuItemIcon" Source="{StaticResource ButtonIcon_Accepted_W}" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4" MaxWidth="24"/>
                 <Label x:Name="MenuItemLabel" Content="{Binding PageName}" Grid.Column="1" HorizontalContentAlignment="Center" Foreground="White" FontSize="14" Margin="0,4,4,4"/>
             </Grid>
+            -->
         </DataTemplate>
 
         <Style x:Key="ChildPageItemStyle" TargetType="ListBoxItem">
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Height" Value="40"/>
-            <Setter Property="Cursor" Value="Hand"/>
+            
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource PrimaryLightBrush}"/>
-            <Setter Property="Margin" Value="0,8,0,0"/> 
-            <Setter Property="ToolTip" Value="{Binding}"/>  
+            <Setter Property="Margin" Value="0,8,0,0"/>
+            <Setter Property="ToolTip" Value="{Binding}"/>
             <Setter Property="Visibility" Value="Visible"/>
             <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
             <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
@@ -415,7 +401,6 @@
                         <!-- TOP: Parent Page Selection -->
                         <ListBox Grid.Row="1" x:Name="ParentPageListBox"
                                  ItemsSource="{Binding ParentPages}"
-                                 SelectedItem="{Binding SelectedParentPageItem, Mode=TwoWay}"
                                  ItemTemplate="{StaticResource ParentPageItemTemplate}"
                                  ItemContainerStyle="{StaticResource ParentPageItemStyle}"
                                  Style="{StaticResource ParentPagesListBoxStyle}"
@@ -427,7 +412,7 @@
                 <!--Left Selection Box Bottom-->
                 <ItemsControl Grid.Row="1"
                               Grid.Column="0"
-                              ItemsSource="{Binding AvailableNavigationGroups}"
+                              ItemsSource="{Binding AvailableChildGroups}"
                               Background="{StaticResource PrimaryDarkBrush}"
                               BorderThickness="1">
                     <ItemsControl.ItemTemplate>
@@ -442,10 +427,9 @@
 
                                 <!-- Child Pages List -->
                                 <ListBox ItemsSource="{Binding ChildPages}"
-                                         SelectedItem="{Binding DataContext.SelectedChildPageItem, RelativeSource={RelativeSource AncestorType=Window}}"
                                          BorderThickness="1"
                                          ItemTemplate="{StaticResource ChildPageItemTemplate}"
-                                         ItemContainerStyle="{StaticResource ChildPageItemStyle}"
+                                         ItemContainerStyle="{StaticResource ParentPageItemStyle}"
                                          Style="{StaticResource ChildPagesListBoxStyle}"/>
                             </StackPanel>
                         </DataTemplate>

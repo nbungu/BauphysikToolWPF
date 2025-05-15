@@ -1,17 +1,18 @@
-﻿using BauphysikToolWPF.Repositories;
+﻿using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using BauphysikToolWPF.Models.UI;
 
 namespace BauphysikToolWPF
 {
@@ -39,6 +40,28 @@ namespace BauphysikToolWPF
     {
         public WindowState RestoredWindowState { get; set; }
 
+        public static Dictionary<NavigationPage, NavigationContent> ParentPageDictionary => ParentPages.ToDictionary(p => p.Page, p => p);
+
+        public static List<NavigationContent> ParentPages = new List<NavigationContent>()
+        {
+            new NavigationContent(NavigationPage.ProjectPage, false),
+            new NavigationContent(NavigationPage.ElementCatalogue, false)
+            {
+                PageGroups = new List<NavigationGroupContent>()
+                {
+                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(2) { NavigationPage.LayerSetup, NavigationPage.Summary }),
+                    new NavigationGroupContent("ERGEBNISSE", new List<NavigationPage>(3) { NavigationPage.TemperatureCurve, NavigationPage.GlaserCurve, NavigationPage.DynamicHeatCalc }),
+                }
+            },
+            new NavigationContent(NavigationPage.BuildingEnvelope, false)
+            {
+                PageGroups = new List<NavigationGroupContent>()
+                {
+                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(1) { NavigationPage.EnvelopeSummary }),
+                }
+            }
+        };
+
         private static ContentControl? _mainWindowContent;
         private static ToastNotification? _toastNotification;
 
@@ -60,9 +83,11 @@ namespace BauphysikToolWPF
             }
         }
 
-        public static void SetPage(NavigationPage page)
+        public static void SetPage(NavigationPage targetPage, NavigationPage? originPage = null)
         {
-            _mainWindowContent.Content = page;
+            if (_mainWindowContent == null) return;
+            _mainWindowContent.Content = targetPage;
+            Session.OnPageChanged(targetPage, originPage);
         }
 
         public static void ShowToast(string message, ToastType toastType, int durationInSeconds = 3)

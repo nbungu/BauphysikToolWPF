@@ -333,7 +333,7 @@
                 Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string-->
             </Border>
 
-            <Button Grid.Row="3" Content="Schichtaufbau" VerticalAlignment="Bottom" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationPage.LayerSetup}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_Layer_W}" IsEnabled="{Binding ElementToolsAvailable}" />
+            <Button Grid.Row="3" Content="Schichtaufbau" VerticalAlignment="Bottom" Command="{Binding SchichtaufbauClickCommand}" Style="{StaticResource ButtonStyle01_Highlighted}" Tag="{StaticResource ButtonIcon_Layer_W}" IsEnabled="{Binding ElementToolsAvailable}" />
 
         </Grid>
 

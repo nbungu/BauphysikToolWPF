@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -23,8 +24,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.SelectedProjectChanged += RefreshXamlBindings;
             Session.NewProjectAdded += RefreshXamlBindings;
             Session.SelectedLayerChanged += RefreshIsEditedTag;
-            // TODO: Doesnt get triggert when element changes
-            Session.SelectedElementChanged += RefreshChildPagesAndIsEditedTag;
+            Session.SelectedElementChanged += RefreshIsEditedTag;
+            Session.PageChanged += OnPageChanged;
 
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
@@ -36,12 +37,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Update ONLY UI-Used Values by fetching from Database!
          */
 
-        [RelayCommand]
-        private void SwitchPage(NavigationPage desiredPage)
-        {
-            MainWindow.SetPage(desiredPage);
-        }
-        
         [RelayCommand]
         private void New()
         {
@@ -57,7 +52,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     case MessageBoxResult.No:
                         DomainModelFactory.CreateNewProject();
                         Session.OnNewProjectAdded(false);
-                        SwitchPage(NavigationPage.ProjectPage);
+                        MainWindow.SetPage(NavigationPage.ProjectPage);
                         break;
                     case MessageBoxResult.Cancel:
                         // Do nothing, user cancelled the action
@@ -68,7 +63,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 DomainModelFactory.CreateNewProject();
                 Session.OnNewProjectAdded(false);
-                SwitchPage(NavigationPage.ProjectPage);
+                MainWindow.SetPage(NavigationPage.ProjectPage);
             }
         }
 
@@ -120,25 +115,24 @@ namespace BauphysikToolWPF.UI.ViewModels
                 RecentProjectsManager.AddRecentProject(filePath);
 
                 Session.OnNewProjectAdded(false);
-                SwitchPage(NavigationPage.ElementCatalogue);
+                MainWindow.SetPage(NavigationPage.ElementCatalogue);
             }
         }
 
         [RelayCommand]
-        private void ShowInfo()
+        private void ParentPageButtonClick(NavigationPage parentPage)
         {
-            new InfoWindow().ShowDialog();
+            MainWindow.SetPage(parentPage);
         }
 
-        partial void OnSelectedParentPageItemChanged(NavigationContent? value)
+        [RelayCommand]
+        private void ChildPageButtonClick(NavigationPage childPage)
         {
-            if (value != null) MainWindow.SetPage(value.Page);
+            MainWindow.SetPage(childPage);
         }
 
-        partial void OnSelectedChildPageItemChanged(NavigationContent? value)
-        {
-            if (value != null) MainWindow.SetPage(value.Page);
-        }
+        [RelayCommand]
+        private void ShowInfo() => new InfoWindow().ShowDialog();
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
@@ -146,12 +140,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Initialized and Assigned with Default Values
          */
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(AvailableNavigationGroups))]
-        private NavigationContent? _selectedParentPageItem;
 
-        [ObservableProperty]
-        private NavigationContent? _selectedChildPageItem;
 
         /*
          * MVVM Capsulated Properties + Triggered by other Properties
@@ -160,55 +149,49 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
 
-        public List<NavigationGroupContent> AvailableNavigationGroups => SelectedParentPageItem?.GroupContent ?? new List<NavigationGroupContent>();
         public string Title => Session.SelectedProject != null ? $"Projekt: {ProjectName}   {Session.ProjectFilePath}" : Session.ProjectFilePath;
         public string ProjectName => Session.SelectedProject != null ? Session.SelectedProject.Name : "Noch kein Projekt geladen";
         public string IsEditedTagColorCode => Session.SelectedProject != null && Session.SelectedProject.IsModified ? "#1473e6" : "#00FFFFFF";
         public bool IsProjectLoaded => !Session.SelectedProject?.IsNewEmptyProject ?? false;
         public Visibility SaveButtonVisibility => IsProjectLoaded ? Visibility.Visible : Visibility.Collapsed;
-        public bool ShowElementCatalogueChildren => Session.SelectedElementId != -1;
 
-        public List<NavigationContent> ParentPages => new List<NavigationContent>()
-        {
-            new NavigationContent(NavigationPage.ProjectPage, isEnabled: IsProjectLoaded),
-            new NavigationContent(NavigationPage.ElementCatalogue, isEnabled: IsProjectLoaded)
-            {
-                GroupContent = new List<NavigationGroupContent>()
-                {
-                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(2) { NavigationPage.LayerSetup, NavigationPage.Summary }, isGroupEnabled: ShowElementCatalogueChildren),
-                    new NavigationGroupContent("ERGEBNISSE", new List<NavigationPage>(3) { NavigationPage.TemperatureCurve, NavigationPage.GlaserCurve, NavigationPage.DynamicHeatCalc }, isGroupEnabled: ShowElementCatalogueChildren),
-                }
-            },
-            new NavigationContent(NavigationPage.BuildingEnvelope, isEnabled: IsProjectLoaded)
-            {
-                GroupContent = new List<NavigationGroupContent>()
-                {
-                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(1) { NavigationPage.EnvelopeSummary }),
-                }
-            }
-        };
+        #region Page Navigation
+        
+        public List<NavigationContent> ParentPages => MainWindow.ParentPages;
+        public NavigationContent? SelectedParentPageItem => ParentPages.FirstOrDefault(p => p.IsSelected);
+        public IEnumerable<NavigationGroupContent> AvailableChildGroups => SelectedParentPageItem?.PageGroups?.Where(grp => grp.IsEnabled) ?? new List<NavigationGroupContent>();
+
+        #endregion
 
         private void RefreshXamlBindings()
         {
-            OnPropertyChanged(nameof(ParentPages));
-            OnPropertyChanged(nameof(AvailableNavigationGroups));
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(ProjectName));            
             OnPropertyChanged(nameof(IsEditedTagColorCode));
             OnPropertyChanged(nameof(IsProjectLoaded));
             OnPropertyChanged(nameof(SaveButtonVisibility));
+            OnPropertyChanged(nameof(ParentPages));
+            OnPropertyChanged(nameof(AvailableChildGroups));
+        }
+
+        private void OnPageChanged(NavigationPage target, NavigationPage? origin)
+        {
+            ParentPages.ForEach(p => p.IsEnabled = IsProjectLoaded);
+
+            if (MainWindow.ParentPageDictionary.ContainsKey(target)) ParentPages.ForEach(p => p.IsSelected = p.Page == target);
+            
+            if (origin == NavigationPage.ElementCatalogue)
+                MainWindow.ParentPageDictionary[NavigationPage.ElementCatalogue].PageGroups?.ForEach(grp => grp.IsEnabled = true);
+            if (target == NavigationPage.ElementCatalogue)
+                MainWindow.ParentPageDictionary[NavigationPage.ElementCatalogue].PageGroups?.ForEach(grp => grp.IsEnabled = false);
+
+            // Dont need sice relevant collection properties have INotifyPropertyChanged implemented
+            //OnPropertyChanged(nameof(ParentPages));
+            //OnPropertyChanged(nameof(AvailableChildGroups));
         }
 
         private void RefreshIsEditedTag()
         {
-            OnPropertyChanged(nameof(IsEditedTagColorCode));
-        }
-
-        private void RefreshChildPagesAndIsEditedTag()
-        {
-            OnPropertyChanged(nameof(ShowElementCatalogueChildren));
-            OnPropertyChanged(nameof(ParentPages));
-            OnPropertyChanged(nameof(AvailableNavigationGroups));
             OnPropertyChanged(nameof(IsEditedTagColorCode));
         }
     }

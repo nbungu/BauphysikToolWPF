@@ -10,6 +10,9 @@ using static BauphysikToolWPF.Models.UI.Enums;
 namespace BauphysikToolWPF.Services.Application
 {
     public delegate void Notify(); // delegate (signature: return type void, no input parameters)
+
+    public delegate void NotifyPageChanged(NavigationPage targetPage, NavigationPage? originPage = null);
+    
     public static class Session // publisher of 'EnvVarsChanged' event
     {
         #region EventHandlers
@@ -23,6 +26,9 @@ namespace BauphysikToolWPF.Services.Application
         public static event Notify? SelectedLayerChanged;
         public static event Notify? EnvVarsChanged;
         public static event Notify? EnvelopeItemsChanged;
+
+
+        public static event NotifyPageChanged? PageChanged;
 
         // event handlers - publisher
         public static void OnSelectedProjectChanged(bool updateIsModified = true) //protected virtual method
@@ -70,6 +76,11 @@ namespace BauphysikToolWPF.Services.Application
             if (SelectedProject == null) return;
             if (updateIsModified) SelectedProject.IsModified = true;
             EnvelopeItemsChanged?.Invoke();
+        }
+        public static void OnPageChanged(NavigationPage targetPage, NavigationPage? originPage = null)
+        {
+            if (SelectedProject == null) return;
+            PageChanged?.Invoke(targetPage, originPage);
         }
 
         #endregion

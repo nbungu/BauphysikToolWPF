@@ -42,13 +42,6 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void SwitchPage(NavigationPage desiredPage)
-        {
-            if (SelectedElement is null) return;
-            MainWindow.SetPage(desiredPage);
-        }
-
-        [RelayCommand]
         private void AddNewElement()
         {
             Session.SelectedElementId = -1;
@@ -104,7 +97,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void ElementDoubleClick()
         {
-            SwitchPage(NavigationPage.LayerSetup);
+            if (SelectedElement is null) return;
+            MainWindow.SetPage(NavigationPage.LayerSetup, NavigationPage.ElementCatalogue);
+        }
+
+        [RelayCommand]
+        private void SchichtaufbauClick()
+        {
+            if (SelectedElement is null) return;
+            MainWindow.SetPage(NavigationPage.LayerSetup, NavigationPage.ElementCatalogue);
         }
 
         [RelayCommand]
