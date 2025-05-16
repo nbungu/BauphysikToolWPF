@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -34,7 +35,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             PropertyItem<int>.PropertyChanged += UpdatePresets;
             PropertyItem<string>.PropertyChanged += UpdatePresets;
         }
-        
+
+        [RelayCommand]
+        private void SwitchPage(NavigationPage desiredPage)
+        {
+            MainWindow.SetPage(desiredPage);
+        }
+
         [RelayCommand]
         private void AddEnvelopeItem()
         {
@@ -131,7 +138,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Not Observable, not directly mutated by user input
          */
-
+        public string Title => "Eingabe der thermischen Hüllfläche";
         public ObservableCollection<EnvelopeItem> EnvelopeItems => new ObservableCollection<EnvelopeItem>(Session.SelectedProject?.EnvelopeItems ?? new List<EnvelopeItem>());
         public bool IsRowSelected => SelectedEnvelopeItem != null;
         public Visibility PresetActiveVisibility => AnyPresetActive ? Visibility.Visible : Visibility.Collapsed;

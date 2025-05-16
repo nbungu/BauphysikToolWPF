@@ -14,7 +14,7 @@ namespace BauphysikToolWPF.Services.UI
             // See App.xaml e.g.: <DataTemplate x:Key="0">
             string key = Convert.ToString((int)page);
 
-            return System.Windows.Application.Current.Resources[key] as DataTemplate;
+            return NavigationManager.GetPageFromAppResources(key);
         }
     }
 }

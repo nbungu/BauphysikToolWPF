@@ -228,6 +228,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Update="UI\Page_EnvelopeSummary.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Repositories\InitialDB.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

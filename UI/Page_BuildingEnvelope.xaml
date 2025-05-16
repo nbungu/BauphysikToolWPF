@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              mc:Ignorable="d"
              d:DesignHeight="1200"
              d:DesignWidth="1400">
@@ -24,16 +25,12 @@
 
         <Border Grid.Row="0" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
-                    <Label Content="Zurück"/>
-                </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                    <Label Content="Eingabe der thermischen Hüllfläche" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
+                    <Label Content="{Binding Title}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.EnvelopeSummary}" Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -82,7 +79,7 @@
 
                 </StackPanel>
 
-                <Label Grid.Row="0" Content="{Binding ItemsCheckedCountString}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Label Grid.Row="0" Content="{Binding ItemsCountString}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <!--EnvelopeItem DataGrid-->
                 <controls:BuildingEnvelopeDataGrid

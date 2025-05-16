@@ -52,7 +52,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     case MessageBoxResult.No:
                         DomainModelFactory.CreateNewProject();
                         Session.OnNewProjectAdded(false);
-                        MainWindow.SetPage(NavigationPage.ProjectPage);
+                        MainWindow.SetPage(NavigationPage.ProjectData);
                         break;
                     case MessageBoxResult.Cancel:
                         // Do nothing, user cancelled the action
@@ -63,7 +63,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 DomainModelFactory.CreateNewProject();
                 Session.OnNewProjectAdded(false);
-                MainWindow.SetPage(NavigationPage.ProjectPage);
+                MainWindow.SetPage(NavigationPage.ProjectData);
             }
         }
 
@@ -120,16 +120,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void ParentPageButtonClick(NavigationPage parentPage)
-        {
-            MainWindow.SetPage(parentPage);
-        }
-
-        [RelayCommand]
-        private void ChildPageButtonClick(NavigationPage childPage)
-        {
-            MainWindow.SetPage(childPage);
-        }
+        private void SetPageButtonClick(NavigationPage targetPage) => MainWindow.SetPage(targetPage);
 
         [RelayCommand]
         private void ShowInfo() => new InfoWindow().ShowDialog();
@@ -157,9 +148,25 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         #region Page Navigation
         
-        public List<NavigationContent> ParentPages => MainWindow.ParentPages;
-        public NavigationContent? SelectedParentPageItem => ParentPages.FirstOrDefault(p => p.IsSelected);
-        public IEnumerable<NavigationGroupContent> AvailableChildGroups => SelectedParentPageItem?.PageGroups?.Where(grp => grp.IsEnabled) ?? new List<NavigationGroupContent>();
+        public List<NavigationContent> ParentPages => NavigationManager.ParentPages;
+        public List<NavigationGroupContent> AvailableChildGroups => ParentPages.FirstOrDefault(p => p.IsSelected)?.PageGroups ?? new List<NavigationGroupContent>();
+
+        private void OnPageChanged(NavigationPage target, NavigationPage? origin)
+        {
+            NavigationManager.UpdateParentEnabledStates();
+            target.UpdateParentSelectedState();
+            target.UpdateChildSelectedState(AvailableChildGroups);
+
+            if (origin == NavigationPage.ElementCatalogue)
+                NavigationManager.ParentPageDictionary[NavigationPage.ElementCatalogue].PageGroups?.ForEach(grp => grp.IsEnabled = true);
+            if (target == NavigationPage.ElementCatalogue)
+                NavigationManager.ParentPageDictionary[NavigationPage.ElementCatalogue].PageGroups?.ForEach(grp => grp.IsEnabled = false);
+            
+            OnPropertyChanged(nameof(AvailableChildGroups));
+
+            // Dont need sice relevant collection properties have INotifyPropertyChanged implemented
+            //OnPropertyChanged(nameof(ParentPages));
+        }
 
         #endregion
 
@@ -170,24 +177,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(IsEditedTagColorCode));
             OnPropertyChanged(nameof(IsProjectLoaded));
             OnPropertyChanged(nameof(SaveButtonVisibility));
-            OnPropertyChanged(nameof(ParentPages));
             OnPropertyChanged(nameof(AvailableChildGroups));
-        }
-
-        private void OnPageChanged(NavigationPage target, NavigationPage? origin)
-        {
-            ParentPages.ForEach(p => p.IsEnabled = IsProjectLoaded);
-
-            if (MainWindow.ParentPageDictionary.ContainsKey(target)) ParentPages.ForEach(p => p.IsSelected = p.Page == target);
-            
-            if (origin == NavigationPage.ElementCatalogue)
-                MainWindow.ParentPageDictionary[NavigationPage.ElementCatalogue].PageGroups?.ForEach(grp => grp.IsEnabled = true);
-            if (target == NavigationPage.ElementCatalogue)
-                MainWindow.ParentPageDictionary[NavigationPage.ElementCatalogue].PageGroups?.ForEach(grp => grp.IsEnabled = false);
 
             // Dont need sice relevant collection properties have INotifyPropertyChanged implemented
             //OnPropertyChanged(nameof(ParentPages));
-            //OnPropertyChanged(nameof(AvailableChildGroups));
         }
 
         private void RefreshIsEditedTag()

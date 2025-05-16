@@ -34,94 +34,110 @@
     <Window.Resources>
         
         <ui1:PageTemplateSelector x:Key="PageTemplateSelector" />
-        
+
+
+        <!--
+        PARENT PAGES
+        -->
+        <Style x:Key="ParentPagesListBoxStyle" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Padding" Value="0,4,0,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+
         <DataTemplate x:Key="ParentPageItemTemplate">
             <Button Content="{Binding PageName}"
+                    ToolTip="{Binding Tooltip}"
                     IsEnabled="{Binding IsEnabled}"
-                    Command="{Binding DataContext.ParentPageButtonClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Command="{Binding DataContext.SetPageButtonClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                     CommandParameter="{Binding Page}"
                     Style="{StaticResource ButtonStyle01}"
-                    Tag="{StaticResource ButtonIcon_Accepted_B}"/>
+                    Tag="{Binding Icon}"/>
         </DataTemplate>
 
         <Style x:Key="ParentPageItemStyle" TargetType="ListBoxItem">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Focusable" Value="False"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border Name="Bd"
+                        <Border Name="listBoxItem_Border"
                                 Background="{TemplateBinding Background}"
-                                BorderThickness="4,0,0,0"
+                                BorderThickness="4,0,0,0"   
                                 BorderBrush="Transparent"
                                 SnapsToDevicePixels="true"
-                                Margin="16,8,16,8"
+                                Margin="0,0,0,16"
                                 CornerRadius="8">
                             <ContentPresenter
-                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                 Margin="0"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                                <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource PrimaryHighlightBrush}" />
+                                <Setter TargetName="listBoxItem_Border"
+                                        Property="BorderBrush"
+                                        Value="{StaticResource PrimaryHighlightBrush}" />
                             </DataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            
+        </Style>
+
+        <!--
+        CHILD PAGES
+        -->
+        <Style x:Key="ChildPagesListBoxStyle" TargetType="{x:Type ListBox}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="BorderThickness" Value="0"/>
         </Style>
 
         <DataTemplate x:Key="ChildPageItemTemplate">
             <Button Content="{Binding PageName}"
                     IsEnabled="{Binding IsEnabled}"
-                    Command="{Binding DataContext.ChildPageButtonClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                    Command="{Binding DataContext.SetPageButtonClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                     CommandParameter="{Binding Page}"
-                    Style="{StaticResource ButtonStyle01}"
-                    Tag="{StaticResource ButtonIcon_Accepted_B}"/>
-            <!--
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                
-                <Image x:Name="MenuItemIcon" Source="{StaticResource ButtonIcon_Accepted_W}" Grid.Column="0" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="4" MaxWidth="24"/>
-                <Label x:Name="MenuItemLabel" Content="{Binding PageName}" Grid.Column="1" HorizontalContentAlignment="Center" Foreground="White" FontSize="14" Margin="0,4,4,4"/>
-            </Grid>
-            -->
+                    ToolTip="{Binding Tooltip}"
+                    Style="{StaticResource ButtonStyle01_Dark}"
+                    Tag="{Binding Icon}"/>
         </DataTemplate>
 
         <Style x:Key="ChildPageItemStyle" TargetType="ListBoxItem">
-            
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Margin" Value="0,8,0,0"/>
-            <Setter Property="ToolTip" Value="{Binding}"/>
-            <Setter Property="Visibility" Value="Visible"/>
-            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
-            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+            <Setter Property="Focusable" Value="False"/>
+            <Setter Property="HorizontalAlignment" Value="Stretch"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBoxItem">
-                        <Border x:Name="listBox_Border"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}" 
+                        <Border x:Name="listBoxItem_Border"
                                 Background="{TemplateBinding Background}"
-                                Padding="{TemplateBinding Padding}"
-                                CornerRadius="8"
-                                SnapsToDevicePixels="true">
-                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                BorderThickness="4,0,0,0"
+                                BorderBrush="Transparent"
+                                SnapsToDevicePixels="true"
+                                Margin="0,8,0,0"
+                                CornerRadius="8">
+                            <ContentPresenter
+                                HorizontalAlignment="{TemplateBinding HorizontalAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalAlignment}"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                Margin="0"/>
                         </Border>
-                        <!-- Triggers ONLY usable in this Template -->
                         <ControlTemplate.Triggers>
-                            <!--When a ListBox entry is Selected-->
-                            <Trigger Property="IsSelected" Value="True">
-                                <Setter TargetName="listBox_Border" Property="Background" Value="{StaticResource PrimaryDarkHighlightBrush}"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
-                            </Trigger>
+                            <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <Setter TargetName="listBoxItem_Border"
+                                        Property="BorderBrush"
+                                        Value="{StaticResource PrimaryMediumBrush}" />
+                            </DataTrigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
@@ -129,24 +145,6 @@
         </Style>
 
 
-        <Style x:Key="ChildPagesListBoxStyle" TargetType="{x:Type ListBox}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>    
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-            <Setter Property="SelectedIndex" Value="-1"/>
-            <Setter Property="Padding" Value="0"/>
-            <Setter Property="Width" Value="Auto"/>
-        </Style>
-
-        <Style x:Key="ParentPagesListBoxStyle" TargetType="{x:Type ListBox}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="Padding" Value="0,8,0,8"/>
-            <Setter Property="BorderThickness" Value="0"/>
-        </Style>
 
         <Style x:Key="WindowMainPanelStyle" TargetType="{x:Type Border}">
             <Setter Property="BorderBrush" Value="{DynamicResource WindowBorderBrush}" />
@@ -374,9 +372,9 @@
             </Grid>
 
             <!-- Main Grid for Content -->
-            <Grid Grid.Row="1" HorizontalAlignment="Right" Width="1280">
+            <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" MinWidth="128"/>
+                    <ColumnDefinition Width="232"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
@@ -404,7 +402,8 @@
                                  ItemTemplate="{StaticResource ParentPageItemTemplate}"
                                  ItemContainerStyle="{StaticResource ParentPageItemStyle}"
                                  Style="{StaticResource ParentPagesListBoxStyle}"
-                                 Tag="{Binding IsProjectLoaded}"/>
+                                 Tag="{Binding IsProjectLoaded}"
+                                 Margin="16,8,16,0"/>
                     </Grid>
 
                 </Border>
@@ -414,22 +413,41 @@
                               Grid.Column="0"
                               ItemsSource="{Binding AvailableChildGroups}"
                               Background="{StaticResource PrimaryDarkBrush}"
-                              BorderThickness="1">
+                              Margin="0"
+                              Padding="0">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <StackPanel Margin="16,8,16,8">
+                            <StackPanel Margin="16,8,16,0">
+                                <StackPanel.Style>
+                                    <Style TargetType="StackPanel">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsEnabled}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </StackPanel.Style>
                                 <!-- Header -->
                                 <TextBlock Text="{Binding GroupHeader}"
                                            FontWeight="Bold"
                                            FontSize="14"
                                            Foreground="{StaticResource PrimaryMediumBrush}"
-                                           Margin="0" />
+                                           Margin="0">
+                                    <TextBlock.Style>
+                                        <Style TargetType="TextBlock">
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding GroupHeader}" Value="">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBlock.Style>
+                                </TextBlock>
 
                                 <!-- Child Pages List -->
                                 <ListBox ItemsSource="{Binding ChildPages}"
-                                         BorderThickness="1"
                                          ItemTemplate="{StaticResource ChildPageItemTemplate}"
-                                         ItemContainerStyle="{StaticResource ParentPageItemStyle}"
+                                         ItemContainerStyle="{StaticResource ChildPageItemStyle}"
                                          Style="{StaticResource ChildPagesListBoxStyle}"/>
                             </StackPanel>
                         </DataTemplate>

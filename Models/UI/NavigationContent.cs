@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using BauphysikToolWPF.Services.UI;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Windows.Media;
 
 namespace BauphysikToolWPF.Models.UI
 {
@@ -10,8 +12,20 @@ namespace BauphysikToolWPF.Models.UI
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public NavigationPage Page { get; set; } // parent page of the NavigationMenu ListBoxItem
-        public string PageName => NavigationNameMapping.TryGetValue(Page, out var name) ? name : Page.ToString();
-        
+        public string PageName => NavigationManager.PageNameMapping.TryGetValue(Page, out var name) ? name : Page.ToString();
+        public string Tooltip => NavigationManager.PageTooltipMapping.TryGetValue(Page, out var tooltip) ? tooltip : Page.ToString();
+        public ImageSource? Icon
+        {
+            get
+            {
+                if (NavigationManager.PageIconMapping.TryGetValue(Page, out string? resourceKey))
+                {
+                    return NavigationManager.GetBitmapImageFromAppResources(resourceKey);
+                }
+                return null;
+            }
+        }
+
         private bool _isEnabled;
         public bool IsEnabled
         {
@@ -22,6 +36,9 @@ namespace BauphysikToolWPF.Models.UI
                 {
                     _isEnabled = value;
                     OnPropertyChanged(nameof(IsEnabled));
+
+
+                    
                 }
             }
         }
@@ -48,29 +65,6 @@ namespace BauphysikToolWPF.Models.UI
             Page = page;
             IsEnabled = isEnabled;
         }
-
-        public static readonly Dictionary<NavigationPage, string> NavigationNameMapping = new()
-        {
-            { NavigationPage.ProjectPage, "Projektdaten"},
-            { NavigationPage.ElementCatalogue, "Bauteilkatalog"},
-            { NavigationPage.LayerSetup, "Schichtenaufbau"},
-            { NavigationPage.Summary, "Zusammenfassung"},
-            { NavigationPage.TemperatureCurve, "Temperaturverlauf"},
-            { NavigationPage.GlaserCurve, "Glaser-Diagramm"},
-            { NavigationPage.DynamicHeatCalc, "Dynamische Wärmeberechnung"},
-            { NavigationPage.BuildingEnvelope, "Gebäudehülle"},
-        };
-        public static readonly Dictionary<NavigationPage, string> NavigationIconMapping = new()
-        {
-            { NavigationPage.ProjectPage, "ButtonIcon_Project_Flat" },
-            { NavigationPage.ElementCatalogue, "ButtonIcon_Catalogue_Flat" },
-            { NavigationPage.LayerSetup, "ButtonIcon_Layers_Flat" },
-            { NavigationPage.Summary, "ButtonIcon_Summary_Flat" },
-            { NavigationPage.TemperatureCurve, "ButtonIcon_LayerTemps_Flat" },
-            { NavigationPage.GlaserCurve, "ButtonIcon_Glaser_Flat" },
-            { NavigationPage.DynamicHeatCalc, "ButtonIcon_Dynamic_Flat" },
-            { NavigationPage.BuildingEnvelope, "ButtonIcon_Envelope_Flat" },
-        };
     }
 
     public class NavigationGroupContent : INotifyPropertyChanged // To reflect changes being made in a collection -> OnPropertyChanged(nameof(AvailableChildGroups)) not needed

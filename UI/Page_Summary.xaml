@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="clr-namespace:BauphysikToolWPF"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d"
@@ -36,7 +36,7 @@
         <Border Grid.ColumnSpan="2" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationPage.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -46,7 +46,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationPage.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>

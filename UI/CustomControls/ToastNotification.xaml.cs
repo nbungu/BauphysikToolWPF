@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.UI.CustomControls
@@ -57,20 +56,16 @@ namespace BauphysikToolWPF.UI.CustomControls
             switch (ToastType)
             {
                 case ToastType.Info:
-                    //RootGrid.Background = new SolidColorBrush(Colors.LightGray);
-                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/info_b.png"));
+                    ToastIcon.Source = Application.Current.Resources["ButtonIcon_Info_Flat"] as BitmapImage;
                     break;
                 case ToastType.Success:
-                    //RootGrid.Background = new SolidColorBrush(Colors.LightGray);
-                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/haken.png"));
+                    ToastIcon.Source = Application.Current.Resources["ButtonIcon_OK_B"] as BitmapImage;
                     break;
                 case ToastType.Warning:
-                    //RootGrid.Background = new SolidColorBrush(Colors.LightGray);
-                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/triangle-warning.png"));
+                    ToastIcon.Source = Application.Current.Resources["ButtonIcon_Warning_Flat"] as BitmapImage;
                     break;
                 case ToastType.Error:
-                    //RootGrid.Background = new SolidColorBrush(Colors.LightGray);
-                    ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/error.png"));
+                    ToastIcon.Source = Application.Current.Resources["ButtonIcon_Error_Flat"] as BitmapImage;
                     break;
             }
         }

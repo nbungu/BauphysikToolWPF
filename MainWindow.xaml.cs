@@ -1,12 +1,10 @@
-﻿using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Repositories;
+﻿using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -22,45 +20,9 @@ namespace BauphysikToolWPF
      * Contains the Navigation Box on the left and the Content Pages on the right side
      */
 
-    // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF. Accessible from whole application
-    public enum NavigationPage
-    {
-        // see in MainWindow.xaml the List of ItemsSource for indices of the ListBoxItems (Pages)
-        ProjectPage = 0,
-        ElementCatalogue = 10,
-        LayerSetup = 11,
-        Summary = 12,
-        TemperatureCurve = 13,
-        GlaserCurve = 14,
-        DynamicHeatCalc = 15,
-        BuildingEnvelope = 20,
-        EnvelopeSummary = 21,
-    }
     public partial class MainWindow : Window
     {
         public WindowState RestoredWindowState { get; set; }
-
-        public static Dictionary<NavigationPage, NavigationContent> ParentPageDictionary => ParentPages.ToDictionary(p => p.Page, p => p);
-
-        public static List<NavigationContent> ParentPages = new List<NavigationContent>()
-        {
-            new NavigationContent(NavigationPage.ProjectPage, false),
-            new NavigationContent(NavigationPage.ElementCatalogue, false)
-            {
-                PageGroups = new List<NavigationGroupContent>()
-                {
-                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(2) { NavigationPage.LayerSetup, NavigationPage.Summary }),
-                    new NavigationGroupContent("ERGEBNISSE", new List<NavigationPage>(3) { NavigationPage.TemperatureCurve, NavigationPage.GlaserCurve, NavigationPage.DynamicHeatCalc }),
-                }
-            },
-            new NavigationContent(NavigationPage.BuildingEnvelope, false)
-            {
-                PageGroups = new List<NavigationGroupContent>()
-                {
-                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(1) { NavigationPage.EnvelopeSummary }),
-                }
-            }
-        };
 
         private static ContentControl? _mainWindowContent;
         private static ToastNotification? _toastNotification;
@@ -72,7 +34,7 @@ namespace BauphysikToolWPF
             _toastNotification = this.Toast;
             _mainWindowContent = this.MainWindowContent;
 
-            SetPage(NavigationPage.ProjectPage);
+            SetPage(NavigationPage.ProjectData);
 
             if (UpdaterManager.NewVersionAvailable)
             {
@@ -101,16 +63,16 @@ namespace BauphysikToolWPF
             switch (toastType)
             {
                 case ToastType.Info:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/info_b.png"));
+                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Info_Flat"] as BitmapImage;
                     break;
                 case ToastType.Success:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/haken.png"));
+                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_OK_B"] as BitmapImage;
                     break;
                 case ToastType.Warning:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/triangle-warning.png"));
+                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Warning_Flat"] as BitmapImage;
                     break;
                 case ToastType.Error:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/error.png"));
+                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Error_Flat"] as BitmapImage;
                     break;
             }
 
