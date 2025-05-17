@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.Models.Database
         public int Id { get; set; }
 
         [NotNull]
-        public RequirementSourceType Source { get; set; }
+        public DocumentSourceType DocumentSourceType { get; set; }
 
         [NotNull]
         public string SourceName { get; set; } = string.Empty;
@@ -46,7 +46,7 @@ namespace BauphysikToolWPF.Models.Database
         {
             var copy = new DocumentSource();
             copy.Id = -1;
-            copy.Source = this.Source;
+            copy.DocumentSourceType = this.DocumentSourceType;
             copy.SourceName = this.SourceName;
             copy.SourceDescription = this.SourceDescription;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();

@@ -54,7 +54,7 @@ namespace BauphysikToolWPF.Models.Domain
         public string Tag { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;
         public OrientationType OrientationType { get; set; } = OrientationType.North;
-        public RoomUsageType UsageZone { get; set; } = RoomUsageType.Wohnen;
+        public RoomUsageType RoomUsageType { get; set; } = RoomUsageType.Wohnen;
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
@@ -103,13 +103,13 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public string UsageZoneName
         {
-            get => RoomUsageTypeMapping[UsageZone];
+            get => RoomUsageTypeMapping[RoomUsageType];
             set
             {
                 var match = RoomUsageTypeMapping.FirstOrDefault(x => x.Value == value);
                 if (!match.Equals(default(KeyValuePair<RoomUsageType, string>)))
                 {
-                    UsageZone = match.Key;
+                    RoomUsageType = match.Key;
                 }
             }
         }
@@ -140,7 +140,7 @@ namespace BauphysikToolWPF.Models.Domain
                 Tag = this.Tag,
                 Comment = this.Comment,
                 OrientationType = this.OrientationType,
-                UsageZone = this.UsageZone,
+                RoomUsageType = this.RoomUsageType,
             };
             return copy;
         }
@@ -157,7 +157,7 @@ namespace BauphysikToolWPF.Models.Domain
 
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
-            return $"[{InternalId}] {RoomName} ({FloorLevel}) - Element: {Element} | U-Value: {UValue:0.##} | {OrientationType} / {UsageZone}";
+            return $"[{InternalId}] {RoomName} ({FloorLevel}) - Element: {Element} | U-Value: {UValue:0.##} | {OrientationType} / {RoomUsageType}";
         }
 
         #endregion

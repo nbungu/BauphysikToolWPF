@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using Enums = BauphysikToolWPF.Models.Database.Helper.Enums;
 
 namespace BauphysikToolWPF.Services.UI
 {
@@ -164,7 +165,7 @@ namespace BauphysikToolWPF.Services.UI
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(x, ptStart.Y));
                                 layerDrawings.Add(subConstrGeometry);
                                 var labelOffset = new Vector(0, 0);
-                                if (l.SubConstruction.Direction == SubConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
+                                if (l.SubConstruction.Direction == Enums.ConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
                                 layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                             }
                         }
@@ -212,7 +213,7 @@ namespace BauphysikToolWPF.Services.UI
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(ptStart.X, y));
                                 layerDrawings.Add(subConstrGeometry);
                                 var labelOffset = new Vector(0, 0);
-                                if (l.SubConstruction.Direction == SubConstructionDirection.Vertical) labelOffset = new Vector(24, 0);
+                                if (l.SubConstruction.Direction == Enums.ConstructionDirection.Vertical) labelOffset = new Vector(24, 0);
                                 layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                             }
                         }
@@ -223,8 +224,8 @@ namespace BauphysikToolWPF.Services.UI
                         subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(ptStart);
                         layerDrawings.Add(subConstrGeometry);
                         var labelOffset = new Vector(0, 0);
-                        if (l.SubConstruction.Direction == SubConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
-                        if (l.SubConstruction.Direction == SubConstructionDirection.Vertical) labelOffset = new Vector(0, 24);
+                        if (l.SubConstruction.Direction == Enums.ConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
+                        if (l.SubConstruction.Direction == Enums.ConstructionDirection.Vertical) labelOffset = new Vector(0, 24);
                         layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                     }
                 }
@@ -332,7 +333,7 @@ namespace BauphysikToolWPF.Services.UI
         private IDrawingGeometry UpdateLayerGeometry(Layer layer)
         {
             layer.BackgroundColor = new SolidColorBrush(layer.Material.Color);
-            layer.DrawingBrush = BrushesRepo.GetHatchPattern(layer.Material.Category, 0.5, layer.Rectangle);
+            layer.DrawingBrush = BrushesRepo.GetHatchPattern(layer.Material.MaterialCategory, 0.5, layer.Rectangle);
             layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
@@ -346,7 +347,7 @@ namespace BauphysikToolWPF.Services.UI
 
             var subConstruction = layer.SubConstruction;
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
-            subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.Category, 0.5, subConstruction.Rectangle);
+            subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.MaterialCategory, 0.5, subConstruction.Rectangle);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             subConstruction.Tag = $"Layer_{layer.LayerNumber}b";
             return subConstruction;

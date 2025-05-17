@@ -9,7 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.Models.Domain
         public double Width { get; set; } // cm
         public double Thickness { get; set; } // cm
         public double Spacing { get; set; } // cm (innerer Abstand)
-        public SubConstructionDirection Direction { get; set; }
+        public ConstructionDirection Direction { get; set; }
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public int MaterialId { get; set; } = -1;
@@ -42,7 +42,7 @@ namespace BauphysikToolWPF.Models.Domain
         {
             new PropertyItem<string>("Material", () => Material.Name),
             new PropertyItem<string>("Kategorie", () => Material.CategoryName),
-            new PropertyItem<int>("Ausrichtung", () => (int)Direction, value => Direction = (SubConstructionDirection)value)
+            new PropertyItem<int>("Ausrichtung", () => (int)Direction, value => Direction = (ConstructionDirection)value)
             {
                 PropertyValues = SubConstructionDirectionMapping.Values.Cast<object>().ToArray()
             },

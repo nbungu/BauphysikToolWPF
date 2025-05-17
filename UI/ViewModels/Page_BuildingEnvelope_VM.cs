@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             FloorLevel = "EG",
             RoomName = "Wohnzimmer",
-            UsageZone = RoomUsageType.Wohnen,
+            RoomUsageType = RoomUsageType.Wohnen,
         };
 
         private EnvelopeItem? _previousItem;
@@ -50,7 +50,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 item.FloorLevel = _presetEnvelopeItem.FloorLevel;
                 item.RoomName = _presetEnvelopeItem.RoomName;
-                item.UsageZone = _presetEnvelopeItem.UsageZone;
+                item.RoomUsageType = _presetEnvelopeItem.RoomUsageType;
             }
             if (IsElementPresetChecked)
             {
@@ -153,7 +153,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             new PropertyItem<string>("Etage", () => _presetEnvelopeItem.FloorLevel, value => _presetEnvelopeItem.FloorLevel = value),
             new PropertyItem<string>("Bezeichnung", () => _presetEnvelopeItem.RoomName, value => _presetEnvelopeItem.RoomName = value),
-            new PropertyItem<int>("Zone", () => (int)_presetEnvelopeItem.UsageZone, value => _presetEnvelopeItem.UsageZone = (RoomUsageType)value)
+            new PropertyItem<int>("Zone", () => (int)_presetEnvelopeItem.RoomUsageType, value => _presetEnvelopeItem.RoomUsageType = (RoomUsageType)value)
             {
                 PropertyValues = RoomUsageTypeMapping.Values.Cast<object>().ToArray()
             },

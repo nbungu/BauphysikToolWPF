@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.Models.Database
         [NotNull, Unique]
         public string Name { get; set; } = string.Empty;
         [NotNull]
-        public MaterialCategory Category { get; set; } = MaterialCategory.NotDefined;
+        public MaterialCategory MaterialCategory { get; set; } = MaterialCategory.NotDefined;
         [NotNull]
         public bool IsUserDefined { get; set; }
         [NotNull]
@@ -43,7 +43,7 @@ namespace BauphysikToolWPF.Models.Database
         public bool IsValid => BulkDensity > 0 && Name != "";
 
         [Ignore]
-        public string CategoryName => MaterialCategoryMapping[Category];
+        public string CategoryName => MaterialCategoryMapping[MaterialCategory];
 
         [Ignore]
         public Color Color // HEX ColorCode (e.g. #dddddd) to 'Color' Type
@@ -77,7 +77,7 @@ namespace BauphysikToolWPF.Models.Database
             var copy = new Material();
             copy.Id = -1;
             copy.Name = this.Name;
-            copy.Category = this.Category;
+            copy.MaterialCategory = this.MaterialCategory;
             copy.IsUserDefined = this.IsUserDefined;
             copy.BulkDensity = this.BulkDensity;
             copy.ThermalConductivity = this.ThermalConductivity;
@@ -102,7 +102,7 @@ namespace BauphysikToolWPF.Models.Database
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Id == other.Id && Name == other.Name && Category == other.Category && IsUserDefined == other.IsUserDefined && BulkDensity == other.BulkDensity && ThermalConductivity.Equals(other.ThermalConductivity) && DiffusionResistance.Equals(other.DiffusionResistance) && SpecificHeatCapacity == other.SpecificHeatCapacity;
+            return Id == other.Id && Name == other.Name && MaterialCategory == other.MaterialCategory && IsUserDefined == other.IsUserDefined && BulkDensity == other.BulkDensity && ThermalConductivity.Equals(other.ThermalConductivity) && DiffusionResistance.Equals(other.DiffusionResistance) && SpecificHeatCapacity == other.SpecificHeatCapacity;
         }
 
         public override bool Equals(object? obj)
@@ -115,7 +115,7 @@ namespace BauphysikToolWPF.Models.Database
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(Name, (int)Category, IsUserDefined, BulkDensity, ThermalConductivity, DiffusionResistance, ColorCode, SpecificHeatCapacity);
+            return HashCode.Combine(Name, (int)MaterialCategory, IsUserDefined, BulkDensity, ThermalConductivity, DiffusionResistance, ColorCode, SpecificHeatCapacity);
         }
 
         #endregion

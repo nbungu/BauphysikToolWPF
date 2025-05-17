@@ -115,7 +115,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<IPropertyItem> SubConstructionProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Material", () => _tempConstruction.Material.Name),
-            new PropertyItem<int>("Ausrichtung", () => (int)_tempConstruction.Direction, value => _tempConstruction.Direction = (SubConstructionDirection)value)
+            new PropertyItem<int>("Ausrichtung", () => (int)_tempConstruction.Direction, value => _tempConstruction.Direction = (ConstructionDirection)value)
             {
                 PropertyValues = SubConstructionDirectionMapping.Values.Cast<object>().ToArray()
             },
@@ -145,12 +145,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 return DatabaseAccess.GetMaterialsQuery().Where(m =>
                     m.IsUserDefined == (SelectedTabIndex == 1) &&
-                    m.Category == (MaterialCategory)SelectedCategoryIndex &&
+                    m.MaterialCategory == (MaterialCategory)SelectedCategoryIndex &&
                     m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
             }
             return DatabaseAccess.GetMaterialsQuery().Where(m =>
                 m.IsUserDefined == (SelectedTabIndex == 1) &&
-                m.Category == (MaterialCategory)SelectedCategoryIndex).ToList();
+                m.MaterialCategory == (MaterialCategory)SelectedCategoryIndex).ToList();
             
         }
         

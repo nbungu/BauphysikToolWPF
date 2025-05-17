@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Calculation
@@ -266,10 +267,10 @@ namespace BauphysikToolWPF.Calculation
 
             if (subConstr.Count > 0)
             {
-                var vSubs = subConstr.Where(s => s.Direction == SubConstructionDirection.Vertical).ToList();
+                var vSubs = subConstr.Where(s => s.Direction == ConstructionDirection.Vertical).ToList();
                 if (vSubs.Count > 0) maxWidth = vSubs.Max(s => s.Width + s.Spacing);
 
-                var hSubs = subConstr.Where(s => s.Direction == SubConstructionDirection.Horizontal).ToList();
+                var hSubs = subConstr.Where(s => s.Direction == ConstructionDirection.Horizontal).ToList();
                 if (hSubs.Count > 0) maxHeight = hSubs.Max(s => s.Width + s.Spacing);
             }
             //  when exactly ONE of maxWidth or maxHeight is equal to zero
@@ -303,12 +304,12 @@ namespace BauphysikToolWPF.Calculation
                     if (_layerMapping[layerString] is Layer layer)
                     {
                         // Check: has vertical sub constr
-                        if (layer.SubConstruction?.Direction == SubConstructionDirection.Vertical) currentMinWidth = Math.Min(layer.SubConstruction.Spacing, currentMinWidth);
+                        if (layer.SubConstruction?.Direction == ConstructionDirection.Vertical) currentMinWidth = Math.Min(layer.SubConstruction.Spacing, currentMinWidth);
                     }
                     else if (_layerMapping[layerString] is LayerSubConstruction layerSubConstr)
                     {
                         // Check: has vertical sub constr
-                        if (layerSubConstr.Direction == SubConstructionDirection.Vertical) currentMinWidth = Math.Min(layerSubConstr.Width, currentMinWidth);
+                        if (layerSubConstr.Direction == ConstructionDirection.Vertical) currentMinWidth = Math.Min(layerSubConstr.Width, currentMinWidth);
                     }
                     else throw new Exception("Typ konnte nicht aufgelöst werden");
                 }
@@ -332,12 +333,12 @@ namespace BauphysikToolWPF.Calculation
                     if (_layerMapping[layerString] is Layer layer)
                     {
                         // Check: has horizontal sub constr
-                        if (layer.SubConstruction?.Direction == SubConstructionDirection.Horizontal) currentMinHeight = Math.Min(layer.SubConstruction.Spacing, currentMinHeight);
+                        if (layer.SubConstruction?.Direction == ConstructionDirection.Horizontal) currentMinHeight = Math.Min(layer.SubConstruction.Spacing, currentMinHeight);
                     }
                     else if (_layerMapping[layerString] is LayerSubConstruction layerSubConstr)
                     {
                         // Check: has horizontal sub constr
-                        if (layerSubConstr.Direction == SubConstructionDirection.Horizontal) currentMinHeight = Math.Min(layerSubConstr.Width, currentMinHeight);
+                        if (layerSubConstr.Direction == ConstructionDirection.Horizontal) currentMinHeight = Math.Min(layerSubConstr.Width, currentMinHeight);
                     }
                     else throw new Exception("Typ konnte nicht aufgelöst werden");
                 }

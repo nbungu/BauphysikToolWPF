@@ -4,6 +4,7 @@ using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Collections.Generic;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Database
 {
@@ -12,11 +13,11 @@ namespace BauphysikToolWPF.Models.Database
         [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int Id { get; set; }
         [NotNull]
-        public ConstructionType Type { get; set; }
+        public ConstructionType ConstructionType { get; set; }
         [NotNull]
         public string TypeName { get; set; } = string.Empty;
         [NotNull]
-        public int IsVertical { get; set; }
+        public ConstructionDirection ConstructionDirection { get; set; }
         [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
         public int DocumentSourceId { get; set; }
         [NotNull]
@@ -35,11 +36,8 @@ namespace BauphysikToolWPF.Models.Database
         public List<Requirement> Requirements => DatabaseAccess.QueryRequirementsByDesignDocumentId(DocumentSourceId);
 
         [Ignore]
-        public bool IsLayoutVertical // true = 1
-        {
-            get => IsVertical == 1;
-            set => IsVertical = (value) ? 1 : 0;
-        }
+        public bool IsLayoutVertical => (int)ConstructionDirection == 1;
+
 
         //------Konstruktor-----//
 
@@ -55,9 +53,9 @@ namespace BauphysikToolWPF.Models.Database
         {
             var copy = new Construction();
             copy.Id = -1;
-            copy.Type = this.Type;
+            copy.ConstructionType = this.ConstructionType;
             copy.TypeName = this.TypeName;
-            copy.IsVertical = this.IsVertical;
+            copy.ConstructionDirection = this.ConstructionDirection;
             copy.DocumentSourceId = this.DocumentSourceId;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();

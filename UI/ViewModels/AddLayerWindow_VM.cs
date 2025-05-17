@@ -28,7 +28,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (_targetLayer != null)
             {
                 SelectedTabIndex = _targetLayer.Material.IsUserDefined ? 1 : 0;
-                SelectedMaterialCategoryIndex = (int)_targetLayer.Material.Category;
+                SelectedMaterialCategoryIndex = (int)_targetLayer.Material.MaterialCategory;
                 SelectedListViewItem = _targetLayer.Material;
             }
             
@@ -137,7 +137,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 {
                     Name = $"Neues Material ({MaterialCategoryMapping[(MaterialCategory)SelectedMaterialCategoryIndex]})",
                     IsUserDefined = true,
-                    Category = (MaterialCategory)SelectedMaterialCategoryIndex
+                    MaterialCategory = (MaterialCategory)SelectedMaterialCategoryIndex
                 };
             }
             DatabaseAccess.CreateMaterial(newMaterial);
@@ -149,7 +149,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnSelectedListViewItemChanged(Material? value)
         {
             if (value is null) return;
-            Thickness = DefaultLayerWidthMapping[value.Category];
+            Thickness = DefaultLayerWidthMapping[value.MaterialCategory];
         }
 
         /*
@@ -191,7 +191,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<IPropertyItem> MaterialProperties => SelectedListViewItem != null ? new List<IPropertyItem>()
         {
             new PropertyItem<string>("Materialbezeichnung", () => SelectedListViewItem.Name, value => SelectedListViewItem.Name = value),
-            new PropertyItem<int>("Kategorie", () => (int)SelectedListViewItem.Category, value => SelectedListViewItem.Category = (MaterialCategory)value)
+            new PropertyItem<int>("Kategorie", () => (int)SelectedListViewItem.MaterialCategory, value => SelectedListViewItem.MaterialCategory = (MaterialCategory)value)
             {
                 PropertyValues = MaterialCategoryMapping.Values.Cast<object>().ToArray()
             },
@@ -228,12 +228,12 @@ namespace BauphysikToolWPF.UI.ViewModels
                 {
                     return DatabaseAccess.GetMaterialsQuery().Where(m =>
                         m.IsUserDefined == (SelectedTabIndex == 1) &&
-                        m.Category == (MaterialCategory)SelectedMaterialCategoryIndex &&
+                        m.MaterialCategory == (MaterialCategory)SelectedMaterialCategoryIndex &&
                         m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
                 }
                 return DatabaseAccess.GetMaterialsQuery().Where(m =>
                     m.IsUserDefined == (SelectedTabIndex == 1) &&
-                    m.Category == (MaterialCategory)SelectedMaterialCategoryIndex).ToList();
+                    m.MaterialCategory == (MaterialCategory)SelectedMaterialCategoryIndex).ToList();
             }
         }
 

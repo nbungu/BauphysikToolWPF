@@ -6,7 +6,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
     {
         public enum ConstructionType
         {
-            NotDefined,
+            NotDefined = 0,
             Aussenwand,
             AussenwandGegErdreich,
             Innenwand,
@@ -37,29 +37,42 @@ namespace BauphysikToolWPF.Models.Database.Helper
             { ConstructionType.Kellerdecke, "Kellerdecke" }
         };
 
-
-        public enum RequirementSourceType
+        public enum ConstructionDirection
         {
-            NotDefined,
+            Vertical,
+            Horizontal,
+        }
+
+        public static readonly Dictionary<ConstructionDirection, string> SubConstructionDirectionMapping = new()
+        {
+            { ConstructionDirection.Vertical, "Vertikal" },
+            { ConstructionDirection.Horizontal, "Horizontal" }
+        };
+
+
+        public enum DocumentSourceType
+        {
+            NotDefined = 0,
             GEG_Anlage1,
             GEG_Anlage2,
             GEG_Anlage7,
             DIN_4108_2_Tabelle3,
             DIN_V_18599_10_AnhangA,
+            DIN_V_18599_10_Tabelle_E1,
         }
-        public static readonly Dictionary<RequirementSourceType, string> RequirementSourceTypeMapping = new()
+        public static readonly Dictionary<DocumentSourceType, string> RequirementSourceTypeMapping = new()
         {
-            { RequirementSourceType.NotDefined, "Nicht definiert" },
-            { RequirementSourceType.GEG_Anlage1, "GEG Anlage 1" },
-            { RequirementSourceType.GEG_Anlage2, "GEG Anlage 2" },
-            { RequirementSourceType.GEG_Anlage7, "GEG Anlage 7" },
-            { RequirementSourceType.DIN_4108_2_Tabelle3, "DIN 4108-2 Tabelle 3" },
-            { RequirementSourceType.DIN_V_18599_10_AnhangA, "DIN V 18599-10 Anhang A" }
+            { DocumentSourceType.NotDefined, "Nicht definiert" },
+            { DocumentSourceType.GEG_Anlage1, "GEG Anlage 1" },
+            { DocumentSourceType.GEG_Anlage2, "GEG Anlage 2" },
+            { DocumentSourceType.GEG_Anlage7, "GEG Anlage 7" },
+            { DocumentSourceType.DIN_4108_2_Tabelle3, "DIN 4108-2 Tabelle 3" },
+            { DocumentSourceType.DIN_V_18599_10_AnhangA, "DIN V 18599-10 Anhang A" }
         };
 
         public enum MaterialCategory
         {
-            NotDefined,
+            NotDefined = 0,
             Insulation,
             Concrete,
             Wood,
@@ -95,7 +108,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
         // DIN V 18599-10 Anhang A
         public enum RoomUsageType
         {
-            Wohnen,
+            Wohnen = 0,
             Einzelbuero,
             GruppenBueroBis6Ap,
             GrossRaumBueroAb7Ap,
@@ -187,6 +200,74 @@ namespace BauphysikToolWPF.Models.Database.Helper
             { RoomUsageType.FlurAllgemeinerPflegebereich, "Flure des allgemeinen Pflegebereichs" },
             { RoomUsageType.ArztpraxenTherapeutischePraxen, "Arztpraxen und Therapeutische Praxen" },
             { RoomUsageType.LagerLogistikhalle, "Lagerhallen, Logistikhallen" },
+        };
+
+        public enum ReferenceLocation
+        {
+            Bremerhaven = 1,
+            Rostock,
+            Hamburg,
+            Potsdam,
+            Essen,
+            BadMarienberg,
+            Kassel,
+            Braunlage,
+            Chemnitz,
+            Hof,
+            Fichtelberg,
+            Mannheim,
+            Passau,
+            Stoetten,
+            GarmischPartenkirchen,
+        }
+        public static readonly Dictionary<ReferenceLocation, string> ReferenceLocationMapping = new()
+        {
+            { ReferenceLocation.Bremerhaven, "Bremerhaven" },
+            { ReferenceLocation.Rostock, "Rostock" },
+            { ReferenceLocation.Hamburg, "Hamburg" },
+            { ReferenceLocation.Potsdam, "Potsdam" },
+            { ReferenceLocation.Essen, "Essen" },
+            { ReferenceLocation.BadMarienberg, "Bad Marienberg" },
+            { ReferenceLocation.Kassel, "Kassel" },
+            { ReferenceLocation.Braunlage, "Braunlage" },
+            { ReferenceLocation.Chemnitz, "Chemnitz" },
+            { ReferenceLocation.Hof, "Hof" },
+            { ReferenceLocation.Fichtelberg, "Fichtelberg" },
+            { ReferenceLocation.Mannheim, "Mannheim" },
+            { ReferenceLocation.Passau, "Passau" },
+            { ReferenceLocation.Stoetten, "Stötten" },
+            { ReferenceLocation.GarmischPartenkirchen, "Garmisch-Partenkirchen" }
+        };
+
+        public enum Month
+        {
+            January = 1,
+            February,
+            March,
+            April,
+            May,
+            June,
+            July,
+            August,
+            September,
+            October,
+            November,
+            December
+        }
+        public static readonly Dictionary<Month, string> MonthMapping = new()
+        {
+            { Month.January, "Januar" },
+            { Month.February, "Februar" },
+            { Month.March, "März" },
+            { Month.April, "April" },
+            { Month.May, "Mai" },
+            { Month.June, "Juni" },
+            { Month.July, "Juli" },
+            { Month.August, "August" },
+            { Month.September, "September" },
+            { Month.October, "Oktober" },
+            { Month.November, "November" },
+            { Month.December, "Dezember" }
         };
     }
 }

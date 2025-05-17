@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.Models.Database
         public int Id { get; set; }
 
         [NotNull]
-        public RoomUsageType Usage { get; set; }
+        public RoomUsageType RoomUsageType { get; set; }
 
         [NotNull]
         public string UsageName { get; set; } = string.Empty;

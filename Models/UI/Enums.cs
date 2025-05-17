@@ -63,8 +63,10 @@ namespace BauphysikToolWPF.Models.UI
             PrimaryEnergyPerArea,               // q_p
             AToVRatio,                          // A/V
             SpecificHeatTransmissionLoss,       // H_T'
-            ThermalBridgeSurcharge,              // ΔU_WB
+            HeatTransferCoef,                   // H
+            ThermalBridgeSurcharge,             // ΔU_WB
             AirExchangeRate,                    // n
+            TempCorrectionFactor,               // F_x  
         }
 
         public static readonly Dictionary<Symbol, (Unit unit, string baseText, string subscriptText, string name, string comment)> SymbolMapping = new()
@@ -112,8 +114,10 @@ namespace BauphysikToolWPF.Models.UI
             { Symbol.PrimaryEnergyPerArea, (Unit.KilowattHourPerAreaAndYear, "q", "p", "Primärenergie (flächenbezogen)", "") },
             { Symbol.AToVRatio, (Unit.PerMeter, "A", "V", "A zu V Verhältnis", "") },
             { Symbol.SpecificHeatTransmissionLoss, (Unit.WattsPerSquareMeterKelvin, "H", "T'", "spezifischer Transmissionswärmeverlust", "spezifischer Transmissionswärmetransferkoeffizient (Bezeichnung in DIN V 18599) bzw. den spezifischer Transmissionswärmeverlust (Bezeichnung in DIN V 4108-6). Auf die wärmeübertragende Hüllfläche bezogener Transmissionswärmeverlust") },
+            { Symbol.HeatTransferCoef, (Unit.WattsPerKelvin, "H", "", "Wärmetransferkoeffizient", "Wärmetransferkoeffizient") },
             { Symbol.ThermalBridgeSurcharge, (Unit.WattsPerSquareMeterKelvin, "ΔU", "WB", "Wärmebrückenzuschlag", "") },
             { Symbol.AirExchangeRate, (Unit.PerHour, "n", "", "Luftwechselzahl", "Luftvolumenstrom je Volumeneinheit") },
+            { Symbol.TempCorrectionFactor, (Unit.None, "F", "x", "Temperatur-Korrekturfaktor", "Temperatur-Korrekturfaktor für Bauteilart x") },
         };
 
         public enum Unit
@@ -204,6 +208,7 @@ namespace BauphysikToolWPF.Models.UI
 
             // Building Physics
             JoulesPerKilogramKelvin,       // J/(kg·K) - Specific Heat Capacity
+            WattsPerKelvin,                // W/K - 
             WattsPerMeterKelvin,           // W/(m·K) - Thermal Conductivity
             WattsPerSquareMeterKelvin,     // W/(m²·K) - Thermal Transmittance (U-value)
             WattsPerSquareMeter,           // W/m² - Heat Flux Density
@@ -212,9 +217,9 @@ namespace BauphysikToolWPF.Models.UI
             KilojoulesPerCubicMeterKelvin, // kJ/(m³·K) - Volumetric Heat Capacity
 
             // Other
-            Percent,                 // %
-            PerMeter,                // 1/m
-            PerHour,                // 1/h   
+            Percent,                    // %
+            PerMeter,                   // 1/m
+            PerHour,                    // 1/h   
         }
         public static readonly Dictionary<Unit, (string counterText, string denominatorText)> UnitDisplayMapping = new()
         {
@@ -304,6 +309,7 @@ namespace BauphysikToolWPF.Models.UI
 
             // Building Physics
             { Unit.JoulesPerKilogramKelvin, ("J", "kgK") },
+            { Unit.WattsPerKelvin, ("W", "K") },
             { Unit.WattsPerMeterKelvin, ("W", "mK") },
             { Unit.WattsPerSquareMeterKelvin, ("W", "m²K") },
             { Unit.WattsPerSquareMeter, ("W", "m²") },

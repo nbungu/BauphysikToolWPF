@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using Enums = BauphysikToolWPF.Models.Database.Helper.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {
@@ -67,16 +68,16 @@ namespace BauphysikToolWPF.Calculation
             {
                 if (BuildingUsage == BuildingUsageType.Residential)
                 {
-                    requirementSourceId = (int)RequirementSourceType.GEG_Anlage1;
+                    requirementSourceId = (int)Enums.DocumentSourceType.GEG_Anlage1;
                 }
                 else if (BuildingUsage == BuildingUsageType.NonResidential)
                 {
-                    requirementSourceId = (int)RequirementSourceType.GEG_Anlage2;
+                    requirementSourceId = (int)Enums.DocumentSourceType.GEG_Anlage2;
                 }
             }
             else if (BuildingAge == BuildingAgeType.Existing)
             {
-                requirementSourceId = (int)RequirementSourceType.GEG_Anlage7;
+                requirementSourceId = (int)Enums.DocumentSourceType.GEG_Anlage7;
             }
 
             // c) Get specific Requirement from selected RequirementSource
@@ -111,7 +112,7 @@ namespace BauphysikToolWPF.Calculation
             if (allRequirements.Count == 0) return;
 
             // b) Select relevant Source
-            int requirementSourceId = (int)RequirementSourceType.DIN_4108_2_Tabelle3;
+            int requirementSourceId = (int)Enums.DocumentSourceType.DIN_4108_2_Tabelle3;
 
             // c) Get specific Requirement from selected RequirementSource
             Requirement? specificRequirement = allRequirements.Find(r => r.DocumentSourceId == requirementSourceId);

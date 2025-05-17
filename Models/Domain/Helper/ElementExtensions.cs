@@ -35,7 +35,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                 bool foundAirLayer = false;
                 foreach (Layer layer in element.Layers)
                 {
-                    if (layer.Material.Category == MaterialCategory.Air) foundAirLayer = true;
+                    if (layer.Material.MaterialCategory == MaterialCategory.Air) foundAirLayer = true;
 
                     layer.IsEffective = !foundAirLayer;
                     if (layer.HasSubConstructions && layer.SubConstruction != null) layer.SubConstruction.IsEffective = layer.IsEffective;

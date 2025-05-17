@@ -21,7 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public AddElementWindow_VM()
         {
             SelectedElementName = _targetElement != null ? _targetElement.Name : "Neues Element";
-            SelectedConstruction = _targetElement != null ? (int)_targetElement.Construction.Type : (int)ConstructionType.Aussenwand;
+            SelectedConstruction = _targetElement != null ? (int)_targetElement.Construction.ConstructionType : (int)ConstructionType.Aussenwand;
             SelectedOrientation = _targetElement != null ? (int)_targetElement.OrientationType : (int)OrientationType.North;
             TagList = _targetElement != null ? _targetElement.TagList : new List<string>(0);
             SelectedElementComment = _targetElement != null ? _targetElement.Comment : "";

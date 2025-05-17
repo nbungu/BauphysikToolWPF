@@ -26,18 +26,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             { OrientationType.West, "Westen" },
             { OrientationType.NorthWest, "Nordwesten" }
         };
-
-        public enum SubConstructionDirection
-        {
-            Vertical,
-            Horizontal
-        }
-        public static readonly Dictionary<SubConstructionDirection, string> SubConstructionDirectionMapping = new()
-        {
-            { SubConstructionDirection.Vertical, "Vertikal" },
-            { SubConstructionDirection.Horizontal, "Horizontal" }
-        };
-
+        
         public enum BuildingUsageType
         {
             NonResidential, // 0, Nichtwohngebäude
@@ -74,6 +63,5 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             { BuildingTypeResidatial.ZFH, "Zweifamilienhaus" },
             { BuildingTypeResidatial.RMH, "Reihenmittelhaus" }
         };
-
     }
 }
