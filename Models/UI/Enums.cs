@@ -63,6 +63,8 @@ namespace BauphysikToolWPF.Models.UI
             PrimaryEnergyPerArea,               // q_p
             AToVRatio,                          // A/V
             SpecificHeatTransmissionLoss,       // H_T'
+            TransmissionHeatTransferCoef,       // H_T
+            VentilationHeatTransferCoef,        // H_V
             HeatTransferCoef,                   // H
             ThermalBridgeSurcharge,             // ΔU_WB
             AirExchangeRate,                    // n
@@ -114,6 +116,8 @@ namespace BauphysikToolWPF.Models.UI
             { Symbol.PrimaryEnergyPerArea, (Unit.KilowattHourPerAreaAndYear, "q", "p", "Primärenergie (flächenbezogen)", "") },
             { Symbol.AToVRatio, (Unit.PerMeter, "A", "V", "A zu V Verhältnis", "") },
             { Symbol.SpecificHeatTransmissionLoss, (Unit.WattsPerSquareMeterKelvin, "H", "T'", "spezifischer Transmissionswärmeverlust", "spezifischer Transmissionswärmetransferkoeffizient (Bezeichnung in DIN V 18599) bzw. den spezifischer Transmissionswärmeverlust (Bezeichnung in DIN V 4108-6). Auf die wärmeübertragende Hüllfläche bezogener Transmissionswärmeverlust") },
+            { Symbol.TransmissionHeatTransferCoef, (Unit.WattsPerKelvin, "H", "T", "Transmissionswärmetransferkoeffizient", "Transmissionswärmetransferkoeffizient") },
+            { Symbol.VentilationHeatTransferCoef, (Unit.WattsPerKelvin, "H", "V", "Lüftungswärmetransferkoeffizient", "Lüftungswärmetransferkoeffizient") },
             { Symbol.HeatTransferCoef, (Unit.WattsPerKelvin, "H", "", "Wärmetransferkoeffizient", "Wärmetransferkoeffizient") },
             { Symbol.ThermalBridgeSurcharge, (Unit.WattsPerSquareMeterKelvin, "ΔU", "WB", "Wärmebrückenzuschlag", "") },
             { Symbol.AirExchangeRate, (Unit.PerHour, "n", "", "Luftwechselzahl", "Luftvolumenstrom je Volumeneinheit") },
@@ -221,106 +225,148 @@ namespace BauphysikToolWPF.Models.UI
             PerMeter,                   // 1/m
             PerHour,                    // 1/h   
         }
-        public static readonly Dictionary<Unit, (string counterText, string denominatorText)> UnitDisplayMapping = new()
+        public static readonly Dictionary<Unit, (string counterText, string denominatorText, string fullString)> UnitDisplayMapping = new()
         {
-            { Unit.None, ("-", "") },
+            { Unit.None, ("-", "", "-") },
 
             // Temperature
-            { Unit.Celsius, ("°C", "") },
-            { Unit.Kelvin, ("K", "") },
+            { Unit.Celsius, ("°C", "", "°C") },
+            { Unit.Kelvin, ("K", "", "K") },
 
             // Density
-            { Unit.KilogramPerCubicMeter, ("kg", "m³") },
-            { Unit.KilogramPerSquareMeter, ("kg", "m²") },
-            { Unit.GramPerCubicMeter, ("g", "m³") },
-            { Unit.MilligramPerCubicMeter, ("mg", "m³") },
+            { Unit.KilogramPerCubicMeter, ("kg", "m³", "kg/m³") },
+            { Unit.KilogramPerSquareMeter, ("kg", "m²", "kg/m²") },
+            { Unit.GramPerCubicMeter, ("g", "m³", "g/m³") },
+            { Unit.MilligramPerCubicMeter, ("mg", "m³", "mg/m³") },
 
             // Volume Flow
-            { Unit.CubicMeterPerSecond, ("m³", "s") },
-            { Unit.CubicMeterPerHour, ("m³", "h") },
-            { Unit.CubicMeterPerDay, ("m³", "d") },
+            { Unit.CubicMeterPerSecond, ("m³", "s", "m³/s") },
+            { Unit.CubicMeterPerHour, ("m³", "h", "m³/h") },
+            { Unit.CubicMeterPerDay, ("m³", "d", "m³/d") },
 
             // Pressure
-            { Unit.Pascal, ("Pa", "") },
-            { Unit.Bar, ("bar", "") },
-            { Unit.Atmosphere, ("atm", "") },
+            { Unit.Pascal, ("Pa", "", "Pa") },
+            { Unit.Bar, ("bar", "", "bar") },
+            { Unit.Atmosphere, ("atm", "", "atm") },
 
             // Length
-            { Unit.Meter, ("m", "") },
-            { Unit.Centimeter, ("cm", "") },
-            { Unit.Millimeter, ("mm", "") },
-            { Unit.Inch, ("in", "") },
-            { Unit.Foot, ("ft", "") },
+            { Unit.Meter, ("m", "", "m") },
+            { Unit.Centimeter, ("cm", "", "cm") },
+            { Unit.Millimeter, ("mm", "", "mm") },
+            { Unit.Inch, ("in", "", "in") },
+            { Unit.Foot, ("ft", "", "ft") },
 
             // Area
-            { Unit.SquareMeter, ("m²", "") },
-            { Unit.SquareCentimeter, ("cm²", "") },
-            { Unit.SquareMillimeter, ("mm²", "") },
-            { Unit.SquareInch, ("in²", "") },
-            { Unit.SquareFoot, ("ft²", "") },
+            { Unit.SquareMeter, ("m²", "", "m²") },
+            { Unit.SquareCentimeter, ("cm²", "", "cm²") },
+            { Unit.SquareMillimeter, ("mm²", "", "mm²") },
+            { Unit.SquareInch, ("in²", "", "in²") },
+            { Unit.SquareFoot, ("ft²", "", "ft²") },
 
             // Volume
-            { Unit.CubicMeter, ("m³", "") },
-            { Unit.CubicCentimeter, ("cm³", "") },
-            { Unit.CubicMillimeter, ("mm³", "") },
-            { Unit.CubicInch, ("in³", "") },
-            { Unit.CubicFoot, ("ft³", "") },
-            { Unit.Liter, ("L", "") },
-            { Unit.Milliliter, ("mL", "") },
-            { Unit.Gallon, ("gal", "") },
-            { Unit.Quart, ("qt", "") },
-            { Unit.Pint, ("pt", "") },
-            { Unit.Cup, ("cup", "") },
-            { Unit.Ounce, ("oz", "") },
+            { Unit.CubicMeter, ("m³", "", "m³") },
+            { Unit.CubicCentimeter, ("cm³", "", "cm³") },
+            { Unit.CubicMillimeter, ("mm³", "", "mm³") },
+            { Unit.CubicInch, ("in³", "", "in³") },
+            { Unit.CubicFoot, ("ft³", "", "ft³") },
+            { Unit.Liter, ("L", "", "L") },
+            { Unit.Milliliter, ("mL", "", "mL") },
+            { Unit.Gallon, ("gal", "", "gal") },
+            { Unit.Quart, ("qt", "", "qt") },
+            { Unit.Pint, ("pt", "", "pt") },
+            { Unit.Cup, ("cup", "", "cup") },
+            { Unit.Ounce, ("oz", "", "oz") },
 
             // Mass
-            { Unit.Kilogram, ("kg", "") },
-            { Unit.Gram, ("g", "") },
-            { Unit.Milligram, ("mg", "") },
-            { Unit.Ton, ("t", "") },
-            { Unit.Pound, ("lb", "") },
+            { Unit.Kilogram, ("kg", "", "kg") },
+            { Unit.Gram, ("g", "", "g") },
+            { Unit.Milligram, ("mg", "", "mg") },
+            { Unit.Ton, ("t", "", "t") },
+            { Unit.Pound, ("lb", "", "lb") },
 
             // Energy
-            { Unit.KilowattHour, ("kWh", "") },
-            { Unit.KilowattHourPerYear, ("kWh", "a") },
-            { Unit.KilowattHourPerAreaAndYear, ("kWh", "m²a") },
-            { Unit.Joule, ("J", "") },
-            { Unit.Calorie, ("cal", "") },
+            { Unit.KilowattHour, ("kWh", "", "kWh") },
+            { Unit.KilowattHourPerYear, ("kWh", "a", "kWh/a") },
+            { Unit.KilowattHourPerAreaAndYear, ("kWh", "m²a", "kWh/m²a") },
+            { Unit.Joule, ("J", "", "J") },
+            { Unit.Calorie, ("cal", "", "cal") },
 
             // Power
-            { Unit.Watt, ("W", "") },
-            { Unit.Kilowatt, ("kW", "") },
-            { Unit.Horsepower, ("hp", "") },
+            { Unit.Watt, ("W", "", "W") },
+            { Unit.Kilowatt, ("kW", "", "kW") },
+            { Unit.Horsepower, ("hp", "", "hp") },
 
             // Force
-            { Unit.Newton, ("N", "") },
-            { Unit.Kilonewton, ("kN", "") },
-            { Unit.Megapascal, ("MPa", "") },
-            { Unit.Gigapascal, ("GPa", "") },
+            { Unit.Newton, ("N", "", "N") },
+            { Unit.Kilonewton, ("kN", "", "kN") },
+            { Unit.Megapascal, ("MPa", "", "MPa") },
+            { Unit.Gigapascal, ("GPa", "", "GPa") },
 
             // Time
-            { Unit.Second, ("s", "") },
-            { Unit.Minute, ("min", "") },
-            { Unit.Hour, ("h", "") },
-            { Unit.Day, ("d", "") },
-            { Unit.Week, ("week", "") },
-            { Unit.Month, ("M", "") },
-            { Unit.Year, ("a", "") },
+            { Unit.Second, ("s", "", "s") },
+            { Unit.Minute, ("min", "", "min") },
+            { Unit.Hour, ("h", "", "h") },
+            { Unit.Day, ("d", "", "d") },
+            { Unit.Week, ("week", "", "week") },
+            { Unit.Month, ("M", "", "M") },
+            { Unit.Year, ("a", "", "a") },
 
             // Building Physics
-            { Unit.JoulesPerKilogramKelvin, ("J", "kgK") },
-            { Unit.WattsPerKelvin, ("W", "K") },
-            { Unit.WattsPerMeterKelvin, ("W", "mK") },
-            { Unit.WattsPerSquareMeterKelvin, ("W", "m²K") },
-            { Unit.WattsPerSquareMeter, ("W", "m²") },
-            { Unit.KilojoulesPerSquareMeterKelvin, ("kJ", "m²K") },
-            { Unit.SquareMeterKelvinPerWatt, ("m²K", "W") },
-            { Unit.KilojoulesPerCubicMeterKelvin, ("kJ", "m³K") },
+            { Unit.JoulesPerKilogramKelvin, ("J", "kgK", "J/kgK") },
+            { Unit.WattsPerKelvin, ("W", "K", "W/K") },
+            { Unit.WattsPerMeterKelvin, ("W", "mK", "W/mK") },
+            { Unit.WattsPerSquareMeterKelvin, ("W", "m²K", "W/m²K") },
+            { Unit.WattsPerSquareMeter, ("W", "m²", "W/m²") },
+            { Unit.KilojoulesPerSquareMeterKelvin, ("kJ", "m²K", "kJ/m²K") },
+            { Unit.SquareMeterKelvinPerWatt, ("m²K", "W", "m²K/W") },
+            { Unit.KilojoulesPerCubicMeterKelvin, ("kJ", "m³K", "kJ/m³K") },
 
             // Other
-            { Unit.Percent, ("%", "") },
-            { Unit.PerMeter, ("1", "m") },
-            { Unit.PerHour, ("1", "h") },
+            { Unit.Percent, ("%", "", "%") },
+            { Unit.PerMeter, ("1", "m", "1/m") },
+            { Unit.PerHour, ("1", "h", "1/h") },
+        };
+        public static string GetUnitStringFromSymbol(Symbol symbol)
+        {
+            if (SymbolMapping.TryGetValue(symbol, out var symbolData))
+            {
+                var unit = symbolData.unit;
+                if (UnitDisplayMapping.TryGetValue(unit, out var unitDisplay))
+                {
+                    return unitDisplay.fullString;
+                }
+            }
+            return "-"; // Fallback for unknown symbol or unit
+        }
+
+        public enum ElementSortingType
+        {
+            DateAscending,
+            DateDescending,
+            NameAscending,
+            NameDescending
+        }
+        public static readonly Dictionary<ElementSortingType, string> ElementSortingTypeMapping = new()
+        {
+            { ElementSortingType.DateAscending, "Änderungsdatum (älteste zuerst)" },
+            { ElementSortingType.DateDescending, "Änderungsdatum (neueste zuerst)" },
+            { ElementSortingType.NameAscending, "Name (aufsteigend)" },
+            { ElementSortingType.NameDescending, "Name (absteigend)" }
+        };
+
+        public enum ElementGroupingType
+        {
+            None,
+            Type,
+            Orientation,
+            Tag
+        }
+        public static readonly Dictionary<ElementGroupingType, string> ElementGroupingTypeMapping = new()
+        {
+            { ElementGroupingType.None, "Ohne" },
+            { ElementGroupingType.Type, "Typ" },
+            { ElementGroupingType.Orientation, "Ausrichtung" },
+            { ElementGroupingType.Tag, "Tags" }
         };
     }
 }

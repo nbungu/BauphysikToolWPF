@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using BauphysikToolWPF.UI.CustomControls;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
@@ -22,13 +23,111 @@ namespace BauphysikToolWPF.Models.Domain
 
         public string RoomName { get; set; } = string.Empty;
         public string FloorLevel { get; set; } = string.Empty;
-        public double RoomHeightGross { get; set; }
-        public double RoomAreaGross { get; set; }
-        public double RoomVolumeGross { get; set; }
-        public double RoomHeightNet { get; set; }
-        public double RoomAreaNet { get; set; }
-        public double RoomVolumeNet { get; set; }
-        public double EnvelopeArea { get; set; }
+
+        private double _roomHeightGross;
+        public double RoomHeightGross
+        {
+            get => _roomHeightGross;
+            set
+            {
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
+                    return;
+                }
+                _roomHeightGross = value;
+            }
+        }
+
+        private double _roomAreaGross;
+        public double RoomAreaGross
+        {
+            get => _roomAreaGross;
+            set
+            {
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
+                    return;
+                }
+                _roomAreaGross = value;
+            }
+        }
+
+        private double _roomVolumeGross;
+        public double RoomVolumeGross
+        {
+            get => _roomVolumeGross;
+            set
+            {
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
+                    return;
+                }
+                _roomVolumeGross = value;
+            }
+        }
+
+        private double _roomHeightNet;
+        public double RoomHeightNet
+        {
+            get => _roomHeightNet;
+            set
+            {
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
+                    return;
+                }
+                _roomHeightNet = value;
+            }
+        }
+
+        private double _roomAreaNet;
+        public double RoomAreaNet
+        {
+            get => _roomAreaNet;
+            set
+            {
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
+                    return;
+                }
+                _roomAreaNet = value;
+            }
+        }
+
+        private double _roomVolumeNet;
+        public double RoomVolumeNet
+        {
+            get => _roomVolumeNet;
+            set
+            {
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
+                    return;
+                }
+                _roomVolumeNet = value;
+            }
+        }
+
+        private double _envelopeArea;
+        public double EnvelopeArea
+        {
+            get => _envelopeArea;
+            set
+            {
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
+                    return;
+                }
+                _envelopeArea = value;
+            }
+        }
 
         private double _uValue;
         public double UValue
@@ -36,6 +135,12 @@ namespace BauphysikToolWPF.Models.Domain
             get => Element?.UValue ?? _uValue;
             set
             {
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
+                    return;
+                }
+                if (value > 10) MainWindow.ShowToast("Unrealistischer U-Wert", ToastType.Warning);
                 _uValue = value;
                 ElementInternalId = -1;
             }
@@ -51,6 +156,22 @@ namespace BauphysikToolWPF.Models.Domain
             }
         }
 
+        private double _tempCorrectionFactor = 1.0;
+
+        public double TempCorrectionFactor
+        {
+            get => _tempCorrectionFactor;
+            set
+            {
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
+                    return;
+                }
+                if (value > 10) MainWindow.ShowToast("Unrealistischer Temperatur-Korrekturfaktor", ToastType.Warning);
+                _tempCorrectionFactor = value;
+            }
+        }
         public string Tag { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;
         public OrientationType OrientationType { get; set; } = OrientationType.North;
@@ -114,6 +235,12 @@ namespace BauphysikToolWPF.Models.Domain
             }
         }
 
+        /// <summary>
+        /// H_T,j
+        /// </summary>
+        [JsonIgnore]
+        public double TransmissionHeatTransferCoef => TempCorrectionFactor * UValue * EnvelopeArea;
+        
         #endregion
 
         #region ctors

@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -150,10 +149,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public string Title => _targetElement != null ? $"Ausgewähltes Element bearbeiten: {_targetElement.Name}" : "Neues Element erstellen";
-
-        public List<string> OrientationList => OrientationTypeMapping.Values.ToList();
-
-        // Database is Source
-        public List<string> ConstructionTypeList => DatabaseAccess.GetConstructionsQuery().Select(e => e.TypeName).ToList();
+        public IEnumerable<string> OrientationList => OrientationTypeMapping.Values;
+        public IEnumerable<string> ConstructionTypeList => ConstructionTypeMapping.Values;
     }
 }

@@ -63,16 +63,16 @@ namespace BauphysikToolWPF
             switch (toastType)
             {
                 case ToastType.Info:
-                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Info_Flat"] as BitmapImage;
+                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Info_B"] as BitmapImage;
                     break;
                 case ToastType.Success:
                     _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_OK_B"] as BitmapImage;
                     break;
                 case ToastType.Warning:
-                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Warning_Flat"] as BitmapImage;
+                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Warning_B"] as BitmapImage;
                     break;
                 case ToastType.Error:
-                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Error_Flat"] as BitmapImage;
+                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Error_B"] as BitmapImage;
                     break;
             }
 

@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -148,7 +149,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public int ItemsCheckedCount => EnvelopeItems.Where(e => e.IsSelected).ToList().Count;
         public string ItemsCheckedCountString => $"Zeilen markiert: {ItemsCheckedCount}";
         public Visibility NoEntriesVisibility => EnvelopeItems.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
-
+        public bool IsNonResidential => Session.SelectedProject?.BuildingUsage == BuildingUsageType.NonResidential;
+        
         public IEnumerable<IPropertyItem> InfoPresetProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Etage", () => _presetEnvelopeItem.FloorLevel, value => _presetEnvelopeItem.FloorLevel = value),
@@ -184,6 +186,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public IEnumerable<Element> GetElements() => Session.SelectedProject?.Elements.OrderBy(e => e.InternalId) ?? Enumerable.Empty<Element>();
         public IEnumerable<string> GetOrientationTypeNames() => OrientationTypeMapping.Values;
         public IEnumerable<string> GetUsageZoneNames() => RoomUsageTypeMapping.Values;
+        //public IEnumerable<string> GetTempCorrFactorNames() => DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TempCorrectionFactor).Select(e => e.Name);
 
         /// <summary>
         /// Updates XAML Bindings and the Reset Calculation Flag

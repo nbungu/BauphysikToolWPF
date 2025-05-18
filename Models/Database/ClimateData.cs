@@ -2,21 +2,27 @@
 using BauphysikToolWPF.Services.Application;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System.Collections.Generic;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Database
 {
-    public class Construction : IDatabaseObject<Construction>
+    public class ClimateData : IDatabaseObject<ClimateData>
     {
         [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int Id { get; set; }
         [NotNull]
-        public ConstructionType ConstructionType { get; set; }
+        public int Region { get; set; }
         [NotNull]
-        public string TypeName { get; set; } = string.Empty;
+        public ReferenceLocation ReferenceLocation { get; set; }
         [NotNull]
-        public ConstructionDirection ConstructionDirection { get; set; }
+        public double Value { get; set; }
+        [NotNull]
+        public Month Month { get; set; }
+        [NotNull]
+        public Symbol Symbol { get; set; }
+        [NotNull]
+        public string Comment { get; set; } = string.Empty;
         [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
         public int DocumentSourceId { get; set; }
         [NotNull]
@@ -29,15 +35,7 @@ namespace BauphysikToolWPF.Models.Database
         // n:1 relationship with DocumentSource
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public DocumentSource DocumentSource => DatabaseAccess.QueryDocumentSourceById(DocumentSourceId);
-
-        // m:n relationship with Requirement
-        [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
-        public List<Requirement> Requirements => DatabaseAccess.QueryRequirementsByDesignDocumentId(DocumentSourceId);
-
-        [Ignore]
-        public bool IsLayoutVertical => (int)ConstructionDirection == 1;
-
-
+        
         //------Konstruktor-----//
 
         // has to be default parameterless constructor when used as DB
@@ -45,16 +43,24 @@ namespace BauphysikToolWPF.Models.Database
         //------Methoden-----//
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
-            return TypeName + " (Id: " + Id + ")";
+            
+            return $"Location: {ReferenceLocationMapping[ReferenceLocation]}, " +
+                   $"Month: {MonthMapping[Month]}, " +
+                   $"Value: {Value} {GetUnitStringFromSymbol(Symbol)}, " +
+                   $"Comment: \"{Comment}\", " +
+                   $"Source: {DocumentSource.SourceName}";
         }
 
-        public Construction Copy()
+        public ClimateData Copy()
         {
-            var copy = new Construction();
+            var copy = new ClimateData();
             copy.Id = -1;
-            copy.ConstructionType = this.ConstructionType;
-            copy.TypeName = this.TypeName;
-            copy.ConstructionDirection = this.ConstructionDirection;
+            copy.Region = this.Region;
+            copy.ReferenceLocation = this.ReferenceLocation;
+            copy.Value = this.Value;
+            copy.Month = this.Month;
+            copy.Symbol = this.Symbol;
+            copy.Comment = this.Comment;
             copy.DocumentSourceId = this.DocumentSourceId;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();

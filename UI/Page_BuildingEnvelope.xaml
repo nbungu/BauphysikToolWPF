@@ -87,6 +87,7 @@
                     EnvelopeItems="{Binding EnvelopeItems}"
                     SelectedEnvelopeItem="{Binding SelectedEnvelopeItem, Mode=TwoWay}"
                     IsAllSelected="{Binding IsAllSelected, Mode=TwoWay}"
+                    IsNonResidential="{Binding IsNonResidential}"
                     MinHeight="200"
                     MinWidth="200"/>
 

@@ -1,8 +1,8 @@
 ﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.Domain.Helper;
 using System;
 using System.Globalization;
 using System.Windows.Data;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Services.UI
 {

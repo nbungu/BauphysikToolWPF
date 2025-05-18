@@ -143,6 +143,9 @@
         <BitmapImage x:Key="ButtonIcon_ImagePlaceholder_B" UriSource="/Resources/Icons/placeholder_256px.png"/>
         <BitmapImage x:Key="ButtonIcon_Floor_Plan" UriSource="/Resources/Icons/floor-plan-128.png"/>
         <BitmapImage x:Key="ButtonIcon_Library" UriSource="/Resources/Icons/books.png"/>
+        <BitmapImage x:Key="ButtonIcon_Info_B" UriSource="/Resources/Icons/info_b.png"/>
+        <BitmapImage x:Key="ButtonIcon_Error_B" UriSource="/Resources/Icons/error.png"/>
+        <BitmapImage x:Key="ButtonIcon_Warning_B" UriSource="/Resources/Icons/triangle-warning.png"/>
 
         <!--Flat Style by https://www.flaticon.com/authors/srip -->
         <BitmapImage x:Key="ButtonIcon_Database_Flat" UriSource="/Resources/Icons/Flat/database.png"/>
@@ -304,6 +307,7 @@
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="FontSize" Value="12"/>
+            <Setter Property="IsEnabled" Value="True"/>
             <Setter Property="OverridesDefaultStyle" Value="True"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
@@ -378,6 +382,8 @@
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Foreground" Value="Gray"/>
+                                <Setter Property="Focusable" Value="False"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -657,6 +663,26 @@
                     <Setter Property="IsEnabled" Value="True"/>
                 </DataTrigger>
             </Style.Triggers>
+        </Style>
+
+        <Style x:Key="{x:Type ToolTip}" TargetType="{x:Type ToolTip}">
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToolTip">
+                        <Border Background="#FFEEEEEE"
+                                BorderBrush="Gray"
+                                BorderThickness="1"
+                                Padding="8"
+                                CornerRadius="4"
+                                SnapsToDevicePixels="True">
+                            <TextBlock TextWrapping="Wrap"
+                                       MaxWidth="300"
+                                       Text="{TemplateBinding Content}" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <!--Custom ContextMenu Style: Used in ContextMenu as 'Style'-->

@@ -112,7 +112,7 @@ namespace BauphysikToolWPF.Calculation
             if (allRequirements.Count == 0) return;
 
             // b) Select relevant Source
-            int requirementSourceId = (int)Enums.DocumentSourceType.DIN_4108_2_Tabelle3;
+            int requirementSourceId = (int)Enums.DocumentSourceType.DIN_4108_2_Tabelle_3;
 
             // c) Get specific Requirement from selected RequirementSource
             Requirement? specificRequirement = allRequirements.Find(r => r.DocumentSourceId == requirementSourceId);

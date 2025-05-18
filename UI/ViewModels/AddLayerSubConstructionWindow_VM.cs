@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -124,7 +123,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.Distance, () => _tempConstruction.Spacing, value => _tempConstruction.Spacing = value),
         };
 
-        public List<string> MaterialCategoryList => MaterialCategoryMapping.Values.ToList();
+        public IEnumerable<string> MaterialCategoryList => MaterialCategoryMapping.Values;
 
         
         // TODO: implement QueryFilterConfig...

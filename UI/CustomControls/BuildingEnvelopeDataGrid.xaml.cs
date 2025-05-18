@@ -47,6 +47,15 @@ namespace BauphysikToolWPF.UI.CustomControls
             set => SetValue(IsAllSelectedProperty, value);
         }
 
+        public static readonly DependencyProperty IsNonResidentialProperty =
+            DependencyProperty.Register(nameof(IsNonResidential), typeof(bool), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
+
+        public object IsNonResidential
+        {
+            get => GetValue(IsNonResidentialProperty);
+            set => SetValue(IsNonResidentialProperty, value);
+        }
+
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
@@ -128,7 +137,7 @@ namespace BauphysikToolWPF.UI.CustomControls
                     {
                         // Get the editor (ComboBox) once the cell is in edit mode
                         var editor = cell.Content as ComboBox;
-                        if (editor != null)
+                        if (editor != null && editor.IsEnabled)
                         {
                             // Open the dropdown of the ComboBox
                             editor.IsDropDownOpen = true;

@@ -2,10 +2,12 @@
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Collections.Generic;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Database
 {
+   
     public class Requirement : IDatabaseObject<Requirement>
     {
         //------Variablen-----//
@@ -18,6 +20,9 @@ namespace BauphysikToolWPF.Models.Database
 
         [NotNull]
         public string RefNumber { get; set; } = string.Empty;
+
+        [NotNull]
+        public RequirementComparison RequirementComparison { get; set; }
 
         [NotNull]
         public double ValueA { get; set; }

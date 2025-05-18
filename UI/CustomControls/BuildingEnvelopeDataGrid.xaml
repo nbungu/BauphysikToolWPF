@@ -15,6 +15,7 @@
     <UserControl.Resources>
 
         <ui:NumberConverter x:Key="NumberConverter"/>
+        <ui:TooltipNotEmptyToVisibilityConverter x:Key="TooltipNotEmptyToVisibilityConverter"/>
 
         <ObjectDataProvider x:Key="OrientationTypeNames"
                             MethodName="GetOrientationTypeNames"
@@ -27,6 +28,10 @@
         <ObjectDataProvider x:Key="ElementListValues"
                             MethodName="GetElements"
                             ObjectType="{x:Type vm:Page_BuildingEnvelope_VM}"/>
+
+        <!--<ObjectDataProvider x:Key="TempCorrFactorNames"
+                            MethodName="GetTempCorrFactorNames"
+                            ObjectType="{x:Type vm:Page_BuildingEnvelope_VM}"/>-->
 
         <Style x:Key="DataGridTextColumn_Numeric_ElementStyle" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -96,8 +101,18 @@
                             <RowDefinition Height="16" />
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
+
                         <ContentPresenter Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True"/>
-                        <Path x:Name="SortArrow" Grid.Row="0" Style="{StaticResource SortArrowPathStyle}"  Visibility="Collapsed" HorizontalAlignment="Right" Fill="{TemplateBinding Foreground}"/>
+                        
+                        <Path x:Name="SortArrow"
+                              Grid.Row="1"
+                              Style="{StaticResource SortArrowPathStyle}"
+                              Visibility="Collapsed" 
+                              HorizontalAlignment="Right"
+                              Margin="0,0,2,0"
+                              Opacity="0.7"
+                              Fill="{TemplateBinding Foreground}"/>
+                        
                         <customControls:FractionLabel Grid.Row="1"
                                                       CounterText="{TemplateBinding Tag}"
                                                       VerticalAlignment="Center"
@@ -105,6 +120,16 @@
                                                       Margin="0,4,0,0"
                                                       FontWeight="DemiBold"
                                                       HorizontalAlignment="Left"/>
+                        <Image x:Name="HoverIcon"
+                               Grid.Row="0"
+                               Source="{StaticResource ButtonIcon_Info_B}"
+                               HorizontalAlignment="Right"
+                               VerticalAlignment="Center"
+                               Stretch="Fill"
+                               Width="12" Height="12"
+                               Opacity="0.7"
+                               Margin="2"
+                               Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ToolTip, Converter={StaticResource TooltipNotEmptyToVisibilityConverter}}"/>
                     </Grid>
                 </Border>
             </Grid>
@@ -166,24 +191,24 @@
                     <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="88"/>
+                    <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0" Grid.ColumnSpan="4" Background="{StaticResource SecondaryLightBlueBrush}" BorderThickness="1,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Info" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="4" Grid.ColumnSpan="4" Background="{StaticResource SecondaryLightYellowBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                <Border Grid.Column="4" Grid.ColumnSpan="5" Background="{StaticResource SecondaryLightYellowBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Bauteil" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="8" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                <Border Grid.Column="9" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Netto Raum" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="11" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                <Border Grid.Column="12" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Brutto Raum" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="14" Background="{StaticResource PrimaryLightBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
+                <Border Grid.Column="15" Background="{StaticResource PrimaryLightBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
             </Grid>
-
 
             <DataGrid Grid.Row="1"
                       x:Name="BuildingEnvelopeDataGridElement"
@@ -271,15 +296,20 @@
                                             ItemsSource="{Binding Source={StaticResource UsageZoneNames}}"
                                             Width="120">
                         <DataGridComboBoxColumn.ElementStyle>
-                            <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}"/>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}">
+                                <Setter Property="IsEnabled" Value="{Binding IsNonResidential, ElementName=BuildingEnvelopeDataGridControl}"/>
+                            </Style>
                         </DataGridComboBoxColumn.ElementStyle>
                         <DataGridComboBoxColumn.EditingElementStyle>
-                            <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}"/>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}">
+                                <Setter Property="IsEnabled" Value="{Binding IsNonResidential, ElementName=BuildingEnvelopeDataGridControl}"/>
+                            </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                         <DataGridComboBoxColumn.HeaderStyle>
                             <Style TargetType="DataGridColumnHeader">
                                 <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
                                 <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                                <Setter Property="ToolTip" Value="Merkmal einer Zone: gleiche Nutzung und gleiche Art der Konditionierung. Zonierung nur bei Nichtwohngebäuden erforderlich!"/>
                             </Style>
                         </DataGridComboBoxColumn.HeaderStyle>
                     </DataGridComboBoxColumn>
@@ -328,8 +358,8 @@
                         </DataGridTextColumn.HeaderStyle>
                     </DataGridTextColumn>
 
-                    <!-- Bauteilfläche Column -->
-                    <DataGridTextColumn Header="Bauteilfläche"
+                    <!-- Fläche Column -->
+                    <DataGridTextColumn Header="Fläche"
                                         Binding="{Binding EnvelopeArea, Converter={StaticResource NumberConverter}}"
                                         Width="88"
                                         ElementStyle="{StaticResource DataGridTextColumn_Numeric_ElementStyle}"
@@ -339,6 +369,7 @@
                                 <Setter Property="Tag" Value="m²"/>
                                 <Setter Property="Background" Value="{StaticResource SecondaryLightYellowBrush}"/>
                                 <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                                <Setter Property="ToolTip" Value="Wärmeübertragende Umfassungsfläche eines Bauteils. Bei Außenbauteilen: Außenmaße. Bei Innenbauteilen zwischen einer temperierten und einer nicht temperierten Zone: Außenmaß der temperierten Zone. Bei Innenbauteilen zwischen zwei (unterschiedlich) temperierten Zonen: Mitte des Rohbaus. Bauteile zwischen Zonen bis 4 K Solltemperaturunterschied dürfen vernachlässigt werden."/>
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
                     </DataGridTextColumn>
@@ -363,6 +394,22 @@
                         </DataGridComboBoxColumn.HeaderStyle>
                     </DataGridComboBoxColumn>
 
+                    <!-- Bauteilfläche Column -->
+                    <DataGridTextColumn Header="Fx"
+                                        Binding="{Binding TempCorrectionFactor, Converter={StaticResource NumberConverter}}"
+                                        Width="88"
+                                        ElementStyle="{StaticResource DataGridTextColumn_Numeric_ElementStyle}"
+                                        EditingElementStyle="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Tag" Value="-"/>
+                                <Setter Property="Background" Value="{StaticResource SecondaryLightYellowBrush}"/>
+                                <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                                <Setter Property="ToolTip" Value="Temperatur-Korrekturfaktor: Für alle Bauteilflächen, die an die Außenluft grenzen, ist der Fx-Wert = 1,0. Für alle anderen, wird ein Temperatur-Korrekturfaktor ungleich 1,0 berücksichtigt."/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
                     <!-- Netto Höhe Column -->
                     <DataGridTextColumn Header="Höhe"
                                         Binding="{Binding RoomHeightNet, Converter={StaticResource NumberConverter}}"
@@ -374,6 +421,7 @@
                                 <Setter Property="Tag" Value="m"/>
                                 <Setter Property="Background" Value="{StaticResource SecondaryLightGreenBrush}"/>
                                 <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                                <Setter Property="ToolTip" Value="Oberkante Fußboden bis Unterkante Geschossdecke bzw. abgehängte Decke."/>
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
                     </DataGridTextColumn>
@@ -389,6 +437,7 @@
                                 <Setter Property="Tag" Value="m²"/>
                                 <Setter Property="Background" Value="{StaticResource SecondaryLightGreenBrush}"/>
                                 <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                                <Setter Property="ToolTip" Value="Nettoraumfläche NRF (Bezugsfläche)"/>
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
                     </DataGridTextColumn>
@@ -404,6 +453,7 @@
                                 <Setter Property="Tag" Value="m³"/>
                                 <Setter Property="Background" Value="{StaticResource SecondaryLightGreenBrush}"/>
                                 <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                                <Setter Property="ToolTip" Value="Nettoraumvolumen: wird entsprechend den inneren Abmessungen bestimmt"/>
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
                     </DataGridTextColumn>

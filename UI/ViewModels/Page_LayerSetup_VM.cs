@@ -231,7 +231,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string> RelFiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Select(e => e.Name).ToList();
         public List<string> RelFeKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Select(e => e.Name).ToList();
 
-
         // Index is 0:
         // On Initial Startup (default value for not assigned int)
         // Index is -1:

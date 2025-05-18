@@ -1,4 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF.Models.Database.Helper
 {
@@ -20,22 +23,14 @@ namespace BauphysikToolWPF.Models.Database.Helper
             Bodenplatte,
             Kellerdecke,
         }
-        public static readonly Dictionary<ConstructionType, string> ConstructionTypeMapping = new()
-        {
-            { ConstructionType.NotDefined, "Nicht definiert" },
-            { ConstructionType.Aussenwand, "Außenwand" },
-            { ConstructionType.AussenwandGegErdreich, "Außenwand gegen Erdreich" },
-            { ConstructionType.Innenwand, "Innenwand" },
-            { ConstructionType.WhgTrennwand, "Wohnungstrennwand" },
-            { ConstructionType.GeschossdeckeGegAussenluft, "Geschossdecke gegen Außenluft" },
-            { ConstructionType.DeckeGegUnbeheizt, "Decke gegen unbeheizten Raum" },
-            { ConstructionType.InnenwandGegUnbeheizt, "Innenwand gegen unbeheizten Raum" },
-            { ConstructionType.Flachdach, "Flachdach" },
-            { ConstructionType.Schraegdach, "Schrägdach" },
-            { ConstructionType.Umkehrdach, "Umkehrdach" },
-            { ConstructionType.Bodenplatte, "Bodenplatte" },
-            { ConstructionType.Kellerdecke, "Kellerdecke" }
-        };
+
+        public static readonly Dictionary<ConstructionType, string> ConstructionTypeMapping =
+            Enum.GetValues(typeof(ConstructionType))
+                .Cast<ConstructionType>()
+                .ToDictionary(
+                    type => type,
+                    DatabaseAccess.QueryConstructionNameByConstructionType
+                );
 
         public enum ConstructionDirection
         {
@@ -56,19 +51,24 @@ namespace BauphysikToolWPF.Models.Database.Helper
             GEG_Anlage1,
             GEG_Anlage2,
             GEG_Anlage7,
-            DIN_4108_2_Tabelle3,
+            DIN_4108_2_Tabelle_3,
             DIN_V_18599_10_AnhangA,
             DIN_V_18599_10_Tabelle_E1,
+            DIN_V_18599_10_Tabelle_4,
+            DIN_V_18599_2_Tabelle_5,
+            DIN_V_18599_10_Tabelle_5,
         }
-        public static readonly Dictionary<DocumentSourceType, string> RequirementSourceTypeMapping = new()
-        {
-            { DocumentSourceType.NotDefined, "Nicht definiert" },
-            { DocumentSourceType.GEG_Anlage1, "GEG Anlage 1" },
-            { DocumentSourceType.GEG_Anlage2, "GEG Anlage 2" },
-            { DocumentSourceType.GEG_Anlage7, "GEG Anlage 7" },
-            { DocumentSourceType.DIN_4108_2_Tabelle3, "DIN 4108-2 Tabelle 3" },
-            { DocumentSourceType.DIN_V_18599_10_AnhangA, "DIN V 18599-10 Anhang A" }
-        };
+
+        // TODO: TEST
+        // method calls are executed once per entry when the static class containing the dictionary
+        // is first loaded into memory (i.e., on first access to any member of the class or when explicitly triggered)
+        public static readonly Dictionary<DocumentSourceType, string> DocumentSourceTypeMapping =
+            Enum.GetValues(typeof(DocumentSourceType))
+                .Cast<DocumentSourceType>()
+                .ToDictionary(
+                    type => type,
+                    DatabaseAccess.QueryDocumentSourceNameBySourceType
+                );
 
         public enum MaterialCategory
         {
@@ -154,53 +154,13 @@ namespace BauphysikToolWPF.Models.Database.Helper
             LagerLogistikhalle,
         }
 
-        public static readonly Dictionary<RoomUsageType, string> RoomUsageTypeMapping = new()
-        {
-            { RoomUsageType.Wohnen, "Wohnen" },
-            { RoomUsageType.Einzelbuero, "Einzelbüro" },
-            { RoomUsageType.GruppenBueroBis6Ap, "Gruppenbüro (zwei bis sechs Arbeitsplätze)" },
-            { RoomUsageType.GrossRaumBueroAb7Ap, "Großraumbüro (ab sieben Arbeitsplätze)" },
-            { RoomUsageType.Besprechung, "Besprechung, Sitzung, Seminar" },
-            { RoomUsageType.Schalterhalle, "Schalterhalle" },
-            { RoomUsageType.Einzelhandel, "Einzelhandel/Kaufhaus" },
-            { RoomUsageType.EinzelhandelMitKühlprodukten, "Einzelhandel/Kaufhaus (Lebensmittelabteilung mit Kühlprodukten)" },
-            { RoomUsageType.Klassenzimmer, "Klassenzimmer (Schule), Gruppenraum (Kindergarten)" },
-            { RoomUsageType.Hoersaal, "Hörsaal, Auditorium" },
-            { RoomUsageType.Bettenzimmer, "Bettenzimmer" },
-            { RoomUsageType.Hotelzimmer, "Hotelzimmer" },
-            { RoomUsageType.Kantine, "Kantine" },
-            { RoomUsageType.Restaurant, "Restaurant" },
-            { RoomUsageType.KuecheInNWG, "Küchen in Nichtwohngebäuden" },
-            { RoomUsageType.KuecheLager, "Küche – Vorbereitung, Lager" },
-            { RoomUsageType.WCSanitaerInNWG, "WC und Sanitärräume in Nichtwohngebäuden" },
-            { RoomUsageType.SonstigeAufenthalt, "Sonstige Aufenthaltsräume" },
-            { RoomUsageType.NebenflaechenOhneAufenthalt, "Nebenflächen (ohne Aufenthaltsräume)" },
-            { RoomUsageType.Verkehrsflaechen, "Verkehrsflächen" },
-            { RoomUsageType.LagerTechnikArchiv, "Lager, Technik, Archiv" },
-            { RoomUsageType.Rechenzentrum, "Rechenzentrum" },
-            { RoomUsageType.GewerbeUndIndustrieHalleSA, "Gewerbliche und industrielle Hallen – schwere Arbeit, stehende Tätigkeit" },
-            { RoomUsageType.GewerbeUndIndustrieHalleMSA, "Gewerbliche und industrielle Hallen – mittelschwere Arbeit, überwiegend stehende Tätigkeit" },
-            { RoomUsageType.GewerbeUndIndustrieHalleLA, "Gewerbliche und industrielle Hallen – leichte Arbeit, überwiegend sitzende Tätigkeit" },
-            { RoomUsageType.Zuschauerbereich, "Zuschauerbereich (Theater und Veranstaltungsbauten)" },
-            { RoomUsageType.FoyerTheater, "Foyer (Theater und Veranstaltungsbauten)" },
-            { RoomUsageType.BuehneTheater, "Bühne (Theater und Veranstaltungsbauten)" },
-            { RoomUsageType.MesseKongress, "Messe/Kongress" },
-            { RoomUsageType.AusstellungMuseum, "Ausstellungsräume und Museum mit konservatorischen Anforderungen" },
-            { RoomUsageType.BibLesesaal, "Bibliothek – Lesesaal" },
-            { RoomUsageType.BibFreihandbereich, "Bibliothek – Freihandbereich" },
-            { RoomUsageType.BibMagazinDepot, "Bibliothek – Magazin und Depot" },
-            { RoomUsageType.Turnhalle, "Turnhalle (ohne Zuschauerbereich)" },
-            { RoomUsageType.ParkhausBueroPrivatnutzung, "Parkhäuser (Büro- und Privatnutzung)" },
-            { RoomUsageType.ParkhausOeffentlicheNutzung, "Parkhäuser (öffentliche Nutzung)" },
-            { RoomUsageType.Saunabereich, "Saunabereich" },
-            { RoomUsageType.Fitnessraum, "Fitnessraum" },
-            { RoomUsageType.Labor, "Labor" },
-            { RoomUsageType.UntersuchungsBehandlungsraeume, "Untersuchungs- und Behandlungsräume" },
-            { RoomUsageType.Spezialpflegebereiche, "Spezialpflegebereiche" },
-            { RoomUsageType.FlurAllgemeinerPflegebereich, "Flure des allgemeinen Pflegebereichs" },
-            { RoomUsageType.ArztpraxenTherapeutischePraxen, "Arztpraxen und Therapeutische Praxen" },
-            { RoomUsageType.LagerLogistikhalle, "Lagerhallen, Logistikhallen" },
-        };
+        public static readonly Dictionary<RoomUsageType, string> RoomUsageTypeMapping =
+            Enum.GetValues(typeof(RoomUsageType))
+                .Cast<RoomUsageType>()
+                .ToDictionary(
+                    type => type,
+                    DatabaseAccess.QueryRoomUsageProfileNameByRoomUsageType
+                );
 
         public enum ReferenceLocation
         {
@@ -237,6 +197,23 @@ namespace BauphysikToolWPF.Models.Database.Helper
             { ReferenceLocation.Passau, "Passau" },
             { ReferenceLocation.Stoetten, "Stötten" },
             { ReferenceLocation.GarmischPartenkirchen, "Garmisch-Partenkirchen" }
+        };
+
+        public enum RequirementComparison
+        {
+            Equal = 0,
+            LessThan,
+            GreaterThan,
+            LessThanOrEqual,
+            GreaterThanOrEqual,
+        }
+        public static readonly Dictionary<RequirementComparison, string> RequirementComparisonMapping = new()
+        {
+            { RequirementComparison.Equal, "=" },
+            { RequirementComparison.LessThan, "<" },
+            { RequirementComparison.GreaterThan, ">" },
+            { RequirementComparison.LessThanOrEqual, "<=" },
+            { RequirementComparison.GreaterThanOrEqual, ">=" }
         };
 
         public enum Month

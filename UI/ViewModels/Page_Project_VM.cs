@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Application;
 using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using BT.Logging;
@@ -12,7 +13,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Repositories;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -257,7 +257,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility RecentProjectsListVisibility => ProjectDataVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         public Visibility RecentProjectEntriesVisibility => RecentProjects.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         public Visibility NoRecentProjectEntriesVisibility => RecentProjects.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
-        
         public bool ElementPageAvailable => ProjectDataVisibility == Visibility.Visible || SelectedListViewItem != null;
 
         private void RefreshXamlBindings()
