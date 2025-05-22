@@ -1,7 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -11,6 +10,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
+using BauphysikToolWPF.Calculation;
+using static BauphysikToolWPF.Calculation.EnvelopeCalculation;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
@@ -25,6 +26,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             RoomName = "Wohnzimmer",
             RoomUsageType = RoomUsageType.Wohnen,
         };
+        private readonly EnvelopeCalculation _envelopeCalc = new EnvelopeCalculation();
 
         private EnvelopeItem? _previousItem;
 
@@ -139,18 +141,29 @@ namespace BauphysikToolWPF.UI.ViewModels
          * 
          * Not Observable, not directly mutated by user input
          */
+
         public string Title => "Eingabe der thermischen Hüllfläche";
         public ObservableCollection<EnvelopeItem> EnvelopeItems => new ObservableCollection<EnvelopeItem>(Session.SelectedProject?.EnvelopeItems ?? new List<EnvelopeItem>());
         public bool IsRowSelected => SelectedEnvelopeItem != null;
         public Visibility PresetActiveVisibility => AnyPresetActive ? Visibility.Visible : Visibility.Collapsed;
         public bool AnyPresetActive => IsInfoPresetChecked || IsElementPresetChecked || IsRoomPresetChecked;
         public int ItemsCount => EnvelopeItems.Count;
-        public string ItemsCountString => $"Bereiche angelegt: {ItemsCount}";
+        public string ItemsCountString => $"Bereiche/Bauteile angelegt: {ItemsCount}";
         public int ItemsCheckedCount => EnvelopeItems.Where(e => e.IsSelected).ToList().Count;
         public string ItemsCheckedCountString => $"Zeilen markiert: {ItemsCheckedCount}";
         public Visibility NoEntriesVisibility => EnvelopeItems.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public bool IsNonResidential => Session.SelectedProject?.BuildingUsage == BuildingUsageType.NonResidential;
-        
+
+        public IEnumerable<IPropertyItem> TestPropBag => new List<IPropertyItem>()
+        {
+            new PropertyItem<double>(Symbol.PrimaryEnergyPerArea, () => _envelopeCalc.PrimaryEnergyPerArea),
+            new PropertyItem<double>(Symbol.AirExchangeRate, () => _envelopeCalc.AirExchangeRate),
+            new PropertyItem<int>(Symbol.ThermalBridgeSurcharge, () => (int)_envelopeCalc.ThermalBridgeSurcharge, value => _envelopeCalc.ThermalBridgeSurcharge = (ThermalBridgeSurchargeType)value)
+            {
+                PropertyValues = ThermalBridgeSurchargeMapping.Values.Cast<object>().ToArray()
+            },
+        };
+
         public IEnumerable<IPropertyItem> InfoPresetProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Etage", () => _presetEnvelopeItem.FloorLevel, value => _presetEnvelopeItem.FloorLevel = value),
@@ -205,6 +218,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             OnPropertyChanged(nameof(InfoPresetProperties));
             OnPropertyChanged(nameof(ElementPresetProperties));
+            OnPropertyChanged(nameof(TestPropBag));
         }
 
         private void UpdatePropertyDependencies(object? sender, PropertyChangedEventArgs e)

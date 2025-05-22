@@ -369,7 +369,7 @@
                                 <Setter Property="Tag" Value="m²"/>
                                 <Setter Property="Background" Value="{StaticResource SecondaryLightYellowBrush}"/>
                                 <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
-                                <Setter Property="ToolTip" Value="Wärmeübertragende Umfassungsfläche eines Bauteils. Bei Außenbauteilen: Außenmaße. Bei Innenbauteilen zwischen einer temperierten und einer nicht temperierten Zone: Außenmaß der temperierten Zone. Bei Innenbauteilen zwischen zwei (unterschiedlich) temperierten Zonen: Mitte des Rohbaus. Bauteile zwischen Zonen bis 4 K Solltemperaturunterschied dürfen vernachlässigt werden."/>
+                                <Setter Property="ToolTip" Value="Wärmeübertragende Umfassungsfläche eines Bauteils. Bei Außenbauteilen: Außenmaße. Bei Innenbauteilen zwischen einer temperierten und einer nicht temperierten Zone: Außenmaß der temperierten Zone. Bei Innenbauteilen zwischen zwei (unterschiedlich) temperierten Zonen: Mitte des Rohbaus. Als Maße von Fenstern und Türen werden die lichten inneren Rohbauöffnungen angesetzt. Bauteile zwischen Zonen bis 4 K Solltemperaturunterschied dürfen vernachlässigt werden."/>
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
                     </DataGridTextColumn>
@@ -394,7 +394,7 @@
                         </DataGridComboBoxColumn.HeaderStyle>
                     </DataGridComboBoxColumn>
 
-                    <!-- Bauteilfläche Column -->
+                    <!-- Fx Column -->
                     <DataGridTextColumn Header="Fx"
                                         Binding="{Binding TempCorrectionFactor, Converter={StaticResource NumberConverter}}"
                                         Width="88"

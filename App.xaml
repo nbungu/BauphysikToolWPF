@@ -263,7 +263,7 @@
                                             Content="{TemplateBinding SelectionBoxItem}"
                                             ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                             ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                            Margin="6,6,26,6"
+                                            Margin="6,6,24,6"
                                             VerticalAlignment="Stretch"
                                             HorizontalAlignment="Left"/>
                             <!-- DropDown Menu / Popup -->
@@ -347,7 +347,7 @@
                                 Content="{TemplateBinding SelectionBoxItem}"
                                 ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                 ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                Margin="4,0,0,0"
+                                Margin="4,4,20,4"
                                 VerticalAlignment="Center"
                                 HorizontalAlignment="Left"/>
                             <!-- DropDown Menu / Popup -->

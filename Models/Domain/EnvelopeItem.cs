@@ -1,10 +1,10 @@
 ﻿using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.UI.CustomControls;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
-using BauphysikToolWPF.UI.CustomControls;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
@@ -235,12 +235,6 @@ namespace BauphysikToolWPF.Models.Domain
             }
         }
 
-        /// <summary>
-        /// H_T,j
-        /// </summary>
-        [JsonIgnore]
-        public double TransmissionHeatTransferCoef => TempCorrectionFactor * UValue * EnvelopeArea;
-        
         #endregion
 
         #region ctors

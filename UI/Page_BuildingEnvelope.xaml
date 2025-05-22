@@ -114,6 +114,7 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto"/>
@@ -121,18 +122,22 @@
                 </Grid.ColumnDefinitions>
 
                 <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsInfoPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="0" Grid.Column="1" Header="Vorbelegung für Info-Werte" IsExpanded="True" IsEnabled="{Binding IsInfoPresetChecked}" Margin="0,0,0,8">
-                    <controls:PropertyDataGrid x:Name="InfoPresetDataGrid" Properties="{Binding InfoPresetProperties}"/>
+                <Expander Grid.Row="0" Grid.Column="1" Header="Vorbelegung für Info-Werte" IsExpanded="True" Margin="0,0,0,8">
+                    <controls:PropertyDataGrid x:Name="InfoPresetDataGrid" Properties="{Binding InfoPresetProperties}" IsEnabled="{Binding IsInfoPresetChecked}"/>
                 </Expander>
 
                 <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsElementPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="1" Grid.Column="1" Header="Vorbelegung für Bauteil-Werte" IsExpanded="True" IsEnabled="{Binding IsElementPresetChecked}" Margin="0,0,0,8">
-                    <controls:PropertyDataGrid x:Name="ElementPresetDataGrid" Properties="{Binding ElementPresetProperties}"/>
+                <Expander Grid.Row="1" Grid.Column="1" Header="Vorbelegung für Bauteil-Werte" IsExpanded="False" Margin="0,0,0,8">
+                    <controls:PropertyDataGrid x:Name="ElementPresetDataGrid" Properties="{Binding ElementPresetProperties}" IsEnabled="{Binding IsElementPresetChecked}"/>
                 </Expander>
 
                 <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsRoomPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="2" Grid.Column="1" Header="Vorbelegung für Raum-Werte" IsExpanded="True" IsEnabled="{Binding IsRoomPresetChecked}" Margin="0,0,0,8">
-                    <controls:PropertyDataGrid x:Name="RoomPresetDataGrid" Properties="{Binding RoomPresetProperties}"/>
+                <Expander Grid.Row="2" Grid.Column="1" Header="Vorbelegung für Raum-Werte" IsExpanded="False" Margin="0,0,0,8">
+                    <controls:PropertyDataGrid x:Name="RoomPresetDataGrid" Properties="{Binding RoomPresetProperties}" IsEnabled="{Binding IsRoomPresetChecked}"/>
+                </Expander>
+
+                <Expander Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Header="Berechnungsparameter" IsExpanded="True" Margin="0,0,0,8">
+                    <controls:PropertyDataGrid x:Name="InfoPresetDataGrid2" Properties="{Binding TestPropBag}"/>
                 </Expander>
 
             </Grid>

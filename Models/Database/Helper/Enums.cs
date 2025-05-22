@@ -22,6 +22,10 @@ namespace BauphysikToolWPF.Models.Database.Helper
             Umkehrdach,
             Bodenplatte,
             Kellerdecke,
+            Fenster,
+            Tuer,
+            InnenTuer,
+            Glasvorbau,
         }
 
         public static readonly Dictionary<ConstructionType, string> ConstructionTypeMapping =
@@ -79,7 +83,8 @@ namespace BauphysikToolWPF.Models.Database.Helper
             Masonry,
             Plasters,
             Sealant,
-            Air
+            Air,
+            Glass
         }
         public static readonly Dictionary<MaterialCategory, string> MaterialCategoryMapping = new()
         {
@@ -91,6 +96,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
             { MaterialCategory.Plasters, "Mörtel und Putze" },
             { MaterialCategory.Sealant, "Dichtbahnen, Folien" },
             { MaterialCategory.Air, "Luftschicht" },
+            { MaterialCategory.Glass, "Glas" },
         };
 
         public static readonly Dictionary<MaterialCategory, double> DefaultLayerWidthMapping = new()
