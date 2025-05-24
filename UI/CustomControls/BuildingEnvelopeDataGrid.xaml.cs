@@ -38,15 +38,6 @@ namespace BauphysikToolWPF.UI.CustomControls
             set => SetValue(SelectedEnvelopeItemProperty, value);
         }
 
-        public static readonly DependencyProperty IsAllSelectedProperty =
-            DependencyProperty.Register(nameof(IsAllSelected), typeof(bool), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
-
-        public object IsAllSelected
-        {
-            get => GetValue(IsAllSelectedProperty);
-            set => SetValue(IsAllSelectedProperty, value);
-        }
-
         public static readonly DependencyProperty IsNonResidentialProperty =
             DependencyProperty.Register(nameof(IsNonResidential), typeof(bool), typeof(BuildingEnvelopeDataGrid), new PropertyMetadata(null));
 

@@ -1,10 +1,7 @@
 ﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {
@@ -23,7 +20,7 @@ namespace BauphysikToolWPF.Calculation
             OverGround,
             ViaThermalBridges,
         }
-        public static readonly Dictionary<TransmissionTransfer, string> TransmissionTypeMapping = new()
+        public static readonly Dictionary<TransmissionTransfer, string> TransmissionTransferMapping = new()
         {
             { TransmissionTransfer.ToOutside, "direkte Transmission nach außen" },
             { TransmissionTransfer.ThroughUnheatedRooms, "Transmission durch unbeheizte oder ungekühlte Räume" },
@@ -42,7 +39,7 @@ namespace BauphysikToolWPF.Calculation
             MechanicalVentilation,
             AirExchangeBetweenZones,
         }
-        public static readonly Dictionary<VentilationTransfer, string> VentilationTypeMapping = new()
+        public static readonly Dictionary<VentilationTransfer, string> VentilationTransferMapping = new()
         {
             { VentilationTransfer.Infiltration, "Infiltration" },
             { VentilationTransfer.WindowVentilation, "Fensterlüftung" },
@@ -84,7 +81,7 @@ namespace BauphysikToolWPF.Calculation
             { ThermalBridgeSurchargeType.NoCalculation, "Ohne Nachweis" },
             { ThermalBridgeSurchargeType.WithInternalInsulationAndIntegralSolidCeiling, "Außenbauteile mit innenliegender Dämmschicht und einbindender Massivdecke" },
             { ThermalBridgeSurchargeType.ProofOfEquivalence_CatB, "DIN 4108 Beiblatt 2: Gleichwertigkeit bei allen Anschlüssen nach Kategorie B erfüllt." },
-            { ThermalBridgeSurchargeType.ProofOfEquivalence_CatMixed, "DIN 4108 Beiblatt 2: Gleichwertigkeit nicht bei allen Anschlüssen nach Kategorie B oder Kategorie A erfüllt." },
+            { ThermalBridgeSurchargeType.ProofOfEquivalence_CatMixed, "DIN 4108 Beiblatt 2: Gleichwertigkeit bei allen Anschlüssen nach Kategorie B oder Kategorie A erfüllt." },
             { ThermalBridgeSurchargeType.ProofOfEquivalence_CatNotMet, "DIN 4108 Beiblatt 2: Gleichwertigkeit nicht bei allen Anschlüssen erfüllt." },
             { ThermalBridgeSurchargeType.ProjectRelatedValue, "Projektbezogener Wärmebrückenzuschlag" }
         };
@@ -97,20 +94,34 @@ namespace BauphysikToolWPF.Calculation
         };
 
 
-        private readonly List<EnvelopeItem> _inputCollection;
-        private readonly EnvelopeCalculationConfig _config;
-        
+        public List<EnvelopeItem> InputCollection { get; set; }
+        public EnvelopeCalculationConfig Config { get; set; }
         public double HeatedRoomVolume { get; private set; }
-        public double VentilatedVolume => _config.IsEFH ? 0.76 * HeatedRoomVolume : 0.80 * HeatedRoomVolume;
-        public double EnvelopeArea => _inputCollection.Sum(itm => itm.EnvelopeArea);
+        //public double VentilatedVolume => _config.IsEFH ? 0.76 * HeatedRoomVolume : 0.80 * HeatedRoomVolume;
+        public double EnvelopeArea => InputCollection.Sum(itm => itm.EnvelopeArea);
         public double UsableArea { get; private set; }
-        public double LivingArea => _config.IsEFH ? UsableArea / 1.35 : UsableArea / 1.20;
+        public double LivingArea => Config.IsEFH ? UsableArea / 1.35 : UsableArea / 1.20;
         public double AVRatio { get; private set; }
         public double PrimaryEnergy { get; private set; }
         public double PrimaryEnergyPerArea => PrimaryEnergy / UsableArea;
-        public double AirExchangeRate { get; private set; }
-        public double ThermalBridgeSurchargeValue { get; private set; }
-        public ThermalBridgeSurchargeType ThermalBridgeSurcharge { get; set; }
+        public double AirExchangeRateInf { get; private set; }
+        public double AirExchangeRateWin { get; private set; }
+        public double AirExchangeRateMech { get; private set; }
+        public double AirExchangeRateUe { get; private set; }
+
+        public double ThermalBridgeSurchargeValue { get; set; } = ThermalBridgeSurchargeValues[ThermalBridgeSurchargeType.NoCalculation];
+        public bool ThermalBridgeSurchargeCustomValue => (int)ThermalBridgeSurcharge <= 3; 
+
+        private ThermalBridgeSurchargeType _thermalBridgeSurcharge;
+        public ThermalBridgeSurchargeType ThermalBridgeSurcharge
+        {
+            get => _thermalBridgeSurcharge;
+            set
+            {
+                _thermalBridgeSurcharge = value;
+                ThermalBridgeSurchargeValue = ThermalBridgeSurchargeValues.TryGetValue(value, out var surcharge) ? surcharge : 0.0;
+            }
+        }
 
         public double ZoneTempInteriorHeating { get; private set; } // TODO: Zone temperature calculation
         public double ZoneTempInteriorCooling { get; private set; } // TODO: Zone temperature calculation
@@ -134,13 +145,19 @@ namespace BauphysikToolWPF.Calculation
 
         public EnvelopeCalculation()
         {
-            _inputCollection = new List<EnvelopeItem>();
-            _config = new EnvelopeCalculationConfig();
+            InputCollection = new List<EnvelopeItem>();
+            Config = new EnvelopeCalculationConfig();
+        }
+
+        public EnvelopeCalculation(IEnumerable<EnvelopeItem> inputCollection)
+        {
+            InputCollection = inputCollection.ToList();
+            Config = new EnvelopeCalculationConfig();
         }
         public EnvelopeCalculation(IEnumerable<EnvelopeItem> inputCollection, EnvelopeCalculationConfig config)
         {
-            _inputCollection = inputCollection.ToList();
-            _config = config;
+            InputCollection = inputCollection.ToList();
+            Config = config;
         }
 
         public void CalculateEnvelope()

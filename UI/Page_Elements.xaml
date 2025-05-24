@@ -266,9 +266,9 @@
             <Label Grid.Row="0" Content="Ausgewähltes Bauteil" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,8">
-                <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
-                <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
             
             <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" Margin="0,0,0,8">

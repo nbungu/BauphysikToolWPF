@@ -94,7 +94,7 @@
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,8">
                 <TextBox Text="{Binding SearchString}" Background="{StaticResource SecondaryLightBlueBrush}" TextAlignment="Left" MaxLength="320" Width="320" Margin="0,0,8,0"/>
-                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle01_Mini}" Margin="0,0,8,0"/>
+                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle01_Mini_Transparent}" Margin="0,0,8,0"/>
             </StackPanel>
 
             <controls:MaterialsListView Grid.Row="2" Materials="{Binding Materials}" SelectedMaterial="{Binding SelectedListViewItem, Mode=TwoWay}"/>

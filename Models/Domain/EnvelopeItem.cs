@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using System.Windows;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
@@ -22,8 +23,9 @@ namespace BauphysikToolWPF.Models.Domain
         #region Serialization Objects
 
         public string RoomName { get; set; } = string.Empty;
+        public int RoomNumber { get; set; } = -1; // not assigned by default
         public string FloorLevel { get; set; } = string.Empty;
-
+        
         private double _roomHeightGross;
         public double RoomHeightGross
         {
@@ -193,11 +195,31 @@ namespace BauphysikToolWPF.Models.Domain
             get => Session.SelectedProject?.Elements.FirstOrDefault(e => e?.InternalId == ElementInternalId, null);
             set => ElementInternalId = value?.InternalId ?? -1;
         }
+        
+        private bool _isSelected;
         [JsonIgnore]
-        public bool IsSelected { get; set; }
-
+        public bool IsSelected
+        {
+            get => _isSelected;
+            set
+            {
+                if (_isSelected != value)
+                {
+                    _isSelected = value;
+                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(IsSelectedArrowVisibility)); // Notify change
+                }
+            }
+        }
+        [JsonIgnore]
+        public Visibility IsSelectedArrowVisibility => IsSelected ? Visibility.Visible : Visibility.Collapsed;
         [JsonIgnore]
         public bool IsReadonly { get; set; }
+        [JsonIgnore]
+        public int RoomGroupColorIndex => RoomNumber % 2; // 0 if even, 1 if odd
+        [JsonIgnore]
+        public bool ShowRoomData { get; set; } // For UI purposes
+
         [JsonIgnore]
         public static EnvelopeItem Empty => new EnvelopeItem(); // Optional static default (for easy reference)
 
@@ -249,6 +271,7 @@ namespace BauphysikToolWPF.Models.Domain
                 ElementInternalId = this.ElementInternalId,
                 CreatedAt = this.CreatedAt,
                 UpdatedAt = TimeStamp.GetCurrentUnixTimestamp(),
+                RoomNumber = this.RoomNumber,
                 RoomName = this.RoomName,
                 FloorLevel = this.FloorLevel,
                 RoomHeightGross = this.RoomHeightGross,
@@ -258,6 +281,7 @@ namespace BauphysikToolWPF.Models.Domain
                 RoomAreaNet = this.RoomAreaNet,
                 RoomVolumeNet = this.RoomVolumeNet,
                 EnvelopeArea = this.EnvelopeArea,
+                TempCorrectionFactor = this.TempCorrectionFactor,
                 Tag = this.Tag,
                 Comment = this.Comment,
                 OrientationType = this.OrientationType,
@@ -278,7 +302,7 @@ namespace BauphysikToolWPF.Models.Domain
 
         public override string ToString() // Überlagert vererbte standard ToString() Methode 
         {
-            return $"[{InternalId}] {RoomName} ({FloorLevel}) - Element: {Element} | U-Value: {UValue:0.##} | {OrientationType} / {RoomUsageType}";
+            return $"[{RoomNumber}] {RoomName} ({FloorLevel}) - Element: {Element} | U-Value: {UValue:0.##} | {OrientationType} / {RoomUsageType}";
         }
 
         #endregion

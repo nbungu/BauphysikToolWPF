@@ -63,5 +63,19 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             { BuildingTypeResidatial.ZFH, "Zweifamilienhaus" },
             { BuildingTypeResidatial.RMH, "Reihenmittelhaus" }
         };
+
+        /// <summary>
+        ///
+        /// </summary>
+        public enum VentilationType
+        {
+            None,
+            Mechanical,
+        }
+        public static readonly Dictionary<VentilationType, string> VentilationTypeMapping = new()
+        {
+            { VentilationType.None, "keine Lüftungsanlage" },
+            { VentilationType.Mechanical, "mechanische Lüftungsanlage" },
+        };
     }
 }

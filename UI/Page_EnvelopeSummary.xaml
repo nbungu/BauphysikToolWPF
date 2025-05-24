@@ -26,7 +26,7 @@
         <Border Grid.Row="0" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Prev_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.BuildingEnvelope}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}" Tag="{StaticResource ButtonIcon_Prev_B}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.BuildingEnvelope}" Margin="4"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">

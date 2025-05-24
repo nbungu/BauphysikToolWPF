@@ -30,7 +30,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.EnvelopeSummary}" Style="{StaticResource ButtonStyle01_Mini}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.EnvelopeSummary}" Style="{StaticResource ButtonStyle01_Mini_Transparent}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -39,7 +39,7 @@
         <Grid Grid.Row="1" Margin="0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="320"/>
-                <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
+                <ColumnDefinition Width="360" MaxWidth="480" MinWidth="16"/>
             </Grid.ColumnDefinitions>
 
             <!--Main, Left -->
@@ -51,22 +51,29 @@
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
 
-                    <Button Content="Neuer Bereich"
-                        ToolTip="Erstellt einen neuen Bereich der Gebäudehülle"
+                    <Button Content="Neuer Raum"
+                        ToolTip="Erstellt neuen Raum"
                         Style="{StaticResource ButtonStyle01_Mini_Highlighted}"
-                        Command="{Binding AddEnvelopeItemCommand}"
+                        Command="{Binding AddEnvelopeItemRoomCommand}"
                         Tag="{StaticResource ButtonIcon_AddLayer_W}"
                         Margin="0,0,8,0"/>
 
-                    <Button ToolTip="Bereich duplizieren"
-                        Style="{StaticResource ButtonStyle01_Mini}"
+                    <Button Content="Bauteilfläche dem Raum hinzufügen"
+                            ToolTip="Erstellt neuen Bereich der thermischen Hüllfläche, zugehörig zum aktuellen Raum"
+                            Style="{StaticResource ButtonStyle01_Mini}"
+                            Command="{Binding AddEnvelopeItemCommand}"
+                            Tag="{StaticResource ButtonIcon_AddLayer_B}"
+                            Margin="0,0,8,0"/>
+
+                    <Button ToolTip="{Binding DuplicateButtonTooltip}"
+                        Style="{StaticResource ButtonStyle01_Mini_Transparent}"
                         Command="{Binding DuplicateEnvelopeItemCommand}"
                         Tag="{StaticResource ButtonIcon_Copy_B}" 
                         Margin="0,0,8,0"
                         IsEnabled="{Binding IsRowSelected}"/>
 
-                    <Button ToolTip="Bereich löschen"
-                        Style="{StaticResource ButtonStyle01_Mini}"
+                    <Button ToolTip="{Binding DeleteButtonTooltip}"
+                        Style="{StaticResource ButtonStyle01_Mini_Transparent}"
                         Tag="{StaticResource ButtonIcon_Delete_B}"
                         IsEnabled="{Binding IsRowSelected}"
                         Command="{Binding DeleteEnvelopeItemCommand}"
@@ -79,14 +86,13 @@
 
                 </StackPanel>
 
-                <Label Grid.Row="0" Content="{Binding ItemsCountString}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <Label Grid.Row="0" Margin="0,0,0,8" Content="{Binding ItemsCountString}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
 
                 <!--EnvelopeItem DataGrid-->
                 <controls:BuildingEnvelopeDataGrid
                     Grid.Row="1"
                     EnvelopeItems="{Binding EnvelopeItems}"
                     SelectedEnvelopeItem="{Binding SelectedEnvelopeItem, Mode=TwoWay}"
-                    IsAllSelected="{Binding IsAllSelected, Mode=TwoWay}"
                     IsNonResidential="{Binding IsNonResidential}"
                     MinHeight="200"
                     MinWidth="200"/>
@@ -122,17 +128,17 @@
                 </Grid.ColumnDefinitions>
 
                 <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsInfoPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="0" Grid.Column="1" Header="Vorbelegung für Info-Werte" IsExpanded="True" Margin="0,0,0,8">
+                <Expander Grid.Row="0" Grid.Column="1" Header="Raumvorbelegung: Raumbeschreibung" IsExpanded="True" Margin="0,0,0,8">
                     <controls:PropertyDataGrid x:Name="InfoPresetDataGrid" Properties="{Binding InfoPresetProperties}" IsEnabled="{Binding IsInfoPresetChecked}"/>
                 </Expander>
 
                 <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsElementPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="1" Grid.Column="1" Header="Vorbelegung für Bauteil-Werte" IsExpanded="False" Margin="0,0,0,8">
+                <Expander Grid.Row="1" Grid.Column="1" Header="Raumvorbelegung: Bauteilwerte" IsExpanded="False" Margin="0,0,0,8">
                     <controls:PropertyDataGrid x:Name="ElementPresetDataGrid" Properties="{Binding ElementPresetProperties}" IsEnabled="{Binding IsElementPresetChecked}"/>
                 </Expander>
 
                 <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsRoomPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="2" Grid.Column="1" Header="Vorbelegung für Raum-Werte" IsExpanded="False" Margin="0,0,0,8">
+                <Expander Grid.Row="2" Grid.Column="1" Header="Raumvorbelegung: Raum-Maße" IsExpanded="False" Margin="0,0,0,8">
                     <controls:PropertyDataGrid x:Name="RoomPresetDataGrid" Properties="{Binding RoomPresetProperties}" IsEnabled="{Binding IsRoomPresetChecked}"/>
                 </Expander>
 

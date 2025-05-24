@@ -65,7 +65,7 @@ namespace BauphysikToolWPF.Services.UI
         #region IMultiValueConverter
 
         // MultiBinding Convert method
-        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
+        public virtual object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (values.Length == 2 && values[0] != null && values[1] is int decimalPlaces)
             {
@@ -85,7 +85,7 @@ namespace BauphysikToolWPF.Services.UI
         }
 
         // MultiBinding ConvertBack method
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        public virtual object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             culture = CultureInfo.CurrentCulture; // Use current culture for parsing
             if (value is string stringValue && double.TryParse(stringValue, NumberStyles.Any, culture, out double result))

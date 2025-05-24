@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Calculation;
+using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
@@ -10,7 +11,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Calculation;
 using static BauphysikToolWPF.Calculation.EnvelopeCalculation;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
@@ -26,7 +26,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             RoomName = "Wohnzimmer",
             RoomUsageType = RoomUsageType.Wohnen,
         };
-        private readonly EnvelopeCalculation _envelopeCalc = new EnvelopeCalculation();
+        private readonly EnvelopeCalculation _envelopeCalc;
 
         private EnvelopeItem? _previousItem;
 
@@ -34,9 +34,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             Session.EnvelopeItemsChanged += UpdateXamlBindings;
 
-            PropertyItem<double>.PropertyChanged += UpdatePresets;
-            PropertyItem<int>.PropertyChanged += UpdatePresets;
-            PropertyItem<string>.PropertyChanged += UpdatePresets;
+            PropertyItem<double>.PropertyChanged += UpdatePropertyBags;
+            PropertyItem<int>.PropertyChanged += UpdatePropertyBags;
+            PropertyItem<string>.PropertyChanged += UpdatePropertyBags;
+
+            _envelopeCalc = new EnvelopeCalculation(EnvelopeItems);
         }
 
         [RelayCommand]
@@ -44,34 +46,72 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             MainWindow.SetPage(desiredPage);
         }
+        
+        [RelayCommand]
+        private void AddEnvelopeItemRoom()
+        {
+            var newItem = EnvelopeItem.Empty;
+            if (IsInfoPresetChecked)
+            {
+                newItem.FloorLevel = _presetEnvelopeItem.FloorLevel;
+                newItem.RoomName = _presetEnvelopeItem.RoomName;
+                newItem.RoomUsageType = _presetEnvelopeItem.RoomUsageType;
+            }
+            if (IsElementPresetChecked)
+            {
+                newItem.EnvelopeArea = _presetEnvelopeItem.EnvelopeArea;
+                newItem.UValue = _presetEnvelopeItem.UValue;
+                newItem.ElementInternalId = _presetEnvelopeItem.ElementInternalId;
+                newItem.OrientationType = _presetEnvelopeItem.OrientationType;
+            }
+            if (IsRoomPresetChecked)
+            {
+                newItem.RoomHeightGross = _presetEnvelopeItem.RoomHeightGross;
+                newItem.RoomAreaGross = _presetEnvelopeItem.RoomAreaGross;
+                newItem.RoomVolumeGross = _presetEnvelopeItem.RoomVolumeGross;
+                newItem.RoomHeightNet = _presetEnvelopeItem.RoomHeightNet;
+                newItem.RoomAreaNet = _presetEnvelopeItem.RoomAreaNet;
+                newItem.RoomVolumeNet = _presetEnvelopeItem.RoomVolumeNet;
+            }
+            // Add as new Room
+            newItem.RoomNumber = RoomNumbers.Count;
+            newItem.ShowRoomData = true;
+
+            Session.SelectedProject?.AddEnvelopeItem(newItem);
+            Session.OnEnvelopeItemsChanged();
+        }
 
         [RelayCommand]
         private void AddEnvelopeItem()
         {
-            var item = EnvelopeItem.Empty;
-            if (IsInfoPresetChecked)
-            {
-                item.FloorLevel = _presetEnvelopeItem.FloorLevel;
-                item.RoomName = _presetEnvelopeItem.RoomName;
-                item.RoomUsageType = _presetEnvelopeItem.RoomUsageType;
-            }
+            var parentRoomItem = SelectedEnvelopeItem != null ? EnvelopeItems.First(e => e.RoomNumber == SelectedEnvelopeItem.RoomNumber) : EnvelopeItems.Last();
+            
+            var newItem = EnvelopeItem.Empty;
+
+            newItem.FloorLevel = parentRoomItem.FloorLevel;
+            newItem.RoomName = parentRoomItem.RoomName;
+            newItem.RoomUsageType = parentRoomItem.RoomUsageType;
+            newItem.RoomHeightGross = parentRoomItem.RoomHeightGross;
+            newItem.RoomAreaGross = parentRoomItem.RoomAreaGross;
+            newItem.RoomVolumeGross = parentRoomItem.RoomVolumeGross;
+            newItem.RoomHeightNet = parentRoomItem.RoomHeightNet;
+            newItem.RoomAreaNet = parentRoomItem.RoomAreaNet;
+            newItem.RoomVolumeNet = parentRoomItem.RoomVolumeNet;
+
             if (IsElementPresetChecked)
             {
-                item.EnvelopeArea = _presetEnvelopeItem.EnvelopeArea;
-                item.UValue = _presetEnvelopeItem.UValue;
-                item.ElementInternalId = _presetEnvelopeItem.ElementInternalId;
-                item.OrientationType = _presetEnvelopeItem.OrientationType;
+                newItem.EnvelopeArea = _presetEnvelopeItem.EnvelopeArea;
+                newItem.UValue = _presetEnvelopeItem.UValue;
+                newItem.ElementInternalId = _presetEnvelopeItem.ElementInternalId;
+                newItem.OrientationType = _presetEnvelopeItem.OrientationType;
             }
-            if (IsRoomPresetChecked)
-            {
-                item.RoomHeightGross = _presetEnvelopeItem.RoomHeightGross;
-                item.RoomAreaGross = _presetEnvelopeItem.RoomAreaGross;
-                item.RoomVolumeGross = _presetEnvelopeItem.RoomVolumeGross;
-                item.RoomHeightNet = _presetEnvelopeItem.RoomHeightNet;
-                item.RoomAreaNet = _presetEnvelopeItem.RoomAreaNet;
-                item.RoomVolumeNet = _presetEnvelopeItem.RoomVolumeNet;
-            }
-            Session.SelectedProject?.AddEnvelopeItem(item);
+
+            // Add to existing selected room or append to last room
+            //newItem.RoomNumber = SelectedEnvelopeItem?.RoomNumber ?? RoomNumbers.Last();
+            newItem.RoomNumber = parentRoomItem.RoomNumber;
+            newItem.ShowRoomData = false;
+
+            Session.SelectedProject?.AddEnvelopeItem(newItem);
             Session.OnEnvelopeItemsChanged();
         }
 
@@ -89,21 +129,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.OnEnvelopeItemsChanged();
         }
 
-        partial void OnIsAllSelectedChanged(bool value)
-        {
-            if (Session.SelectedProject != null)
-            {
-                foreach (var item in Session.SelectedProject.EnvelopeItems)
-                {
-                    item.IsSelected = value;
-                }
-                Session.OnEnvelopeItemsChanged();
-            }
-        }
         partial void OnSelectedEnvelopeItemChanged(EnvelopeItem? value)
         {
             // Set the PropertyChanged event handler dynamically for the new selected item
             SetEventHandler(value);
+            SetAsSelected(value, EnvelopeItems);
         }
 
         /*
@@ -131,11 +161,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(PresetActiveVisibility))]
         private static bool _isRoomPresetChecked = false;
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(ItemsCheckedCount))]
-        [NotifyPropertyChangedFor(nameof(ItemsCheckedCountString))]
-        private static bool _isAllSelected = false;
-
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
          * 
@@ -143,7 +168,12 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         public string Title => "Eingabe der thermischen Hüllfläche";
-        public ObservableCollection<EnvelopeItem> EnvelopeItems => new ObservableCollection<EnvelopeItem>(Session.SelectedProject?.EnvelopeItems ?? new List<EnvelopeItem>());
+        public ObservableCollection<EnvelopeItem> EnvelopeItems =>
+            new ObservableCollection<EnvelopeItem>(
+                (Session.SelectedProject?.EnvelopeItems ?? new List<EnvelopeItem>())
+                .OrderBy(e => e.RoomNumber)
+            );
+
         public bool IsRowSelected => SelectedEnvelopeItem != null;
         public Visibility PresetActiveVisibility => AnyPresetActive ? Visibility.Visible : Visibility.Collapsed;
         public bool AnyPresetActive => IsInfoPresetChecked || IsElementPresetChecked || IsRoomPresetChecked;
@@ -151,23 +181,29 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string ItemsCountString => $"Bereiche/Bauteile angelegt: {ItemsCount}";
         public int ItemsCheckedCount => EnvelopeItems.Where(e => e.IsSelected).ToList().Count;
         public string ItemsCheckedCountString => $"Zeilen markiert: {ItemsCheckedCount}";
+        public string DuplicateButtonTooltip => SelectedEnvelopeItem is null ? "" : SelectedEnvelopeItem.ShowRoomData ? "gewählten Raum duplizieren" : "gewählten Bereich duplizieren";
+        public string DeleteButtonTooltip => SelectedEnvelopeItem is null ? "" : SelectedEnvelopeItem.ShowRoomData ? "gewählten Raum löschen" : "gewählten Bereich löschen";
         public Visibility NoEntriesVisibility => EnvelopeItems.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public bool IsNonResidential => Session.SelectedProject?.BuildingUsage == BuildingUsageType.NonResidential;
+        public List<int> RoomNumbers => EnvelopeItems.Where(e => e.RoomNumber >= 0).Select(e => e.RoomNumber).Distinct().OrderBy(e => e).ToList();
 
         public IEnumerable<IPropertyItem> TestPropBag => new List<IPropertyItem>()
         {
+            new PropertyItem<double>(Symbol.Area, () => _envelopeCalc.UsableArea) { SymbolSubscriptText = "N", Comment = "Nutzbare Grundfläche"},
+            new PropertyItem<double>(Symbol.Area, () => _envelopeCalc.EnvelopeArea) { SymbolSubscriptText = "", Comment = "Fläche der thermische Gebäudehülle"},
             new PropertyItem<double>(Symbol.PrimaryEnergyPerArea, () => _envelopeCalc.PrimaryEnergyPerArea),
-            new PropertyItem<double>(Symbol.AirExchangeRate, () => _envelopeCalc.AirExchangeRate),
-            new PropertyItem<int>(Symbol.ThermalBridgeSurcharge, () => (int)_envelopeCalc.ThermalBridgeSurcharge, value => _envelopeCalc.ThermalBridgeSurcharge = (ThermalBridgeSurchargeType)value)
+
+            new PropertyItem<int>("Berücksichtigung Wärmebrücken", () => (int)_envelopeCalc.ThermalBridgeSurcharge, value => _envelopeCalc.ThermalBridgeSurcharge = (ThermalBridgeSurchargeType)value)
             {
                 PropertyValues = ThermalBridgeSurchargeMapping.Values.Cast<object>().ToArray()
             },
+            new PropertyItem<double>(Symbol.ThermalBridgeSurcharge, () => _envelopeCalc.ThermalBridgeSurchargeValue, value => _envelopeCalc.ThermalBridgeSurchargeValue = value) { IsReadonly = _envelopeCalc.ThermalBridgeSurchargeCustomValue },
         };
 
         public IEnumerable<IPropertyItem> InfoPresetProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Etage", () => _presetEnvelopeItem.FloorLevel, value => _presetEnvelopeItem.FloorLevel = value),
-            new PropertyItem<string>("Bezeichnung", () => _presetEnvelopeItem.RoomName, value => _presetEnvelopeItem.RoomName = value),
+            new PropertyItem<string>("Raumbezeichnung", () => _presetEnvelopeItem.RoomName, value => _presetEnvelopeItem.RoomName = value),
             new PropertyItem<int>("Zone", () => (int)_presetEnvelopeItem.RoomUsageType, value => _presetEnvelopeItem.RoomUsageType = (RoomUsageType)value)
             {
                 PropertyValues = RoomUsageTypeMapping.Values.Cast<object>().ToArray()
@@ -208,16 +244,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void UpdateXamlBindings()
         {
             // For updating MVVM Capsulated Properties
+            SetShowRoomDataFirstInGroupOnly(EnvelopeItems);
+
             OnPropertyChanged(nameof(EnvelopeItems));
             OnPropertyChanged(nameof(IsRowSelected));
             OnPropertyChanged(nameof(AnyPresetActive));
             OnPropertyChanged(nameof(ItemsCountString));
             OnPropertyChanged(nameof(NoEntriesVisibility));
         }
-        private void UpdatePresets()
+        private void UpdatePropertyBags()
         {
             OnPropertyChanged(nameof(InfoPresetProperties));
             OnPropertyChanged(nameof(ElementPresetProperties));
+            OnPropertyChanged(nameof(RoomPresetProperties));
             OnPropertyChanged(nameof(TestPropBag));
         }
 
@@ -235,6 +274,33 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // Subscribe to the new item's PropertyChanged event if it exists
             if (item != null) item.PropertyChanged += UpdatePropertyDependencies;
+        }
+
+        private void SetShowRoomDataFirstInGroupOnly(IEnumerable<EnvelopeItem> items)
+        {
+            // Ensure the items are ordered by RoomNumber so first-in-group is predictable
+            var orderedItems = items.OrderBy(item => item.RoomNumber).ToList();
+
+            int lastRoomNumber = -1;
+
+            foreach (var item in orderedItems)
+            {
+                if (item.RoomNumber != lastRoomNumber)
+                {
+                    item.ShowRoomData = true;
+                    lastRoomNumber = item.RoomNumber;
+                }
+                else
+                {
+                    item.ShowRoomData = false;
+                }
+            }
+        }
+        private void SetAsSelected(EnvelopeItem? item, IEnumerable<EnvelopeItem> items)
+        {
+            if (item == null) return;
+            items.ToList().ForEach(i => i.IsSelected = false); // Deselect all items first
+            item.IsSelected = true;
         }
     }
 }
