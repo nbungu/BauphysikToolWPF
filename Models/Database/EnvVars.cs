@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Services.Application;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Database
@@ -14,10 +15,14 @@ namespace BauphysikToolWPF.Models.Database
         [NotNull]
         public double Value { get; set; }
         [NotNull]
+        public string Comment { get; set; } = string.Empty;
+        [NotNull]
         public Symbol Symbol { get; set; }
         
         [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
         public int DocumentSourceId { get; set; }
+        [NotNull]
+        public RequirementComparison RequirementComparison { get; set; }
         [NotNull]
         public long CreatedAt { get; set; }
         [NotNull]

@@ -15,8 +15,6 @@
     <UserControl.Resources>
 
         <ui:NumberConverter x:Key="NumberConverter"/>
-        <ui:ConditionalValueConverter x:Key="ConditionalValueConverter"/>
-        <ui:ConditionalNumberConverter x:Key="ConditionalNumberConverter"/>
         <ui:TooltipNotEmptyToVisibilityConverter x:Key="TooltipNotEmptyToVisibilityConverter"/>
 
         <ObjectDataProvider x:Key="OrientationTypeNames"
@@ -30,6 +28,46 @@
         <ObjectDataProvider x:Key="ElementListValues"
                             MethodName="GetElements"
                             ObjectType="{x:Type vm:Page_BuildingEnvelope_VM}"/>
+
+        <Style x:Key="RoundIconButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <!-- Circular shape -->
+                            <Ellipse Fill="{TemplateBinding Background}" />
+
+                            <!-- Embedded plus icon using a Path -->
+                            <Path Data="M0,5 L10,5 M5,0 L5,10"
+                                  Stroke="White"
+                                  StrokeThickness="2"
+                                  Width="10"
+                                  Height="10"
+                                  HorizontalAlignment="Center"
+                                  VerticalAlignment="Center" />
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="RoundIconButtonStyle_Highlighted" BasedOn="{StaticResource RoundIconButtonStyle}" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
+        </Style>
 
         <Style x:Key="DataGridTextColumn_Numeric_ElementStyle" TargetType="TextBlock">
             <Setter Property="VerticalAlignment" Value="Center" />
@@ -62,6 +100,7 @@
             <Setter Property="GridLinesVisibility" Value="All"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
+            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
             <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="1"/>
@@ -73,6 +112,84 @@
             <Setter Property="SelectionMode" Value="Single"/>
             <Setter Property="RowHeight" Value="24"/>
             <Setter Property="HorizontalAlignment" Value="Left"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGrid">
+                        <Border
+                            x:Name="DGBorder"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Background="{TemplateBinding Background}"
+                            SnapsToDevicePixels="True">
+
+                            <ScrollViewer x:Name="PART_ScrollViewer" Focusable="false" Padding="{TemplateBinding Padding}">
+                                <StackPanel Orientation="Vertical" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    
+                                    <!-- THIS IS WHAT RENDERS COLUMN HEADERS -->
+                                    <DataGridColumnHeadersPresenter x:Name="PART_ColumnHeadersPresenter" />
+
+                                    <!-- THIS IS WHAT RENDERS DATA ROWS -->
+                                    <ItemsPresenter />
+
+                                    <!-- Custom UI at the bottom of the DataGrid -->
+                                    <Border x:Name="CustomBottomArea"
+                                            Background="Transparent"
+                                            Padding="8">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- First Button -->
+                                            <Button x:Name="FirstButton" Style="{StaticResource RoundIconButtonStyle_Highlighted}" ToolTip="Erstellt neuen Raum" Command="{Binding DataContext.AddEnvelopeItemRoomCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" VerticalAlignment="Center"/>
+
+                                            <!-- Second Button -->
+                                            <Button Grid.Column="1" Style="{StaticResource RoundIconButtonStyle}" ToolTip="Erstellt neuen Bereich der thermischen Hüllfläche, zugehörig zum aktuellen Raum" Command="{Binding DataContext.AddEnvelopeItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" Margin="16,0,0,0" VerticalAlignment="Center" />
+
+                                        </Grid>
+                                        <!--<Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            --><!-- First Button --><!--
+                                            <Button x:Name="FirstButton" Style="{StaticResource RoundIconButtonStyle_Highlighted}" Margin="0,24,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
+
+                                            --><!-- Second Button --><!--  
+                                            <Button Grid.Column="1" Style="{StaticResource RoundIconButtonStyle}" Margin="16,0,10,0" VerticalAlignment="Top" />
+
+                                            --><!-- Vertical Line --><!--
+                                            <Line Grid.Column="0"
+                                                  Stroke="{StaticResource PrimaryHighlightBrush}"
+                                                  StrokeThickness="2"
+                                                  VerticalAlignment="Top"
+                                                  X1="0" X2="0"
+                                                  Y1="-20" Y2="12"
+                                                  Margin="12"/>
+
+                                            --><!-- Horizontal Line --><!--
+                                            <Line Grid.Column="1"
+                                                  Stroke="{StaticResource PrimaryMediumBrush}"
+                                                  StrokeThickness="2"
+                                                  VerticalAlignment="Top"
+                                                  X1="-24" X2="4"
+                                                  Y1="0" Y2="0"
+                                                  Margin="12"/>
+                                        </Grid>-->
+                                    </Border>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Items.Count}" Value="0">
+                                <Setter TargetName="CustomBottomArea" Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
 
         <ControlTemplate x:Key="SortableHeaderTemplate" TargetType="DataGridColumnHeader">
@@ -167,14 +284,14 @@
             <Grid Grid.Row="0">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="38"/>
-                    <ColumnDefinition Width="96"/>
+                    <ColumnDefinition Width="80"/>
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="132"/>
                     <ColumnDefinition Width="72"/>
                     <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="88"/>
-                    <!--<ColumnDefinition Width="88"/>-->
+                    <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="88"/>
@@ -187,16 +304,16 @@
                 <Border Grid.Column="0" Grid.ColumnSpan="4" Background="{StaticResource SecondaryLightBlueBrush}" BorderThickness="1,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Info" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="4" Grid.ColumnSpan="4" Background="{StaticResource SecondaryLightYellowBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                <Border Grid.Column="4" Grid.ColumnSpan="5" Background="{StaticResource SecondaryLightYellowBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Bauteil" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="8" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                <Border Grid.Column="9" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Netto Raum" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="11" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                <Border Grid.Column="12" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Brutto Raum" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="14" Background="{StaticResource PrimaryLightBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
+                <Border Grid.Column="15" Background="{StaticResource PrimaryLightBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
             </Grid>
 
             <DataGrid Grid.Row="1"
@@ -213,11 +330,11 @@
                             <!-- IsSelected of a cell extends to the whole row! -->
                             <Trigger Property="IsSelected" Value="True">
                                 <Setter Property="Background" Value="Transparent" />
-                                <Setter Property="FontWeight" Value="DemiBold" />
+                                <Setter Property="FontWeight" Value="DemiBold"/>
                             </Trigger>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter Property="Background" Value="{StaticResource PrimaryHoverBrush}" />
-                            </Trigger>  
+                            </Trigger>
                         </Style.Triggers>
                     </Style>
                 </DataGrid.Resources>
@@ -230,7 +347,7 @@
                                 <Setter Property="Background" Value="White"/>
                             </DataTrigger>
                             <DataTrigger Binding="{Binding RoomGroupColorIndex}" Value="1">
-                                <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
+                                <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
                                 <!-- Light blueish -->
                             </DataTrigger>
                         </Style.Triggers>
@@ -272,21 +389,18 @@
 
                     <!-- Etage Column -->
                     <DataGridTextColumn Header="Etage"
-                                        Width="96">
-                        <DataGridTextColumn.Binding>
-                            <MultiBinding Converter="{StaticResource ConditionalValueConverter}">
-                                <Binding Path="FloorLevel"/>
-                                <Binding Path="ShowRoomData"/>
-                            </MultiBinding>
-                        </DataGridTextColumn.Binding>
+                                        Width="80"
+                                        Binding="{Binding FloorLevel}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource DataGridTextColumn_ElementStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextColumn_EditingStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                         <DataGridTextColumn.HeaderStyle>
@@ -299,21 +413,18 @@
 
                     <!-- Raumbezeichnung Column -->
                     <DataGridTextColumn Header="Raumbezeichnung"
-                                        Width="120">
-                        <DataGridTextColumn.Binding>
-                            <MultiBinding Converter="{StaticResource ConditionalValueConverter}">
-                                <Binding Path="RoomName"/>
-                                <Binding Path="ShowRoomData"/>
-                            </MultiBinding>
-                        </DataGridTextColumn.Binding>
+                                        Width="120"
+                                        Binding="{Binding RoomName}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource DataGridTextColumn_ElementStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextColumn_EditingStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                         <DataGridTextColumn.HeaderStyle>
@@ -333,11 +444,13 @@
                         <DataGridComboBoxColumn.ElementStyle>
                             <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridComboBoxColumn.ElementStyle>
                         <DataGridComboBoxColumn.EditingElementStyle>
                             <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridComboBoxColumn.EditingElementStyle>
                         <DataGridComboBoxColumn.HeaderStyle>
@@ -428,9 +541,9 @@
                         </DataGridComboBoxColumn.HeaderStyle>
                     </DataGridComboBoxColumn>
 
-                    <!-- Fx Column --><!--
+                     <!--Fx Column--> 
                     <DataGridTextColumn Header="Fx"
-                                        Binding="{Binding TempCorrectionFactor, Converter={StaticResource NumberConverter}}"
+                                        Binding="{Binding FxValue, Converter={StaticResource NumberConverter}}"
                                         Width="88"
                                         ElementStyle="{StaticResource DataGridTextColumn_Numeric_ElementStyle}"
                                         EditingElementStyle="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
@@ -442,25 +555,22 @@
                                 <Setter Property="ToolTip" Value="Temperatur-Korrekturfaktor: Für alle Bauteilflächen, die an die Außenluft grenzen, ist der Fx-Wert = 1,0. Für alle anderen, wird ein Temperatur-Korrekturfaktor ungleich 1,0 berücksichtigt."/>
                             </Style>
                         </DataGridTextColumn.HeaderStyle>
-                    </DataGridTextColumn>-->
+                    </DataGridTextColumn>
 
                     <!-- Netto Höhe Column -->
                     <DataGridTextColumn Header="Höhe"
-                                        Width="88">
-                        <DataGridTextColumn.Binding>
-                            <MultiBinding Converter="{StaticResource ConditionalNumberConverter}">
-                                <Binding Path="RoomHeightNet"/>
-                                <Binding Path="ShowRoomData"/>
-                            </MultiBinding>
-                        </DataGridTextColumn.Binding>
+                                        Width="88"
+                                        Binding ="{Binding RoomHeightNet, Converter={StaticResource NumberConverter}}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource DataGridTextColumn_Numeric_ElementStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                         <DataGridTextColumn.HeaderStyle>
@@ -474,22 +584,19 @@
                     </DataGridTextColumn>
 
                     <!-- Netto Fläche Column -->
-                    <DataGridTextColumn Header="Grundfläche"
-                                        Width="88">
-                        <DataGridTextColumn.Binding>
-                            <MultiBinding Converter="{StaticResource ConditionalNumberConverter}">
-                                <Binding Path="RoomAreaNet"/>
-                                <Binding Path="ShowRoomData"/>
-                            </MultiBinding>
-                        </DataGridTextColumn.Binding>
+                    <DataGridTextColumn Header="Fläche"
+                                        Width="88"
+                                        Binding ="{Binding RoomAreaNet, Converter={StaticResource NumberConverter}}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource DataGridTextColumn_Numeric_ElementStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                         <DataGridTextColumn.HeaderStyle>
@@ -504,21 +611,18 @@
 
                     <!-- Netto Volumen Column -->
                     <DataGridTextColumn Header="Volumen"
-                                        Width="88">
-                        <DataGridTextColumn.Binding>
-                            <MultiBinding Converter="{StaticResource ConditionalNumberConverter}">
-                                <Binding Path="RoomVolumeNet"/>
-                                <Binding Path="ShowRoomData"/>
-                            </MultiBinding>
-                        </DataGridTextColumn.Binding>
+                                        Width="88"
+                                        Binding ="{Binding RoomVolumeNet, Converter={StaticResource NumberConverter}}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource DataGridTextColumn_Numeric_ElementStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                         <DataGridTextColumn.HeaderStyle>
@@ -533,21 +637,18 @@
 
                     <!-- Raumhöhe Column -->
                     <DataGridTextColumn Header="Höhe"
-                                        Width="88">
-                        <DataGridTextColumn.Binding>
-                            <MultiBinding Converter="{StaticResource ConditionalNumberConverter}">
-                                <Binding Path="RoomHeightGross"/>
-                                <Binding Path="ShowRoomData"/>
-                            </MultiBinding>
-                        </DataGridTextColumn.Binding>
+                                        Width="88"
+                                        Binding ="{Binding RoomHeightGross, Converter={StaticResource NumberConverter}}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource DataGridTextColumn_Numeric_ElementStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                         <DataGridTextColumn.HeaderStyle>
@@ -560,22 +661,19 @@
                     </DataGridTextColumn>
 
                     <!-- Raumfläche Column -->
-                    <DataGridTextColumn Header="Grundfläche"
-                                        Width="88">
-                        <DataGridTextColumn.Binding>
-                            <MultiBinding Converter="{StaticResource ConditionalNumberConverter}">
-                                <Binding Path="RoomAreaGross"/>
-                                <Binding Path="ShowRoomData"/>
-                            </MultiBinding>
-                        </DataGridTextColumn.Binding>
+                    <DataGridTextColumn Header="Fläche"
+                                        Width="88"
+                                        Binding ="{Binding RoomAreaGross, Converter={StaticResource NumberConverter}}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource DataGridTextColumn_Numeric_ElementStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                         <DataGridTextColumn.HeaderStyle>
@@ -589,21 +687,18 @@
 
                     <!-- Raumvolumen Column -->
                     <DataGridTextColumn Header="Volumen"
-                                        Width="88">
-                        <DataGridTextColumn.Binding>
-                            <MultiBinding Converter="{StaticResource ConditionalNumberConverter}">
-                                <Binding Path="RoomVolumeGross"/>
-                                <Binding Path="ShowRoomData"/>
-                            </MultiBinding>
-                        </DataGridTextColumn.Binding>
+                                        Width="88"
+                                        Binding ="{Binding RoomVolumeGross, Converter={StaticResource NumberConverter}}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock" BasedOn="{StaticResource DataGridTextColumn_Numeric_ElementStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                         <DataGridTextColumn.EditingElementStyle>
                             <Style TargetType="TextBox" BasedOn="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
                                 <Setter Property="IsEnabled" Value="{Binding ShowRoomData}"/>
+                                <Setter Property="Visibility" Value="{Binding ShowRoomDataVisibility}"/>
                             </Style>
                         </DataGridTextColumn.EditingElementStyle>
                         <DataGridTextColumn.HeaderStyle>

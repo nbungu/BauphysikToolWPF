@@ -154,15 +154,16 @@ namespace BauphysikToolWPF.Models.Domain
             set
             {
                 _elementInternalId = value;
-                OnPropertyChanged();
+                OnPropertyChanged(nameof(ElementInternalId));
+                OnPropertyChanged(nameof(UValue));
             }
         }
 
-        private double _tempCorrectionFactor = 1.0;
+        private double _fxValue = 1.0;
 
-        public double TempCorrectionFactor
+        public double FxValue
         {
-            get => _tempCorrectionFactor;
+            get => _fxValue;
             set
             {
                 if (value < 0)
@@ -171,7 +172,7 @@ namespace BauphysikToolWPF.Models.Domain
                     return;
                 }
                 if (value > 10) MainWindow.ShowToast("Unrealistischer Temperatur-Korrekturfaktor", ToastType.Warning);
-                _tempCorrectionFactor = value;
+                _fxValue = value;
             }
         }
         public string Tag { get; set; } = string.Empty;
@@ -219,12 +220,14 @@ namespace BauphysikToolWPF.Models.Domain
         public int RoomGroupColorIndex => RoomNumber % 2; // 0 if even, 1 if odd
         [JsonIgnore]
         public bool ShowRoomData { get; set; } // For UI purposes
+        [JsonIgnore]
+        public Visibility ShowRoomDataVisibility => ShowRoomData ? Visibility.Visible : Visibility.Collapsed;
 
         [JsonIgnore]
         public static EnvelopeItem Empty => new EnvelopeItem(); // Optional static default (for easy reference)
-
+        
         [JsonIgnore]
-        public bool IsValid => FloorLevel != string.Empty && RoomName != string.Empty;
+        public bool IsValid => RoomNumber != -1 && InternalId != -1;
         [JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
         [JsonIgnore]
@@ -281,7 +284,7 @@ namespace BauphysikToolWPF.Models.Domain
                 RoomAreaNet = this.RoomAreaNet,
                 RoomVolumeNet = this.RoomVolumeNet,
                 EnvelopeArea = this.EnvelopeArea,
-                TempCorrectionFactor = this.TempCorrectionFactor,
+                FxValue = this.FxValue,
                 Tag = this.Tag,
                 Comment = this.Comment,
                 OrientationType = this.OrientationType,

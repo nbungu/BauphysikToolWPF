@@ -13,6 +13,8 @@ namespace BauphysikToolWPF.Services.Application
             Session.ProjectFilePath = "";
             MainWindow.ShowToast("Neues Projekt erstellt!", ToastType.Success);
         }
+
+        // TODO: EnvelopeItemFactory
     }
 
 }

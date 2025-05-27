@@ -112,16 +112,16 @@ namespace BauphysikToolWPF.Models.UI
             { Symbol.DecrementFactor, (Unit.None, "f", "", "Dekrement", "Abminderungsfaktor: Verhältnis des Betrags der dynamischen Wärmeaufnahme zum Wärmedurchgangskoeffizienten U unter\r\nstationären Bedingungen") },
             { Symbol.ThermalAdmittance, (Unit.WattsPerSquareMeterKelvin, "Y", "mm", "Wärmeaufnahme", "komplexe Größe, festgelegt als komplexe Amplitude der Wärmestromdichte durch die an Zone m des\r\nBauteils angrenzende Oberfläche, geteilt durch die komplexe Temperaturamplitude in der gleichen Zone,\r\nwenn die Temperatur auf der anderen Seite konstant gehalten wird") },
             { Symbol.DynamicThermalAdmittance, (Unit.WattsPerSquareMeterKelvin, "Y", "mn", "dynamische Wärmeaufnahme", "komplexe Größe, festgelegt als komplexe Amplitude der Wärmestromdichte durch die an Zone m des Bau-\r\nteils angrenzende Oberfläche geteilt durch die komplexe Temperaturamplitude in der Zone n, wenn die\r\nTemperatur in Zone m konstant gehalten wird") },
-            { Symbol.PrimaryEnergy, (Unit.KilowattHourPerYear, "Q", "p", "Primärenergie (absolut)", "Energiemenge, die zusätzlich zum Energieinhalt des notwendigen Brennstoffs und der Hilfs-\r\nenergien für die Anlagentechnik auch die Energiemengen einbezieht, die durch vorgelagerte Prozessketten\r\naußerhalb des Gebäudes bei der Gewinnung, Umwandlung und Verteilung der jeweils eingesetzten\r\nBrennstoffe bzw. Stoffe entstehen") },
-            { Symbol.PrimaryEnergyPerArea, (Unit.KilowattHourPerAreaAndYear, "q", "p", "Primärenergie (flächenbezogen)", "") },
+            { Symbol.PrimaryEnergy, (Unit.KilowattHourPerYear, "Q", "p", "Jahresprimärenergiebedarf (absolut)", "Beschreibt die Energiemenge, die benötigt wird, um den Endenergiebedarf zu decken, inklusive aller vorgelagerten Energieprozesse (Gewinnung, Umwandlung, Transport).") },
+            { Symbol.PrimaryEnergyPerArea, (Unit.KilowattHourPerAreaAndYear, "q", "p", "Jahresprimärenergiebedarf (flächenbezogen)", "Beschreibt die Energiemenge, die benötigt wird, um den Endenergiebedarf zu decken, inklusive aller vorgelagerten Energieprozesse (Gewinnung, Umwandlung, Transport).") },
             { Symbol.AToVRatio, (Unit.PerMeter, "A", "V", "A zu V Verhältnis", "") },
             { Symbol.SpecificHeatTransmissionLoss, (Unit.WattsPerSquareMeterKelvin, "H", "T'", "spezifischer Transmissionswärmeverlust", "spezifischer Transmissionswärmetransferkoeffizient (Bezeichnung in DIN V 18599) bzw. den spezifischer Transmissionswärmeverlust (Bezeichnung in DIN V 4108-6). Auf die wärmeübertragende Hüllfläche bezogener Transmissionswärmeverlust") },
-            { Symbol.TransmissionHeatTransferCoef, (Unit.WattsPerKelvin, "H", "T", "Transmissionswärmetransferkoeffizient", "Transmissionswärmetransferkoeffizient") },
+            { Symbol.TransmissionHeatTransferCoef, (Unit.WattsPerKelvin, "H", "T", "Transmissionswärmetransferkoeffizient", "Transmissionswärmeverlust") },
             { Symbol.VentilationHeatTransferCoef, (Unit.WattsPerKelvin, "H", "V", "Lüftungswärmetransferkoeffizient", "Lüftungswärmetransferkoeffizient") },
             { Symbol.HeatTransferCoef, (Unit.WattsPerKelvin, "H", "", "Wärmetransferkoeffizient", "Wärmetransferkoeffizient") },
-            { Symbol.ThermalBridgeSurcharge, (Unit.WattsPerSquareMeterKelvin, "ΔU", "WB", "Wärmebrückenzuschlag", "") },
+            { Symbol.ThermalBridgeSurcharge, (Unit.WattsPerSquareMeterKelvin, "ΔU", "WB", "Wärmebrückenzuschlag", "Faktor, der bei der Berechnung des Energiebedarfs eines Gebäudes berücksichtigt werden muss, um den zusätzlichen Wärmeverlust durch Wärmebrücken zu erfassen.") },
             { Symbol.AirExchangeRate, (Unit.PerHour, "n", "", "Luftwechselzahl", "Luftvolumenstrom je Volumeneinheit") },
-            { Symbol.TempCorrectionFactor, (Unit.None, "F", "x", "Temperatur-Korrekturfaktor", "Temperatur-Korrekturfaktor für Bauteilart x") },
+            { Symbol.TempCorrectionFactor, (Unit.None, "F", "x", "Temperatur-Korrekturfaktor", "Temperatur-Korrekturfaktor für Bauteilart x. Abminderungsfaktor, der dazu dient, den Wärmestrom zwischen einem beheizten Raum und einer angrenzenden nicht beheizten oder unbeheizten Zone korrekt zu bewerten") },
         };
 
         public enum Unit

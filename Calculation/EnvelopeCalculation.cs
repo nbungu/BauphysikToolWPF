@@ -73,7 +73,6 @@ namespace BauphysikToolWPF.Calculation
             WithInternalInsulationAndIntegralSolidCeiling,
             ProofOfEquivalence_CatB,
             ProofOfEquivalence_CatMixed,
-            ProofOfEquivalence_CatNotMet,
             ProjectRelatedValue
         }
         public static readonly Dictionary<ThermalBridgeSurchargeType, string> ThermalBridgeSurchargeMapping = new()
@@ -82,7 +81,7 @@ namespace BauphysikToolWPF.Calculation
             { ThermalBridgeSurchargeType.WithInternalInsulationAndIntegralSolidCeiling, "Außenbauteile mit innenliegender Dämmschicht und einbindender Massivdecke" },
             { ThermalBridgeSurchargeType.ProofOfEquivalence_CatB, "DIN 4108 Beiblatt 2: Gleichwertigkeit bei allen Anschlüssen nach Kategorie B erfüllt." },
             { ThermalBridgeSurchargeType.ProofOfEquivalence_CatMixed, "DIN 4108 Beiblatt 2: Gleichwertigkeit bei allen Anschlüssen nach Kategorie B oder Kategorie A erfüllt." },
-            { ThermalBridgeSurchargeType.ProofOfEquivalence_CatNotMet, "DIN 4108 Beiblatt 2: Gleichwertigkeit nicht bei allen Anschlüssen erfüllt." },
+            
             { ThermalBridgeSurchargeType.ProjectRelatedValue, "Projektbezogener Wärmebrückenzuschlag" }
         };
         public static readonly Dictionary<ThermalBridgeSurchargeType, double> ThermalBridgeSurchargeValues = new()
@@ -91,28 +90,72 @@ namespace BauphysikToolWPF.Calculation
             { ThermalBridgeSurchargeType.WithInternalInsulationAndIntegralSolidCeiling, 0.15 },
             { ThermalBridgeSurchargeType.ProofOfEquivalence_CatB, 0.03 },
             { ThermalBridgeSurchargeType.ProofOfEquivalence_CatMixed, 0.05 },
+            { ThermalBridgeSurchargeType.ProjectRelatedValue, 0.1 }, // Placeholder, actual values would depend on the user entry
+        };
+
+        public enum FxType
+        {
+            Default,
+            FromTable,
+            IncludedInConstructiveUValue,
+            Fictional,
+            Custom,
+        }
+        public static readonly Dictionary<FxType, string> FxTypeMapping = new()
+        {
+            { FxType.Default, "Standardwert (keine Abminderung)" },
+            { FxType.FromTable, "Einzeln, für jede Bauteilart (DIN V 18599-2, Tabelle 5 und 6)" },
+            { FxType.IncludedInConstructiveUValue, "Wirkung der unbeheizten Zone bereits im U-Wert berücksichtigt" },
+            { FxType.Fictional, "fiktiver Fx-Wert (DIN V 18599-2, Anhang F)" },
+            { FxType.Custom, "Benutzerdefiniert" },
+
+        };
+        public static readonly Dictionary<FxType, double?> FxTypeValues = new()
+        {
+            { FxType.Default, 1.0 },
+            { FxType.FromTable, null }, // Placeholder, actual values would depend on the table used
+            { FxType.IncludedInConstructiveUValue, 1.0 },
+            { FxType.Fictional, 1.234 }, // Placeholder, actual value would depend on the calculation
+            { FxType.Custom, 1.0 },
         };
 
 
         public List<EnvelopeItem> InputCollection { get; set; }
         public EnvelopeCalculationConfig Config { get; set; }
-        public double HeatedRoomVolume { get; private set; }
-        //public double VentilatedVolume => _config.IsEFH ? 0.76 * HeatedRoomVolume : 0.80 * HeatedRoomVolume;
-        public double EnvelopeArea => InputCollection.Sum(itm => itm.EnvelopeArea);
-        public double UsableArea { get; private set; }
+
+
+        public double HeatedRoomVolume => InputCollection.Sum(itm => itm.RoomVolumeNet);
+        public double VentilatedVolume => Config.IsEFH ? 0.76 * HeatedRoomVolume : 0.80 * HeatedRoomVolume;
+        public double UsableArea => InputCollection.Sum(itm => itm.RoomAreaNet);
         public double LivingArea => Config.IsEFH ? UsableArea / 1.35 : UsableArea / 1.20;
+
+        public double EnvelopeArea => InputCollection.Sum(itm => itm.EnvelopeArea);
         public double AVRatio { get; private set; }
-        public double PrimaryEnergy { get; private set; }
-        public double PrimaryEnergyPerArea => PrimaryEnergy / UsableArea;
+        public double AnnualPrimaryEnergy { get; private set; }
+        public double AnnualPrimaryEnergyPerArea => AnnualPrimaryEnergy / UsableArea;
         public double AirExchangeRateInf { get; private set; }
         public double AirExchangeRateWin { get; private set; }
         public double AirExchangeRateMech { get; private set; }
         public double AirExchangeRateUe { get; private set; }
 
-        public double ThermalBridgeSurchargeValue { get; set; } = ThermalBridgeSurchargeValues[ThermalBridgeSurchargeType.NoCalculation];
-        public bool ThermalBridgeSurchargeCustomValue => (int)ThermalBridgeSurcharge <= 3; 
+        private FxType _fx = FxType.Default;
+        public FxType Fx
+        {
+            get => _fx;
+            set
+            {
+                _fx = value;
+                FxGlobalValue = FxTypeValues.TryGetValue(value, out var fx) ? fx : 0.0;
+            }
+        }
+        public double? FxGlobalValue { get; set; } = FxTypeValues[FxType.Default];
+        public bool IsFxCustomValue => Fx == FxType.Custom;
 
-        private ThermalBridgeSurchargeType _thermalBridgeSurcharge;
+
+        public double ThermalBridgeSurchargeValue { get; set; } = ThermalBridgeSurchargeValues[ThermalBridgeSurchargeType.NoCalculation];
+        public bool IsThermalBridgeSurchargeCustomValue => ThermalBridgeSurcharge == ThermalBridgeSurchargeType.ProjectRelatedValue; 
+
+        private ThermalBridgeSurchargeType _thermalBridgeSurcharge = ThermalBridgeSurchargeType.NoCalculation;
         public ThermalBridgeSurchargeType ThermalBridgeSurcharge
         {
             get => _thermalBridgeSurcharge;
@@ -126,6 +169,7 @@ namespace BauphysikToolWPF.Calculation
         public double ZoneTempInteriorHeating { get; private set; } // TODO: Zone temperature calculation
         public double ZoneTempInteriorCooling { get; private set; } // TODO: Zone temperature calculation
         public double ZoneTempInterior { get; private set; } // TODO: Zone temperature calculation
+        //public double SpecificTransmissionHeatTransferCoef => InputCollection.Sum(itm => itm.HeatTransferLoss);
 
         //public double TransmissionHeatTransferCoefSum => _inputCollection.Sum(itm => itm.TransmissionHeatTransferCoef);
         //public double TransmissionHeatTransferCoefProject => TransmissionHeatTransferCoefSum + ThermalBridgeSurcharge * EnvelopeArea;
@@ -182,27 +226,32 @@ namespace BauphysikToolWPF.Calculation
             return heatTransferCoef * Math.Abs(tempInt - tempExt);
         }
 
-        //private double GetQ()
-        //{
 
-        //}
-
-        ///// <summary>
-        ///// DIN V 18599-2, 6.7.1 Wirksame Wärmekapazität C_wirk
-        ///// </summary>
-        ///// <returns></returns>
-        //private double SimplifiedEffectiveHeatCapacity()
-        //{
-        //    return 0.0;
-        //}
-
-        //private double TimeConstantOfZone(RoomUsageType zone, double cWirk, double heatTransferCoef)
-        //{
-        //    return cWirk / heatTransferCoef;
-        //}
 
         // H_T,x
-        private double TransmissionHeatTransferCoef(List<EnvelopeItem> itms, TransmissionTransfer transferType)
+        private double GetTransmissionHeatLoss(List<EnvelopeItem> itms, TransmissionTransfer transferType)
+        {
+            double htD = 0;
+            double htWB = 0;
+            double htiu = 0;
+            double htsk = 0;
+            
+            //switch (transferType)
+            //{
+            //    case TransmissionTransfer.ToOutside:
+            //    case TransmissionTransfer.ThroughUnheatedRooms:
+            //    case TransmissionTransfer.ToAdjacentZone:
+            //    case TransmissionTransfer.OverGround: // TODO: H_G nach DIN EN ISO 13370
+            //        return itm.UValue * itm.EnvelopeArea;
+            //    case TransmissionTransfer.ViaThermalBridges:
+            //        return ThermalBridgeSurchargeValue * itm.EnvelopeArea;
+            //    default: return itm.UValue * itm.EnvelopeArea;
+            //}
+            return 0.0;
+        }
+
+
+        private double GetElementTransmissionHeatLoss(EnvelopeItem itm, TransmissionTransfer transferType)
         {
             switch (transferType)
             {
@@ -210,14 +259,14 @@ namespace BauphysikToolWPF.Calculation
                 case TransmissionTransfer.ThroughUnheatedRooms:
                 case TransmissionTransfer.ToAdjacentZone:
                 case TransmissionTransfer.OverGround: // TODO: H_G nach DIN EN ISO 13370
-                    return itms.Sum(itm => itm.UValue * itm.EnvelopeArea);
+                    return itm.UValue * itm.EnvelopeArea;
                 case TransmissionTransfer.ViaThermalBridges:
-                    return ThermalBridgeSurchargeValue * itms.Sum(itm => itm.EnvelopeArea);
-                default: return itms.Sum(itm => itm.UValue * itm.EnvelopeArea);
+                    return ThermalBridgeSurchargeValue * itm.EnvelopeArea;
+                default: return itm.UValue * itm.EnvelopeArea;
             }
         }
         // H_T'
-        private double SpecificTransmissionHeatTransferCoef(List<EnvelopeItem> itms)
+        private double SpecificTransmissionHeatLoss(List<EnvelopeItem> itms)
         {
             // TODO: elemente aufteilen nach TransmissionTransfer
 
@@ -225,30 +274,30 @@ namespace BauphysikToolWPF.Calculation
         }
 
         // Q_T,x
-        private double QTransmission(List<EnvelopeItem> itms, TransmissionTransfer transferType, double tempInt, double tempExt)
-        {
-            switch (transferType)
-            {
-                // 6.2.1 Direkte Transmission nach außen (45) und (46)
-                case TransmissionTransfer.ToOutside:
-                    var htd = TransmissionHeatTransferCoef(itms, transferType);
-                    var htwb = TransmissionHeatTransferCoef(itms, TransmissionTransfer.ViaThermalBridges);
-                    return (htd + htwb) * Math.Abs(tempInt - tempExt) * _dayFactor;
-                case TransmissionTransfer.ThroughUnheatedRooms:
-                    var htiu = TransmissionHeatTransferCoef(itms, transferType);
-                    return htiu * Math.Abs(tempInt - tempExt) * _dayFactor;
-                case TransmissionTransfer.ToAdjacentZone:
-                    var htiz = TransmissionHeatTransferCoef(itms, transferType);
-                    return htiz * Math.Abs(tempInt - tempExt) * _dayFactor;
-                case TransmissionTransfer.OverGround:
-                    var hts = TransmissionHeatTransferCoef(itms, transferType);
-                    return hts * Math.Abs(tempInt - tempExt) * _dayFactor;
-                //Falls der Wärmeaustrag über das Erdreich einen erheblichen Anteil an den
-                //Gesamtwärmesenken ausmacht, ist abzuwägen, ob eine detaillierte Berechnung des Wärmestroms über das
-                //Erdreich nach DIN EN ISO 13370:2018 - 03, C.1, durchzuführen ist
-                default: return 0.0;
-            }
-        }
+        //private double QTransmission(List<EnvelopeItem> itms, TransmissionTransfer transferType, double tempInt, double tempExt)
+        //{
+        //    switch (transferType)
+        //    {
+        //        // 6.2.1 Direkte Transmission nach außen (45) und (46)
+        //        case TransmissionTransfer.ToOutside:
+        //            var htd = TransmissionHeatTransferCoef(itms, transferType);
+        //            var htwb = TransmissionHeatTransferCoef(itms, TransmissionTransfer.ViaThermalBridges);
+        //            return (htd + htwb) * Math.Abs(tempInt - tempExt) * _dayFactor;
+        //        case TransmissionTransfer.ThroughUnheatedRooms:
+        //            var htiu = TransmissionHeatTransferCoef(itms, transferType);
+        //            return htiu * Math.Abs(tempInt - tempExt) * _dayFactor;
+        //        case TransmissionTransfer.ToAdjacentZone:
+        //            var htiz = TransmissionHeatTransferCoef(itms, transferType);
+        //            return htiz * Math.Abs(tempInt - tempExt) * _dayFactor;
+        //        case TransmissionTransfer.OverGround:
+        //            var hts = TransmissionHeatTransferCoef(itms, transferType);
+        //            return hts * Math.Abs(tempInt - tempExt) * _dayFactor;
+        //        //Falls der Wärmeaustrag über das Erdreich einen erheblichen Anteil an den
+        //        //Gesamtwärmesenken ausmacht, ist abzuwägen, ob eine detaillierte Berechnung des Wärmestroms über das
+        //        //Erdreich nach DIN EN ISO 13370:2018 - 03, C.1, durchzuführen ist
+        //        default: return 0.0;
+        //    }
+        //}
 
         private double QTransmissionTotal()
         {
