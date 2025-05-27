@@ -216,7 +216,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
         }
         public static readonly Dictionary<RequirementComparison, string> RequirementComparisonMapping = new()
         {
-            { RequirementComparison.None, "" },
+            { RequirementComparison.None, "kein Anforderungswert" },
             { RequirementComparison.Equal, "=" },
             { RequirementComparison.LessThan, "<" },
             { RequirementComparison.GreaterThan, ">" },

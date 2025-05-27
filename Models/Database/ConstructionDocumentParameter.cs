@@ -4,9 +4,9 @@ using SQLiteNetExtensions.Attributes;
 
 namespace BauphysikToolWPF.Models.Database
 {
-    // Verknüpfungstabelle für m:n Beziehung von 'Construction' und 'Requirement'
+    // Verknüpfungstabelle für m:n Beziehung von 'Construction' und 'DocumentParameter'
     // Intermediate class, not used directly anywhere in the code
-    public class ConstructionRequirement : IDatabaseObject<ConstructionRequirement>
+    public class ConstructionDocumentParameter : IDatabaseObject<ConstructionDocumentParameter>
     {
         //------Variablen-----//
 
@@ -19,8 +19,8 @@ namespace BauphysikToolWPF.Models.Database
         [ForeignKey(typeof(Construction))] // FK for the m:n relation
         public int ConstructionId { get; set; }
 
-        [ForeignKey(typeof(Requirement))] // FK for the m:n relation
-        public int RequirementId { get; set; }
+        [ForeignKey(typeof(DocumentParameter))] // FK for the m:n relation
+        public int DocumentParameterId { get; set; }
         [NotNull]
         public string Comment { get; set; } = string.Empty;
         [NotNull]
@@ -33,12 +33,12 @@ namespace BauphysikToolWPF.Models.Database
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
 
-        public ConstructionRequirement Copy()
+        public ConstructionDocumentParameter Copy()
         {
-            var copy = new ConstructionRequirement();
+            var copy = new ConstructionDocumentParameter();
             copy.Id = -1;
             copy.ConstructionId = this.ConstructionId;
-            copy.RequirementId = this.RequirementId;
+            copy.DocumentParameterId = this.DocumentParameterId;
             copy.Comment = this.Comment;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();

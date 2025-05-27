@@ -31,8 +31,8 @@ namespace BauphysikToolWPF.Models.Database
         public DocumentSource DocumentSource => DatabaseAccess.QueryDocumentSourceById(DocumentSourceId);
 
         // m:n relationship with Requirement
-        [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
-        public List<Requirement> Requirements => DatabaseAccess.QueryRequirementsByDesignDocumentId(DocumentSourceId);
+        [ManyToMany(typeof(ConstructionDocumentParameter), CascadeOperations = CascadeOperation.CascadeRead)]
+        public List<DocumentParameter> Requirements => DatabaseAccess.QueryDocumentParameterByDocumentId(DocumentSourceId);
 
         [Ignore]
         public bool IsLayoutVertical => (int)ConstructionDirection == 1;

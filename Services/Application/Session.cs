@@ -214,12 +214,12 @@ namespace BauphysikToolWPF.Services.Application
         // Initialize with default values from the database
         private static readonly Dictionary<Symbol, double> _userEnvVars = new Dictionary<Symbol, double>(6)
         {
-            {Symbol.TemperatureInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior)[0].Value },
-            {Symbol.TemperatureExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior)[0].Value },
-            {Symbol.TransferResistanceSurfaceInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior)[0].Value },
-            {Symbol.TransferResistanceSurfaceExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior)[0].Value },
-            {Symbol.RelativeHumidityInterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior)[0].Value },
-            {Symbol.RelativeHumidityExterior, DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior)[0].Value },
+            {Symbol.TemperatureInterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior)[0].Value },
+            {Symbol.TemperatureExterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior)[0].Value },
+            {Symbol.TransferResistanceSurfaceInterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior)[0].Value },
+            {Symbol.TransferResistanceSurfaceExterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior)[0].Value },
+            {Symbol.RelativeHumidityInterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior)[0].Value },
+            {Symbol.RelativeHumidityExterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior)[0].Value },
         };
 
         #endregion

@@ -3,6 +3,7 @@ using SQLite;
 using SQLiteNetExtensions.Extensions;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Models.UI;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
@@ -70,19 +71,40 @@ namespace BauphysikToolWPF.Repositories
 
         #endregion
 
-        #region EnvVars
+        #region DocumentParameter
 
-        public static IQueryable<EnvVars> GetEnvVarsQuery() => Database.Table<EnvVars>().AsQueryable();
+        public static IQueryable<DocumentParameter> GetDocumentParametersQuery() => Database.Table<DocumentParameter>().AsQueryable();
 
-        public static List<EnvVars> GetEnvVars()
+        public static List<DocumentParameter> GetEnvVars()
         {
-            return Database.GetAllWithChildren<EnvVars>();
+            List<Symbol> envVars = new List<Symbol>()
+            {
+                Symbol.TemperatureInterior,
+                Symbol.TemperatureExterior,
+                Symbol.RelativeHumidityInterior,
+                Symbol.RelativeHumidityExterior,
+                Symbol.TransferResistanceSurfaceInterior,
+                Symbol.TransferResistanceSurfaceExterior,
+            };
+
+            return GetDocumentParametersQuery()
+                .Where(e => envVars.Contains(e.Symbol))
+                .ToList();
         }
 
-        public static List<EnvVars> QueryEnvVarsBySymbol(Symbol symbol)
+        public static List<DocumentParameter> QueryDocumentParameterBySymbol(Symbol symbol)
         {
-            if (symbol == Symbol.None) return GetEnvVars();
-            return GetEnvVarsQuery().Where(e => (int)e.Symbol == (int)symbol).ToList();
+            //if (symbol == Symbol.None) return GetEnvVars();
+            return GetDocumentParametersQuery().Where(e => (int)e.Symbol == (int)symbol).ToList();
+        }
+        public static List<DocumentParameter> QueryDocumentParameterByDocumentSourceType(DocumentSourceType sourceType)
+        {
+            var designDocumentId = QueryDocumentSourceBySourceType(sourceType).Id;
+            return GetDocumentParametersQuery().Where(e => e.DocumentSourceId == designDocumentId).ToList();
+        }
+        public static List<DocumentParameter> QueryDocumentParameterByDocumentId(int designDocumentId)
+        {
+            return GetDocumentParametersQuery().Where(e => e.DocumentSourceId == designDocumentId).ToList();
         }
 
         #endregion
@@ -106,22 +128,6 @@ namespace BauphysikToolWPF.Repositories
         public static string QueryDocumentSourceDescrBySourceType(DocumentSourceType sourceType)
         {
             return GetDocumentSourcesQuery().FirstOrDefault(r => r.DocumentSourceType == sourceType, new DocumentSource()).SourceDescription;
-        }
-
-        #endregion
-
-        #region Requirement
-
-        public static IQueryable<Requirement> GetRequirementsQuery() => Database.Table<Requirement>().AsQueryable();
-
-        public static List<Requirement> QueryRequirementsBySourceType(DocumentSourceType sourceType)
-        {
-            var desgnDocumentId = QueryDocumentSourceBySourceType(sourceType).Id;
-            return GetRequirementsQuery().Where(e => e.DocumentSourceId == desgnDocumentId).ToList();
-        }
-        public static List<Requirement> QueryRequirementsByDesignDocumentId(int desgnDocumentId)
-        {
-            return GetRequirementsQuery().Where(e => e.DocumentSourceId == desgnDocumentId).ToList();
         }
 
         #endregion

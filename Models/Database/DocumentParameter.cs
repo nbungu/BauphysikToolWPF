@@ -1,43 +1,28 @@
 ﻿using BauphysikToolWPF.Services.Application;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
-using System.Collections.Generic;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Database
 {
-   
-    public class Requirement : IDatabaseObject<Requirement>
+    public class DocumentParameter : IDatabaseObject<DocumentParameter>
     {
-        //------Variablen-----//
-
-
-        //------Eigenschaften-----//
-
         [NotNull, PrimaryKey, AutoIncrement, Unique]
         public int Id { get; set; } = -1;
-
         [NotNull]
-        public string RefNumber { get; set; } = string.Empty;
-
+        public string Name { get; set; } = string.Empty;
         [NotNull]
-        public RequirementComparison RequirementComparison { get; set; }
-
+        public double Value { get; set; }
         [NotNull]
-        public double ValueA { get; set; }
-
-        public string? ValueACondition { get; set; }
-
-        public double? ValueB { get; set; }
-
-        public string? ValueBCondition { get; set; }
-
+        public string Comment { get; set; } = string.Empty;
         [NotNull]
         public Symbol Symbol { get; set; }
-
+        
         [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
         public int DocumentSourceId { get; set; }
+        [NotNull]
+        public RequirementComparison RequirementComparison { get; set; }
         [NotNull]
         public long CreatedAt { get; set; }
         [NotNull]
@@ -48,32 +33,15 @@ namespace BauphysikToolWPF.Models.Database
         // n:1 relationship with DocumentSource
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public DocumentSource DocumentSource { get; set; } = new DocumentSource();
+        public Unit Unit => SymbolMapping[Symbol].unit;
 
-        // m:n relationship with Construction
-        [ManyToMany(typeof(ConstructionRequirement), CascadeOperations = CascadeOperation.CascadeRead)]
-        public List<Construction> Constructions { get; set; } = new List<Construction>();
-
-        //------Konstruktor-----//
-
-        // has to be default parameterless constructor when used as DB
-
-        //------Methoden-----//
-
-        public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
+        public DocumentParameter Copy()
         {
-            return "(Id: " + Id + ")";
-        }
-
-        public Requirement Copy()
-        {
-            var copy = new Requirement();
+            var copy = new DocumentParameter();
             copy.Id = -1;
-            copy.RefNumber = this.RefNumber;
-            copy.ValueA = this.ValueA;
-            copy.ValueACondition = this.ValueACondition;
-            copy.ValueB = this.ValueB;
-            copy.ValueBCondition = this.ValueBCondition;
+            copy.Value = this.Value;
             copy.Symbol = this.Symbol;
+            copy.Name = this.Name;
             copy.DocumentSourceId = this.DocumentSourceId;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();

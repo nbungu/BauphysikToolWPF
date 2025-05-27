@@ -224,12 +224,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> LayerMeasurementFull => MeasurementDrawing.GetFullLayerMeasurementChain(_crossSection);
         public IEnumerable<IPropertyItem> LayerProperties => SelectedListViewItem?.PropertyBag ?? new List<IPropertyItem>(0);
         public IEnumerable<IPropertyItem> SubConstructionProperties => SelectedListViewItem?.SubConstruction?.PropertyBag ?? new List<IPropertyItem>(0);
-        public List<string> TiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Select(e => e.Name).ToList();
-        public List<string> TeKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Select(e => e.Name).ToList();
-        public List<string> RsiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Select(e => e.Name).ToList();
-        public List<string> RseKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior).Select(e => e.Name).ToList();
-        public List<string> RelFiKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Select(e => e.Name).ToList();
-        public List<string> RelFeKeys { get; } = DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Select(e => e.Name).ToList();
+        public List<string> TiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Select(e => e.Name).ToList();
+        public List<string> TeKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Select(e => e.Name).ToList();
+        public List<string> RsiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Select(e => e.Name).ToList();
+        public List<string> RseKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Select(e => e.Name).ToList();
+        public List<string> RelFiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Select(e => e.Name).ToList();
+        public List<string> RelFeKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Select(e => e.Name).ToList();
 
         // Index is 0:
         // On Initial Startup (default value for not assigned int)
@@ -239,7 +239,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_tiIndex == -1) ? Session.Ti : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureInterior).Find(e => e.Name == TiKeys[_tiIndex])?.Value;
+                double? value = (_tiIndex == -1) ? Session.Ti : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Find(e => e.Name == TiKeys[_tiIndex])?.Value;
                 Session.Ti = value ?? 0.0;
                 return Session.Ti;
             }
@@ -255,7 +255,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_teIndex == -1) ? Session.Te : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TemperatureExterior).Find(e => e.Name == TeKeys[_teIndex])?.Value;
+                double? value = (_teIndex == -1) ? Session.Te : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Find(e => e.Name == TeKeys[_teIndex])?.Value;
                 Session.Te = value ?? 0.0;
                 return Session.Te;
             }
@@ -269,7 +269,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_rsiIndex == -1) ? Session.Rsi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Name == RsiKeys[_rsiIndex])?.Value;
+                double? value = (_rsiIndex == -1) ? Session.Rsi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Name == RsiKeys[_rsiIndex])?.Value;
                 Session.Rsi = value ?? 0.0;
                 return Session.Rsi;
             }
@@ -283,7 +283,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_rseIndex == -1) ? Session.Rse : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Name == RseKeys[_rseIndex])?.Value;
+                double? value = (_rseIndex == -1) ? Session.Rse : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Name == RseKeys[_rseIndex])?.Value;
                 Session.Rse = value ?? 0.0;
                 return Session.Rse;
             }
@@ -297,7 +297,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_relFiIndex == -1) ? Session.RelFi : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Name == RelFiKeys[_relFiIndex])?.Value;
+                double? value = (_relFiIndex == -1) ? Session.RelFi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Name == RelFiKeys[_relFiIndex])?.Value;
                 Session.RelFi = value ?? 0.0;
                 return Session.RelFi;
             }
@@ -311,7 +311,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_relFeIndex == -1) ? Session.RelFe : DatabaseAccess.QueryEnvVarsBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Name == RelFeKeys[_relFeIndex])?.Value;
+                double? value = (_relFeIndex == -1) ? Session.RelFe : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Name == RelFeKeys[_relFeIndex])?.Value;
                 Session.RelFe = value ?? 0.0;
                 return Session.RelFe;
             }

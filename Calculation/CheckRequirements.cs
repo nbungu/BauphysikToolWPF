@@ -81,23 +81,24 @@ namespace BauphysikToolWPF.Calculation
             }
 
             // c) Get specific Requirement from selected RequirementSource
-            Requirement? specificRequirement = constructionRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
+            DocumentParameter? specificRequirement = constructionRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
             if (specificRequirement is null) return;
 
             // Check if conditions have to be met
-            if (Ti >= 19)
-            {
-                UMax = specificRequirement.ValueA;
-            }
-            else if (Ti > 12 && Ti < 19)
-            {
-                UMax = specificRequirement.ValueB ?? specificRequirement.ValueA;
-            }
-            else
-            {
-                //TODO
-                // If Room Temperature (inside) is lower than 12 °C it does not specify as 'heated' room. No requirement has to be met!
-            }
+            UMax = specificRequirement.Value;
+            //if (Ti >= 19)
+            //{
+            //    UMax = specificRequirement.ValueA;
+            //}
+            //else if (Ti > 12 && Ti < 19)
+            //{
+            //    UMax = specificRequirement.ValueB ?? specificRequirement.ValueA;
+            //}
+            //else
+            //{
+            //    //TODO
+            //    // If Room Temperature (inside) is lower than 12 °C it does not specify as 'heated' room. No requirement has to be met!
+            //}
         }
 
         private void SetRMin()
@@ -106,7 +107,7 @@ namespace BauphysikToolWPF.Calculation
             
             // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
             // via m:n relation of Construction and Requirement.
-            List<Requirement> allRequirements = Element.Construction.Requirements;
+            List<DocumentParameter> allRequirements = Element.Construction.Requirements;
 
             // catch constructions with no requirements
             if (allRequirements.Count == 0) return;
@@ -115,13 +116,14 @@ namespace BauphysikToolWPF.Calculation
             int requirementSourceId = (int)Enums.DocumentSourceType.DIN_4108_2_Tabelle_3;
 
             // c) Get specific Requirement from selected RequirementSource
-            Requirement? specificRequirement = allRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
+            DocumentParameter? specificRequirement = allRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
             if (specificRequirement is null) return;
 
             // Check if conditions have to be met
-            if (Element.AreaMassDens >= 100) RMin = specificRequirement.ValueA;
+            RMin = specificRequirement.Value;
+            //if (Element.AreaMassDens >= 100) RMin = specificRequirement.ValueA;
             
-            RMin = specificRequirement.ValueB ?? specificRequirement.ValueA;
+            //RMin = specificRequirement.ValueB ?? specificRequirement.ValueA;
         }
         private void SetQMax()
         {

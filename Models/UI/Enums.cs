@@ -4,9 +4,10 @@ namespace BauphysikToolWPF.Models.UI
 {
     public class Enums
     {
+        // Keep Order!
         public enum Symbol
         {
-            None,
+            None = 0,
 
             // Geometry
             Length,                             // l
