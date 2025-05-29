@@ -26,6 +26,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
             Tuer,
             InnenTuer,
             Glasvorbau,
+            Tiefgaragendecke
         }
 
         public static readonly Dictionary<ConstructionType, string> ConstructionTypeMapping =
@@ -61,6 +62,9 @@ namespace BauphysikToolWPF.Models.Database.Helper
             DIN_V_18599_10_Tabelle_4,
             DIN_V_18599_2_Tabelle_5,
             DIN_V_18599_10_Tabelle_5,
+            DIN_4108_3_AnhangA,
+            DIN_EN_ISO_6946_Tabelle_7,
+            DIN_EN_ISO_6946_Tabelle_8,
         }
 
         // TODO: TEST

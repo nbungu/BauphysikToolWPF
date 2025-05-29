@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.Repositories;
-using BauphysikToolWPF.Services.Application;
+﻿using BauphysikToolWPF.Services.Application;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Collections.Generic;
@@ -17,8 +16,6 @@ namespace BauphysikToolWPF.Models.Database
         public string TypeName { get; set; } = string.Empty;
         [NotNull]
         public ConstructionDirection ConstructionDirection { get; set; }
-        [NotNull, ForeignKey(typeof(DocumentSource))] // FK for the n:1 relationship with DocumentSource
-        public int DocumentSourceId { get; set; }
         [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         [NotNull]
@@ -26,17 +23,9 @@ namespace BauphysikToolWPF.Models.Database
 
         //------Not part of the Database-----//
 
-        // n:1 relationship with DocumentSource
-        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public DocumentSource DocumentSource => DatabaseAccess.QueryDocumentSourceById(DocumentSourceId);
-
         // m:n relationship with Requirement
-        [ManyToMany(typeof(ConstructionDocumentParameter), CascadeOperations = CascadeOperation.CascadeRead)]
-        public List<DocumentParameter> Requirements => DatabaseAccess.QueryDocumentParameterByDocumentId(DocumentSourceId);
-
-        [Ignore]
-        public bool IsLayoutVertical => (int)ConstructionDirection == 1;
-
+        [Ignore, ManyToMany(typeof(ConstructionDocumentParameter), CascadeOperations = CascadeOperation.CascadeRead)]
+        public List<DocumentParameter> Requirements { get; set; } = new List<DocumentParameter>();
 
         //------Konstruktor-----//
 
@@ -55,7 +44,6 @@ namespace BauphysikToolWPF.Models.Database
             copy.ConstructionType = this.ConstructionType;
             copy.TypeName = this.TypeName;
             copy.ConstructionDirection = this.ConstructionDirection;
-            copy.DocumentSourceId = this.DocumentSourceId;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             return copy;

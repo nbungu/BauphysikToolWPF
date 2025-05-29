@@ -46,7 +46,7 @@ namespace BauphysikToolWPF.Models.UI
             VolumetricHeatCapacity,             // C_V
             ArealHeatCapacity,                  // C_i
             HeatFluxDensity,                    // q
-            FRsi,
+            FRsi,                               // fRsi
 
             // Dynamic Thermal Values
             UValueDynamic,
@@ -69,7 +69,9 @@ namespace BauphysikToolWPF.Models.UI
             HeatTransferCoef,                   // H
             ThermalBridgeSurcharge,             // ΔU_WB
             AirExchangeRate,                    // n
-            TempCorrectionFactor,               // F_x  
+            TempCorrectionFactor,               // F_x
+
+
         }
 
         public static readonly Dictionary<Symbol, (Unit unit, string baseText, string subscriptText, string name, string comment)> SymbolMapping = new()
@@ -104,11 +106,12 @@ namespace BauphysikToolWPF.Models.UI
             { Symbol.VolumetricHeatCapacity, (Unit.KilojoulesPerCubicMeterKelvin, "C", "V", "Volumenbez. Wärmekapazität", "") },
             { Symbol.ArealHeatCapacity, (Unit.KilojoulesPerSquareMeterKelvin, "C", "", "Flächenbez. Wärmekapazität", "Quotient aus Wärmekapazität und Bauteilfläche") },
             { Symbol.HeatFluxDensity, (Unit.WattsPerSquareMeter, "q", "", "Wärmestromdichte", "") },
+            { Symbol.FRsi, (Unit.None, "f", "Rsi", "Temperaturfaktor für die raumseitige Oberfläche", "") },
             { Symbol.UValueDynamic, (Unit.WattsPerSquareMeterKelvin, "U", "dyn", "U-dynamisch", "dynamischer Wärmedurchgangskoeffizient") },
             { Symbol.RValueDynamic, (Unit.SquareMeterKelvinPerWatt, "R", "dyn", "R-dynamisch", "dynamischer Wärmedurchlasswiderstand") },
             { Symbol.TemperatureAmplitudeDamping, (Unit.None, "υ", "", "Temperaturamplitudendämpfung", "") },
             { Symbol.TemperatureAmplitudeRatio, (Unit.None, "", "", "Temperaturamplitudenverhältnis", "Kehrwert der TAD: multipliziert mit 100 enpricht es dem %-Wert der Wärmeamplitude welche innen noch ankommt, aufgrund einer Schwankung außen.") },
-            { Symbol.TimeShift, (Unit.Hour, "Δt", "", "Phasenverschiebung", "Zeitvorsprung (wenn positiv) oder Verzögerung (wenn\r\nnegativ)") },
+            { Symbol.TimeShift, (Unit.Hour, "Δt", "", "Phasenverschiebung", "Zeitvorsprung (wenn positiv) oder Verzögerung (wenn negativ)") },
             { Symbol.EffectiveThermalMass, (Unit.KilogramPerSquareMeter, "M", "", "Speicherwirksame Masse", "") },
             { Symbol.DecrementFactor, (Unit.None, "f", "", "Dekrement", "Abminderungsfaktor: Verhältnis des Betrags der dynamischen Wärmeaufnahme zum Wärmedurchgangskoeffizienten U unter\r\nstationären Bedingungen") },
             { Symbol.ThermalAdmittance, (Unit.WattsPerSquareMeterKelvin, "Y", "mm", "Wärmeaufnahme", "komplexe Größe, festgelegt als komplexe Amplitude der Wärmestromdichte durch die an Zone m des\r\nBauteils angrenzende Oberfläche, geteilt durch die komplexe Temperaturamplitude in der gleichen Zone,\r\nwenn die Temperatur auf der anderen Seite konstant gehalten wird") },

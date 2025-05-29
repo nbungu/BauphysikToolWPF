@@ -3,7 +3,6 @@ using SQLite;
 using SQLiteNetExtensions.Extensions;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models.UI;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
@@ -60,10 +59,12 @@ namespace BauphysikToolWPF.Repositories
 
         public static IQueryable<Construction> GetConstructionsQuery() => Database.Table<Construction>().AsQueryable();
 
-        public static Construction QueryConstructionById(int constructionId)
+        public static Construction QueryConstructionById(int constructionId, bool recursive = false)
         {
+            if (recursive) return Database.GetWithChildren<Construction>(constructionId, recursive);
             return GetConstructionsQuery().FirstOrDefault(c => c.Id == constructionId, new Construction());
         }
+
         public static string QueryConstructionNameByConstructionType(ConstructionType constructionType)
         {
             return GetConstructionsQuery().FirstOrDefault(c => c.ConstructionType == constructionType, new Construction()).TypeName;

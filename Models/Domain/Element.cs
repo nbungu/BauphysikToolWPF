@@ -43,7 +43,7 @@ namespace BauphysikToolWPF.Models.Domain // or core?
         public string OrientationTypeName => OrientationTypeMapping[OrientationType];
 
         [JsonIgnore]
-        public Construction Construction => DatabaseAccess.QueryConstructionById(ConstructionId);
+        public Construction Construction => DatabaseAccess.QueryConstructionById(ConstructionId, recursive: true);
 
         [JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
@@ -57,14 +57,7 @@ namespace BauphysikToolWPF.Models.Domain // or core?
         public bool IsInhomogeneous => Layers.Any(l => l.HasSubConstructions);
 
         [JsonIgnore]
-        public Color Color // HEX 'ColorCode' Property to 'Color' Type
-        {
-            get
-            {
-                if (ColorCode == "#00FFFFFF") return Colors.Transparent;
-                return (Color)ColorConverter.ConvertFromString(ColorCode);
-            }
-        }
+        public Color Color => ColorCode == "#00FFFFFF" ? Colors.Transparent : (Color)ColorConverter.ConvertFromString(ColorCode); // HEX 'ColorCode' Property to 'Color' Type
 
         [JsonIgnore]
         public byte[] DocumentImage { get; set; } = Array.Empty<byte>();
