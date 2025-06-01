@@ -10,7 +10,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
-
 /* 
  * https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/
  * https://social.msdn.microsoft.com/Forums/en-US/85b1141b-2144-40c2-b9b3-e1e6cdb0ea02/announcement-cascade-operations-in-sqlitenet-extensions?forum=xamarinlibraries

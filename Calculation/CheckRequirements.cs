@@ -1,11 +1,9 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.Domain.Helper;
 using System;
 using System.Collections.Generic;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
-using Enums = BauphysikToolWPF.Models.Database.Helper.Enums;
+using System.Linq;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {
@@ -18,10 +16,11 @@ namespace BauphysikToolWPF.Calculation
     public class CheckRequirements
     {
         public Element? Element { get; }
-        public BuildingAgeType BuildingAge { get; }
-        public BuildingUsageType BuildingUsage { get; }
+        //public BuildingAgeType BuildingAge { get; }
+        //public BuildingUsageType BuildingUsage { get; }
         public double Ti { get; }
         public double Te { get; }
+        public List<DocumentParameter> RelevantRequirements { get; set; } = new List<DocumentParameter>();
         public double UMax { get; private set; } = -1;
         public double RMin { get; private set; } = -1;
         public double QMax { get; private set; } = -1;
@@ -35,12 +34,16 @@ namespace BauphysikToolWPF.Calculation
             Element = element;
             if (Element is null) return;
 
-            BuildingAge = config.BuildingAge;
-            BuildingUsage = config.BuildingUsage;
+            //BuildingAge = config.BuildingAge;
+            //BuildingUsage = config.BuildingUsage;
             Ti = config.Ti;
             Te = config.Te;
 
+            // Force recalculation to work with latest values
             Element.UpdateResults();
+
+            RelevantRequirements = Element.Construction.Requirements.Where(r => config.RelevantDocumentSources.Contains(r.DocumentSource.DocumentSourceType)).ToList();
+
             SetUMax();
             SetRMin();
             SetQMax();
@@ -53,78 +56,24 @@ namespace BauphysikToolWPF.Calculation
         {
             if (Element is null) return;
 
-            // default (irregular) values
-            int requirementSourceId = -1;
-
-            // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
-            // via m:n relation of Construction and Requirement.
-            var constructionRequirements = Element.Construction.Requirements;
-
-            // catch constructions with no requirements (e.g. Innenwand)
-            if (constructionRequirements.Count == 0) return;
-
-            // b) Select relevant Source based off Building Age and Usage
-            if (BuildingAge == BuildingAgeType.New)
-            {
-                if (BuildingUsage == BuildingUsageType.Residential)
-                {
-                    requirementSourceId = (int)Enums.DocumentSourceType.GEG_Anlage1;
-                }
-                else if (BuildingUsage == BuildingUsageType.NonResidential)
-                {
-                    requirementSourceId = (int)Enums.DocumentSourceType.GEG_Anlage2;
-                }
-            }
-            else if (BuildingAge == BuildingAgeType.Existing)
-            {
-                requirementSourceId = (int)Enums.DocumentSourceType.GEG_Anlage7;
-            }
-
-            // c) Get specific Requirement from selected RequirementSource
-            DocumentParameter? specificRequirement = constructionRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
+            DocumentParameter? specificRequirement = RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null);
             if (specificRequirement is null) return;
 
-            // Check if conditions have to be met
+            // TODO: Distinct between Ti >= 19 and Ti > 12 && Ti < 19
             UMax = specificRequirement.Value;
-            //if (Ti >= 19)
-            //{
-            //    UMax = specificRequirement.ValueA;
-            //}
-            //else if (Ti > 12 && Ti < 19)
-            //{
-            //    UMax = specificRequirement.ValueB ?? specificRequirement.ValueA;
-            //}
-            //else
-            //{
-            //    //TODO
-            //    // If Room Temperature (inside) is lower than 12 °C it does not specify as 'heated' room. No requirement has to be met!
-            //}
         }
 
         private void SetRMin()
         {
             if (Element is null) return;
-            
-            // a) Get all Requirements linked to current type of construction. Without any relation to a specific RequirementSource!
-            // via m:n relation of Construction and Requirement.
-            List<DocumentParameter> allRequirements = Element.Construction.Requirements;
 
-            // catch constructions with no requirements
-            if (allRequirements.Count == 0) return;
-
-            // b) Select relevant Source
-            int requirementSourceId = (int)Enums.DocumentSourceType.DIN_4108_2_Tabelle_3;
-
-            // c) Get specific Requirement from selected RequirementSource
-            DocumentParameter? specificRequirement = allRequirements.Find(r => r.DocumentSourceId == requirementSourceId);
+            DocumentParameter? specificRequirement = RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.RValueElement, null);
             if (specificRequirement is null) return;
 
-            // Check if conditions have to be met
+            //TODO: Distinct between Element.AreaMassDens >= 100 and Element.AreaMassDens < 100
             RMin = specificRequirement.Value;
-            //if (Element.AreaMassDens >= 100) RMin = specificRequirement.ValueA;
-            
-            //RMin = specificRequirement.ValueB ?? specificRequirement.ValueA;
         }
+
         private void SetQMax()
         {
             if (UMax >= 0) QMax = Math.Round(UMax * (Ti - Te), 4);

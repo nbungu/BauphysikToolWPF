@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using BauphysikToolWPF.Services.UI;
+using static BauphysikToolWPF.Models.UI.Enums;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -81,18 +82,20 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public List<OverviewItem> OverviewItems
         {
+            // TODO Rework: -> ProperyItem
             get
             {
                 if (!_tempCurve.IsValid) return new List<OverviewItem>();
                 return new List<OverviewItem>
                 {
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "ges", Value = _tempCurve.Element.RGesValue, RequirementValue = RequirementValues.RMin >= 0 ? RequirementValues.RMin : null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "R", SymbolSubscript = "T", Value = _tempCurve.RTotal, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
-                    new OverviewItem { SymbolBase = "U", SymbolSubscript = "", Value = _tempCurve.UValue, RequirementValue = RequirementValues.UMax >= 0 ? RequirementValues.UMax : null, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
-                    new OverviewItem { SymbolBase = "q", SymbolSubscript = "", Value = _tempCurve.QValue, RequirementValue = RequirementValues.QMax >= 0 ? RequirementValues.QMax : null, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _tempCurve.Tsi, RequirementValue = _tempCurve.TsiMin, IsRequirementMet = _tempCurve.Tsi >= _tempCurve.TsiMin, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = _tempCurve.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                    new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = _tempCurve.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCurve.FRsi >= 0.7 },
+                    new OverviewItem { Symbol = Symbol.RValueElement, Value = RequirementValues.Element.RGesValue, RequirementValue = RequirementValues.RMin >= 0 ? RequirementValues.RMin : null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
+                    new OverviewItem { Symbol = Symbol.RValueTotal, Value = RequirementValues.Element.RTotValue, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
+                    new OverviewItem { Symbol = Symbol.UValue, Value = RequirementValues.Element.UValue, RequirementValue = RequirementValues.UMax >= 0 ? RequirementValues.UMax : null, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
+                    new OverviewItem { Symbol = Symbol.HeatFluxDensity, Value = RequirementValues.Element.QValue, RequirementValue = RequirementValues.QMax >= 0 ? RequirementValues.QMax : null, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
+                    
+                    new OverviewItem { Symbol = Symbol.TemperatureSurfaceInterior, Value = _tempCurve.Tsi, RequirementValue = _tempCurve.TsiMin, IsRequirementMet = _tempCurve.Tsi >= _tempCurve.TsiMin, Unit = "°C" },
+                    new OverviewItem { Symbol = Symbol.TemperatureSurfaceExterior, Value = _tempCurve.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+                    new OverviewItem { Symbol = Symbol.FRsi, Value = _tempCurve.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCurve.FRsi >= 0.7 },
                 };
             }
         }

@@ -31,8 +31,9 @@ namespace BauphysikToolWPF.Models.Database
         //------Not part of the Database-----//
 
         // n:1 relationship with DocumentSource
-        [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
+        [Ignore, ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
         public DocumentSource DocumentSource { get; set; } = new DocumentSource();
+        [Ignore]
         public Unit Unit => SymbolMapping[Symbol].unit;
 
         public DocumentParameter Copy()

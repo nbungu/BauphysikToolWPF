@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using BauphysikToolWPF.Services.UI;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
@@ -129,8 +130,9 @@ namespace BauphysikToolWPF.Services.Application
 
         public static CheckRequirementsConfig CheckRequirementsConfig => new CheckRequirementsConfig()
         {
-            BuildingAge = SelectedProject?.BuildingAge ?? BuildingAgeType.New,
-            BuildingUsage = SelectedProject?.BuildingUsage ?? BuildingUsageType.Residential,
+            //BuildingAge = SelectedProject?.BuildingAge ?? BuildingAgeType.New,
+            //BuildingUsage = SelectedProject?.BuildingUsage ?? BuildingUsageType.Residential,
+            RelevantDocumentSources = SelectedProject?.ProjectRelatedDocumentSources ?? new List<DocumentSourceType>(),
             Ti = Ti,
             Te = Te,
         };

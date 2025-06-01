@@ -3,6 +3,7 @@ using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Repositories;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
@@ -63,7 +64,6 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             project.Elements.ForEach(ImageCreator.RenderElementPreviewImage);
         }
 
-
         /// <summary>
         /// For filtering Element construction requirements
         /// </summary>
@@ -77,6 +77,9 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                 DocumentSourceType.DIN_4108_2_Tabelle_3,
                 DocumentSourceType.DIN_V_18599_10_Tabelle_E1,
                 DocumentSourceType.DIN_V_18599_2_Tabelle_5,
+                DocumentSourceType.DIN_4108_3_AnhangA,
+                DocumentSourceType.DIN_EN_ISO_6946_Tabelle_7,
+                DocumentSourceType.DIN_EN_ISO_6946_Tabelle_8,
             };
             // Add document sources based on project properties
             if (project.BuildingAge == BuildingAgeType.New && project.BuildingUsage == BuildingUsageType.Residential)
@@ -102,6 +105,13 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                 documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_5);
             }
             return documentSourceTypes;
+        }
+
+        public static List<int> GetProjectRelatedDocumentSourceIds(this Project project)
+        {
+            return GetProjectRelatedDocumentSources(project)
+                .Select(d => DatabaseAccess.QueryDocumentSourceBySourceType(d).Id)
+                .ToList();
         }
     }
 }

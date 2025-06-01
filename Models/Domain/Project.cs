@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using BauphysikToolWPF.Models.Domain.Helper;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
@@ -37,9 +39,11 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
+        
         [JsonIgnore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
-
+        
+        [JsonIgnore]
         public bool IsValid => true; // TODO: Implement validation logic
 
         [JsonIgnore]
@@ -89,6 +93,9 @@ namespace BauphysikToolWPF.Models.Domain
                 return _envelopeResults;
             }
         }
+
+        [JsonIgnore]
+        public List<DocumentSourceType> ProjectRelatedDocumentSources => this.GetProjectRelatedDocumentSources();
 
         #endregion
 

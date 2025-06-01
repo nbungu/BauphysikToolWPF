@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using BauphysikToolWPF.Services.UI;
+using static BauphysikToolWPF.Models.UI.Enums;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -96,10 +97,10 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             return new List<OverviewItem>
             {
-                new OverviewItem { SymbolBase = "θ", SymbolSubscript = "si", Value = _glaser.Tsi, RequirementValue = _glaser.TaupunktMax_i, IsRequirementMet = _glaser.Tsi >= _glaser.TaupunktMax_i, Unit = "°C" },
-                new OverviewItem { SymbolBase = "θ", SymbolSubscript = "se", Value = _glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                new OverviewItem { SymbolBase = "f", SymbolSubscript = "Rsi", Value = _glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = _glaser.FRsi >= 0.7 },
-                new OverviewItem { SymbolBase = "Φ", SymbolSubscript = "i", Value = Session.RelFi, RequirementValue = _glaser.PhiMax, IsRequirementMet = Session.RelFi < _glaser.PhiMax, Unit = "%" }
+                new OverviewItem { Symbol = Symbol.TemperatureSurfaceInterior, Value = _glaser.Tsi, RequirementValue = _glaser.TaupunktMax_i, IsRequirementMet = _glaser.Tsi >= _glaser.TaupunktMax_i, Unit = "°C" },
+                new OverviewItem { Symbol = Symbol.TemperatureSurfaceExterior, Value = _glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+                new OverviewItem { Symbol = Symbol.FRsi, Value = _glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = _glaser.FRsi >= 0.7 },
+                new OverviewItem { Symbol = Symbol.RelativeHumidityInterior, Value = Session.RelFi, RequirementValue = _glaser.PhiMax, IsRequirementMet = Session.RelFi < _glaser.PhiMax, Unit = "%" }
             };
         }
 
