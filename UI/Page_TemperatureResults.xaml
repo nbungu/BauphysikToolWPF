@@ -164,11 +164,21 @@
 
         <!--Bottom Right-->       
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
-            <ListBox Style="{StaticResource OverviewListBoxStyle}"
+            <!--<ListBox Style="{StaticResource OverviewListBoxStyle}"
                      ItemsSource="{Binding OverviewItems}"
                      ItemTemplate="{StaticResource OverviewItemDataTemplate}"
                      ItemContainerStyle="{StaticResource OverviewItemContainerStyle}"
-                     SnapsToDevicePixels="True"/>
+                     SnapsToDevicePixels="True"/>-->
+
+            <controls:Gauge Value="0.20"
+                      ValueUnit="W/(m²K)"
+                      Title="U-Wert"
+                      MinValue="0"
+                      MaxValue="1.0"
+                      ShowUnitLabel="True"
+                      ShowReferenceMarkerTick = "True"
+                      ReferenceMarkerValue = "0.24"
+                      Width = "180"/>
         </Grid>
 
     </Grid>
