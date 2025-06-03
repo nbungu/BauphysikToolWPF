@@ -192,7 +192,7 @@
                                     Margin="0,0,8,0"/>
                     <controls:Gauge Grid.Column="1"
                                     Title="R-Wert:"
-                                    Caption="Grenzwert"
+                                    Caption="Grenzwert nach DIN 4108-2"
                                     Value="{Binding RValue}"
                                     UnitLabel="{Binding RValueUnitString}"
                                     MinValue="{Binding RValueScaleMin}"
@@ -200,6 +200,7 @@
                                     SymbolLabelBase="R"
                                     SymbolLabelSubscript="ges"
                                     ShowReferenceMarkerTick = "True"
+                                    ReverseGradient="True"
                                     ReferenceMarkerValue = "{Binding RValueRefMarker}"
                                     Margin="8,0,0,0"/>
                 </Grid>

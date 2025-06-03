@@ -85,15 +85,6 @@ namespace BauphysikToolWPF.UI.CustomControls
             set => SetValue(ReferenceMarkerValueProperty, value);
         }
 
-        //public static readonly DependencyProperty ShowSymbolLabelProperty =
-        //    DependencyProperty.Register(nameof(ShowSymbolLabel), typeof(bool), typeof(Gauge), new PropertyMetadata(false));
-
-        //public bool ShowSymbolLabel
-        //{
-        //    get => (bool)GetValue(ShowSymbolLabelProperty);
-        //    set => SetValue(ShowSymbolLabelProperty, value);
-        //}
-
         public static readonly DependencyProperty SymbolLabelBaseProperty =
             DependencyProperty.Register(nameof(SymbolLabelBase), typeof(string), typeof(Gauge), new PropertyMetadata(""));
 
@@ -110,6 +101,15 @@ namespace BauphysikToolWPF.UI.CustomControls
         {
             get => (string)GetValue(SymbolLabelSubscriptProperty);
             set => SetValue(SymbolLabelSubscriptProperty, value);
+        }
+
+        public static readonly DependencyProperty ReverseGradientProperty =
+            DependencyProperty.Register(nameof(ReverseGradient), typeof(bool), typeof(Gauge), new PropertyMetadata(false));
+
+        public bool ReverseGradient
+        {
+            get => (bool)GetValue(ReverseGradientProperty);
+            set => SetValue(ReverseGradientProperty, value);
         }
     }
 }

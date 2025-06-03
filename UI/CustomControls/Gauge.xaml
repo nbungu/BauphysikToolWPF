@@ -77,15 +77,35 @@
 
         <!-- Gauge bar -->
         <Grid Grid.Row="2" Height="24">
-            <Border Height="16" CornerRadius="8" Background="Transparent" ClipToBounds="True">
+            <Border Height="16" Background="Transparent" ClipToBounds="True">
                 <Rectangle RadiusX="6" RadiusY="6">
-                    <Rectangle.Fill>
-                        <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                            <GradientStop Color="Green" Offset="0"/>
-                            <GradientStop Color="Yellow" Offset="0.5"/>
-                            <GradientStop Color="Red" Offset="1"/>
-                        </LinearGradientBrush>
-                    </Rectangle.Fill>
+                    <Rectangle.Style>
+                        <Style TargetType="Rectangle">
+                            <Setter Property="Fill">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                        <GradientStop Color="Green" Offset="0"/>
+                                        <GradientStop Color="Yellow" Offset="0.5"/>
+                                        <GradientStop Color="Red" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ReverseGradient, ElementName=RootGauge}" Value="True">
+                                    <Setter Property="Fill">
+                                        <Setter.Value>
+                                            <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
+                                                <GradientStop Color="Red" Offset="0"/>
+                                                <GradientStop Color="Yellow" Offset="0.5"/>
+                                                <GradientStop Color="Green" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Rectangle.Style>
                 </Rectangle>
             </Border>
 
