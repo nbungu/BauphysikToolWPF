@@ -19,9 +19,10 @@ namespace BauphysikToolWPF.Services.UI
             if (range <= 0)
                 return 0.0;
 
+            double margin = 8.0;
             double normalized = (value - min) / range;
-            double usableWidth = width - 20; // adjust margin if needed
-            return normalized * usableWidth;
+            double usableWidth = width - margin; // adjust margin if needed
+            return margin / 2 + normalized * usableWidth;
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture) =>

@@ -41,31 +41,32 @@ namespace BauphysikToolWPF.UI.CustomControls
             set => SetValue(MaxValueProperty, value);
         }
 
-        public static readonly DependencyProperty UnitCounterProperty =
-            DependencyProperty.Register(nameof(UnitCounter), typeof(string), typeof(Gauge), new PropertyMetadata("m"));
+        public static readonly DependencyProperty UnitLabelProperty =
+            DependencyProperty.Register(nameof(UnitLabel), typeof(string), typeof(Gauge), new PropertyMetadata("m"));
 
-        public string UnitCounter
+        public string UnitLabel
         {
-            get => (string)GetValue(UnitCounterProperty);
-            set => SetValue(UnitCounterProperty, value);
+            get => (string)GetValue(UnitLabelProperty);
+            set => SetValue(UnitLabelProperty, value);
         }
 
-        public static readonly DependencyProperty UnitDenominatorProperty =
-            DependencyProperty.Register(nameof(UnitDenominator), typeof(string), typeof(Gauge), new PropertyMetadata(""));
-
-        public string UnitDenominator
-        {
-            get => (string)GetValue(UnitDenominatorProperty);
-            set => SetValue(UnitDenominatorProperty, value);
-        }
 
         public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(nameof(Title), typeof(string), typeof(Gauge), new PropertyMetadata("Gauge"));
+            DependencyProperty.Register(nameof(Title), typeof(string), typeof(Gauge), new PropertyMetadata("Title"));
 
         public string Title
         {
             get => (string)GetValue(TitleProperty);
             set => SetValue(TitleProperty, value);
+        }
+
+        public static readonly DependencyProperty CaptionProperty =
+            DependencyProperty.Register(nameof(Caption), typeof(string), typeof(Gauge), new PropertyMetadata("Caption"));
+
+        public string Caption
+        {
+            get => (string)GetValue(CaptionProperty);
+            set => SetValue(CaptionProperty, value);
         }
 
         public static readonly DependencyProperty ShowReferenceMarkerTickProperty =
@@ -84,15 +85,6 @@ namespace BauphysikToolWPF.UI.CustomControls
         {
             get => (double)GetValue(ReferenceMarkerValueProperty);
             set => SetValue(ReferenceMarkerValueProperty, value);
-        }
-
-        public static readonly DependencyProperty ShowUnitLabelProperty =
-            DependencyProperty.Register(nameof(ShowUnitLabel), typeof(bool), typeof(Gauge), new PropertyMetadata(true));
-
-        public bool ShowUnitLabel
-        {
-            get => (bool)GetValue(ShowUnitLabelProperty);
-            set => SetValue(ShowUnitLabelProperty, value);
         }
     }
 }

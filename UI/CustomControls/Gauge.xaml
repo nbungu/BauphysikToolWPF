@@ -4,7 +4,6 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
-             xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d" 
              x:Name="RootGauge"
              d:DesignHeight="160"
@@ -14,71 +13,8 @@
         <!-- Value to position converter -->
         <ui:ValueAndWidthToOffsetConverter x:Key="ValueAndWidthToOffsetConverter" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <ui:NumberConverter x:Key="NumberConverter" />
     </UserControl.Resources>
-
-    <!--<Grid x:Name="RootGrid">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-
-        --><!-- Color bar --><!--
-        <Rectangle Height="24" RadiusX="8" RadiusY="8" VerticalAlignment="Center" >
-            <Rectangle.Fill>
-                <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
-                    <GradientStop Color="Green" Offset="0"/>
-                    <GradientStop Color="Yellow" Offset="0.5"/>
-                    <GradientStop Color="Red" Offset="1"/>
-                </LinearGradientBrush>
-            </Rectangle.Fill>
-        </Rectangle>
-
-        --><!-- Reference Marker --><!--
-        <Rectangle Grid.Row="0" Width="2" Height="32" Fill="{StaticResource PrimaryDarkHighlightBrush}" VerticalAlignment="Center"
-                   Visibility="{Binding ShowReferenceMarkerTick, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibilityConverter}}"
-                   HorizontalAlignment="Left">
-            <Rectangle.RenderTransform>
-                <TranslateTransform>
-                    <TranslateTransform.X>
-                        <MultiBinding Converter="{StaticResource ValueAndWidthToOffsetConverter}">
-                            <Binding Path="ReferenceMarkerValue" RelativeSource="{RelativeSource AncestorType=UserControl}" />
-                            <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=UserControl}" />
-                            <Binding Path="MinValue" RelativeSource="{RelativeSource AncestorType=UserControl}" />
-                            <Binding Path="MaxValue" RelativeSource="{RelativeSource AncestorType=UserControl}" />
-                        </MultiBinding>
-                    </TranslateTransform.X>
-                </TranslateTransform>
-            </Rectangle.RenderTransform>
-        </Rectangle>
-
-        --><!-- Value Marker --><!--
-        <Canvas Grid.Row="1" VerticalAlignment="Top" Height="12">
-            <Polygon Fill="{StaticResource PrimaryHighlightBrush}"
-                     Points="0,0 6,12 -6,12">
-                <Polygon.RenderTransform>
-                    <TranslateTransform>
-                        <TranslateTransform.X>
-                            <MultiBinding Converter="{StaticResource ValueAndWidthToOffsetConverter}">
-                                <Binding Path="Value" RelativeSource="{RelativeSource AncestorType=UserControl}" />
-                                <Binding Path="ActualWidth" RelativeSource="{RelativeSource AncestorType=UserControl}" />
-                                <Binding Path="MinValue" RelativeSource="{RelativeSource AncestorType=UserControl}" />
-                                <Binding Path="MaxValue" RelativeSource="{RelativeSource AncestorType=UserControl}" />
-                            </MultiBinding>
-                        </TranslateTransform.X>
-                    </TranslateTransform>
-                </Polygon.RenderTransform>
-            </Polygon>
-        </Canvas>
-
-        --><!-- Labels --><!--
-        <StackPanel Grid.Row="2" Margin="0,8,0,0">
-            <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="Bold" />
-            <TextBlock Text="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-            <TextBlock Text="{Binding ValueUnit, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                       Visibility="{Binding ShowUnitLabel, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibilityConverter}}" />
-        </StackPanel>
-    </Grid>-->
 
     <Grid x:Name="RootGrid">
         <Grid.RowDefinitions>
@@ -86,43 +22,24 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <!-- Labels -->
+        <!-- Header/Value Labels -->
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="Bold" />
-            <TextBlock Text="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-            <customControls:FractionLabel CounterText="{Binding UnitCounter, RelativeSource={RelativeSource AncestorType=UserControl}}" DenominatorText="{Binding UnitDenominator, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-
+            <Label Content="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="Bold" Margin="-4,-4,0,-4" />
+            <Label Content="{Binding Value, Converter={StaticResource NumberConverter}, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="16" FontWeight="DemiBold" Margin="0,-4,0,-4"/>
+            <Label Content="{Binding UnitLabel, RelativeSource={RelativeSource AncestorType=UserControl}}" Margin="0,-4,0,-4"/>
+            
         </StackPanel>
 
-        <!-- Value triangle + label on top the gauge -->
-        <Canvas Grid.Row="1" Height="32" Background="Aqua">
-            <!-- Value label (above triangle) -->
-            <TextBlock Text="{Binding Value, ElementName=RootGauge}"
-               FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource PrimaryDarkHighlightBrush}"
-               TextAlignment="Center" RenderTransformOrigin="0.5,0"
-               Canvas.Top="-4"
-               Canvas.Left="-10">
-                <TextBlock.RenderTransform>
-                    <TranslateTransform>
-                        <TranslateTransform.X>
-                            <MultiBinding Converter="{StaticResource ValueAndWidthToOffsetConverter}">
-                                <Binding Path="Value" ElementName="RootGauge"/>
-                                <Binding Path="ActualWidth" ElementName="RootGrid"/>
-                                <Binding Path="MinValue" ElementName="RootGauge"/>
-                                <Binding Path="MaxValue" ElementName="RootGauge"/>
-                            </MultiBinding>
-                        </TranslateTransform.X>
-                    </TranslateTransform>
-                </TextBlock.RenderTransform>
-            </TextBlock>
+        <!-- Value triangle -->
+        <Grid Grid.Row="1">
 
             <!-- Downward triangle (points down at bar) -->
-            <Polygon Fill="{StaticResource PrimaryDarkHighlightBrush}"
-             Points="-6,0 6,0 0,12"
-             Canvas.Top="20"
-             RenderTransformOrigin="0.5,0">
+            <Polygon Fill="Black"
+                     Points="-6,0 6,0 0,12"
+                     RenderTransformOrigin="0.5,0">
                 <Polygon.RenderTransform>
                     <TranslateTransform>
                         <TranslateTransform.X>
@@ -136,11 +53,11 @@
                     </TranslateTransform>
                 </Polygon.RenderTransform>
             </Polygon>
-        </Canvas>
+        </Grid>
 
 
-        <!-- Gauge bar with reference marker centered vertically -->
-        <Grid Grid.Row="2" Background="LightGreen">
+        <!-- Gauge bar -->
+        <Grid Grid.Row="2">
             <Border Height="16" CornerRadius="8" Background="Transparent" ClipToBounds="True">
                 <Rectangle RadiusX="8" RadiusY="8">
                     <Rectangle.Fill>
@@ -153,8 +70,8 @@
                 </Rectangle>
             </Border>
 
-            <!-- Reference line stays vertically centered -->
-            <Rectangle Width="2" Height="24" Fill="{StaticResource PrimaryHighlightBrush}"
+            <!-- Reference Marker -->
+            <Rectangle Width="2" Height="24" Fill="{StaticResource PrimaryDarkMediumBrush}"
                        Visibility="{Binding ShowReferenceMarkerTick, ElementName=RootGauge, Converter={StaticResource BoolToVisibilityConverter}}"
                        HorizontalAlignment="Left">
                 <Rectangle.RenderTransform>
@@ -172,10 +89,9 @@
             </Rectangle>
         </Grid>
 
-        <!-- Reference Label below the gauge -->
-        <Canvas Grid.Row="3" Height="18" Background="Aqua">
-            <TextBlock Text="{Binding ReferenceMarkerValue, ElementName=RootGauge}" FontSize="14" Foreground="{StaticResource PrimaryHighlightBrush}"
-                       Visibility="{Binding ShowReferenceMarkerTick, ElementName=RootGauge, Converter={StaticResource BoolToVisibilityConverter}}"
+        <!-- Reference Marker Value Label -->
+        <Canvas Grid.Row="3" Height="18" Visibility="{Binding ShowReferenceMarkerTick, ElementName=RootGauge, Converter={StaticResource BoolToVisibilityConverter}}">
+            <TextBlock Text="{Binding ReferenceMarkerValue, Converter={StaticResource NumberConverter}, ElementName=RootGauge}" FontSize="14" Foreground="{StaticResource PrimaryDarkMediumBrush}"
                        FontWeight="SemiBold"
                        Canvas.Left="-10">
                 <TextBlock.RenderTransform>
@@ -192,5 +108,10 @@
                 </TextBlock.RenderTransform>
             </TextBlock>
         </Canvas>
+
+        <!-- Caption -->
+        <StackPanel Grid.Row="4" Orientation="Horizontal">
+            <Label Content="{Binding Caption, RelativeSource={RelativeSource AncestorType=UserControl}}" Margin="-4,-6,-4,-4" Foreground="{StaticResource PrimaryDarkMediumBrush}" />
+        </StackPanel>
     </Grid>
 </UserControl>
