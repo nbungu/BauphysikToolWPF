@@ -88,7 +88,7 @@
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="320"/>
-            <ColumnDefinition Width="360" MaxWidth="360" MinWidth="16"/>
+            <ColumnDefinition Width="400" MaxWidth="480" MinWidth="16"/>
         </Grid.ColumnDefinitions>
 
         <!--Top -->
@@ -174,24 +174,48 @@
                      ItemContainerStyle="{StaticResource OverviewItemContainerStyle}"
                      SnapsToDevicePixels="True"/>-->
 
-            <controls:Gauge Grid.Row="0" Value="0.20"
-                            Title="U-Wert:"
-                            Caption="Grenzwert nach GEG Anlage 1"
-                            UnitLabel="W/m²K"
-                            MinValue="0"
-                            MaxValue="0.48"
-                            ShowReferenceMarkerTick = "True"
-                            ReferenceMarkerValue = "0.24"
-                            Width = "160"/>
-            <controls:Gauge Grid.Row="1" Value="1.0"
-                            Title="U-Wert:"
-                            Caption="Grenzwert"
-                            UnitLabel="W/m²K"
-                            MinValue="0"
-                            MaxValue="1.0"
-                            ShowReferenceMarkerTick = "True"
-                            ReferenceMarkerValue = "0.50"
-                            Width = "160"/>
+            <Expander Grid.Row="0" Header="Wärme" IsExpanded="True" Margin="0,0,0,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <controls:Gauge Grid.Column="0"
+                                    Title="U-Wert:"
+                                    Caption="Grenzwert nach GEG Anlage 1"
+                                    Value="{Binding UValue}"
+                                    UnitLabel="{Binding UValueUnitString}"
+                                    MinValue="{Binding UValueScaleMin}"
+                                    MaxValue="{Binding UValueScaleMax}"
+                                    ShowReferenceMarkerTick = "True"
+                                    ReferenceMarkerValue = "{Binding UValueRefMarker}"
+                                    Margin="0,0,8,0"/>
+                    <controls:Gauge Grid.Column="1"
+                                    Title="R-Wert:"
+                                    Caption="Grenzwert"
+                                    Value="{Binding RValue}"
+                                    UnitLabel="{Binding RValueUnitString}"
+                                    MinValue="{Binding RValueScaleMin}"
+                                    MaxValue="{Binding RValueScaleMax}"
+                                    SymbolLabelBase="R"
+                                    SymbolLabelSubscript="ges"
+                                    ShowReferenceMarkerTick = "True"
+                                    ReferenceMarkerValue = "{Binding RValueRefMarker}"
+                                    Margin="8,0,0,0"/>
+                </Grid>
+            </Expander>
+            <Expander Grid.Row="1" Header="Feuchte" IsExpanded="True" Margin="0,0,0,8">
+                <controls:Gauge Title="Wärmestrom:"
+                                Caption="Kein Grenzwert einzuhalten"
+                                Value="{Binding QValue}"
+                                UnitLabel="{Binding QValueUnitString}"
+                                MinValue="{Binding QValueScaleMin}"
+                                MaxValue="{Binding QValueScaleMax}"
+                                ShowReferenceMarkerTick = "False"/>
+            </Expander>
+
+
+
         </Grid>
 
     </Grid>

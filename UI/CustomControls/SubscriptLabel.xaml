@@ -19,7 +19,7 @@
 
     </UserControl.Resources>
 
-    <Grid>
+    <Grid Margin="4,0,0,0">
         <StackPanel Orientation="Horizontal">
             <TextBlock FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}" Text="{Binding PrependText, ElementName=SubscriptLabelControl}" VerticalAlignment="Center"/>
             <TextBlock FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}" Text="{Binding BaseText, ElementName=SubscriptLabelControl}" VerticalAlignment="Center"/>

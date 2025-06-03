@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -42,7 +41,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty UnitLabelProperty =
-            DependencyProperty.Register(nameof(UnitLabel), typeof(string), typeof(Gauge), new PropertyMetadata("m"));
+            DependencyProperty.Register(nameof(UnitLabel), typeof(string), typeof(Gauge), new PropertyMetadata(""));
 
         public string UnitLabel
         {
@@ -50,9 +49,8 @@ namespace BauphysikToolWPF.UI.CustomControls
             set => SetValue(UnitLabelProperty, value);
         }
 
-
         public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(nameof(Title), typeof(string), typeof(Gauge), new PropertyMetadata("Title"));
+            DependencyProperty.Register(nameof(Title), typeof(string), typeof(Gauge), new PropertyMetadata(""));
 
         public string Title
         {
@@ -61,7 +59,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty CaptionProperty =
-            DependencyProperty.Register(nameof(Caption), typeof(string), typeof(Gauge), new PropertyMetadata("Caption"));
+            DependencyProperty.Register(nameof(Caption), typeof(string), typeof(Gauge), new PropertyMetadata(""));
 
         public string Caption
         {
@@ -85,6 +83,33 @@ namespace BauphysikToolWPF.UI.CustomControls
         {
             get => (double)GetValue(ReferenceMarkerValueProperty);
             set => SetValue(ReferenceMarkerValueProperty, value);
+        }
+
+        //public static readonly DependencyProperty ShowSymbolLabelProperty =
+        //    DependencyProperty.Register(nameof(ShowSymbolLabel), typeof(bool), typeof(Gauge), new PropertyMetadata(false));
+
+        //public bool ShowSymbolLabel
+        //{
+        //    get => (bool)GetValue(ShowSymbolLabelProperty);
+        //    set => SetValue(ShowSymbolLabelProperty, value);
+        //}
+
+        public static readonly DependencyProperty SymbolLabelBaseProperty =
+            DependencyProperty.Register(nameof(SymbolLabelBase), typeof(string), typeof(Gauge), new PropertyMetadata(""));
+
+        public string SymbolLabelBase
+        {
+            get => (string)GetValue(SymbolLabelBaseProperty);
+            set => SetValue(SymbolLabelBaseProperty, value);
+        }
+
+        public static readonly DependencyProperty SymbolLabelSubscriptProperty =
+            DependencyProperty.Register(nameof(SymbolLabelSubscript), typeof(string), typeof(Gauge), new PropertyMetadata(""));
+
+        public string SymbolLabelSubscript
+        {
+            get => (string)GetValue(SymbolLabelSubscriptProperty);
+            set => SetValue(SymbolLabelSubscriptProperty, value);
         }
     }
 }

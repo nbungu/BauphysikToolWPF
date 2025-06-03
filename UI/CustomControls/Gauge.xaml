@@ -4,14 +4,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
+             xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d" 
              x:Name="RootGauge"
-             d:DesignHeight="160"
+             d:DesignHeight="120"
              d:DesignWidth="400"
              d:Background="{StaticResource PrimaryLightBrush}">
+
     <UserControl.Resources>
         <!-- Value to position converter -->
         <ui:ValueAndWidthToOffsetConverter x:Key="ValueAndWidthToOffsetConverter" />
+        <ui:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <ui:NumberConverter x:Key="NumberConverter" />
     </UserControl.Resources>
@@ -27,9 +30,26 @@
 
         <!-- Header/Value Labels -->
         <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Label Content="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="Bold" Margin="-4,-4,0,-4" />
-            <Label Content="{Binding Value, Converter={StaticResource NumberConverter}, RelativeSource={RelativeSource AncestorType=UserControl}}" FontSize="16" FontWeight="DemiBold" Margin="0,-4,0,-4"/>
-            <Label Content="{Binding UnitLabel, RelativeSource={RelativeSource AncestorType=UserControl}}" Margin="0,-4,0,-4"/>
+            <Label Content="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                   Visibility="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource StringToVisibilityConverter}}"
+                   FontWeight="Bold"
+                   Margin="-4,-4,0,-4" />
+            <customControls:SubscriptLabel BaseText="{Binding SymbolLabelBase, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           SubscriptText="{Binding SymbolLabelSubscript, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           Visibility="{Binding SymbolLabelBase, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource StringToVisibilityConverter}}"
+                                           FontWeight="Bold"
+                                           Margin="-4,-4,0,-4" />
+            <Label Content="="
+                   Visibility="{Binding SymbolLabelBase, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource StringToVisibilityConverter}}"
+                   FontWeight="Bold"
+                   Margin="0,-4,0,-4"/>
+            <Label Content="{Binding Value, Converter={StaticResource NumberConverter}, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                   FontSize="16"
+                   FontWeight="DemiBold"
+                   Margin="0,-4,0,-4"/>
+            <Label Content="{Binding UnitLabel, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                   FontWeight="Normal"
+                   Margin="0,-4,0,-4"/>
             
         </StackPanel>
 
@@ -37,9 +57,9 @@
         <Grid Grid.Row="1">
 
             <!-- Downward triangle (points down at bar) -->
-            <Polygon Fill="Black"
+            <Polygon Fill="{StaticResource PrimaryDarkBrush}"
                      Points="-6,0 6,0 0,12"
-                     RenderTransformOrigin="0.5,0">
+                     Margin="0,0,0,-2">
                 <Polygon.RenderTransform>
                     <TranslateTransform>
                         <TranslateTransform.X>
@@ -55,11 +75,10 @@
             </Polygon>
         </Grid>
 
-
         <!-- Gauge bar -->
-        <Grid Grid.Row="2">
+        <Grid Grid.Row="2" Height="24">
             <Border Height="16" CornerRadius="8" Background="Transparent" ClipToBounds="True">
-                <Rectangle RadiusX="8" RadiusY="8">
+                <Rectangle RadiusX="6" RadiusY="6">
                     <Rectangle.Fill>
                         <LinearGradientBrush StartPoint="0,0.5" EndPoint="1,0.5">
                             <GradientStop Color="Green" Offset="0"/>

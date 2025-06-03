@@ -80,25 +80,44 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
         public CheckRequirements RequirementValues => new CheckRequirements(SelectedElement, Session.CheckRequirementsConfig);
 
-        public List<OverviewItem> OverviewItems
-        {
-            // TODO Rework: -> ProperyItem
-            get
-            {
-                if (!_tempCurve.IsValid) return new List<OverviewItem>();
-                return new List<OverviewItem>
-                {
-                    new OverviewItem { Symbol = Symbol.RValueElement, Value = RequirementValues.Element.RGesValue, RequirementValue = RequirementValues.RMin >= 0 ? RequirementValues.RMin : null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
-                    new OverviewItem { Symbol = Symbol.RValueTotal, Value = RequirementValues.Element.RTotValue, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
-                    new OverviewItem { Symbol = Symbol.UValue, Value = RequirementValues.Element.UValue, RequirementValue = RequirementValues.UMax >= 0 ? RequirementValues.UMax : null, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
-                    new OverviewItem { Symbol = Symbol.HeatFluxDensity, Value = RequirementValues.Element.QValue, RequirementValue = RequirementValues.QMax >= 0 ? RequirementValues.QMax : null, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
-                    
-                    new OverviewItem { Symbol = Symbol.TemperatureSurfaceInterior, Value = _tempCurve.Tsi, RequirementValue = _tempCurve.TsiMin, IsRequirementMet = _tempCurve.Tsi >= _tempCurve.TsiMin, Unit = "°C" },
-                    new OverviewItem { Symbol = Symbol.TemperatureSurfaceExterior, Value = _tempCurve.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                    new OverviewItem { Symbol = Symbol.FRsi, Value = _tempCurve.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCurve.FRsi >= 0.7 },
-                };
-            }
-        }
+        public double UValue => RequirementValues.Element.UValue;
+        public double UValueScaleMin => 0.0;
+        public double UValueScaleMax => 2 * UValueRefMarker;
+        public double UValueRefMarker => RequirementValues.UMax;
+        public string UValueUnitString => GetUnitStringFromSymbol(Symbol.UValue);
+
+        public double RValue => RequirementValues.Element.RGesValue;
+        public double RValueScaleMin => 0.0;
+        public double RValueScaleMax => 2 * RValueRefMarker;
+        public double RValueRefMarker => RequirementValues.RMin;
+        public string RValueUnitString => GetUnitStringFromSymbol(Symbol.RValueElement);
+
+        public double QValue => RequirementValues.Element.QValue;
+        public double QValueScaleMin => 0.0;
+        public double QValueScaleMax => 2 * QValueRefMarker;
+        public double QValueRefMarker => RequirementValues.QMax;
+        public string QValueUnitString => GetUnitStringFromSymbol(Symbol.HeatFluxDensity);
+
+
+        //public List<OverviewItem> OverviewItems
+        //{
+        //    // TODO Rework: -> ProperyItem
+        //    get
+        //    {
+        //        if (!_tempCurve.IsValid) return new List<OverviewItem>();
+        //        return new List<OverviewItem>
+        //        {
+        //            new OverviewItem { Symbol = Symbol.RValueElement, Value = RequirementValues.Element.RGesValue, RequirementValue = RequirementValues.RMin >= 0 ? RequirementValues.RMin : null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
+        //            new OverviewItem { Symbol = Symbol.RValueTotal, Value = RequirementValues.Element.RTotValue, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
+        //            new OverviewItem { Symbol = Symbol.UValue, Value = RequirementValues.Element.UValue, RequirementValue = RequirementValues.UMax >= 0 ? RequirementValues.UMax : null, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
+        //            new OverviewItem { Symbol = Symbol.HeatFluxDensity, Value = RequirementValues.Element.QValue, RequirementValue = RequirementValues.QMax >= 0 ? RequirementValues.QMax : null, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
+
+        //            new OverviewItem { Symbol = Symbol.TemperatureSurfaceInterior, Value = _tempCurve.Tsi, RequirementValue = _tempCurve.TsiMin, IsRequirementMet = _tempCurve.Tsi >= _tempCurve.TsiMin, Unit = "°C" },
+        //            new OverviewItem { Symbol = Symbol.TemperatureSurfaceExterior, Value = _tempCurve.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
+        //            new OverviewItem { Symbol = Symbol.FRsi, Value = _tempCurve.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCurve.FRsi >= 0.7 },
+        //        };
+        //    }
+        //}
 
         /*
          * private Methods
@@ -108,7 +127,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             OnPropertyChanged(nameof(SelectedElement));
             OnPropertyChanged(nameof(RequirementValues));
-            OnPropertyChanged(nameof(OverviewItems));
+            //OnPropertyChanged(nameof(OverviewItems));
         }
 
         private RectangularSection[] DrawLayerSections()
