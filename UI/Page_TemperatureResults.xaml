@@ -171,8 +171,9 @@
                      SnapsToDevicePixels="True"/>-->
 
             <controls:Gauge Value="0.20"
-                      ValueUnit="W/(m²K)"
-                      Title="U-Wert"
+                            Title="U-Wert:"
+                            UnitCounter="W"
+                            UnitDenominator="m²K"
                       MinValue="0"
                       MaxValue="1.0"
                       ShowUnitLabel="True"

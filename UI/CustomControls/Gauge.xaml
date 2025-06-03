@@ -4,9 +4,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
+             xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d" 
              x:Name="RootGauge"
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="160"
+             d:DesignWidth="400"
+             d:Background="{StaticResource PrimaryLightBrush}">
     <UserControl.Resources>
         <!-- Value to position converter -->
         <ui:ValueAndWidthToOffsetConverter x:Key="ValueAndWidthToOffsetConverter" />
@@ -85,13 +88,21 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Labels -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="Bold" />
+            <TextBlock Text="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+            <customControls:FractionLabel CounterText="{Binding UnitCounter, RelativeSource={RelativeSource AncestorType=UserControl}}" DenominatorText="{Binding UnitDenominator, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+
+        </StackPanel>
+
         <!-- Value triangle + label on top the gauge -->
-        <Canvas Grid.Row="0" Height="32">
+        <Canvas Grid.Row="1" Height="32" Background="Aqua">
             <!-- Value label (above triangle) -->
             <TextBlock Text="{Binding Value, ElementName=RootGauge}"
                FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource PrimaryDarkHighlightBrush}"
                TextAlignment="Center" RenderTransformOrigin="0.5,0"
-               Canvas.Top="0"
+               Canvas.Top="-4"
                Canvas.Left="-10">
                 <TextBlock.RenderTransform>
                     <TranslateTransform>
@@ -110,7 +121,7 @@
             <!-- Downward triangle (points down at bar) -->
             <Polygon Fill="{StaticResource PrimaryDarkHighlightBrush}"
              Points="-6,0 6,0 0,12"
-             Canvas.Top="22"
+             Canvas.Top="20"
              RenderTransformOrigin="0.5,0">
                 <Polygon.RenderTransform>
                     <TranslateTransform>
@@ -129,7 +140,7 @@
 
 
         <!-- Gauge bar with reference marker centered vertically -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="2" Background="LightGreen">
             <Border Height="16" CornerRadius="8" Background="Transparent" ClipToBounds="True">
                 <Rectangle RadiusX="8" RadiusY="8">
                     <Rectangle.Fill>
@@ -162,7 +173,7 @@
         </Grid>
 
         <!-- Reference Label below the gauge -->
-        <Canvas Grid.Row="2" Height="24">
+        <Canvas Grid.Row="3" Height="18" Background="Aqua">
             <TextBlock Text="{Binding ReferenceMarkerValue, ElementName=RootGauge}" FontSize="14" Foreground="{StaticResource PrimaryHighlightBrush}"
                        Visibility="{Binding ShowReferenceMarkerTick, ElementName=RootGauge, Converter={StaticResource BoolToVisibilityConverter}}"
                        FontWeight="SemiBold"
@@ -181,13 +192,5 @@
                 </TextBlock.RenderTransform>
             </TextBlock>
         </Canvas>
-
-        <!-- Labels -->
-        <StackPanel Grid.Row="3" Margin="0,8,0,0">
-            <TextBlock Text="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}" FontWeight="Bold" />
-            <TextBlock Text="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}}" />
-            <TextBlock Text="{Binding ValueUnit, RelativeSource={RelativeSource AncestorType=UserControl}}" 
-                       Visibility="{Binding ShowUnitLabel, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource BoolToVisibilityConverter}}" />
-        </StackPanel>
     </Grid>
 </UserControl>

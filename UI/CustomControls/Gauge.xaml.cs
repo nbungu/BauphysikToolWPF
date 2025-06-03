@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -40,13 +41,22 @@ namespace BauphysikToolWPF.UI.CustomControls
             set => SetValue(MaxValueProperty, value);
         }
 
-        public static readonly DependencyProperty ValueUnitProperty =
-            DependencyProperty.Register(nameof(ValueUnit), typeof(string), typeof(Gauge), new PropertyMetadata("m"));
+        public static readonly DependencyProperty UnitCounterProperty =
+            DependencyProperty.Register(nameof(UnitCounter), typeof(string), typeof(Gauge), new PropertyMetadata("m"));
 
-        public string ValueUnit
+        public string UnitCounter
         {
-            get => (string)GetValue(ValueUnitProperty);
-            set => SetValue(ValueUnitProperty, value);
+            get => (string)GetValue(UnitCounterProperty);
+            set => SetValue(UnitCounterProperty, value);
+        }
+
+        public static readonly DependencyProperty UnitDenominatorProperty =
+            DependencyProperty.Register(nameof(UnitDenominator), typeof(string), typeof(Gauge), new PropertyMetadata(""));
+
+        public string UnitDenominator
+        {
+            get => (string)GetValue(UnitDenominatorProperty);
+            set => SetValue(UnitDenominatorProperty, value);
         }
 
         public static readonly DependencyProperty TitleProperty =
