@@ -71,8 +71,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility ResultsChartVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         public double Ti => _glaser.Ti;
         public double Te => _glaser.Te;
-        public double Rel_Fi => _glaser.RelFi;
-        public double Rel_Fe => _glaser.RelFe;
+        public double RelFi => _glaser.RelFi;
+        public double RelFe => _glaser.RelFe;
         public List<OverviewItem> OverviewItems => GetOverviewItemsList();
         public ISeries[] DataPoints => GetDataPoints();
         public RectangularSection[] LayerSections => DrawLayerSections();

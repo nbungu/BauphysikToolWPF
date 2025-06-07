@@ -70,8 +70,6 @@ namespace BauphysikToolWPF.Models.UI
             ThermalBridgeSurcharge,             // ΔU_WB
             AirExchangeRate,                    // n
             TempCorrectionFactor,               // F_x
-
-
         }
 
         public static readonly Dictionary<Symbol, (Unit unit, string baseText, string subscriptText, string name, string comment)> SymbolMapping = new()
@@ -79,13 +77,13 @@ namespace BauphysikToolWPF.Models.UI
             { Symbol.None, (Unit.None, "", "", "", "") },
             { Symbol.Length, (Unit.Centimeter, "l", "", "Länge", "") },
             { Symbol.Distance, (Unit.Centimeter, "a", "", "Abstand", "") },
-            { Symbol.Area, (Unit.SquareMeter, "A", "", "Fläche", "") },
-            { Symbol.Volume, (Unit.CubicMeter, "V", "", "Volumen", "") },
-            { Symbol.Thickness, (Unit.Centimeter, "d", "", "Dicke", "") },
-            { Symbol.Width, (Unit.Centimeter, "b", "", "Breite", "") },
-            { Symbol.Height, (Unit.Centimeter, "h", "", "Höhe", "") },
-            { Symbol.TemperatureInterior, (Unit.Celsius, "θ", "i", "Raumtemperatur", "") },
-            { Symbol.TemperatureExterior, (Unit.Celsius, "θ", "e", "Außentemperatur", "") },
+            { Symbol.Area, (Unit.SquareMeter, "A", "", "Fläche", "Fläche") },
+            { Symbol.Volume, (Unit.CubicMeter, "V", "", "Volumen", "Volumen") },
+            { Symbol.Thickness, (Unit.Centimeter, "d", "", "Dicke", "Dicke") },
+            { Symbol.Width, (Unit.Centimeter, "b", "", "Breite", "Breite") },
+            { Symbol.Height, (Unit.Centimeter, "h", "", "Höhe", "Höhe") },
+            { Symbol.TemperatureInterior, (Unit.Celsius, "θ", "i", "Raumtemperatur", "Raumtemperatur") },
+            { Symbol.TemperatureExterior, (Unit.Celsius, "θ", "e", "Außentemperatur", "Außentemperatur") },
             { Symbol.TemperatureSurfaceInterior, (Unit.Celsius, "θ", "si", "Oberflächentemperatur, Innen", "") },
             { Symbol.TemperatureSurfaceExterior, (Unit.Celsius, "θ", "se", "Oberflächentemperatur, Außen", "") },
             { Symbol.RValueLayer, (Unit.SquareMeterKelvinPerWatt, "R", "i", "R-Wert", "Wärmedurchlasswiderstand") },
@@ -93,7 +91,7 @@ namespace BauphysikToolWPF.Models.UI
             { Symbol.RValueTotal, (Unit.SquareMeterKelvinPerWatt, "R", "T", "R-Total", "Wärmedurchlasswiderstand") },
             { Symbol.TransferResistanceSurfaceInterior, (Unit.SquareMeterKelvinPerWatt, "R", "si", "Wärmeübergangswiderstand, Innen", "") },
             { Symbol.TransferResistanceSurfaceExterior, (Unit.SquareMeterKelvinPerWatt, "R", "se", "Wärmeübergangswiderstand, Außen", "") },
-            { Symbol.UValue, (Unit.WattsPerSquareMeterKelvin, "U", "", "Wärmedurchgangskoeffizient", "U-Wert") },
+            { Symbol.UValue, (Unit.WattsPerSquareMeterKelvin, "U", "", "Wärmedurchgangskoeffizient", "U-Wert: Maß für die Wärmedämmung eines Bauteils. Er gibt an, wie viel Wärme pro Quadratmeter und Kelvin durch ein Bauteil fließt, wenn eine Temperaturdifferenz von einem Kelvin zwischen den beiden Seiten besteht. Je niedriger der U-Wert, desto besser ist die Wärmedämmung.") },
             { Symbol.RawDensity, (Unit.KilogramPerCubicMeter, "ρ", "", "Rohdichte", "") },
             { Symbol.AreaMassDensity, (Unit.KilogramPerSquareMeter, "m'", "", "Flächenbez. Masse", "") },
             { Symbol.SdThickness, (Unit.KilogramPerSquareMeter, "s", "d", "sd-Wert", "Wasserdampfdiffusionsäquivalente Luftschichtdicke") },
@@ -105,8 +103,8 @@ namespace BauphysikToolWPF.Models.UI
             { Symbol.SpecificHeatCapacity, (Unit.JoulesPerKilogramKelvin, "c", "", "Spezifische Wärmekapazität", "") },
             { Symbol.VolumetricHeatCapacity, (Unit.KilojoulesPerCubicMeterKelvin, "C", "V", "Volumenbez. Wärmekapazität", "") },
             { Symbol.ArealHeatCapacity, (Unit.KilojoulesPerSquareMeterKelvin, "C", "", "Flächenbez. Wärmekapazität", "Quotient aus Wärmekapazität und Bauteilfläche") },
-            { Symbol.HeatFluxDensity, (Unit.WattsPerSquareMeter, "q", "", "Wärmestromdichte", "") },
-            { Symbol.FRsi, (Unit.None, "f", "Rsi", "Temperaturfaktor für die raumseitige Oberfläche", "") },
+            { Symbol.HeatFluxDensity, (Unit.WattsPerSquareMeter, "q", "", "Wärmestromdichte", "Die Wärmestromdichte beschreibt die Menge an Wärmeenergie, die pro Zeiteinheit durch eine bestimmte Fläche fließt") },
+            { Symbol.FRsi, (Unit.None, "f", "Rsi", "Temperaturfaktor für die raumseitige Oberfläche", "Wärmebrücken-Index. Er gibt an, ob eine Baukonstruktion in Bezug auf Wärmebrücken mangelhaft ist.") },
             { Symbol.UValueDynamic, (Unit.WattsPerSquareMeterKelvin, "U", "dyn", "U-dynamisch", "dynamischer Wärmedurchgangskoeffizient") },
             { Symbol.RValueDynamic, (Unit.SquareMeterKelvinPerWatt, "R", "dyn", "R-dynamisch", "dynamischer Wärmedurchlasswiderstand") },
             { Symbol.TemperatureAmplitudeDamping, (Unit.None, "υ", "", "Temperaturamplitudendämpfung", "") },
@@ -231,7 +229,7 @@ namespace BauphysikToolWPF.Models.UI
         }
         public static readonly Dictionary<Unit, (string counterText, string denominatorText, string fullString)> UnitDisplayMapping = new()
         {
-            { Unit.None, ("-", "", "-") },
+            { Unit.None, ("", "", "") },
 
             // Temperature
             { Unit.Celsius, ("°C", "", "°C") },
@@ -340,7 +338,7 @@ namespace BauphysikToolWPF.Models.UI
                     return unitDisplay.fullString;
                 }
             }
-            return "-"; // Fallback for unknown symbol or unit
+            return ""; // Fallback for unknown symbol or unit
         }
 
         public enum ElementSortingType

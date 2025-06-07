@@ -15,7 +15,8 @@
         <!-- Value to position converter -->
         <ui:ValueAndWidthToOffsetConverter x:Key="ValueAndWidthToOffsetConverter" />
         <ui:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
-        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
+        <ui:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <!--<BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>-->
         <ui:NumberConverter x:Key="NumberConverter" />
     </UserControl.Resources>
 
@@ -29,32 +30,34 @@
         </Grid.RowDefinitions>
 
         <!-- Header/Value Labels -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <Label Content="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                   Visibility="{Binding Title, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource StringToVisibilityConverter}}"
+        <StackPanel Grid.Row="0" Orientation="Horizontal" ToolTip="{Binding ToolTip, ElementName=RootGauge}">
+            <TextBlock Text="{Binding Title, ElementName=RootGauge}"
+                   Visibility="{Binding Title, ElementName=RootGauge, Converter={StaticResource StringToVisibilityConverter}}"
                    FontWeight="Bold"
-                   Margin="-4,-4,0,-4" />
-            <customControls:SubscriptLabel BaseText="{Binding SymbolLabelBase, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                           SubscriptText="{Binding SymbolLabelSubscript, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                           Visibility="{Binding SymbolLabelBase, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource StringToVisibilityConverter}}"
+                   VerticalAlignment="Center"
+                   Margin="0,0,8,0" />
+            <customControls:SubscriptLabel Visibility="{Binding SymbolLabelBase, ElementName=RootGauge, Converter={StaticResource StringToVisibilityConverter}}"
+                                           BaseText="{Binding SymbolLabelBase, ElementName=RootGauge}"
+                                           SubscriptText="{Binding SymbolLabelSubscript, ElementName=RootGauge}"
+                                           AppendText="="
                                            FontWeight="Bold"
-                                           Margin="-4,-4,0,-4" />
-            <Label Content="="
-                   Visibility="{Binding SymbolLabelBase, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource StringToVisibilityConverter}}"
-                   FontWeight="Bold"
-                   Margin="0,-4,0,-4"/>
-            <Label Content="{Binding Value, Converter={StaticResource NumberConverter}, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                           VerticalAlignment="Center"
+                                           Margin="-4,0,0,0"/>
+            <TextBlock Text="{Binding Value, ElementName=RootGauge, Converter={StaticResource NumberConverter}}"
+                   Visibility="{Binding Value, ElementName=RootGauge, Converter={StaticResource NullToVisibilityConverter}}"
                    FontSize="16"
                    FontWeight="DemiBold"
-                   Margin="0,-4,0,-4"/>
-            <Label Content="{Binding UnitLabel, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                   VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding UnitLabel, ElementName=RootGauge}"
+                   Visibility="{Binding UnitLabel, ElementName=RootGauge, Converter={StaticResource StringToVisibilityConverter}}"
                    FontWeight="Normal"
-                   Margin="0,-4,0,-4"/>
+                   VerticalAlignment="Center"
+                   Margin="6,0,0,0"/>
             
         </StackPanel>
 
         <!-- Value triangle -->
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1" Visibility="{Binding Value, ElementName=RootGauge, Converter={StaticResource NullToVisibilityConverter}}">
 
             <!-- Downward triangle (points down at bar) -->
             <Polygon Fill="{StaticResource PrimaryDarkBrush}"
@@ -111,7 +114,7 @@
 
             <!-- Reference Marker -->
             <Rectangle Width="2" Height="24" Fill="{StaticResource PrimaryDarkMediumBrush}"
-                       Visibility="{Binding ShowReferenceMarkerTick, ElementName=RootGauge, Converter={StaticResource BoolToVisibilityConverter}}"
+                       Visibility="{Binding ReferenceMarkerValue, ElementName=RootGauge, Converter={StaticResource NullToVisibilityConverter}}"
                        HorizontalAlignment="Left">
                 <Rectangle.RenderTransform>
                     <TranslateTransform>
@@ -129,11 +132,14 @@
         </Grid>
 
         <!-- Reference Marker Value Label -->
-        <Canvas Grid.Row="3" Height="18" Visibility="{Binding ShowReferenceMarkerTick, ElementName=RootGauge, Converter={StaticResource BoolToVisibilityConverter}}">
-            <TextBlock Text="{Binding ReferenceMarkerValue, Converter={StaticResource NumberConverter}, ElementName=RootGauge}" FontSize="14" Foreground="{StaticResource PrimaryDarkMediumBrush}"
-                       FontWeight="SemiBold"
-                       Canvas.Left="-10">
-                <TextBlock.RenderTransform>
+        <Canvas Grid.Row="3" Height="18" Visibility="{Binding ReferenceMarkerValue, ElementName=RootGauge, Converter={StaticResource NullToVisibilityConverter}}">
+            <Grid Canvas.Left="-16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RenderTransform>
                     <TranslateTransform>
                         <TranslateTransform.X>
                             <MultiBinding Converter="{StaticResource ValueAndWidthToOffsetConverter}">
@@ -144,13 +150,35 @@
                             </MultiBinding>
                         </TranslateTransform.X>
                     </TranslateTransform>
-                </TextBlock.RenderTransform>
-            </TextBlock>
+                </Grid.RenderTransform>
+
+                <customControls:SubscriptLabel Grid.Column="0"
+                                               Visibility="{Binding MarkerSymbolLabelBase, ElementName=RootGauge, Converter={StaticResource StringToVisibilityConverter}}"
+                                               BaseText="{Binding MarkerSymbolLabelBase, ElementName=RootGauge}"
+                                               SubscriptText="{Binding MarkerSymbolLabelSubscript, ElementName=RootGauge}"
+                                               AppendText="="
+                                               FontSize="14"
+                                               HorizontalAlignment="Left"
+                                               VerticalAlignment="Top"
+                                               Foreground="{StaticResource PrimaryDarkMediumBrush}"/>
+                <TextBlock Grid.Column="1"
+                           Text="{Binding ReferenceMarkerValue, Converter={StaticResource NumberConverter}, ElementName=RootGauge}"
+                           FontSize="14"
+                           Foreground="{StaticResource PrimaryDarkMediumBrush}"
+                           FontWeight="SemiBold"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"/>
+            </Grid>
+            
         </Canvas>
 
         <!-- Caption -->
-        <StackPanel Grid.Row="4" Orientation="Horizontal">
-            <Label Content="{Binding Caption, RelativeSource={RelativeSource AncestorType=UserControl}}" Margin="-4,-6,-4,-4" Foreground="{StaticResource PrimaryDarkMediumBrush}" />
-        </StackPanel>
+        <TextBlock Grid.Row="4"
+                   Visibility="{Binding Caption, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource StringToVisibilityConverter}}"
+                   Text="{Binding Caption, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                   Foreground="{StaticResource PrimaryDarkMediumBrush}"
+                   FontWeight="Normal"
+                   HorizontalAlignment="Left"/>
+
     </Grid>
 </UserControl>

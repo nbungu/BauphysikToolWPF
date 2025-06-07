@@ -25,7 +25,9 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private static TemperatureCurveCalc _tempCurve = new TemperatureCurveCalc();
+        //private static TemperatureCurveCalc _tempCurve = new TemperatureCurveCalc();
+
+        private static GlaserCalc _glaser = new GlaserCalc();
 
         public Page_TemperatureResults_VM()
         {
@@ -34,9 +36,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 
-            _tempCurve = new TemperatureCurveCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
-            _tempCurve.CalculateHomogeneous();
-            _tempCurve.CalculateTemperatureCurve();
+            //_tempCurve = new TemperatureCurveCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
+            //_tempCurve.CalculateHomogeneous();
+            //_tempCurve.CalculateTemperatureCurve();
+
+            _glaser = new GlaserCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
+            _glaser.CalculateHomogeneous(); // Bauteil berechnen
+            _glaser.CalculateTemperatureCurve(); // Temperaturkurve
+            _glaser.CalculateGlaser(); // Glaser Kurve
         }
 
         /*
@@ -68,10 +75,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Element? SelectedElement => Session.SelectedElement;
         public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility ResultsChartVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        public double Ti => _tempCurve.Ti;
-        public double Te => _tempCurve.Te;
-        public double Rsi => _tempCurve.Rsi;
-        public double Rse => _tempCurve.Rse;
+        public double Ti => _glaser.Ti;
+        public double Te => _glaser.Te;
+        public double Rsi => _glaser.Rsi;
+        public double Rse => _glaser.Rse;
         public ISeries[] DataPoints => GetDataPoints();
         public RectangularSection[] LayerSections => DrawLayerSections();
         public Axis[] XAxes => DrawXAxes();
@@ -80,23 +87,75 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
         public CheckRequirements RequirementValues => new CheckRequirements(SelectedElement, Session.CheckRequirementsConfig);
 
-        public double UValue => RequirementValues.Element.UValue;
+        public double? UValue => RequirementValues.Element?.UValue;
+        public string UValueCaption => RequirementValues.UMaxCaption;
+        public string UValueTooltip => SymbolMapping[Symbol.UValue].comment;
         public double UValueScaleMin => 0.0;
-        public double UValueScaleMax => 2 * UValueRefMarker;
-        public double UValueRefMarker => RequirementValues.UMax;
+        public double UValueScaleMax => 2 * UValueRefMarker ?? 2 * UValue ?? 1.0;
+        public double? UValueRefMarker => RequirementValues.UMax;
         public string UValueUnitString => GetUnitStringFromSymbol(Symbol.UValue);
+        
 
-        public double RValue => RequirementValues.Element.RGesValue;
+        public double? RValue => RequirementValues.Element?.RGesValue;
+        public string RValueCaption => RequirementValues.RMinRequirementSourceName != null ? $"Grenzwert nach {RequirementValues.RMinRequirementSourceName}" : "";
+        public string RValueTooltip => SymbolMapping[Symbol.RValueElement].comment;
         public double RValueScaleMin => 0.0;
-        public double RValueScaleMax => 2 * RValueRefMarker;
-        public double RValueRefMarker => RequirementValues.RMin;
+        public double RValueScaleMax => 2 * RValueRefMarker ?? 2 * RValue ?? 1.0;
+        public double? RValueRefMarker => RequirementValues.RMin;
         public string RValueUnitString => GetUnitStringFromSymbol(Symbol.RValueElement);
+        public string RValueSymbolBase => SymbolMapping[Symbol.RValueElement].baseText;
+        public string RValueSymbolSubscript => SymbolMapping[Symbol.RValueElement].subscriptText;
+
 
         public double QValue => RequirementValues.Element.QValue;
+        public string QValueCaption => "kein Grenzwert einzuhalten";
+        public string QValueTooltip => SymbolMapping[Symbol.HeatFluxDensity].comment;
         public double QValueScaleMin => 0.0;
-        public double QValueScaleMax => 2 * QValueRefMarker;
-        public double QValueRefMarker => RequirementValues.QMax;
+        public double QValueScaleMax => 2 * QValueRefMarker ?? 1.0;
+        public double? QValueRefMarker => RequirementValues.QMax;
         public string QValueUnitString => GetUnitStringFromSymbol(Symbol.HeatFluxDensity);
+        public string QValueSymbolBase => SymbolMapping[Symbol.HeatFluxDensity].baseText;
+
+
+        public double TsiValue => _glaser.Tsi;
+        public string TsiCaption => "zur Vermeidung von Schimmelpilzbildung";
+        public double TsiValueScaleMin => _glaser.Te;
+        public double TsiValueScaleMax => _glaser.Ti;
+        public double TsiValueRefMarker => _glaser.TsiMin;
+        public string TsiValueUnitString => GetUnitStringFromSymbol(Symbol.TemperatureSurfaceInterior);
+        public string TsiSymbolBase => SymbolMapping[Symbol.TemperatureSurfaceInterior].baseText;
+        public string TsiSymbolSubscript => $"{SymbolMapping[Symbol.TemperatureSurfaceInterior].subscriptText}";
+        public string TsiMarkerSymbolBase => SymbolMapping[Symbol.TemperatureSurfaceInterior].baseText;
+        public string TsiMarkerSymbolSubscript => $"{SymbolMapping[Symbol.TemperatureSurfaceInterior].subscriptText}" + ",min";
+
+
+        public double FRsiValue => _glaser.FRsi;
+        public string FRsiCaption => "zur Vermeidung von Schimmelpilzbildung";
+        public string FRsiTooltip => SymbolMapping[Symbol.FRsi].comment;
+        public double FRsiValueScaleMin => 0.0;
+        public double FRsiValueScaleMax => 1.0;
+        public double FRsiValueRefMarker => 0.7; // TODO:
+        public string FRsiValueUnitString => GetUnitStringFromSymbol(Symbol.FRsi);
+        public string FRsiSymbolBase => SymbolMapping[Symbol.FRsi].baseText;
+        public string FRsiSymbolSubscript => $"{SymbolMapping[Symbol.FRsi].subscriptText}";
+        public string FRsiMarkerSymbolBase => SymbolMapping[Symbol.FRsi].baseText;
+        public string FRsiMarkerSymbolSubscript => $"{SymbolMapping[Symbol.FRsi].subscriptText}" + ",min";
+
+        public double RelFiValue => _glaser.RelFi;
+        public string RelFiCaption => "zur Vermeidung von Schimmelpilzbildung";
+        public double RelFiValueScaleMin => 0.0;
+        public double RelFiValueScaleMax => 100.0;
+        public double RelFiValueRefMarker => _glaser.PhiMax; // TODO:
+        public string RelFiValueUnitString => GetUnitStringFromSymbol(Symbol.RelativeHumidityInterior);
+        public string RelFiSymbolBase => SymbolMapping[Symbol.RelativeHumidityInterior].baseText;
+        public string RelFiSymbolSubscript => $"{SymbolMapping[Symbol.RelativeHumidityInterior].subscriptText}";
+        public string RelFiMarkerSymbolBase => SymbolMapping[Symbol.RelativeHumidityInterior].baseText;
+        public string RelFiMarkerSymbolSubscript => $"{SymbolMapping[Symbol.RelativeHumidityInterior].subscriptText}" + ",max";
+
+
+
+
+        //  new OverviewItem { Symbol = Symbol.RelativeHumidityInterior, Value = Session.RelFi, RequirementValue = _glaser.PhiMax, IsRequirementMet = Session.RelFi < _glaser.PhiMax, Unit = "%" }
 
 
         //public List<OverviewItem> OverviewItems
@@ -132,12 +191,12 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private RectangularSection[] DrawLayerSections()
         {
-            if (!_tempCurve.IsValid) return Array.Empty<RectangularSection>();
+            if (!_glaser.IsValid) return Array.Empty<RectangularSection>();
 
-            RectangularSection[] rects = new RectangularSection[_tempCurve.Element.Layers.Count];
+            RectangularSection[] rects = new RectangularSection[_glaser.Element.Layers.Count];
 
             double left = 0;
-            foreach (Layer layer in _tempCurve.Element.Layers)
+            foreach (Layer layer in _glaser.Element.Layers)
             {
                 double layerWidth = layer.Thickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)
@@ -170,10 +229,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private ISeries[] GetDataPoints()
         {
-            if (!_tempCurve.IsValid) return Array.Empty<ISeries>();
+            if (!_glaser.IsValid) return Array.Empty<ISeries>();
 
             double tsiPos = 0;
-            double tsi = _tempCurve.Tsi;
+            double tsi = _glaser.Tsi;
             double deltaTi = Math.Abs(Ti - tsi);
 
             LineSeries<ObservablePoint> rsiCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
@@ -194,11 +253,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                 YToolTipLabelFormatter = null
             };
 
-            ObservablePoint[] tempValues = new ObservablePoint[_tempCurve.LayerTemps.Count]; // represents the temperature points
-            for (int i = 0; i < _tempCurve.LayerTemps.Count; i++)
+            ObservablePoint[] tempValues = new ObservablePoint[_glaser.LayerTemps.Count]; // represents the temperature points
+            for (int i = 0; i < _glaser.LayerTemps.Count; i++)
             {
-                double x = _tempCurve.LayerTemps.ElementAt(i).Key; // Position in cm
-                double y = Math.Round(_tempCurve.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
+                double x = _glaser.LayerTemps.ElementAt(i).Key; // Position in cm
+                double y = Math.Round(_glaser.LayerTemps.ElementAt(i).Value, 2); // Temperature in °C
                 tempValues[i] = new ObservablePoint(x, y); // Add x,y Coords to the Array
             }
             // Set properties & add temperature points to the series
@@ -221,8 +280,8 @@ namespace BauphysikToolWPF.UI.ViewModels
                 ScalesXAt = 0 // it will be scaled at the XAxes[0] instance
             };
 
-            double tsePos = _tempCurve.LayerTemps.Last().Key;
-            double tse = _tempCurve.Tse;
+            double tsePos = _glaser.LayerTemps.Last().Key;
+            double tse = _glaser.Tse;
             double deltaTe = Math.Abs(Te - tse);
             LineSeries<ObservablePoint> rseCurveSeries = new LineSeries<ObservablePoint> // adds the temperature points to the series
             {
@@ -245,7 +304,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private Axis[] DrawXAxes()
         {
-            if (!_tempCurve.IsValid) return Array.Empty<Axis>();
+            if (!_glaser.IsValid) return Array.Empty<Axis>();
             return new Axis[]
             {
                 new Axis
@@ -258,7 +317,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     TextSize = 14,
                     SeparatorsPaint = new SolidColorPaint(SKColors.LightGray) { StrokeThickness = 1 },
                     MinLimit = - 2,
-                    MaxLimit = _tempCurve.Element.Thickness + 2
+                    MaxLimit = _glaser.Element.Thickness + 2
                 }
                 /*new Axis
                 {

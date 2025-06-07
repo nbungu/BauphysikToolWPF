@@ -33,7 +33,7 @@ namespace BauphysikToolWPF.Services.UI
             {
                 PageGroups = new List<NavigationGroupContent>()
                 {
-                    new NavigationGroupContent("ERSTELLEN", new List<NavigationPage>(2) { NavigationPage.LayerSetup, NavigationPage.Summary }),
+                    new NavigationGroupContent("KONSTRUKTION", new List<NavigationPage>(2) { NavigationPage.LayerSetup, NavigationPage.Summary }),
                     new NavigationGroupContent("ERGEBNISSE", new List<NavigationPage>(3) { NavigationPage.TemperatureCurve, NavigationPage.GlaserCurve, NavigationPage.DynamicHeatCalc }),
                 }
             },
@@ -49,11 +49,11 @@ namespace BauphysikToolWPF.Services.UI
         {
             { NavigationPage.ProjectData, "Projektdaten"},
             { NavigationPage.ElementCatalogue, "Bauteilkatalog"},
-            { NavigationPage.LayerSetup, "Schichtenaufbau"},
-            { NavigationPage.Summary, "Zusammenfassung"},
+            { NavigationPage.LayerSetup, "Bearbeiten"},
+            { NavigationPage.Summary, "Übersicht"},
             { NavigationPage.TemperatureCurve, "Temperaturverlauf"},
             { NavigationPage.GlaserCurve, "Glaser-Diagramm"},
-            { NavigationPage.DynamicHeatCalc, "Dynamische Wärmeberechnung"},
+            { NavigationPage.DynamicHeatCalc, "Dynamisch"},
             { NavigationPage.BuildingEnvelope, "Gebäudehülle"},
             { NavigationPage.EnvelopeSummary, "Zusammenfassung"},
         };

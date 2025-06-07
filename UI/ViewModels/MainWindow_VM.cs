@@ -149,7 +149,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         #region Page Navigation
         
         public List<NavigationContent> ParentPages => NavigationManager.ParentPages;
-        public List<NavigationGroupContent> AvailableChildGroups => ParentPages.FirstOrDefault(p => p.IsSelected)?.PageGroups ?? new List<NavigationGroupContent>();
+        public List<NavigationGroupContent> AvailableChildGroups => NavigationManager.ParentPages.FirstOrDefault(p => p.IsSelected)?.PageGroups ?? new List<NavigationGroupContent>();
 
         private void OnPageChanged(NavigationPage target, NavigationPage? origin)
         {

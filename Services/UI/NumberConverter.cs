@@ -19,7 +19,7 @@ namespace BauphysikToolWPF.Services.UI
             return returnValue ?? string.Empty;
         }
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {
             // Use current culture for parsing
             culture = CultureInfo.CurrentCulture;

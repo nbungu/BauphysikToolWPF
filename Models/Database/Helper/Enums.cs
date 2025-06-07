@@ -227,6 +227,15 @@ namespace BauphysikToolWPF.Models.Database.Helper
             { RequirementComparison.LessThanOrEqual, "<=" },
             { RequirementComparison.GreaterThanOrEqual, ">=" }
         };
+        public static readonly Dictionary<RequirementComparison, string> RequirementComparisonDescriptionMapping = new()
+        {
+            { RequirementComparison.None, "kein Anforderungswert" },
+            { RequirementComparison.Equal, "Vorgabe" },
+            { RequirementComparison.LessThan, "Maximalwert" },
+            { RequirementComparison.GreaterThan, "Minimalwert" },
+            { RequirementComparison.LessThanOrEqual, "Maximalwert" },
+            { RequirementComparison.GreaterThanOrEqual, "Minimalwert" }
+        };
 
         public enum Month
         {

@@ -5,11 +5,16 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800">
+             d:DesignHeight="450"
+             d:DesignWidth="800"
+             d:Background="{StaticResource PrimaryLightBrush}">
 
 
     <UserControl.Resources>
+
+        <ui:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
 
         <!--Custom Label for Subscript Text-->
         <Style TargetType="{x:Type controls:SubscriptLabel}">
@@ -27,7 +32,12 @@
                 <Run Text=""/>
                 <Run BaselineAlignment="Subscript" Text="{Binding SubscriptText, ElementName=SubscriptLabelControl}" FontSize="{Binding SubscriptFontSize, ElementName=SubscriptLabelControl}"/>
             </TextBlock>
-            <TextBlock FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}" Text="{Binding AppendText, ElementName=SubscriptLabelControl}" VerticalAlignment="Center"/>
+            <TextBlock
+                Visibility="{Binding AppendText, ElementName=SubscriptLabelControl, Converter={StaticResource StringToVisibilityConverter}}"
+                FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}"
+                Text="{Binding AppendText, ElementName=SubscriptLabelControl}"
+                VerticalAlignment="Center"
+                Margin="3,0,3,0"/>
         </StackPanel>
     </Grid>
 

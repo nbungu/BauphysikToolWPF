@@ -14,9 +14,9 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty ValueProperty =
-        DependencyProperty.Register(nameof(Value), typeof(double), typeof(Gauge), new PropertyMetadata(25.0));
+        DependencyProperty.Register(nameof(Value), typeof(double?), typeof(Gauge), new PropertyMetadata(null));
 
-        public double Value
+        public double? Value
         {
             get => (double)GetValue(ValueProperty);
             set => SetValue(ValueProperty, value);
@@ -32,7 +32,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty MaxValueProperty =
-            DependencyProperty.Register(nameof(MaxValue), typeof(double), typeof(Gauge), new PropertyMetadata(100.0));
+            DependencyProperty.Register(nameof(MaxValue), typeof(double), typeof(Gauge), new PropertyMetadata(1.0));
 
         public double MaxValue
         {
@@ -67,19 +67,10 @@ namespace BauphysikToolWPF.UI.CustomControls
             set => SetValue(CaptionProperty, value);
         }
 
-        public static readonly DependencyProperty ShowReferenceMarkerTickProperty =
-            DependencyProperty.Register(nameof(ShowReferenceMarkerTick), typeof(bool), typeof(Gauge), new PropertyMetadata(true));
-
-        public bool ShowReferenceMarkerTick
-        {
-            get => (bool)GetValue(ShowReferenceMarkerTickProperty);
-            set => SetValue(ShowReferenceMarkerTickProperty, value);
-        }
-
         public static readonly DependencyProperty ReferenceMarkerValueProperty =
-            DependencyProperty.Register(nameof(ReferenceMarkerValue), typeof(double), typeof(Gauge), new PropertyMetadata(50.0));
+            DependencyProperty.Register(nameof(ReferenceMarkerValue), typeof(double?), typeof(Gauge), new PropertyMetadata(null));
 
-        public double ReferenceMarkerValue
+        public double? ReferenceMarkerValue
         {
             get => (double)GetValue(ReferenceMarkerValueProperty);
             set => SetValue(ReferenceMarkerValueProperty, value);
@@ -101,6 +92,24 @@ namespace BauphysikToolWPF.UI.CustomControls
         {
             get => (string)GetValue(SymbolLabelSubscriptProperty);
             set => SetValue(SymbolLabelSubscriptProperty, value);
+        }
+
+        public static readonly DependencyProperty MarkerSymbolLabelBaseProperty =
+            DependencyProperty.Register(nameof(MarkerSymbolLabelBase), typeof(string), typeof(Gauge), new PropertyMetadata(""));
+
+        public string MarkerSymbolLabelBase
+        {
+            get => (string)GetValue(MarkerSymbolLabelBaseProperty);
+            set => SetValue(MarkerSymbolLabelBaseProperty, value);
+        }
+
+        public static readonly DependencyProperty MarkerSymbolLabelSubscriptProperty =
+            DependencyProperty.Register(nameof(MarkerSymbolLabelSubscript), typeof(string), typeof(Gauge), new PropertyMetadata(""));
+
+        public string MarkerSymbolLabelSubscript
+        {
+            get => (string)GetValue(MarkerSymbolLabelSubscriptProperty);
+            set => SetValue(MarkerSymbolLabelSubscriptProperty, value);
         }
 
         public static readonly DependencyProperty ReverseGradientProperty =

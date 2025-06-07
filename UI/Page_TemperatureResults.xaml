@@ -122,14 +122,14 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
                         <Label Content="Innen" FontWeight="Bold"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding Ti}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding Ti, Converter={StaticResource NumberConverter}, ConverterParameter=1}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="R" SubscriptText="si" Value="{Binding Rsi}" ValueUnit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="R" SubscriptText="si" Value="{Binding Rsi, Converter={StaticResource NumberConverter}}" ValueUnit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
-                        <controls:EquationLabel BaseText="R" SubscriptText="se" Value="{Binding Rse}" ValueUnit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="R" SubscriptText="se" Value="{Binding Rse, Converter={StaticResource NumberConverter}}" ValueUnit="m²K/W" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding Te}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding Te, Converter={StaticResource NumberConverter}, ConverterParameter=1}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <Label Content="Außen" FontWeight="Bold"/>
                     </StackPanel>
@@ -175,44 +175,83 @@
                      SnapsToDevicePixels="True"/>-->
 
             <Expander Grid.Row="0" Header="Wärme" IsExpanded="True" Margin="0,0,0,8">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-                    <controls:Gauge Grid.Column="0"
-                                    Title="U-Wert:"
-                                    Caption="Grenzwert nach GEG Anlage 1"
+                <StackPanel>
+                    <controls:Gauge Title="U-Wert:"
+                                    Caption="{Binding UValueCaption}"
+                                    ToolTip="{Binding UValueTooltip}"
                                     Value="{Binding UValue}"
                                     UnitLabel="{Binding UValueUnitString}"
                                     MinValue="{Binding UValueScaleMin}"
                                     MaxValue="{Binding UValueScaleMax}"
-                                    ShowReferenceMarkerTick = "True"
                                     ReferenceMarkerValue = "{Binding UValueRefMarker}"
-                                    Margin="0,0,8,0"/>
-                    <controls:Gauge Grid.Column="1"
-                                    Title="R-Wert:"
-                                    Caption="Grenzwert nach DIN 4108-2"
+                                    Margin="0,0,0,16"/>
+                    <controls:Gauge Title="R-Wert:"
+                                    Caption="{Binding RValueCaption}"
+                                    ToolTip="{Binding RValueTooltip}"
                                     Value="{Binding RValue}"
                                     UnitLabel="{Binding RValueUnitString}"
                                     MinValue="{Binding RValueScaleMin}"
                                     MaxValue="{Binding RValueScaleMax}"
-                                    SymbolLabelBase="R"
-                                    SymbolLabelSubscript="ges"
-                                    ShowReferenceMarkerTick = "True"
+                                    SymbolLabelBase="{Binding RValueSymbolBase}"
+                                    SymbolLabelSubscript="{Binding RValueSymbolSubscript}"
                                     ReverseGradient="True"
                                     ReferenceMarkerValue = "{Binding RValueRefMarker}"
-                                    Margin="8,0,0,0"/>
-                </Grid>
+                                    Margin="0,0,0,16"/>
+                    <controls:Gauge Title="Wärmestrom:"
+                                    Caption="{Binding QValueCaption}"
+                                    ToolTip="{Binding QValueTooltip}"
+                                    Value="{Binding QValue}"
+                                    UnitLabel="{Binding QValueUnitString}"
+                                    MinValue="{Binding QValueScaleMin}"
+                                    MaxValue="{Binding QValueScaleMax}"
+                                    SymbolLabelBase="{Binding QValueSymbolBase}"/>
+                    
+                </StackPanel>
             </Expander>
             <Expander Grid.Row="1" Header="Feuchte" IsExpanded="True" Margin="0,0,0,8">
-                <controls:Gauge Title="Wärmestrom:"
-                                Caption="Kein Grenzwert einzuhalten"
-                                Value="{Binding QValue}"
-                                UnitLabel="{Binding QValueUnitString}"
-                                MinValue="{Binding QValueScaleMin}"
-                                MaxValue="{Binding QValueScaleMax}"
-                                ShowReferenceMarkerTick = "False"/>
+                <StackPanel>
+
+                    <controls:Gauge Title="Temperaturfaktor:"
+                                    Caption="{Binding FRsiCaption}"
+                                    ToolTip="{Binding FRsiTooltip}"
+                                    Value="{Binding FRsiValue}"
+                                    UnitLabel="{Binding FRsiValueUnitString}"
+                                    MinValue="{Binding FRsiValueScaleMin}"
+                                    MaxValue="{Binding FRsiValueScaleMax}"
+                                    SymbolLabelBase="{Binding FRsiSymbolBase}"
+                                    SymbolLabelSubscript="{Binding FRsiSymbolSubscript}"
+                                    MarkerSymbolLabelBase="{Binding FRsiMarkerSymbolBase}"
+                                    MarkerSymbolLabelSubscript="{Binding FRsiMarkerSymbolSubscript}"
+                                    ReferenceMarkerValue = "{Binding FRsiValueRefMarker}"
+                                    ReverseGradient="True"
+                                    Margin="0,0,0,16"/>
+                    <controls:Gauge Title="Oberflächentemperatur (innen):"
+                                    Caption="{Binding TsiCaption}"
+                                    Value="{Binding TsiValue}"
+                                    UnitLabel="{Binding TsiValueUnitString}"
+                                    MinValue="{Binding TsiValueScaleMin}"
+                                    MaxValue="{Binding TsiValueScaleMax}"
+                                    SymbolLabelBase="{Binding TsiSymbolBase}"
+                                    SymbolLabelSubscript="{Binding TsiSymbolSubscript}"
+                                    MarkerSymbolLabelBase="{Binding TsiMarkerSymbolBase}"
+                                    MarkerSymbolLabelSubscript="{Binding TsiMarkerSymbolSubscript}"
+                                    ReferenceMarkerValue = "{Binding TsiValueRefMarker}"
+                                    ReverseGradient="True"
+                                    Margin="0,0,0,16"/>
+                    <controls:Gauge Title="relative Luftfeuchte (innen):"
+                                    Caption="{Binding RelFiCaption}"
+                                    Value="{Binding RelFiValue}"
+                                    UnitLabel="{Binding RelFiValueUnitString}"
+                                    MinValue="{Binding RelFiValueScaleMin}"
+                                    MaxValue="{Binding RelFiValueScaleMax}"
+                                    SymbolLabelBase="{Binding RelFiSymbolBase}"
+                                    SymbolLabelSubscript="{Binding RelFiSymbolSubscript}"
+                                    MarkerSymbolLabelBase="{Binding RelFiMarkerSymbolBase}"
+                                    MarkerSymbolLabelSubscript="{Binding RelFiMarkerSymbolSubscript}"
+                                    ReferenceMarkerValue = "{Binding RelFiValueRefMarker}"/>
+                </StackPanel>
+                
+                
             </Expander>
 
 

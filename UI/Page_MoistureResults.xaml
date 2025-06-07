@@ -122,10 +122,10 @@
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding Ti}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding Rel_Fi}" ValueUnit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding RelFi}" ValueUnit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
-                        <controls:EquationLabel BaseText="Φ" SubscriptText="e" Value="{Binding Rel_Fe}" ValueUnit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="Φ" SubscriptText="e" Value="{Binding RelFe}" ValueUnit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding Te}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>

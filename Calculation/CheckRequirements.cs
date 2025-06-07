@@ -1,8 +1,8 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain;
-using System;
 using System.Collections.Generic;
 using System.Linq;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation
@@ -21,12 +21,18 @@ namespace BauphysikToolWPF.Calculation
         public double Ti { get; }
         public double Te { get; }
         public List<DocumentParameter> RelevantRequirements { get; set; } = new List<DocumentParameter>();
-        public double UMax { get; private set; } = -1;
-        public double RMin { get; private set; } = -1;
-        public double QMax { get; private set; } = -1;
-        public bool IsUValueOk { get; } // GEG Requirements
-        public bool IsRValueOk { get; } // DIN 4108-2 Requirements
-        public bool IsQValueOk { get; } // Not mandatory as requirement
+        public double? UMax { get; private set; }
+        public string UMaxRequirementSourceName => RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null)?.DocumentSource.SourceName ?? "";
+        public string UMaxComparisonDescription => RequirementComparisonDescriptionMapping[RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null)?.RequirementComparison ?? RequirementComparison.None];
+        public string UMaxCaption => UMaxComparisonDescription != "" && UMaxRequirementSourceName != "" ? $"{UMaxComparisonDescription} nach {UMaxRequirementSourceName}" : "";
+
+        public double? RMin { get; private set; }
+        public string? RMinRequirementSourceName => RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.RValueElement, null)?.DocumentSource.SourceName;
+        public double? QMax { get; private set; }
+
+        public bool IsUValueOk => Element?.ThermalResults.UValue <= UMax; // GEG Requirements
+        public bool IsRValueOk => Element?.RGesValue >= RMin; // DIN 4108-2 Requirements
+        public bool IsQValueOk => Element?.ThermalResults.QValue <= QMax; // Not mandatory as requirement
 
         public CheckRequirements() { }
         public CheckRequirements(Element? element, CheckRequirementsConfig config)
@@ -47,9 +53,6 @@ namespace BauphysikToolWPF.Calculation
             SetUMax();
             SetRMin();
             SetQMax();
-            IsUValueOk = UMax == -1 || Element.ThermalResults.UValue <= UMax;
-            IsRValueOk = RMin == -1 || Element.RGesValue >= RMin;
-            IsQValueOk = QMax == -1 || Element.ThermalResults.QValue <= QMax;
         }
 
         private void SetUMax()
@@ -76,7 +79,7 @@ namespace BauphysikToolWPF.Calculation
 
         private void SetQMax()
         {
-            if (UMax >= 0) QMax = Math.Round(UMax * (Ti - Te), 4);
+            if (UMax != null && UMax >= 0) QMax = UMax * (Ti - Te);
         }
     }
 }

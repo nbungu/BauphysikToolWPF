@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Calculation;
+using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
@@ -71,6 +72,25 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> LayerMeasurementVerticalCut => MeasurementDrawing.GetLayerMeasurementChain(_verticalCut);
         public List<DrawingGeometry> SubConstructionMeasurementVerticalCut => MeasurementDrawing.GetSubConstructionMeasurementChain(_verticalCut);
         public List<DrawingGeometry> LayerMeasurementFullVerticalCut => MeasurementDrawing.GetFullLayerMeasurementChain(_verticalCut);
+
+        // Results
+        public CheckRequirements RequirementValues => new CheckRequirements(SelectedElement, Session.CheckRequirementsConfig);
+
+        public double? UValue => RequirementValues.Element?.UValue;
+        public double UValueScaleMin => 0.0;
+        public double UValueScaleMax => 2 * UValueRefMarker ?? 2 * UValue ?? 1.0;
+        public double? UValueRefMarker => RequirementValues.UMax;
+        public string UValueUnitString => GetUnitStringFromSymbol(Symbol.UValue);
+        public string UValueCaption => RequirementValues.UMaxRequirementSourceName != null ? $"Grenzwert nach {RequirementValues.UMaxRequirementSourceName}" : "";
+
+        public double? RValue => RequirementValues.Element?.RGesValue;
+        public double RValueScaleMin => 0.0;
+        public double RValueScaleMax => 2 * RValueRefMarker ?? 2 * RValue ?? 1.0;
+        public double? RValueRefMarker => RequirementValues.RMin;
+        public string RValueUnitString => GetUnitStringFromSymbol(Symbol.RValueElement);
+        public string RValueCaption => RequirementValues.RMinRequirementSourceName != null ? $"Grenzwert nach {RequirementValues.RMinRequirementSourceName}" : "";
+        public string RValueSymbolLabelBase => SymbolMapping[Symbol.RValueElement].baseText;
+        public string RValueSymbolLabelSubscript => SymbolMapping[Symbol.RValueElement].subscriptText;
 
         public List<IPropertyItem> ElementProperties => Session.SelectedElement != null ? new List<IPropertyItem>
         {
