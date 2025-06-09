@@ -5,6 +5,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
+             xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d"
              d:DesignHeight="320"
              d:DesignWidth="640"
@@ -12,14 +14,62 @@
 
     <UserControl.Resources>
 
+        <ui:NumberConverter x:Key="NumberConverter" />
+        <ui:TooltipNotEmptyToVisibilityConverter x:Key="TooltipNotEmptyToVisibilityConverter"/>
+
+        <ControlTemplate x:Key="LayerListViewHeaderTemplate" TargetType="GridViewColumnHeader">
+            <Grid>
+                <Border
+                    x:Name="HeaderBorder"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{StaticResource PrimaryBorderBrush}"
+                    BorderThickness="1,0,0,2"
+                    Margin="0"
+                    Padding="4"
+                    Tag="{TemplateBinding Tag}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="16" />
+                            <RowDefinition Height="20" />
+                        </Grid.RowDefinitions>
+
+                        <ContentPresenter Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True"/>
+
+                        <customControls:FractionLabel Grid.Row="1"
+                                                      CounterText="{TemplateBinding Tag}"
+                                                      VerticalAlignment="Center"
+                                                      Foreground="{StaticResource PrimaryDarkMediumBrush}"
+                                                      Margin="0,4,0,0"
+                                                      FontWeight="DemiBold"
+                                                      HorizontalAlignment="Left"/>
+                        <Image x:Name="HoverIcon"
+                           Grid.Row="0"
+                           Source="{StaticResource ButtonIcon_Info_B}"
+                           HorizontalAlignment="Right"
+                           VerticalAlignment="Center"
+                           Stretch="Fill"
+                           Width="12" Height="12"
+                           Opacity="0.7"
+                           Margin="2"
+                           Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ToolTip, Converter={StaticResource TooltipNotEmptyToVisibilityConverter}}"/>
+                    </Grid>
+                </Border>
+            </Grid>
+            <ControlTemplate.Triggers>
+
+            </ControlTemplate.Triggers>
+        </ControlTemplate>
+
         <!--
         https://learn.microsoft.com/en-us/dotnet/desktop/wpf/controls/gridview-overview?view=netframeworkdesktop-4.8
         https://github.com/mochan-b/GridViewCellFormatting
         Links the data content to a ListViewItem via Binding from ItemsSource, INSTEAD of ItemTemplate
         -->
-        <GridView x:Key="LayerGridViewColumns" AllowsColumnReorder="true" ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}">
+
+        <GridView x:Key="LayerGridViewColumns" AllowsColumnReorder="true"> <!--ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}"-->
+
             <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
-            <GridViewColumn Header="Pos." Width="Auto">
+            <GridViewColumn Header="Pos." Width="40">
                 <!--Custom Column Style for Column 0-->
                 <GridViewColumn.CellTemplate>
                     <DataTemplate>
@@ -35,12 +85,105 @@
                         </DataTemplate.Triggers>
                     </DataTemplate>
                 </GridViewColumn.CellTemplate>
+                <GridViewColumn.HeaderContainerStyle>
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
+                        <Setter Property="Margin" Value="-3,0,0,0"/>
+                    </Style>
+                </GridViewColumn.HeaderContainerStyle>
             </GridViewColumn>
-            <GridViewColumn DisplayMemberBinding="{Binding Material.Name}" Header="Material" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Thickness}" Header="d [cm]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding R_Value}" Header="R [m²K/W]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding Sd_Thickness}" Header="sd [m]" Width="Auto"/>
-            <GridViewColumn DisplayMemberBinding="{Binding AreaMassDensity}" Header="m' [kg/m²]" Width="Auto"/>
+
+            <!-- NAME -->
+            <GridViewColumn Header="Material" Width="200">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Material.Name}"/>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+                <GridViewColumn.HeaderContainerStyle>
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
+                    </Style>
+                </GridViewColumn.HeaderContainerStyle>
+            </GridViewColumn>
+            
+            <!-- DICKE -->
+            <GridViewColumn Header="d" Width="64">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Thickness, Converter={StaticResource NumberConverter}}" FontWeight="DemiBold"/>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+
+                <GridViewColumn.HeaderContainerStyle>
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Tag" Value="cm"/>
+                        <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
+                    </Style>
+                </GridViewColumn.HeaderContainerStyle>
+            </GridViewColumn>
+
+            <!-- LEITFÄHIGKEIT -->
+            <GridViewColumn Header="λ" Width="64">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Material.ThermalConductivity, Converter={StaticResource NumberConverter}, ConverterParameter=3}"/>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+                <GridViewColumn.HeaderContainerStyle>
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Tag" Value="W/(mK)"/>
+                        <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
+                    </Style>
+                </GridViewColumn.HeaderContainerStyle>
+            </GridViewColumn>
+
+            <!-- R-WERT -->
+            <GridViewColumn Header="R" Width="64">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding R_Value, Converter={StaticResource NumberConverter}}" FontWeight="DemiBold"/>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+                <GridViewColumn.HeaderContainerStyle>
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Tag" Value="m²K/W"/>
+                        <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
+                    </Style>
+                </GridViewColumn.HeaderContainerStyle>
+            </GridViewColumn>
+
+            <!-- DICHTE -->
+            <GridViewColumn Header="ρ" Width="64">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Material.BulkDensity, Converter={StaticResource NumberConverter}}"/>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+                <GridViewColumn.HeaderContainerStyle>
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Tag" Value="kg/m³"/>
+                        <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
+                    </Style>
+                </GridViewColumn.HeaderContainerStyle>
+            </GridViewColumn>
+
+            <!-- FL.BEZ. MASSE -->
+            <GridViewColumn Header="m'" Width="64">
+                <GridViewColumn.CellTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding AreaMassDensity, Converter={StaticResource NumberConverter}}"/>
+                    </DataTemplate>
+                </GridViewColumn.CellTemplate>
+                <GridViewColumn.HeaderContainerStyle>
+                    <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Tag" Value="kg/m²"/>
+                        <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
+                        <Setter Property="Margin" Value="0,0,-1200,0"/>
+                    </Style>
+                </GridViewColumn.HeaderContainerStyle>
+            </GridViewColumn>
+
         </GridView>
 
         <!-- Custom Layer ListViewItem appearance. Style of the Row Container -->
