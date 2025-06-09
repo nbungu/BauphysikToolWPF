@@ -27,8 +27,17 @@ namespace BauphysikToolWPF.Models.Domain
         
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
+        private int _materialId = -1;
         // 1:1 relationship with Material
-        public int MaterialId { get; set; } = -1;
+        public int MaterialId
+        {
+            get => _materialId;
+            set
+            {
+                _materialId = value;
+                ReloadMaterial = true;
+            }
+        }
 
         // 1:n relationship with LayerSubConstruction
         public List<LayerSubConstruction> SubConstructions { get; set; } = new List<LayerSubConstruction>(1);
@@ -39,33 +48,56 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public int InternalId { get; set; } = -1;
-        
+
         [JsonIgnore]
-        public IEnumerable<IPropertyItem> PropertyBag => new List<IPropertyItem>()
+        public IEnumerable<IPropertyItem> PropertyBag
         {
-            new PropertyItem<string>("Kategorie", () => Material.CategoryName),
-            new PropertyItem<string>("Materialquelle", () => Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
-            new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
-            new PropertyItem<double>(Symbol.ThermalConductivity, () => Material.ThermalConductivity) { DecimalPlaces = 3 },
-            new PropertyItem<double>(Symbol.RValueLayer, () => R_Value)
+            get
             {
-                SymbolSubscriptText = $"{LayerNumber}"
-            },
-            new PropertyItem<int>(Symbol.RawDensity, () => Material.BulkDensity),
-            new PropertyItem<double>(Symbol.AreaMassDensity, () => AreaMassDensity),
-            new PropertyItem<double>(Symbol.SdThickness, () => Sd_Thickness) { DecimalPlaces = 1 },
-            new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => Material.DiffusionResistance),
-            new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => Material.SpecificHeatCapacity),
-            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => ArealHeatCapacity)
-            {
-                SymbolSubscriptText = $"{LayerNumber}"
-            },
-            new PropertyItem<bool>("Wirksame Schicht", () => IsEffective, value => IsEffective = value)
-        };
+                return new List<IPropertyItem>()
+                {
+                    new PropertyItem<string>("Kategorie", () => Material.CategoryName),
+                    new PropertyItem<string>("Materialquelle", () => Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
+                    new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
+                    new PropertyItem<double>(Symbol.ThermalConductivity, () => Material.ThermalConductivity) { DecimalPlaces = 3 },
+                    new PropertyItem<double>(Symbol.RValueLayer, () => R_Value)
+                    {
+                        SymbolSubscriptText = $"{LayerNumber}"
+                    },
+                    new PropertyItem<int>(Symbol.RawDensity, () => Material.BulkDensity),
+                    new PropertyItem<double>(Symbol.AreaMassDensity, () => AreaMassDensity),
+                    new PropertyItem<double>(Symbol.SdThickness, () => Sd_Thickness) { DecimalPlaces = 1 },
+                    new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => Material.DiffusionResistance),
+                    new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => Material.SpecificHeatCapacity),
+                    new PropertyItem<double>(Symbol.ArealHeatCapacity, () => ArealHeatCapacity)
+                    {
+                        SymbolSubscriptText = $"{LayerNumber}"
+                    },
+                    new PropertyItem<bool>("Wirksame Schicht", () => IsEffective, value => IsEffective = value)
+                };
+            }
+        }
+
+        public bool ReloadMaterial { get; private set; } = true;
 
         // 1:1 relationship with Material
+        private Material _material = Material.Empty;
+        /// <summary>
+        /// Lazy Initialization of Material object.
+        /// </summary>
         [JsonIgnore]
-        public Material Material => DatabaseAccess.QueryMaterialById(MaterialId);
+        public Material Material
+        {
+            get
+            {
+                if (ReloadMaterial)
+                {
+                    _material = DatabaseAccess.QueryMaterialById(MaterialId);
+                    ReloadMaterial = false;
+                }
+                return _material;
+            }
+        }
 
         [JsonIgnore]
         public bool IsSelected { get; set; } // For UI Purposes 
@@ -209,6 +241,12 @@ namespace BauphysikToolWPF.Models.Domain
         public void RemoveSubConstruction()
         {
             this.SubConstructions.Clear();
+        }
+
+        public void RefreshMaterial()
+        {
+            ReloadMaterial = true;
+            SubConstructions.ForEach(l => l.RefreshMaterial());
         }
 
         #endregion

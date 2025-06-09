@@ -237,7 +237,7 @@
             <!-- CanContentScroll = false for smooth scrolling -->
             <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
             <Setter Property="MinWidth" Value="80"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="Height" Value="28"/>
             <Setter Property="MaxDropDownHeight" Value="320"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -263,7 +263,7 @@
                                             Content="{TemplateBinding SelectionBoxItem}"
                                             ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                             ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                                            Margin="6,6,24,6"
+                                            Margin="6,4,24,4"
                                             VerticalAlignment="Stretch"
                                             HorizontalAlignment="Left"/>
                             <!-- DropDown Menu / Popup -->
@@ -490,7 +490,6 @@
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-
                             <Expander />
 
                             <!-- Horizontal Line 
@@ -523,7 +522,7 @@
             <Setter Property="MaxHeight" Value="48"/>
             <Setter Property="MaxLength" Value="80"/>
             <Setter Property="FontWeight" Value="Regular"/>
-            <Setter Property="Padding" Value="2,0,0,0"/>
+            <Setter Property="Padding" Value="2,0,2,0"/>
             <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
             <Setter Property="VerticalAlignment" Value="Stretch"/>
             <Setter Property="FontSize" Value="14"/>
@@ -679,7 +678,8 @@
                             <TextBlock TextWrapping="Wrap"
                                        MaxWidth="300"
                                        Text="{TemplateBinding Content}"
-                                       Foreground="Black"/>
+                                       Foreground="Black"
+                                       FontWeight="Normal"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>

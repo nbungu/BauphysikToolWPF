@@ -156,7 +156,7 @@
                                                     <controls:FractionLabel Grid.Column="1" CounterText="{Binding UnitCounterText}" DenominatorText="{Binding UnitDenominatorText}">
                                                         <controls:FractionLabel.Style>
                                                             <Style TargetType="controls:FractionLabel">
-                                                                <Setter Property="FontWeight" Value="DemiBold"/>
+                                                                <Setter Property="FontWeight" Value="Normal"/>
                                                                 <Setter Property="VerticalAlignment" Value="Stretch"/>
                                                                 <Setter Property="Margin" Value="4,-2,8,-2"/>
                                                                 <Setter Property="Foreground" Value="{StaticResource PrimaryDarkMediumBrush}"/>

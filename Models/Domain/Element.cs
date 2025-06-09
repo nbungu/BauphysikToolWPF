@@ -162,7 +162,7 @@ namespace BauphysikToolWPF.Models.Domain // or core?
         /// which would require a re-calculation, are made there.
         /// </summary>
         [JsonIgnore]
-        public bool Recalculate { get; set; } = true;
+        public bool Recalculate { get; private set; } = true;
 
         // Use GlaserCalc as Collection for Results due to Polymorphism;
         // You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.
@@ -174,8 +174,7 @@ namespace BauphysikToolWPF.Models.Domain // or core?
             {
                 if (Recalculate)
                 {
-                    var newResults = new ThermalValuesCalc(this, Session.ThermalValuesCalcConfig);
-                    _thermalResults = newResults;
+                    _thermalResults = new ThermalValuesCalc(this, Session.ThermalValuesCalcConfig);
                     Recalculate = false;
                 }
                 return _thermalResults;
@@ -227,9 +226,10 @@ namespace BauphysikToolWPF.Models.Domain // or core?
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
 
-        public void UpdateResults()
+        public void RefreshResults()
         {
             Recalculate = true;
+            Layers.ForEach(l => l.RefreshMaterial());
         }
 
         #endregion

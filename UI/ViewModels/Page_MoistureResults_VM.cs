@@ -73,7 +73,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public double Te => _glaser.Te;
         public double RelFi => _glaser.RelFi;
         public double RelFe => _glaser.RelFe;
-        public List<OverviewItem> OverviewItems => GetOverviewItemsList();
         public ISeries[] DataPoints => GetDataPoints();
         public RectangularSection[] LayerSections => DrawLayerSections();
         public Axis[] XAxes => DrawXAxes();
@@ -82,6 +81,74 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipTextPaint { get; set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
 
 
+        public CheckRequirements RequirementValues => new CheckRequirements(SelectedElement, Session.CheckRequirementsConfig);
+
+        public double UValue => RequirementValues.Element.UValue;
+        public string UValueCaption => RequirementValues.UMaxCaption;
+        public string UValueTooltip => SymbolMapping[Symbol.UValue].comment;
+        public double UValueScaleMin => 0.0;
+        public double UValueScaleMax => 2 * UValueRefMarker ?? Math.Max(1.0, UValue + 0.1);
+        public double? UValueRefMarker => RequirementValues.UMax;
+        public string UValueUnitString => GetUnitStringFromSymbol(Symbol.UValue);
+        public string UValueSymbolBase => SymbolMapping[Symbol.UValue].baseText;
+
+
+        public double? RValue => RequirementValues.Element?.RGesValue;
+        public string RValueCaption => RequirementValues.RMinRequirementSourceName != null ? $"Grenzwert nach {RequirementValues.RMinRequirementSourceName}" : "";
+        public string RValueTooltip => SymbolMapping[Symbol.RValueElement].comment;
+        public double RValueScaleMin => 0.0;
+        public double RValueScaleMax => 2 * RValueRefMarker ?? 2 * RValue ?? 1.0;
+        public double? RValueRefMarker => RequirementValues.RMin;
+        public string RValueUnitString => GetUnitStringFromSymbol(Symbol.RValueElement);
+        public string RValueSymbolBase => SymbolMapping[Symbol.RValueElement].baseText;
+        public string RValueSymbolSubscript => SymbolMapping[Symbol.RValueElement].subscriptText;
+
+
+        public double QValue => RequirementValues.Element.QValue;
+        public string QValueCaption => "kein Grenzwert einzuhalten";
+        public string QValueTooltip => SymbolMapping[Symbol.HeatFluxDensity].comment;
+        public double QValueScaleMin => 0.0;
+        public double QValueScaleMax => 2 * QValueRefMarker ?? 1.0;
+        public double? QValueRefMarker => RequirementValues.QMax;
+        public string QValueUnitString => GetUnitStringFromSymbol(Symbol.HeatFluxDensity);
+        public string QValueSymbolBase => SymbolMapping[Symbol.HeatFluxDensity].baseText;
+
+
+        public double TsiValue => _glaser.Tsi;
+        public string TsiCaption => "zur Vermeidung von Schimmelpilzbildung";
+        public double TsiValueScaleMin => _glaser.Te;
+        public double TsiValueScaleMax => _glaser.Ti;
+        public double TsiValueRefMarker => _glaser.TsiMin;
+        public string TsiValueUnitString => GetUnitStringFromSymbol(Symbol.TemperatureSurfaceInterior);
+        public string TsiSymbolBase => SymbolMapping[Symbol.TemperatureSurfaceInterior].baseText;
+        public string TsiSymbolSubscript => $"{SymbolMapping[Symbol.TemperatureSurfaceInterior].subscriptText}";
+        public string TsiMarkerSymbolBase => SymbolMapping[Symbol.TemperatureSurfaceInterior].baseText;
+        public string TsiMarkerSymbolSubscript => $"{SymbolMapping[Symbol.TemperatureSurfaceInterior].subscriptText}" + ",min";
+
+
+        public double FRsiValue => _glaser.FRsi;
+        public string FRsiCaption => "zur Vermeidung von Schimmelpilzbildung";
+        public string FRsiTooltip => SymbolMapping[Symbol.FRsi].comment;
+        public double FRsiValueScaleMin => 0.0;
+        public double FRsiValueScaleMax => 1.0;
+        public double FRsiValueRefMarker => 0.7; // TODO:
+        public string FRsiValueUnitString => GetUnitStringFromSymbol(Symbol.FRsi);
+        public string FRsiSymbolBase => SymbolMapping[Symbol.FRsi].baseText;
+        public string FRsiSymbolSubscript => $"{SymbolMapping[Symbol.FRsi].subscriptText}";
+        public string FRsiMarkerSymbolBase => SymbolMapping[Symbol.FRsi].baseText;
+        public string FRsiMarkerSymbolSubscript => $"{SymbolMapping[Symbol.FRsi].subscriptText}" + ",min";
+
+        public double RelFiValue => _glaser.RelFi;
+        public string RelFiCaption => "zur Vermeidung von Schimmelpilzbildung";
+        public double RelFiValueScaleMin => 0.0;
+        public double RelFiValueScaleMax => 100.0;
+        public double RelFiValueRefMarker => _glaser.PhiMax; // TODO:
+        public string RelFiValueUnitString => GetUnitStringFromSymbol(Symbol.RelativeHumidityInterior);
+        public string RelFiSymbolBase => SymbolMapping[Symbol.RelativeHumidityInterior].baseText;
+        public string RelFiSymbolSubscript => $"{SymbolMapping[Symbol.RelativeHumidityInterior].subscriptText}";
+        public string RelFiMarkerSymbolBase => SymbolMapping[Symbol.RelativeHumidityInterior].baseText;
+        public string RelFiMarkerSymbolSubscript => $"{SymbolMapping[Symbol.RelativeHumidityInterior].subscriptText}" + ",max";
+
         /*
          * private Methods
          */
@@ -89,21 +156,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void RefreshXamlBindings()
         {
             OnPropertyChanged(nameof(SelectedElement));
-            OnPropertyChanged(nameof(OverviewItems));
+            OnPropertyChanged(nameof(RequirementValues));
         }
-        private List<OverviewItem> GetOverviewItemsList()
-        {
-            if (!_glaser.IsValid) return new List<OverviewItem>();
-
-            return new List<OverviewItem>
-            {
-                new OverviewItem { Symbol = Symbol.TemperatureSurfaceInterior, Value = _glaser.Tsi, RequirementValue = _glaser.TaupunktMax_i, IsRequirementMet = _glaser.Tsi >= _glaser.TaupunktMax_i, Unit = "°C" },
-                new OverviewItem { Symbol = Symbol.TemperatureSurfaceExterior, Value = _glaser.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-                new OverviewItem { Symbol = Symbol.FRsi, Value = _glaser.FRsi, RequirementValue = 0.7, IsRequirementMet = _glaser.FRsi >= 0.7 },
-                new OverviewItem { Symbol = Symbol.RelativeHumidityInterior, Value = Session.RelFi, RequirementValue = _glaser.PhiMax, IsRequirementMet = Session.RelFi < _glaser.PhiMax, Unit = "%" }
-            };
-        }
-
+        
         private RectangularSection[] DrawLayerSections()
         {
             if (!_glaser.IsValid) return Array.Empty<RectangularSection>();

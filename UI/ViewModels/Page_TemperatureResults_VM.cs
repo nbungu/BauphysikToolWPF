@@ -85,26 +85,70 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Axis[] YAxes => DrawYAxes();
         public SolidColorPaint TooltipBackgroundPaint { get; private set; } = new SolidColorPaint(new SKColor(255, 255, 255));
         public SolidColorPaint TooltipTextPaint { get; private set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
-        public CheckRequirements RequirementValues => new CheckRequirements(SelectedElement, Session.CheckRequirementsConfig);
 
-        public double? UValue => RequirementValues.Element?.UValue;
-        public string UValueCaption => RequirementValues.UMaxCaption;
-        public string UValueTooltip => SymbolMapping[Symbol.UValue].comment;
-        public double UValueScaleMin => 0.0;
-        public double UValueScaleMax => 2 * UValueRefMarker ?? 2 * UValue ?? 1.0;
-        public double? UValueRefMarker => RequirementValues.UMax;
-        public string UValueUnitString => GetUnitStringFromSymbol(Symbol.UValue);
-        
 
-        public double? RValue => RequirementValues.Element?.RGesValue;
-        public string RValueCaption => RequirementValues.RMinRequirementSourceName != null ? $"Grenzwert nach {RequirementValues.RMinRequirementSourceName}" : "";
-        public string RValueTooltip => SymbolMapping[Symbol.RValueElement].comment;
-        public double RValueScaleMin => 0.0;
-        public double RValueScaleMax => 2 * RValueRefMarker ?? 2 * RValue ?? 1.0;
-        public double? RValueRefMarker => RequirementValues.RMin;
-        public string RValueUnitString => GetUnitStringFromSymbol(Symbol.RValueElement);
-        public string RValueSymbolBase => SymbolMapping[Symbol.RValueElement].baseText;
-        public string RValueSymbolSubscript => SymbolMapping[Symbol.RValueElement].subscriptText;
+        public CheckRequirements RequirementValues { get; } = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
+
+
+        private GaugeItem? _uValueGauge;
+        /// <summary>
+        /// Gets the gauge configuration, lazily initializing it on first access.
+        /// 
+        /// This lazy pattern ensures that the GaugeItem is only constructed when needed, 
+        /// avoiding repeated allocations from XAML bindings that may call this getter multiple times. 
+        /// It improves performance and keeps initialization logic encapsulated.
+        /// </summary>
+        public GaugeItem UValueGauge
+        {
+            get
+            {
+                if (_uValueGauge == null)
+                {
+                    double? uMax = RequirementValues.UMax;
+                    double elementUValue = RequirementValues.Element.UValue;
+                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, RequirementValues.UMaxComparisonRequirement)
+                    {
+                        Caption = RequirementValues.UMaxCaption,
+                        ScaleMin = 0.0,
+                        ScaleMax = uMax.HasValue
+                            ? 2 * uMax.Value
+                            : Math.Max(1.0, elementUValue + 0.1)
+                    };
+                }
+
+                return _uValueGauge;
+            }
+        }
+
+        private GaugeItem? _rValueGauge;
+        /// <summary>
+        /// Gets the gauge configuration, lazily initializing it on first access.
+        /// 
+        /// This lazy pattern ensures that the GaugeItem is only constructed when needed, 
+        /// avoiding repeated allocations from XAML bindings that may call this getter multiple times. 
+        /// It improves performance and keeps initialization logic encapsulated.
+        /// </summary>
+        public GaugeItem RValueGauge
+        {
+            get
+            {
+                if (_rValueGauge == null)
+                {
+                    var uValueGauge = UValueGauge; // ensure initialized once
+                    double uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
+                    double targetRValueNormalized = 1.0 - uValueNormalized;
+
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, RequirementValues.Element.RGesValue, RequirementValues.RMin, RequirementValues.RMinComparisonRequirement)
+                    {
+                        Caption = RequirementValues.RMinCaption,
+                        ScaleMin = 0.0,
+                        ScaleMax = RequirementValues.Element.RGesValue / targetRValueNormalized,
+                    };
+                }
+
+                return _rValueGauge;
+            }
+        }
 
 
         public double QValue => RequirementValues.Element.QValue;
@@ -152,32 +196,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string RelFiMarkerSymbolBase => SymbolMapping[Symbol.RelativeHumidityInterior].baseText;
         public string RelFiMarkerSymbolSubscript => $"{SymbolMapping[Symbol.RelativeHumidityInterior].subscriptText}" + ",max";
 
-
-
-
-        //  new OverviewItem { Symbol = Symbol.RelativeHumidityInterior, Value = Session.RelFi, RequirementValue = _glaser.PhiMax, IsRequirementMet = Session.RelFi < _glaser.PhiMax, Unit = "%" }
-
-
-        //public List<OverviewItem> OverviewItems
-        //{
-        //    // TODO Rework: -> ProperyItem
-        //    get
-        //    {
-        //        if (!_tempCurve.IsValid) return new List<OverviewItem>();
-        //        return new List<OverviewItem>
-        //        {
-        //            new OverviewItem { Symbol = Symbol.RValueElement, Value = RequirementValues.Element.RGesValue, RequirementValue = RequirementValues.RMin >= 0 ? RequirementValues.RMin : null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
-        //            new OverviewItem { Symbol = Symbol.RValueTotal, Value = RequirementValues.Element.RTotValue, RequirementValue = null, IsRequirementMet = RequirementValues.IsRValueOk, Unit = "m²K/W" },
-        //            new OverviewItem { Symbol = Symbol.UValue, Value = RequirementValues.Element.UValue, RequirementValue = RequirementValues.UMax >= 0 ? RequirementValues.UMax : null, IsRequirementMet = RequirementValues.IsUValueOk, Unit = "W/m²K" },
-        //            new OverviewItem { Symbol = Symbol.HeatFluxDensity, Value = RequirementValues.Element.QValue, RequirementValue = RequirementValues.QMax >= 0 ? RequirementValues.QMax : null, IsRequirementMet = RequirementValues.IsQValueOk, Unit = "W/m²" },
-
-        //            new OverviewItem { Symbol = Symbol.TemperatureSurfaceInterior, Value = _tempCurve.Tsi, RequirementValue = _tempCurve.TsiMin, IsRequirementMet = _tempCurve.Tsi >= _tempCurve.TsiMin, Unit = "°C" },
-        //            new OverviewItem { Symbol = Symbol.TemperatureSurfaceExterior, Value = _tempCurve.Tse, RequirementValue = null, IsRequirementMet = true, Unit = "°C" },
-        //            new OverviewItem { Symbol = Symbol.FRsi, Value = _tempCurve.FRsi, RequirementValue = 0.7, IsRequirementMet = _tempCurve.FRsi >= 0.7 },
-        //        };
-        //    }
-        //}
-
         /*
          * private Methods
          */
@@ -186,7 +204,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             OnPropertyChanged(nameof(SelectedElement));
             OnPropertyChanged(nameof(RequirementValues));
-            //OnPropertyChanged(nameof(OverviewItems));
         }
 
         private RectangularSection[] DrawLayerSections()

@@ -112,7 +112,8 @@ namespace BauphysikToolWPF.Models.Database.Helper
             { MaterialCategory.Masonry, 24.0 },
             { MaterialCategory.Plasters, 1.0 },
             { MaterialCategory.Sealant, 0.01 },
-            { MaterialCategory.Air, 4.0 }
+            { MaterialCategory.Air, 4.0 },
+            { MaterialCategory.Glass, 0.4 },
         };
 
         // DIN V 18599-10 Anhang A

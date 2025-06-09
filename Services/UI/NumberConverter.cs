@@ -44,8 +44,16 @@ namespace BauphysikToolWPF.Services.UI
             }
             else if (value is double doubleValue)
             {
-                // Format the number with four decimal places
-                return doubleValue.ToString(formatString, culture);
+                string formatted = doubleValue.ToString(formatString, culture);
+
+                // If value is non-zero but rounds to 0.00, return the full precision instead
+                if (Math.Abs(doubleValue) > 0 && formatted == (0.0).ToString(formatString, culture))
+                {
+                    // Show full precision without trailing zeros (or you can use "G" for general format)
+                    return doubleValue.ToString("G", culture); // Or use "0.####" for more control
+                }
+
+                return formatted;
             }
             return value?.ToString() ?? string.Empty;
         }
@@ -74,7 +82,16 @@ namespace BauphysikToolWPF.Services.UI
 
                 if (values[0] is double doubleValue)
                 {
-                    return doubleValue.ToString(formatString, culture);
+                    string formatted = doubleValue.ToString(formatString, culture);
+
+                    // If the value is non-zero but rounds to 0.00, return the full-precision value
+                    if (Math.Abs(doubleValue) > 0 && formatted == (0.0).ToString(formatString, culture))
+                    {
+                        // You can use "G" or "0.####" depending on formatting preferences
+                        return doubleValue.ToString("G", culture);
+                    }
+
+                    return formatted;
                 }
                 else if (values[0] is int intValue)
                 {

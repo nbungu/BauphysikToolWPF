@@ -30,6 +30,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 SelectedTabIndex = _targetLayer.Material.IsUserDefined ? 1 : 0;
                 SelectedMaterialCategoryIndex = (int)_targetLayer.Material.MaterialCategory;
                 SelectedListViewItem = _targetLayer.Material;
+                Thickness = _targetLayer.Thickness;
             }
             
             PropertyItem<string>.PropertyChanged += MaterialPropertiesChanged;
@@ -46,7 +47,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void ApplyChanges()
         {
-            if (Thickness <= 0 || SelectedListViewItem is null) return;
+            if (SelectedListViewItem is null)
+            {
+                MainWindow.ShowToast("Schicht kann der Konstruktion nicht hinzugefügt werden.", ToastType.Info);
+                return;
+            }
+            if (Thickness <= 0)
+            {
+                MainWindow.ShowToast("Schichtdicke muss größer 0,0 cm sein.", ToastType.Info);
+                return;
+            }
 
             int materialId;
 
@@ -76,11 +86,13 @@ namespace BauphysikToolWPF.UI.ViewModels
                 }
             }
 
-            // Update Material in existing Layer or Add new Layer
+            // Update Material in existing Layer
             if (_targetLayer != null)
             {
                 _targetLayer.MaterialId = materialId;
+                _targetLayer.Thickness = Thickness;
             }
+            // Add new Layer
             else if (Session.SelectedElement != null)
             {
                 // LayerPosition is always at end of List 
@@ -90,7 +102,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 {
                     LayerPosition = layerCount,
                     InternalId = layerCount,
-                    Thickness = Convert.ToDouble(Thickness),
+                    Thickness = Thickness,
                     IsEffective = true,
                     MaterialId = materialId,
                 };
@@ -149,7 +161,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         partial void OnSelectedListViewItemChanged(Material? value)
         {
             if (value is null) return;
-            Thickness = DefaultLayerWidthMapping[value.MaterialCategory];
+            // Only preset the Thickness if the Layer is not already set
+            if (_targetLayer is null) Thickness = DefaultLayerWidthMapping.TryGetValue(value.MaterialCategory, out var thickness) ? thickness : 1.0;
         }
 
         /*

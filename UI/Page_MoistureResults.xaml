@@ -8,7 +8,8 @@
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
              mc:Ignorable="d" 
-             d:DesignHeight="700" d:DesignWidth="1200">
+             d:DesignHeight="700"
+             d:DesignWidth="1200">
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
@@ -16,66 +17,7 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
-
         <ui:NumberConverter x:Key="NumberConverter" />
-
-        <!--OverviewListBox appearance: Used in ListBox as Style -->
-        <Style x:Key="OverviewListBoxStyle" TargetType="{x:Type ListBox}">
-            <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <!-- Creates Column Headers for the Items-->
-                    <ControlTemplate TargetType="{x:Type ListBox}">
-                        <DockPanel> <!-- Define SharedSizeScope in Parent Element which contains the shared sizing objects-->
-                            <!--Shared Sizing object 1: Header-->
-                            <Grid DockPanel.Dock="Top" Height="40" Margin="6,0,0,0">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="32"/>
-                                    <ColumnDefinition Width="32"/>
-                                    <ColumnDefinition MinWidth="96"/>
-                                    <ColumnDefinition MinWidth="96"/>
-                                </Grid.ColumnDefinitions>
-                                <Border Grid.ColumnSpan="4" BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="0,0,0,2"/>
-                                <Label Grid.Column="2" Content="Ist-Wert" HorizontalAlignment="Left"/>
-                                <Label Grid.Column="3" Content="Soll-Wert" HorizontalAlignment="Left"/>
-                            </Grid>
-                            <!--Shared Sizing object 2: The Items of the List-->
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
-                        </DockPanel>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!-- Style and behaviour of the ListBoxItem Container, NOT the Data inside!-->
-        <Style x:Key="OverviewItemContainerStyle" TargetType="{x:Type ListBoxItem}">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        </Style>
-
-        <!-- ListBoxItem Data Template for ItemsSource: 'OverviewItems'-->
-        <DataTemplate x:Key="OverviewItemDataTemplate">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="32"/>
-                    <ColumnDefinition Width="32"/>
-                    <ColumnDefinition MinWidth="96"/>
-                    <ColumnDefinition MinWidth="96"/>
-                </Grid.ColumnDefinitions>
-                <!--Here: Binding source are Items from the ItemsSource Property-->
-                <Ellipse Fill="{Binding Color}" Height="10" Width="10" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}" HorizontalAlignment="Right"/>
-                <StackPanel Grid.Column="2" Orientation="Horizontal">
-                    <Label Content="{Binding Value, Converter={StaticResource NumberConverter}}" ContentStringFormat="= {0}" FontWeight="Bold"/>
-                    <Label Content="{Binding Unit}" HorizontalAlignment="Left" Margin="-4,0,0,0" FontWeight="Bold"/>
-                </StackPanel>
-                <StackPanel Grid.Column="3" Orientation="Horizontal">
-                    <Label Content="{Binding RequirementStatement}"/>
-                    <Label Content="{Binding Unit}" HorizontalAlignment="Left"/>
-                </StackPanel>                
-            </Grid>
-        </DataTemplate>
     </UserControl.Resources>
 
     <!--Main Grid 2x2-->
@@ -120,14 +62,14 @@
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="8,0,0,0">
                         <Label Content="Innen" FontWeight="Bold"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding Ti}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="i" Value="{Binding Ti, Converter={StaticResource NumberConverter}, ConverterParameter=1}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding RelFi}" ValueUnit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="Φ" SubscriptText="i" Value="{Binding RelFi, Converter={StaticResource NumberConverter}, ConverterParameter=1}" ValueUnit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,8,0">
-                        <controls:EquationLabel BaseText="Φ" SubscriptText="e" Value="{Binding RelFe}" ValueUnit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="Φ" SubscriptText="e" Value="{Binding RelFe, Converter={StaticResource NumberConverter}, ConverterParameter=1}" ValueUnit="%" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
-                        <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding Te}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
+                        <controls:EquationLabel BaseText="θ" SubscriptText="e" Value="{Binding Te, Converter={StaticResource NumberConverter}, ConverterParameter=1}" ValueUnit="°C" VerticalAlignment="Center" Height="28" Margin="4,0,4,0"/>
                         <Line Y2="32" Stroke="LightGray" Margin="4" StrokeThickness="2"/>
                         <Label Content="Außen" FontWeight="Bold"/>
                     </StackPanel>
@@ -162,11 +104,94 @@
 
         <!--Bottom Right-->
         <Grid Grid.Column="1" Grid.Row="1" Margin="16">
-            <ListBox Style="{StaticResource OverviewListBoxStyle}"
-                     ItemsSource="{Binding OverviewItems}"
-                     ItemTemplate="{StaticResource OverviewItemDataTemplate}"
-                     ItemContainerStyle="{StaticResource OverviewItemContainerStyle}"
-                     SnapsToDevicePixels="True"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <Expander Grid.Row="0" Header="Wärme" IsExpanded="True" Margin="0,0,0,8">
+                <StackPanel>
+                    <controls:Gauge Title="U-Wert:"
+                            Caption="{Binding UValueCaption}"
+                            ToolTip="{Binding UValueTooltip}"
+                            Value="{Binding UValue}"
+                            UnitLabel="{Binding UValueUnitString}"
+                            MinValue="{Binding UValueScaleMin}"
+                            MaxValue="{Binding UValueScaleMax}"
+                            SymbolLabelBase="{Binding UValueSymbolBase}"
+                            ReferenceMarkerValue = "{Binding UValueRefMarker}"
+                            Margin="0,0,0,8"/>
+                    <controls:Gauge Title="R-Wert:"
+                            Caption="{Binding RValueCaption}"
+                            ToolTip="{Binding RValueTooltip}"
+                            Value="{Binding RValue}"
+                            UnitLabel="{Binding RValueUnitString}"
+                            MinValue="{Binding RValueScaleMin}"
+                            MaxValue="{Binding RValueScaleMax}"
+                            SymbolLabelBase="{Binding RValueSymbolBase}"
+                            SymbolLabelSubscript="{Binding RValueSymbolSubscript}"
+                            ReverseGradient="True"
+                            ReferenceMarkerValue = "{Binding RValueRefMarker}"
+                            Margin="0,0,0,8"/>
+                    <controls:Gauge Title="Wärmestrom:"
+                            Caption="{Binding QValueCaption}"
+                            ToolTip="{Binding QValueTooltip}"
+                            Value="{Binding QValue}"
+                            UnitLabel="{Binding QValueUnitString}"
+                            MinValue="{Binding QValueScaleMin}"
+                            MaxValue="{Binding QValueScaleMax}"
+                            SymbolLabelBase="{Binding QValueSymbolBase}"/>
+
+                </StackPanel>
+            </Expander>
+            <Expander Grid.Row="1" Header="Feuchte" IsExpanded="True" Margin="0,0,0,8">
+                <StackPanel>
+
+                    <controls:Gauge Title="Temperaturfaktor:"
+                            Caption="{Binding FRsiCaption}"
+                            ToolTip="{Binding FRsiTooltip}"
+                            Value="{Binding FRsiValue}"
+                            UnitLabel="{Binding FRsiValueUnitString}"
+                            MinValue="{Binding FRsiValueScaleMin}"
+                            MaxValue="{Binding FRsiValueScaleMax}"
+                            SymbolLabelBase="{Binding FRsiSymbolBase}"
+                            SymbolLabelSubscript="{Binding FRsiSymbolSubscript}"
+                            MarkerSymbolLabelBase="{Binding FRsiMarkerSymbolBase}"
+                            MarkerSymbolLabelSubscript="{Binding FRsiMarkerSymbolSubscript}"
+                            ReferenceMarkerValue = "{Binding FRsiValueRefMarker}"
+                            ReverseGradient="True"
+                            Margin="0,0,0,8"/>
+                    <controls:Gauge Title="Oberflächentemperatur, Innen:"
+                            Caption="{Binding TsiCaption}"
+                            Value="{Binding TsiValue}"
+                            UnitLabel="{Binding TsiValueUnitString}"
+                            MinValue="{Binding TsiValueScaleMin}"
+                            MaxValue="{Binding TsiValueScaleMax}"
+                            SymbolLabelBase="{Binding TsiSymbolBase}"
+                            SymbolLabelSubscript="{Binding TsiSymbolSubscript}"
+                            MarkerSymbolLabelBase="{Binding TsiMarkerSymbolBase}"
+                            MarkerSymbolLabelSubscript="{Binding TsiMarkerSymbolSubscript}"
+                            ReferenceMarkerValue = "{Binding TsiValueRefMarker}"
+                            ReverseGradient="True"
+                            Margin="0,0,0,8"/>
+                    <controls:Gauge Title="Relative Luftfeuchte, Innen:"
+                            Caption="{Binding RelFiCaption}"
+                            Value="{Binding RelFiValue}"
+                            UnitLabel="{Binding RelFiValueUnitString}"
+                            MinValue="{Binding RelFiValueScaleMin}"
+                            MaxValue="{Binding RelFiValueScaleMax}"
+                            SymbolLabelBase="{Binding RelFiSymbolBase}"
+                            SymbolLabelSubscript="{Binding RelFiSymbolSubscript}"
+                            MarkerSymbolLabelBase="{Binding RelFiMarkerSymbolBase}"
+                            MarkerSymbolLabelSubscript="{Binding RelFiMarkerSymbolSubscript}"
+                            ReferenceMarkerValue = "{Binding RelFiValueRefMarker}"/>
+                </StackPanel>
+
+
+            </Expander>
+
+
+
         </Grid>
 
     </Grid>

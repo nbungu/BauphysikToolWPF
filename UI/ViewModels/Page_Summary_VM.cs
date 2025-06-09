@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Calculation;
+﻿using System;
+using BauphysikToolWPF.Calculation;
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
@@ -74,23 +75,68 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> LayerMeasurementFullVerticalCut => MeasurementDrawing.GetFullLayerMeasurementChain(_verticalCut);
 
         // Results
-        public CheckRequirements RequirementValues => new CheckRequirements(SelectedElement, Session.CheckRequirementsConfig);
+        public CheckRequirements RequirementValues { get; } = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
 
-        public double? UValue => RequirementValues.Element?.UValue;
-        public double UValueScaleMin => 0.0;
-        public double UValueScaleMax => 2 * UValueRefMarker ?? 2 * UValue ?? 1.0;
-        public double? UValueRefMarker => RequirementValues.UMax;
-        public string UValueUnitString => GetUnitStringFromSymbol(Symbol.UValue);
-        public string UValueCaption => RequirementValues.UMaxRequirementSourceName != null ? $"Grenzwert nach {RequirementValues.UMaxRequirementSourceName}" : "";
 
-        public double? RValue => RequirementValues.Element?.RGesValue;
-        public double RValueScaleMin => 0.0;
-        public double RValueScaleMax => 2 * RValueRefMarker ?? 2 * RValue ?? 1.0;
-        public double? RValueRefMarker => RequirementValues.RMin;
-        public string RValueUnitString => GetUnitStringFromSymbol(Symbol.RValueElement);
-        public string RValueCaption => RequirementValues.RMinRequirementSourceName != null ? $"Grenzwert nach {RequirementValues.RMinRequirementSourceName}" : "";
-        public string RValueSymbolLabelBase => SymbolMapping[Symbol.RValueElement].baseText;
-        public string RValueSymbolLabelSubscript => SymbolMapping[Symbol.RValueElement].subscriptText;
+        private GaugeItem? _uValueGauge;
+        /// <summary>
+        /// Gets the gauge configuration, lazily initializing it on first access.
+        /// 
+        /// This lazy pattern ensures that the GaugeItem is only constructed when needed, 
+        /// avoiding repeated allocations from XAML bindings that may call this getter multiple times. 
+        /// It improves performance and keeps initialization logic encapsulated.
+        /// </summary>
+        public GaugeItem UValueGauge
+        {
+            get
+            {
+                if (_uValueGauge == null)
+                {
+                    double? uMax = RequirementValues.UMax;
+                    double elementUValue = RequirementValues.Element.UValue;
+                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, RequirementValues.UMaxComparisonRequirement)
+                    {
+                        Caption = RequirementValues.UMaxCaption,
+                        ScaleMin = 0.0,
+                        ScaleMax = uMax.HasValue
+                            ? 2 * uMax.Value
+                            : Math.Max(1.0, elementUValue + 0.1)
+                    };
+                }
+
+                return _uValueGauge;
+            }
+        }
+
+        private GaugeItem? _rValueGauge;
+        /// <summary>
+        /// Gets the gauge configuration, lazily initializing it on first access.
+        /// 
+        /// This lazy pattern ensures that the GaugeItem is only constructed when needed, 
+        /// avoiding repeated allocations from XAML bindings that may call this getter multiple times. 
+        /// It improves performance and keeps initialization logic encapsulated.
+        /// </summary>
+        public GaugeItem RValueGauge
+        {
+            get
+            {
+                if (_rValueGauge == null)
+                {
+                    var uValueGauge = UValueGauge; // ensure initialized once
+                    double uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
+                    double targetRValueNormalized = 1.0 - uValueNormalized;
+
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, RequirementValues.Element.RGesValue, RequirementValues.RMin, RequirementValues.RMinComparisonRequirement)
+                    {
+                        Caption = RequirementValues.RMinCaption,
+                        ScaleMin = 0.0,
+                        ScaleMax = RequirementValues.Element.RGesValue / targetRValueNormalized,
+                    };
+                }
+
+                return _rValueGauge;
+            }
+        }
 
         public List<IPropertyItem> ElementProperties => Session.SelectedElement != null ? new List<IPropertyItem>
         {

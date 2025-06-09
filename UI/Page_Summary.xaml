@@ -7,7 +7,8 @@
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d"
-            d:DesignHeight="700" d:DesignWidth="1200">
+             d:DesignHeight="700"
+             d:DesignWidth="1200">
 
     <UserControl.DataContext>
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
@@ -202,26 +203,34 @@
         <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="16">
             <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                 <StackPanel>
-                    <controls:Gauge Title="U-Wert:"
-                                    Caption="{Binding UValueCaption}"
-                                    Value="{Binding UValue}"
-                                    UnitLabel="{Binding UValueUnitString}"
-                                    MinValue="{Binding UValueScaleMin}"
-                                    MaxValue="{Binding UValueScaleMax}"
-                                    ReferenceMarkerValue = "{Binding UValueRefMarker}"
-                                    Margin="8,0,8,16"/>
-                    <controls:Gauge Title="R-Wert:"
-                                    Caption="{Binding RValueCaption}"
-                                    Value="{Binding RValue}"
-                                    UnitLabel="{Binding RValueUnitString}"
-                                    MinValue="{Binding RValueScaleMin}"
-                                    MaxValue="{Binding RValueScaleMax}"
-                                    SymbolLabelBase="{Binding RValueSymbolLabelBase}"
-                                    SymbolLabelSubscript="{Binding RValueSymbolLabelSubscript}"
+                    <controls:Gauge Title="{Binding UValueGauge.Title}"
+                                    Caption="{Binding UValueGauge.Caption}"
+                                    ToolTip="{Binding UValueGauge.Tooltip}"
+                                    Value="{Binding UValueGauge.Value}"
+                                    UnitLabel="{Binding UValueGauge.Unit}"
+                                    MinValue="{Binding UValueGauge.ScaleMin}"
+                                    MaxValue="{Binding UValueGauge.ScaleMax}"
+                                    SymbolLabelBase="{Binding UValueGauge.SymbolBase}"
+                                    SymbolLabelSubscript="{Binding UValueGauge.SymbolSubscript}"
+                                    ReferenceMarkerValue="{Binding UValueGauge.MarkerValue}"
+                                    MarkerSymbolLabelBase="{Binding UValueGauge.MarkerSymbolBase}"
+                                    MarkerSymbolLabelSubscript="{Binding UValueGauge.MarkerSymbolSubscript}"
+                                    Margin="0,0,0,8"/>
+                    <controls:Gauge Title="{Binding RValueGauge.Title}"
+                                    Caption="{Binding RValueGauge.Caption}"
+                                    ToolTip="{Binding RValueGauge.Tooltip}"
+                                    Value="{Binding RValueGauge.Value}"
+                                    UnitLabel="{Binding RValueGauge.Unit}"
+                                    MinValue="{Binding RValueGauge.ScaleMin}"
+                                    MaxValue="{Binding RValueGauge.ScaleMax}"
+                                    SymbolLabelBase="{Binding RValueGauge.SymbolBase}"
+                                    SymbolLabelSubscript="{Binding RValueGauge.SymbolSubscript}"
+                                    ReferenceMarkerValue="{Binding RValueGauge.MarkerValue}"
+                                    MarkerSymbolLabelBase="{Binding RValueGauge.MarkerSymbolBase}"
+                                    MarkerSymbolLabelSubscript="{Binding RValueGauge.MarkerSymbolSubscript}"
                                     ReverseGradient="True"
-                                    ReferenceMarkerValue = "{Binding RValueRefMarker}"
-                                    Margin="8,0,8,16"/>
-                    
+                                    Margin="0,0,0,8"/>
+
                     <!--Eigenschaften-->
                     <Expander Header="Bauteildaten" IsExpanded="True" Margin="0,0,0,8">
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Disabled">

@@ -50,7 +50,7 @@ namespace BauphysikToolWPF.Services.UI
             { NavigationPage.ProjectData, "Projektdaten"},
             { NavigationPage.ElementCatalogue, "Bauteilkatalog"},
             { NavigationPage.LayerSetup, "Bearbeiten"},
-            { NavigationPage.Summary, "Übersicht"},
+            { NavigationPage.Summary, "Zusammenfassung"},
             { NavigationPage.TemperatureCurve, "Temperaturverlauf"},
             { NavigationPage.GlaserCurve, "Glaser-Diagramm"},
             { NavigationPage.DynamicHeatCalc, "Dynamisch"},
@@ -59,15 +59,15 @@ namespace BauphysikToolWPF.Services.UI
         };
         public static readonly Dictionary<NavigationPage, string> PageTooltipMapping = new()
         {
-            { NavigationPage.ProjectData, "Projektdaten"},
-            { NavigationPage.ElementCatalogue, "Übersicht aller angelegten Bauteile"},
-            { NavigationPage.LayerSetup, "Eingabe des Bauteils mit beliebigen Schichten und Materialien"},
-            { NavigationPage.Summary, "Grafische Zusammenfassung und bauphysikalische Kennwerte des Bauteils"},
-            { NavigationPage.TemperatureCurve, "Zeigt den stationären Temperaturverlauf im Bauteilquerschnitt"},
-            { NavigationPage.GlaserCurve, "Zeigt das Glaser-Diagramm im Bauteilquerschnitt"},
+            { NavigationPage.ProjectData, "Übersicht und Eingabe der Projektdaten."},
+            { NavigationPage.ElementCatalogue, "Übersicht aller projektbezogenen Konstruktionen."},
+            { NavigationPage.LayerSetup, "Erstellen der Konstuktion mit beliebigen Schichten und Materialien; Eingabe der Umgebungsrandbedingungen."},
+            { NavigationPage.Summary, "Vertikal- und Querschnitt der Konstruktion; Zusammenfassung der bauphysikalischen Kennwerte."},
+            { NavigationPage.TemperatureCurve, "Zeigt stationären Temperaturverlauf im Bauteilquerschnitt."},
+            { NavigationPage.GlaserCurve, "Zeigt Glaser-Diagramm im Bauteilquerschnitt."},
             { NavigationPage.DynamicHeatCalc, "Dynamische Wärmeberechnung"},
             { NavigationPage.BuildingEnvelope, "Eingabe der Gebäudehülle"},
-            { NavigationPage.EnvelopeSummary, "Zusammenfassung der Hüllflächenergebnisse und Anpassung der Berechnungs-Randbedingungen"},
+            { NavigationPage.EnvelopeSummary, "Zusammenfassung der Hüllflächenergebnisse und Anpassung der Berechnungs-Randbedingungen."},
         };
         public static readonly Dictionary<NavigationPage, string> PageIconMapping = new()
         {

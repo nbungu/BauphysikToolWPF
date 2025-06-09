@@ -31,23 +31,29 @@
 
         <!-- Header/Value Labels -->
         <StackPanel Grid.Row="0" Orientation="Horizontal" ToolTip="{Binding ToolTip, ElementName=RootGauge}">
+            <!-- TITLE -->
             <TextBlock Text="{Binding Title, ElementName=RootGauge}"
-                   Visibility="{Binding Title, ElementName=RootGauge, Converter={StaticResource StringToVisibilityConverter}}"
-                   FontWeight="Bold"
-                   VerticalAlignment="Center"
-                   Margin="0,0,8,0" />
+                       Visibility="{Binding Title, ElementName=RootGauge, Converter={StaticResource StringToVisibilityConverter}}"
+                       FontWeight="Normal"
+                       VerticalAlignment="Center"
+                       Margin="0,0,8,0" />
+            <!-- SYMBOL -->
             <customControls:SubscriptLabel Visibility="{Binding SymbolLabelBase, ElementName=RootGauge, Converter={StaticResource StringToVisibilityConverter}}"
                                            BaseText="{Binding SymbolLabelBase, ElementName=RootGauge}"
                                            SubscriptText="{Binding SymbolLabelSubscript, ElementName=RootGauge}"
+                                           FontSize="16"
                                            AppendText="="
                                            FontWeight="Bold"
                                            VerticalAlignment="Center"
-                                           Margin="-4,0,0,0"/>
+                                           Margin="-4,-2,0,0"/>
+            <!-- VALUE -->
             <TextBlock Text="{Binding Value, ElementName=RootGauge, Converter={StaticResource NumberConverter}}"
                    Visibility="{Binding Value, ElementName=RootGauge, Converter={StaticResource NullToVisibilityConverter}}"
                    FontSize="16"
-                   FontWeight="DemiBold"
-                   VerticalAlignment="Center"/>
+                   FontWeight="Bold"
+                   VerticalAlignment="Center"
+                   Margin="0,-2,0,0"/>
+            <!-- UNIT -->
             <TextBlock Text="{Binding UnitLabel, ElementName=RootGauge}"
                    Visibility="{Binding UnitLabel, ElementName=RootGauge, Converter={StaticResource StringToVisibilityConverter}}"
                    FontWeight="Normal"
@@ -79,7 +85,7 @@
         </Grid>
 
         <!-- Gauge bar -->
-        <Grid Grid.Row="2" Height="24">
+        <Grid Grid.Row="2" Height="20">
             <Border Height="16" Background="Transparent" ClipToBounds="True">
                 <Rectangle RadiusX="6" RadiusY="6">
                     <Rectangle.Style>
@@ -113,7 +119,7 @@
             </Border>
 
             <!-- Reference Marker -->
-            <Rectangle Width="2" Height="24" Fill="{StaticResource PrimaryDarkMediumBrush}"
+            <Rectangle Width="2" Height="20" Fill="{StaticResource PrimaryDarkMediumBrush}"
                        Visibility="{Binding ReferenceMarkerValue, ElementName=RootGauge, Converter={StaticResource NullToVisibilityConverter}}"
                        HorizontalAlignment="Left">
                 <Rectangle.RenderTransform>
@@ -178,7 +184,6 @@
                    Text="{Binding Caption, RelativeSource={RelativeSource AncestorType=UserControl}}"
                    Foreground="{StaticResource PrimaryDarkMediumBrush}"
                    FontWeight="Normal"
-                   HorizontalAlignment="Left"/>
-
+                   HorizontalAlignment="Center"/>
     </Grid>
 </UserControl>

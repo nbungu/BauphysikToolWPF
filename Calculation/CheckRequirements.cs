@@ -7,79 +7,81 @@ using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {
-    /*
-     * No static Class due to often changing 'Project' and 'Construction'.
-     * Therefore the Calculations will always be up to date when calling Class with 'new'.
-     * Con: Needs computation time on every call even if variables did not change.
-     */
-
+    
     public class CheckRequirements
     {
+        public CheckRequirementsConfig Config { get; }
         public Element? Element { get; }
-        //public BuildingAgeType BuildingAge { get; }
-        //public BuildingUsageType BuildingUsage { get; }
-        public double Ti { get; }
-        public double Te { get; }
-        public List<DocumentParameter> RelevantRequirements { get; set; } = new List<DocumentParameter>();
+        public List<DocumentParameter> RelevantRequirements { get; private set; } = new List<DocumentParameter>();
+
         public double? UMax { get; private set; }
         public string UMaxRequirementSourceName => RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null)?.DocumentSource.SourceName ?? "";
-        public string UMaxComparisonDescription => RequirementComparisonDescriptionMapping[RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null)?.RequirementComparison ?? RequirementComparison.None];
+        public RequirementComparison UMaxComparisonRequirement => RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null)?.RequirementComparison ?? RequirementComparison.None;
+        public string UMaxComparisonDescription => RequirementComparisonDescriptionMapping[UMaxComparisonRequirement];
         public string UMaxCaption => UMaxComparisonDescription != "" && UMaxRequirementSourceName != "" ? $"{UMaxComparisonDescription} nach {UMaxRequirementSourceName}" : "";
+        public bool IsUValueOk => Element?.ThermalResults.UValue <= UMax;
+
+
 
         public double? RMin { get; private set; }
         public string? RMinRequirementSourceName => RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.RValueElement, null)?.DocumentSource.SourceName;
+        public RequirementComparison RMinComparisonRequirement => RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.RValueElement, null)?.RequirementComparison ?? RequirementComparison.None;
+        public string RMinComparisonDescription => RequirementComparisonDescriptionMapping[RMinComparisonRequirement];
+        public string RMinCaption => RMinComparisonDescription != "" && RMinRequirementSourceName != null ? $"{RMinComparisonDescription} nach {RMinRequirementSourceName}" : "";
+        public bool IsRValueOk => Element?.RGesValue >= RMin;
+
+
+
         public double? QMax { get; private set; }
+        public bool IsQValueOk => Element?.ThermalResults.QValue <= QMax;
 
-        public bool IsUValueOk => Element?.ThermalResults.UValue <= UMax; // GEG Requirements
-        public bool IsRValueOk => Element?.RGesValue >= RMin; // DIN 4108-2 Requirements
-        public bool IsQValueOk => Element?.ThermalResults.QValue <= QMax; // Not mandatory as requirement
-
-        public CheckRequirements() { }
         public CheckRequirements(Element? element, CheckRequirementsConfig config)
         {
             Element = element;
-            if (Element is null) return;
+            Config = config;
 
-            //BuildingAge = config.BuildingAge;
-            //BuildingUsage = config.BuildingUsage;
-            Ti = config.Ti;
-            Te = config.Te;
-
-            // Force recalculation to work with latest values
-            Element.UpdateResults();
-
-            RelevantRequirements = Element.Construction.Requirements.Where(r => config.RelevantDocumentSources.Contains(r.DocumentSource.DocumentSourceType)).ToList();
-
-            SetUMax();
-            SetRMin();
-            SetQMax();
+            Update();
         }
 
-        private void SetUMax()
+        public void Update()
         {
             if (Element is null) return;
+
+            if (Element.Recalculate == false) Element.RefreshResults();
+
+            RelevantRequirements = Element.Construction.Requirements.Where(r => Config.RelevantDocumentSources.Contains(r.DocumentSource.DocumentSourceType)).ToList();
+
+            UMax = GetUMax();
+            RMin = GetRMin();
+            QMax = GetQMax();
+        }
+
+        private double? GetUMax()
+        {
+            if (Element is null) return null;
 
             DocumentParameter? specificRequirement = RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null);
-            if (specificRequirement is null) return;
+            if (specificRequirement is null) return null;
 
             // TODO: Distinct between Ti >= 19 and Ti > 12 && Ti < 19
-            UMax = specificRequirement.Value;
+            return specificRequirement.Value;
         }
 
-        private void SetRMin()
+        private double? GetRMin()
         {
-            if (Element is null) return;
+            if (Element is null) return null;
 
             DocumentParameter? specificRequirement = RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.RValueElement, null);
-            if (specificRequirement is null) return;
+            if (specificRequirement is null) return null;
 
             //TODO: Distinct between Element.AreaMassDens >= 100 and Element.AreaMassDens < 100
-            RMin = specificRequirement.Value;
+            return specificRequirement.Value;
         }
 
-        private void SetQMax()
+        private double? GetQMax()
         {
-            if (UMax != null && UMax >= 0) QMax = UMax * (Ti - Te);
+            if (UMax != null && UMax >= 0) return UMax * (Config.Ti - Config.Te);
+            return null;
         }
     }
 }

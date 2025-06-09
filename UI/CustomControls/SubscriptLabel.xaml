@@ -20,6 +20,8 @@
         <Style TargetType="{x:Type controls:SubscriptLabel}">
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="SubscriptFontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Normal"/>
+            <Setter Property="FontStyle" Value="Normal"/>
         </Style>
 
     </UserControl.Resources>
@@ -27,15 +29,16 @@
     <Grid Margin="4,0,0,0">
         <StackPanel Orientation="Horizontal">
             <TextBlock FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}" Text="{Binding PrependText, ElementName=SubscriptLabelControl}" VerticalAlignment="Center"/>
-            <TextBlock FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}" Text="{Binding BaseText, ElementName=SubscriptLabelControl}" VerticalAlignment="Center"/>
+            <TextBlock FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}" Text="{Binding BaseText, ElementName=SubscriptLabelControl}" VerticalAlignment="Center" FontStyle="{Binding FontStyle, ElementName=SubscriptLabelControl}"/>
             <TextBlock FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}" Margin="-3,1,0,0" VerticalAlignment="Center">
                 <Run Text=""/>
-                <Run BaselineAlignment="Subscript" Text="{Binding SubscriptText, ElementName=SubscriptLabelControl}" FontSize="{Binding SubscriptFontSize, ElementName=SubscriptLabelControl}"/>
+                <Run BaselineAlignment="Subscript" Text="{Binding SubscriptText, ElementName=SubscriptLabelControl}" FontSize="{Binding SubscriptFontSize, ElementName=SubscriptLabelControl}" FontStyle="{Binding FontStyle, ElementName=SubscriptLabelControl}"/>
             </TextBlock>
             <TextBlock
                 Visibility="{Binding AppendText, ElementName=SubscriptLabelControl, Converter={StaticResource StringToVisibilityConverter}}"
-                FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}"
                 Text="{Binding AppendText, ElementName=SubscriptLabelControl}"
+                FontSize="{Binding FontSize, ElementName=SubscriptLabelControl}"
+                FontWeight="{Binding FontWeight, ElementName=SubscriptLabelControl}"
                 VerticalAlignment="Center"
                 Margin="3,0,3,0"/>
         </StackPanel>
