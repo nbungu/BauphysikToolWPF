@@ -91,6 +91,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 _targetLayer.MaterialId = materialId;
                 _targetLayer.Thickness = Thickness;
+                // Trigger event to update LayerWindow and all subscriber windows
+                Session.OnSelectedLayerChanged();
             }
             // Add new Layer
             else if (Session.SelectedElement != null)
@@ -107,9 +109,9 @@ namespace BauphysikToolWPF.UI.ViewModels
                     MaterialId = materialId,
                 };
                 Session.SelectedElement.AddLayer(layer);
+                // Trigger event to update LayerWindow and all subscriber windows
+                Session.OnSelectedElementChanged();
             }
-            // Trigger event to update LayerWindow and all subscriber windows
-            Session.OnSelectedLayerChanged();
         }
 
         [RelayCommand]

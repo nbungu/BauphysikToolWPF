@@ -43,7 +43,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                     LayerNumber = _targetLayer.LayerNumber,
                     IsEffective = _targetLayer.IsEffective,
                 };
-
             }
             SelectedListViewItem = _tempConstruction.Material;
         }

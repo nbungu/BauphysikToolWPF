@@ -65,8 +65,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the Values above
          */
 
-        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Glaser-Diagramm" : "";
-        public Element SelectedElement => Session.SelectedElement;
+        public string Title { get; } = Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Glaser-Diagramm" : "";
+        public string SelectedElementColorCode { get; } = Session.SelectedElement?.ColorCode ?? string.Empty;
+        public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
         public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility ResultsChartVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         public double Ti => _glaser.Ti;
@@ -81,7 +82,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipTextPaint { get; set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
 
 
-        public CheckRequirements RequirementValues => new CheckRequirements(SelectedElement, Session.CheckRequirementsConfig);
+        public CheckRequirements RequirementValues => new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
 
         public double UValue => RequirementValues.Element.UValue;
         public string UValueCaption => RequirementValues.UMaxCaption;
@@ -155,7 +156,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-            OnPropertyChanged(nameof(SelectedElement));
             OnPropertyChanged(nameof(RequirementValues));
         }
         

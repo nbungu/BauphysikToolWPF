@@ -30,9 +30,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (Session.SelectedElement is null) return;
 
-            // Allow other UserControls to trigger RefreshXamlBindings of this Window
-            Session.SelectedElementChanged += RefreshXamlBindings;
-
             _dynamicTempCalc = new DynamicTempCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
             _dynamicTempCalc.CalculateHomogeneous();
             _dynamicTempCalc.CalculateDynamicValues();
@@ -90,8 +87,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the Values above
          */
 
-        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Dynamisches Bauteilverhalten" : "";
-        public Element SelectedElement => Session.SelectedElement;
+        public string Title { get; } = Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Dynamisches Bauteilverhalten" : "";
+        public string SelectedElementColorCode { get; } = Session.SelectedElement?.ColorCode ?? string.Empty;
+        public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
 
         // Vertical Cut
         public List<IDrawingGeometry> VerticalCutDrawing => _verticalCut.DrawingGeometries;
@@ -134,11 +132,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * private Methods
          */
-
-        private void RefreshXamlBindings()
-        {
-            OnPropertyChanged(nameof(SelectedElement));
-        }
 
         private ISeries[] GetDataPoints_e()
         {

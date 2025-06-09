@@ -1,12 +1,11 @@
-﻿using System;
-using BauphysikToolWPF.Calculation;
-using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Calculation;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using static BauphysikToolWPF.Models.UI.Enums;
@@ -22,13 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private readonly CrossSectionDrawing _verticalCut = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
         private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
 
-        public Page_Summary_VM()
-        {
-            if (Session.SelectedElement is null) return;
-            
-            // Allow other UserControls to trigger RefreshXamlBindings of this Window
-            Session.SelectedElementChanged += RefreshXamlBindings;
-        }
+        public Page_Summary_VM() { }
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -55,9 +48,10 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the _selection Values above
          */
 
-        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Zusammenfassung " : "";
-        public Element? SelectedElement => Session.SelectedElement;
-        public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+        public string Title { get; } = Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Zusammenfassung " : "";
+        public string SelectedElementColorCode { get; } = Session.SelectedElement?.ColorCode ?? string.Empty;
+        public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
+        public Visibility NoLayersVisibility { get; } = Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
 
         // Cross Section
 
@@ -160,10 +154,5 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => Session.RelFi) { DecimalPlaces = 1 },
             new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => Session.RelFe) { DecimalPlaces = 1 },
         };
-
-        private void RefreshXamlBindings()
-        {
-            OnPropertyChanged(nameof(SelectedElement));
-        }
     }
 }

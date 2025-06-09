@@ -21,6 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class Page_LayerSetup_VM : ObservableObject
     {
         private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+        private readonly CheckRequirements _requirementValues = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
 
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
@@ -34,13 +35,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.SelectedElement.AssignInternalIdsToLayers();
 
             // Allow child Windows to trigger UpdateAll of this Window
-            Session.SelectedLayerChanged += UpdateAll;
-            Session.EnvVarsChanged += UpdateRecalculate;
+            Session.SelectedLayerChanged += LayerChanged;
+            Session.SelectedElementChanged += ElementChanged;
+            Session.EnvVarsChanged += EnvVarsChanged;
 
             // For values changed in PropertyDataGrid TextBox
-            PropertyItem<double>.PropertyChanged += TriggerSelectedLayerChanged;
-            PropertyItem<int>.PropertyChanged += TriggerSelectedLayerChanged;
-            PropertyItem<bool>.PropertyChanged += TriggerSelectedLayerChanged;
+            PropertyItem<double>.PropertyChanged += PropertyItemChanged;
+            PropertyItem<int>.PropertyChanged += PropertyItemChanged;
+            PropertyItem<bool>.PropertyChanged += PropertyItemChanged;
         }
 
         /*
@@ -103,7 +105,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (SelectedListViewItem is null) return;
 
             Session.SelectedElement.RemoveLayer(SelectedListViewItem.InternalId);
-            Session.OnSelectedLayerChanged();
+            Session.OnSelectedElementChanged();
             SelectedListViewItem = null;
         }
 
@@ -114,7 +116,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (SelectedListViewItem is null) return;
 
             Session.SelectedElement.DuplicateLayer(SelectedListViewItem.InternalId);
-            Session.OnSelectedLayerChanged();
+            Session.OnSelectedElementChanged();
         }
 
         [RelayCommand]
@@ -124,7 +126,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (SelectedListViewItem is null) return;
 
             Session.SelectedElement.MoveLayerPositionToOutside(SelectedListViewItem.InternalId);
-            Session.OnSelectedLayerChanged();
+            Session.OnSelectedElementChanged();
         }
 
         [RelayCommand]
@@ -134,7 +136,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (SelectedListViewItem is null) return;
 
             Session.SelectedElement.MoveLayerPositionToInside(SelectedListViewItem.InternalId);
-            Session.OnSelectedLayerChanged();
+            Session.OnSelectedElementChanged();
         }
 
         [RelayCommand]
@@ -179,6 +181,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(SubConstructionMeasurement))]
         [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
         [NotifyPropertyChangedFor(nameof(CanvasSize))]
+        [NotifyPropertyChangedFor(nameof(NoLayersVisibility))]
         private List<Layer>? _layerList = Session.SelectedElement?.Layers;
 
         [ObservableProperty]
@@ -211,8 +214,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         * Not Observable, not directly mutated by user input
         */
        
-        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Schichtaufbau " : "";
-        public Element? SelectedElement => Session.SelectedElement;
+        public string Title { get; } = Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Schichtaufbau " : "";
+        public string SelectedElementColorCode { get; } = Session.SelectedElement?.ColorCode ?? string.Empty;
+        public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
+
         public bool IsLayerSelected => SelectedListViewItem != null;
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
@@ -230,9 +235,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string> RseKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Select(e => e.Name).ToList();
         public List<string> RelFiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Select(e => e.Name).ToList();
         public List<string> RelFeKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Select(e => e.Name).ToList();
-        
-
-        public CheckRequirements RequirementValues { get; } = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
 
 
         private GaugeItem? _uValueGauge;
@@ -249,11 +251,11 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 if (_uValueGauge == null)
                 {
-                    double? uMax = RequirementValues.UMax;
-                    double elementUValue = RequirementValues.Element.UValue;
-                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, RequirementValues.UMaxComparisonRequirement)
+                    double? uMax = _requirementValues.UMax;
+                    double elementUValue = _requirementValues.Element.UValue;
+                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _requirementValues.UMaxComparisonRequirement)
                     {
-                        Caption = RequirementValues.UMaxCaption,
+                        Caption = _requirementValues.UMaxCaption,
                         ScaleMin = 0.0,
                         ScaleMax = uMax.HasValue ? Math.Max(2 * uMax.Value, elementUValue + 0.1) : Math.Max(1.0, elementUValue + 0.1)
                     };
@@ -280,11 +282,11 @@ namespace BauphysikToolWPF.UI.ViewModels
                     double uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
                     double targetRValueNormalized = 1.0 - uValueNormalized;
 
-                    _rValueGauge = new GaugeItem(Symbol.RValueElement, RequirementValues.Element.RGesValue, RequirementValues.RMin, RequirementValues.RMinComparisonRequirement)
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, _requirementValues.Element.RGesValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
                     {
-                        Caption = RequirementValues.RMinCaption,
+                        Caption = _requirementValues.RMinCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = RequirementValues.Element.RGesValue / targetRValueNormalized,
+                        ScaleMax = _requirementValues.Element.RGesValue / targetRValueNormalized,
                     };
                 }
                 return _rValueGauge;
@@ -386,47 +388,53 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Trigger Hooks
          */
 
+        private void ElementChanged()
+        {
+            RefreshGauges();
+            RefreshDrawings();
+            RefreshPropertyGrid();
+
+            LayerList = null;
+            LayerList = Session.SelectedElement?.Layers;
+            SelectedListViewItem = null;
+            SelectedListViewItem = Session.SelectedLayer;
+        }
+
         /// <summary>
         /// Updates XAML Bindings and the Reset Calculation Flag
         /// </summary>
-        private void UpdateAll()
+        private void LayerChanged()
         {
-            UpdateRecalculate();
-
+            RefreshGauges();
             RefreshDrawings();
+            RefreshPropertyGrid();
 
+            // when sub construction changes: To reflect the new buttons in the listView
             LayerList = null;
-            LayerList = SelectedElement?.Layers;
+            LayerList = Session.SelectedElement?.Layers;
             SelectedListViewItem = null;
             SelectedListViewItem = Session.SelectedLayer;
-
-            // For updating MVVM Capsulated Properties
-            OnPropertyChanged(nameof(SelectedElement));
-            OnPropertyChanged(nameof(LayerProperties));
-            OnPropertyChanged(nameof(NoLayersVisibility));
-        }
-
-        private void UpdateRecalculate()
-        {
-            Session.SelectedElement.RefreshResults();
-            
-            RefreshGauges();
         }
 
         // To also trigger the SelectedLayerChanged event for other subscribers
-        private void TriggerSelectedLayerChanged()
+        private void PropertyItemChanged()
         {
+            // To notify all other subscribers (e.g. MainWindow) of this Event aswell
             Session.OnSelectedLayerChanged();
         }
 
-        private void RefreshGauges()
+        private void EnvVarsChanged()
         {
-            RequirementValues.Update();
-            // Forces the re-creation of the GaugeItems with updated values
-            _uValueGauge = null;
-            _rValueGauge = null;
-            OnPropertyChanged(nameof(UValueGauge));
-            OnPropertyChanged(nameof(RValueGauge));
+            RefreshGauges();
+        }
+
+        private void RefreshPropertyGrid()
+        {
+            if (SelectedListViewItem is null) return;
+
+            SelectedListViewItem.RefreshPropertyBag();
+            OnPropertyChanged(nameof(LayerProperties));
+            OnPropertyChanged(nameof(SubConstructionProperties));
         }
 
         private void RefreshDrawings()
@@ -437,6 +445,17 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(SubConstructionMeasurement));
             OnPropertyChanged(nameof(CrossSectionDrawing));
             OnPropertyChanged(nameof(CanvasSize));
+        }
+
+        private void RefreshGauges()
+        {
+            // Recalulates the Element
+            _requirementValues.Update();
+            // Forces the re-creation of the GaugeItems with updated values
+            _uValueGauge = null;
+            _rValueGauge = null;
+            OnPropertyChanged(nameof(UValueGauge));
+            OnPropertyChanged(nameof(RValueGauge));
         }
     }
 }

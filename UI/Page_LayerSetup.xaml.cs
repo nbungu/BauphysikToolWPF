@@ -5,6 +5,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
 namespace BauphysikToolWPF.UI
 {
@@ -229,14 +230,16 @@ namespace BauphysikToolWPF.UI
 
             while (current != null)
             {
-                // Find the ComboBox that owns the popup (logical or visual tree walk)
+                // Check for ComboBox in visual/logical tree
                 if (current is FrameworkElement fe && fe.TemplatedParent is ComboBox comboBox)
                 {
                     if (comboBox.IsDropDownOpen)
-                        return; // Let the ComboBox handle the scroll
+                        return; // ComboBox should handle scrolling
                 }
 
-                current = VisualTreeHelper.GetParent(current);
+                current = current is Visual or Visual3D
+                    ? VisualTreeHelper.GetParent(current)
+                    : LogicalTreeHelper.GetParent(current);
             }
 
             // Scroll parent ScrollViewer

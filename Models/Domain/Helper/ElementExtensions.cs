@@ -65,7 +65,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             if (neighbour == null) return;
             neighbour.LayerPosition += 1;
             targetLayer.LayerPosition -= 1;
-            
+
             element.SortLayers();
             //element.AssignInternalIdsToLayers();
             element.AssignEffectiveLayers();

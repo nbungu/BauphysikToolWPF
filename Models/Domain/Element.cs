@@ -229,7 +229,6 @@ namespace BauphysikToolWPF.Models.Domain // or core?
         public void RefreshResults()
         {
             Recalculate = true;
-            Layers.ForEach(l => l.RefreshMaterial());
         }
 
         #endregion

@@ -49,39 +49,49 @@ namespace BauphysikToolWPF.Models.Domain
         public int InternalId { get; set; } = -1;
 
         [JsonIgnore]
+        public bool ReloadPropertyBag { get; private set; } = true;
+
+        private IEnumerable<IPropertyItem> _propertyBag = new List<IPropertyItem>();
+
+        [JsonIgnore]
         public IEnumerable<IPropertyItem> PropertyBag
         {
             get
             {
-                return new List<IPropertyItem>()
+                if (ReloadPropertyBag)
                 {
-                    new PropertyItem<string>("Material", () => Material.Name),
-                    new PropertyItem<string>("Kategorie", () => Material.CategoryName),
-                    new PropertyItem<int>("Ausrichtung", () => (int)Direction, value => Direction = (ConstructionDirection)value)
+                    _propertyBag = new List<IPropertyItem>()
                     {
-                        PropertyValues = SubConstructionDirectionMapping.Values.Cast<object>().ToArray()
-                    },
-                    new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
-                    new PropertyItem<double>(Symbol.Width, () => Width, value => Width = value),
-                    new PropertyItem<double>(Symbol.Distance, () => Spacing, value => Spacing = value),
-                    new PropertyItem<double>("Achsenabstand", Symbol.Distance, () => AxisSpacing, value => AxisSpacing = value),
-                    new PropertyItem<double>(Symbol.ThermalConductivity, () => Material.ThermalConductivity) { DecimalPlaces = 3},
-                    new PropertyItem<double>(Symbol.RValueLayer, () => R_Value)
-                    {
-                        SymbolSubscriptText = $"{LayerNumber}b"
-                    },
-                    new PropertyItem<double>(Symbol.AreaMassDensity, () => AreaMassDensity),
-                    new PropertyItem<double>(Symbol.SdThickness, () => Sd_Thickness) { DecimalPlaces = 1 },
-                    new PropertyItem<double>(Symbol.ArealHeatCapacity, () => ArealHeatCapacity)
-                    {
-                        SymbolSubscriptText = $"{LayerNumber}b"
-                    },
-                    new PropertyItem<bool>("Wirksame Schicht", () => IsEffective, value => IsEffective = value)
-                };
+                        new PropertyItem<string>("Material", () => Material.Name),
+                        new PropertyItem<string>("Kategorie", () => Material.CategoryName),
+                        new PropertyItem<int>("Ausrichtung", () => (int)Direction, value => Direction = (ConstructionDirection)value)
+                        {
+                            PropertyValues = SubConstructionDirectionMapping.Values.Cast<object>().ToArray()
+                        },
+                        new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
+                        new PropertyItem<double>(Symbol.Width, () => Width, value => Width = value),
+                        new PropertyItem<double>(Symbol.Distance, () => Spacing, value => Spacing = value),
+                        new PropertyItem<double>("Achsenabstand", Symbol.Distance, () => AxisSpacing, value => AxisSpacing = value),
+                        new PropertyItem<double>(Symbol.ThermalConductivity, () => Material.ThermalConductivity) { DecimalPlaces = 3},
+                        new PropertyItem<double>(Symbol.RValueLayer, () => R_Value)
+                        {
+                            SymbolSubscriptText = $"{LayerNumber}b"
+                        },
+                        new PropertyItem<double>(Symbol.AreaMassDensity, () => AreaMassDensity),
+                        new PropertyItem<double>(Symbol.SdThickness, () => Sd_Thickness) { DecimalPlaces = 1 },
+                        new PropertyItem<double>(Symbol.ArealHeatCapacity, () => ArealHeatCapacity)
+                        {
+                            SymbolSubscriptText = $"{LayerNumber}b"
+                        },
+                        new PropertyItem<bool>("Wirksame Schicht", () => IsEffective, value => IsEffective = value)
+                    };
+                    ReloadPropertyBag = false;
+                }
+                return _propertyBag;
             }
         }
 
-
+        [JsonIgnore]
         public bool ReloadMaterial { get; private set; } = true;
 
 
@@ -206,6 +216,11 @@ namespace BauphysikToolWPF.Models.Domain
         public void RefreshMaterial()
         {
             ReloadMaterial = true;
+        }
+
+        public void RefreshPropertyBag()
+        {
+            ReloadPropertyBag = true;
         }
 
 

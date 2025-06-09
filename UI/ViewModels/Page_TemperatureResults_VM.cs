@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -11,10 +12,8 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Services.UI;
 using static BauphysikToolWPF.Models.UI.Enums;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
@@ -71,8 +70,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the elementType Value above
          */
 
-        public string Title => Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Temperaturverlauf" : "";
-        public Element? SelectedElement => Session.SelectedElement;
+        public string Title { get; } = Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Temperaturverlauf" : "";
+        public string SelectedElementColorCode { get; } = Session.SelectedElement?.ColorCode ?? string.Empty;
+        public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
         public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility ResultsChartVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         public double Ti => _glaser.Ti;
@@ -202,7 +202,6 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-            OnPropertyChanged(nameof(SelectedElement));
             OnPropertyChanged(nameof(RequirementValues));
         }
 
