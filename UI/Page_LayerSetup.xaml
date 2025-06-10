@@ -53,8 +53,8 @@
         <!--Content Area-->
         <Grid Grid.Row="1" Margin="0">
             <Grid.RowDefinitions>
-                <RowDefinition Height=".55*" MinHeight="240"/>
-                <RowDefinition Height=".45*" MinHeight="160"/>
+                <RowDefinition Height=".5*" MinHeight="240"/>
+                <RowDefinition Height=".5*" MinHeight="240"/>
             </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" MinWidth="320"/>
@@ -132,7 +132,6 @@
             <GridSplitter Grid.Row="1" Grid.Column="0" Height="6" Margin="112, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
             <Label Grid.Row="1" Grid.Column="0" Content="Querschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16, -16, 0,0"/>
     
-            
             <Grid Grid.Row="1" Grid.Column="0" Margin="16" ClipToBounds="True">
                 
                 <Grid.ColumnDefinitions>
@@ -217,7 +216,7 @@
                               PreviewMouseWheel="ScrollViewer_OnPreviewMouseWheel">
                     <StackPanel>
 
-                        <controls:Gauge Title="{Binding UValueGauge.Title}"
+                        <controls:Gauge Title="U-Wert:"
                                         Caption="{Binding UValueGauge.Caption}"
                                         ToolTip="{Binding UValueGauge.Tooltip}"
                                         Value="{Binding UValueGauge.Value}"
@@ -229,8 +228,8 @@
                                         ReferenceMarkerValue="{Binding UValueGauge.MarkerValue}"
                                         MarkerSymbolLabelBase="{Binding UValueGauge.MarkerSymbolBase}"
                                         MarkerSymbolLabelSubscript="{Binding UValueGauge.MarkerSymbolSubscript}"
-                                        Margin="0,0,0,8"/>
-                        <controls:Gauge Title="{Binding RValueGauge.Title}"
+                                        Margin="4,0,4,8"/>
+                        <controls:Gauge Title="R-Wert:"
                                         Caption="{Binding RValueGauge.Caption}"
                                         ToolTip="{Binding RValueGauge.Tooltip}"
                                         Value="{Binding RValueGauge.Value}"
@@ -243,17 +242,19 @@
                                         MarkerSymbolLabelBase="{Binding RValueGauge.MarkerSymbolBase}"
                                         MarkerSymbolLabelSubscript="{Binding RValueGauge.MarkerSymbolSubscript}"
                                         ReverseGradient="True"
-                                        Margin="0,0,0,8"/>
+                                        Margin="4,0,4,8"/>
 
 
                         <!--Gewählte Schicht + Eigenschaften-->
                         <Expander Header="Schicht-Eigenschaften" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding LayerPropertiesExpanderVisibility}">
-                            <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid" Properties="{Binding LayerProperties}"/>
+                            <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid"
+                                                       Properties="{Binding SelectedListViewItem.PropertyBag}"/>
                         </Expander>
 
                         <!--Balkenlage + Eigenschaften-->
                         <Expander Header="Schicht-Balkenlage" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding SubConstructionExpanderVisibility}">
-                            <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid" Properties="{Binding SubConstructionProperties}"/>
+                            <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid"
+                                                       Properties="{Binding SelectedListViewItem.SubConstruction.PropertyBag}"/>
                         </Expander>
 
                         <!--EnvVars Innen-->
@@ -307,9 +308,8 @@
                         </Expander>
 
                     </StackPanel>
-                </ScrollViewer>
 
-                
+                </ScrollViewer>
 
             </Grid>
 

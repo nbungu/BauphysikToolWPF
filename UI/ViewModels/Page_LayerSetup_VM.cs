@@ -20,14 +20,19 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
     public partial class Page_LayerSetup_VM : ObservableObject
     {
-        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
-        private readonly CheckRequirements _requirementValues = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
+        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
+        private readonly CheckRequirements _requirementValues = new CheckRequirements();
 
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
         {
             if (Session.SelectedProject is null) return;
             if (Session.SelectedElement is null) return;
+
+            _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+            // TODO: this could be 'Element' property and be fetched from the SelectedElement directly
+            // -> just set Update flag to true
+            _requirementValues = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
 
             Session.SelectedLayerId = -1;
             Session.SelectedElement.SortLayers();
@@ -146,20 +151,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         // This method will be called whenever SelectedListViewItem changes
-        partial void OnSelectedListViewItemChanged(Layer? value)
-        {
-            // Unselect all
-            if (Session.SelectedElement is null) return;
-            Session.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
+        partial void OnSelectedListViewItemChanged(Layer? value) => SelectedLayerChanged(value);
 
-            if (value != null)
-            {
-                Session.SelectedLayerId = value.InternalId;
-                Session.SelectedLayer.IsSelected = true;
-            }
-            _crossSection.UpdateDrawings();
-        }
-        
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
@@ -170,17 +163,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
         [NotifyPropertyChangedFor(nameof(SubConstructionExpanderVisibility))]
         [NotifyPropertyChangedFor(nameof(LayerPropertiesExpanderVisibility))]
-        [NotifyPropertyChangedFor(nameof(LayerProperties))]
-        [NotifyPropertyChangedFor(nameof(SubConstructionProperties))]
-        [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
         private Layer? _selectedListViewItem;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(LayerMeasurement))]
-        [NotifyPropertyChangedFor(nameof(LayerMeasurementFull))]
-        [NotifyPropertyChangedFor(nameof(SubConstructionMeasurement))]
-        [NotifyPropertyChangedFor(nameof(CrossSectionDrawing))]
-        [NotifyPropertyChangedFor(nameof(CanvasSize))]
         [NotifyPropertyChangedFor(nameof(NoLayersVisibility))]
         private List<Layer>? _layerList = Session.SelectedElement?.Layers;
 
@@ -227,8 +212,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> LayerMeasurement => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);
         public List<DrawingGeometry> SubConstructionMeasurement => MeasurementDrawing.GetSubConstructionMeasurementChain(_crossSection);
         public List<DrawingGeometry> LayerMeasurementFull => MeasurementDrawing.GetFullLayerMeasurementChain(_crossSection);
-        public IEnumerable<IPropertyItem> LayerProperties => SelectedListViewItem?.PropertyBag ?? new List<IPropertyItem>(0);
-        public IEnumerable<IPropertyItem> SubConstructionProperties => SelectedListViewItem?.SubConstruction?.PropertyBag ?? new List<IPropertyItem>(0);
         public List<string> TiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Select(e => e.Name).ToList();
         public List<string> TeKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Select(e => e.Name).ToList();
         public List<string> RsiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Select(e => e.Name).ToList();
@@ -384,14 +367,12 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
 
-        /*
-         * Trigger Hooks
-         */
+        #region Event Handlers for UI Events
 
         private void ElementChanged()
         {
             RefreshGauges();
-            RefreshDrawings();
+            RefreshDrawingsFull();
             RefreshPropertyGrid();
 
             LayerList = null;
@@ -406,7 +387,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void LayerChanged()
         {
             RefreshGauges();
-            RefreshDrawings();
+            RefreshDrawingsFull();
             RefreshPropertyGrid();
 
             // when sub construction changes: To reflect the new buttons in the listView
@@ -428,23 +409,44 @@ namespace BauphysikToolWPF.UI.ViewModels
             RefreshGauges();
         }
 
+        private void SelectedLayerChanged(Layer? value)
+        {
+            // Unselect all
+            if (Session.SelectedElement is null) return;
+            Session.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
+
+            if (value != null)
+            {
+                Session.SelectedLayerId = value.InternalId;
+                Session.SelectedLayer.IsSelected = true;
+            }
+            RefreshDrawingsLayerSelected();
+        }
+
+        #endregion
+
+        #region Refresh Methods for selected XAML Elements
+
         private void RefreshPropertyGrid()
         {
             if (SelectedListViewItem is null) return;
 
             SelectedListViewItem.RefreshPropertyBag();
-            OnPropertyChanged(nameof(LayerProperties));
-            OnPropertyChanged(nameof(SubConstructionProperties));
         }
 
-        private void RefreshDrawings()
+        private void RefreshDrawingsFull()
         {
             _crossSection.UpdateDrawings();
+            OnPropertyChanged(nameof(CrossSectionDrawing));
+            OnPropertyChanged(nameof(CanvasSize));
             OnPropertyChanged(nameof(LayerMeasurement));
             OnPropertyChanged(nameof(LayerMeasurementFull));
             OnPropertyChanged(nameof(SubConstructionMeasurement));
+        }
+        private void RefreshDrawingsLayerSelected()
+        {
+            _crossSection.UpdateDrawings();
             OnPropertyChanged(nameof(CrossSectionDrawing));
-            OnPropertyChanged(nameof(CanvasSize));
         }
 
         private void RefreshGauges()
@@ -457,5 +459,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(UValueGauge));
             OnPropertyChanged(nameof(RValueGauge));
         }
+
+        #endregion
     }
 }
