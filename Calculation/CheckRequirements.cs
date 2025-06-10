@@ -10,7 +10,7 @@ namespace BauphysikToolWPF.Calculation
     
     public class CheckRequirements
     {
-        public CheckRequirementsConfig Config { get; }
+        public CheckRequirementsConfig Config { get; } = new CheckRequirementsConfig();
         public Element? Element { get; }
         public List<DocumentParameter> RelevantRequirements { get; private set; } = new List<DocumentParameter>();
 
@@ -35,6 +35,7 @@ namespace BauphysikToolWPF.Calculation
         public double? QMax { get; private set; }
         public bool IsQValueOk => Element?.ThermalResults.QValue <= QMax;
 
+        public CheckRequirements() {}
         public CheckRequirements(Element? element, CheckRequirementsConfig config)
         {
             Element = element;

@@ -94,10 +94,10 @@
                         </DataTemplate.Triggers>
                     </DataTemplate>
                 </GridViewColumn.CellTemplate>
-
                 <GridViewColumn.HeaderContainerStyle>
                     <Style TargetType="GridViewColumnHeader">
                         <Setter Property="Tag" Value=" "/>
+                        <Setter Property="ToolTip" Value="Position der Schicht von innen (= 1) nach außen."/>
                         <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
                         <Setter Property="Margin" Value="-2,0,0,0"/>
                         <Setter Property="FontWeight" Value="Bold"/>
@@ -114,6 +114,7 @@
                 </GridViewColumn.CellTemplate>
                 <GridViewColumn.HeaderContainerStyle>
                     <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="ToolTip" Value="Materialbezeichnung"/>
                         <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
                     </Style>
                 </GridViewColumn.HeaderContainerStyle>
@@ -126,10 +127,10 @@
                         <TextBlock Text="{Binding Thickness, Converter={StaticResource NumberConverter}}" FontWeight="DemiBold"/>
                     </DataTemplate>
                 </GridViewColumn.CellTemplate>
-
                 <GridViewColumn.HeaderContainerStyle>
                     <Style TargetType="GridViewColumnHeader">
                         <Setter Property="Tag" Value="cm"/>
+                        <Setter Property="ToolTip" Value="Dicke"/>
                         <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
                     </Style>
                 </GridViewColumn.HeaderContainerStyle>
@@ -144,6 +145,7 @@
                 </GridViewColumn.CellTemplate>
                 <GridViewColumn.HeaderContainerStyle>
                     <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="ToolTip" Value="Wärmeleitfähigkeit"/>
                         <Setter Property="Tag" Value="W/(mK)"/>
                         <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
                     </Style>
@@ -160,6 +162,7 @@
                 <GridViewColumn.HeaderContainerStyle>
                     <Style TargetType="GridViewColumnHeader">
                         <Setter Property="Tag" Value="m²K/W"/>
+                        <Setter Property="ToolTip" Value="Wärmedurchlasswiderstand"/>
                         <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
                     </Style>
                 </GridViewColumn.HeaderContainerStyle>
@@ -175,6 +178,7 @@
                 <GridViewColumn.HeaderContainerStyle>
                     <Style TargetType="GridViewColumnHeader">
                         <Setter Property="Tag" Value="kg/m³"/>
+                        <Setter Property="ToolTip" Value="Rohdichte"/>
                         <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
                     </Style>
                 </GridViewColumn.HeaderContainerStyle>
@@ -190,8 +194,8 @@
                 <GridViewColumn.HeaderContainerStyle>
                     <Style TargetType="GridViewColumnHeader">
                         <Setter Property="Tag" Value="kg/m²"/>
+                        <Setter Property="ToolTip" Value="flächenbezogene Masse"/>
                         <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
-                        <Setter Property="Margin" Value="0,0,0,0"/>
                     </Style>
                 </GridViewColumn.HeaderContainerStyle>
             </GridViewColumn>

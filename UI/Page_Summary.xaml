@@ -203,7 +203,7 @@
         <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="16">
             <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                 <StackPanel>
-                    <controls:Gauge Title="{Binding UValueGauge.Title}"
+                    <controls:Gauge Title="U-Wert:"
                                     Caption="{Binding UValueGauge.Caption}"
                                     ToolTip="{Binding UValueGauge.Tooltip}"
                                     Value="{Binding UValueGauge.Value}"
@@ -215,8 +215,8 @@
                                     ReferenceMarkerValue="{Binding UValueGauge.MarkerValue}"
                                     MarkerSymbolLabelBase="{Binding UValueGauge.MarkerSymbolBase}"
                                     MarkerSymbolLabelSubscript="{Binding UValueGauge.MarkerSymbolSubscript}"
-                                    Margin="0,0,0,8"/>
-                    <controls:Gauge Title="{Binding RValueGauge.Title}"
+                                    Margin="4,0,4,8"/>
+                    <controls:Gauge Title="R-Wert:"
                                     Caption="{Binding RValueGauge.Caption}"
                                     ToolTip="{Binding RValueGauge.Tooltip}"
                                     Value="{Binding RValueGauge.Value}"
@@ -229,7 +229,7 @@
                                     MarkerSymbolLabelBase="{Binding RValueGauge.MarkerSymbolBase}"
                                     MarkerSymbolLabelSubscript="{Binding RValueGauge.MarkerSymbolSubscript}"
                                     ReverseGradient="True"
-                                    Margin="0,0,0,8"/>
+                                    Margin="4,0,4,8"/>
 
                     <!--Eigenschaften-->
                     <Expander Header="Bauteildaten" IsExpanded="True" Margin="0,0,0,8">

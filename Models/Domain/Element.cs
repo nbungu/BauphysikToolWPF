@@ -181,6 +181,19 @@ namespace BauphysikToolWPF.Models.Domain // or core?
             }
         }
 
+        //private CheckRequirements _requirements = new CheckRequirements();
+        //public CheckRequirements Requirements
+        //{
+        //    get
+        //    {
+        //        if (Recalculate)
+        //        {
+        //            _requirements = new CheckRequirements(this, Session.CheckRequirementsConfig);
+        //        }
+        //        return _requirements;
+        //    }
+        //}
+
         #endregion
 
 

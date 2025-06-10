@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -11,10 +12,8 @@ using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using SkiaSharp;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Services.UI;
 using static BauphysikToolWPF.Models.UI.Enums;
 using Axis = LiveChartsCore.SkiaSharpView.Axis;
 
@@ -25,6 +24,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
         private static GlaserCalc _glaser = new GlaserCalc();
+        private readonly CheckRequirements _requirementValues = new CheckRequirements();
 
         public Page_MoistureResults_VM()
         {
@@ -32,6 +32,10 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
+
+            // TODO: those could be 'Element' properties and be fetched from the SelectedElement directly
+            // -> just set Update flag to true
+            _requirementValues = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
 
             _glaser = new GlaserCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
             _glaser.CalculateHomogeneous(); // Bauteil berechnen
@@ -82,35 +86,69 @@ namespace BauphysikToolWPF.UI.ViewModels
         public SolidColorPaint TooltipTextPaint { get; set; } = new SolidColorPaint { Color = new SKColor(0, 0, 0), SKTypeface = SKTypeface.FromFamilyName("SegoeUI") };
 
 
-        public CheckRequirements RequirementValues => new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
+        private GaugeItem? _uValueGauge;
+        /// <summary>
+        /// Gets the gauge configuration, lazily initializing it on first access.
+        /// 
+        /// This lazy pattern ensures that the GaugeItem is only constructed when needed, 
+        /// avoiding repeated allocations from XAML bindings that may call this getter multiple times. 
+        /// It improves performance and keeps initialization logic encapsulated.
+        /// </summary>
+        public GaugeItem UValueGauge
+        {
+            get
+            {
+                if (_uValueGauge == null)
+                {
+                    double? uMax = _requirementValues.UMax;
+                    double elementUValue = _requirementValues.Element.UValue;
+                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _requirementValues.UMaxComparisonRequirement)
+                    {
+                        Caption = _requirementValues.UMaxCaption,
+                        ScaleMin = 0.0,
+                        ScaleMax = uMax.HasValue ? Math.Max(2 * uMax.Value, elementUValue + 0.1) : Math.Max(1.0, elementUValue + 0.1)
+                    };
+                }
+                return _uValueGauge;
+            }
+        }
 
-        public double UValue => RequirementValues.Element.UValue;
-        public string UValueCaption => RequirementValues.UMaxCaption;
-        public string UValueTooltip => SymbolMapping[Symbol.UValue].comment;
-        public double UValueScaleMin => 0.0;
-        public double UValueScaleMax => 2 * UValueRefMarker ?? Math.Max(1.0, UValue + 0.1);
-        public double? UValueRefMarker => RequirementValues.UMax;
-        public string UValueUnitString => GetUnitStringFromSymbol(Symbol.UValue);
-        public string UValueSymbolBase => SymbolMapping[Symbol.UValue].baseText;
+        private GaugeItem? _rValueGauge;
+        /// <summary>
+        /// Gets the gauge configuration, lazily initializing it on first access.
+        /// 
+        /// This lazy pattern ensures that the GaugeItem is only constructed when needed, 
+        /// avoiding repeated allocations from XAML bindings that may call this getter multiple times. 
+        /// It improves performance and keeps initialization logic encapsulated.
+        /// </summary>
+        public GaugeItem RValueGauge
+        {
+            get
+            {
+                if (_rValueGauge == null)
+                {
+                    var uValueGauge = UValueGauge; // ensure initialized once
+                    double uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
+                    double targetRValueNormalized = 1.0 - uValueNormalized;
+
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, _requirementValues.Element.RGesValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
+                    {
+                        Caption = _requirementValues.RMinCaption,
+                        ScaleMin = 0.0,
+                        ScaleMax = _requirementValues.Element.RGesValue / targetRValueNormalized,
+                    };
+                }
+                return _rValueGauge;
+            }
+        }
 
 
-        public double? RValue => RequirementValues.Element?.RGesValue;
-        public string RValueCaption => RequirementValues.RMinRequirementSourceName != null ? $"Grenzwert nach {RequirementValues.RMinRequirementSourceName}" : "";
-        public string RValueTooltip => SymbolMapping[Symbol.RValueElement].comment;
-        public double RValueScaleMin => 0.0;
-        public double RValueScaleMax => 2 * RValueRefMarker ?? 2 * RValue ?? 1.0;
-        public double? RValueRefMarker => RequirementValues.RMin;
-        public string RValueUnitString => GetUnitStringFromSymbol(Symbol.RValueElement);
-        public string RValueSymbolBase => SymbolMapping[Symbol.RValueElement].baseText;
-        public string RValueSymbolSubscript => SymbolMapping[Symbol.RValueElement].subscriptText;
-
-
-        public double QValue => RequirementValues.Element.QValue;
+        public double QValue => _requirementValues.Element.QValue;
         public string QValueCaption => "kein Grenzwert einzuhalten";
         public string QValueTooltip => SymbolMapping[Symbol.HeatFluxDensity].comment;
         public double QValueScaleMin => 0.0;
         public double QValueScaleMax => 2 * QValueRefMarker ?? 1.0;
-        public double? QValueRefMarker => RequirementValues.QMax;
+        public double? QValueRefMarker => _requirementValues.QMax;
         public string QValueUnitString => GetUnitStringFromSymbol(Symbol.HeatFluxDensity);
         public string QValueSymbolBase => SymbolMapping[Symbol.HeatFluxDensity].baseText;
 
@@ -156,7 +194,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-            OnPropertyChanged(nameof(RequirementValues));
+            
         }
         
         private RectangularSection[] DrawLayerSections()

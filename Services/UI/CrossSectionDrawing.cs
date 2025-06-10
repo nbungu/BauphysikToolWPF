@@ -37,6 +37,15 @@ namespace BauphysikToolWPF.Services.UI
         public List<IDrawingGeometry> DrawingGeometries { get; private set; }
         public bool LastDrawingSuccessful { get; private set; }
 
+        public CrossSectionDrawing()
+        {
+            Element = new Element();
+            CanvasSize = new Rectangle(new Point(0, 0), 880, 400); // Default size for CrossSection
+            DrawingType = DrawingType.CrossSection;
+            Alignment = AlignmentVariant.EvenSpacingCentered;
+            DrawingGeometries = new List<IDrawingGeometry>();
+        }
+
         public CrossSectionDrawing(Element? element, Rectangle canvasSize, DrawingType drawingType, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {
             Element = element ?? throw new ArgumentNullException(nameof(element), "Element cannot be null.");

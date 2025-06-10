@@ -18,10 +18,22 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
 
-        private readonly CrossSectionDrawing _verticalCut = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
-        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+        private readonly CrossSectionDrawing _verticalCut = new CrossSectionDrawing();
+        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
+        private readonly CheckRequirements _requirementValues = new CheckRequirements();
 
-        public Page_Summary_VM() { }
+        public Page_Summary_VM()
+        {
+            if (Session.SelectedProject is null) return;
+            if (Session.SelectedElement is null) return;
+
+            _verticalCut = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
+            _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+
+            // TODO: this could be 'Element' property and be fetched from the SelectedElement directly
+            // -> just set Update flag to true
+            _requirementValues = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
+        }
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -69,8 +81,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<DrawingGeometry> LayerMeasurementFullVerticalCut => MeasurementDrawing.GetFullLayerMeasurementChain(_verticalCut);
 
         // Results
-        public CheckRequirements RequirementValues { get; } = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
-
 
         private GaugeItem? _uValueGauge;
         /// <summary>
@@ -86,18 +96,15 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 if (_uValueGauge == null)
                 {
-                    double? uMax = RequirementValues.UMax;
-                    double elementUValue = RequirementValues.Element.UValue;
-                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, RequirementValues.UMaxComparisonRequirement)
+                    double? uMax = _requirementValues.UMax;
+                    double elementUValue = _requirementValues.Element.UValue;
+                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _requirementValues.UMaxComparisonRequirement)
                     {
-                        Caption = RequirementValues.UMaxCaption,
+                        Caption = _requirementValues.UMaxCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = uMax.HasValue
-                            ? 2 * uMax.Value
-                            : Math.Max(1.0, elementUValue + 0.1)
+                        ScaleMax = uMax.HasValue ? Math.Max(2 * uMax.Value, elementUValue + 0.1) : Math.Max(1.0, elementUValue + 0.1)
                     };
                 }
-
                 return _uValueGauge;
             }
         }
@@ -120,14 +127,13 @@ namespace BauphysikToolWPF.UI.ViewModels
                     double uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
                     double targetRValueNormalized = 1.0 - uValueNormalized;
 
-                    _rValueGauge = new GaugeItem(Symbol.RValueElement, RequirementValues.Element.RGesValue, RequirementValues.RMin, RequirementValues.RMinComparisonRequirement)
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, _requirementValues.Element.RGesValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
                     {
-                        Caption = RequirementValues.RMinCaption,
+                        Caption = _requirementValues.RMinCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = RequirementValues.Element.RGesValue / targetRValueNormalized,
+                        ScaleMax = _requirementValues.Element.RGesValue / targetRValueNormalized,
                     };
                 }
-
                 return _rValueGauge;
             }
         }
