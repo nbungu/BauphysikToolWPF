@@ -15,7 +15,6 @@
     <UserControl.Resources>
 
         <ui:NumberConverter x:Key="NumberConverter" />
-        <ui:TooltipNotEmptyToVisibilityConverter x:Key="TooltipNotEmptyToVisibilityConverter"/>
 
         <ControlTemplate x:Key="LayerListViewHeaderTemplate" TargetType="GridViewColumnHeader">
             <Grid>
@@ -23,13 +22,13 @@
                     x:Name="HeaderBorder"
                     Background="{TemplateBinding Background}"
                     BorderBrush="{StaticResource PrimaryBorderBrush}"
-                    BorderThickness="1,0,0,2"
+                    BorderThickness="0,0,1,1"
                     Margin="0"
-                    Padding="4"
+                    Padding="6"
                     Tag="{TemplateBinding Tag}">
                     <Grid>
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="16" />
+                            <RowDefinition Height="16"/>
                             <RowDefinition Height="20" />
                         </Grid.RowDefinitions>
 
@@ -42,18 +41,28 @@
                                                       Margin="0,4,0,0"
                                                       FontWeight="DemiBold"
                                                       HorizontalAlignment="Left"/>
-                        <Image x:Name="HoverIcon"
-                           Grid.Row="0"
-                           Source="{StaticResource ButtonIcon_Info_B}"
-                           HorizontalAlignment="Right"
-                           VerticalAlignment="Center"
-                           Stretch="Fill"
-                           Width="12" Height="12"
-                           Opacity="0.7"
-                           Margin="2"
-                           Visibility="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=ToolTip, Converter={StaticResource TooltipNotEmptyToVisibilityConverter}}"/>
                     </Grid>
                 </Border>
+                <!-- ADD THIS PART: Resize Thumb -->
+                <Thumb x:Name="PART_HeaderGripper"
+                       Width="8"
+                       HorizontalAlignment="Right">
+                    <Thumb.Style>
+                        <Style TargetType="Thumb">
+                            <Setter Property="Visibility" Value="Visible"/>
+                            <Setter Property="Background" Value="Aqua"/>
+                            <Setter Property="BorderThickness" Value="0"/>
+                            <Setter Property="Opacity" Value="0.0"/>
+                            <Setter Property="Margin" Value="0,0,-4,0"/>
+                            <Style.Triggers>
+                                <!--weird workaround for being visible on all columns except the first one, which has ' ' as Tag-->
+                                <DataTrigger Binding="{Binding Tag, RelativeSource={RelativeSource AncestorType=GridViewColumnHeader}}" Value=" ">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Thumb.Style>
+                </Thumb>
             </Grid>
             <ControlTemplate.Triggers>
 
@@ -69,14 +78,14 @@
         <GridView x:Key="LayerGridViewColumns" AllowsColumnReorder="true"> <!--ColumnHeaderContainerStyle="{StaticResource ListViewHeaderStyle01}"-->
 
             <!--Here: Binding source are Items (typeof 'Layer') from the ItemsSource Property-->
-            <GridViewColumn Header="Pos." Width="40">
+            <GridViewColumn Header="Pos." Width="36">
                 <!--Custom Column Style for Column 0-->
                 <GridViewColumn.CellTemplate>
                     <DataTemplate>
-                        <Grid>
-                            <Rectangle x:Name="rectangle" Fill="{Binding Material.ColorCode}" Margin="-6,-2,0,-2" Width="8" VerticalAlignment="Stretch" HorizontalAlignment="Left"/>
-                            <Label x:Name="positionLabel" Content="{Binding LayerNumber}" FontWeight="DemiBold" Margin="4,0"/>
-                        </Grid>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="-6,0,-6,0">
+                            <Rectangle x:Name="rectangle" Fill="{Binding Material.ColorCode}" Width="8" VerticalAlignment="Stretch" HorizontalAlignment="Left" Margin="0,0,8,0"/>
+                            <Label x:Name="positionLabel" Content="{Binding LayerNumber}" FontWeight="DemiBold" Margin="0"/>
+                        </StackPanel>
                         <DataTemplate.Triggers>
                             <!-- Trigger to change label color when ListViewItem is selected -->
                             <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource AncestorType=ListViewItem}}" Value="True">
@@ -85,10 +94,13 @@
                         </DataTemplate.Triggers>
                     </DataTemplate>
                 </GridViewColumn.CellTemplate>
+
                 <GridViewColumn.HeaderContainerStyle>
                     <Style TargetType="GridViewColumnHeader">
+                        <Setter Property="Tag" Value=" "/>
                         <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
-                        <Setter Property="Margin" Value="-3,0,0,0"/>
+                        <Setter Property="Margin" Value="-2,0,0,0"/>
+                        <Setter Property="FontWeight" Value="Bold"/>
                     </Style>
                 </GridViewColumn.HeaderContainerStyle>
             </GridViewColumn>
@@ -97,7 +109,7 @@
             <GridViewColumn Header="Material" Width="200">
                 <GridViewColumn.CellTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding Material.Name}"/>
+                        <TextBlock Text="{Binding Material.Name}" Margin="0"/>
                     </DataTemplate>
                 </GridViewColumn.CellTemplate>
                 <GridViewColumn.HeaderContainerStyle>
@@ -179,7 +191,7 @@
                     <Style TargetType="GridViewColumnHeader">
                         <Setter Property="Tag" Value="kg/m²"/>
                         <Setter Property="Template" Value="{StaticResource LayerListViewHeaderTemplate}"/>
-                        <Setter Property="Margin" Value="0,0,-1200,0"/>
+                        <Setter Property="Margin" Value="0,0,0,0"/>
                     </Style>
                 </GridViewColumn.HeaderContainerStyle>
             </GridViewColumn>
@@ -193,26 +205,29 @@
             <Setter Property="ToolTip" Value="{Binding}"/>
             <Setter Property="Foreground" Value="Black"/>
             <Setter Property="Margin" Value="0,0,0,0"/>
-            <Setter Property="Padding" Value="0,2,0,2"/>
+            <Setter Property="Padding" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ListViewItem}">
                         <Border x:Name="ListViewItemBorder"
-                        BorderBrush="{StaticResource PrimaryBorderBrush}"
-                        BorderThickness="0,0,0,1"
-                        Background="{TemplateBinding Background}"
-                        Padding="{TemplateBinding Padding}"
-                        CornerRadius="0"
-                        Height="Auto"
-                        SnapsToDevicePixels="true">
+                                BorderBrush="{StaticResource PrimaryBorderBrush}"
+                                BorderThickness="0,0,0,1"
+                                Background="{TemplateBinding Background}"
+                                Padding="{TemplateBinding Padding}"
+                                Margin="{TemplateBinding Margin}"
+                                CornerRadius="0"
+                                Height="Auto"
+                                SnapsToDevicePixels="true">
                             <Grid>
                                 <StackPanel Orientation="Vertical">
                                     <!-- GridViewRowPresenter contains the actual ListViewItem Content from TemplateBinding (ItemsSource)-->
-                                    <GridViewRowPresenter Content="{TemplateBinding Content}" Columns="{TemplateBinding GridView.ColumnCollection}"/>
+                                    <GridViewRowPresenter Content="{TemplateBinding Content}"
+                                                          Columns="{TemplateBinding GridView.ColumnCollection}"
+                                                          Margin="0"/>
 
                                     <!-- StackPanel for the Edit and Delete buttons -->
                                     <StackPanel x:Name="EditDeletePanel" Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center" Visibility="Collapsed" Margin="4,0,0,0">
-                                        <Label x:Name="LabelBalkenlage" Content="Balkenlage:" FontSize="12" Foreground="{StaticResource PrimaryBorderBrush}">
+                                        <Label x:Name="LabelBalkenlage" Content="Balkenlage:" FontSize="12" Foreground="{StaticResource PrimaryBorderBrush}" Margin="36,0,0,0">
                                             <Label.Style>
                                                 <Style TargetType="Label">
                                                     <Setter Property="Foreground" Value="{StaticResource PrimaryBorderBrush}"/>
@@ -237,7 +252,7 @@
                                     Style="{StaticResource ButtonStyleListViewItem}"
                                     Command="{Binding DataContext.AddSubConstructionLayerCommand, RelativeSource={RelativeSource AncestorType=ListView}}"
                                     CommandParameter="{Binding InternalId}"
-                                    Margin="0,0,16,0"/>
+                                    Margin="0,0,8,0"/>
 
                             </Grid>
                         </Border>
@@ -284,6 +299,7 @@
                     <i:InvokeCommandAction Command="{Binding LayerDoubleClickCommand}" />
                 </i:EventTrigger>
             </i:Interaction.Triggers>
+
             <!--ItemContainerStyle: Defines the style and behavior of the ListViewItem container itself. This can include properties like margins, padding, selection styles, and triggers based on the ListViewItem state.-->
             <!--ItemTemplate: Defines how the CONTENT of each ListViewItem is displayed. It specifies the visual structure and data bindings for the item content.-->
 

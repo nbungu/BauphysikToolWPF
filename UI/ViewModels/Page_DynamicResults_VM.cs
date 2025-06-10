@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Calculation;
-using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
