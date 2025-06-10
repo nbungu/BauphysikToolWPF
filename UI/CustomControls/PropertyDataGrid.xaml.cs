@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.UI;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -19,7 +20,7 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty PropertiesProperty =
-            DependencyProperty.Register(nameof(Properties), typeof(object), typeof(PropertyDataGrid), new PropertyMetadata(null));
+            DependencyProperty.Register(nameof(Properties), typeof(IEnumerable<IPropertyItem>), typeof(PropertyDataGrid), new PropertyMetadata(new List<IPropertyItem>(0), null));
 
         public object Properties
         {

@@ -430,7 +430,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void RefreshPropertyGrid()
         {
             if (SelectedListViewItem is null) return;
-
             SelectedListViewItem.RefreshPropertyBag();
         }
 

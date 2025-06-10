@@ -248,13 +248,13 @@
                         <!--Gewählte Schicht + Eigenschaften-->
                         <Expander Header="Schicht-Eigenschaften" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding LayerPropertiesExpanderVisibility}">
                             <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid"
-                                                       Properties="{Binding SelectedListViewItem.PropertyBag}"/>
+                                                       Properties="{Binding SelectedListViewItem.PropertyBag, FallbackValue={x:Null}}"/>
                         </Expander>
 
                         <!--Balkenlage + Eigenschaften-->
                         <Expander Header="Schicht-Balkenlage" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding SubConstructionExpanderVisibility}">
                             <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid"
-                                                       Properties="{Binding SelectedListViewItem.SubConstruction.PropertyBag}"/>
+                                                       Properties="{Binding SelectedListViewItem.SubConstruction.PropertyBag, FallbackValue={x:Null}}"/>
                         </Expander>
 
                         <!--EnvVars Innen-->
