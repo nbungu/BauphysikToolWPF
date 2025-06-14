@@ -111,7 +111,7 @@
 
             <Expander Grid.Row="0" Header="Wärme" IsExpanded="True" Margin="0,0,0,8">
                 <StackPanel>
-                    <controls:Gauge Title="R-Wert:"
+                    <controls:Gauge Title="U-Wert:"
                                     Caption="{Binding UValueGauge.Caption}"
                                     ToolTip="{Binding UValueGauge.Tooltip}"
                                     Value="{Binding UValueGauge.Value}"
@@ -124,7 +124,7 @@
                                     MarkerSymbolLabelBase="{Binding UValueGauge.MarkerSymbolBase}"
                                     MarkerSymbolLabelSubscript="{Binding UValueGauge.MarkerSymbolSubscript}"
                                     Margin="0,0,0,8"/>
-                    <controls:Gauge Title="U-Wert:"
+                    <controls:Gauge Title="R-Wert:"
                                     Caption="{Binding RValueGauge.Caption}"
                                     ToolTip="{Binding RValueGauge.Tooltip}"
                                     Value="{Binding RValueGauge.Value}"

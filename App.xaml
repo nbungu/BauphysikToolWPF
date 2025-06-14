@@ -1033,7 +1033,7 @@
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Tag" Value=""/>
-            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <!--Set appearance of the element-->
             <Setter Property="Template">
@@ -1041,11 +1041,29 @@
                     <ControlTemplate TargetType="{x:Type Button}">
                         <!--Element appearance with behaviour of a 'Button'-->
                         <Border CornerRadius="8" Background="{TemplateBinding Background}">
-                            <StackPanel Orientation="Horizontal">
-                                <!--Bind Image via DataContext Property in the Button Element-->
-                                <Image x:Name="ButtonIcon" Source="{TemplateBinding Tag}" Stretch="Uniform" MaxWidth="20" MaxHeight="20" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
-                                <TextBlock x:Name="ButtonText" Text="{TemplateBinding Content}" Foreground="{TemplateBinding Foreground}" VerticalAlignment="Center" Margin="4,4,16,4" FontWeight="{TemplateBinding FontWeight}" FontSize="{TemplateBinding FontSize}"/>
-                            </StackPanel>
+                            <Grid HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Image x:Name="ButtonIcon"
+                                       Source="{TemplateBinding Tag}"
+                                       Stretch="Uniform"
+                                       MaxWidth="20"
+                                       MaxHeight="20"
+                                       Margin="10"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
+                                <TextBlock x:Name="ButtonText"
+                                           Grid.Column="1"
+                                           Text="{TemplateBinding Content}"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           VerticalAlignment="Center"
+                                           HorizontalAlignment="Center"
+                                           Margin="4,4,16,4"
+                                           FontWeight="{TemplateBinding FontWeight}"
+                                           FontSize="{TemplateBinding FontSize}"/>
+                            </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="Tag" Value="">

@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.Models.UI
 
         public Symbol Symbol { get; }
         public RequirementComparison Comparison { get; }
-        public double Value { get; }
+        public double? Value { get; }
         public string SymbolBase => SymbolMapping.TryGetValue(Symbol, out var mapping) ? mapping.baseText : string.Empty;
         public string SymbolSubscript => SymbolMapping.TryGetValue(Symbol, out var mapping) ? mapping.subscriptText : string.Empty;
 
@@ -60,7 +60,7 @@ namespace BauphysikToolWPF.Models.UI
 
         public string Unit => GetUnitStringFromSymbol(Symbol);
 
-        public GaugeItem(Symbol symbol, double value, double? markerValue = null, RequirementComparison comparisonType = RequirementComparison.None)
+        public GaugeItem(Symbol symbol, double? value = null, double? markerValue = null, RequirementComparison comparisonType = RequirementComparison.None)
         {
             Symbol = symbol;
             Value = value;
@@ -76,8 +76,8 @@ namespace BauphysikToolWPF.Models.UI
                 Title = string.Empty;
                 Tooltip = string.Empty;
             }
-
-            ScaleMax = 2 * MarkerValue ?? 2 * Value;
+            ScaleMin = 0.0; // Default minimum scale value
+            ScaleMax = 2 * MarkerValue ?? 2 * Value ?? 1.0;
         }   
     }
 }

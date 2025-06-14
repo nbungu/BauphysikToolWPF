@@ -102,16 +102,23 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
+                if (_requirementValues.Element is null) return new GaugeItem(Symbol.UValue);
+
                 if (_uValueGauge == null)
                 {
                     double? uMax = _requirementValues.UMax;
-                    double elementUValue = _requirementValues.Element.UValue;
+                    double? elementUValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.UValue : null;
+                    double scaleMax = uMax.HasValue
+                        ? Math.Max(2 * uMax.Value, (elementUValue ?? 0.0) + 0.1)
+                        : Math.Max(1.0, (elementUValue ?? 0.0) + 0.1);
+
                     _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _requirementValues.UMaxComparisonRequirement)
                     {
                         Caption = _requirementValues.UMaxCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = uMax.HasValue ? Math.Max(2 * uMax.Value, elementUValue + 0.1) : Math.Max(1.0, elementUValue + 0.1)
+                        ScaleMax = scaleMax,
                     };
+
                 }
                 return _uValueGauge;
             }
@@ -129,17 +136,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
+                if (_requirementValues.Element is null) return new GaugeItem(Symbol.RValueElement);
+
                 if (_rValueGauge == null)
                 {
                     var uValueGauge = UValueGauge; // ensure initialized once
-                    double uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
-                    double targetRValueNormalized = 1.0 - uValueNormalized;
-
-                    _rValueGauge = new GaugeItem(Symbol.RValueElement, _requirementValues.Element.RGesValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
+                    double? uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
+                    double? targetRValueNormalized = 1.0 - uValueNormalized;
+                    double? elementRValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.RGesValue : null;
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, elementRValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
                     {
                         Caption = _requirementValues.RMinCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = _requirementValues.Element.RGesValue / targetRValueNormalized,
+                        ScaleMax = _requirementValues.Element.RGesValue / targetRValueNormalized ?? 1.0,
                     };
                 }
                 return _rValueGauge;
@@ -147,7 +156,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
 
-        public double QValue => _requirementValues.Element.QValue;
+        public double? QValue => _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.QValue : null;
         public string QValueCaption => "kein Grenzwert einzuhalten";
         public string QValueTooltip => SymbolMapping[Symbol.HeatFluxDensity].comment;
         public double QValueScaleMin => 0.0;
@@ -157,11 +166,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string QValueSymbolBase => SymbolMapping[Symbol.HeatFluxDensity].baseText;
 
 
-        public double TsiValue => _glaser.Tsi;
+        public double? TsiValue => _glaser.IsValid ? _glaser.Tsi : null;
         public string TsiCaption => "zur Vermeidung von Schimmelpilzbildung";
         public double TsiValueScaleMin => _glaser.Te;
         public double TsiValueScaleMax => _glaser.Ti;
-        public double TsiValueRefMarker => _glaser.TsiMin;
+        public double? TsiValueRefMarker => _glaser.IsValid ? _glaser.TsiMin : null;
         public string TsiValueUnitString => GetUnitStringFromSymbol(Symbol.TemperatureSurfaceInterior);
         public string TsiSymbolBase => SymbolMapping[Symbol.TemperatureSurfaceInterior].baseText;
         public string TsiSymbolSubscript => $"{SymbolMapping[Symbol.TemperatureSurfaceInterior].subscriptText}";
@@ -169,23 +178,23 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string TsiMarkerSymbolSubscript => $"{SymbolMapping[Symbol.TemperatureSurfaceInterior].subscriptText}" + ",min";
 
 
-        public double FRsiValue => _glaser.FRsi;
+        public double? FRsiValue => _glaser.IsValid ? _glaser.FRsi : null;
         public string FRsiCaption => "zur Vermeidung von Schimmelpilzbildung";
         public string FRsiTooltip => SymbolMapping[Symbol.FRsi].comment;
         public double FRsiValueScaleMin => 0.0;
         public double FRsiValueScaleMax => 1.0;
-        public double FRsiValueRefMarker => 0.7; // TODO:
+        public double? FRsiValueRefMarker => _glaser.IsValid ? 0.7 : null; // TODO:
         public string FRsiValueUnitString => GetUnitStringFromSymbol(Symbol.FRsi);
         public string FRsiSymbolBase => SymbolMapping[Symbol.FRsi].baseText;
         public string FRsiSymbolSubscript => $"{SymbolMapping[Symbol.FRsi].subscriptText}";
         public string FRsiMarkerSymbolBase => SymbolMapping[Symbol.FRsi].baseText;
         public string FRsiMarkerSymbolSubscript => $"{SymbolMapping[Symbol.FRsi].subscriptText}" + ",min";
 
-        public double RelFiValue => _glaser.RelFi;
+        public double? RelFiValue => _glaser.IsValid ? _glaser.RelFi : null;
         public string RelFiCaption => "zur Vermeidung von Schimmelpilzbildung";
         public double RelFiValueScaleMin => 0.0;
         public double RelFiValueScaleMax => 100.0;
-        public double RelFiValueRefMarker => _glaser.PhiMax; // TODO:
+        public double? RelFiValueRefMarker => _glaser.IsValid ? _glaser.PhiMax : null; // TODO:
         public string RelFiValueUnitString => GetUnitStringFromSymbol(Symbol.RelativeHumidityInterior);
         public string RelFiSymbolBase => SymbolMapping[Symbol.RelativeHumidityInterior].baseText;
         public string RelFiSymbolSubscript => $"{SymbolMapping[Symbol.RelativeHumidityInterior].subscriptText}";

@@ -98,16 +98,23 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
+                if (_requirementValues.Element is null) return new GaugeItem(Symbol.UValue);
+
                 if (_uValueGauge == null)
                 {
                     double? uMax = _requirementValues.UMax;
-                    double elementUValue = _requirementValues.Element.UValue;
+                    double? elementUValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.UValue : null;
+                    double scaleMax = uMax.HasValue
+                        ? Math.Max(2 * uMax.Value, (elementUValue ?? 0.0) + 0.1)
+                        : Math.Max(1.0, (elementUValue ?? 0.0) + 0.1);
+
                     _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _requirementValues.UMaxComparisonRequirement)
                     {
                         Caption = _requirementValues.UMaxCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = uMax.HasValue ? Math.Max(2 * uMax.Value, elementUValue + 0.1) : Math.Max(1.0, elementUValue + 0.1)
+                        ScaleMax = scaleMax,
                     };
+
                 }
                 return _uValueGauge;
             }
@@ -125,17 +132,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
+                if (_requirementValues.Element is null) return new GaugeItem(Symbol.RValueElement);
+
                 if (_rValueGauge == null)
                 {
                     var uValueGauge = UValueGauge; // ensure initialized once
-                    double uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
-                    double targetRValueNormalized = 1.0 - uValueNormalized;
-
-                    _rValueGauge = new GaugeItem(Symbol.RValueElement, _requirementValues.Element.RGesValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
+                    double? uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
+                    double? targetRValueNormalized = 1.0 - uValueNormalized;
+                    double? elementRValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.RGesValue : null;
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, elementRValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
                     {
                         Caption = _requirementValues.RMinCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = _requirementValues.Element.RGesValue / targetRValueNormalized,
+                        ScaleMax = _requirementValues.Element?.RGesValue / targetRValueNormalized ?? 1.0,
                     };
                 }
                 return _rValueGauge;
@@ -143,7 +152,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
 
-        public double QValue => _requirementValues.Element.QValue;
+        public double? QValue => _requirementValues.Element?.QValue;
         public string QValueCaption => "kein Grenzwert einzuhalten";
         public string QValueTooltip => SymbolMapping[Symbol.HeatFluxDensity].comment;
         public double QValueScaleMin => 0.0;
