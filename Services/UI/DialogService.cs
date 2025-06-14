@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using BauphysikToolWPF.UI.CustomControls;
+using System.Windows;
 
 namespace BauphysikToolWPF.Services.UI
 {
@@ -6,11 +7,14 @@ namespace BauphysikToolWPF.Services.UI
     {
         public MessageBoxResult ShowSaveConfirmationDialog()
         {
-            string message = "Do you want to save the current project before creating a new one?";
-            string caption = "Save Project";
-            MessageBoxButton buttons = MessageBoxButton.YesNoCancel;
-            MessageBoxImage icon = MessageBoxImage.Warning;
-            return MessageBox.Show(message, caption, buttons, icon);
+            var dialog = new SaveConfirmationDialog
+            {
+                Owner = System.Windows.Application.Current.MainWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+
+            dialog.ShowDialog();
+            return dialog.Result;
         }
     }
 }
