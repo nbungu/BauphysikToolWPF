@@ -74,7 +74,7 @@
         <Border Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.GlaserCurve}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.GlaserCurve}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -85,7 +85,7 @@
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <!--
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                     -->
                 </StackPanel>
             </Grid>

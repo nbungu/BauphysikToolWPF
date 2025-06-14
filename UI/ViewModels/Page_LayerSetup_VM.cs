@@ -367,7 +367,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
 
-        #region Event Handlers for UI Events
+        #region Who triggers: Event Handlers for UI Events
 
         private void ElementChanged()
         {
@@ -425,7 +425,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         #endregion
 
-        #region Refresh Methods for selected XAML Elements
+        #region What is refreshed: Refresh Methods for selected XAML Elements
 
         private void RefreshPropertyGrid()
         {

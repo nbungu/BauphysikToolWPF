@@ -53,7 +53,7 @@
                     IsEnabled="{Binding IsEnabled}"
                     Command="{Binding DataContext.SetPageButtonClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                     CommandParameter="{Binding Page}"
-                    Style="{StaticResource ButtonStyle01}"
+                    Style="{StaticResource ButtonStandard}"
                     Tag="{Binding Icon}"/>
         </DataTemplate>
 
@@ -107,7 +107,7 @@
                     Command="{Binding DataContext.SetPageButtonClickCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                     CommandParameter="{Binding Page}"
                     ToolTip="{Binding Tooltip}"
-                    Style="{StaticResource ButtonStyle01_Dark}"
+                    Style="{StaticResource ButtonDark}"
                     Tag="{Binding Icon}"/>
         </DataTemplate>
 

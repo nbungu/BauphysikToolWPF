@@ -22,7 +22,7 @@
 
             <Button Grid.Column="2"
                     Tag="{StaticResource ButtonIcon_Cancel_B}"
-                    Style="{StaticResource ButtonStyle01_Mini_Transparent}"
+                    Style="{StaticResource ButtonMiniTransparent}"
                     Click="ButtonBase_OnClick"
                     Margin="8,0"/>
         </Grid>

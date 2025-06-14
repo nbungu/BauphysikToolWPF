@@ -35,7 +35,7 @@
         <Border Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.ElementCatalogue}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.ElementCatalogue}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -45,7 +45,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.Summary}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.Summary}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -70,35 +70,35 @@
 
                 <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
                     <Button Content="Schicht hinzufügen"
-                            Style="{StaticResource ButtonStyle01_Mini_Highlighted}"
+                            Style="{StaticResource ButtonMiniHighlighted}"
                             Command="{Binding AddLayerCommand}"
                             Tag="{StaticResource ButtonIcon_AddLayer_W}"
                             Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}"
+                    <Button Style="{StaticResource ButtonMiniTransparent}"
                             Tag="{StaticResource ButtonIcon_Edit_B}"
                             ToolTip="Schicht bearbeiten"
                             IsEnabled="{Binding IsLayerSelected}"
                             Command="{Binding EditLayerCommand}"
                             Margin="0,0,8,0"/>
-                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}"
+                    <Button Style="{StaticResource ButtonMiniTransparent}"
                             Command="{Binding DuplicateLayerCommand}"
                             Tag="{StaticResource ButtonIcon_Copy_B}" 
                             Margin="0,0,8,0"
                             IsEnabled="{Binding IsLayerSelected}"
                             ToolTip="Schicht duplizieren"/>
-                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}"
+                    <Button Style="{StaticResource ButtonMiniTransparent}"
                             Command="{Binding MoveLayerUpCommand}"
                             Tag="{StaticResource ButtonIcon_Up_B}"
                             Margin="0,0,8,0"
                             IsEnabled="{Binding IsLayerSelected}"
                             ToolTip="Schicht eine Lage nach oben verschieben"/>
-                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}"
+                    <Button Style="{StaticResource ButtonMiniTransparent}"
                             Command="{Binding MoveLayerDownCommand}"
                             Tag="{StaticResource ButtonIcon_Down_B}"
                             Margin="0,0,8,0"
                             IsEnabled="{Binding IsLayerSelected}"
                             ToolTip="Schicht eine Lage nach unten verschieben"/>
-                    <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}"
+                    <Button Style="{StaticResource ButtonMiniTransparent}"
                             Command="{Binding DeleteLayerCommand}"
                             Tag="{StaticResource ButtonIcon_Delete_B}"
                             Margin="0,0,8,0"

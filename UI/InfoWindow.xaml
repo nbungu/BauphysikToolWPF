@@ -36,7 +36,7 @@
 
 
         <Label Content="Neue Versionen und Infos unter:"  Margin="0,16,0,0"/>
-        <Button Content="{Binding Website}" HorizontalAlignment="Center" Padding="8,0" Tag="{StaticResource ButtonIcon_Internet_Flat}" Style="{StaticResource ButtonStyle01_Transparent}" Foreground="Blue" Command="{Binding OpenWebsiteCommand}" CommandParameter="{Binding ElementName=InfoWindowControl}"/>
+        <Button Content="{Binding Website}" HorizontalAlignment="Center" Padding="8,0" Tag="{StaticResource ButtonIcon_Internet_Flat}" Style="{StaticResource ButtonTransparent}" Foreground="Blue" Command="{Binding OpenWebsiteCommand}" CommandParameter="{Binding ElementName=InfoWindowControl}"/>
 
         <Separator BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="2" Margin="0,16"/>
         <Label Content="Rechte Dritter:" FontWeight="DemiBold" HorizontalAlignment="Left"/>
@@ -48,7 +48,7 @@
 
         <Separator BorderBrush="{StaticResource PrimaryBorderBrush}" BorderThickness="2" Margin="0,16"/>
         <Label Content="Lizenz zur Nutzung und Weiterverbreitung" FontWeight="DemiBold" HorizontalAlignment="Left"/>
-        <Button Content="GPL-3.0 license" HorizontalAlignment="Center" Padding="8,0" Style="{StaticResource ButtonStyle01_Transparent}" Foreground="Blue" Command="{Binding OpenLicenseCommand}" CommandParameter="{Binding ElementName=InfoWindowControl}"/>
+        <Button Content="GPL-3.0 license" HorizontalAlignment="Center" Padding="8,0" Style="{StaticResource ButtonTransparent}" Foreground="Blue" Command="{Binding OpenLicenseCommand}" CommandParameter="{Binding ElementName=InfoWindowControl}"/>
 
         <Button Margin="0,16,0,0" Content="Schließen" Command="{Binding CancelCommand}" CommandParameter="{Binding ElementName=InfoWindowControl}" Style="{StaticResource ButtonStyle02}"/>
     </StackPanel>

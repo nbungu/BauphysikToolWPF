@@ -137,19 +137,19 @@
             <Label Content="Material Auswahl" FontWeight="Bold" HorizontalAlignment="Left"/>
 
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="4,0,0,8">
-                <Button Style="{StaticResource ButtonStyle01_Mini_Highlighted}"
+                <Button Style="{StaticResource ButtonMiniHighlighted}"
                         Command="{Binding CreateMaterialCommand}"
                         Tag="{StaticResource ButtonIcon_Add_W}"
                         Margin="0,0,8,0"
                         ToolTip="Eigenes Material erstellen"/>
-                <Button Style="{StaticResource ButtonStyle01_Mini_Transparent}"
+                <Button Style="{StaticResource ButtonMiniTransparent}"
                         Command="{Binding DeleteMaterialCommand}"
                         Tag="{StaticResource ButtonIcon_Delete_B}"
                         Margin="0,0,8,0"
                         IsEnabled="{Binding AllowDelete}"
                         ToolTip="Material löschen"/>
                 <TextBox Text="{Binding SearchString}" TextAlignment="Left" Background="{StaticResource SecondaryLightBlueBrush}" MaxLength="320" Width="240" Margin="0,0,8,0"/>
-                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonStyle01_Mini_Transparent}" Margin="0,0,8,0"/>
+                <Button Content="Suchen" Tag="{StaticResource ButtonIcon_Search_Bold_B}" Style="{StaticResource ButtonMiniTransparent}" Margin="0,0,8,0"/>
 
             </StackPanel>
 
@@ -193,7 +193,7 @@
                     VerticalAlignment="Bottom"
                     Command="{Binding ApplyChangesCommand}"
                     CommandParameter="{Binding ElementName=AddLayerWindowControl}"
-                    Style="{StaticResource ButtonStyle01_Highlighted}"
+                    Style="{StaticResource ButtonHighlighted}"
                     Tag="{StaticResource ButtonIcon_AddLayer_W}"/>
         </Grid>
 

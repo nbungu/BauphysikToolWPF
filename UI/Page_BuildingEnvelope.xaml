@@ -30,7 +30,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.EnvelopeSummary}" Style="{StaticResource ButtonStyle01_Mini_Transparent}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.EnvelopeSummary}" Style="{StaticResource ButtonMiniTransparent}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -53,27 +53,27 @@
 
                     <Button Content="Neuer Raum"
                         ToolTip="Erstellt neuen Raum"
-                        Style="{StaticResource ButtonStyle01_Mini_Highlighted}"
+                        Style="{StaticResource ButtonMiniHighlighted}"
                         Command="{Binding AddEnvelopeItemRoomCommand}"
                         Tag="{StaticResource ButtonIcon_AddLayer_W}"
                         Margin="0,0,8,0"/>
 
                     <Button Content="Bauteil hinzufügen"
                             ToolTip="Erstellt neuen Bereich der thermischen Hüllfläche, zugehörig zum aktuellen Raum"
-                            Style="{StaticResource ButtonStyle01_Mini}"
+                            Style="{StaticResource ButtonMini}"
                             Command="{Binding AddEnvelopeItemCommand}"
                             Tag="{StaticResource ButtonIcon_AddLayer_B}"
                             Margin="0,0,8,0"/>
 
                     <Button ToolTip="{Binding DuplicateButtonTooltip}"
-                        Style="{StaticResource ButtonStyle01_Mini_Transparent}"
+                        Style="{StaticResource ButtonMiniTransparent}"
                         Command="{Binding DuplicateEnvelopeItemCommand}"
                         Tag="{StaticResource ButtonIcon_Copy_B}" 
                         Margin="0,0,8,0"
                         IsEnabled="{Binding IsRowSelected}"/>
 
                     <Button ToolTip="{Binding DeleteButtonTooltip}"
-                        Style="{StaticResource ButtonStyle01_Mini_Transparent}"
+                        Style="{StaticResource ButtonMiniTransparent}"
                         Tag="{StaticResource ButtonIcon_Delete_B}"
                         IsEnabled="{Binding IsRowSelected}"
                         Command="{Binding DeleteEnvelopeItemCommand}"

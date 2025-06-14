@@ -88,7 +88,7 @@
                         Content="{Binding}"
                         Command="{Binding RelativeSource={RelativeSource Self}, Path=Tag.RemoveTagCommand}"
                         CommandParameter="{Binding}"
-                        Style="{StaticResource ButtonStyle05_Tag}">
+                        Style="{StaticResource ButtonTag}">
                 </Button>
             </Grid>
         </DataTemplate>
@@ -138,9 +138,9 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Button Grid.ColumnSpan="2" Visibility="{Binding TagBtnVisible}" Style="{StaticResource ButtonStyle01_Transparent}" Tag="{StaticResource ButtonIcon_Add_B}" Content="Neues Tag hinzufügen" Command="{Binding ToggleTagInputCommand}" Height="32" FontWeight="Regular"/>
+                <Button Grid.ColumnSpan="2" Visibility="{Binding TagBtnVisible}" Style="{StaticResource ButtonTransparent}" Tag="{StaticResource ButtonIcon_Add_B}" Content="Neues Tag hinzufügen" Command="{Binding ToggleTagInputCommand}" Height="32" FontWeight="Regular"/>
                 <TextBox Grid.Column="0" x:Name="TagInputField" Visibility="{Binding TextBoxVisible}" HorizontalContentAlignment="Left" MaxLength="48" Height="32"/>
-                <Button Visibility="{Binding EnterBtnVisible}" Grid.Column="1" Style="{StaticResource ButtonStyle01_Mini_Transparent}" Tag="{StaticResource ButtonIcon_Add_B}" Command="{Binding EnterTagCommand}" CommandParameter="{Binding Text, ElementName=TagInputField}" Height="32" Width="32" Margin="8,0,0,0"/>
+                <Button Visibility="{Binding EnterBtnVisible}" Grid.Column="1" Style="{StaticResource ButtonMiniTransparent}" Tag="{StaticResource ButtonIcon_Add_B}" Command="{Binding EnterTagCommand}" CommandParameter="{Binding Text, ElementName=TagInputField}" Height="32" Width="32" Margin="8,0,0,0"/>
             </Grid>
             <ItemsControl ItemsSource="{Binding TagList}"
                           ItemsPanel="{StaticResource WrapPanel_Template}"

@@ -1022,8 +1022,8 @@
             <Setter Property="FontWeight" Value="Bold"/>
         </Style>
 
-        <!--Custom ButtonStyle01: Icon + Label, rounded corners, click effects -->
-        <Style x:Key="ButtonStyle01" TargetType="{x:Type Button}">
+        <!--Custom ButtonStandard: Icon + Label, rounded corners, click effects -->
+        <Style x:Key="ButtonStandard" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value=""/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -1082,7 +1082,7 @@
             </Style.Triggers>
         </Style>
 
-        <Style x:Key="ButtonStyle01_Dark" BasedOn="{StaticResource ButtonStyle01}" TargetType="Button">
+        <Style x:Key="ButtonDark" BasedOn="{StaticResource ButtonStandard}" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource PrimaryDarkHighlightBrush}" />
             <Setter Property="Foreground" Value="White"/>
             <Style.Triggers>
@@ -1092,21 +1092,21 @@
             </Style.Triggers>
         </Style>
 
-        <!--Custom ButtonStyle01_Transparent: Icon + Label, Transparent, rounded corners -->
-        <Style x:Key="ButtonStyle01_Transparent" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle01}">
+        <!--Custom ButtonTransparent: Icon + Label, Transparent, rounded corners -->
+        <Style x:Key="ButtonTransparent" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStandard}">
             <!--Set default properties of the button-->
             <Setter Property="Background" Value="Transparent"/>
         </Style>
 
-        <!--Custom ButtonStyle01_Highlighted: Icon + Label, highlighted, rounded corners, click effects -->        
-        <Style x:Key="ButtonStyle01_Highlighted" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle01}">
+        <!--Custom ButtonHighlighted: Icon + Label, highlighted, rounded corners, click effects -->        
+        <Style x:Key="ButtonHighlighted" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStandard}">
             <!--Set default properties of the button-->
             <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
-        <!--Custom ButtonStyle01_Mini_Transparent: Icon + Label, transparent, rounded corners, click effects -->
-        <Style x:Key="ButtonStyle01_Mini_Transparent" TargetType="{x:Type Button}">
+        <!--Custom ButtonMiniTransparent: Icon + Label, transparent, rounded corners, click effects -->
+        <Style x:Key="ButtonMiniTransparent" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value=""/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -1165,20 +1165,20 @@
             </Style.Triggers>
         </Style>
 
-        <!--Custom ButtonStyle01_Mini_Highlighted: Icon + Label, transparent, rounded corners, click effects -->
-        <Style x:Key="ButtonStyle01_Mini_Highlighted" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle01_Mini_Transparent}">
+        <!--Custom ButtonMiniHighlighted: Icon + Label, transparent, rounded corners, click effects -->
+        <Style x:Key="ButtonMiniHighlighted" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonMiniTransparent}">
             <!--Set default properties of the button-->
             <Setter Property="Background" Value="{StaticResource PrimaryHighlightBrush}"/>
             <Setter Property="Foreground" Value="White"/>
         </Style>
 
-        <!--Custom ButtonStyle01_Mini_Highlighted: Icon + Label, transparent, rounded corners, click effects -->
-        <Style x:Key="ButtonStyle01_Mini" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonStyle01_Mini_Transparent}">
+        <!--Custom ButtonMiniHighlighted: Icon + Label, transparent, rounded corners, click effects -->
+        <Style x:Key="ButtonMini" TargetType="{x:Type Button}" BasedOn="{StaticResource ButtonMiniTransparent}">
             <!--Set default properties of the button-->
             <Setter Property="Background" Value="{StaticResource PrimaryMediumBrush}"/>
         </Style>
 
-        <Style x:Key="ButtonStyle05_Tag" TargetType="{x:Type Button}">
+        <Style x:Key="ButtonTag" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value="Tag Name"/>
             <Setter Property="Padding" Value="0"/>
@@ -1214,7 +1214,7 @@
             </Style.Triggers>
         </Style>
         
-        <Style x:Key="ButtonStyle05_Tag_B" TargetType="{x:Type Button}">
+        <Style x:Key="ButtonTagB" TargetType="{x:Type Button}">
             <!--Set default properties of the button-->
             <Setter Property="Content" Value="Tag Name"/>
             <Setter Property="BorderThickness" Value="0"/>
