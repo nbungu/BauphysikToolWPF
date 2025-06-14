@@ -28,7 +28,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             
             PropertyItem<int>.PropertyChanged += UpdateXamlBindings;
 
-            if (_targetLayer.HasSubConstructions && _targetLayer.SubConstruction != null)
+            if (_targetLayer.SubConstruction != null)
             {
                 _tempConstruction = _targetLayer.SubConstruction.Copy();
             }
@@ -105,11 +105,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, No direct User Input involved
          */
 
-        public string Title => _targetLayer != null && _targetLayer.HasSubConstructions ? $"Balkenlage bearbeiten: {_targetLayer.SubConstruction} | Schicht: {_targetLayer}" : $"Neue Balkenlage erstellen | Schicht: {_targetLayer}";
+        public string Title => _targetLayer != null && _targetLayer.SubConstruction != null ? $"Balkenlage bearbeiten: {_targetLayer.SubConstruction} | Schicht: {_targetLayer}" : $"Neue Balkenlage erstellen | Schicht: {_targetLayer}";
         public List<Material> Materials => GetMaterials();
         public string Tab0Header => $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
         public string Tab1Header => $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
-        public string ButtonText => _targetLayer.HasSubConstructions ? "Änderung übernehmen" : "Balkenlage hinzufügen";
+        public string ButtonText => _targetLayer?.SubConstruction != null ? "Änderung übernehmen" : "Balkenlage hinzufügen";
         public List<IPropertyItem> SubConstructionProperties => new List<IPropertyItem>()
         {
             new PropertyItem<string>("Material", () => _tempConstruction.Material.Name),

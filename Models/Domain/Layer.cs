@@ -5,7 +5,6 @@ using BauphysikToolWPF.Services.Application;
 using BT.Geometry;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using static BauphysikToolWPF.Models.UI.Enums;
@@ -37,7 +36,7 @@ namespace BauphysikToolWPF.Models.Domain
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
         private int _materialId = -1;
-        // 1:1 relationship with Material
+
         public int MaterialId
         {
             get => _materialId;
@@ -49,8 +48,7 @@ namespace BauphysikToolWPF.Models.Domain
             }
         }
 
-        // 1:n relationship with LayerSubConstruction
-        public List<LayerSubConstruction> SubConstructions { get; set; } = new List<LayerSubConstruction>(1);
+        public LayerSubConstruction? SubConstruction { get; set; }
 
         #endregion
 
@@ -131,34 +129,22 @@ namespace BauphysikToolWPF.Models.Domain
             set
             {
                 _isEffective = value;
-                if (HasSubConstructions && SubConstruction != null) SubConstruction.IsEffective = value;
+                if (SubConstruction != null) SubConstruction.IsEffective = value;
             }
         }
 
         [JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
+
         [JsonIgnore]
         public string UpdatedAtString => TimeStamp.ConvertToNormalTime(UpdatedAt);
-        [JsonIgnore]
-        public bool HasSubConstructions => SubConstructions.Count > 0;
+
         [JsonIgnore]
         public bool IsValid => LayerPosition >= 0 && Thickness > 0 && Material.IsValid;
+
         [JsonIgnore]
         public int LayerNumber => LayerPosition + 1;
-
-        // Workaround: Currently only 1 SubConstruction supported
-        [JsonIgnore]
-        public LayerSubConstruction? SubConstruction
-        {
-            get => SubConstructions.FirstOrDefault();
-            set
-            {
-                if (value == null) return;
-                SubConstructions.Clear();
-                SubConstructions.Add(value);
-            }
-        }
-
+        
         [JsonIgnore]
         public double R_Value
         {
@@ -185,7 +171,7 @@ namespace BauphysikToolWPF.Models.Domain
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                if (HasSubConstructions && SubConstruction != null)
+                if (SubConstruction != null)
                 {
                     var partialAreaOfLayer = 1 - (SubConstruction.Width / (SubConstruction.Width + SubConstruction.Spacing));
                     return Math.Round((this.Thickness / 100) * Material.BulkDensity * partialAreaOfLayer, 3);
@@ -200,7 +186,7 @@ namespace BauphysikToolWPF.Models.Domain
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                if (HasSubConstructions && SubConstruction != null)
+                if (SubConstruction != null)
                 {
                     var partialAreaOfLayer = 1 - (SubConstruction.Width / (SubConstruction.Width + SubConstruction.Spacing));
                     return (this.Thickness / 100) * Material.VolumetricHeatCapacity * partialAreaOfLayer;
@@ -240,7 +226,7 @@ namespace BauphysikToolWPF.Models.Domain
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             // Deep copy of the SubConstructions list
-            this.SubConstructions.ForEach(sc => sc.CopyToNewLayer(copy));
+            if (SubConstruction != null) this.SubConstruction.CopyToNewLayer(copy);
             return copy;
         }
         public void CopyToElement(Element element)
@@ -261,7 +247,7 @@ namespace BauphysikToolWPF.Models.Domain
 
         public void RemoveSubConstruction()
         {
-            this.SubConstructions.Clear();
+            this.SubConstruction = null;
         }
 
         /// <summary>

@@ -199,8 +199,7 @@ namespace BauphysikToolWPF.Models.Domain
         }
         public void CopyToNewLayer(Layer layer)
         {
-            var copy = Copy();
-            layer.SubConstructions.Add(copy);
+            layer.SubConstruction = Copy();
         }
 
         public void UpdateTimestamp()

@@ -119,7 +119,7 @@ namespace BauphysikToolWPF.Services.UI
                 layerDrawings.Add(GetLabelForLayer(l, (l.LayerNumber).ToString()));
 
                 // SubConstruction
-                if (l.HasSubConstructions && l.SubConstruction != null)
+                if (l.SubConstruction != null)
                 {
                     double subConstrWidth = l.SubConstruction.Rectangle.Width;
                     double subConstrHeight = l.SubConstruction.Rectangle.Height;
@@ -294,7 +294,7 @@ namespace BauphysikToolWPF.Services.UI
 
                 UpdateLayerGeometry(l);
 
-                if (l.HasSubConstructions && l.SubConstruction != null)
+                if (l.SubConstruction != null)
                 {
                     if (DrawingType == DrawingType.CrossSection)
                     {
@@ -352,7 +352,7 @@ namespace BauphysikToolWPF.Services.UI
 
         private IDrawingGeometry UpdateSubConstructionGeometry(Layer layer)
         {
-            if (!layer.HasSubConstructions || layer.SubConstruction is null) return new DrawingGeometry();
+            if (layer.SubConstruction is null) return new DrawingGeometry();
 
             var subConstruction = layer.SubConstruction;
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);

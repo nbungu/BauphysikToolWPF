@@ -204,7 +204,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
 
         public bool IsLayerSelected => SelectedListViewItem != null;
-        public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem.HasSubConstructions ? Visibility.Visible : Visibility.Collapsed;
+        public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem?.SubConstruction != null ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
         public Visibility NoLayersVisibility => LayerList?.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;

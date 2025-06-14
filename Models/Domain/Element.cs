@@ -53,7 +53,7 @@ namespace BauphysikToolWPF.Models.Domain // or core?
         public bool IsValid => Name != string.Empty && Layers.Count > 0;
 
         [JsonIgnore]
-        public bool IsInhomogeneous => Layers.Any(l => l.HasSubConstructions);
+        public bool IsInhomogeneous => Layers.Any(l => l.SubConstruction != null);
 
         [JsonIgnore]
         public Color Color => ColorCode == "#00FFFFFF" ? Colors.Transparent : (Color)ColorConverter.ConvertFromString(ColorCode); // HEX 'ColorCode' Property to 'Color' Type
@@ -115,7 +115,7 @@ namespace BauphysikToolWPF.Models.Domain // or core?
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    if (layer.HasSubConstructions && layer.SubConstruction != null)
+                    if (layer.SubConstruction != null)
                     {
                         val += layer.AreaMassDensity;
                         val += layer.SubConstruction.AreaMassDensity;
@@ -135,7 +135,7 @@ namespace BauphysikToolWPF.Models.Domain // or core?
                 double val = 0;
                 foreach (Layer layer in Layers)
                 {
-                    if (layer.HasSubConstructions && layer.SubConstruction != null)
+                    if (layer.SubConstruction != null)
                     {
                         val += layer.ArealHeatCapacity;
                         val += layer.SubConstruction.ArealHeatCapacity;

@@ -129,7 +129,7 @@ namespace BauphysikToolWPF.Calculation
                 double rGesLower = 0.0;
                 foreach (var layer in RelevantLayers)
                 {
-                    if (layer.HasSubConstructions && layer.SubConstruction != null)
+                    if (layer.SubConstruction != null)
                     {
                         string mainLayer = $"{layer.LayerPosition}";
                         string subLayer = $"{layer.LayerPosition}b";
@@ -218,7 +218,7 @@ namespace BauphysikToolWPF.Calculation
 
             var layer = RelevantLayers[i];
                 
-            if (layer.HasSubConstructions)
+            if (layer.SubConstruction != null)
             {
                 var newCombinationPath = new List<string>(currentCombination);
                 newCombinationPath.Add($"{layer.LayerPosition}b");
@@ -234,7 +234,7 @@ namespace BauphysikToolWPF.Calculation
             foreach (var layer in RelevantLayers)
             {
                 _layerMapping.Add($"{layer.LayerPosition}", layer);
-                if (layer.HasSubConstructions && layer.SubConstruction != null)
+                if (layer.SubConstruction != null)
                 {
                     _layerMapping.Add($"{layer.LayerPosition}b", layer.SubConstruction);
                 }

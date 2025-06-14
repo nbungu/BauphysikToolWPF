@@ -280,7 +280,7 @@ namespace BauphysikToolWPF.Services.Application
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
-            var str = element.Layers.Any(l => l.HasSubConstructions) ? "Ja" : "Nein";
+            var str = element.IsInhomogeneous ? "Ja" : "Nein";
             gfx.DrawString($"Inhomogener Schichtaufbau: {str}", bodyFont, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
@@ -426,7 +426,7 @@ namespace BauphysikToolWPF.Services.Application
         private static string[,] GetLayerData(Element element)
         {
             var layers = element.Layers;
-            var rows = layers.Count + layers.Count(l => l.HasSubConstructions) + 2;
+            var rows = layers.Count + layers.Count(l => l.SubConstruction != null) + 2;
             string[,] data = new string[rows, 6]; // Zeilen, Spalten
 
             int currentRow = 0;
@@ -448,7 +448,7 @@ namespace BauphysikToolWPF.Services.Application
                 data[currentRow, 5] = layers[i].R_Value.ToString("F2");
                 currentRow += 1;
 
-                if (layers[i].HasSubConstructions)
+                if (layers[i].SubConstruction != null)
                 {
                     string numberSubC = i+1 < 10 ? $"0{i + 1}b" : $"{i + 1}b";
                     data[currentRow, 0] = $"{numberSubC} - {layers[i].SubConstruction?.Material.Name}";
