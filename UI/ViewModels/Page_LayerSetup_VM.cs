@@ -23,11 +23,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
         private readonly CheckRequirements _requirementValues = new CheckRequirements();
 
+        private readonly IDialogService _dialogService;
+
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
         {
             if (Session.SelectedProject is null) return;
             if (Session.SelectedElement is null) return;
+
+            _dialogService = new DialogService();
 
             _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
             // TODO: this could be 'Element' property and be fetched from the SelectedElement directly
@@ -57,41 +61,26 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void SwitchPage(NavigationPage desiredPage)
-        {
-            MainWindow.SetPage(desiredPage);
-        }
+        private void SwitchPage(NavigationPage desiredPage) => MainWindow.SetPage(desiredPage);
 
         [RelayCommand]
-        private void AddLayer()
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerWindow().ShowDialog();
-        }
+        private void AddLayer() => _dialogService.ShowAddNewLayerDialog();
+
         [RelayCommand]
-        private void EditLayer()
-        {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddLayerWindow(SelectedListViewItem?.InternalId ?? -1).ShowDialog();
-        }
+        private void EditLayer() => _dialogService.ShowEditLayerDialog(SelectedListViewItem?.InternalId ?? -1);
 
         [RelayCommand]
         private void AddSubConstructionLayer(int targetLayerInternalId = -1)
         {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
             if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
-            new AddLayerSubConstructionWindow(targetLayerInternalId).ShowDialog();
+            _dialogService.ShowAddNewSubconstructionDialog(targetLayerInternalId);
         }
+
         [RelayCommand]
         private void EditSubConstructionLayer(int targetLayerInternalId = -1)
         {
-            // Once a window is closed, the same object instance can't be used to reopen the window.
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
             if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
-            new AddLayerSubConstructionWindow(targetLayerInternalId).ShowDialog();
+            _dialogService.ShowEditSubconstructionDialog(targetLayerInternalId);
         }
 
         [RelayCommand]
@@ -145,10 +134,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void LayerDoubleClick()
-        {
-            EditLayer();
-        }
+        private void LayerDoubleClick() => EditLayer();
 
         // This method will be called whenever SelectedListViewItem changes
         partial void OnSelectedListViewItemChanged(Layer? value) => SelectedLayerChanged(value);

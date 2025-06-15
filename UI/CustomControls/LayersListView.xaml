@@ -64,9 +64,6 @@
                     </Thumb.Style>
                 </Thumb>
             </Grid>
-            <ControlTemplate.Triggers>
-
-            </ControlTemplate.Triggers>
         </ControlTemplate>
 
         <!--
@@ -236,7 +233,7 @@
                                                 <Style TargetType="Label">
                                                     <Setter Property="Foreground" Value="{StaticResource PrimaryBorderBrush}"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding HasSubConstructions}" Value="True">
+                                                        <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
                                                             <Setter Property="Foreground" Value="Black"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
@@ -267,11 +264,11 @@
                                 <Setter Property="Foreground" Value="White"/>
                                 <Setter TargetName="LabelBalkenlage" Property="Foreground" Value="White"/>
                             </Trigger>
-                            <DataTrigger Binding="{Binding HasSubConstructions}" Value="True">
+                            <DataTrigger Binding="{Binding HasSubConstruction}" Value="True">
                                 <Setter TargetName="EditDeletePanel" Property="Visibility" Value="Visible" />
                                 <Setter TargetName="AddLayerSubConstructionButton" Property="Visibility" Value="Collapsed" />
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding HasSubConstructions}" Value="False">
+                            <DataTrigger Binding="{Binding HasSubConstruction}" Value="False">
                                 <Setter TargetName="EditDeletePanel" Property="Visibility" Value="Collapsed" />
                                 <Setter TargetName="AddLayerSubConstructionButton" Property="Visibility" Value="Visible" />
                             </DataTrigger>
@@ -384,7 +381,7 @@
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage hinzufügen" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstructions, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstruction, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="True">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -401,7 +398,7 @@
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage bearbeiten" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstructions, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False">
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstruction, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>
@@ -417,7 +414,7 @@
                             <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type MenuItem}}">
                                 <Setter Property="Header" Value="Balkenlage löschen" />
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstructions, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False">
+                                    <DataTrigger Binding="{Binding Path=PlacementTarget.SelectedItem.HasSubConstruction, RelativeSource={RelativeSource AncestorType=ContextMenu}}" Value="False">
                                         <Setter Property="Visibility" Value="Collapsed" />
                                     </DataTrigger>
                                 </Style.Triggers>

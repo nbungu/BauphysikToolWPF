@@ -105,6 +105,21 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void Open()
         {
+            if (Session.SelectedProject != null && Session.SelectedProject.IsModified)
+            {
+                MessageBoxResult result = _dialogService.ShowSaveConfirmationDialog();
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        Save();
+                        break;
+                    case MessageBoxResult.No:
+                        break;
+                    case MessageBoxResult.Cancel:
+                        return;
+                }
+            }
+
             string? filePath = _fileDialogService.ShowOpenFileDialog("BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
             if (filePath != null)
             {

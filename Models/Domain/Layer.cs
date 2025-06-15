@@ -119,6 +119,9 @@ namespace BauphysikToolWPF.Models.Domain
         }
 
         [JsonIgnore]
+        public bool HasSubConstruction => SubConstruction != null;
+
+        [JsonIgnore]
         public bool IsSelected { get; set; } // For UI Purposes 
 
         private bool _isEffective = true;

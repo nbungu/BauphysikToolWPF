@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain;
+using BT.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
@@ -7,7 +8,7 @@ using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {
-    
+
     public class CheckRequirements
     {
         public CheckRequirementsConfig Config { get; } = new CheckRequirementsConfig();
@@ -55,6 +56,8 @@ namespace BauphysikToolWPF.Calculation
             UMax = GetUMax();
             RMin = GetRMin();
             QMax = GetQMax();
+
+            Logger.LogInfo($"Updated requirements check for element: {Element}.");
         }
 
         private double? GetUMax()

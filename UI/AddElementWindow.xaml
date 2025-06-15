@@ -12,7 +12,6 @@
         MinWidth="220"
         MaxWidth="480"
         MinHeight="80"
-        WindowStartupLocation="CenterOwner"        
         ShowInTaskbar="False"
         WindowStyle="None"
         SizeToContent="Height" KeyDown="AddElementWindowControl_KeyDown">

@@ -16,9 +16,13 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_Elements.xaml: Used in xaml as "DataContext"
     public partial class Page_Elements_VM : ObservableObject
     {
+        private readonly IDialogService _dialogService;
+
         public Page_Elements_VM()
         {
             if (Session.SelectedProject is null) return;
+
+            _dialogService = new DialogService();
 
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
@@ -46,16 +50,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void AddNewElement()
         {
             Session.SelectedElementId = -1;
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow().ShowDialog();
+            _dialogService.ShowAddNewElementDialog();
         }
 
         [RelayCommand]
         private void EditElement(int selectedInternalId) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
             Session.SelectedElementId = selectedInternalId;
-            // Open as modal (Parent window pauses, waiting for the window to be closed)
-            new AddElementWindow(Session.SelectedElementId).ShowDialog();
+            _dialogService.ShowEditElementDialog(Session.SelectedElementId);
         }
 
         [RelayCommand]

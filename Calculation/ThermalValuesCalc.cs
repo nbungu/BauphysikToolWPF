@@ -91,7 +91,13 @@ namespace BauphysikToolWPF.Calculation
             if (RelevantLayers.Count == 0) return;
             try
             {
-                PrepareMappingsForInhomogeneous();
+                bool continueWithInhomogeneous = PrepareMappingsForInhomogeneous();
+                if (!continueWithInhomogeneous)
+                {
+                    Logger.LogInfo($"Relevant Layers of inhomogeneous Element {Element} are homogeneous. Using normal calculation instead.");
+                    CalculateHomogeneous();
+                    return;
+                }
 
                 // R_upper via cross section
                 double rTotUpper = 0.0;
@@ -177,27 +183,23 @@ namespace BauphysikToolWPF.Calculation
                 ErrorEstimation = e * 100;
                 ErrorEstimationOk = e * 100 <= 20;
                 IsValid = true;
-                Logger.LogInfo($"Successfully calculated Inhomogeneous Element: {Element}");
+                Logger.LogInfo($"Successfully calculated inhomogeneous Element: {Element}");
             }
             catch (Exception ex)
             {
                 IsValid = false;
-                Logger.LogError($"Error calculating Inhomogeneous Element: {Element}, {ex.Message}");
+                Logger.LogError($"Error calculating inhomogeneous Element: {Element}, {ex.Message}");
             }
         }
 
         #region private methods
         
-        private void PrepareMappingsForInhomogeneous()
+        private bool PrepareMappingsForInhomogeneous()
         {
             SetCalculationAreaBoundaries();
 
             // Wenn ungültige Bounds ermittelt -> Homogenes Bauteil -> Normale Berechnung des Bauteils!
-            if (_calculationAreaBounds.Area == 0)
-            {
-                CalculateHomogeneous();
-                return;
-            }
+            if (_calculationAreaBounds.Area == 0) return false;
 
             CreateLayerMapping();
             CreateLayerPathCombinations(0, new List<string>());
@@ -206,6 +208,7 @@ namespace BauphysikToolWPF.Calculation
             SetAreaWidths();
             SetAreaHeights();
             CreateAreaSharesMapping();
+            return true;
         }
         
         private void CreateLayerPathCombinations(int i, List<string> currentCombination)
