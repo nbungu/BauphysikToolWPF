@@ -65,19 +65,26 @@
                             Tag="{StaticResource ButtonIcon_AddLayer_B}"
                             Margin="0,0,8,0"/>
 
-                    <Button ToolTip="{Binding DuplicateButtonTooltip}"
+                    <Button ToolTip="Gewählten Raum/Bereich duplizieren"
                         Style="{StaticResource ButtonMiniTransparent}"
                         Command="{Binding DuplicateEnvelopeItemCommand}"
                         Tag="{StaticResource ButtonIcon_Copy_B}" 
                         Margin="0,0,8,0"
                         IsEnabled="{Binding IsRowSelected}"/>
 
-                    <Button ToolTip="{Binding DeleteButtonTooltip}"
+                    <Button ToolTip="Gewählten Raum/Bereich löschen"
                         Style="{StaticResource ButtonMiniTransparent}"
                         Tag="{StaticResource ButtonIcon_Delete_B}"
                         IsEnabled="{Binding IsRowSelected}"
                         Command="{Binding DeleteEnvelopeItemCommand}"
                         Margin="0,0,8,0"/>
+
+                    <Button ToolTip="Alles löschen"
+                            Style="{StaticResource ButtonMiniTransparent}"
+                            Tag="{StaticResource ButtonIcon_DeleteAll_B}"
+                            IsEnabled="{Binding HasItems}"
+                            Command="{Binding DeleteAllEnvelopeItemsCommand}"
+                            Margin="0,0,8,0"/>
 
                     <StackPanel Orientation="Horizontal" Margin="32,0,8,0" Visibility="{Binding PresetActiveVisibility}">
                         <Image x:Name="ButtonIcon" Source="{StaticResource ButtonIcon_Info_Flat}" Stretch="Fill" Width="18" Height="18" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,8,0"/>
@@ -86,7 +93,12 @@
 
                 </StackPanel>
 
-                <Label Grid.Row="0" Margin="0,0,0,8" Content="{Binding ItemsCountString}" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+                <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Stretch">
+                    <TextBlock Text="{Binding RoomCountString}" FontWeight="Bold" FontSize="12"/>
+                    <TextBlock Text="{Binding ItemsCountString}" FontSize="12"/>
+                    
+                </StackPanel>
+               
 
                 <!--EnvelopeItem DataGrid-->
                 <controls:BuildingEnvelopeDataGrid
@@ -126,22 +138,17 @@
                     <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
 
-                <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsInfoPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="0" Grid.Column="1" Header="Raumvorbelegung: Raumbeschreibung" IsExpanded="True" Margin="0,0,0,8">
-                    <controls:PropertyDataGrid x:Name="InfoPresetDataGrid" Properties="{Binding InfoPresetProperties}" IsEnabled="{Binding IsInfoPresetChecked}"/>
-                </Expander>
-
-                <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsElementPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="1" Grid.Column="1" Header="Raumvorbelegung: Bauteilwerte" IsExpanded="False" Margin="0,0,0,8">
+                <CheckBox Grid.Row="0" Grid.Column="0" IsChecked="{Binding IsElementPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                <Expander Grid.Row="0" Grid.Column="1" Header="Vorbelegung: Bauteil" IsExpanded="False" Margin="0,0,0,8">
                     <controls:PropertyDataGrid x:Name="ElementPresetDataGrid" Properties="{Binding ElementPresetProperties}" IsEnabled="{Binding IsElementPresetChecked}"/>
                 </Expander>
 
-                <CheckBox Grid.Row="2" Grid.Column="0" IsChecked="{Binding IsRoomPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
-                <Expander Grid.Row="2" Grid.Column="1" Header="Raumvorbelegung: Raum-Maße" IsExpanded="False" Margin="0,0,0,8">
+                <CheckBox Grid.Row="1" Grid.Column="0" IsChecked="{Binding IsRoomPresetChecked}" VerticalAlignment="Top" Margin="0,2,0,0"/>
+                <Expander Grid.Row="1" Grid.Column="1" Header="Vorbelegung: Raum" IsExpanded="False" Margin="0,0,0,8">
                     <controls:PropertyDataGrid x:Name="RoomPresetDataGrid" Properties="{Binding RoomPresetProperties}" IsEnabled="{Binding IsRoomPresetChecked}"/>
                 </Expander>
 
-                <Expander Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Header="Berechnungsparameter" IsExpanded="True" Margin="0,0,0,8">
+                <Expander Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2" Header="Berechnungsparameter" IsExpanded="True" Margin="0,0,0,8">
                     <controls:PropertyDataGrid x:Name="InfoPresetDataGrid2" Properties="{Binding TestPropBag}"/>
                 </Expander>
 

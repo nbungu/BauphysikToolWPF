@@ -194,10 +194,10 @@
             <Button Content="Neues Bauteil" Command="{Binding AddNewElementCommand}" Style="{StaticResource ButtonHighlighted}" Tag="{StaticResource ButtonIcon_AddElement_W}" Margin="0,0,0,16"/>
             <Button Content="Bauteil-PDF erstellen" Command="{Binding CreateSingleElementPdfCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Style="{StaticResource ButtonStandard}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" Margin="0,0,0,16"/>
             <Line X2="300" Stroke="Gray" HorizontalAlignment="Center" Margin="0,0,0,16"/>
-            <Button Content="Bauteilkatalog erstellen" Command="{Binding CreateFullPdfCommand}" IsEnabled="{Binding ExportPdfCatalogueAvailable}" Style="{StaticResource ButtonStandard}" Tag="{StaticResource ButtonIcon_ExportPDFFull_B}" Margin="0,0,0,16" ToolTip="Ab Version v0.3.0 verfügbar!"/>
+            <Button Content="Bauteilkatalog erstellen" Command="{Binding CreateFullPdfCommand}" IsEnabled="{Binding HasItems}" Style="{StaticResource ButtonStandard}" Tag="{StaticResource ButtonIcon_ExportPDFFull_B}" Margin="0,0,0,16" ToolTip="Ab Version v0.3.0 verfügbar!"/>
         </StackPanel>
         <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Vertical" Margin="16" VerticalAlignment="Bottom">
-            <Button Content="Bauteilkatalog löschen" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStandard}" Tag="{StaticResource ButtonIcon_Delete_B}"/>
+            <Button Content="Bauteilkatalog löschen" IsEnabled="{Binding HasItems}" Command="{Binding DeleteAllElementsCommand}" Style="{StaticResource ButtonStandard}" Tag="{StaticResource ButtonIcon_DeleteAll_B}"/>
         </StackPanel>
 
         <!-- Middle -->

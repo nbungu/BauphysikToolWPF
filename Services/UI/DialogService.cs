@@ -17,6 +17,18 @@ namespace BauphysikToolWPF.Services.UI
             dialog.ShowDialog();
             return dialog.Result;
         }
+
+        public MessageBoxResult ShowDeleteConfirmationDialog()
+        {
+            var dialog = new DeleteConfirmationDialog()
+            {
+                Owner = System.Windows.Application.Current.MainWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            dialog.ShowDialog();
+            return dialog.Result;
+        }
         public void ShowAddNewElementDialog()
         {
             var dialog = new AddElementWindow

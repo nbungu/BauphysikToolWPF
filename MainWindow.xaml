@@ -35,7 +35,6 @@
         
         <ui1:PageTemplateSelector x:Key="PageTemplateSelector" />
 
-
         <!--
         PARENT PAGES
         -->
@@ -80,6 +79,10 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <DataTrigger Binding="{Binding IsSelected}" Value="True">
+                                <!--<Setter TargetName="listBoxItem_Border"
+                                        Property="BorderBrush"
+                                        Value="Transparent" />-->
+                                <!-- Removed the selection state indicator... -->
                                 <Setter TargetName="listBoxItem_Border"
                                         Property="BorderBrush"
                                         Value="{StaticResource PrimaryHighlightBrush}" />
@@ -462,7 +465,7 @@
                                 Grid.RowSpan="2"/>
 
                 <!--Toast Notification-->
-                <controls:ToastNotification x:Name="Toast" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
+                <controls:ToastNotification x:Name="Toast" Grid.Row="0" Grid.Column="1" Visibility="Collapsed" HorizontalAlignment="Stretch" VerticalAlignment="Top"/>
             </Grid>
 
 

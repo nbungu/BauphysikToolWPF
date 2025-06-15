@@ -102,6 +102,25 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.OnSelectedElementChanged();
             SelectedListViewItem = null;
         }
+        [RelayCommand]
+        private void DeleteAllLayer()
+        {
+            if (Session.SelectedElement is null) return;
+
+            MessageBoxResult result = _dialogService.ShowDeleteConfirmationDialog();
+
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    Session.SelectedElement.Layers.Clear();
+                    Session.OnSelectedElementChanged();
+                    SelectedListViewItem = null;
+                    break;
+                case MessageBoxResult.Cancel:
+                    // Do nothing, user cancelled the action
+                    break;
+            }
+        }
 
         [RelayCommand]
         private void DuplicateLayer()
@@ -153,6 +172,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(NoLayersVisibility))]
+        [NotifyPropertyChangedFor(nameof(HasItems))]
         private List<Layer>? _layerList = Session.SelectedElement?.Layers;
 
         [ObservableProperty]
@@ -190,9 +210,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
 
         public bool IsLayerSelected => SelectedListViewItem != null;
+        public bool HasItems => LayerList?.Count > 0;
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem?.SubConstruction != null ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
-        public Visibility NoLayersVisibility => LayerList?.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility NoLayersVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
         public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
         public Rectangle CanvasSize => _crossSection.CanvasSize;
         public List<DrawingGeometry> LayerMeasurement => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);

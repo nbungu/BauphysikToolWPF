@@ -24,6 +24,9 @@ namespace BauphysikToolWPF.Services.UI
 
     public static class NavigationManager
     {
+        // If true, only one page can be selected at a time.
+        // If false, multiple pages can be shown as selected (e.g. current parent page is always shown as selected + the current child page).
+        public static bool SingleStateSelection { get; set; } = true;
         public static Dictionary<NavigationPage, NavigationContent> ParentPageDictionary => ParentPages.ToDictionary(p => p.Page, p => p);
 
         public static List<NavigationContent> ParentPages = new List<NavigationContent>()
@@ -71,14 +74,14 @@ namespace BauphysikToolWPF.Services.UI
         };
         public static readonly Dictionary<NavigationPage, string> PageIconMapping = new()
         {
-            { NavigationPage.ProjectData, "ButtonIcon_House_B" },
-            { NavigationPage.ElementCatalogue, "ButtonIcon_Elements_B" },
+            { NavigationPage.ProjectData, "ButtonIcon_Info_B" },
+            { NavigationPage.ElementCatalogue, "ButtonIcon_Grid_B" },
             { NavigationPage.LayerSetup, "ButtonIcon_Layers_Flat" },
             { NavigationPage.Summary, "ButtonIcon_Summary_Flat" },
             { NavigationPage.TemperatureCurve, "ButtonIcon_LayerTemps_Flat" },
             { NavigationPage.GlaserCurve, "ButtonIcon_Glaser_Flat" },
             { NavigationPage.DynamicHeatCalc, "ButtonIcon_Dynamic_Flat" },
-            { NavigationPage.BuildingEnvelope, "Favicon" },
+            { NavigationPage.BuildingEnvelope, "ButtonIcon_House_B" },
             { NavigationPage.EnvelopeSummary, "ButtonIcon_Summary_Flat" },
         };
 
@@ -86,33 +89,17 @@ namespace BauphysikToolWPF.Services.UI
         {
             // When targetPage is NOT a parent page, return
             if (!ParentPageDictionary.ContainsKey(parentPage)) return;
-                
+
             ParentPages.ForEach(p => p.IsSelected = p.Page == parentPage);
-        }
-        public static void UpdateChildSelectedState(this NavigationPage childPage)
-        {
-            // When targetPage is a parent page, return
-            if (ParentPageDictionary.ContainsKey(childPage)) return;
 
-            foreach (var parent in ParentPages)
-            {
-                if (parent.PageGroups == null) continue;
-
-                foreach (var group in parent.PageGroups)
-                {
-                    foreach (var child in group.ChildPages)
-                    {
-                        child.IsSelected = child.Page == childPage;
-                    }
-                }
-            }
+            if (SingleStateSelection) UnselectChildPages();
         }
+
         public static void UpdateChildSelectedState(this NavigationPage childPage, List<NavigationGroupContent> navigationGroup)
         {
             // When targetPage is a parent page, return
             if (ParentPageDictionary.ContainsKey(childPage)) return;
-
-
+            
             foreach (var group in navigationGroup)
             {
                 foreach (var child in group.ChildPages)
@@ -120,6 +107,8 @@ namespace BauphysikToolWPF.Services.UI
                     child.IsSelected = child.Page == childPage;
                 }
             }
+
+            if (SingleStateSelection) UnselectParentPages();
         }
         public static void UpdateParentEnabledStates()
         {
@@ -129,5 +118,19 @@ namespace BauphysikToolWPF.Services.UI
 
         public static BitmapImage? GetBitmapImageFromAppResources(string resourceKey) => System.Windows.Application.Current.Resources[resourceKey] as BitmapImage;
         public static DataTemplate? GetPageFromAppResources(string resourceKey) => System.Windows.Application.Current.Resources[resourceKey] as DataTemplate;
+
+        #region private
+
+        private static void UnselectChildPages()
+        {
+            ParentPages.ForEach(p => p.PageGroups?.ForEach(g => g.ChildPages.ForEach(c => c.IsSelected = false)));
+        }
+
+        private static void UnselectParentPages()
+        {
+            ParentPages.ForEach(p => p.IsSelected = false);
+        }
+
+        #endregion
     }
 }

@@ -37,7 +37,10 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
+                if (value < 0.1) MainWindow.ShowToast("Unrealistische Raumhöhe!", ToastType.Warning);
                 _roomHeightGross = value;
+
+                RoomVolumeGross = RoomAreaGross * _roomHeightGross; // Update RoomVolumeGross when RoomHeightGross changes
             }
         }
 
@@ -52,7 +55,10 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
+                if (value < 0.1) MainWindow.ShowToast("Unrealistische Raumgrundfläche!", ToastType.Warning);
                 _roomAreaGross = value;
+
+                RoomVolumeGross = _roomAreaGross * RoomHeightGross; // Update RoomVolumeGross when RoomAreaGross changes
             }
         }
 
@@ -68,6 +74,7 @@ namespace BauphysikToolWPF.Models.Domain
                     return;
                 }
                 _roomVolumeGross = value;
+                OnPropertyChanged(nameof(RoomVolumeGross)); // Notify change
             }
         }
 
@@ -82,7 +89,10 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
+                if (value < 0.1) MainWindow.ShowToast("Unrealistische Raumhöhe!", ToastType.Warning);
                 _roomHeightNet = value;
+
+                RoomVolumeNet = RoomAreaNet * _roomHeightNet; // Update RoomVolumeNet when RoomHeightNet changes
             }
         }
 
@@ -97,7 +107,10 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
+                if (value < 0.1) MainWindow.ShowToast("Unrealistische Raumgrundfläche!", ToastType.Warning);
                 _roomAreaNet = value;
+
+                RoomVolumeNet = _roomAreaNet * RoomHeightNet; // Update RoomVolumeNet when RoomAreaNet changes
             }
         }
 
@@ -113,6 +126,7 @@ namespace BauphysikToolWPF.Models.Domain
                     return;
                 }
                 _roomVolumeNet = value;
+                OnPropertyChanged(nameof(RoomVolumeNet)); // Notify change
             }
         }
 
@@ -127,6 +141,7 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
+                if (value < 0.05) MainWindow.ShowToast("Sehr kleine Flächen können vernachlässigt werden", ToastType.Warning);
                 _envelopeArea = value;
             }
         }
@@ -134,7 +149,7 @@ namespace BauphysikToolWPF.Models.Domain
         private double _uValue;
         public double UValue
         {
-            get => Element?.UValue ?? _uValue;
+            get => _uValue;
             set
             {
                 if (value < 0)
@@ -144,7 +159,7 @@ namespace BauphysikToolWPF.Models.Domain
                 }
                 if (value > 10) MainWindow.ShowToast("Unrealistischer U-Wert", ToastType.Warning);
                 _uValue = value;
-                ElementInternalId = -1;
+                OnPropertyChanged(nameof(UValue));
             }
         }
         private int _elementInternalId = -1; // For PropertyItem ComboBox selection
@@ -153,9 +168,8 @@ namespace BauphysikToolWPF.Models.Domain
             get => _elementInternalId;
             set
             {
-                _elementInternalId = value;
-                OnPropertyChanged(nameof(ElementInternalId));
-                OnPropertyChanged(nameof(UValue));
+                _elementInternalId = value; 
+                UValue = Element?.UValue ?? 0; // Update UValue when ElementInternalId changes
             }
         }
 
@@ -171,7 +185,7 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
-                if (value > 10) MainWindow.ShowToast("Unrealistischer Temperatur-Korrekturfaktor", ToastType.Warning);
+                if (value > 5) MainWindow.ShowToast("Unrealistischer Temperatur-Korrekturfaktor", ToastType.Warning);
                 _fxValue = value;
             }
         }

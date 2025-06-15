@@ -162,16 +162,20 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility SaveButtonVisibility => IsProjectLoaded ? Visibility.Visible : Visibility.Collapsed;
 
         #region Page Navigation
-        
+        public NavigationPage CurrentParentPage { get; set; }
         public List<NavigationContent> ParentPages => NavigationManager.ParentPages;
-        public List<NavigationGroupContent> AvailableChildGroups => NavigationManager.ParentPages.FirstOrDefault(p => p.IsSelected)?.PageGroups ?? new List<NavigationGroupContent>();
+        public List<NavigationGroupContent> AvailableChildGroups => NavigationManager.ParentPages.FirstOrDefault(p => p.Page == CurrentParentPage)?.PageGroups ?? new List<NavigationGroupContent>();
 
         private void OnPageChanged(NavigationPage target, NavigationPage? origin)
         {
+            // When targetPage is a parent page, set as current parent page
+            if (NavigationManager.ParentPageDictionary.ContainsKey(target)) CurrentParentPage = target;
+
             NavigationManager.UpdateParentEnabledStates();
             target.UpdateParentSelectedState();
             target.UpdateChildSelectedState(AvailableChildGroups);
 
+            // Custom
             if (origin == NavigationPage.ElementCatalogue)
                 NavigationManager.ParentPageDictionary[NavigationPage.ElementCatalogue].PageGroups?.ForEach(grp => grp.IsEnabled = true);
             if (target == NavigationPage.ElementCatalogue)

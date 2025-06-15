@@ -72,10 +72,20 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DeleteAllElements()
         {
-            // Delete all Elements
             if (Session.SelectedProject is null) return;
-            Session.SelectedProject.Elements.Clear();
-            Session.OnElementRemoved();
+
+            MessageBoxResult result = _dialogService.ShowDeleteConfirmationDialog();
+
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    Session.SelectedProject.Elements.Clear();
+                    Session.OnElementRemoved();
+                    break;
+                case MessageBoxResult.Cancel:
+                    // Do nothing, user cancelled the action
+                    break;
+            }
         }
 
         [RelayCommand]
@@ -150,7 +160,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
         [NotifyPropertyChangedFor(nameof(ElementInfoVisibility))]
-        private List<Element> _elements = Session.SelectedProject?.Elements ?? new List<Element>(0);
+        [NotifyPropertyChangedFor(nameof(HasItems))]
+        private List<Element>? _elements = Session.SelectedProject?.Elements ?? new List<Element>(0);
 
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
@@ -160,7 +171,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Element? SelectedElement => Session.SelectedElement; // Cannot be directly mutated via binding like ListViewItems, since ints wrapped as button in a WrapPanel
         public bool ElementToolsAvailable => Session.SelectedElementId != -1;
-        public bool ExportPdfCatalogueAvailable => Elements.Count > 0;
+        public bool HasItems => Elements?.Count > 0;
 
         // Returns False if Index is 0. Index 0 means without Grouping, since "Ohne" is first entry in Combobox
         public bool IsGroupingEnabled => GroupingPropertyIndex > 0;
@@ -171,8 +182,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility ElementInfoVisibility => ElementToolsAvailable ? Visibility.Visible : Visibility.Collapsed;
         public IEnumerable<string> SortingProperties => ElementSortingTypeMapping.Values; // Has to match ElementSortingType enum values (+Order)
         public IEnumerable<string> GroupingProperties => ElementGroupingTypeMapping.Values; // Has to match ElementSortingType enum values (+Order)
-        public ICollectionView? GroupedElements => IsGroupingEnabled && Session.SelectedProject?.Elements.Count > 0 ? GetGroupedItemsSource() : null;
-        public Visibility NoElementsVisibility => Elements.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+        public ICollectionView? GroupedElements => IsGroupingEnabled && HasItems ? GetGroupedItemsSource() : null;
+        public Visibility NoElementsVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
 
         private void UpdateOnNewElementAdded()
         {
@@ -224,7 +235,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(IsGroupingEnabled));
             OnPropertyChanged(nameof(GroupedElements));
             OnPropertyChanged(nameof(SelectedElement));
-            OnPropertyChanged(nameof(ExportPdfCatalogueAvailable));
+            OnPropertyChanged(nameof(HasItems));
             OnPropertyChanged(nameof(ElementToolsAvailable));
             OnPropertyChanged(nameof(ElementInfoVisibility));
             OnPropertyChanged(nameof(NoElementsVisibility));

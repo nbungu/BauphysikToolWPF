@@ -104,6 +104,12 @@
                             Margin="0,0,8,0"
                             IsEnabled="{Binding IsLayerSelected}"
                             ToolTip="Schicht löschen"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}"
+                            Tag="{StaticResource ButtonIcon_DeleteAll_B}"
+                            IsEnabled="{Binding HasItems}"
+                            Command="{Binding DeleteAllLayerCommand}"
+                            Margin="0,0,8,0"
+                            ToolTip="Alle Schichten löschen"/>
                 </StackPanel>
 
                 <Label Grid.Row="0" Content="Von innen nach außen" HorizontalAlignment="Right" VerticalAlignment="Center"/>
