@@ -89,7 +89,11 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             }
             else if (project.BuildingAge == BuildingAgeType.New && project.BuildingUsage == BuildingUsageType.NonResidential)
             {
-                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2);
+                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte1);
+                // TODO: auf element ebene -> beide GetSourcesMethoden zusammenlegen
+                //if (Ti > 19) documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2);
+                // else documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte2);
+
                 documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_AnhangA);
                 documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_5);
             }

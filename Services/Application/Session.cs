@@ -132,7 +132,6 @@ namespace BauphysikToolWPF.Services.Application
         {
             //BuildingAge = SelectedProject?.BuildingAge ?? BuildingAgeType.New,
             //BuildingUsage = SelectedProject?.BuildingUsage ?? BuildingUsageType.Residential,
-            RelevantDocumentSources = SelectedProject?.ProjectRelatedDocumentSources ?? new List<DocumentSourceType>(),
             Ti = Ti,
             Te = Te,
         };

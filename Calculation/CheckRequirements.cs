@@ -3,6 +3,8 @@ using BauphysikToolWPF.Models.Domain;
 using BT.Logging;
 using System.Collections.Generic;
 using System.Linq;
+using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Services.Application;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
@@ -14,6 +16,8 @@ namespace BauphysikToolWPF.Calculation
         public CheckRequirementsConfig Config { get; } = new CheckRequirementsConfig();
         public Element? Element { get; }
         public List<DocumentParameter> RelevantRequirements { get; private set; } = new List<DocumentParameter>();
+
+        public List<DocumentSourceType> RelevantDocumentSources { get; set; } = new List<DocumentSourceType>(0);
 
         public double? UMax { get; private set; }
         public string UMaxRequirementSourceName => RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null)?.DocumentSource.SourceName ?? "";
@@ -41,7 +45,7 @@ namespace BauphysikToolWPF.Calculation
         {
             Element = element;
             Config = config;
-
+            
             Update();
         }
 
@@ -51,7 +55,12 @@ namespace BauphysikToolWPF.Calculation
 
             if (Element.Recalculate == false) Element.RefreshResults();
 
-            RelevantRequirements = Element.Construction.Requirements.Where(r => Config.RelevantDocumentSources.Contains(r.DocumentSource.DocumentSourceType)).ToList();
+            // Update sources: Element specific sources can vary
+            RelevantDocumentSources.Clear();
+            RelevantDocumentSources.AddRange(Session.SelectedProject.GetProjectRelatedDocumentSources());
+            RelevantDocumentSources.AddRange(Element.GetElementRelatedDocumentSources());
+
+            RelevantRequirements = Element.Construction.Requirements.Where(r => RelevantDocumentSources.Contains(r.DocumentSource.DocumentSourceType)).ToList();
 
             UMax = GetUMax();
             RMin = GetRMin();
