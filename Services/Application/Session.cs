@@ -1,11 +1,10 @@
 ﻿using BauphysikToolWPF.Calculation;
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Repositories;
+using BauphysikToolWPF.Services.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Services.UI;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 

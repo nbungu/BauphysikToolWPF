@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
 {
@@ -45,19 +43,27 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             }
         }
 
-        public static void DuplicateLayer(this Element element, int targetLayerId)
+        public static void DuplicateLayer(this Element element, Layer layer)
         {
-            if (element.Layers.Count == 0) return;
-            var copy = element.Layers.First(l => l.InternalId == targetLayerId).Copy();
+            var copy = layer.Copy();
             copy.LayerPosition = element.Layers.Count;
             copy.InternalId = element.Layers.Count;
             element.AddLayer(copy);
         }
 
-        public static void MoveLayerPositionToInside(this Element element, int targetLayerId)
+        public static void DuplicateLayerById(this Element element, int layerId)
         {
             if (element.Layers.Count == 0) return;
-            var targetLayer = element.Layers.First(l => l.InternalId == targetLayerId);
+            var copy = element.Layers.First(l => l.InternalId == layerId).Copy();
+            copy.LayerPosition = element.Layers.Count;
+            copy.InternalId = element.Layers.Count;
+            element.AddLayer(copy);
+        }
+
+        public static void MoveLayerPositionToInside(this Element element, int layerId)
+        {
+            if (element.Layers.Count == 0) return;
+            var targetLayer = element.Layers.First(l => l.InternalId == layerId);
             // When Layer is already at the top of the List (first in the List)
             if (targetLayer.LayerPosition == 0) return;
             // Change Positions
@@ -67,14 +73,13 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             targetLayer.LayerPosition -= 1;
 
             element.SortLayers();
-            //element.AssignInternalIdsToLayers();
             element.AssignEffectiveLayers();
         }
 
-        public static void MoveLayerPositionToOutside(this Element element, int targetLayerId)
+        public static void MoveLayerPositionToOutside(this Element element, int layerId)
         {
             if (element.Layers.Count == 0) return;
-            var targetLayer = element.Layers.First(l => l.InternalId == targetLayerId);
+            var targetLayer = element.Layers.First(l => l.InternalId == layerId);
             // When Layer is already at the bottom of the List (last in the List)
             if (targetLayer.LayerPosition == element.Layers.Count - 1) return;
             // Change Positions
@@ -84,14 +89,13 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             targetLayer.LayerPosition += 1;
 
             element.SortLayers();
-            //element.AssignInternalIdsToLayers();
             element.AssignEffectiveLayers();
         }
 
-        public static void RemoveLayer(this Element element, int targetLayerId)
+        public static void RemoveLayerById(this Element element, int layerId)
         {
             if (element.Layers.Count == 0) return;
-            var targetLayer = element.Layers.First(l => l.InternalId == targetLayerId);
+            var targetLayer = element.Layers.First(l => l.InternalId == layerId);
             element.Layers.Remove(targetLayer);
             //
             element.SortLayers();
@@ -112,29 +116,24 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             element.Layers.ForEach(l => l.IsSelected = false);
         }
 
-        /// <summary>
-        /// For filtering Element construction requirements
-        /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public static List<DocumentSourceType> GetElementRelatedDocumentSources(this Element element)
-        {
-            // Add all document sources that are always available
-            var documentSourceTypes = new List<DocumentSourceType>();
+        //public static List<DocumentSourceType> GetElementRelatedDocumentSources(this Element element)
+        //{
+        //    // Add all document sources that are always available
+        //    var documentSourceTypes = new List<DocumentSourceType>();
 
-            // TODO: beide GetSourcesMethoden zusammenlegen (Projekt + Element ebene)
+        //    // TODO: beide GetSourcesMethoden zusammenlegen (Projekt + Element ebene)
             
-            // TODO add element Randbedingungen
-            // -> GEG unterscheidung nach Ti 
+        //    // TODO add element Randbedingungen
+        //    // -> GEG unterscheidung nach Ti 
 
-            // Add document sources based on project properties
-            if (element.IsInhomogeneous) documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_5p1p3); // Mindestwerte für Wärmedurchlasswiderstände inhomogener, opaker Bauteile
-            else
-            {
-                if (element.AreaMassDens >= 100) documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_Tabelle_3); // Mindestwerte für Wärmedurchlasswiderstände homogener Bauteile mit m' ≥ 100 kg/m²
-                else documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_5p1p2p2); // Mindestwerte für Wärmedurchlasswiderstände homogener Bauteile mit m' < 100 kg/m²
-            }
-            return documentSourceTypes;
-        }
+        //    // Add document sources based on project properties
+        //    if (element.IsInhomogeneous) documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_5p1p3); // Mindestwerte für Wärmedurchlasswiderstände inhomogener, opaker Bauteile
+        //    else
+        //    {
+        //        if (element.AreaMassDens >= 100) documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_Tabelle_3); // Mindestwerte für Wärmedurchlasswiderstände homogener Bauteile mit m' ≥ 100 kg/m²
+        //        else documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_5p1p2p2); // Mindestwerte für Wärmedurchlasswiderstände homogener Bauteile mit m' < 100 kg/m²
+        //    }
+        //    return documentSourceTypes;
+        //}
     }
 }

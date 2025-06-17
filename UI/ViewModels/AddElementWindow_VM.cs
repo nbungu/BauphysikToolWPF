@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using BauphysikToolWPF.Models.Domain.Helper;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
@@ -105,7 +106,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Comment = SelectedElementComment,
                     ColorCode = SelectedElementColor
                 };
-                Session.SelectedProject.Elements.Add(newElem);
+                Session.SelectedProject.AddElement(newElem);
                 Session.OnNewElementAdded();
             }
             window.Close();

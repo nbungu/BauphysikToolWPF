@@ -122,7 +122,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DeleteEnvelopeItem()
         {
-            Session.SelectedProject?.RemoveEnvelopeItem(SelectedEnvelopeItem?.InternalId ?? -1);
+            Session.SelectedProject?.RemoveEnvelopeItemById(SelectedEnvelopeItem?.InternalId ?? -1);
             Session.OnEnvelopeItemsChanged();
         }
 
@@ -146,7 +146,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DuplicateEnvelopeItem()
         {
-            Session.SelectedProject?.DuplicateEnvelopeItem(SelectedEnvelopeItem?.InternalId ?? -1);
+            Session.SelectedProject?.DuplicateEnvelopeItemById(SelectedEnvelopeItem?.InternalId ?? -1);
             Session.OnEnvelopeItemsChanged();
         }
 

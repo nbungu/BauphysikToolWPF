@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BauphysikToolWPF.Models.Domain.Helper;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
@@ -32,6 +33,9 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public int InternalId { get; set; } = -1;
+
+        [JsonIgnore]
+        public Project? ParentProject { get; set; }
 
         [JsonIgnore]
         public string OrientationTypeName => OrientationTypeMapping[OrientationType];
@@ -221,7 +225,8 @@ namespace BauphysikToolWPF.Models.Domain
         public void CopyToProject(Project project)
         {
             var copy = Copy();
-            project.Elements.Add(copy);
+            copy.ParentProject = project; // Set the parent project reference
+            project.AddElement(copy); // Add the copied element to the project);
         }
 
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 

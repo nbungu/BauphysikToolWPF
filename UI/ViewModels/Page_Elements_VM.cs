@@ -65,7 +65,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             // Delete selected Element
             if (Session.SelectedProject is null) return;
-            Session.SelectedProject.Elements.RemoveAll(e => e.InternalId == selectedInternalId);
+            Session.SelectedProject.RemoveElementById(selectedInternalId);
             Session.OnElementRemoved();
         }
 
@@ -95,7 +95,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             if (Session.SelectedProject is null) return;
             if (Session.SelectedElement is null) return;
-            Session.SelectedProject.Elements.Add(Session.SelectedElement.Copy());
+            Session.SelectedProject.DuplicateElement(Session.SelectedElement);
             Session.OnNewElementAdded();
         }
 
@@ -187,12 +187,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateOnNewElementAdded()
         {
-            if (Session.SelectedProject is null) return;
-            // Update InternalIds
-            Session.SelectedProject.AssignInternalIdsToElements();
-            // Set selected to newest element
-            Session.SelectedElementId = Session.SelectedProject.Elements.Last().InternalId;
-            // update UI
+            Session.SelectedElementId = Session.SelectedProject?.Elements.Last().InternalId ?? -1;
             RefreshXamlBindings();
         }
 

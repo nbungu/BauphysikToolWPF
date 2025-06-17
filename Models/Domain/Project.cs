@@ -94,8 +94,8 @@ namespace BauphysikToolWPF.Models.Domain
             }
         }
 
-        [JsonIgnore]
-        public List<DocumentSourceType> ProjectRelatedDocumentSources => this.GetProjectRelatedDocumentSources();
+        //[JsonIgnore]
+        //public List<DocumentSourceType> ProjectRelatedDocumentSources => this.GetProjectRelatedDocumentSources();
 
         #endregion
 

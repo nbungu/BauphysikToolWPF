@@ -1,11 +1,11 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Services.Application;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation
@@ -45,7 +45,7 @@ namespace BauphysikToolWPF.Calculation
         {
             Element = element;
             Config = config;
-            
+
             Update();
         }
 
@@ -56,9 +56,7 @@ namespace BauphysikToolWPF.Calculation
             if (Element.Recalculate == false) Element.RefreshResults();
 
             // Update sources: Element specific sources can vary
-            RelevantDocumentSources.Clear();
-            RelevantDocumentSources.AddRange(Session.SelectedProject.GetProjectRelatedDocumentSources());
-            RelevantDocumentSources.AddRange(Element.GetElementRelatedDocumentSources());
+            RelevantDocumentSources = GetRelatedDocumentSources(Element);
 
             RelevantRequirements = Element.Construction.Requirements.Where(r => RelevantDocumentSources.Contains(r.DocumentSource.DocumentSourceType)).ToList();
 
@@ -95,6 +93,76 @@ namespace BauphysikToolWPF.Calculation
         {
             if (UMax != null && UMax >= 0) return UMax * (Config.Ti - Config.Te);
             return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public List<DocumentSourceType> GetRelatedDocumentSources(Element element)
+        {
+            var project = element.ParentProject;
+            if (project is null) return new List<DocumentSourceType>(0);
+
+            #region General
+            
+            // Add document sources that are always available
+            var documentSourceTypes = new List<DocumentSourceType>()
+            {
+                DocumentSourceType.DIN_V_18599_10_Tabelle_E1,
+                DocumentSourceType.DIN_V_18599_2_Tabelle_5,
+                DocumentSourceType.DIN_4108_3_AnhangA,
+                DocumentSourceType.DIN_EN_ISO_6946_Tabelle_7,
+                DocumentSourceType.DIN_EN_ISO_6946_Tabelle_8,
+            };
+            #endregion
+
+            #region Element Related
+
+            // Add document sources based on element properties
+            if (element.IsInhomogeneous) documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_5p1p3); // Mindestwerte für Wärmedurchlasswiderstände inhomogener, opaker Bauteile
+            else
+            {
+                if (element.AreaMassDens >= 100) documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_Tabelle_3); // Mindestwerte für Wärmedurchlasswiderstände homogener Bauteile mit m' ≥ 100 kg/m²
+                else documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_5p1p2p2); // Mindestwerte für Wärmedurchlasswiderstände homogener Bauteile mit m' < 100 kg/m²
+            }
+
+            #endregion
+            
+            #region Project Related
+
+            // Add document sources based on project properties
+            if (project.BuildingAge == BuildingAgeType.New && project.BuildingUsage == BuildingUsageType.Residential)
+            {
+                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage1);
+                documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_4);
+            }
+            else if (project.BuildingAge == BuildingAgeType.New && project.BuildingUsage == BuildingUsageType.NonResidential)
+            {
+                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte1);
+                // TODO: auf element ebene -> beide GetSourcesMethoden zusammenlegen
+                //if (Ti > 19) documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2);
+                // else documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte2);
+
+                documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_AnhangA);
+                documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_5);
+            }
+            else if (project.BuildingAge == BuildingAgeType.Existing && project.BuildingUsage == BuildingUsageType.Residential)
+            {
+                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage7);
+                documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_4);
+            }
+            else if (project.BuildingAge == BuildingAgeType.Existing && project.BuildingUsage == BuildingUsageType.NonResidential)
+            {
+                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage7);
+                documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_AnhangA);
+                documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_5);
+            }
+
+            #endregion
+            
+            return documentSourceTypes;
         }
     }
 }

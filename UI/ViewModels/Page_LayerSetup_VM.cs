@@ -98,7 +98,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (Session.SelectedElement is null) return;
             if (SelectedListViewItem is null) return;
 
-            Session.SelectedElement.RemoveLayer(SelectedListViewItem.InternalId);
+            Session.SelectedElement.RemoveLayerById(SelectedListViewItem.InternalId);
             Session.OnSelectedElementChanged();
             SelectedListViewItem = null;
         }
@@ -128,7 +128,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (Session.SelectedElement is null) return;
             if (SelectedListViewItem is null) return;
 
-            Session.SelectedElement.DuplicateLayer(SelectedListViewItem.InternalId);
+            Session.SelectedElement.DuplicateLayerById(SelectedListViewItem.InternalId);
             Session.OnSelectedElementChanged();
         }
 
