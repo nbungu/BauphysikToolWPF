@@ -1,15 +1,16 @@
-﻿using BauphysikToolWPF.Calculation;
-using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.UI.CustomControls;
 using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using static BauphysikToolWPF.Models.UI.Enums;
@@ -21,29 +22,24 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class Page_LayerSetup_VM : ObservableObject
     {
         private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
-        private readonly CheckRequirements _requirementValues = new CheckRequirements();
-
         private readonly IDialogService _dialogService;
+        private Element _element;
 
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
         {
-            if (Session.SelectedProject is null) return;
             if (Session.SelectedElement is null) return;
 
+            _element = Session.SelectedElement;
+            _element.SortLayers();
+            _element.AssignEffectiveLayers();
+            _element.AssignInternalIdsToLayers();
+
             _dialogService = new DialogService();
-
-            _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
-            // TODO: this could be 'Element' property and be fetched from the SelectedElement directly
-            // -> just set Update flag to true
-            _requirementValues = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
-
-            Session.SelectedLayerId = -1;
-            Session.SelectedElement.SortLayers();
-            Session.SelectedElement.AssignEffectiveLayers();
-            Session.SelectedElement.AssignInternalIdsToLayers();
-
+            _crossSection = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+            
             // Allow child Windows to trigger UpdateAll of this Window
+            Session.SelectedProjectChanged += ProjectDataChanged;
             Session.SelectedLayerChanged += LayerChanged;
             Session.SelectedElementChanged += ElementChanged;
             Session.EnvVarsChanged += EnvVarsChanged;
@@ -67,27 +63,27 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void AddLayer() => _dialogService.ShowAddNewLayerDialog();
 
         [RelayCommand]
-        private void EditLayer() => _dialogService.ShowEditLayerDialog(SelectedListViewItem?.InternalId ?? -1);
+        private void EditLayer() => _dialogService.ShowEditLayerDialog(SelectedLayer?.InternalId ?? -1);
 
         [RelayCommand]
         private void AddSubConstructionLayer(int targetLayerInternalId = -1)
         {
-            if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
+            if (targetLayerInternalId == -1) targetLayerInternalId = SelectedLayer?.InternalId ?? -1;
             _dialogService.ShowAddNewSubconstructionDialog(targetLayerInternalId);
         }
 
         [RelayCommand]
         private void EditSubConstructionLayer(int targetLayerInternalId = -1)
         {
-            if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
+            if (targetLayerInternalId == -1) targetLayerInternalId = SelectedLayer?.InternalId ?? -1;
             _dialogService.ShowEditSubconstructionDialog(targetLayerInternalId);
         }
 
         [RelayCommand]
         private void DeleteSubConstructionLayer(int targetLayerInternalId = -1) 
         {
-            if (targetLayerInternalId == -1) targetLayerInternalId = SelectedListViewItem?.InternalId ?? -1;
-            var targetLayer = Session.SelectedElement?.Layers.FirstOrDefault(l => l?.InternalId == targetLayerInternalId, null);
+            if (targetLayerInternalId == -1) targetLayerInternalId = SelectedLayer?.InternalId ?? -1;
+            var targetLayer = _element.Layers.FirstOrDefault(l => l?.InternalId == targetLayerInternalId, null);
             targetLayer?.RemoveSubConstruction();
             Session.OnSelectedLayerChanged();
         }
@@ -95,26 +91,24 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DeleteLayer()
         {
-            if (Session.SelectedElement is null) return;
-            if (SelectedListViewItem is null) return;
-
-            Session.SelectedElement.RemoveLayerById(SelectedListViewItem.InternalId);
+            if (SelectedLayer is null) return;
+            var newIndex = SelectedLayerIndex - 1;
+            _element.RemoveLayerById(SelectedLayer.InternalId);
             Session.OnSelectedElementChanged();
-            SelectedListViewItem = null;
+            SelectedLayerIndex = newIndex;
         }
+
         [RelayCommand]
         private void DeleteAllLayer()
         {
-            if (Session.SelectedElement is null) return;
-
             MessageBoxResult result = _dialogService.ShowDeleteConfirmationDialog();
 
             switch (result)
             {
                 case MessageBoxResult.Yes:
-                    Session.SelectedElement.Layers.Clear();
+                    _element.Layers.Clear();
                     Session.OnSelectedElementChanged();
-                    SelectedListViewItem = null;
+                    SelectedLayerIndex = -1;
                     break;
                 case MessageBoxResult.Cancel:
                     // Do nothing, user cancelled the action
@@ -125,38 +119,36 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DuplicateLayer()
         {
-            if (Session.SelectedElement is null) return;
-            if (SelectedListViewItem is null) return;
+            if (SelectedLayer is null) return;
 
-            Session.SelectedElement.DuplicateLayerById(SelectedListViewItem.InternalId);
+            _element.DuplicateLayerById(SelectedLayer.InternalId);
             Session.OnSelectedElementChanged();
         }
 
         [RelayCommand]
         private void MoveLayerDown()
         {
-            if (Session.SelectedElement is null) return;
-            if (SelectedListViewItem is null) return;
+            if (SelectedLayer is null) return;
 
-            Session.SelectedElement.MoveLayerPositionToOutside(SelectedListViewItem.InternalId);
+            _element.MoveLayerPositionToOutside(SelectedLayer.InternalId);
             Session.OnSelectedElementChanged();
         }
 
         [RelayCommand]
         private void MoveLayerUp()
         {
-            if (Session.SelectedElement is null) return;
-            if (SelectedListViewItem is null) return;
+            if (SelectedLayer is null) return;
 
-            Session.SelectedElement.MoveLayerPositionToInside(SelectedListViewItem.InternalId);
+            _element.MoveLayerPositionToInside(SelectedLayer.InternalId);
             Session.OnSelectedElementChanged();
         }
 
         [RelayCommand]
         private void LayerDoubleClick() => EditLayer();
 
-        // This method will be called whenever SelectedListViewItem changes
-        partial void OnSelectedListViewItemChanged(Layer? value) => SelectedLayerChanged(value);
+        // This method will be called whenever SelectedLayer changes
+        //partial void OnSelectedListViewItemChanged(Layer? value) => SelectedLayerIndexChanged(value);
+        partial void OnSelectedLayerIndexChanged(int value) => SelectedLayerIndexChanged(value);
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
@@ -165,15 +157,15 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
-        [NotifyPropertyChangedFor(nameof(SubConstructionExpanderVisibility))]
-        [NotifyPropertyChangedFor(nameof(LayerPropertiesExpanderVisibility))]
-        private Layer? _selectedListViewItem;
+        private int _selectedLayerIndex;
 
         [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(NoLayersVisibility))]
-        [NotifyPropertyChangedFor(nameof(HasItems))]
-        private List<Layer>? _layerList = Session.SelectedElement?.Layers;
+        [NotifyPropertyChangedFor(nameof(IsLayerSelected))]
+        [NotifyPropertyChangedFor(nameof(LayerPropertyBag))]
+        [NotifyPropertyChangedFor(nameof(LayerSubConstrPropertyBag))]
+        [NotifyPropertyChangedFor(nameof(SubConstructionExpanderVisibility))]
+        [NotifyPropertyChangedFor(nameof(LayerPropertiesExpanderVisibility))]
+        private Layer? _selectedLayer;
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(TiValue))]
@@ -205,13 +197,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         * Not Observable, not directly mutated by user input
         */
        
-        public string Title { get; } = Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Schichtaufbau " : "";
-        public string SelectedElementColorCode { get; } = Session.SelectedElement?.ColorCode ?? string.Empty;
-        public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
+        public string Title => $"'{_element.Name}' - Schichtaufbau ";
+        public string SelectedElementColorCode => _element.ColorCode;
+        public string SelectedElementConstructionName => _element.Construction.TypeName;
+        public ObservableCollection<Layer> LayerList => new ObservableCollection<Layer>(_element.Layers);
+        public IEnumerable<IPropertyItem>? LayerPropertyBag => SelectedLayer?.PropertyBag;
+        public IEnumerable<IPropertyItem>? LayerSubConstrPropertyBag => SelectedLayer?.SubConstruction?.PropertyBag;
 
-        public bool IsLayerSelected => SelectedListViewItem != null;
-        public bool HasItems => LayerList?.Count > 0;
-        public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedListViewItem?.SubConstruction != null ? Visibility.Visible : Visibility.Collapsed;
+        public bool IsLayerSelected => SelectedLayer != null;
+        public bool HasItems => LayerList.Count > 0;
+        public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedLayer?.SubConstruction != null ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
         public Visibility NoLayersVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
         public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
@@ -239,19 +234,17 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_requirementValues.Element is null) return new GaugeItem(Symbol.UValue);
-
                 if (_uValueGauge == null)
                 {
-                    double? uMax = _requirementValues.UMax;
-                    double? elementUValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.UValue : null;
+                    double? uMax = _element.Requirements.UMax;
+                    double? elementUValue = _element.ThermalResults.IsValid ? _element.UValue : null;
                     double scaleMax = uMax.HasValue
                         ? Math.Max(2 * uMax.Value, (elementUValue ?? 0.0) + 0.1)
                         : Math.Max(1.0, (elementUValue ?? 0.0) + 0.1);
 
-                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _requirementValues.UMaxComparisonRequirement)
+                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _element.Requirements.UMaxComparisonRequirement)
                     {
-                        Caption = _requirementValues.UMaxCaption,
+                        Caption = _element.Requirements.UMaxCaption,
                         ScaleMin = 0.0,
                         ScaleMax = scaleMax,
                     };
@@ -273,23 +266,21 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_requirementValues.Element is null) return new GaugeItem(Symbol.RValueElement);
-
                 if (_rValueGauge == null)
                 {
                     var uValueGauge = UValueGauge; // ensure initialized once
                     double? uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
                     double? targetRValueNormalized = 1.0 - uValueNormalized;
-                    double? elementRValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.RGesValue : null;
-                    _rValueGauge = new GaugeItem(Symbol.RValueElement, elementRValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
+                    double? elementRValue = _element.ThermalResults.IsValid ? _element.RGesValue : null;
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, elementRValue, _element.Requirements.RMin, _element.Requirements.RMinComparisonRequirement)
                     {
-                        Caption = _requirementValues.RMinCaption,
+                        Caption = _element.Requirements.RMinCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = _requirementValues.Element.RGesValue / targetRValueNormalized ?? 1.0,
+                        ScaleMax = _element.RGesValue / targetRValueNormalized ?? 1.0,
                     };
                 }
                 return _rValueGauge;
-            }
+            } 
         }
 
         // Index is 0:
@@ -300,71 +291,90 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_tiIndex == -1) ? Session.Ti : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Find(e => e.Name == TiKeys[_tiIndex])?.Value;
-                Session.Ti = value ?? 0.0;
-                return Session.Ti;
+                double? value = (_tiIndex == -1) ? _element.ThermalCalcConfig.Ti : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Find(e => e.Name == TiKeys[_tiIndex])?.Value;
+                _element.ThermalCalcConfig.Ti = value ?? 0.0;
+                return _element.ThermalCalcConfig.Ti;
             }
             set
             {
                 // Save custom user input
-                Session.Ti = value;
+                _element.ThermalCalcConfig.Ti = value;
                 // Changing ti_Index Triggers TiValue getter due to NotifyProperty
                 TiIndex = -1;
+                if (Math.Abs(value) > 40) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
             }
         }
         public double TeValue
         {
             get
             {
-                double? value = (_teIndex == -1) ? Session.Te : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Find(e => e.Name == TeKeys[_teIndex])?.Value;
-                Session.Te = value ?? 0.0;
-                return Session.Te;
+                double? value = (_teIndex == -1) ? _element.ThermalCalcConfig.Te : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Find(e => e.Name == TeKeys[_teIndex])?.Value;
+                _element.ThermalCalcConfig.Te = value ?? 0.0;
+                return _element.ThermalCalcConfig.Te;
             }
             set
             {
-                Session.Te = value;
+                _element.ThermalCalcConfig.Te = value;
                 TeIndex = -1;
+                if (Math.Abs(value) > 50) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
             }
         }
         public double RsiValue
         {
             get
             {
-                double? value = (_rsiIndex == -1) ? Session.Rsi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Name == RsiKeys[_rsiIndex])?.Value;
-                Session.Rsi = value ?? 0.0;
-                return Session.Rsi;
+                double? value = (_rsiIndex == -1) ? _element.ThermalCalcConfig.Rsi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Name == RsiKeys[_rsiIndex])?.Value;
+                _element.ThermalCalcConfig.Rsi = value ?? 0.0;
+                return _element.ThermalCalcConfig.Rsi;
             }
             set
             {
-                Session.Rsi = value;
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Error);
+                    return;
+                }
+                _element.ThermalCalcConfig.Rsi = value;
                 RsiIndex = -1;
+                if (value > 1) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
             }
         }
         public double RseValue
         {
             get
             {
-                double? value = (_rseIndex == -1) ? Session.Rse : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Name == RseKeys[_rseIndex])?.Value;
-                Session.Rse = value ?? 0.0;
-                return Session.Rse;
+                double? value = (_rseIndex == -1) ? _element.ThermalCalcConfig.Rse : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Name == RseKeys[_rseIndex])?.Value;
+                _element.ThermalCalcConfig.Rse = value ?? 0.0;
+                return _element.ThermalCalcConfig.Rse;
             }
             set
             {
-                Session.Rse = value;
+                if (value < 0)
+                {
+                    MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Error);
+                    return;
+                }
+                _element.ThermalCalcConfig.Rse = value;
                 RseIndex = -1;
+                if (value > 1) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
             }
         }
         public double RelFiValue
         {
             get
             {
-                double? value = (_relFiIndex == -1) ? Session.RelFi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Name == RelFiKeys[_relFiIndex])?.Value;
-                Session.RelFi = value ?? 0.0;
-                return Session.RelFi;
+                double? value = (_relFiIndex == -1) ? _element.ThermalCalcConfig.RelFi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Name == RelFiKeys[_relFiIndex])?.Value;
+                _element.ThermalCalcConfig.RelFi = value ?? 0.0;
+                return _element.ThermalCalcConfig.RelFi;
             }
             set
             {
-                Session.RelFi = value;
+                if (value < 0 || value > 100)
+                {
+                    MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Error);
+                    return;
+                }
+                _element.ThermalCalcConfig.RelFi = value;
                 RelFiIndex = -1;
             }
         }
@@ -372,29 +382,36 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_relFeIndex == -1) ? Session.RelFe : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Name == RelFeKeys[_relFeIndex])?.Value;
-                Session.RelFe = value ?? 0.0;
-                return Session.RelFe;
+                double? value = (_relFeIndex == -1) ? _element.ThermalCalcConfig.RelFe : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Name == RelFeKeys[_relFeIndex])?.Value;
+                _element.ThermalCalcConfig.RelFe = value ?? 0.0;
+                return _element.ThermalCalcConfig.RelFe;
             }
             set
             {
-                Session.RelFe = value;
+                if (value < 0 || value > 100)
+                {
+                    MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Error);
+                    return;
+                }
+                _element.ThermalCalcConfig.RelFe = value;
                 RelFeIndex = -1;
             }
         }
 
         #region Who triggers: Event Handlers for UI Events
 
+        private void ProjectDataChanged()
+        {
+            RefreshGauges();
+        }
+
         private void ElementChanged()
         {
             RefreshGauges();
             RefreshDrawingsFull();
             RefreshPropertyGrid();
-
-            LayerList = null;
-            LayerList = Session.SelectedElement?.Layers;
-            SelectedListViewItem = null;
-            SelectedListViewItem = Session.SelectedLayer;
+            RefreshLayerCollection();
+            RefreshElementTimeStamp();
         }
 
         /// <summary>
@@ -405,12 +422,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             RefreshGauges();
             RefreshDrawingsFull();
             RefreshPropertyGrid();
-
-            // when sub construction changes: To reflect the new buttons in the listView
-            LayerList = null;
-            LayerList = Session.SelectedElement?.Layers;
-            SelectedListViewItem = null;
-            SelectedListViewItem = Session.SelectedLayer;
+            RefreshLayerCollection();
+            RefreshLayerTimeStamp();
         }
 
         // To also trigger the SelectedLayerChanged event for other subscribers
@@ -420,21 +433,18 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.OnSelectedLayerChanged();
         }
 
-        private void EnvVarsChanged()
+        private void EnvVarsChanged(Symbol changed)
         {
-            RefreshGauges();
+            // Only run logic for Rsi or Rse change
+            if (changed == Symbol.TransferResistanceSurfaceInterior || changed == Symbol.TransferResistanceSurfaceExterior)
+                RefreshGauges();
         }
 
-        private void SelectedLayerChanged(Layer? value)
+        private void SelectedLayerIndexChanged(int value)
         {
-            // Unselect all
-            if (Session.SelectedElement is null) return;
-            Session.SelectedElement.Layers.ForEach(l => l.IsSelected = false);
-
-            if (value != null)
+            for (int i = 0; i < LayerList.Count; i++)
             {
-                Session.SelectedLayerId = value.InternalId;
-                Session.SelectedLayer.IsSelected = true;
+                LayerList[i].IsSelected = (i == value);
             }
             RefreshDrawingsLayerSelected();
         }
@@ -445,8 +455,10 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshPropertyGrid()
         {
-            if (SelectedListViewItem is null) return;
-            SelectedListViewItem.RefreshPropertyBag();
+            if (SelectedLayer is null) return;
+            SelectedLayer.RefreshPropertyBag();
+            OnPropertyChanged(nameof(LayerPropertyBag));
+            OnPropertyChanged(nameof(LayerSubConstrPropertyBag));
         }
 
         private void RefreshDrawingsFull()
@@ -467,12 +479,31 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void RefreshGauges()
         {
             // Recalulates the Element
-            _requirementValues.Update();
+            _element.Requirements.Update();
             // Forces the re-creation of the GaugeItems with updated values
             _uValueGauge = null;
             _rValueGauge = null;
             OnPropertyChanged(nameof(UValueGauge));
             OnPropertyChanged(nameof(RValueGauge));
+        }
+
+        private void RefreshLayerCollection()
+        {
+            OnPropertyChanged(nameof(LayerList));
+            OnPropertyChanged(nameof(NoLayersVisibility));
+            OnPropertyChanged(nameof(HasItems));
+        }
+
+        private void RefreshLayerTimeStamp()
+        {
+            if (SelectedLayer is null) return;
+            SelectedLayer.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+
+            RefreshElementTimeStamp();
+        }
+        private void RefreshElementTimeStamp()
+        {
+            _element.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
         }
 
         #endregion

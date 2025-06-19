@@ -17,13 +17,18 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for AddLayerSubConstructionWindow.xaml: Used in xaml as "DataContext"
     public partial class AddLayerSubConstructionWindow_VM : ObservableObject
     {
-        private readonly Layer? _targetLayer = Session.SelectedElement?.Layers.FirstOrDefault(l => l?.InternalId == AddLayerSubConstructionWindow.TargetLayerInternalId, null);
+        private readonly Element _element;
+        private readonly Layer? _targetLayer;
         private readonly LayerSubConstruction _tempConstruction;
         
         // Called by 'InitializeComponent()' from AddLayerSubConstructionWindow.cs due to Class-Binding in xaml via DataContext
         public AddLayerSubConstructionWindow_VM()
         {
             if (Session.SelectedElement is null) return;
+
+            _element = Session.SelectedElement;
+            _targetLayer = _element.Layers.FirstOrDefault(l => l?.InternalId == AddLayerSubConstructionWindow.TargetLayerInternalId, null);
+
             if (_targetLayer is null) return;
             
             PropertyItem<int>.PropertyChanged += UpdateXamlBindings;

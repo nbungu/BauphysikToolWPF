@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,10 +12,9 @@ namespace BauphysikToolWPF.Calculation
 
     public class CheckRequirements
     {
-        public CheckRequirementsConfig Config { get; } = new CheckRequirementsConfig();
-        public Element? Element { get; }
-        public List<DocumentParameter> RelevantRequirements { get; private set; } = new List<DocumentParameter>();
+        private readonly Element _element;
 
+        public List<DocumentParameter> RelevantRequirements { get; private set; } = new List<DocumentParameter>();
         public List<DocumentSourceType> RelevantDocumentSources { get; set; } = new List<DocumentSourceType>(0);
 
         public double? UMax { get; private set; }
@@ -24,7 +22,7 @@ namespace BauphysikToolWPF.Calculation
         public RequirementComparison UMaxComparisonRequirement => RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null)?.RequirementComparison ?? RequirementComparison.None;
         public string UMaxComparisonDescription => RequirementComparisonDescriptionMapping[UMaxComparisonRequirement];
         public string UMaxCaption => UMaxComparisonDescription != "" && UMaxRequirementSourceName != "" ? $"{UMaxComparisonDescription} nach {UMaxRequirementSourceName}" : "";
-        public bool IsUValueOk => Element?.ThermalResults.UValue <= UMax;
+        public bool IsUValueOk => _element.ThermalResults.UValue <= UMax;
 
 
 
@@ -33,44 +31,39 @@ namespace BauphysikToolWPF.Calculation
         public RequirementComparison RMinComparisonRequirement => RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.RValueElement, null)?.RequirementComparison ?? RequirementComparison.None;
         public string RMinComparisonDescription => RequirementComparisonDescriptionMapping[RMinComparisonRequirement];
         public string RMinCaption => RMinComparisonDescription != "" && RMinRequirementSourceName != null ? $"{RMinComparisonDescription} nach {RMinRequirementSourceName}" : "";
-        public bool IsRValueOk => Element?.RGesValue >= RMin;
-
+        public bool IsRValueOk => _element.RGesValue >= RMin;
 
 
         public double? QMax { get; private set; }
-        public bool IsQValueOk => Element?.ThermalResults.QValue <= QMax;
+        public bool IsQValueOk => _element.ThermalResults.QValue <= QMax;
+        public bool HasRequirements => RelevantRequirements.Count > 0;
 
         public CheckRequirements() {}
-        public CheckRequirements(Element? element, CheckRequirementsConfig config)
+        public CheckRequirements(Element element)
         {
-            Element = element;
-            Config = config;
+            _element = element;
 
             Update();
         }
 
         public void Update()
         {
-            if (Element is null) return;
+            _element.RefreshResults();
 
-            if (Element.Recalculate == false) Element.RefreshResults();
+            // Update sources: _element specific sources can vary
+            RelevantDocumentSources = GetRelatedDocumentSources(_element);
 
-            // Update sources: Element specific sources can vary
-            RelevantDocumentSources = GetRelatedDocumentSources(Element);
-
-            RelevantRequirements = Element.Construction.Requirements.Where(r => RelevantDocumentSources.Contains(r.DocumentSource.DocumentSourceType)).ToList();
+            RelevantRequirements = _element.Construction.Requirements.Where(r => RelevantDocumentSources.Contains(r.DocumentSource.DocumentSourceType)).ToList();
 
             UMax = GetUMax();
             RMin = GetRMin();
             QMax = GetQMax();
 
-            Logger.LogInfo($"Updated requirements check for element: {Element}.");
+            Logger.LogInfo($"Updated requirements check for element: {_element}.");
         }
 
         private double? GetUMax()
         {
-            if (Element is null) return null;
-
             DocumentParameter? specificRequirement = RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.UValue, null);
             if (specificRequirement is null) return null;
 
@@ -80,27 +73,28 @@ namespace BauphysikToolWPF.Calculation
 
         private double? GetRMin()
         {
-            if (Element is null) return null;
-
             DocumentParameter? specificRequirement = RelevantRequirements.FirstOrDefault(r => r?.Symbol == Symbol.RValueElement, null);
             if (specificRequirement is null) return null;
 
-            //TODO: Distinct between Element.AreaMassDens >= 100 and Element.AreaMassDens < 100
+            //TODO: Distinct between _element.AreaMassDens >= 100 and _element.AreaMassDens < 100
             return specificRequirement.Value;
         }
 
         private double? GetQMax()
         {
-            if (UMax != null && UMax >= 0) return UMax * (Config.Ti - Config.Te);
+            if (UMax != null && UMax >= 0) return UMax * (_element.ThermalCalcConfig.Ti - _element.ThermalCalcConfig.Te);
             return null;
         }
 
         /// <summary>
-        /// 
+        /// Determines a list of relevant document sources (standards, tables, etc.) 
+        /// that apply based on the properties of the given element and its associated project. 
+        /// This includes general sources as well as those specific to the element and the project context.
         /// </summary>
-        /// <param name="element"></param>
-        /// <returns></returns>
-        public List<DocumentSourceType> GetRelatedDocumentSources(Element element)
+        /// <param name="element">The element for which the related document sources should be determined. 
+        /// It is expected that the <c>ParentProject</c> property is correctly assigned.</param>
+        /// <returns>A list of <see cref="DocumentSourceType"/> values applicable to the given element.</returns>
+        public static List<DocumentSourceType> GetRelatedDocumentSources(Element element)
         {
             var project = element.ParentProject;
             if (project is null) return new List<DocumentSourceType>(0);
@@ -118,7 +112,7 @@ namespace BauphysikToolWPF.Calculation
             };
             #endregion
 
-            #region Element Related
+            #region _element Related
 
             // Add document sources based on element properties
             if (element.IsInhomogeneous) documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_5p1p3); // Mindestwerte für Wärmedurchlasswiderstände inhomogener, opaker Bauteile
@@ -140,22 +134,22 @@ namespace BauphysikToolWPF.Calculation
             }
             else if (project.BuildingAge == BuildingAgeType.New && project.BuildingUsage == BuildingUsageType.NonResidential)
             {
-                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte1);
-                // TODO: auf element ebene -> beide GetSourcesMethoden zusammenlegen
-                //if (Ti > 19) documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2);
-                // else documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte2);
+                if (element.ThermalCalcConfig.Ti >= 19) documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte1);
+                else if (element.ThermalCalcConfig.Ti >= 12 && element.ThermalCalcConfig.Ti < 19) documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte2);
 
                 documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_AnhangA);
                 documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_5);
             }
             else if (project.BuildingAge == BuildingAgeType.Existing && project.BuildingUsage == BuildingUsageType.Residential)
             {
-                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage7);
+                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage7_Spalte1);
                 documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_4);
             }
             else if (project.BuildingAge == BuildingAgeType.Existing && project.BuildingUsage == BuildingUsageType.NonResidential)
             {
-                documentSourceTypes.Add(DocumentSourceType.GEG_Anlage7);
+                if (element.ThermalCalcConfig.Ti >= 19) documentSourceTypes.Add(DocumentSourceType.GEG_Anlage7_Spalte1);
+                else if (element.ThermalCalcConfig.Ti >= 12 && element.ThermalCalcConfig.Ti < 19) documentSourceTypes.Add(DocumentSourceType.GEG_Anlage7_Spalte2);
+                
                 documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_AnhangA);
                 documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_5);
             }

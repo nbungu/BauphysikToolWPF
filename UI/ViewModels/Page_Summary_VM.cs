@@ -1,4 +1,4 @@
-﻿using BauphysikToolWPF.Calculation;
+﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
@@ -20,19 +20,17 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private readonly CrossSectionDrawing _verticalCut = new CrossSectionDrawing();
         private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
-        private readonly CheckRequirements _requirementValues = new CheckRequirements();
+        private readonly Element _element;
 
         public Page_Summary_VM()
         {
             if (Session.SelectedProject is null) return;
             if (Session.SelectedElement is null) return;
 
-            _verticalCut = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
-            _crossSection = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+            _element = Session.SelectedElement;
 
-            // TODO: this could be 'Element' property and be fetched from the SelectedElement directly
-            // -> just set Update flag to true
-            _requirementValues = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
+            _verticalCut = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
+            _crossSection = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
         }
 
         /*
@@ -42,10 +40,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void SwitchPage(NavigationPage desiredPage)
-        {
-            MainWindow.SetPage(desiredPage);
-        }
+        private void SwitchPage(NavigationPage desiredPage) => MainWindow.SetPage(desiredPage);
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
@@ -60,10 +55,10 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the _selection Values above
          */
 
-        public string Title { get; } = Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Zusammenfassung " : "";
-        public string SelectedElementColorCode { get; } = Session.SelectedElement?.ColorCode ?? string.Empty;
-        public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
-        public Visibility NoLayersVisibility { get; } = Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+        public string Title => $"'{_element.Name}' - Zusammenfassung ";
+        public string SelectedElementColorCode => _element.ColorCode;
+        public string SelectedElementConstructionName => _element.Construction.TypeName;
+        public Visibility NoLayersVisibility => _element.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
 
         // Cross Section
 
@@ -94,19 +89,17 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_requirementValues.Element is null) return new GaugeItem(Symbol.UValue);
-
                 if (_uValueGauge == null)
                 {
-                    double? uMax = _requirementValues.UMax;
-                    double? elementUValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.UValue : null;
+                    double? uMax = _element.Requirements.UMax;
+                    double? elementUValue = _element.ThermalResults.IsValid ? _element.UValue : null;
                     double scaleMax = uMax.HasValue
                         ? Math.Max(2 * uMax.Value, (elementUValue ?? 0.0) + 0.1)
                         : Math.Max(1.0, (elementUValue ?? 0.0) + 0.1);
 
-                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _requirementValues.UMaxComparisonRequirement)
+                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _element.Requirements.UMaxComparisonRequirement)
                     {
-                        Caption = _requirementValues.UMaxCaption,
+                        Caption = _element.Requirements.UMaxCaption,
                         ScaleMin = 0.0,
                         ScaleMax = scaleMax,
                     };
@@ -128,46 +121,44 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_requirementValues.Element is null) return new GaugeItem(Symbol.RValueElement);
-
                 if (_rValueGauge == null)
                 {
                     var uValueGauge = UValueGauge; // ensure initialized once
                     double? uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
                     double? targetRValueNormalized = 1.0 - uValueNormalized;
-                    double? elementRValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.RGesValue : null;
-                    _rValueGauge = new GaugeItem(Symbol.RValueElement, elementRValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
+                    double? elementRValue = _element.ThermalResults.IsValid ? _element.RGesValue : null;
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, elementRValue, _element.Requirements.RMin, _element.Requirements.RMinComparisonRequirement)
                     {
-                        Caption = _requirementValues.RMinCaption,
+                        Caption = _element.Requirements.RMinCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = _requirementValues.Element?.RGesValue / targetRValueNormalized ?? 1.0,
+                        ScaleMax = _element.RGesValue / targetRValueNormalized ?? 1.0,
                     };
                 }
                 return _rValueGauge;
             }
         }
 
-        public List<IPropertyItem> ElementProperties => Session.SelectedElement != null ? new List<IPropertyItem>
+        public List<IPropertyItem> ElementProperties => _element != null ? new List<IPropertyItem>
         {
-            new PropertyItem<int>("Schichten", () => Session.SelectedElement.Layers.Count),
-            new PropertyItem<double>(Symbol.Thickness, () => Session.SelectedElement.Thickness),
-            new PropertyItem<double>(Symbol.RValueElement, () => Session.SelectedElement.RGesValue),
-            new PropertyItem<double>(Symbol.RValueTotal, () => Session.SelectedElement.RTotValue),
-            new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValue) { DecimalPlaces = 3 },
-            new PropertyItem<double>(Symbol.HeatFluxDensity, () => Session.SelectedElement.QValue),
-            new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedElement.SdThickness) { DecimalPlaces = 1 },
-            new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedElement.AreaMassDens),
-            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => Session.SelectedElement.ArealHeatCapacity),
+            new PropertyItem<int>("Schichten", () => _element.Layers.Count),
+            new PropertyItem<double>(Symbol.Thickness, () => _element.Thickness),
+            new PropertyItem<double>(Symbol.RValueElement, () => _element.RGesValue),
+            new PropertyItem<double>(Symbol.RValueTotal, () => _element.RTotValue),
+            new PropertyItem<double>(Symbol.UValue, () => _element.UValue) { DecimalPlaces = 3 },
+            new PropertyItem<double>(Symbol.HeatFluxDensity, () => _element.QValue),
+            new PropertyItem<double>(Symbol.SdThickness, () => _element.SdThickness) { DecimalPlaces = 1 },
+            new PropertyItem<double>(Symbol.AreaMassDensity, () => _element.AreaMassDens),
+            new PropertyItem<double>(Symbol.ArealHeatCapacity, () => _element.ArealHeatCapacity),
         } : new List<IPropertyItem>(0);
 
         public List<IPropertyItem> EnvironmentProperties => new List<IPropertyItem>
         {
-            new PropertyItem<double>(Symbol.TemperatureInterior, () => Session.Ti) { DecimalPlaces = 1 },
-            new PropertyItem<double>(Symbol.TemperatureExterior, () => Session.Te) { DecimalPlaces = 1 },
-            new PropertyItem<double>(Symbol.TransferResistanceSurfaceInterior, () => Session.Rsi),
-            new PropertyItem<double>(Symbol.TransferResistanceSurfaceExterior, () => Session.Rse),
-            new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => Session.RelFi) { DecimalPlaces = 1 },
-            new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => Session.RelFe) { DecimalPlaces = 1 },
+            new PropertyItem<double>(Symbol.TemperatureInterior, () => _element.ThermalCalcConfig.Ti) { DecimalPlaces = 1 },
+            new PropertyItem<double>(Symbol.TemperatureExterior, () => _element.ThermalCalcConfig.Te) { DecimalPlaces = 1 },
+            new PropertyItem<double>(Symbol.TransferResistanceSurfaceInterior, () => _element.ThermalCalcConfig.Rsi),
+            new PropertyItem<double>(Symbol.TransferResistanceSurfaceExterior, () => _element.ThermalCalcConfig.Rse),
+            new PropertyItem<double>(Symbol.RelativeHumidityInterior, () => _element.ThermalCalcConfig.RelFi) { DecimalPlaces = 1 },
+            new PropertyItem<double>(Symbol.RelativeHumidityExterior, () => _element.ThermalCalcConfig.RelFe) { DecimalPlaces = 1 },
         };
     }
 }

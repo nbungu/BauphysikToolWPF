@@ -37,7 +37,6 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
-                if (value < 0.1) MainWindow.ShowToast("Unrealistische Raumhöhe!", ToastType.Warning);
                 _roomHeightGross = value;
 
                 RoomVolumeGross = RoomAreaGross * _roomHeightGross; // Update RoomVolumeGross when RoomHeightGross changes
@@ -55,7 +54,6 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
-                if (value < 0.1) MainWindow.ShowToast("Unrealistische Raumgrundfläche!", ToastType.Warning);
                 _roomAreaGross = value;
 
                 RoomVolumeGross = _roomAreaGross * RoomHeightGross; // Update RoomVolumeGross when RoomAreaGross changes
@@ -89,7 +87,6 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
-                if (value < 0.1) MainWindow.ShowToast("Unrealistische Raumhöhe!", ToastType.Warning);
                 _roomHeightNet = value;
 
                 RoomVolumeNet = RoomAreaNet * _roomHeightNet; // Update RoomVolumeNet when RoomHeightNet changes
@@ -107,7 +104,6 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
-                if (value < 0.1) MainWindow.ShowToast("Unrealistische Raumgrundfläche!", ToastType.Warning);
                 _roomAreaNet = value;
 
                 RoomVolumeNet = _roomAreaNet * RoomHeightNet; // Update RoomVolumeNet when RoomAreaNet changes
@@ -141,7 +137,6 @@ namespace BauphysikToolWPF.Models.Domain
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
                     return;
                 }
-                if (value < 0.05) MainWindow.ShowToast("Sehr kleine Flächen können vernachlässigt werden", ToastType.Warning);
                 _envelopeArea = value;
             }
         }

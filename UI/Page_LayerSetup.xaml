@@ -122,7 +122,8 @@
                               VerticalAlignment="Stretch"
                               PreviewMouseWheel="LayerListScrollViewer_PreviewMouseWheel">
                     <controls:LayersListView Layers="{Binding LayerList}"
-                                             SelectedLayer="{Binding SelectedListViewItem, Mode=TwoWay}"
+                                             SelectedLayerIndex="{Binding SelectedLayerIndex, Mode=TwoWay}"
+                                             SelectedLayer="{Binding SelectedLayer}"
                                              MinHeight="200"
                                              MaxHeight="800"/>
                 </ScrollViewer>
@@ -254,13 +255,13 @@
                         <!--Gewählte Schicht + Eigenschaften-->
                         <Expander Header="Schicht-Eigenschaften" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding LayerPropertiesExpanderVisibility}">
                             <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid"
-                                                       Properties="{Binding SelectedListViewItem.PropertyBag, FallbackValue={x:Null}}"/>
+                                                       Properties="{Binding LayerPropertyBag}"/>
                         </Expander>
 
                         <!--Balkenlage + Eigenschaften-->
                         <Expander Header="Schicht-Balkenlage" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding SubConstructionExpanderVisibility}">
                             <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid"
-                                                       Properties="{Binding SelectedListViewItem.SubConstruction.PropertyBag, FallbackValue={x:Null}}"/>
+                                                       Properties="{Binding LayerSubConstrPropertyBag}"/>
                         </Expander>
 
                         <!--EnvVars Innen-->

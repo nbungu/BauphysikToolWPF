@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Services.Application;
 using BT.Geometry;
 using System;
 using System.Collections.Generic;
@@ -20,8 +19,6 @@ namespace BauphysikToolWPF.Services.UI
     }
     public static class MeasurementDrawing
     {
-        
-        
         #region Public Methods
 
         public static DrawingGeometry GetMeasurementChain(IEnumerable<Layer> layers, Axis intervalDirection = Axis.Z)
@@ -78,7 +75,7 @@ namespace BauphysikToolWPF.Services.UI
         }
         public static List<DrawingGeometry> GetLayerMeasurementChain(CrossSectionDrawing drawingService)
         {
-            if (Session.SelectedElement is null || Session.SelectedElement.Layers.Count == 0) return new List<DrawingGeometry>(0);
+            if (drawingService.Element.Layers.Count == 0) return new List<DrawingGeometry>(0);
             DrawingGeometry chainGeometry = new DrawingGeometry();
             if (drawingService.DrawingType == DrawingType.CrossSection)
             {

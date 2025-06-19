@@ -5,6 +5,7 @@ using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
 using System.ComponentModel;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -26,6 +27,8 @@ namespace BauphysikToolWPF
 
         private static ContentControl? _mainWindowContent;
         private static ToastNotification? _toastNotification;
+        private readonly IDialogService _dialogService;
+        private readonly IFileDialogService _fileDialogService;
 
         public MainWindow()
         {
@@ -33,6 +36,8 @@ namespace BauphysikToolWPF
 
             _toastNotification = this.Toast;
             _mainWindowContent = this.MainWindowContent;
+            _dialogService = new DialogService();
+            _fileDialogService = new FileDialogService();
 
             SetPage(NavigationPage.ProjectData);
 
@@ -120,9 +125,45 @@ namespace BauphysikToolWPF
 
             this.RefreshMaximizeRestoreButton();
         }
+
         private void MainWindow_OnClosing(object? sender, CancelEventArgs e)
         {
-            // TODO: 
+            if (Session.SelectedProject != null && Session.SelectedProject.IsModified)
+            {
+                MessageBoxResult result = _dialogService.ShowExitSaveConfirmationDialog();
+
+                switch (result)
+                {
+                    case MessageBoxResult.Yes:
+                        if (!File.Exists(Session.ProjectFilePath))
+                        {
+                            string saveFileName = Session.SelectedProject.Name == "" ? "unbekannt" : Session.SelectedProject.Name;
+                            string? filePath = _fileDialogService.ShowSaveFileDialog($"{saveFileName}.btk", "BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
+                            if (filePath != null)
+                            {
+                                DomainModelSerializer.SaveProjectToFile(Session.SelectedProject, filePath);
+                                RecentProjectsManager.AddRecentProject(filePath);
+                            }
+                            else
+                            {
+                                e.Cancel = true; // user canceled SaveFileDialog
+                                return;
+                            }
+                        }
+                        else
+                        {
+                            DomainModelSerializer.SaveProjectToFile(Session.SelectedProject, Session.ProjectFilePath);
+                        }
+                        break;
+                    case MessageBoxResult.No:
+                        // proceed without saving
+                        break;
+                    case MessageBoxResult.Cancel:
+                        // Cancel window close
+                        e.Cancel = true;
+                        return;
+                }
+            }
         }
 
         private void RefreshMaximizeRestoreButton()

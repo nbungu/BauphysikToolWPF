@@ -5,6 +5,7 @@ using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
@@ -18,28 +19,26 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         private readonly IDialogService _dialogService;
 
+        // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
         public Page_Elements_VM()
         {
             if (Session.SelectedProject is null) return;
 
             _dialogService = new DialogService();
+            
+            Session.SelectedProject.AssignInternalIdsToElements();
+            Session.SelectedProject.AssignAsParentToElements();
+            Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
+            Session.SelectedProject.RenderMissingElementImages(); // If Images are not rendered yet
 
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
-            Session.SelectedProject.AssignInternalIdsToElements();
-            Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
-
             Session.NewProjectAdded += UpdateNewProjectAdded;
             Session.NewElementAdded += UpdateOnNewElementAdded;
             Session.ElementRemoved += UpdateOnElementRemoved;
             Session.SelectedElementChanged += RefreshXamlBindings;
-
-            // If Images are not rendered yet
-            Session.SelectedProject.RenderMissingElementImages();
         }
-
-        // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
-
+        
         /*
          * MVVM Commands - UI Interaction with Commands
          * 
@@ -64,7 +63,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void DeleteElement(int selectedInternalId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
         {
             // Delete selected Element
-            if (Session.SelectedProject is null) return;
             Session.SelectedProject.RemoveElementById(selectedInternalId);
             Session.OnElementRemoved();
         }
@@ -72,8 +70,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DeleteAllElements()
         {
-            if (Session.SelectedProject is null) return;
-
             MessageBoxResult result = _dialogService.ShowDeleteConfirmationDialog();
 
             switch (result)
@@ -93,7 +89,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             Session.SelectedElementId = selectedInternalId;
 
-            if (Session.SelectedProject is null) return;
             if (Session.SelectedElement is null) return;
             Session.SelectedProject.DuplicateElement(Session.SelectedElement);
             Session.OnNewElementAdded();
@@ -103,7 +98,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void SelectElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
             Session.SelectedElementId = selectedInternalId;
-            Session.SelectedElement.RefreshResults();
+            if (Session.SelectedElement != null) Session.SelectedElement.RefreshResults();
             RefreshXamlBindings();
         }
 
@@ -125,7 +120,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void CreateSingleElementPdf(int selectedInternalId)
         {
             Session.SelectedElementId = selectedInternalId;
-            DocumentDesigner.CreateSingleElementDocument(Session.SelectedProject, Session.SelectedElement);
+            DocumentDesigner.CreateSingleElementDocument(Session.SelectedElement);
         }
 
         [RelayCommand]
@@ -157,11 +152,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         [ObservableProperty]
         private static int _groupingPropertyIndex; // As Static Class Variable to Save the Selection after Switching Pages!
 
-        [ObservableProperty]
-        [NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
-        [NotifyPropertyChangedFor(nameof(ElementInfoVisibility))]
-        [NotifyPropertyChangedFor(nameof(HasItems))]
-        private List<Element>? _elements = Session.SelectedProject?.Elements ?? new List<Element>(0);
+        // TODO NotifyPropertyChangedFor einarbeiten
+        //[ObservableProperty]
+        //[NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
+        //[NotifyPropertyChangedFor(nameof(ElementInfoVisibility))]
+        //[NotifyPropertyChangedFor(nameof(HasItems))]
+        //private List<Element>? _elements;
 
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
@@ -171,7 +167,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Element? SelectedElement => Session.SelectedElement; // Cannot be directly mutated via binding like ListViewItems, since ints wrapped as button in a WrapPanel
         public bool ElementToolsAvailable => Session.SelectedElementId != -1;
-        public bool HasItems => Elements?.Count > 0;
+        public bool HasItems => Elements.Count > 0;
+
+        public ObservableCollection<Element> Elements => new ObservableCollection<Element>(Session.SelectedProject.Elements);
 
         // Returns False if Index is 0. Index 0 means without Grouping, since "Ohne" is first entry in Combobox
         public bool IsGroupingEnabled => GroupingPropertyIndex > 0;
@@ -187,27 +185,24 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateOnNewElementAdded()
         {
-            Session.SelectedElementId = Session.SelectedProject?.Elements.Last().InternalId ?? -1;
+            Session.SelectedElementId = Session.SelectedProject.Elements.Last().InternalId;
             RefreshXamlBindings();
         }
 
         private void UpdateNewProjectAdded()
         {
-            if (Session.SelectedProject is null) return;
-
             // reset SelectedElement
             Session.SelectedElementId = -1;
 
             // Update InternalIds and render new images
             Session.SelectedProject.AssignInternalIdsToElements();
+            Session.SelectedProject.AssignAsParentToElements();
             Session.SelectedProject.RenderAllElementImages();
             // update UI
             RefreshXamlBindings();
         }
         private void UpdateOnElementRemoved()
         {
-            if (Session.SelectedProject is null) return;
-
             // reset SelectedElement
             Session.SelectedElementId = -1;
             // set selected element to last
@@ -219,12 +214,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-            if (Session.SelectedProject is null) return;
-
             // For Updating MVVM Properties
-            Elements = null;
             Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
-            Elements = Session.SelectedProject.Elements;
+            OnPropertyChanged(nameof(Elements));
 
             // For updating MVVM Capsulated Properties
             OnPropertyChanged(nameof(IsGroupingEnabled));
@@ -238,7 +230,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private ICollectionView GetGroupedItemsSource()
         {
-            var cvs = new CollectionViewSource { Source = Session.SelectedProject?.Elements };
+            var cvs = new CollectionViewSource { Source = Session.SelectedProject.Elements };
             var pgd = new PropertyGroupDescription(".", new GroupingTypeToPropertyName(SelectedGrouping));
             cvs.GroupDescriptions.Add(pgd);
             return cvs.View;

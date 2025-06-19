@@ -55,7 +55,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
             NotDefined = 0,
             GEG_Anlage1,
             GEG_Anlage2_Spalte1,
-            GEG_Anlage7,
+            GEG_Anlage7_Spalte1,
             DIN_4108_2_Tabelle_3,
             DIN_V_18599_10_AnhangA,
             DIN_V_18599_10_Tabelle_E1,
@@ -68,6 +68,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
             DIN_4108_2_5p1p2p2,
             DIN_4108_2_5p1p3,
             GEG_Anlage2_Spalte2,
+            GEG_Anlage7_Spalte2,
         }
 
         // TODO: TEST

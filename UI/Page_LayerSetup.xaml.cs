@@ -35,16 +35,17 @@ namespace BauphysikToolWPF.UI
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (Session.SelectedElement is null) return;
+            var element = Session.SelectedElement;
 
             // Only save if leaving this page
-            Session.SelectedElement.UnselectAllLayers();
+            element.UnselectAllLayers();
 
-            if (!IsVisible && Session.SelectedElement.IsValid)
+            if (!IsVisible && element.IsValid)
             {
-                Session.SelectedElement.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
+                element.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
                 
-                ImageCreator.RenderElementPreviewImage(Session.SelectedElement);
-                //Session.SelectedElement.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
+                ImageCreator.RenderElementPreviewImage(element);
+                //element.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
             }
         }
 

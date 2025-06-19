@@ -24,7 +24,8 @@ namespace BauphysikToolWPF.Services.Application
                 {
                     WriteIndented = true,
                     ReferenceHandler = ReferenceHandler.Preserve,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+                    DefaultIgnoreCondition = JsonIgnoreCondition.Never, // Include all values
+                    //DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault, // omit values that are default (0, null, false, etc.)
                 };
 
                 string jsonString = JsonSerializer.Serialize(project, options);

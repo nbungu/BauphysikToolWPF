@@ -231,6 +231,9 @@
     <Compile Update="UI\CustomControls\DeleteConfirmationDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UI\CustomControls\SaveExitConfirmationDialog.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UI\Page_EnvelopeSummary.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

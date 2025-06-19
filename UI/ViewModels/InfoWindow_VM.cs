@@ -6,12 +6,20 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Diagnostics;
 using System.Windows;
+using BauphysikToolWPF.Models.Domain;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     public partial class InfoWindow_VM : ObservableObject
     {
+        private readonly Element? _element;
+        
         // Called by 'InitializeComponent()' from InfoWindow.cs due to Class-Binding in xaml via DataContext
+        public InfoWindow_VM()
+        {
+            _element = Session.SelectedElement;
+            _selectedElementName = _element != null && _element.IsValid ? _element.Name : "Neues Element";
+        }
 
         /*
          * MVVM Commands - UI Interaction with Commands
@@ -83,7 +91,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private string _selectedElementName = Session.SelectedElement != null && Session.SelectedElement.IsValid ? Session.SelectedElement.Name : "Neues Element";
+        private string _selectedElementName;
 
         /*
          * MVVM Capsulated Properties or Triggered by other Properties

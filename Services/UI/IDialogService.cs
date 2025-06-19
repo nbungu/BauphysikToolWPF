@@ -5,6 +5,7 @@ namespace BauphysikToolWPF.Services.UI
     public interface IDialogService
     {
         MessageBoxResult ShowSaveConfirmationDialog();
+        MessageBoxResult ShowExitSaveConfirmationDialog();
         MessageBoxResult ShowDeleteConfirmationDialog();
         void ShowAddNewElementDialog();
         void ShowEditElementDialog(int targetElementInternalId);

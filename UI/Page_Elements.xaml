@@ -129,7 +129,7 @@
                                         <Image Source="{StaticResource ButtonIcon_Copy_B}" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                            <MenuItem Header="Exportieren" Command="{Binding Path=PlacementTarget.Tag.CreateSingleElementPdfCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Als PDF exportieren" Command="{Binding Path=PlacementTarget.Tag.CreateSingleElementPdfCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                     <MenuItem.Icon>
                                         <Image Source="{StaticResource ButtonIcon_Export_B}"/>
                                     </MenuItem.Icon>
@@ -269,6 +269,7 @@
                 <Button Style="{StaticResource ButtonMiniTransparent}" Tag="{StaticResource ButtonIcon_Edit_B}" ToolTip="Umbenennen" Command="{Binding EditElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonMiniTransparent}" Tag="{StaticResource ButtonIcon_Copy_B}" ToolTip="Kopieren" Command="{Binding CopyElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonMiniTransparent}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
+                <Button Style="{StaticResource ButtonMiniTransparent}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" ToolTip="Bauteil-PDF erstellen" Command="{Binding CreateSingleElementPdfCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
             
             <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" Margin="0,0,0,8">
@@ -325,7 +326,7 @@
                             <Image Source="{StaticResource ButtonIcon_Comment_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
                             <Label Content="Kommentar:" HorizontalAlignment="Left"/>
                         </StackPanel>
-                        <TextBlock TextAlignment="Left" Text="{Binding SelectedElement.Comment}" Background="Transparent" TextWrapping="Wrap" FontSize="14" FontFamily="Consolas" Margin="0,8,0,8"/>
+                        <TextBlock TextAlignment="Left" Text="{Binding SelectedElement.Comment}" Background="Transparent" TextWrapping="Wrap" FontSize="14" FontFamily="Consolas" Margin="8"/>
                     </StackPanel>
                 </ScrollViewer>
                 <!--Because ContentStringFormat attribute requires some kind of character or text before the opening curly brace to work correctly.

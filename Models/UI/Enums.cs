@@ -343,15 +343,15 @@ namespace BauphysikToolWPF.Models.UI
 
         public enum ElementSortingType
         {
-            DateAscending,
             DateDescending,
+            DateAscending,
             NameAscending,
             NameDescending
         }
         public static readonly Dictionary<ElementSortingType, string> ElementSortingTypeMapping = new()
         {
-            { ElementSortingType.DateAscending, "Änderungsdatum (älteste zuerst)" },
             { ElementSortingType.DateDescending, "Änderungsdatum (neueste zuerst)" },
+            { ElementSortingType.DateAscending, "Änderungsdatum (älteste zuerst)" },
             { ElementSortingType.NameAscending, "Name (aufsteigend)" },
             { ElementSortingType.NameDescending, "Name (absteigend)" }
         };

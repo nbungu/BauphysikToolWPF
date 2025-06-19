@@ -185,7 +185,7 @@ namespace BauphysikToolWPF.Services.Application
 
             foreach (var element in project.Elements)
             {
-                AddElementPage(project, element, document);
+                AddElementPage(element, document);
             }
 
             var pdfFilePath = SaveDoc(document, $"Bauteilkatalog_{project.Name}");
@@ -194,15 +194,15 @@ namespace BauphysikToolWPF.Services.Application
             Process.Start(new ProcessStartInfo(pdfFilePath) { UseShellExecute = true });
         }
 
-        public static void CreateSingleElementDocument(Project? project, Element? element)
+        public static void CreateSingleElementDocument(Element? element)
         {
-            if (project is null || element is null) return;
+            if (element is null) return;
 
             // Create a new PDF document
             PdfDocument document = new PdfDocument();
             document.Info.Title = $"Overview of {element.Name}";
 
-            AddElementPage(project, element, document);
+            AddElementPage(element, document);
 
             var pdfFilePath = SaveDoc(document, element.Name);
 
@@ -226,15 +226,18 @@ namespace BauphysikToolWPF.Services.Application
             return pdfFilePath;
         }
 
-        private static void AddElementPage(Project project, Element element, PdfDocument document)
+        private static void AddElementPage(Element element, PdfDocument document)
         {
+            var project = element.ParentProject;
+
             XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
             XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
             XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
             XFont bodyFontItalic = new XFont("Verdana", 9, XFontStyleEx.Italic);
-            //XFont bodyFontBold = new XFont("Verdana", 9, XFontStyleEx.Bold);
+            XFont bodyFontBold = new XFont("Verdana", 9, XFontStyleEx.Bold);
             XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
             XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
+            XFont tableBodyFontBold = new XFont("Verdana", 8, XFontStyleEx.Bold);
 
             // Add a page
             PdfPage page = document.AddPage();
@@ -259,19 +262,19 @@ namespace BauphysikToolWPF.Services.Application
             startY += 32;
 
             // Draw Element Properties
-            gfx.DrawString($"Rges = {element.RGesValue:0.00} m²K/W (nur Bauteil)", bodyFont, XBrushes.Black,
+            gfx.DrawString($"Rges = {element.RGesValue:0.000} m²K/W (nur Bauteil)", bodyFont, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"RT = {element.RTotValue:0.00} m²K/W", bodyFont, XBrushes.Black,
+            gfx.DrawString($"RT = {element.RTotValue:0.000} m²K/W", bodyFont, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"U = {element.UValue:0.00} W/m²K", bodyFont, XBrushes.Black,
+            gfx.DrawString($"U = {element.UValue:0.000} W/m²K", bodyFontBold, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"q = {element.QValue:0.00} W/m²", bodyFont, XBrushes.Black,
+            gfx.DrawString($"m' = {element.AreaMassDens:0.00} kg/m²", bodyFont, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 24;
@@ -291,7 +294,7 @@ namespace BauphysikToolWPF.Services.Application
                 gfx.DrawString($"Kommentar:", bodyFont, XBrushes.Black,
                     new XRect(new XUnitPt(70), new XUnitPt(startY),
                         new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-                var textBlockHeight = DrawWrappedText(gfx, element.Comment, bodyFont, XBrushes.Black,
+                var textBlockHeight = DrawWrappedText(gfx, $"\"{element.Comment}\"", bodyFont, XBrushes.Black,
                     new XRect(new XUnitPt(130), new XUnitPt(startY),
                         new XUnitPt(page.Width - 160), new XUnitPt(80)), bodyFont.GetHeight());
                 startY += textBlockHeight + 16;
@@ -416,7 +419,7 @@ namespace BauphysikToolWPF.Services.Application
             for (int col = 0; col < sumValues.Length; col++)
             {
                 //gfx.DrawRectangle(XPens.Black, new XRect(currentX, currentY, columnWidths[col], cellHeight));
-                gfx.DrawString(sumValues[col], tableBodyFont, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
+                gfx.DrawString(sumValues[col], tableBodyFontBold, XBrushes.Black, new XRect(currentX + 2, currentY + 3, columnWidths[col], cellHeight), XStringFormats.TopLeft);
                 currentX += columnWidths[col];
             }
 

@@ -50,6 +50,17 @@ namespace BauphysikToolWPF.Models.Domain
 
         public LayerSubConstruction? SubConstruction { get; set; }
 
+        private bool _isEffective = true;
+        public bool IsEffective
+        {
+            get => _isEffective;
+            set
+            {
+                _isEffective = value;
+                if (SubConstruction != null) SubConstruction.IsEffective = value;
+            }
+        }
+
         #endregion
 
         #region Non-serialized Properties
@@ -123,18 +134,6 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public bool IsSelected { get; set; } // For UI Purposes 
-
-        private bool _isEffective = true;
-        [JsonIgnore]
-        public bool IsEffective
-        {
-            get => _isEffective;
-            set
-            {
-                _isEffective = value;
-                if (SubConstruction != null) SubConstruction.IsEffective = value;
-            }
-        }
 
         [JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);

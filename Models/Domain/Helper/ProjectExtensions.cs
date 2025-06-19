@@ -79,53 +79,10 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             project.Elements.ForEach(ImageCreator.RenderElementPreviewImage);
         }
 
-        //public static List<DocumentSourceType> GetProjectRelatedDocumentSources(this Project project)
-        //{
-        //    // Add all document sources that are always available
-        //    var documentSourceTypes = new List<DocumentSourceType>()
-        //    {
-        //        DocumentSourceType.DIN_4108_2_Tabelle_3,
-        //        DocumentSourceType.DIN_V_18599_10_Tabelle_E1,
-        //        DocumentSourceType.DIN_V_18599_2_Tabelle_5,
-        //        DocumentSourceType.DIN_4108_3_AnhangA,
-        //        DocumentSourceType.DIN_EN_ISO_6946_Tabelle_7,
-        //        DocumentSourceType.DIN_EN_ISO_6946_Tabelle_8,
-        //    };
-        //    // Add document sources based on project properties
-        //    if (project.BuildingAge == BuildingAgeType.New && project.BuildingUsage == BuildingUsageType.Residential)
-        //    {
-        //        documentSourceTypes.Add(DocumentSourceType.GEG_Anlage1);
-        //        documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_4);
-        //    }
-        //    else if (project.BuildingAge == BuildingAgeType.New && project.BuildingUsage == BuildingUsageType.NonResidential)
-        //    {
-        //        documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte1);
-        //        // TODO: auf element ebene -> beide GetSourcesMethoden zusammenlegen
-        //        //if (Ti > 19) documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2);
-        //        // else documentSourceTypes.Add(DocumentSourceType.GEG_Anlage2_Spalte2);
-
-        //        documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_AnhangA);
-        //        documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_5);
-        //    }
-        //    else if (project.BuildingAge == BuildingAgeType.Existing && project.BuildingUsage == BuildingUsageType.Residential)
-        //    {
-        //        documentSourceTypes.Add(DocumentSourceType.GEG_Anlage7);
-        //        documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_4);
-        //    }
-        //    else if (project.BuildingAge == BuildingAgeType.Existing && project.BuildingUsage == BuildingUsageType.NonResidential)
-        //    {
-        //        documentSourceTypes.Add(DocumentSourceType.GEG_Anlage7);
-        //        documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_AnhangA);
-        //        documentSourceTypes.Add(DocumentSourceType.DIN_V_18599_10_Tabelle_5);
-        //    }
-        //    return documentSourceTypes;
-        //}
-
-        //public static List<int> GetProjectRelatedDocumentSourceIds(this Project project)
-        //{
-        //    return GetProjectRelatedDocumentSources(project)
-        //        .Select(d => DatabaseAccess.QueryDocumentSourceBySourceType(d).Id)
-        //        .ToList();
-        //}
+        public static void AssignAsParentToElements(this Project project)
+        {
+            if (project.Elements.Count == 0) return;
+            project.Elements.ForEach(e => e.ParentProject = project);
+        }
     }
 }

@@ -25,8 +25,10 @@ namespace BauphysikToolWPF.Models.Domain
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public int ConstructionId { get; set; } = 0;
-        public List<Layer> Layers { get; set; } = new List<Layer>(0);
-        
+        public List<Layer> Layers { get; set; } = new List<Layer>();
+        public ThermalValuesCalcConfig ThermalCalcConfig { get; set; } = new ThermalValuesCalcConfig();
+        public EnvelopeCalculationConfig EnvelopeCalcConfig { get; set; } = new EnvelopeCalculationConfig();
+
         #endregion
 
         #region Non-serialized properties
@@ -146,7 +148,7 @@ namespace BauphysikToolWPF.Models.Domain
         }
 
         #region Calculation Results
-        
+
         [JsonIgnore]
         public double RGesValue => ThermalResults.RGes; // R_ges in m²K/W
         [JsonIgnore]
@@ -173,25 +175,26 @@ namespace BauphysikToolWPF.Models.Domain
             {
                 if (Recalculate)
                 {
-                    _thermalResults = new ThermalValuesCalc(this, Session.ThermalValuesCalcConfig);
+                    _thermalResults = new ThermalValuesCalc(this, this.ThermalCalcConfig);
                     Recalculate = false;
                 }
                 return _thermalResults;
             }
         }
 
-        //private CheckRequirements _requirements = new CheckRequirements();
-        //public CheckRequirements Requirements
-        //{
-        //    get
-        //    {
-        //        if (Recalculate)
-        //        {
-        //            _requirements = new CheckRequirements(this, Session.CheckRequirementsConfig);
-        //        }
-        //        return _requirements;
-        //    }
-        //}
+        private CheckRequirements? _requirements;
+        [JsonIgnore]
+        public CheckRequirements Requirements
+        {
+            get
+            {
+                if (_requirements is null)
+                {
+                    _requirements = new CheckRequirements(this);
+                }
+                return _requirements;
+            }
+        }
 
         #endregion
 
@@ -203,7 +206,7 @@ namespace BauphysikToolWPF.Models.Domain
         #endregion
 
         #region Public Methods
-        
+
         public Element Copy()
         {
             var copy = new Element();
@@ -215,6 +218,8 @@ namespace BauphysikToolWPF.Models.Domain
             copy.ColorCode = this.ColorCode;
             copy.Tag = this.Tag;
             copy.Comment = this.Comment;
+            copy.ThermalCalcConfig = this.ThermalCalcConfig.Copy();
+            copy.EnvelopeCalcConfig = this.EnvelopeCalcConfig.Copy();
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             // Deep copy of the Layers list

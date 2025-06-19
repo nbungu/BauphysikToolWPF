@@ -115,25 +115,5 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         {
             element.Layers.ForEach(l => l.IsSelected = false);
         }
-
-        //public static List<DocumentSourceType> GetElementRelatedDocumentSources(this Element element)
-        //{
-        //    // Add all document sources that are always available
-        //    var documentSourceTypes = new List<DocumentSourceType>();
-
-        //    // TODO: beide GetSourcesMethoden zusammenlegen (Projekt + Element ebene)
-            
-        //    // TODO add element Randbedingungen
-        //    // -> GEG unterscheidung nach Ti 
-
-        //    // Add document sources based on project properties
-        //    if (element.IsInhomogeneous) documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_5p1p3); // Mindestwerte für Wärmedurchlasswiderstände inhomogener, opaker Bauteile
-        //    else
-        //    {
-        //        if (element.AreaMassDens >= 100) documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_Tabelle_3); // Mindestwerte für Wärmedurchlasswiderstände homogener Bauteile mit m' ≥ 100 kg/m²
-        //        else documentSourceTypes.Add(DocumentSourceType.DIN_4108_2_5p1p2p2); // Mindestwerte für Wärmedurchlasswiderstände homogener Bauteile mit m' < 100 kg/m²
-        //    }
-        //    return documentSourceTypes;
-        //}
     }
 }

@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.Calculation;
+using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
@@ -22,16 +23,22 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
+        private Element _element;
+        private readonly CrossSectionDrawing _verticalCut;
         private static DynamicTempCalc _dynamicTempCalc = new DynamicTempCalc();
-        private readonly CrossSectionDrawing _verticalCut = new CrossSectionDrawing(Session.SelectedElement, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
 
         public Page_DynamicResults_VM()
         {
             if (Session.SelectedElement is null) return;
 
-            _dynamicTempCalc = new DynamicTempCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
+            _element = Session.SelectedElement;
+
+            _verticalCut = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
+            _dynamicTempCalc = new DynamicTempCalc(_element, _element.ThermalCalcConfig);
             _dynamicTempCalc.CalculateHomogeneous();
             _dynamicTempCalc.CalculateDynamicValues();
+
+            Session.SelectedElementChanged += RefreshXamlBindings;
         }
 
         /*
@@ -86,9 +93,9 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the Values above
          */
 
-        public string Title { get; } = Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Dynamisches Bauteilverhalten" : "";
-        public string SelectedElementColorCode { get; } = Session.SelectedElement?.ColorCode ?? string.Empty;
-        public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
+        public string Title => $"'{_element.Name}' - Dynamisches Bauteilverhalten";
+        public string SelectedElementColorCode => _element.ColorCode;
+        public string SelectedElementConstructionName => _element.Construction.TypeName;
 
         // Vertical Cut
         public List<IDrawingGeometry> VerticalCutDrawing => _verticalCut.DrawingGeometries;
@@ -131,6 +138,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * private Methods
          */
+
+        private void RefreshXamlBindings()
+        {
+            _element = Session.SelectedElement;
+        }
 
         private ISeries[] GetDataPoints_e()
         {

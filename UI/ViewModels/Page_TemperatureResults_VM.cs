@@ -26,23 +26,19 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Manually Trigger Calculation
         //private static TemperatureCurveCalc _tempCurve = new TemperatureCurveCalc();
 
+        private Element _element;
         private static GlaserCalc _glaser = new GlaserCalc();
-        private readonly CheckRequirements _requirementValues = new CheckRequirements();
 
         public Page_TemperatureResults_VM()
         {
             if (Session.SelectedElement is null) return;
-            
+
+            _element = Session.SelectedElement;
+
             // Allow other UserControls to trigger RefreshXamlBindings of this Window
             Session.SelectedElementChanged += RefreshXamlBindings;
 
-            _requirementValues = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
-
-            // TODO: those could be 'Element' properties and be fetched from the SelectedElement directly
-            // -> just set Update flag to true
-            _requirementValues = new CheckRequirements(Session.SelectedElement, Session.CheckRequirementsConfig);
-
-            _glaser = new GlaserCalc(Session.SelectedElement, Session.ThermalValuesCalcConfig);
+            _glaser = new GlaserCalc(_element, _element.ThermalCalcConfig);
             _glaser.CalculateHomogeneous(); // Bauteil berechnen
             _glaser.CalculateTemperatureCurve(); // Temperaturkurve
             _glaser.CalculateGlaser(); // Glaser Kurve
@@ -73,11 +69,11 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, because Triggered and Changed by the elementType Value above
          */
 
-        public string Title { get; } = Session.SelectedElement != null ? $"'{Session.SelectedElement.Name}' - Temperaturverlauf" : "";
-        public string SelectedElementColorCode { get; } = Session.SelectedElement?.ColorCode ?? string.Empty;
-        public string SelectedElementConstructionName { get; } = Session.SelectedElement?.Construction.TypeName ?? string.Empty;
-        public Visibility NoLayersVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
-        public Visibility ResultsChartVisibility => Session.SelectedElement?.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        public string Title => $"'{_element.Name}' - Temperaturverlauf";
+        public string SelectedElementColorCode => _element.ColorCode;
+        public string SelectedElementConstructionName => _element.Construction.TypeName;
+        public Visibility NoLayersVisibility => _element.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
+        public Visibility ResultsChartVisibility => _element.Layers.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         public double Ti => _glaser.Ti;
         public double Te => _glaser.Te;
         public double Rsi => _glaser.Rsi;
@@ -102,19 +98,17 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_requirementValues.Element is null) return new GaugeItem(Symbol.UValue);
-
                 if (_uValueGauge == null)
                 {
-                    double? uMax = _requirementValues.UMax;
-                    double? elementUValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.UValue : null;
+                    double? uMax = _element.Requirements.UMax;
+                    double? elementUValue = _element.ThermalResults.IsValid ? _element.UValue : null;
                     double scaleMax = uMax.HasValue
                         ? Math.Max(2 * uMax.Value, (elementUValue ?? 0.0) + 0.1)
                         : Math.Max(1.0, (elementUValue ?? 0.0) + 0.1);
 
-                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _requirementValues.UMaxComparisonRequirement)
+                    _uValueGauge = new GaugeItem(Symbol.UValue, elementUValue, uMax, _element.Requirements.UMaxComparisonRequirement)
                     {
-                        Caption = _requirementValues.UMaxCaption,
+                        Caption = _element.Requirements.UMaxCaption,
                         ScaleMin = 0.0,
                         ScaleMax = scaleMax,
                     };
@@ -136,32 +130,29 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                if (_requirementValues.Element is null) return new GaugeItem(Symbol.RValueElement);
-
                 if (_rValueGauge == null)
                 {
                     var uValueGauge = UValueGauge; // ensure initialized once
                     double? uValueNormalized = (uValueGauge.Value - uValueGauge.ScaleMin) / (uValueGauge.ScaleMax - uValueGauge.ScaleMin);
                     double? targetRValueNormalized = 1.0 - uValueNormalized;
-                    double? elementRValue = _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.RGesValue : null;
-                    _rValueGauge = new GaugeItem(Symbol.RValueElement, elementRValue, _requirementValues.RMin, _requirementValues.RMinComparisonRequirement)
+                    double? elementRValue = _element.ThermalResults.IsValid ? _element.RGesValue : null;
+                    _rValueGauge = new GaugeItem(Symbol.RValueElement, elementRValue, _element.Requirements.RMin, _element.Requirements.RMinComparisonRequirement)
                     {
-                        Caption = _requirementValues.RMinCaption,
+                        Caption = _element.Requirements.RMinCaption,
                         ScaleMin = 0.0,
-                        ScaleMax = _requirementValues.Element.RGesValue / targetRValueNormalized ?? 1.0,
+                        ScaleMax = _element.RGesValue / targetRValueNormalized ?? 1.0,
                     };
                 }
                 return _rValueGauge;
             }
         }
 
-
-        public double? QValue => _requirementValues.Element.ThermalResults.IsValid ? _requirementValues.Element.QValue : null;
+        public double? QValue => _element.ThermalResults.IsValid ? _element.QValue : null;
         public string QValueCaption => "kein Grenzwert einzuhalten";
         public string QValueTooltip => SymbolMapping[Symbol.HeatFluxDensity].comment;
         public double QValueScaleMin => 0.0;
         public double QValueScaleMax => 2 * QValueRefMarker ?? 1.0;
-        public double? QValueRefMarker => _requirementValues.QMax;
+        public double? QValueRefMarker => _element.Requirements.QMax;
         public string QValueUnitString => GetUnitStringFromSymbol(Symbol.HeatFluxDensity);
         public string QValueSymbolBase => SymbolMapping[Symbol.HeatFluxDensity].baseText;
 
@@ -207,7 +198,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-
+            _element = Session.SelectedElement;
         }
 
         private RectangularSection[] DrawLayerSections()

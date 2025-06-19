@@ -24,12 +24,30 @@ namespace BauphysikToolWPF.UI.CustomControls
         }
 
         public static readonly DependencyProperty SelectedLayerProperty =
-            DependencyProperty.Register(nameof(SelectedLayer), typeof(object), typeof(LayersListView), new FrameworkPropertyMetadata(new Layer(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+            DependencyProperty.Register(nameof(SelectedLayer), typeof(Layer), typeof(LayersListView), new FrameworkPropertyMetadata(new Layer(), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
 
         public object SelectedLayer
         {
             get => GetValue(SelectedLayerProperty);
             set => SetValue(SelectedLayerProperty, value);
+        }
+
+        public static readonly DependencyProperty SelectedLayerIndexProperty =
+            DependencyProperty.Register(nameof(SelectedLayerIndex), typeof(int), typeof(LayersListView), new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public object SelectedLayerIndex
+        {
+            get => GetValue(SelectedLayerIndexProperty);
+            set => SetValue(SelectedLayerIndexProperty, value);
+        }
+
+        public static readonly DependencyProperty SelectedLayerInternalIdProperty =
+            DependencyProperty.Register(nameof(SelectedLayerInternalId), typeof(int), typeof(LayersListView), new FrameworkPropertyMetadata(-1, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        public object SelectedLayerInternalId
+        {
+            get => GetValue(SelectedLayerInternalIdProperty);
+            set => SetValue(SelectedLayerInternalIdProperty, value);
         }
     }
 }

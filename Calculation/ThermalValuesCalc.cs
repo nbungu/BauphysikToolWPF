@@ -4,7 +4,6 @@ using BT.Geometry;
 using BT.Logging;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 

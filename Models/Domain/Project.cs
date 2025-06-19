@@ -1,11 +1,8 @@
-﻿using BauphysikToolWPF.Calculation;
-using BauphysikToolWPF.Services.Application;
+﻿using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
-using BauphysikToolWPF.Models.Domain.Helper;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
@@ -74,25 +71,25 @@ namespace BauphysikToolWPF.Models.Domain
         /// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,
         /// which would require a re-calculation, are made there.
         /// </summary>
-        [JsonIgnore]
-        public bool RecalculateEnvelope { get; set; } = true;
+        //[JsonIgnore]
+        //public bool RecalculateEnvelope { get; set; } = true;
 
-        private EnvelopeCalculation _envelopeResults = new EnvelopeCalculation();
+        //private EnvelopeCalculation _envelopeResults = new EnvelopeCalculation();
         
-        [JsonIgnore]
-        public EnvelopeCalculation EnvelopeResults
-        {
-            get
-            {
-                if (RecalculateEnvelope)
-                {
-                    var newResults = new EnvelopeCalculation(EnvelopeItems, Session.EnvelopeCalcConfig);
-                    _envelopeResults = newResults;
-                    RecalculateEnvelope = false;
-                }
-                return _envelopeResults;
-            }
-        }
+        //[JsonIgnore]
+        //public EnvelopeCalculation EnvelopeResults
+        //{
+        //    get
+        //    {
+        //        if (RecalculateEnvelope)
+        //        {
+        //            var newResults = new EnvelopeCalculation(EnvelopeItems, Session.EnvelopeCalcConfig);
+        //            _envelopeResults = newResults;
+        //            RecalculateEnvelope = false;
+        //        }
+        //        return _envelopeResults;
+        //    }
+        //}
 
         //[JsonIgnore]
         //public List<DocumentSourceType> ProjectRelatedDocumentSources => this.GetProjectRelatedDocumentSources();

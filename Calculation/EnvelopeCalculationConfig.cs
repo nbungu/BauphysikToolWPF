@@ -9,5 +9,13 @@ namespace BauphysikToolWPF.Calculation
         public BuildingUsageType BuildingUsageType { get; set; }
         public BuildingTypeResidatial BuildingTypeResidatial { get; set; }
         public bool WithAirLeakTest { get; set; }
+
+        public EnvelopeCalculationConfig Copy()
+        {
+            return new EnvelopeCalculationConfig()
+            {
+                // TODO:
+            };
+        }
     }
 }

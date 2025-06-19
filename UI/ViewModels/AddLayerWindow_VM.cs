@@ -19,12 +19,17 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for AddLayerWindow.xaml: Used in xaml as "DataContext"
     public partial class AddLayerWindow_VM : ObservableObject
     {
-        private readonly Layer? _targetLayer = Session.SelectedElement?.Layers.FirstOrDefault(l => l?.InternalId == AddLayerWindow.TargetLayerInternalId, null);
+        private readonly Element _element;
+        private readonly Layer? _targetLayer;
         
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
         public AddLayerWindow_VM()
         {
             if (Session.SelectedElement is null) return;
+
+            _element = Session.SelectedElement;
+            _targetLayer = _element.Layers.FirstOrDefault(l => l?.InternalId == AddLayerWindow.TargetLayerInternalId, null);
+
             if (_targetLayer != null)
             {
                 SelectedTabIndex = _targetLayer.Material.IsUserDefined ? 1 : 0;
@@ -95,10 +100,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Session.OnSelectedLayerChanged();
             }
             // Add new Layer
-            else if (Session.SelectedElement != null)
+            else
             {
                 // LayerPosition is always at end of List 
-                int layerCount = Session.SelectedElement.Layers.Count;
+                int layerCount = _element.Layers.Count;
 
                 Layer layer = new Layer
                 {
@@ -108,7 +113,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                     IsEffective = true,
                     MaterialId = materialId,
                 };
-                Session.SelectedElement.AddLayer(layer);
+                _element.AddLayer(layer);
                 // Trigger event to update LayerWindow and all subscriber windows
                 Session.OnSelectedElementChanged();
             }
