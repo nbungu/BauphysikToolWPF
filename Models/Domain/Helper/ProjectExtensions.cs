@@ -10,8 +10,8 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         public static void AddElement(this Project project, Element newElement)
         {
             newElement.ParentProject = project;
+            newElement.InternalId = project.Elements.Max(e => e.InternalId) + 1;
             project.Elements.Add(newElement);
-            project.AssignInternalIdsToElements();
         }
         public static void DuplicateElement(this Project project, Element element)
         {
@@ -24,33 +24,37 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         {
             if (project.Elements.Count == 0) return;
             project.Elements.RemoveAll(e => e.InternalId == elementId);
-            project.AssignInternalIdsToElements();
         }
 
-        public static void AssignInternalIdsToElements(this Project project)
+        public static void AssignInternalIdsToElements(this Project project, bool forceOverwrite = false)
         {
             if (project.Elements.Count == 0) return;
-            int index = 0; // Start at 0
-            project.Elements.ForEach(e => e.InternalId = index++);
+            if (forceOverwrite || project.Elements.Any(e => e.InternalId == -1))
+            {
+                int index = 0;
+                project.Elements.ForEach(e => e.InternalId = index++);
+            }
         }
-        public static void AssignInternalIdsToEnvelopeItems(this Project project)
+        public static void AssignInternalIdsToEnvelopeItems(this Project project, bool forceOverwrite = false)
         {
             if (project.EnvelopeItems.Count == 0) return;
-            int index = 0; // Start at 0
-            project.EnvelopeItems.ForEach(e => e.InternalId = index++);
+            if (forceOverwrite || project.EnvelopeItems.Any(e => e.InternalId == -1))
+            {
+                int index = 0;
+                project.EnvelopeItems.ForEach(e => e.InternalId = index++);
+            }
         }
 
         public static void RemoveEnvelopeItemById(this Project project, int envelopeItemId)
         {
             if (project.EnvelopeItems.Count == 0) return;
             project.EnvelopeItems.RemoveAll(e => e.InternalId == envelopeItemId);
-            project.AssignInternalIdsToEnvelopeItems();
         }
 
         public static void AddEnvelopeItem(this Project project, EnvelopeItem newItem)
         {
+            newItem.InternalId = project.EnvelopeItems.Max(e => e.InternalId) + 1;
             project.EnvelopeItems.Add(newItem);
-            project.AssignInternalIdsToEnvelopeItems();
         }
         public static void DuplicateEnvelopeItemById(this Project project, int envelopeItemId)
         {

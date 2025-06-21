@@ -10,14 +10,22 @@ namespace BauphysikToolWPF.Models.Database
     {
         [PrimaryKey, NotNull, AutoIncrement, Unique]
         public int Id { get; set; }
+
         [NotNull]
-        public ConstructionType ConstructionType { get; set; }
+        public ConstructionType ConstructionType { get; set; } = ConstructionType.NotDefined;
+
         [NotNull]
         public string TypeName { get; set; } = string.Empty;
+
         [NotNull]
-        public ConstructionDirection ConstructionDirection { get; set; }
+        public ConstructionDirection ConstructionDirection { get; set; } = ConstructionDirection.Vertical;
+
+        [NotNull]
+        public ConstructionGroup ConstructionGroup { get; set; } = ConstructionGroup.NotDefined;
+
         [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
+
         [NotNull]
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
 
@@ -44,6 +52,7 @@ namespace BauphysikToolWPF.Models.Database
             copy.ConstructionType = this.ConstructionType;
             copy.TypeName = this.TypeName;
             copy.ConstructionDirection = this.ConstructionDirection;
+            copy.ConstructionGroup = this.ConstructionGroup;
             copy.CreatedAt = TimeStamp.GetCurrentUnixTimestamp();
             copy.UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
             return copy;

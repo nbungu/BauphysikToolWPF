@@ -26,7 +26,8 @@ namespace BauphysikToolWPF.Models.Database.Helper
             Tuer,
             InnenTuer,
             Glasvorbau,
-            Tiefgaragendecke
+            Tiefgaragendecke, 
+            DeckeGegUnbeheiztenDachraum,
         }
 
         public static readonly Dictionary<ConstructionType, string> ConstructionTypeMapping =
@@ -47,6 +48,26 @@ namespace BauphysikToolWPF.Models.Database.Helper
         {
             { ConstructionDirection.Vertical, "Vertikal" },
             { ConstructionDirection.Horizontal, "Horizontal" }
+        };
+
+        public enum ConstructionGroup
+        {
+            AussenliegendeWand = 1,
+            InnenliegendeWand = 2,
+            Decke = 3,
+            Boden = 4,
+            Dach = 5,
+            NotDefined = 10
+        }
+
+        public static readonly Dictionary<ConstructionGroup, string> ConstructionGroupMapping = new()
+        {
+            { ConstructionGroup.AussenliegendeWand, "Außenliegende Wand" },
+            { ConstructionGroup.InnenliegendeWand, "Innenliegende Wand" },
+            { ConstructionGroup.Decke, "Decke" },
+            { ConstructionGroup.Boden, "Boden" },
+            { ConstructionGroup.Dach, "Dach" },
+            { ConstructionGroup.NotDefined, "Sonstige" },
         };
 
 

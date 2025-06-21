@@ -32,16 +32,18 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Page_BuildingEnvelope_VM()
         {
-            Session.EnvelopeItemsChanged += UpdateXamlBindings;
-
-            PropertyItem<double>.PropertyChanged += UpdatePropertyBags;
-            PropertyItem<int>.PropertyChanged += UpdatePropertyBags;
-            PropertyItem<string>.PropertyChanged += UpdatePropertyBags;
-
             _envelopeCalc = new EnvelopeCalculation(OrderedEnvelopeItems);
             _dialogService = new DialogService();
 
+            Session.SelectedProject.AssignInternalIdsToEnvelopeItems();
+
             SetShowRoomDataFirstInGroupOnly(OrderedEnvelopeItems);
+
+            Session.NewProjectAdded += UpdateNewProjectAdded;
+            Session.EnvelopeItemsChanged += UpdateXamlBindings;
+            PropertyItem<double>.PropertyChanged += UpdatePropertyBags;
+            PropertyItem<int>.PropertyChanged += UpdatePropertyBags;
+            PropertyItem<string>.PropertyChanged += UpdatePropertyBags;
         }
 
         [RelayCommand]
@@ -286,6 +288,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             //SetShowRoomDataFirstInGroupOnly(OrderedEnvelopeItems);
             //OnPropertyChanged(nameof(OrderedEnvelopeItems));
             OnPropertyChanged(nameof(TestPropBag));
+        }
+        private void UpdateNewProjectAdded()
+        {
+            // Update InternalIds
+            Session.SelectedProject.AssignInternalIdsToEnvelopeItems(true);
+
+            // update UI
+            UpdateXamlBindings();
         }
 
         private void SetEventHandler(EnvelopeItem? item)

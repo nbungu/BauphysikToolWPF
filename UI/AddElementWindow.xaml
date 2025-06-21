@@ -24,6 +24,13 @@
 
     <Window.Resources>
 
+        <CollectionViewSource x:Key="GroupedConstructionTypes"
+                              Source="{Binding GroupedConstructionTypes}">
+            <CollectionViewSource.GroupDescriptions>
+                <PropertyGroupDescription PropertyName="GroupName" />
+            </CollectionViewSource.GroupDescriptions>
+        </CollectionViewSource>
+
         <Style x:Key="ItemsControlVisibilityStyle" TargetType="ItemsControl">
             <Style.Triggers>
                 <DataTrigger Binding="{Binding TagList.Count}" Value="0">
@@ -101,7 +108,10 @@
         </StackPanel>
         <StackPanel Orientation="Vertical"  Margin="0,0,0,8">
             <Label Content="Typ" HorizontalAlignment="Left"/>
-            <ComboBox ItemsSource="{Binding ConstructionTypeList}" SelectedIndex="{Binding SelectedConstruction}"/>
+            <ComboBox ItemsSource="{Binding Source={StaticResource GroupedConstructionTypes}}"
+                      DisplayMemberPath="Name"
+                      SelectedValuePath="Type"
+                      SelectedValue="{Binding SelectedConstruction, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Ausrichtung" HorizontalAlignment="Left"/>

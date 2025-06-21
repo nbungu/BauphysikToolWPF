@@ -26,6 +26,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             _dialogService = new DialogService();
             
+
             Session.SelectedProject.AssignInternalIdsToElements();
             Session.SelectedProject.AssignAsParentToElements();
             Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
@@ -195,8 +196,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.SelectedElementId = -1;
 
             // Update InternalIds and render new images
-            Session.SelectedProject.AssignInternalIdsToElements();
             Session.SelectedProject.AssignAsParentToElements();
+            Session.SelectedProject.AssignInternalIdsToElements(true);
             Session.SelectedProject.RenderAllElementImages();
             // update UI
             RefreshXamlBindings();
