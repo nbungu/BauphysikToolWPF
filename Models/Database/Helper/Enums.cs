@@ -38,6 +38,29 @@ namespace BauphysikToolWPF.Models.Database.Helper
                     DatabaseAccess.QueryConstructionNameByConstructionType
                 );
 
+        public static readonly Dictionary<ConstructionType, string> ConstructionTypeShortNameMapping = new()
+        {
+            { ConstructionType.NotDefined, "-" },
+            { ConstructionType.Aussenwand, "AW" },
+            { ConstructionType.AussenwandGegErdreich, "AWE" },
+            { ConstructionType.Innenwand, "IW" },
+            { ConstructionType.WhgTrennwand, "TW" },
+            { ConstructionType.GeschossdeckeGegAussenluft, "DA" },
+            { ConstructionType.DeckeGegUnbeheizt, "DU" },
+            { ConstructionType.InnenwandGegUnbeheizt, "IWU" },
+            { ConstructionType.Flachdach, "FD" },
+            { ConstructionType.Schraegdach, "SD" },
+            { ConstructionType.Umkehrdach, "FD" },
+            { ConstructionType.Bodenplatte, "BP" },
+            { ConstructionType.Kellerdecke, "DK" },
+            { ConstructionType.Fenster, "FE" },
+            { ConstructionType.Tuer, "AT" },
+            { ConstructionType.InnenTuer, "IT" },
+            { ConstructionType.Glasvorbau, "FE" },
+            { ConstructionType.Tiefgaragendecke, "DTG" },
+            { ConstructionType.DeckeGegUnbeheiztenDachraum, "DUD" },
+        };
+
         public enum ConstructionDirection
         {
             Vertical,
@@ -57,6 +80,7 @@ namespace BauphysikToolWPF.Models.Database.Helper
             Decke = 3,
             Boden = 4,
             Dach = 5,
+            Fenster = 6,
             NotDefined = 10
         }
 
@@ -66,10 +90,10 @@ namespace BauphysikToolWPF.Models.Database.Helper
             { ConstructionGroup.InnenliegendeWand, "Innenliegende Wand" },
             { ConstructionGroup.Decke, "Decke" },
             { ConstructionGroup.Boden, "Boden" },
-            { ConstructionGroup.Dach, "Dach" },
+            { ConstructionGroup.Dach, "Dachaufbauten" },
+            { ConstructionGroup.Fenster, "Fenster" },
             { ConstructionGroup.NotDefined, "Sonstige" },
         };
-
 
         public enum DocumentSourceType
         {

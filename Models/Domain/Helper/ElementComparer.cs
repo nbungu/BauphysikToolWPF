@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
@@ -29,6 +30,19 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                     return x.Name.CompareTo(y.Name);
                 case ElementSortingType.NameDescending:
                     return y.Name.CompareTo(x.Name);
+                case ElementSortingType.TypeNameAscending:
+                    return string.Compare(
+                        x.Construction.TypeName,
+                        y.Construction.TypeName,
+                        StringComparison.CurrentCulture
+                    );
+
+                case ElementSortingType.TypeNameDescending:
+                    return string.Compare(
+                        y.Construction.TypeName,
+                        x.Construction.TypeName,
+                        StringComparison.CurrentCulture
+                    );
                 default:
                     return x.UpdatedAt.CompareTo(y.UpdatedAt);
             }

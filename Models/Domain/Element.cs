@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BauphysikToolWPF.Models.Domain.Helper;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {
@@ -18,6 +19,25 @@ namespace BauphysikToolWPF.Models.Domain
         #region Serialization Objects
 
         public string Name { get; set; } = string.Empty;
+
+        private string _shortName = string.Empty;
+        public string ShortName
+        {
+            get
+            {
+                if (string.IsNullOrWhiteSpace(_shortName))
+                {
+                    if (ConstructionTypeShortNameMapping.TryGetValue(Construction.ConstructionType, out string mappedShort))
+                    {
+                        return mappedShort + InternalId;
+                    }
+                    // Fallback to just InternalId if nothing else is available
+                    return InternalId.ToString();
+                }
+                return _shortName;
+            }
+            set => _shortName = value;
+        }
         public string ColorCode { get; set; } = "#00FFFFFF";
         public string Tag { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;

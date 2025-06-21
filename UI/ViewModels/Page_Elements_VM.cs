@@ -25,11 +25,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (Session.SelectedProject is null) return;
 
             _dialogService = new DialogService();
-            
 
             Session.SelectedProject.AssignInternalIdsToElements();
             Session.SelectedProject.AssignAsParentToElements();
-            Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
+            Session.SelectedProject.SortElements(SelectedSorting);
             Session.SelectedProject.RenderMissingElementImages(); // If Images are not rendered yet
 
             // Subscribe to Event and Handle
@@ -216,7 +215,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void RefreshXamlBindings()
         {
             // For Updating MVVM Properties
-            Session.SelectedProject.Elements.Sort(new ElementComparer(SelectedSorting));
+            Session.SelectedProject.SortElements(SelectedSorting);
             OnPropertyChanged(nameof(Elements));
 
             // For updating MVVM Capsulated Properties

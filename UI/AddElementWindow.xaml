@@ -106,6 +106,10 @@
             <Label Content="Name" HorizontalAlignment="Left"/>
             <TextBox Text="{Binding SelectedElementName}" HorizontalContentAlignment="Left" MaxLength="64" Height="32" HorizontalAlignment="Stretch"/>
         </StackPanel>
+        <StackPanel Orientation="Vertical" Margin="0,0,0,8">
+            <Label Content="Kurzbezeichnung" HorizontalAlignment="Left"/>
+            <TextBox Text="{Binding SelectedElementShortName}" HorizontalContentAlignment="Left" MaxLength="4" Height="32" HorizontalAlignment="Stretch"/>
+        </StackPanel>
         <StackPanel Orientation="Vertical"  Margin="0,0,0,8">
             <Label Content="Typ" HorizontalAlignment="Left"/>
             <ComboBox ItemsSource="{Binding Source={StaticResource GroupedConstructionTypes}}"
@@ -132,12 +136,12 @@
                 </Grid.RowDefinitions>
                 <RadioButton GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Black" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
                 <RadioButton Grid.Row="0" Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Gray" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Row="0" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Red" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Row="0" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Green" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Row="1" Grid.Column="0" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Blue" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Yellow" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Brown" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
-                <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Transparent" Tag="{StaticResource ButtonIcon_Cancel_B}" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="0" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="#FF0000" ToolTip="z.B. opake Bauteile (Außenwand)" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="0" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="#92D050" ToolTip="z.B. Boden gegen Außenluft" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="1" Grid.Column="0" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="#00FFFF" ToolTip="z.B. Dachaufbauten" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="1" Grid.Column="1" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="#FFFF00" ToolTip="z.B. Fenster und Türen" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="1" Grid.Column="2" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="#984806" ToolTip="z.B. erdberührte Bauteile" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
+                <RadioButton Grid.Row="1" Grid.Column="3" GroupName="Colors" Style="{StaticResource RadioButton_ColorPicker}" Background="Transparent" ToolTip="ohne Farbmarkierung" Tag="{StaticResource ButtonIcon_Cancel_B}" Margin="4" Command="{Binding ChangeColorCommand}" CommandParameter="{Binding Background, RelativeSource={RelativeSource Self}}"/>
             </Grid>
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">

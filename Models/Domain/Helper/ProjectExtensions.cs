@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Services.Application;
 using System;
 using System.Linq;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
 {
@@ -10,7 +11,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         public static void AddElement(this Project project, Element newElement)
         {
             newElement.ParentProject = project;
-            newElement.InternalId = project.Elements.Max(e => e.InternalId) + 1;
+            newElement.InternalId = project.Elements.DefaultIfEmpty().Max(e => e?.InternalId ?? 0) + 1;
             project.Elements.Add(newElement);
         }
         public static void DuplicateElement(this Project project, Element element)
@@ -24,6 +25,15 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         {
             if (project.Elements.Count == 0) return;
             project.Elements.RemoveAll(e => e.InternalId == elementId);
+        }
+
+        private static readonly ElementComparer ElementComparer = new ElementComparer(ElementSortingType.DateDescending);
+
+        public static void SortElements(this Project project, ElementSortingType sortingType)
+        {
+            if (project.Elements.Count == 0) return;
+            ElementComparer.SortingType = sortingType;
+            project.Elements.Sort(ElementComparer);
         }
 
         public static void AssignInternalIdsToElements(this Project project, bool forceOverwrite = false)
@@ -53,7 +63,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
 
         public static void AddEnvelopeItem(this Project project, EnvelopeItem newItem)
         {
-            newItem.InternalId = project.EnvelopeItems.Max(e => e.InternalId) + 1;
+            newItem.InternalId = project.EnvelopeItems.DefaultIfEmpty().Max(e => e?.InternalId ?? 0) + 1;
             project.EnvelopeItems.Add(newItem);
         }
         public static void DuplicateEnvelopeItemById(this Project project, int envelopeItemId)

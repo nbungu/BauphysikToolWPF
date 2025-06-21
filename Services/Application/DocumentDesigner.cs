@@ -4,10 +4,12 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.UI;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Services.Application
 {
@@ -16,12 +18,16 @@ namespace BauphysikToolWPF.Services.Application
         public static void FullCatalogueExport(Project? project)
         {
             if (project == null) return;
+
             
             XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
             //XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
             //XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
             XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
-            XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
+            XFont tableBodyFont = new XFont("Verdana", 7, XFontStyleEx.Regular);
+            XFont tableBodyFont2 = new XFont("Verdana", 8, XFontStyleEx.Bold);
+
+            var thinPen = new XPen(XColors.Black, 0.5); // 0.5pt line
 
             // Create a new PDF document
             PdfDocument document = new PdfDocument();
@@ -39,7 +45,8 @@ namespace BauphysikToolWPF.Services.Application
                 new XRect(0, 20, page.Width, 30),
                 XStringFormats.TopCenter);
 
-            var elements = project.Elements.ToList();
+            project.SortElements(ElementSortingType.TypeNameAscending);
+            var elements = project.Elements;
 
             // Define starting point and table layout
             double startX = 40;
@@ -50,10 +57,10 @@ namespace BauphysikToolWPF.Services.Application
             var tf = new XTextFormatter(gfx);
 
             // New headers and adjusted column widths
-            string[] headers = { "Nr.", "Bauteilbezeichnung", "", "Kategorie", "U-Wert\nGEG\n[W/(m²K)]", "Wärmedurchlasswiderstand R\n[m²K/W]", "" };
+            string[] headers = { "Nr.", "Bauteilbezeichnung", "", "Kategorie", "U-Wert\nGEG\n[W/(m²K)]", "Wärmedurchlasswiderstand\nR [m²K/W]", "" };
             string[] secondRowHeaders = { "", "", "", "", "", "Ist-Wert", "Soll-Wert\nDIN 4108-2" }; // New row header for Wärmedurchlasswiderstand
 
-            double[] columnProportions = { 24, 24, 120, 60, 56, 72, 72 }; // Original widths
+            double[] columnProportions = { 24, 24, 140, 120, 56, 64, 64 }; // Original widths
             double totalWeight = columnProportions.Sum();
             double[] columnWidths = columnProportions.Select(p => p / totalWeight * maxWidth).ToArray();
 
@@ -63,7 +70,7 @@ namespace BauphysikToolWPF.Services.Application
             for (int i = 0; i < elements.Count; i++)
             {
                 var el = elements[i];
-                data[i, 0] = el.InternalId.ToString(); // Bauteilnummer
+                data[i, 0] = el.ShortName;
                 data[i, 1] = ""; // Color visual only
                 data[i, 2] = el.Name; // Bauteilbezeichnung
                 data[i, 3] = el.Construction.TypeName; // Kategorie
@@ -83,7 +90,7 @@ namespace BauphysikToolWPF.Services.Application
                 if (i == 1)
                 {
                     var headerRect = new XRect(currentX, startY, columnWidths[i] + columnWidths[i+1], cellHeight * 3);
-                    gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+                    gfx.DrawRectangle(thinPen, XBrushes.LightGray, headerRect);
                     tf.Alignment = XParagraphAlignment.Center;
                     var contentRect = new XRect(currentX + 2, startY + 4, headerRect.Width - 4, headerRect.Height - 8);
                     tf.DrawString(headers[i], tableHeaderFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
@@ -93,7 +100,7 @@ namespace BauphysikToolWPF.Services.Application
                 else if (i == 5)
                 {
                     var headerRect = new XRect(currentX, startY, columnWidths[i] + columnWidths[i+1], cellHeight * 1.5);
-                    gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+                    gfx.DrawRectangle(thinPen, XBrushes.LightGray, headerRect);
                     tf.Alignment = XParagraphAlignment.Center;
                     var contentRect = new XRect(currentX + 2, startY + 4, headerRect.Width - 4, headerRect.Height - 8);
                     tf.DrawString(headers[i], tableHeaderFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
@@ -102,7 +109,7 @@ namespace BauphysikToolWPF.Services.Application
                 else
                 {
                     var headerRect = new XRect(currentX, startY, columnWidths[i], cellHeight * 3); // taller header for first row
-                    gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+                    gfx.DrawRectangle(thinPen, XBrushes.LightGray, headerRect);
                     var contentRect = new XRect(currentX + 2, startY + 4, headerRect.Width - 4, headerRect.Height - 8);
                     tf.Alignment = XParagraphAlignment.Center;
                     tf.DrawString(headers[i], tableHeaderFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
@@ -119,10 +126,10 @@ namespace BauphysikToolWPF.Services.Application
                 }
 
                 var headerRect = new XRect(currentX, startY + cellHeight * 1.5, columnWidths[i], cellHeight * 1.5); // normal height for second row
-                gfx.DrawRectangle(XPens.Black, XBrushes.LightGray, headerRect);
+                gfx.DrawRectangle(thinPen, XBrushes.LightGray, headerRect);
                 var contentRect = new XRect(headerRect.X + 2, headerRect.Y + 4, headerRect.Width - 4, headerRect.Height - 8);
                 tf.Alignment = XParagraphAlignment.Center;
-                tf.DrawString(secondRowHeaders[i], tableHeaderFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                tf.DrawString(secondRowHeaders[i], tableBodyFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
 
                 currentX += columnWidths[i];
             }
@@ -145,8 +152,7 @@ namespace BauphysikToolWPF.Services.Application
                 for (int col = 0; col < secondRowHeaders.Length; col++)
                 {
                     var rect = new XRect(currentX, currentY, columnWidths[col], rowHeight);
-                    gfx.DrawRectangle(XPens.Black, rect);
-                    
+                    gfx.DrawRectangle(thinPen, rect);
 
                     // Center-align everything except Bauteilbezeichnung (for wrapping)
                     tf.Alignment = col == 2 ? XParagraphAlignment.Left : XParagraphAlignment.Center;
@@ -165,7 +171,15 @@ namespace BauphysikToolWPF.Services.Application
                     else
                     {
                         var contentRect = new XRect(currentX + 4, currentY + 4, columnWidths[col] - 8, rowHeight - 8);
-                        tf.DrawString(data[row, col], tableBodyFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                        if (col == 4) // U-Wert hervorheben mit anderer Font
+                        {
+                            tf.DrawString(data[row, col], tableBodyFont2, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                        }
+                        else
+                        {
+                            tf.DrawString(data[row, col], tableBodyFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                        }
+                        
                     }
 
                     currentX += columnWidths[col];
@@ -266,7 +280,7 @@ namespace BauphysikToolWPF.Services.Application
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"RT = {element.RTotValue:0.000} m²K/W", bodyFont, XBrushes.Black,
+            gfx.DrawString($"RT = {element.RTotValue:0.000} m²K/W (inkl. Übergangswiderstände)", bodyFont, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;

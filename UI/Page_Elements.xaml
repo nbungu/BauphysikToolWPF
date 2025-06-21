@@ -38,11 +38,11 @@
                                     <RowDefinition Height="*"/>
                                 </Grid.RowDefinitions>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Height="20">
-                                    <Ellipse x:Name="ellipse_icon" Fill="{Binding ColorCode}" Width="20" Height="20" Margin="0,0,4,0"/>
-                                    <Image x:Name="comment_icon" Source="{StaticResource ButtonIcon_Comment_B}" Margin="0,0,4,0"/>
-                                    <Image x:Name="tag_icon" Source="{StaticResource ButtonIcon_Tags_B}" Margin="0,0,4,0"/>
+                                    <Ellipse x:Name="ellipse_icon" Fill="{Binding ColorCode}" Width="18" Height="18" Margin="0,0,4,0"/>
+                                    <Image x:Name="comment_icon" Width="18" Source="{StaticResource ButtonIcon_Comment_B}" Margin="0,0,4,0"/>
+                                    <Image x:Name="tag_icon" Width="18" Source="{StaticResource ButtonIcon_Tags_B}" Margin="0,0,4,0"/>
                                 </StackPanel>
-                                <Label Grid.Row="0" Content="{Binding InternalId}" ContentStringFormat='ID: {0}' HorizontalAlignment="Right" Foreground="White" FontSize="10"/>
+                                <Label Grid.Row="0" Content="{Binding ShortName}" HorizontalAlignment="Right" Foreground="White" FontSize="12" FontWeight="DemiBold" Margin="0,-2,0,-2"/>
                                 <Image Grid.Row="1" ClipToBounds="True" SnapsToDevicePixels="True" Source="{Binding PreviewImage}" Margin="8"/>
                             </Grid>
                         </Border>

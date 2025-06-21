@@ -22,7 +22,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from AddElementWindow.cs due to Class-Binding in xaml via DataContext
         public AddElementWindow_VM()
         {
-            SelectedElementName = _targetElement != null ? _targetElement.Name : "Neues Element";
+            SelectedElementName = _targetElement != null ? _targetElement.Name : "Außenwand";
+            SelectedElementShortName = _targetElement != null ? _targetElement.ShortName : "AW1";
             SelectedConstruction = _targetElement != null ? (int)_targetElement.Construction.ConstructionType : (int)ConstructionType.Aussenwand;
             SelectedOrientation = _targetElement != null ? (int)_targetElement.OrientationType : (int)OrientationType.North;
             TagList = _targetElement != null ? _targetElement.TagList : new List<string>(0);
@@ -101,6 +102,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (_targetElement != null)
             {
                 _targetElement.Name = SelectedElementName;
+                _targetElement.ShortName = SelectedElementShortName;
                 _targetElement.ConstructionId = SelectedConstruction;
                 _targetElement.OrientationType = (OrientationType)SelectedOrientation;
                 _targetElement.TagList = TagList;
@@ -114,6 +116,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 Element newElem = new Element
                 {
                     Name = SelectedElementName,
+                    ShortName = SelectedElementShortName,
                     ConstructionId = SelectedConstruction,
                     OrientationType = (OrientationType)SelectedOrientation,
                     TagList = TagList,
@@ -142,6 +145,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         private string _selectedElementName;
+        [ObservableProperty]
+        private string _selectedElementShortName;
         [ObservableProperty]
         private int _selectedConstruction;
         [ObservableProperty]

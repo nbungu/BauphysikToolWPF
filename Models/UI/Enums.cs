@@ -346,7 +346,9 @@ namespace BauphysikToolWPF.Models.UI
             DateDescending,
             DateAscending,
             NameAscending,
-            NameDescending
+            NameDescending,
+            TypeNameAscending,
+            TypeNameDescending
         }
         public static readonly Dictionary<ElementSortingType, string> ElementSortingTypeMapping = new()
         {
@@ -366,7 +368,7 @@ namespace BauphysikToolWPF.Models.UI
         public static readonly Dictionary<ElementGroupingType, string> ElementGroupingTypeMapping = new()
         {
             { ElementGroupingType.None, "Ohne" },
-            { ElementGroupingType.Type, "Typ" },
+            { ElementGroupingType.Type, "Konstruktions-Typ" },
             { ElementGroupingType.Orientation, "Ausrichtung" },
             { ElementGroupingType.Tag, "Tags" }
         };
