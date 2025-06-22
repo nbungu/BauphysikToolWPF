@@ -1,5 +1,7 @@
-﻿using BauphysikToolWPF.UI;
+﻿using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.UI;
 using BauphysikToolWPF.UI.CustomControls;
+using System.Collections.Generic;
 using System.Windows;
 
 namespace BauphysikToolWPF.Services.UI
@@ -83,9 +85,7 @@ namespace BauphysikToolWPF.Services.UI
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             dialog.ShowDialog();
         }
-
-
-
+        
         public void ShowAddNewSubconstructionDialog(int targetLayerInternalId)
         {
             var dialog = new AddLayerSubConstructionWindow(targetLayerInternalId)
@@ -99,5 +99,15 @@ namespace BauphysikToolWPF.Services.UI
 
         public void ShowEditSubconstructionDialog(int targetLayerInternalId) => ShowAddNewSubconstructionDialog(targetLayerInternalId);
 
+        public void ShowPropertyBagDialog(IEnumerable<IPropertyItem> propertyItems, string propertyTitle, string windowTitle)
+        {
+            var dialog = new PropertyWindow(propertyItems, propertyTitle, windowTitle)
+            {
+                Owner = System.Windows.Application.Current.MainWindow,
+                WindowStartupLocation = WindowStartupLocation.CenterOwner
+            };
+            // Open as modal (Parent window pauses, waiting for the window to be closed)
+            dialog.ShowDialog();
+        }
     }
 }

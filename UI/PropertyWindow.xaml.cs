@@ -1,4 +1,8 @@
-﻿using BauphysikToolWPF.Services.UI;
+﻿using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.UI.ViewModels;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,10 +16,24 @@ namespace BauphysikToolWPF.UI
     /// </summary>
     public partial class PropertyWindow : Window
     {
-        public PropertyWindow()
+        public PropertyWindow(IEnumerable<IPropertyItem> propertyItems, string propertyTitle, string windowTitle)
         {
+            // Init VM
             InitializeComponent();
+
+            // Explicitly instantiate and initialize ViewModel!
+            // This is necessary to set the ctor parameters correctly
+            var vm = new PropertyWindow_VM
+            {
+                PropertyBag = new ObservableCollection<IPropertyItem>(propertyItems),
+                PropertyBagTitle = propertyTitle,
+                Title = windowTitle
+            };
+
+            DataContext = vm;
         }
+
+        public PropertyWindow() => InitializeComponent();
 
         // Handle Custom User Input - Regex Check
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -57,6 +75,14 @@ namespace BauphysikToolWPF.UI
             {
                 scv.ScrollToVerticalOffset(scv.VerticalOffset - e.Delta);
                 e.Handled = true;
+            }
+        }
+
+        private void PropertyWindowControl_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape)
+            {
+                this.Close(); // Close the window
             }
         }
     }

@@ -276,11 +276,11 @@ namespace BauphysikToolWPF.Services.Application
             startY += 32;
 
             // Draw Element Properties
-            gfx.DrawString($"Rges = {element.RGesValue:0.000} m²K/W (nur Bauteil)", bodyFont, XBrushes.Black,
+            gfx.DrawString($"Rges = {element.RGesValue:0.00} m²K/W (nur Bauteil)", bodyFont, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;
-            gfx.DrawString($"RT = {element.RTotValue:0.000} m²K/W (inkl. Übergangswiderstände)", bodyFont, XBrushes.Black,
+            gfx.DrawString($"RT = {element.RTotValue:0.00} m²K/W (inkl. Übergangswiderstände)", bodyFont, XBrushes.Black,
                 new XRect(new XUnitPt(70), new XUnitPt(startY),
                     new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
             startY += 16;

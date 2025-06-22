@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
+using BauphysikToolWPF.Models.UI;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -83,6 +84,25 @@ namespace BauphysikToolWPF.UI.ViewModels
                     break;
             }
         }
+
+        [RelayCommand]
+        private void ShowExtendedProperties()
+        {
+            var props = new List<IPropertyItem>()
+            {
+                new PropertyItem<bool>("Inhomogen", () => Session.SelectedElement.IsInhomogeneous),
+                new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValueUserDef, value => Session.SelectedElement.UValueUserDef = value) { DecimalPlaces = 3 },
+                new PropertyItem<double>(Symbol.RValueElement, () => Session.SelectedElement.RGesValueUserDef, value => Session.SelectedElement.RGesValueUserDef = value),
+                new PropertyItem<double>(Symbol.RValueTotal, () => Session.SelectedElement.RTotValueUserDef, value => Session.SelectedElement.RTotValueUserDef = value),
+                new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedElement.AreaMassDensUserDef, value => Session.SelectedElement.AreaMassDensUserDef = value),
+                new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedElement.SdThicknessCustom, value => Session.SelectedElement.SdThicknessCustom = value) { DecimalPlaces = 1 },
+            };
+            var propertyTitle = Session.SelectedElement.Name + " - Eigenschaften";
+            var windowTitle = Session.SelectedElement.Name + " - Eigenschaften";
+            _dialogService.ShowPropertyBagDialog(props, propertyTitle, windowTitle);
+        }
+
+        
 
         [RelayCommand]
         private void CopyElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl

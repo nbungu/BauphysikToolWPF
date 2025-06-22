@@ -94,7 +94,7 @@ namespace BauphysikToolWPF.Models.UI
             { Symbol.UValue, (Unit.WattsPerSquareMeterKelvin, "U", "", "U-Wert", "Wärmedurchgangskoeffizient: Maß für die Wärmedämmung eines Bauteils. Er gibt an, wie viel Wärme pro Quadratmeter und Kelvin durch ein Bauteil fließt, wenn eine Temperaturdifferenz von einem Kelvin zwischen den beiden Seiten besteht. Je niedriger der U-Wert, desto besser ist die Wärmedämmung.") },
             { Symbol.RawDensity, (Unit.KilogramPerCubicMeter, "ρ", "", "Rohdichte", "") },
             { Symbol.AreaMassDensity, (Unit.KilogramPerSquareMeter, "m'", "", "Flächenbez. Masse", "") },
-            { Symbol.SdThickness, (Unit.KilogramPerSquareMeter, "s", "d", "sd-Wert", "Wasserdampfdiffusionsäquivalente Luftschichtdicke") },
+            { Symbol.SdThickness, (Unit.Meter, "s", "d", "sd-Wert", "Wasserdampfdiffusionsäquivalente Luftschichtdicke") },
             { Symbol.RelativeHumidity, (Unit.Percent, "φ", "", "Rel. Luftfeuchtigkeit", "") },
             { Symbol.RelativeHumidityInterior, (Unit.Percent, "φ", "i", "Rel. Luftfeuchtigkeit, Innen", "") },
             { Symbol.RelativeHumidityExterior, (Unit.Percent, "φ", "e", "Rel. Luftfeuchtigkeit, Außen", "") },

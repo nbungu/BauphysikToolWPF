@@ -167,6 +167,23 @@ namespace BauphysikToolWPF.Models.Domain
             }
         }
 
+        #region Custom User defined Result values
+
+        [JsonIgnore]
+        public double RGesValueUserDef { get; set; } // R_ges in m²K/W
+        [JsonIgnore]
+        public double RTotValueUserDef { get; set; } // R_tot in m²K/W
+        [JsonIgnore]
+        public double QValueUserDef { get; set; } // q in W/m²
+        [JsonIgnore]
+        public double UValueUserDef { get; set; } // U in W/m²K
+        [JsonIgnore]
+        public double AreaMassDensUserDef { get; set; } // m' in kg/m²
+        [JsonIgnore]
+        public double SdThicknessCustom { get; set; } // sd in m
+
+        #endregion
+
         #region Calculation Results
 
         [JsonIgnore]
@@ -176,7 +193,7 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public double QValue => ThermalResults.QValue; // q in W/m²
         [JsonIgnore]
-        public double UValue => ThermalResults.UValue; // q in W/m²
+        public double UValue => ThermalResults.UValue; // U in W/m²K
 
         /// <summary>
         /// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,

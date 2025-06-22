@@ -14,7 +14,8 @@
         MinHeight="80"
         ShowInTaskbar="False"
         WindowStyle="None"
-        SizeToContent="Height" KeyDown="AddElementWindowControl_KeyDown">
+        SizeToContent="Height"
+        KeyDown="AddElementWindowControl_KeyDown">
 
     <!--  AddElementWindow_VM = Data Reference (Source) for 'Binding' in this XAML -->
     <Window.DataContext>

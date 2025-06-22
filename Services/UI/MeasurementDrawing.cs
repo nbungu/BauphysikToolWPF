@@ -88,8 +88,7 @@ namespace BauphysikToolWPF.Services.UI
             }
             return chainGeometry.IsValid ? chainGeometry.ToList() : new List<DrawingGeometry>(0);
         }
-
-
+        
         #endregion
 
         #region private Methods

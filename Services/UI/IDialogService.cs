@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using BauphysikToolWPF.Models.UI;
+using System.Collections.Generic;
+using System.Windows;
 
 namespace BauphysikToolWPF.Services.UI
 {
@@ -13,5 +15,6 @@ namespace BauphysikToolWPF.Services.UI
         void ShowEditLayerDialog(int targetLayerInternalId);
         void ShowAddNewSubconstructionDialog(int targetLayerInternalId);
         void ShowEditSubconstructionDialog(int targetLayerInternalId);
+        void ShowPropertyBagDialog(IEnumerable<IPropertyItem> propertyItems, string propertyTitle, string windowTitle);
     }
 }
