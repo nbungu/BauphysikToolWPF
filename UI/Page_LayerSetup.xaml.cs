@@ -250,6 +250,7 @@ namespace BauphysikToolWPF.UI
                 e.Handled = true;
             }
         }
+
         private void LayerListScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             ScrollViewer scv = (ScrollViewer)sender;

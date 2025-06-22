@@ -1,26 +1,25 @@
 ﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using BauphysikToolWPF.Models.Domain.Helper;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
-using System.Collections.ObjectModel;
-using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for AddElementWindow.xaml: Used in xaml as "DataContext"
-    public partial class AddElementWindow_VM : ObservableObject
+    public partial class PropertyWindow_VM : ObservableObject
     {
         private readonly Element? _targetElement = Session.SelectedProject?.Elements.FirstOrDefault(e => e?.InternalId == AddElementWindow.TargetElementInternalId, null);
 
         // Called by 'InitializeComponent()' from AddElementWindow.cs due to Class-Binding in xaml via DataContext
-        public AddElementWindow_VM()
+        public PropertyWindow_VM()
         {
             SelectedElementName = _targetElement != null ? _targetElement.Name : "Neue Konstruktion";
             SelectedElementShortName = _targetElement != null ? _targetElement.ShortName : "";
@@ -30,17 +29,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedElementComment = _targetElement != null ? _targetElement.Comment : "";
             SelectedElementColor = _targetElement != null ? _targetElement.ColorCode : "#00FFFFFF";
 
-            var uniqueTypes = DatabaseAccess.GetConstructionsQuery()
-                .Select(c => new ConstructionTypeViewModel
-                {
-                    Type = (int)c.ConstructionType,
-                    Group = c.ConstructionGroup,
-                    Name = ConstructionTypeMapping[c.ConstructionType] // or c.TypeName if preferred
-                })
-                .OrderBy(x => x.Group)
-                .ThenBy(x => x.Name);
-
-            GroupedConstructionTypes = new ObservableCollection<ConstructionTypeViewModel>(uniqueTypes);
         }
         
         /*
@@ -171,13 +159,5 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string Title => _targetElement != null ? $"Ausgewähltes Element bearbeiten: {_targetElement.Name}" : "Neues Element erstellen";
         public IEnumerable<string> OrientationList => OrientationTypeMapping.Values;
         public ObservableCollection<ConstructionTypeViewModel> GroupedConstructionTypes { get; }
-    }
-
-    public class ConstructionTypeViewModel
-    {
-        public int Type { get; set; }
-        public string Name { get; set; }
-        public ConstructionGroup Group { get; set; }
-        public string GroupName => ConstructionGroupMapping[Group];
     }
 }

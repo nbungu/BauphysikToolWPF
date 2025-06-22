@@ -61,7 +61,8 @@ namespace BauphysikToolWPF.Services.UI
         }
         public static List<DrawingGeometry> GetFullLayerMeasurementChain(CrossSectionDrawing drawingService)
         {
-            if (drawingService.Element.Layers.Count == 0) return new List<DrawingGeometry>(0);
+            // Only show when more than one layer is present, otherwise no need to show full measurement chain
+            if (drawingService.Element.Layers.Count <= 1) return new List<DrawingGeometry>(0);
             DrawingGeometry chainGeometry = new DrawingGeometry();
             if (drawingService.DrawingType == DrawingType.CrossSection)
             {

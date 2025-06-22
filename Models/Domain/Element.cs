@@ -232,7 +232,7 @@ namespace BauphysikToolWPF.Models.Domain
             var copy = new Element();
             copy.ConstructionId = this.ConstructionId;
             copy.OrientationType = this.OrientationType;
-            copy.Name = this.Name + "-Copy";
+            copy.Name = this.Name + "-Kopie";
             copy.Image = this.Image;
             copy.DocumentImage = this.DocumentImage;
             copy.ColorCode = this.ColorCode;

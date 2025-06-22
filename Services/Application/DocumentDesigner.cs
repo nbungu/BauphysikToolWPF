@@ -60,7 +60,7 @@ namespace BauphysikToolWPF.Services.Application
             string[] headers = { "Nr.", "Bauteilbezeichnung", "", "Kategorie", "U-Wert\nGEG\n[W/(m²K)]", "Wärmedurchlasswiderstand\nR [m²K/W]", "" };
             string[] secondRowHeaders = { "", "", "", "", "", "Ist-Wert", "Soll-Wert\nDIN 4108-2" }; // New row header for Wärmedurchlasswiderstand
 
-            double[] columnProportions = { 24, 24, 140, 120, 56, 64, 64 }; // Original widths
+            double[] columnProportions = { 28, 24, 140, 120, 56, 64, 64 }; // Original widths
             double totalWeight = columnProportions.Sum();
             double[] columnWidths = columnProportions.Select(p => p / totalWeight * maxWidth).ToArray();
 
