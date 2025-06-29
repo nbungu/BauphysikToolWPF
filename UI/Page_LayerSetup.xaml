@@ -153,64 +153,6 @@
                 <Rectangle Name="RenderArea" Grid.Row="0" 
                            Grid.Column="0" Grid.ColumnSpan="2" Stroke="#008800" 
                            SizeChanged="RenderArea_SizeChanged"/>
-
-                <!--Image-->
-                <Viewbox Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Visibility="Collapsed">
-                    <!--Keep Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                    <Grid x:Name="ZoomableGrid" Margin="8"
-                          MouseWheel="ZoomableGrid_OnMouseWheel"
-                          MouseMove="ZoomableGrid_OnMouseMove"
-                          MouseRightButtonDown="ZoomableGrid_OnMouseRightButtonDown"
-                          MouseLeftButtonDown="ZoomableGrid_OnMouseLeftButtonDown"
-                          MouseLeftButtonUp="ZoomableGrid_OnMouseLeftButtonUp"
-                          TouchDown="ZoomableGrid_OnTouchDown"
-                          TouchMove="ZoomableGrid_OnTouchMove"
-                          TouchUp="ZoomableGrid_OnTouchUp"
-                          RenderTransformOrigin="0.0,0.0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform x:Name="GridScaleTransform"/>
-                                <TranslateTransform x:Name="GridTranslateTransform"/>
-                            </TransformGroup>
-                        </Grid.RenderTransform>
-
-
-                        <!-- "Layers Canvas" -->
-                        
-
-                        <!-- "Vertical Measurement" -->
-                        <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurement}" Margin="32,0"/>
-                        
-                        <!-- "Vertical Measurement Full" -->
-                        <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFull}" Margin="32,0"/>
-
-                        <!-- "Horizontal SubConstruction Measurement" -->
-                        <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvas, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurement}" Margin="0,32">
-                            <controls:MeasurementChain.Style>
-                                <Style TargetType="controls:MeasurementChain">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SubConstructionMeasurement.Count}" Value="0">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </controls:MeasurementChain.Style>
-                        </controls:MeasurementChain>
-
-                    </Grid>
-                </Viewbox>
-
             </Grid>
 
             <!--Grid Splitter-->

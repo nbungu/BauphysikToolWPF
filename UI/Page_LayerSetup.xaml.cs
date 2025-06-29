@@ -21,6 +21,8 @@ namespace BauphysikToolWPF.UI
         private Point _start;
         private bool _isDragging;
         private GLWindow? _glWnd;
+        // Flag to track whether GLWindow has been initialized
+        private bool _glWindowInitialized = false;
 
         // Class Variables - Belongs to the Class-Type itself and stay the same
         private const double MinimumScale = 0.5;
@@ -41,19 +43,26 @@ namespace BauphysikToolWPF.UI
         
         private void Page_LayerSetup_Loaded(object sender, RoutedEventArgs e)
         {
+            if (_glWindowInitialized)
+                return;
+
             Window parentWindow = Window.GetWindow(this);
             if (parentWindow != null)
             {
                 IntPtr hWndParent = new WindowInteropHelper(parentWindow).Handle;
-                _glWnd = GLWindow.CreateAndRun(hWndParent, GetRenderAreaBounds());
 
+                // Create and run GLWindow only once
+                _glWnd = GLWindow.CreateAndRun(hWndParent, GetRenderAreaBounds());
+                _glWindowInitialized = true;
+
+                // Cleanup on main window close
                 parentWindow.Closing += ParentWindow_Closing;
             }
         }
 
         private void ParentWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
-            _glWnd?.Cleanup();
+            CleanupGLWindow();
         }
 
         //If you dynamically add/remove this UserControl, you may want to unhook the event when unloading
@@ -63,6 +72,17 @@ namespace BauphysikToolWPF.UI
             if (parentWindow != null)
             {
                 parentWindow.Closing -= ParentWindow_Closing;
+            }
+
+            CleanupGLWindow(); // Optional: eager cleanup if switching away
+        }
+        private void CleanupGLWindow()
+        {
+            if (_glWnd != null)
+            {
+                _glWnd.Cleanup();
+                _glWnd = null;
+                _glWindowInitialized = false;
             }
         }
 
@@ -74,13 +94,6 @@ namespace BauphysikToolWPF.UI
         {
             _glWnd?.SetBoundingBox(GetRenderAreaBounds());
         }
-    
-
-        //private void RenderArea_SizeChanged(object sender, SizeChangedEventArgs e)
-        //{
-        //    _glWnd?.SetViewport((int)e.NewSize.Width, (int)e.NewSize.Height);
-        //    _glWnd?.UpdateProjection();
-        //}
 
         private Rect GetRenderAreaBounds()
         {
@@ -107,9 +120,9 @@ namespace BauphysikToolWPF.UI
 
             if (!IsVisible && element.IsValid)
             {
-                element.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
+                //element.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
                 
-                ImageCreator.RenderElementPreviewImage(element);
+                //ImageCreator.RenderElementPreviewImage(element);
                 //element.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
             }
         }
@@ -118,165 +131,6 @@ namespace BauphysikToolWPF.UI
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
-        }
-
-        private void ZoomableGrid_OnMouseWheel(object sender, MouseWheelEventArgs e)
-        {
-            Point mousePosition = e.GetPosition(ZoomableGrid);
-
-            double zoomFactor = e.Delta > 0 ? 1.1 : 1.0 / 1.1;
-
-            // Calculate the new scale
-            double newScaleX = GridScaleTransform.ScaleX * zoomFactor;
-            double newScaleY = GridScaleTransform.ScaleY * zoomFactor;
-
-            // Ensure the new scale does not go below the minimum scale factor or above the maximum scale factor
-            if (newScaleX < MinimumScale || newScaleX > MaximumScale || newScaleY < MinimumScale || newScaleY > MaximumScale)
-            {
-                return;
-            }
-
-            // Calculate the translation to keep the mouse position centered
-            double offsetX = mousePosition.X * (newScaleX - GridScaleTransform.ScaleX);
-            double offsetY = mousePosition.Y * (newScaleY - GridScaleTransform.ScaleY);
-
-            GridScaleTransform.ScaleX = newScaleX;
-            GridScaleTransform.ScaleY = newScaleY;
-
-            GridTranslateTransform.X -= offsetX;
-            GridTranslateTransform.Y -= offsetY;
-        }
-
-        private void ZoomableGrid_OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // Zoom In on double Click
-            if (e.ClickCount == 2)
-            {
-                Point mousePosition = e.GetPosition(ZoomableGrid);
-
-                double zoomFactor = 1.5;
-
-                // Calculate the new scale
-                double newScaleX = GridScaleTransform.ScaleX * zoomFactor;
-                double newScaleY = GridScaleTransform.ScaleY * zoomFactor;
-
-                // Ensure the new scale does not go below the minimum scale factor or above the maximum scale factor
-                if (newScaleX < MinimumScale || newScaleX > MaximumScale || newScaleY < MinimumScale || newScaleY > MaximumScale)
-                {
-                    return;
-                }
-
-                // Calculate the translation to keep the mouse position centered
-                double offsetX = mousePosition.X * (newScaleX - GridScaleTransform.ScaleX);
-                double offsetY = mousePosition.Y * (newScaleY - GridScaleTransform.ScaleY);
-
-                GridScaleTransform.ScaleX = newScaleX;
-                GridScaleTransform.ScaleY = newScaleY;
-
-                GridTranslateTransform.X -= offsetX;
-                GridTranslateTransform.Y -= offsetY;
-                return;
-            }
-
-            // Only allow dragging if the grid is zoomed in (scale greater than 1)
-            if (GridScaleTransform.ScaleX > 1.0 && GridScaleTransform.ScaleY > 1.0)
-            {
-                _start = e.GetPosition(ZoomableGrid);
-                _origin = new Point(GridTranslateTransform.X, GridTranslateTransform.Y);
-                ZoomableGrid.CaptureMouse();
-                ZoomableGrid.Cursor = Cursors.Hand;
-                _isDragging = true;
-            }
-        }
-
-        private void ZoomableGrid_OnMouseMove(object sender, MouseEventArgs e)
-        {
-            if (_isDragging)
-            {
-                Point p = e.GetPosition(ZoomableGrid);
-                //if (p.X < 0 || p.X > ZoomableGrid.ActualWidth || p.Y < 0 || p.Y > ZoomableGrid.ActualHeight)
-                //{
-                //    // Stop dragging if the mouse is outside the bounds of the ZoomableGrid
-                //    CustomReleaseMouseCapture();
-                //    return;
-                //}
-
-                Vector v = p - _start; // Correct the direction of the movement
-
-                // Adjust the translation based on the scale factor
-                GridTranslateTransform.X = _origin.X + v.X;// / GridScaleTransform.ScaleX;
-                GridTranslateTransform.Y = _origin.Y + v.Y;// / GridScaleTransform.ScaleY;
-            }
-        }
-
-        private void ZoomableGrid_OnMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            CustomReleaseMouseCapture();
-        }
-
-        private void CustomReleaseMouseCapture()
-        {
-            if (ZoomableGrid.IsMouseCaptured)
-            {
-                ZoomableGrid.ReleaseMouseCapture();
-                ZoomableGrid.Cursor = Cursors.Arrow;
-                _isDragging = false;
-            }
-        }
-
-        private void ZoomableGrid_OnTouchDown(object sender, TouchEventArgs e)
-        {
-            // Only allow dragging if the grid is zoomed in (scale greater than 1)
-            if (GridScaleTransform.ScaleX > 1.0 && GridScaleTransform.ScaleY > 1.0)
-            {
-                _start = e.GetTouchPoint(ZoomableGrid).Position;
-                _origin = new Point(GridTranslateTransform.X, GridTranslateTransform.Y);
-                ZoomableGrid.CaptureTouch(e.TouchDevice);
-                _isDragging = true;
-            }
-        }
-
-        private void ZoomableGrid_OnTouchMove(object sender, TouchEventArgs e)
-        {
-            if (_isDragging)
-            {
-                Point p = e.GetTouchPoint(ZoomableGrid).Position;
-                //if (p.X < 0 || p.X > ZoomableGrid.ActualWidth || p.Y < 0 || p.Y > ZoomableGrid.ActualHeight)
-                //{
-                //    // Stop dragging if the touch is outside the bounds of the ZoomableGrid
-                //    CustomReleaseTouchCapture(e.TouchDevice);
-                //    return;
-                //}
-
-                Vector v = p - _start; // Correct the direction of the movement
-
-                // Adjust the translation based on the scale factor
-                GridTranslateTransform.X = _origin.X + v.X;// / GridScaleTransform.ScaleX;
-                GridTranslateTransform.Y = _origin.Y + v.Y;// / GridScaleTransform.ScaleY;
-            }
-        }
-
-        private void ZoomableGrid_OnTouchUp(object sender, TouchEventArgs e)
-        {
-            CustomReleaseTouchCapture(e.TouchDevice);
-        }
-
-        private void CustomReleaseTouchCapture(TouchDevice touchDevice)
-        {
-            if (ZoomableGrid.AreAnyTouchesCaptured)
-            {
-                ZoomableGrid.ReleaseTouchCapture(touchDevice);
-                _isDragging = false;
-            }
-        }
-
-        private void ZoomableGrid_OnMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            // Reset transformations on right click
-            GridScaleTransform.ScaleX = 1.0;
-            GridScaleTransform.ScaleY = 1.0;
-            GridTranslateTransform.X = 0.0;
-            GridTranslateTransform.Y = 0.0;
         }
 
         /// <summary>

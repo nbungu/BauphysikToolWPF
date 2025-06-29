@@ -199,20 +199,20 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         protected override void OnLoad()
         {
             base.OnLoad();
-            var shader = new Shader("shader.vert", "shader.frag");
+            var shader = new Shader("layer.vert", "layer.frag");
             //var shader = new Shader("layer.vert", "layer.frag");
             var renderer = new LayerRenderer(shader);
             _scene = new ElementScene(renderer);
 
             // TEST
-            _scene.AddLayer(Session.SelectedElement.Layers[0]);
+            _scene.AddLayers(Session.SelectedElement.Layers);
         }
 
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             base.OnRenderFrame(args);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.ClearColor(0f, 0f, 0f, 1f);
+
+            GL.Clear(ClearBufferMask.ColorBufferBit);
 
             var projection = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, -1, 1);
 
@@ -221,66 +221,27 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             SwapBuffers();
         }
 
-
-        //protected override void OnLoad()
-        //{
-        //    base.OnLoad();
-
-        //    GL.ClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-
-        //    _vertexBufferObject = GL.GenBuffer();
-        //    GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-        //    GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
-
-        //    _vertexArrayObject = GL.GenVertexArray();
-        //    GL.BindVertexArray(_vertexArrayObject);
-
-        //    GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-        //    GL.EnableVertexAttribArray(0);
-
-        //    GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-        //    GL.EnableVertexAttribArray(1);
-
-        //    _shader = new Shader("shader.vert", "shader.frag");
-        //    _shader.Use();
-        //}
-
-        //protected override void OnRenderFrame(FrameEventArgs args)
-        //{
-        //    base.OnRenderFrame(args);
-        //    GL.Clear(ClearBufferMask.ColorBufferBit);
-
-        //    if (_shader is null)
-        //    {
-        //        return;
-        //    }
-
-        //    _shader.Use();
-
-        //    SetRotationDegrees(args.Time);
-        //    Matrix4 rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians((float)_rotationDegrees));
-        //    Matrix4 transform = rotation * _scale * _translate;
-        //    int transformLocation = GL.GetUniformLocation(_shader.Handle, "aTransform");
-        //    GL.UniformMatrix4(transformLocation, true, ref transform);
-
-        //    GL.BindVertexArray(_vertexArrayObject);
-
-        //    GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-
-        //    SwapBuffers();
-        //}
-
-
         protected override void OnUnload()
         {
-            // cleanup the OpenGL objects
-            GL.BindVertexArray(0);
-            GL.DeleteVertexArray(_vertexArrayObject);
+            // Dispose ElementScene and any renderer resources
+            if (_scene != null)
+            {
+                if (_scene.Renderer is IDisposable disposableRenderer)
+                {
+                    disposableRenderer.Dispose();
+                }
+                if (_scene is IDisposable disposableScene)
+                {
+                    disposableScene.Dispose();
+                }
 
+                _scene = null;
+            }
+
+            // Optional: Clear OpenGL state if needed
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.DeleteBuffer(_vertexBufferObject);
-
-            _shader?.Dispose();
+            GL.BindVertexArray(0);
+            GL.UseProgram(0);
 
             base.OnUnload();
         }
@@ -319,18 +280,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private double _rotationDegrees;
 
         private bool _isSpinStopped = true;
-
-        // OpenGL objects
-        private readonly float[] _vertices =
-        {
-             // positions        // colors
-             0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-            -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-             0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
-        };
-        private int _vertexBufferObject;
-        private int _vertexArrayObject;
-        private Shader? _shader;
 
         #endregion
 

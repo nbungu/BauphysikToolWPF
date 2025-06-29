@@ -241,17 +241,8 @@ namespace BauphysikToolWPF.Models.Domain
         public double RectangleBorderThickness { get; set; } = 0.2;
         [JsonIgnore]
         public DoubleCollection RectangleStrokeDashArray { get; set; } = new DoubleCollection();
-        private Brush _backgroundColor = Brushes.Transparent;
         [JsonIgnore]
-        public Brush BackgroundColor
-        {
-            get => _backgroundColor;
-            set
-            {
-                _backgroundColor = value;
-                UpdateBrushCache(); // Auto-update when changed
-            }
-        }
+        public Brush BackgroundColor { get; set; } = Brushes.Transparent;
         [JsonIgnore]
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
         [JsonIgnore]
@@ -275,9 +266,16 @@ namespace BauphysikToolWPF.Models.Domain
         );
         [JsonIgnore]
         public Vector4 BackgroundColorVector { get; private set; } = new Vector4(0, 0, 0, 0);
-        // Call this from the UI thread before rendering
+
+        // Call this from the UI thread before rendering. ensure UpdateBrushCache runs on UI thread
         public void UpdateBrushCache()
         {
+            if (System.Windows.Application.Current?.Dispatcher?.CheckAccess() == false)
+            {
+                // If we're not on UI thread, invoke synchronously on UI thread
+                System.Windows.Application.Current.Dispatcher.Invoke(UpdateBrushCache);
+                return;
+            }
             if (BackgroundColor is SolidColorBrush solidColor)
             {
                 var c = solidColor.Color;
@@ -285,7 +283,7 @@ namespace BauphysikToolWPF.Models.Domain
             }
             else
             {
-                BackgroundColorVector = new Vector4(0, 0, 0, 0); // default if not solid color
+                BackgroundColorVector = new Vector4(0, 0, 0, 0);
             }
         }
 

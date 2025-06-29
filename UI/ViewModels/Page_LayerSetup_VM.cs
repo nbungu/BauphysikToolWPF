@@ -21,7 +21,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
     public partial class Page_LayerSetup_VM : ObservableObject
     {
-        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
+        //private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
         private readonly IDialogService _dialogService;
         private readonly Element _element;
 
@@ -36,7 +36,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             _element.AssignInternalIdsToLayers();
 
             _dialogService = new DialogService();
-            _crossSection = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+            //_crossSection = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
             
             // Allow child Windows to trigger UpdateAll of this Window
             Session.SelectedProjectChanged += ProjectDataChanged;
@@ -209,11 +209,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedLayer?.SubConstruction != null ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
         public Visibility NoLayersVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
-        public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
-        public Rectangle CanvasSize => _crossSection.CanvasSize;
-        public List<DrawingGeometry> LayerMeasurement => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);
-        public List<DrawingGeometry> LayerMeasurementFull => MeasurementDrawing.GetFullLayerMeasurementChain(_crossSection);
-        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementDrawing.GetSubConstructionMeasurementChain(_crossSection);
+        //public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
+        //public Rectangle CanvasSize => _crossSection.CanvasSize;
+        //public List<DrawingGeometry> LayerMeasurement => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);
+        //public List<DrawingGeometry> LayerMeasurementFull => MeasurementDrawing.GetFullLayerMeasurementChain(_crossSection);
+        //public List<DrawingGeometry> SubConstructionMeasurement => MeasurementDrawing.GetSubConstructionMeasurementChain(_crossSection);
         
         public List<string> TiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Select(e => e.Name).ToList();
         public List<string> TeKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Select(e => e.Name).ToList();
@@ -464,16 +464,16 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshDrawingsFull()
         {
-            _crossSection.UpdateDrawings();
-            OnPropertyChanged(nameof(CrossSectionDrawing));
-            OnPropertyChanged(nameof(CanvasSize));
-            OnPropertyChanged(nameof(LayerMeasurement));
-            OnPropertyChanged(nameof(LayerMeasurementFull));
-            OnPropertyChanged(nameof(SubConstructionMeasurement));
+            //_crossSection.UpdateDrawings();
+            //OnPropertyChanged(nameof(CrossSectionDrawing));
+            //OnPropertyChanged(nameof(CanvasSize));
+            //OnPropertyChanged(nameof(LayerMeasurement));
+            //OnPropertyChanged(nameof(LayerMeasurementFull));
+            //OnPropertyChanged(nameof(SubConstructionMeasurement));
         }
         private void RefreshDrawingsLayerSelected()
         {
-            _crossSection.UpdateDrawings();
+           // _crossSection.UpdateDrawings();
             OnPropertyChanged(nameof(CrossSectionDrawing));
         }
 

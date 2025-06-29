@@ -1,135 +1,140 @@
 ﻿using BauphysikToolWPF.Models.Domain;
-using LiveChartsCore.Measure;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
-using SkiaSharp;
 using System;
-using System.Windows.Media.Imaging;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
-    public class LayerRenderer
+    /// <summary>
+    /// Handles rendering of multiple rectangular Layers in a single batched draw call using OpenGL.
+    /// Each Layer is represented as a rectangle made of two triangles (6 vertices),
+    /// with position and color attributes packed into a vertex buffer.
+    /// The geometry is rebuilt whenever the list of layers changes.
+    /// </summary>
+    public class LayerRenderer : IDisposable
     {
         private readonly Shader _shader;
         private readonly int _vertexBufferObject, _vertexArrayObject;
-        // the amount of triangle rotation at each frame
-        private double _rotationDegrees;
-        private float _totalScaleFactor = 1f;
-        private double _translateX, _translateY;
-        private Matrix4 _scale = Matrix4.Identity;
-        private Matrix4 _translate = Matrix4.Identity;
+        private int _vertexCount; // Number of vertices currently buffered (6 vertices per rectangle)
 
-        private bool _isSpinStopped = true;
-
-        // OpenGL objects TESTIJG ONLY
-        private readonly float[] _vertices =
-        {
-            // positions        // colors
-            0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
-            -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
-            0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
-        };
-
+        /// <summary>
+        /// Creates a LayerRenderer with a specified Shader.
+        /// Initializes VAO and VBO with position and color vertex attributes.
+        /// </summary>
+        /// <param name="shader">The shader program used for rendering layers.</param>
         public LayerRenderer(Shader shader)
         {
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-
             _shader = shader;
 
+            // Set background clear color for the rendering context
+            GL.ClearColor(0f, 0f, 0f, 1f);
 
+            // Generate and bind the vertex buffer object (VBO)
             _vertexBufferObject = GL.GenBuffer();
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
 
+            // Generate and bind the vertex array object (VAO)
             _vertexArrayObject = GL.GenVertexArray();
             GL.BindVertexArray(_vertexArrayObject);
 
-            // how to interpret the vertex buffer data
-            // You should do this setup once (e.g., in constructor) after generating the VAO and VBO, or each frame before drawing if you’re uploading dynamic data.
+            // Define the layout of the vertex buffer:
+            // Each vertex consists of:
+            // - Position: 3 floats (x, y, z)
+            // - Color: 4 floats (r, g, b, a)
+            // Total stride: 7 floats per vertex
+            int stride = 7 * sizeof(float);
 
-            //GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 3 * sizeof(float), 0);
-            //GL.EnableVertexAttribArray(0);
-
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
+            // Position attribute (location = 0)
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, stride, 0);
             GL.EnableVertexAttribArray(0);
 
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+            // Color attribute (location = 1)
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, stride, 3 * sizeof(float));
             GL.EnableVertexAttribArray(1);
 
-            _shader.Use();
+            // Unbind VAO to avoid accidental modification
+            GL.BindVertexArray(0);
         }
 
-        public void Render(Layer layer, Matrix4 projection)
+        /// <summary>
+        /// Rebuilds the vertex buffer by batching all layers into one vertex array.
+        /// This method should be called whenever the list of layers changes (added, removed, or modified).
+        /// Positions are stored in screen or world coordinates, colors come from each layer's background color.
+        /// </summary>
+        /// <param name="layers">The list of layers to batch into the vertex buffer.</param>
+        public void RebuildGeometry(List<Layer> layers)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.ClearColor(0f, 0f, 0f, 1f);
+            List<float> vertexData = new();
 
-            if (_shader is null)
+            foreach (var layer in layers)
             {
-                return;
+                // Update cached brush color vector from layer's BackgroundColor property
+                layer.UpdateBrushCache();
+
+                var x = layer.RectangleF.X;
+                var y = layer.RectangleF.Y;
+                var w = layer.RectangleF.Width;
+                var h = layer.RectangleF.Height;
+
+                var c = layer.BackgroundColorVector;
+
+                // Each rectangle is composed of two triangles (6 vertices),
+                // each vertex has position (x,y,z) and color (r,g,b,a).
+                float[] rect = new float[]
+                {
+                // First triangle
+                x,     y,     0f,  c.X, c.Y, c.Z, c.W,
+                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,
+                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,
+
+                // Second triangle
+                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,
+                x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,
+                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,
+                };
+
+                vertexData.AddRange(rect);
             }
+
+            // Calculate total vertex count (7 floats per vertex)
+            _vertexCount = vertexData.Count / 7;
+
+            // Bind VAO and VBO to upload new vertex data to GPU
+            GL.BindVertexArray(_vertexArrayObject);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
+
+            // Upload vertex data (dynamic draw since data changes occasionally)
+            GL.BufferData(BufferTarget.ArrayBuffer, vertexData.Count * sizeof(float), vertexData.ToArray(), BufferUsageHint.DynamicDraw);
+        }
+
+        /// <summary>
+        /// Renders all batched layers using a single draw call.
+        /// The projection matrix is applied uniformly to all vertices.
+        /// </summary>
+        /// <param name="projection">Projection matrix (typically orthographic or perspective) to transform vertex positions.</param>
+        public void Render(Matrix4 projection)
+        {
             _shader.Use();
+            GL.BindVertexArray(_vertexArrayObject);
 
-            
-            //GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
+            // Upload the projection matrix (no separate model matrices since positions are pre-transformed)
+            int mvpLocation = _shader.GetUniformLocation("uMVP");
+            GL.UniformMatrix4(mvpLocation, false, ref projection);
 
-            //// Generate rectangle vertices for the given layer
-            //var vertices = CreateRectangleVertices(layer);
-            //GL.BufferData(BufferTarget.ArrayBuffer, vertices.Length * sizeof(float), vertices, BufferUsageHint.DynamicDraw);
+            // Draw all vertices as triangles in a single call
+            GL.DrawArrays(PrimitiveType.Triangles, 0, _vertexCount);
 
-
-            //Matrix4 model = Matrix4.CreateScale(layer.RectangleF.Width, layer.RectangleF.Height, 1f) *
-            //                Matrix4.CreateTranslation(layer.RectangleF.X, layer.RectangleF.Y, 0);
-
-            //Matrix4 mvp = projection * model; //model * projection;
-            //GL.UniformMatrix4(_shader.GetUniformLocation("uMVP"), false, ref mvp);
-
-            //int colorUniformLocation = GL.GetUniformLocation(_shader.Handle, "uColor");
-            //GL.Uniform4(colorUniformLocation, layer.BackgroundColorVector);
-            
-
-            //GL.BindVertexArray(_vertexArrayObject);
-
-            // Draw
-            //GL.DrawArrays(PrimitiveType.TriangleStrip, 0, 4);
-
-
-
-            //SetRotationDegrees(args.Time);
-            Matrix4 rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians((float)_rotationDegrees));
-            Matrix4 transform = rotation * _scale * _translate;
-            int transformLocation = GL.GetUniformLocation(_shader.Handle, "aTransform");
-            GL.UniformMatrix4(transformLocation, true, ref transform);
-
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-
-            // Optional: Render borders with line shader or same shader using GL_LINE_LOOP
-
-            //GL.BindVertexArray(0);
+            // Optional: Unbind VAO (not strictly required)
+            GL.BindVertexArray(0);
         }
 
-        private float[] CreateRectangleVertices(Layer layer)
+        public void Dispose()
         {
-            // Define 4 corner vertices of the rectangle
-            return new float[]
-            {
-                0, 0, 0,
-                1, 0, 0,
-                0, 1, 0,
-                1, 1, 0
-            };
-        }
-
-        private void SetRotationDegrees(double deltaTime)
-        {
-            if (_isSpinStopped)
-            {
-                return;
-            }
-            // the triangle should rotate 20 degrees every second; based on the time elapsed since last frame,
-            // calculate the rotation amount
-            _rotationDegrees += deltaTime * 20.0;
-            _rotationDegrees -= Math.Truncate(_rotationDegrees / 360.0) * 360.0; // take remainder of div by 360
+            // Clean up OpenGL resources
+            GL.DeleteBuffer(_vertexBufferObject);
+            GL.DeleteVertexArray(_vertexArrayObject);
+            _shader?.Dispose(); // If Shader implements IDisposable
         }
     }
 }
