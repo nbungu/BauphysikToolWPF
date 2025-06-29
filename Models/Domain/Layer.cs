@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
+using Vector4 = OpenTK.Mathematics.Vector4;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
@@ -128,9 +129,6 @@ namespace BauphysikToolWPF.Models.Domain
                 return _material;
             }
         }
-
-        [JsonIgnore]
-        public bool HasSubConstruction => SubConstruction != null;
 
         [JsonIgnore]
         public bool IsSelected { get; set; } // For UI Purposes 
@@ -287,8 +285,19 @@ namespace BauphysikToolWPF.Models.Domain
         public double RectangleBorderThickness { get; set; } = 0.2;
         [JsonIgnore]
         public DoubleCollection RectangleStrokeDashArray { get; set; } = new DoubleCollection();
+
+        private Brush _backgroundColor = Brushes.Transparent;
         [JsonIgnore]
-        public Brush BackgroundColor { get; set; } = Brushes.Transparent;
+        public Brush BackgroundColor
+        {
+            get => _backgroundColor;
+            set
+            {
+                _backgroundColor = value;
+                UpdateBrushCache(); // Auto-update when changed
+            }
+        }
+
         [JsonIgnore]
         public Brush DrawingBrush { get; set; } = new DrawingBrush();
         [JsonIgnore]
@@ -302,7 +311,29 @@ namespace BauphysikToolWPF.Models.Domain
         {
             return new DrawingGeometry(this);
         }
-
+        
+        [JsonIgnore]
+        public System.Drawing.RectangleF RectangleF => new System.Drawing.RectangleF(
+            (float)Rectangle.X,
+            (float)Rectangle.Y,
+            (float)Rectangle.Width,
+            (float)Rectangle.Height
+        );
+        [JsonIgnore]
+        public Vector4 BackgroundColorVector { get; private set; } = new Vector4(0, 0, 0, 0);
+        // Call this from the UI thread before rendering
+        public void UpdateBrushCache()
+        {
+            if (BackgroundColor is SolidColorBrush solidColor)
+            {
+                var c = solidColor.Color;
+                BackgroundColorVector = new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
+            }
+            else
+            {
+                BackgroundColorVector = new Vector4(0, 0, 0, 0); // default if not solid color
+            }
+        }
         #endregion
     }
 }

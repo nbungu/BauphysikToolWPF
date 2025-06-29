@@ -1,5 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 namespace BauphysikToolWPF.Services.UI.OpenGL
@@ -99,5 +101,49 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private readonly int _handle;
         private bool _disposedValue;
+
+        #region UniformLocations cached
+
+        // to avoid repeated GL.GetUniformLocation calls, add a cache:
+        private readonly Dictionary<string, int> _uniformLocations = new();
+
+        public int GetUniformLocation(string name)
+        {
+            if (_uniformLocations.TryGetValue(name, out int location))
+                return location;
+
+            location = GL.GetUniformLocation(_handle, name);
+            if (location == -1)
+                Console.WriteLine($"Warning: uniform '{name}' not found in shader.");
+
+            _uniformLocations[name] = location;
+            return location;
+        }
+
+        #endregion
+
+        public void SetUniform(string name, Matrix4 matrix)
+        {
+            int location = GetUniformLocation(name);
+            GL.UniformMatrix4(location, transpose: true, ref matrix);
+        }
+
+        public void SetUniform(string name, Vector4 vector)
+        {
+            int location = GetUniformLocation(name);
+            GL.Uniform4(location, vector);
+        }
+
+        public void SetUniform(string name, float value)
+        {
+            int location = GetUniformLocation(name);
+            GL.Uniform1(location, value);
+        }
+
+        public void SetUniform(string name, int value)
+        {
+            int location = GetUniformLocation(name);
+            GL.Uniform1(location, value);
+        }
     }
 }

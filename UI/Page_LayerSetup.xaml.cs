@@ -21,8 +21,6 @@ namespace BauphysikToolWPF.UI
         private Point _start;
         private bool _isDragging;
         private GLWindow? _glWnd;
-        //private GLControl _glControl;
-        //private CrossSectionOpenGLRenderer _glRenderer = new();
 
         // Class Variables - Belongs to the Class-Type itself and stay the same
         private const double MinimumScale = 0.5;
@@ -76,6 +74,13 @@ namespace BauphysikToolWPF.UI
         {
             _glWnd?.SetBoundingBox(GetRenderAreaBounds());
         }
+    
+
+        //private void RenderArea_SizeChanged(object sender, SizeChangedEventArgs e)
+        //{
+        //    _glWnd?.SetViewport((int)e.NewSize.Width, (int)e.NewSize.Height);
+        //    _glWnd?.UpdateProjection();
+        //}
 
         private Rect GetRenderAreaBounds()
         {

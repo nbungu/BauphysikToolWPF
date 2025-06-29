@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL4;
+﻿using BauphysikToolWPF.Services.Application;
+using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
@@ -9,14 +10,21 @@ using System.Diagnostics.CodeAnalysis;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
+    // OpenGL render thread (GLWindow) is running in a background thread (non-UI thread).
     internal partial class GLWindow : GameWindow
     {
+        private ElementScene _scene;
+
+        // ClientSize is updated automatically when the native Win32 child window resizes (if WPF triggers it via RenderArea_SizeChanged),
+        // or if manually set via a method like glWnd.SetBoundingBox().
+        public int Width => ClientSize.X;
+        public int Height => ClientSize.Y;
+
         #region WPF Integration
-        
+
         /// <summary>
         /// GLWindow has a rendering loop that is inherited from its parent class GameWindow - the Run method - which makes its calling thread busy.
         /// That means the thread cannot be the same as the main thread, which is the WPF UI thread.
@@ -191,25 +199,76 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         protected override void OnLoad()
         {
             base.OnLoad();
+            var shader = new Shader("shader.vert", "shader.frag");
+            //var shader = new Shader("layer.vert", "layer.frag");
+            var renderer = new LayerRenderer(shader);
+            _scene = new ElementScene(renderer);
 
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.5f);
-
-            _vertexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
-
-            _vertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayObject);
-
-            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
-            GL.EnableVertexAttribArray(0);
-
-            GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
-            GL.EnableVertexAttribArray(1);
-
-            _shader = new Shader("shader.vert", "shader.frag");
-            _shader.Use();
+            // TEST
+            _scene.AddLayer(Session.SelectedElement.Layers[0]);
         }
+
+        protected override void OnRenderFrame(FrameEventArgs args)
+        {
+            base.OnRenderFrame(args);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.ClearColor(0f, 0f, 0f, 1f);
+
+            var projection = Matrix4.CreateOrthographicOffCenter(0, Width, Height, 0, -1, 1);
+
+            _scene.Render(projection);
+
+            SwapBuffers();
+        }
+
+
+        //protected override void OnLoad()
+        //{
+        //    base.OnLoad();
+
+        //    GL.ClearColor(0.0f, 0.0f, 0.0f, 0.5f);
+
+        //    _vertexBufferObject = GL.GenBuffer();
+        //    GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
+        //    GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Length * sizeof(float), _vertices, BufferUsageHint.StaticDraw);
+
+        //    _vertexArrayObject = GL.GenVertexArray();
+        //    GL.BindVertexArray(_vertexArrayObject);
+
+        //    GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 0);
+        //    GL.EnableVertexAttribArray(0);
+
+        //    GL.VertexAttribPointer(1, 3, VertexAttribPointerType.Float, false, 6 * sizeof(float), 3 * sizeof(float));
+        //    GL.EnableVertexAttribArray(1);
+
+        //    _shader = new Shader("shader.vert", "shader.frag");
+        //    _shader.Use();
+        //}
+
+        //protected override void OnRenderFrame(FrameEventArgs args)
+        //{
+        //    base.OnRenderFrame(args);
+        //    GL.Clear(ClearBufferMask.ColorBufferBit);
+
+        //    if (_shader is null)
+        //    {
+        //        return;
+        //    }
+
+        //    _shader.Use();
+
+        //    SetRotationDegrees(args.Time);
+        //    Matrix4 rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians((float)_rotationDegrees));
+        //    Matrix4 transform = rotation * _scale * _translate;
+        //    int transformLocation = GL.GetUniformLocation(_shader.Handle, "aTransform");
+        //    GL.UniformMatrix4(transformLocation, true, ref transform);
+
+        //    GL.BindVertexArray(_vertexArrayObject);
+
+        //    GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+
+        //    SwapBuffers();
+        //}
 
 
         protected override void OnUnload()
@@ -241,32 +300,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             {
                 command();
             }
-        }
-
-
-        protected override void OnRenderFrame(FrameEventArgs args)
-        {
-            base.OnRenderFrame(args);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            if (_shader is null)
-            {
-                return;
-            }
-
-            _shader.Use();
-
-            SetRotationDegrees(args.Time);
-            Matrix4 rotation = Matrix4.CreateRotationZ(MathHelper.DegreesToRadians((float)_rotationDegrees));
-            Matrix4 transform = rotation * _scale * _translate;
-            int transformLocation = GL.GetUniformLocation(_shader.Handle, "aTransform");
-            GL.UniformMatrix4(transformLocation, true, ref transform);
-
-            GL.BindVertexArray(_vertexArrayObject);
-
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-
-            SwapBuffers();
         }
 
 
