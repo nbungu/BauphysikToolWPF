@@ -149,9 +149,13 @@
                 <Label Grid.Column="0" Content="Innen" VerticalAlignment="Top" HorizontalAlignment="Left"/>
                 <Label Grid.Column="0" Content="Außen" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                 <Label Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                
+
+                <Rectangle Name="RenderArea" Grid.Row="0" 
+                           Grid.Column="0" Grid.ColumnSpan="2" Stroke="#008800" 
+                           SizeChanged="RenderArea_SizeChanged"/>
+
                 <!--Image-->
-                <Viewbox Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center">
+                <Viewbox Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Visibility="Collapsed">
                     <!--Keep Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
                     <Grid x:Name="ZoomableGrid" Margin="8"
                           MouseWheel="ZoomableGrid_OnMouseWheel"
@@ -180,8 +184,9 @@
                             </TransformGroup>
                         </Grid.RenderTransform>
 
+
                         <!-- "Layers Canvas" -->
-                        <controls:LayersCanvas x:Name="LayersCanvas" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSize.Width}" Height="{Binding CanvasSize.Height}" DrawingGeometries="{Binding CrossSectionDrawing}"/>
+                        
 
                         <!-- "Vertical Measurement" -->
                         <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvas, Path=Height}" DrawingGeometry="{Binding LayerMeasurement}" Margin="32,0"/>

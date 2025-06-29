@@ -1,9 +1,12 @@
 ﻿using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.UI.OpenGL;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
@@ -17,6 +20,9 @@ namespace BauphysikToolWPF.UI
         private Point _origin;
         private Point _start;
         private bool _isDragging;
+        private GLWindow? _glWnd;
+        //private GLControl _glControl;
+        //private CrossSectionOpenGLRenderer _glRenderer = new();
 
         // Class Variables - Belongs to the Class-Type itself and stay the same
         private const double MinimumScale = 0.5;
@@ -29,7 +35,61 @@ namespace BauphysikToolWPF.UI
         {
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
+            this.Loaded += Page_LayerSetup_Loaded;
+            this.Unloaded += Page_LayerSetup_Unloaded;
         }
+
+        #region Creating and Closing the Child Window for OpenGL rendering
+        
+        private void Page_LayerSetup_Loaded(object sender, RoutedEventArgs e)
+        {
+            Window parentWindow = Window.GetWindow(this);
+            if (parentWindow != null)
+            {
+                IntPtr hWndParent = new WindowInteropHelper(parentWindow).Handle;
+                _glWnd = GLWindow.CreateAndRun(hWndParent, GetRenderAreaBounds());
+
+                parentWindow.Closing += ParentWindow_Closing;
+            }
+        }
+
+        private void ParentWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
+        {
+            _glWnd?.Cleanup();
+        }
+
+        //If you dynamically add/remove this UserControl, you may want to unhook the event when unloading
+        private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e)
+        {
+            Window parentWindow = Window.GetWindow(this);
+            if (parentWindow != null)
+            {
+                parentWindow.Closing -= ParentWindow_Closing;
+            }
+        }
+
+        #endregion
+
+        #region Resizing the Main Window and the Child Window Along With It
+
+        private void RenderArea_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            _glWnd?.SetBoundingBox(GetRenderAreaBounds());
+        }
+
+        private Rect GetRenderAreaBounds()
+        {
+            Point location = RenderArea.TransformToAncestor(this).Transform(new Point(0, 0));
+            return new Rect
+            {
+                X = location.X,
+                Y = location.Y,
+                Width = RenderArea.ActualWidth,
+                Height = RenderArea.ActualHeight
+            };
+        }
+
+        #endregion
 
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
