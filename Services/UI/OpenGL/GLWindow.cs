@@ -199,10 +199,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         protected override void OnLoad()
         {
             base.OnLoad();
-            var shader = new Shader("layer.vert", "layer.frag");
             //var shader = new Shader("layer.vert", "layer.frag");
-            var renderer = new LayerRenderer(shader);
-            _scene = new ElementScene(renderer);
+            //var shader = new Shader("layer.vert", "layer.frag");
+           // var renderer = new LayerRenderer(shader);
+            _scene = new ElementScene();
 
             // TEST
             _scene.AddLayers(Session.SelectedElement.Layers);

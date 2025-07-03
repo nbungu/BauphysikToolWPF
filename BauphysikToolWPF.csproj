@@ -43,6 +43,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\UI\OpenGL\GLWindow.cs" />
+    <Compile Remove="Services\UI\OpenGL\IOpenGLScene.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Remove="Resources\Icons\books.png" />
     <None Remove="Resources\Icons\error.png" />
     <None Remove="Resources\Icons\export-pdf-full_b.png" />
@@ -66,7 +71,7 @@
     <PackageReference Include="LiveChartsCore.SkiaSharpView.WPF" Version="2.0.0-rc2" />
     <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.122" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="OpenTK" Version="4.9.4" />
+    <PackageReference Include="OpenTK.GLWpfControl" Version="4.3.3" />
     <PackageReference Include="PDFsharp" Version="6.1.1" />
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
     <PackageReference Include="SQLiteNetExtensions" Version="2.1.0" />
@@ -254,12 +259,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Services\UI\OpenGL\layer.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Services\UI\OpenGL\shader.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Services\UI\OpenGL\shader.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

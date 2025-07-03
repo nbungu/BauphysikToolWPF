@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using OpenTK.Mathematics;
+using System.Collections.Generic;
 using System.Windows.Media;
-using BT.Geometry;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Rectangle = BT.Geometry.Rectangle;
 
 namespace BauphysikToolWPF.Models.UI
 {
@@ -20,6 +23,14 @@ namespace BauphysikToolWPF.Models.UI
         public int ZIndex { get; set; }
         public object Tag { get; set; } = new object();
         public bool IsValid => Rectangle != Rectangle.Empty;
+
+        public System.Drawing.RectangleF RectangleF => new System.Drawing.RectangleF(
+            (float)Rectangle.X,
+            (float)Rectangle.Y,
+            (float)Rectangle.Width,
+            (float)Rectangle.Height
+        );
+        public Vector4 BackgroundColorVector { get; private set; } = new Vector4(0, 0, 0, 0);
 
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
         {
@@ -45,6 +56,25 @@ namespace BauphysikToolWPF.Models.UI
         public IDrawingGeometry Convert()
         {
             return new DrawingGeometry(this);
+        }
+
+        public void UpdateBrushCache()
+        {
+            if (System.Windows.Application.Current?.Dispatcher?.CheckAccess() == false)
+            {
+                // If we're not on UI thread, invoke synchronously on UI thread
+                System.Windows.Application.Current.Dispatcher.Invoke(UpdateBrushCache);
+                return;
+            }
+            if (BackgroundColor is SolidColorBrush solidColor)
+            {
+                var c = solidColor.Color;
+                BackgroundColorVector = new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
+            }
+            else
+            {
+                BackgroundColorVector = new Vector4(0, 0, 0, 0);
+            }
         }
 
         public void UpdateGeometry()

@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:glWpfControl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
@@ -150,9 +151,12 @@
                 <Label Grid.Column="0" Content="Außen" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                 <Label Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-                <Rectangle Name="RenderArea" Grid.Row="0" 
-                           Grid.Column="0" Grid.ColumnSpan="2" Stroke="#008800" 
-                           SizeChanged="RenderArea_SizeChanged"/>
+                <Grid Grid.Column="1">
+                    <glWpfControl:GLWpfControl
+                        x:Name="OpenTkControl"
+                        Render="OpenTkControl_OnRender">
+                    </glWpfControl:GLWpfControl>
+                </Grid>
             </Grid>
 
             <!--Grid Splitter-->

@@ -2,31 +2,23 @@
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
+using OpenTK.Wpf;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
 namespace BauphysikToolWPF.UI
 {
+    // TRY: https://github.com/opentk/GLWpfControl
+
     public partial class Page_LayerSetup : UserControl
     {
         #region private Fields
 
-        // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call of this Class.
-        private Point _origin;
-        private Point _start;
-        private bool _isDragging;
-        private GLWindow? _glWnd;
-        // Flag to track whether GLWindow has been initialized
-        private bool _glWindowInitialized = false;
-
-        // Class Variables - Belongs to the Class-Type itself and stay the same
-        private const double MinimumScale = 0.5;
-        private const double MaximumScale = 3.0;
+        private readonly ElementScene? _elementScene = new ElementScene(); // Instance of the OpenGL Test Scene, if needed
 
         #endregion
 
@@ -35,75 +27,47 @@ namespace BauphysikToolWPF.UI
         {
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
-            this.Loaded += Page_LayerSetup_Loaded;
-            this.Unloaded += Page_LayerSetup_Unloaded;
-        }
+            this.Unloaded += Page_LayerSetup_Unloaded; // Unload event handler for this page
 
-        #region Creating and Closing the Child Window for OpenGL rendering
-        
-        private void Page_LayerSetup_Loaded(object sender, RoutedEventArgs e)
-        {
-            if (_glWindowInitialized)
-                return;
-
-            Window parentWindow = Window.GetWindow(this);
-            if (parentWindow != null)
+            var settings = new GLWpfControlSettings
             {
-                IntPtr hWndParent = new WindowInteropHelper(parentWindow).Handle;
-
-                // Create and run GLWindow only once
-                _glWnd = GLWindow.CreateAndRun(hWndParent, GetRenderAreaBounds());
-                _glWindowInitialized = true;
-
-                // Cleanup on main window close
-                parentWindow.Closing += ParentWindow_Closing;
-            }
+                MajorVersion = 4,
+                MinorVersion = 3,
+                RenderContinuously = false,
+            };
+            OpenTkControl.Start(settings);
+            _elementScene.UseElement(Session.SelectedElement);
+            _elementScene.Initialize();
         }
 
-        private void ParentWindow_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
-        {
-            CleanupGLWindow();
-        }
-
-        //If you dynamically add/remove this UserControl, you may want to unhook the event when unloading
         private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e)
-        {
-            Window parentWindow = Window.GetWindow(this);
-            if (parentWindow != null)
-            {
-                parentWindow.Closing -= ParentWindow_Closing;
-            }
-
-            CleanupGLWindow(); // Optional: eager cleanup if switching away
-        }
-        private void CleanupGLWindow()
-        {
-            if (_glWnd != null)
-            {
-                _glWnd.Cleanup();
-                _glWnd = null;
-                _glWindowInitialized = false;
-            }
+        { 
+            _elementScene?.Dispose();
+            OpenTkControl.Render -= OpenTkControl_OnRender;
         }
 
-        #endregion
+        private void OpenTkControl_OnRender(TimeSpan delta)
+        {
+            _elementScene.UpdateProjection(GetRenderAreaBounds());
+            _elementScene.Render();
+        }
 
         #region Resizing the Main Window and the Child Window Along With It
 
-        private void RenderArea_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void OpenTkControl_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            _glWnd?.SetBoundingBox(GetRenderAreaBounds());
+            _elementScene.UpdateProjection(GetRenderAreaBounds());
         }
 
         private Rect GetRenderAreaBounds()
         {
-            Point location = RenderArea.TransformToAncestor(this).Transform(new Point(0, 0));
+            Point location = OpenTkControl.TransformToAncestor(this).Transform(new Point(0, 0));
             return new Rect
             {
                 X = location.X,
                 Y = location.Y,
-                Width = RenderArea.ActualWidth,
-                Height = RenderArea.ActualHeight
+                Width = OpenTkControl.ActualWidth,
+                Height = OpenTkControl.ActualHeight
             };
         }
 
