@@ -20,6 +20,7 @@ namespace BauphysikToolWPF.Models.UI
         double Opacity { get; set; }
         int ZIndex { get; set; }
         object Tag { get; set; }
+        int? TextureId { get; set; }
         IDrawingGeometry Convert();
         void UpdateBrushCache();
     }

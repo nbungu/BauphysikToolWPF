@@ -295,6 +295,8 @@ namespace BauphysikToolWPF.Models.Domain
         public int ZIndex { get; set; } = 0;
         [JsonIgnore]
         public object Tag { get; set; } = new object();
+        [JsonIgnore]
+        public int? TextureId { get; set; }
 
         public IDrawingGeometry Convert()
         {

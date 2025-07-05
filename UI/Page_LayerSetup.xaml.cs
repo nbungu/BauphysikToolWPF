@@ -48,30 +48,9 @@ namespace BauphysikToolWPF.UI
 
         private void OpenTkControl_OnRender(TimeSpan delta)
         {
-            _elementScene.UpdateProjection(GetRenderAreaBounds());
+            _elementScene.UpdateProjection(new Size(OpenTkControl.ActualWidth, OpenTkControl.ActualHeight));
             _elementScene.Render();
         }
-
-        #region Resizing the Main Window and the Child Window Along With It
-
-        private void OpenTkControl_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            _elementScene.UpdateProjection(GetRenderAreaBounds());
-        }
-
-        private Rect GetRenderAreaBounds()
-        {
-            Point location = OpenTkControl.TransformToAncestor(this).Transform(new Point(0, 0));
-            return new Rect
-            {
-                X = location.X,
-                Y = location.Y,
-                Width = OpenTkControl.ActualWidth,
-                Height = OpenTkControl.ActualHeight
-            };
-        }
-
-        #endregion
 
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

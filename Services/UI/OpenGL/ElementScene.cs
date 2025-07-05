@@ -7,6 +7,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using BauphysikToolWPF.Models.UI;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -48,21 +50,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             _layers.Clear();
             AddToLayerCollection(element.Layers);
         }
-        
-        /// <summary>
-        /// Disposes resources used by the scene and its renderer.
-        /// </summary>
-        public void Dispose()
-        {
-            if (_disposed) return;
 
-            // Clean up OpenGL resources
-            GL.DeleteBuffer(_vertexBufferObject);
-            GL.DeleteVertexArray(_vertexArrayObject);
-            // Shader
-            GL.DeleteProgram(_prgHandle);
-            _disposed = true;
-        }
 
 
         public void Initialize()
@@ -157,7 +145,90 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.BindVertexArray(_vertexArrayObject);
             GL.DrawArrays(PrimitiveType.Triangles, 0, _vertexCount);
         }
+        
+        /// <summary>
+        /// Updates the projection matrix used to transform screen-space layer positions
+        /// into Normalized Device Coordinates (NDC) for rendering. This ensures that
+        /// layer rectangles (defined in pixel units) appear at the correct positions
+        /// when rendered by the GPU.
+        /// </summary>
+        public void UpdateProjection(Size controlSize)
+        {
+            var contentBounds = GetContentBounds();
 
+            float contentWidth = (float)contentBounds.Width;
+            float contentHeight = (float)contentBounds.Height;
+            float controlWidth = (float)controlSize.Width;
+            float controlHeight = (float)controlSize.Height;
+
+            if (contentWidth <= 0 || contentHeight <= 0 || controlWidth <= 0 || controlHeight <= 0)
+            {
+                _projectionMatrix = Matrix4.Identity;
+                return;
+            }
+
+            //Matrix4 view = Matrix4.CreateTranslation(1.0f, -1.0f, 0); // Aligns top Left of the whole element to the center point of the render area
+            //Matrix4 view = Matrix4.CreateTranslation(0.0f, 0.0f, 0); // Aligns top Left of the whole element to the top Left of the render area
+            //Matrix4 view = Matrix4.CreateScale(1, -1, 1); // flips Y axis
+            //Matrix4 view = Matrix4.CreateScale(0.5f, 0.5f, 1f); // scales to 50%
+
+            #region Scale to fit view
+
+            // Calculate scale to fit (preserve aspect ratio)
+            float scaleX = controlWidth / contentWidth;
+            float scaleY = controlHeight / contentHeight;
+            float scale = MathF.Min(scaleX, scaleY); // Uniform scale
+
+            // Apply scaling only when origin of the element (top left) is in the center of the control and then translate back to the top left corner of the control
+            Matrix4 view = Matrix4.CreateTranslation(1.0f, -1.0f, 0) * Matrix4.CreateScale(scale, scale, 1) * Matrix4.CreateTranslation(-1.0f, 1.0f, 0);
+
+            #endregion
+
+            #region Translating to center of content
+
+            float offsetX = 0.0f;
+            if (contentWidth < controlWidth)
+            {
+                var absoluteOffsetInControl = (controlWidth - contentWidth * scale) / 2f;
+                var baseUnitDivisor = controlWidth / 2; // x-Axis: translation of +1.0f from origin is 50% of the control width
+                var converted = absoluteOffsetInControl / baseUnitDivisor; // Convert to OpenGL units
+                offsetX = converted; // Center content horizontally
+            }
+
+            float offsetY = 0.0f;
+            if (contentHeight < controlHeight)
+            {
+                var absoluteOffsetInControl = (controlHeight - contentHeight * scale) / 2f;
+                var baseUnitDivisor = controlHeight / 2; // x-Axis: translation of +1.0f from origin is 50% of the control width
+                var converted = absoluteOffsetInControl / baseUnitDivisor; // Convert to OpenGL units
+                offsetY = converted; // Center content horizontally
+            }
+            view *= Matrix4.CreateTranslation(offsetX, -offsetY, 0); // Move to control center
+
+            #endregion
+            
+            // Final projection maps screen units to [-1, 1] NDC
+            _projectionMatrix = Matrix4.CreateOrthographicOffCenter(0, controlWidth, controlHeight, 0, -1, 1) * view;
+        }
+
+
+        /// <summary>
+        /// Disposes resources used by the scene and its renderer.
+        /// </summary>
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            // Clean up OpenGL resources
+            GL.DeleteBuffer(_vertexBufferObject);
+            GL.DeleteVertexArray(_vertexArrayObject);
+            // Shader
+            GL.DeleteProgram(_prgHandle);
+            _disposed = true;
+        }
+
+        #region private
+        
         private void AddToLayerCollection(IEnumerable<IDrawingGeometry> layers)
         {
             _layers.AddRange(layers);
@@ -172,6 +243,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             foreach (var layer in _layers)
             {
                 layer.UpdateBrushCache(); // Assuming this sets BackgroundColorVector
+                //layer.TextureId = CreateOpenGLTextureFromBrush(layer.DrawingBrush, 256, 256);
 
                 float x = layer.RectangleF.X;
                 float y = layer.RectangleF.Y;
@@ -203,19 +275,64 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Count * sizeof(float), _vertices.ToArray(), BufferUsageHint.DynamicDraw);
         }
 
-        /// <summary>
-        /// Updates the projection matrix used to transform screen-space layer positions
-        /// into Normalized Device Coordinates (NDC) for rendering. This ensures that
-        /// layer rectangles (defined in pixel units) appear at the correct positions
-        /// when rendered by the GPU.
-        /// </summary>
-        public void UpdateProjection(Rect bounds)
+        private Rect GetContentBounds()
         {
-            _projectionMatrix = Matrix4.CreateOrthographicOffCenter(
-                0, (float)bounds.X,   // left to right
-                (float)bounds.Y, 0,  // bottom to top (flipped Y)
-                -1, 1       // near to far
-            );
+            if (_layers.Count == 0)
+                return new Rect(0, 0, 1, 1); // Prevent divide by zero
+
+            float minX = float.MaxValue, minY = float.MaxValue;
+            float maxX = float.MinValue, maxY = float.MinValue;
+
+            foreach (var layer in _layers)
+            {
+                var r = layer.RectangleF;
+                minX = MathF.Min(minX, r.X);
+                minY = MathF.Min(minY, r.Y);
+                maxX = MathF.Max(maxX, r.X + r.Width);
+                maxY = MathF.Max(maxY, r.Y + r.Height);
+            }
+
+            return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
+
+        public static RenderTargetBitmap RenderDrawingBrush(Brush brush, int width, int height)
+        {
+            var drawingVisual = new DrawingVisual();
+            using (var dc = drawingVisual.RenderOpen())
+            {
+                dc.DrawRectangle(brush, null, new Rect(0, 0, width, height));
+            }
+
+            var bmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+            bmp.Render(drawingVisual);
+            return bmp;
+        }
+        public static byte[] BitmapToByteArray(BitmapSource bmp)
+        {
+            int stride = bmp.PixelWidth * (bmp.Format.BitsPerPixel / 8);
+            byte[] pixels = new byte[bmp.PixelHeight * stride];
+            bmp.CopyPixels(pixels, stride, 0);
+            return pixels;
+        }
+        public static int CreateOpenGLTextureFromBrush(Brush brush, int width, int height)
+        {
+            var bmp = RenderDrawingBrush(brush, width, height);
+            var pixels = BitmapToByteArray(bmp);
+
+            int textureId = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, textureId);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
+                bmp.PixelWidth, bmp.PixelHeight, 0,
+                PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            return textureId;
+        }
+
+        #endregion
+
     }
 }
