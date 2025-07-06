@@ -26,7 +26,7 @@ namespace BauphysikToolWPF.Services.UI
         //private Rectangle _defaultVerticalCutRectangle = new Rectangle(new Point(0, 0), 400, 880);
         private bool _isOverflowing;
 
-        // Static, because globally valid for all Intstances
+        // Static, because globally valid for all Instances
         public static double SizeOf1Cm = 16.0; // starting value
 
         public Element Element { get; set; }
@@ -35,6 +35,7 @@ namespace BauphysikToolWPF.Services.UI
         public AlignmentVariant Alignment { get; set; }
         public List<IDrawingGeometry> DrawingGeometries { get; private set; }
         public bool LastDrawingSuccessful { get; private set; }
+        public bool DrawWithLayerLabels { get; set; } = true; // Default to true, can be set to false if labels are not needed
 
         public CrossSectionDrawing()
         {
@@ -82,7 +83,6 @@ namespace BauphysikToolWPF.Services.UI
 
             SetUpPixelResolution();
 
-            // Draw Layers
             UpdateGeometries();
 
             // Stacking
@@ -94,8 +94,6 @@ namespace BauphysikToolWPF.Services.UI
             LastDrawingSuccessful = layerDrawings.Count > 0;
 
             return layerDrawings;
-            
-            // TODO: Add Ellipses and Arrows to the drawing geometries
         }
 
         private void SetUpPixelResolution()
@@ -115,7 +113,7 @@ namespace BauphysikToolWPF.Services.UI
                 // Main Layer Geometry
                 l.Rectangle = l.Rectangle.MoveTo(ptStart);
                 layerDrawings.Add(l.Convert());
-                layerDrawings.Add(GetLabelForLayer(l, (l.LayerNumber).ToString()));
+                if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForLayer(l, (l.LayerNumber).ToString()));
 
                 // SubConstruction
                 if (l.SubConstruction != null)
@@ -174,7 +172,7 @@ namespace BauphysikToolWPF.Services.UI
                                 layerDrawings.Add(subConstrGeometry);
                                 var labelOffset = new Vector(0, 0);
                                 if (l.SubConstruction.Direction == Enums.ConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
-                                layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
+                                if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                             }
                         }
                         // Stack vertically
@@ -222,7 +220,7 @@ namespace BauphysikToolWPF.Services.UI
                                 layerDrawings.Add(subConstrGeometry);
                                 var labelOffset = new Vector(0, 0);
                                 if (l.SubConstruction.Direction == Enums.ConstructionDirection.Vertical) labelOffset = new Vector(24, 0);
-                                layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
+                                if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                             }
                         }
                     }
@@ -234,7 +232,7 @@ namespace BauphysikToolWPF.Services.UI
                         var labelOffset = new Vector(0, 0);
                         if (l.SubConstruction.Direction == Enums.ConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
                         if (l.SubConstruction.Direction == Enums.ConstructionDirection.Vertical) labelOffset = new Vector(0, 24);
-                        layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
+                        if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                     }
                 }
                 // Update Origin
@@ -254,7 +252,7 @@ namespace BauphysikToolWPF.Services.UI
                     20
                 ),
                 BackgroundColor = Brushes.Transparent, // Hintergrund durchsichtig, da Kreis separat gezeichnet wird
-                DrawingBrush = BrushesRepo.CreateCircleWithNumberBrush(labelText, Brushes.White, Brushes.Black, 1, Brushes.Black, new Vector(4,0)),
+                DrawingBrush = BrushesRepo.CreateCircleWithNumberBrush(labelText, Brushes.White, Brushes.Black, 1, Brushes.Black, new Vector(4, 0)),
                 ZIndex = 100,
                 Opacity = 1.0,
                 Tag = $"Label_{labelText}"

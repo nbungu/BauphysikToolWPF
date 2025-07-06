@@ -259,36 +259,6 @@ namespace BauphysikToolWPF.Models.Domain
             return new DrawingGeometry(this);
         }
 
-        [JsonIgnore]
-        public System.Drawing.RectangleF RectangleF => new System.Drawing.RectangleF(
-            (float)Rectangle.X,
-            (float)Rectangle.Y,
-            (float)Rectangle.Width,
-            (float)Rectangle.Height
-        );
-        [JsonIgnore]
-        public Vector4 BackgroundColorVector { get; private set; } = new Vector4(0, 0, 0, 0);
-
-        // Call this from the UI thread before rendering. ensure UpdateBrushCache runs on UI thread
-        public void UpdateBrushCache()
-        {
-            if (System.Windows.Application.Current?.Dispatcher?.CheckAccess() == false)
-            {
-                // If we're not on UI thread, invoke synchronously on UI thread
-                System.Windows.Application.Current.Dispatcher.Invoke(UpdateBrushCache);
-                return;
-            }
-            if (BackgroundColor is SolidColorBrush solidColor)
-            {
-                var c = solidColor.Color;
-                BackgroundColorVector = new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
-            }
-            else
-            {
-                BackgroundColorVector = new Vector4(0, 0, 0, 0);
-            }
-        }
-
         #endregion
     }
 }

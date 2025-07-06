@@ -154,9 +154,7 @@
                 <Grid Grid.Column="1">
                     <glWpfControl:GLWpfControl
                         x:Name="OpenTkControl"
-                        Render="OpenTkControl_OnRender"
-                        SizeChanged="OpenTkControl_SizeChanged">
-                    </glWpfControl:GLWpfControl>
+                        Render="OpenTkControl_OnRender"/>
                 </Grid>
             </Grid>
 

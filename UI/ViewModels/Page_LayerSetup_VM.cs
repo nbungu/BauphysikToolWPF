@@ -5,7 +5,6 @@ using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.UI.CustomControls;
-using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -14,7 +13,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using static BauphysikToolWPF.Models.UI.Enums;
-using Point = BT.Geometry.Point;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {

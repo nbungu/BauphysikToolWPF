@@ -1,4 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.UI;
+using BT.Geometry;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using System;
@@ -6,9 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using BauphysikToolWPF.Models.UI;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -18,6 +18,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class ElementScene : IDisposable
     {
+        private CrossSectionDrawing _crossSectionBuilder = new CrossSectionDrawing();
         private readonly List<IDrawingGeometry> _layers = new();
         private bool _needsRebuild = true;
         private bool _disposed;
@@ -29,29 +30,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private List<float> _vertices = new(); // Interleaved position + color
         private int _vertexCount;
 
-        /// <summary>
-        /// Adds multiple layers to the scene and marks the geometry for rebuilding.
-        /// </summary>
-        /// <param name="layers">The layers to add.</param>
-        public void UseLayers(IEnumerable<Layer> layers)
-        {
-            _layers.Clear();
-            AddToLayerCollection(layers);
-        }
-
-        public void UseDrawingGeometries(IEnumerable<IDrawingGeometry> geometries)
-        {
-            _layers.Clear();
-            AddToLayerCollection(geometries);
-        }
-
         public void UseElement(Element element)
         {
             _layers.Clear();
+            _crossSectionBuilder.Element = element;
+            _crossSectionBuilder.DrawWithLayerLabels = false;
+            _crossSectionBuilder.UpdateDrawings();
+            
             AddToLayerCollection(element.Layers);
         }
-
-
 
         public void Initialize()
         {
@@ -130,11 +117,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (_needsRebuild)
             {
-                RebuildGeometry();
+                _crossSectionBuilder.UpdateDrawings();
+                RebuildOglGeometry();
                 _needsRebuild = false;
             }
 
-            GL.ClearColor(Color4.Black);
+            GL.ClearColor(0f, 0f, 0f, 0f);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.UseProgram(_prgHandle);
@@ -228,7 +216,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         }
 
         #region private
-        
+
         private void AddToLayerCollection(IEnumerable<IDrawingGeometry> layers)
         {
             _layers.AddRange(layers);
@@ -236,35 +224,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             _needsRebuild = true;
         }
 
-        private void RebuildGeometry()
+        private void RebuildOglGeometry()
         {
             List<float> vertexData = new();
 
             foreach (var layer in _layers)
             {
-                layer.UpdateBrushCache(); // Assuming this sets BackgroundColorVector
-                //layer.TextureId = CreateOpenGLTextureFromBrush(layer.DrawingBrush, 256, 256);
-
-                float x = layer.RectangleF.X;
-                float y = layer.RectangleF.Y;
-                float w = layer.RectangleF.Width;
-                float h = layer.RectangleF.Height;
-
-                var c = layer.BackgroundColorVector;
-
-                float[] rect =
-                {
-                    // First triangle
-                    x,     y,     0f,  c.X, c.Y, c.Z, c.W,
-                    x + w, y,     0f,  c.X, c.Y, c.Z, c.W,
-                    x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,
-
-                    // Second triangle
-                    x + w, y,     0f,  c.X, c.Y, c.Z, c.W,
-                    x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,
-                    x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,
-                };
-
+                var rect = DrawRectangle(layer.Rectangle, layer.BackgroundColor);
+                
                 vertexData.AddRange(rect);
             }
 
@@ -285,51 +252,43 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             foreach (var layer in _layers)
             {
-                var r = layer.RectangleF;
-                minX = MathF.Min(minX, r.X);
-                minY = MathF.Min(minY, r.Y);
-                maxX = MathF.Max(maxX, r.X + r.Width);
-                maxY = MathF.Max(maxY, r.Y + r.Height);
+                var r = layer.Rectangle;
+                minX = MathF.Min(minX, (float)r.X);
+                minY = MathF.Min(minY, (float)r.Y);
+                maxX = MathF.Max(maxX, (float)r.X + (float)r.Width);
+                maxY = MathF.Max(maxY, (float)r.Y + (float)r.Height);
             }
 
             return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
 
-        public static RenderTargetBitmap RenderDrawingBrush(Brush brush, int width, int height)
+        private float[] DrawRectangle(Rectangle rectangle, Brush backgroundColor)
         {
-            var drawingVisual = new DrawingVisual();
-            using (var dc = drawingVisual.RenderOpen())
+            float x = (float)rectangle.X;
+            float y = (float)rectangle.Y;
+            float w = (float)rectangle.Width;
+            float h = (float)rectangle.Height;
+
+            var c = new Vector4(0, 0, 0, 0);
+            if (backgroundColor is SolidColorBrush solidColor)
             {
-                dc.DrawRectangle(brush, null, new Rect(0, 0, width, height));
+                var solidColorc = solidColor.Color;
+                c = new Vector4(solidColorc.R / 255f, solidColorc.G / 255f, solidColorc.B / 255f, solidColorc.A / 255f);
             }
 
-            var bmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
-            bmp.Render(drawingVisual);
-            return bmp;
-        }
-        public static byte[] BitmapToByteArray(BitmapSource bmp)
-        {
-            int stride = bmp.PixelWidth * (bmp.Format.BitsPerPixel / 8);
-            byte[] pixels = new byte[bmp.PixelHeight * stride];
-            bmp.CopyPixels(pixels, stride, 0);
-            return pixels;
-        }
-        public static int CreateOpenGLTextureFromBrush(Brush brush, int width, int height)
-        {
-            var bmp = RenderDrawingBrush(brush, width, height);
-            var pixels = BitmapToByteArray(bmp);
+            float[] rect =
+            {
+                // First triangle
+                x,     y,     0f,  c.X, c.Y, c.Z, c.W,
+                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,
+                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,
 
-            int textureId = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, textureId);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
-                bmp.PixelWidth, bmp.PixelHeight, 0,
-                PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
-            return textureId;
+                // Second triangle
+                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,
+                x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,
+                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,
+            };
+            return rect;
         }
 
         #endregion

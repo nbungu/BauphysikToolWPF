@@ -28,6 +28,9 @@ namespace BauphysikToolWPF.UI
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
             this.Unloaded += Page_LayerSetup_Unloaded; // Unload event handler for this page
+            Session.SelectedLayerChanged += OpenTkControl_OnElementChanged;
+            Session.SelectedElementChanged += OpenTkControl_OnElementChanged;
+
 
             var settings = new GLWpfControlSettings
             {
@@ -36,6 +39,7 @@ namespace BauphysikToolWPF.UI
                 RenderContinuously = false,
             };
             OpenTkControl.Start(settings);
+            
             _elementScene.UseElement(Session.SelectedElement);
             _elementScene.Initialize();
         }
@@ -52,6 +56,13 @@ namespace BauphysikToolWPF.UI
             _elementScene.Render();
         }
 
+        private void OpenTkControl_OnElementChanged()
+        {
+            _elementScene.UseElement(Session.SelectedElement);
+            _elementScene.UpdateProjection(new Size(OpenTkControl.ActualWidth, OpenTkControl.ActualHeight));
+            OpenTkControl.InvalidateVisual(); // Force re-render of OpenGL Control programatically
+        }
+
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -63,6 +74,7 @@ namespace BauphysikToolWPF.UI
 
             if (!IsVisible && element.IsValid)
             {
+                // TODO: 
                 //element.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
                 
                 //ImageCreator.RenderElementPreviewImage(element);
