@@ -19,7 +19,6 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
     public partial class Page_LayerSetup_VM : ObservableObject
     {
-        //private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
         private readonly IDialogService _dialogService;
         private readonly Element _element;
         
@@ -205,8 +204,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedLayer?.SubConstruction != null ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
         public Visibility NoLayersVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
-        //public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
-        //public Rectangle CanvasSize => _crossSection.CanvasSize;
+
         //public List<DrawingGeometry> LayerMeasurement => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);
         //public List<DrawingGeometry> LayerMeasurementFull => MeasurementDrawing.GetFullLayerMeasurementChain(_crossSection);
         //public List<DrawingGeometry> SubConstructionMeasurement => MeasurementDrawing.GetSubConstructionMeasurementChain(_crossSection);
@@ -405,7 +403,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void ElementChanged()
         {
             RefreshGauges();
-            RefreshDrawingsFull();
             RefreshPropertyGrid();
             RefreshLayerCollection();
             RefreshElementTimeStamp();
@@ -417,7 +414,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void LayerChanged()
         {
             RefreshGauges();
-            RefreshDrawingsFull();
             RefreshPropertyGrid();
             RefreshLayerCollection();
             RefreshLayerTimeStamp();
@@ -456,16 +452,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedLayer.RefreshPropertyBag();
             OnPropertyChanged(nameof(LayerPropertyBag));
             OnPropertyChanged(nameof(LayerSubConstrPropertyBag));
-        }
-
-        private void RefreshDrawingsFull()
-        {
-            //_crossSection.UpdateDrawings();
-            //OnPropertyChanged(nameof(CrossSectionDrawing));
-            //OnPropertyChanged(nameof(CanvasSize));
-            //OnPropertyChanged(nameof(LayerMeasurement));
-            //OnPropertyChanged(nameof(LayerMeasurementFull));
-            //OnPropertyChanged(nameof(SubConstructionMeasurement));
         }
         private void RefreshDrawingsLayerSelected()
         {

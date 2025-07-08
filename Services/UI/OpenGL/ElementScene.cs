@@ -8,7 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection.Emit;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 
@@ -20,6 +22,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class ElementScene : IDisposable
     {
+        public event Action<ShapeId>? ShapeHovered;
+        public event Action<ShapeId>? ShapeClicked;
+        // ShapeClicked?.Invoke(shape.ShapeId);
+
+        private Rectangle? _hoveredRectangle;
+        private string? _hoveredTooltip;
+
         private readonly CrossSectionBuilder _crossSectionBuilder = new();
         private bool _needsRebuild = true;
 
@@ -60,6 +69,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             View.MouseDown += View_OnMouseDown;
             View.MouseUp += View_OnMouseUp;
             View.MouseMove += View_OnMouseMove;
+            //View.MouseLeftButtonDown += View_OnMouseLeftClick;
 
             ViewSettings = settings ?? new GLWpfControlSettings
             {
@@ -233,23 +243,30 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (_disposed) return;
 
-            // Unsubscribe
-            View.Render -= View_OnRender;
-            View.MouseWheel -= View_OnMouseWheel;
-            View.MouseRightButtonUp -= View_OnMouseRightClick;
-            View.MouseDown -= View_OnMouseDown;
-            View.MouseUp -= View_OnMouseUp;
-            View.MouseMove -= View_OnMouseMove; 
+            if (View != null)
+            {
+                View.Render -= View_OnRender;
+                View.MouseWheel -= View_OnMouseWheel;
+                View.MouseRightButtonUp -= View_OnMouseRightClick;
+                View.MouseDown -= View_OnMouseDown;
+                View.MouseUp -= View_OnMouseUp;
+                View.MouseMove -= View_OnMouseMove;
+                //View.MouseLeftButtonUp -= View_OnMouseLeftClick;
+            }
 
             Session.SelectedLayerChanged -= View_OnElementChanged;
             Session.SelectedElementChanged -= View_OnElementChanged;
 
-            // Clean up OpenGL resources
-            GL.DeleteBuffer(_vertexBufferObject);
-            GL.DeleteBuffer(_lineVertexBuffer);
-            GL.DeleteVertexArray(_vertexArrayObject);
-            // Shader
-            GL.DeleteProgram(_prgHandle);
+            if (_vertexBufferObject != 0)
+                GL.DeleteBuffer(_vertexBufferObject);
+            if (_lineVertexBuffer != 0)
+                GL.DeleteBuffer(_lineVertexBuffer);
+            if (_vertexArrayObject != 0)
+                GL.DeleteVertexArray(_vertexArrayObject);
+            //if (_lineVertexArrayObject != 0)
+            //    GL.DeleteVertexArray(_lineVertexArrayObject);
+            if (_prgHandle != 0)
+                GL.DeleteProgram(_prgHandle);
 
             _disposed = true;
         }
@@ -333,6 +350,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             foreach (var layer in _crossSectionBuilder.DrawingGeometries)
             {
+                // TODO: HERE?
+                layer.ShapeId = new ShapeId(ShapeType.Layer, layer.InternalId);
+
                 var rect = SetRectangle(layer.Rectangle, layer.BackgroundColor);
                 vertexData.AddRange(rect);
             }
@@ -400,32 +420,48 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return rect;
         }
 
-        //public void SetLines(Vector2[] lineVertices, Brush lineColor)
+        //private void AddDashedRect(List<float> vertices, Rectangle rect, Vector4 color)
         //{
-        //    _lineVertexCount = lineVertices.Length;
+        //    // Add vertices for the four edges with dashes
+        //    // We can create multiple short line segments to simulate dashes
 
-        //    float[] interleaved = new float[_lineVertexCount * 7]; // 2D coords + z + color
-
-        //    var c = new Vector4(0, 0, 0, 0);
-        //    if (lineColor is SolidColorBrush solidColor)
+        //    // Helper: Add line segment
+        //    void AddLineSegment(float x1, float y1, float x2, float y2)
         //    {
-        //        var solidColorc = solidColor.Color;
-        //        c = new Vector4(solidColorc.R / 255f, solidColorc.G / 255f, solidColorc.B / 255f, solidColorc.A / 255f);
+        //        vertices.AddRange(new float[] { x1, y1, 0f, color.X, color.Y, color.Z, color.W });
+        //        vertices.AddRange(new float[] { x2, y2, 0f, color.X, color.Y, color.Z, color.W });
         //    }
 
-        //    for (int i = 0; i < lineVertices.Length; i++)
+        //    float dashLength = 10f;
+        //    float gapLength = 5f;
+
+        //    // Top edge: from Left to Right
+        //    for (float x = (float)rect.Left; x < (float)rect.Right; x += dashLength + gapLength)
         //    {
-        //        interleaved[i * 7 + 0] = lineVertices[i].X;
-        //        interleaved[i * 7 + 1] = lineVertices[i].Y;
-        //        interleaved[i * 7 + 2] = 0f; // Z
-        //        interleaved[i * 7 + 3] = c.X;
-        //        interleaved[i * 7 + 4] = c.Y;
-        //        interleaved[i * 7 + 5] = c.Z;
-        //        interleaved[i * 7 + 6] = c.W;
+        //        float x2 = Math.Min(x + dashLength, (float)rect.Right);
+        //        AddLineSegment(x, (float)rect.Top, x2, (float)rect.Top);
         //    }
 
-        //    GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVertexBuffer);
-        //    GL.BufferData(BufferTarget.ArrayBuffer, interleaved.Length * sizeof(float), interleaved, BufferUsageHint.StreamDraw);
+        //    // Right edge: from Top to Bottom
+        //    for (float y = (float)rect.Top; y > (float)rect.Bottom; y -= dashLength + gapLength)
+        //    {
+        //        float y2 = Math.Max(y - dashLength, (float)rect.Bottom);
+        //        AddLineSegment((float)rect.Right, y, (float)rect.Right, y2);
+        //    }
+
+        //    // Bottom edge: from Right to Left
+        //    for (float x = (float)rect.Right; x > (float)rect.Left; x -= dashLength + gapLength)
+        //    {
+        //        float x2 = Math.Max(x - dashLength, (float)rect.Left);
+        //        AddLineSegment(x, (float)rect.Bottom, x2, (float)rect.Bottom);
+        //    }
+
+        //    // Left edge: from Bottom to Top
+        //    for (float y = (float)rect.Bottom; y < (float)rect.Top; y += dashLength + gapLength)
+        //    {
+        //        float y2 = Math.Min(y + dashLength, (float)rect.Top);
+        //        AddLineSegment((float)rect.Left, y, (float)rect.Left, y2);
+        //    }
         //}
 
         public void SetLines(Vector2[] lineVertices, Brush lineColor)
@@ -481,10 +517,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void View_OnMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (e.Delta > 0)
-                ZoomIn();
-            else
-                ZoomOut();
+            if (e.Delta > 0) ZoomIn();
+            else ZoomOut();
         }
         private void View_OnMouseRightClick(object sender, MouseButtonEventArgs e)
         {
@@ -499,6 +533,35 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 _lastMousePosition = e.GetPosition(View);
                 View.CaptureMouse();
                 Mouse.OverrideCursor = Cursors.ScrollAll;
+            }
+
+            if (e.ChangedButton == MouseButton.Left && !_isDragging)
+            {
+               var scenePoint = ConvertMouseToScene(e.GetPosition(View));
+
+                foreach (var shape in _crossSectionBuilder.DrawingGeometries)
+                {
+                    if (shape.Rectangle.Contains(scenePoint))
+                    {
+                        Debug.WriteLine($"Clicked shape: {shape.ShapeId}");
+                        ShapeClicked?.Invoke(shape.ShapeId);
+                        break;
+                    }
+                }
+            }
+            if (e.ChangedButton == MouseButton.Right && !_isDragging)
+            {
+                var scenePoint = ConvertMouseToScene(e.GetPosition(View));
+
+                foreach (var shape in _crossSectionBuilder.DrawingGeometries)
+                {
+                    if (shape.Rectangle.Contains(scenePoint))
+                    {
+                        Debug.WriteLine($"Right Clicked shape: {shape.ShapeId}");
+                        ShapeClicked?.Invoke(shape.ShapeId);
+                        break;
+                    }
+                }
             }
         }
 
@@ -529,6 +592,57 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 UpdateProjection(new Size(View.ActualWidth, View.ActualHeight));
                 View.InvalidateVisual();
             }
+
+
+            // Hit testing for Interactive View
+
+            var scenePoint = ConvertMouseToScene(e.GetPosition(View));
+
+            foreach (var shape in _crossSectionBuilder.DrawingGeometries)
+            {
+                if (shape.Rectangle.Contains(scenePoint))
+                {
+                    _hoveredRectangle = shape.Rectangle;
+                    _hoveredTooltip = shape.ShapeId.ToString();
+
+                    Mouse.OverrideCursor = Cursors.Hand;
+                    ToolTip tooltip = new ToolTip { Content = shape.ShapeId.ToString() };
+                    ToolTipService.SetToolTip(View, tooltip);
+
+                    ShapeHovered?.Invoke(shape.ShapeId);
+                    return;
+                }
+            }
+
+            Mouse.OverrideCursor = null;
+            ToolTipService.SetToolTip(View, null);
+        }
+
+        private BT.Geometry.Point ConvertMouseToScene(System.Windows.Point mousePos)
+        {
+            // Reverse the projection used in UpdateProjection()
+            var bounds = GetContentBounds();
+            float contentWidth = (float)bounds.Width;
+            float contentHeight = (float)bounds.Height;
+            float controlWidth = (float)View.ActualWidth;
+            float controlHeight = (float)View.ActualHeight;
+
+            float scaleX = controlWidth / contentWidth;
+            float scaleY = controlHeight / contentHeight;
+            float scale = MathF.Min(scaleX, scaleY) * (float)ZoomFactor;
+
+            // Apply pan offset (converted to pixels)
+            float panX = _panOffset.X * controlWidth / 2f;
+            float panY = _panOffset.Y * controlHeight / 2f;
+
+            float offsetX = (controlWidth - contentWidth * scale) / 2f + panX;
+            float offsetY = (controlHeight - contentHeight * scale) / 2f + panY;
+
+            // Map screen to element
+            float x = (float)((mousePos.X - offsetX) / scale + bounds.X);
+            float y = (float)((mousePos.Y - offsetY) / scale + bounds.Y);
+
+            return new BT.Geometry.Point(x, y);
         }
 
         #endregion

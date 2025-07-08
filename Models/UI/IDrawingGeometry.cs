@@ -1,5 +1,6 @@
 ﻿using BT.Geometry;
 using System.Windows.Media;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using Brush = System.Windows.Media.Brush;
 
 namespace BauphysikToolWPF.Models.UI
@@ -17,6 +18,7 @@ namespace BauphysikToolWPF.Models.UI
         double Opacity { get; set; }
         int ZIndex { get; set; }
         object Tag { get; set; }
+        ShapeId ShapeId { get; set; } // Unique ID for this shape, used to identify it in the OpenGL scene
         IDrawingGeometry Convert();
     }
 }

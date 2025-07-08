@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.UI.Enums;
 using Vector4 = OpenTK.Mathematics.Vector4;
 
@@ -300,6 +301,8 @@ namespace BauphysikToolWPF.Models.Domain
         public object Tag { get; set; } = new object();
         [JsonIgnore]
         public int? TextureId { get; set; }
+        [JsonIgnore]
+        public ShapeId ShapeId { get; set; }
 
         public IDrawingGeometry Convert()
         {

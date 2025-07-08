@@ -1,4 +1,4 @@
-﻿using OpenTK.Mathematics;
+﻿using BauphysikToolWPF.Services.UI.OpenGL;
 using System.Collections.Generic;
 using System.Windows.Media;
 using Brush = System.Windows.Media.Brush;
@@ -24,6 +24,7 @@ namespace BauphysikToolWPF.Models.UI
         public object Tag { get; set; } = new object();
         public int? TextureId { get; set; }
         public bool IsValid => Rectangle != Rectangle.Empty;
+        public ShapeId ShapeId { get; set; }
 
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
         {

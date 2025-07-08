@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using BT.Geometry;
 using System;
 using System.Collections.Generic;
@@ -253,6 +254,8 @@ namespace BauphysikToolWPF.Models.Domain
         public object Tag { get; set; } = new object();
         [JsonIgnore]
         public int? TextureId { get; set; }
+        [JsonIgnore]
+        public ShapeId ShapeId { get; set; }
 
         public IDrawingGeometry Convert()
         {
