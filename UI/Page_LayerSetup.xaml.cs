@@ -2,8 +2,6 @@
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
-using OpenTK.Wpf;
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -27,41 +25,12 @@ namespace BauphysikToolWPF.UI
         {
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
-            this.Unloaded += Page_LayerSetup_Unloaded; // Unload event handler for this page
-            Session.SelectedLayerChanged += OpenTkControl_OnElementChanged;
-            Session.SelectedElementChanged += OpenTkControl_OnElementChanged;
-
-
-            var settings = new GLWpfControlSettings
-            {
-                MajorVersion = 4,
-                MinorVersion = 3,
-                RenderContinuously = false,
-            };
-            OpenTkControl.Start(settings);
             
+            this.Unloaded += Page_LayerSetup_Unloaded;
+            _elementScene.ConnectToView(OpenTkControl);
             _elementScene.UseElement(Session.SelectedElement);
-            _elementScene.Initialize();
         }
-
-        private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e)
-        { 
-            _elementScene?.Dispose();
-            OpenTkControl.Render -= OpenTkControl_OnRender;
-        }
-
-        private void OpenTkControl_OnRender(TimeSpan delta)
-        {
-            _elementScene.UpdateProjection(new Size(OpenTkControl.ActualWidth, OpenTkControl.ActualHeight));
-            _elementScene.Render();
-        }
-
-        private void OpenTkControl_OnElementChanged()
-        {
-            _elementScene.UseElement(Session.SelectedElement);
-            _elementScene.UpdateProjection(new Size(OpenTkControl.ActualWidth, OpenTkControl.ActualHeight));
-            OpenTkControl.InvalidateVisual(); // Force re-render of OpenGL Control programatically
-        }
+        private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e) => _elementScene?.Dispose();
 
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

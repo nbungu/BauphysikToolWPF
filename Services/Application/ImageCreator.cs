@@ -165,7 +165,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             // Create a CrossSectionDrawing for the selected element
             var canvasSize = new BT.Geometry.Rectangle(new BT.Geometry.Point(0, 0), 880, 400);
-            var drawingService = new CrossSectionDrawing(element, canvasSize, DrawingType.CrossSection);
+            var drawingService = new CrossSectionBuilder(element, canvasSize, DrawingType.CrossSection);
             var drawingContents = drawingService.DrawingGeometries;
             var imgWidth = (int)drawingService.CanvasSize.Width;
             var imgHeight = (int)drawingService.CanvasSize.Height;

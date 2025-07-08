@@ -20,7 +20,7 @@ namespace BauphysikToolWPF.Services.UI
         CrossSection,
         VerticalCut
     }
-    public class CrossSectionDrawing
+    public class CrossSectionBuilder
     {
         //private Rectangle _defaultCrossSectionRectangle = new Rectangle(new Point(0, 0), 880, 400);
         //private Rectangle _defaultVerticalCutRectangle = new Rectangle(new Point(0, 0), 400, 880);
@@ -37,7 +37,7 @@ namespace BauphysikToolWPF.Services.UI
         public bool LastDrawingSuccessful { get; private set; }
         public bool DrawWithLayerLabels { get; set; } = true; // Default to true, can be set to false if labels are not needed
 
-        public CrossSectionDrawing()
+        public CrossSectionBuilder()
         {
             Element = new Element();
             CanvasSize = new Rectangle(new Point(0, 0), 880, 400); // Default size for CrossSection
@@ -46,7 +46,7 @@ namespace BauphysikToolWPF.Services.UI
             DrawingGeometries = new List<IDrawingGeometry>();
         }
 
-        public CrossSectionDrawing(Element? element, Rectangle canvasSize, DrawingType drawingType, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
+        public CrossSectionBuilder(Element? element, Rectangle canvasSize, DrawingType drawingType, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {
             Element = element ?? throw new ArgumentNullException(nameof(element), "Element cannot be null.");
             CanvasSize = canvasSize;
@@ -55,7 +55,7 @@ namespace BauphysikToolWPF.Services.UI
             DrawingGeometries = GetDrawing();
         }
 
-        public void UpdateDrawings()
+        public void RebuildCrossSection()
         {
             DrawingGeometries = GetDrawing();
             Logger.LogInfo($"Updated cross section drawing of element: {Element}.");
@@ -72,7 +72,7 @@ namespace BauphysikToolWPF.Services.UI
                     DrawingGeometries[selectedGeometry] = UpdateLayerGeometry(layer).Convert();
                 }
             }
-            else UpdateDrawings();
+            else RebuildCrossSection();
         }
 
         // Vertikalschnitt, Canvas in PX

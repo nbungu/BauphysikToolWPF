@@ -134,6 +134,9 @@ namespace BauphysikToolWPF.Models.Domain
         public bool IsSelected { get; set; } // For UI Purposes 
 
         [JsonIgnore]
+        public bool HasSubConstruction => SubConstruction != null; // For UI Purposes 
+
+        [JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);
 
         [JsonIgnore]

@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         //private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
         private readonly IDialogService _dialogService;
         private readonly Element _element;
-
+        
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM()
         {
@@ -32,10 +32,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             _element.SortLayers();
             _element.AssignEffectiveLayers();
             _element.AssignInternalIdsToLayers();
-
             _dialogService = new DialogService();
-            //_crossSection = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
-            
+
             // Allow child Windows to trigger UpdateAll of this Window
             Session.SelectedProjectChanged += ProjectDataChanged;
             Session.SelectedLayerChanged += LayerChanged;
@@ -472,7 +470,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void RefreshDrawingsLayerSelected()
         {
            // _crossSection.UpdateDrawings();
-            OnPropertyChanged(nameof(CrossSectionDrawing));
+            OnPropertyChanged(nameof(CrossSectionBuilder));
         }
 
         private void RefreshGauges()

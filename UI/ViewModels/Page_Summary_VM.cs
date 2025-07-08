@@ -18,8 +18,8 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
 
-        private readonly CrossSectionDrawing _verticalCut = new CrossSectionDrawing();
-        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
+        private readonly CrossSectionBuilder _verticalCut = new CrossSectionBuilder();
+        private readonly CrossSectionBuilder _crossSection = new CrossSectionBuilder();
         private readonly Element _element;
 
         public Page_Summary_VM()
@@ -29,8 +29,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             _element = Session.SelectedElement;
 
-            _verticalCut = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
-            _crossSection = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
+            _verticalCut = new CrossSectionBuilder(_element, new Rectangle(new Point(0, 0), 400, 880), DrawingType.VerticalCut);
+            _crossSection = new CrossSectionBuilder(_element, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
         }
 
         /*

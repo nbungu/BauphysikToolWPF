@@ -152,9 +152,7 @@
                 <Label Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
                 <Grid Grid.Column="1">
-                    <glWpfControl:GLWpfControl
-                        x:Name="OpenTkControl"
-                        Render="OpenTkControl_OnRender"/>
+                    <glWpfControl:GLWpfControl x:Name="OpenTkControl"/>
                 </Grid>
             </Grid>
 
