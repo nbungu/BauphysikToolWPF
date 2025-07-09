@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Services.Application;
-using BT.Geometry;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Mathematics;
 using OpenTK.Wpf;
@@ -8,11 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Line = BT.Geometry.Line;
+using Point = BT.Geometry.Point;
+using Rectangle = BT.Geometry.Rectangle;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -49,13 +51,21 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private int _lineVertexBuffer;
         private int _lineVertexCount;
 
+        private List<float> _lineVertices = new(); // Interleaved: position + color
+
         private const double ZoomStep = 0.1;
         private const double MinZoom = 0.5;
         private const double MaxZoom = 5.0;
 
-        public double ZoomFactor { get; private set; } = 1.0;
+        #region Public Properties
+        
+        public Brush BackgroundColor { get; set; } = Brushes.Transparent;
+        public double ZoomFactor { get; set; } = 1.0;
+
         public GLWpfControl View { get; private set; }
         public GLWpfControlSettings ViewSettings { get; private set; }
+
+        #endregion
 
         public void ConnectToView(GLWpfControl view, GLWpfControlSettings? settings = null)
         {
@@ -69,7 +79,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             View.MouseDown += View_OnMouseDown;
             View.MouseUp += View_OnMouseUp;
             View.MouseMove += View_OnMouseMove;
-            //View.MouseLeftButtonDown += View_OnMouseLeftClick;
 
             ViewSettings = settings ?? new GLWpfControlSettings
             {
@@ -89,7 +98,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             _crossSectionBuilder.RebuildCrossSection();
             _needsRebuild = true;
         }
-        
+
         /// <summary>
         /// Renders the scene.
         /// Rebuilds the geometry if layers have changed.
@@ -102,8 +111,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 RebuildOglGeometry();
                 _needsRebuild = false;
             }
+            ErrorCode error = ErrorCode.NoError;
 
-            GL.ClearColor(0f, 0f, 0f, 0f);
+            var bgColor = GetColorFromBrush(BackgroundColor);
+            GL.ClearColor(bgColor.X, bgColor.Y, bgColor.Z, bgColor.W);
+
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.UseProgram(_prgHandle);
@@ -112,37 +124,51 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.UniformMatrix4(projLocation, false, ref _projectionMatrix);
 
             GL.BindVertexArray(_vertexArrayObject);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, _vertexCount);
 
-            // TODO: Currently not workiung
-            // Draw lines if any
-            //if (_drawLines && _lineVertexCount > 1)
-            //{
-            //    GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVertexBuffer);
+            // Draw rectangles
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             
+            GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 7 * sizeof(float), 0);
+            GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 7 * sizeof(float), 3 * sizeof(float));
+            GL.EnableVertexAttribArray(0);
+            GL.EnableVertexAttribArray(1);
 
-            //    int stride = 8 * sizeof(float); // 3 pos + 4 color + 1 dashCoord
+            //int stride = 9 * sizeof(float);
 
-            //    int positionLocation = GL.GetAttribLocation(_prgHandle, "vPosition");
-            //    GL.EnableVertexAttribArray(positionLocation);
-            //    GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, stride, 0);
+            //// Position
+            //GL.EnableVertexAttribArray(positionLocation);
+            //GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, stride, 0);
 
-            //    int colorLocation = GL.GetAttribLocation(_prgHandle, "vColor");
-            //    GL.EnableVertexAttribArray(colorLocation);
-            //    GL.VertexAttribPointer(colorLocation, 4, VertexAttribPointerType.Float, false, stride, 3 * sizeof(float));
+            //// Color
+            //GL.EnableVertexAttribArray(colorLocation);
+            //GL.VertexAttribPointer(colorLocation, 4, VertexAttribPointerType.Float, false, stride, 3 * sizeof(float));
 
-            //    // NEW: dashCoord attribute
-            //    int dashCoordLocation = GL.GetAttribLocation(_prgHandle, "vDashCoord");
-            //    GL.EnableVertexAttribArray(dashCoordLocation);
-            //    GL.VertexAttribPointer(dashCoordLocation, 1, VertexAttribPointerType.Float, false, stride, 7 * sizeof(float));
+            //// TexCoord
+            //int texCoordLocation = GL.GetAttribLocation(_prgHandle, "vTexCoord");
+            //GL.EnableVertexAttribArray(texCoordLocation);
+            //GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, stride, 7 * sizeof(float));
 
 
-            //    GL.LineWidth(0.8f);
-            //    GL.DrawArrays(PrimitiveType.Lines, 0, _lineVertexCount);
-            //    // LineStrip: Connects points in sequence (0→1→2→...).
-            //    // Lines: Treats every pair of vertices as an independent line (0→1, 2→3, ...)
-            //    //LineLoop: Like LineStrip, but connects the last point back to the first.
-            //}
+            GL.DrawArrays(PrimitiveType.Triangles, 0, _vertexCount);
+            error = GL.GetError();
+            if (error != ErrorCode.NoError)
+                Debug.WriteLine($"OpenGL Error: {error}");
+
+            // Draw lines
+            if (_lineVertexCount > 0)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVertexBuffer);
+                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 7 * sizeof(float), 0);
+                GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 7 * sizeof(float), 3 * sizeof(float));
+                GL.EnableVertexAttribArray(0);
+                GL.EnableVertexAttribArray(1);
+
+                GL.LineWidth(1.0f); // Dynamic thickness
+                GL.DrawArrays(PrimitiveType.Lines, 0, _lineVertexCount);
+                error = GL.GetError();
+                if (error != ErrorCode.NoError)
+                    Debug.WriteLine($"OpenGL Error: {error}");
+            }
         }
         
         /// <summary>
@@ -251,7 +277,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 View.MouseDown -= View_OnMouseDown;
                 View.MouseUp -= View_OnMouseUp;
                 View.MouseMove -= View_OnMouseMove;
-                //View.MouseLeftButtonUp -= View_OnMouseLeftClick;
             }
 
             Session.SelectedLayerChanged -= View_OnElementChanged;
@@ -263,8 +288,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 GL.DeleteBuffer(_lineVertexBuffer);
             if (_vertexArrayObject != 0)
                 GL.DeleteVertexArray(_vertexArrayObject);
-            //if (_lineVertexArrayObject != 0)
-            //    GL.DeleteVertexArray(_lineVertexArrayObject);
             if (_prgHandle != 0)
                 GL.DeleteProgram(_prgHandle);
 
@@ -276,6 +299,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private void Initialize()
         {
             _prgHandle = GL.CreateProgram();
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             #region Shader
 
@@ -346,29 +372,30 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void RebuildOglGeometry()
         {
-            List<float> vertexData = new();
+            _vertices.Clear();
+            _lineVertices.Clear();
 
-            foreach (var layer in _crossSectionBuilder.DrawingGeometries)
+            foreach (var geom in _crossSectionBuilder.DrawingGeometries)
             {
                 // TODO: HERE?
-                layer.ShapeId = new ShapeId(ShapeType.Layer, layer.InternalId);
+                geom.ShapeId = new ShapeId(ShapeType.Layer, geom.InternalId);
 
-                var rect = SetRectangle(layer.Rectangle, layer.BackgroundColor);
-                vertexData.AddRange(rect);
+                // Testing
+                AddRectangle(geom.Rectangle, geom.BackgroundColor);
+
+                AddLine(geom.Rectangle.TopLine, Brushes.Black);
+
             }
 
-            _vertices = vertexData;
-            _vertexCount = vertexData.Count / 7;
-
+            // Push rectangle data
+            _vertexCount = _vertices.Count / 7;
             GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Count * sizeof(float), _vertices.ToArray(), BufferUsageHint.DynamicDraw);
 
-            Vector2[] points = new Vector2[]
-            {
-                new Vector2(0, 0),
-                new Vector2(1, 1),
-            };
-            SetLines(points, Brushes.Blue);
+            // Push line data
+            _lineVertexCount = _lineVertices.Count / 7;
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVertexBuffer);
+            GL.BufferData(BufferTarget.ArrayBuffer, _lineVertices.Count * sizeof(float), _lineVertices.ToArray(), BufferUsageHint.DynamicDraw);
         }
 
         private Rect GetContentBounds()
@@ -391,20 +418,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return new Rect(minX, minY, maxX - minX, maxY - minY);
         }
 
-        private float[] SetRectangle(Rectangle rectangle, Brush backgroundColor)
+        private void AddRectangle(Rectangle rectangle, Brush backgroundColor)
         {
+            Vector4 c = GetColorFromBrush(backgroundColor);
+
             float x = (float)rectangle.X;
             float y = (float)rectangle.Y;
             float w = (float)rectangle.Width;
             float h = (float)rectangle.Height;
-
-            var c = new Vector4(0, 0, 0, 0);
-            if (backgroundColor is SolidColorBrush solidColor)
-            {
-                var solidColorc = solidColor.Color;
-                c = new Vector4(solidColorc.R / 255f, solidColorc.G / 255f, solidColorc.B / 255f, solidColorc.A / 255f);
-            }
-
+            
             float[] rect =
             {
                 // First triangle
@@ -417,90 +439,88 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,
                 x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,
             };
-            return rect;
+            _vertices.AddRange(rect);
+
+            // Texture coordinates: (0,0) top-left to (1,1) bottom-right
+            //float[] rect =
+            //{
+            //    // First triangle
+            //    x,     y,     0f,  c.X, c.Y, c.Z, c.W,  0f, 0f,
+            //    x + w, y,     0f,  c.X, c.Y, c.Z, c.W,  1f, 0f,
+            //    x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f, 1f,
+
+            //    // Second triangle
+            //    x + w, y,     0f,  c.X, c.Y, c.Z, c.W,  1f, 0f,
+            //    x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,  1f, 1f,
+            //    x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f, 1f,
+            //};
         }
 
-        //private void AddDashedRect(List<float> vertices, Rectangle rect, Vector4 color)
-        //{
-        //    // Add vertices for the four edges with dashes
-        //    // We can create multiple short line segments to simulate dashes
-
-        //    // Helper: Add line segment
-        //    void AddLineSegment(float x1, float y1, float x2, float y2)
-        //    {
-        //        vertices.AddRange(new float[] { x1, y1, 0f, color.X, color.Y, color.Z, color.W });
-        //        vertices.AddRange(new float[] { x2, y2, 0f, color.X, color.Y, color.Z, color.W });
-        //    }
-
-        //    float dashLength = 10f;
-        //    float gapLength = 5f;
-
-        //    // Top edge: from Left to Right
-        //    for (float x = (float)rect.Left; x < (float)rect.Right; x += dashLength + gapLength)
-        //    {
-        //        float x2 = Math.Min(x + dashLength, (float)rect.Right);
-        //        AddLineSegment(x, (float)rect.Top, x2, (float)rect.Top);
-        //    }
-
-        //    // Right edge: from Top to Bottom
-        //    for (float y = (float)rect.Top; y > (float)rect.Bottom; y -= dashLength + gapLength)
-        //    {
-        //        float y2 = Math.Max(y - dashLength, (float)rect.Bottom);
-        //        AddLineSegment((float)rect.Right, y, (float)rect.Right, y2);
-        //    }
-
-        //    // Bottom edge: from Right to Left
-        //    for (float x = (float)rect.Right; x > (float)rect.Left; x -= dashLength + gapLength)
-        //    {
-        //        float x2 = Math.Max(x - dashLength, (float)rect.Left);
-        //        AddLineSegment(x, (float)rect.Bottom, x2, (float)rect.Bottom);
-        //    }
-
-        //    // Left edge: from Bottom to Top
-        //    for (float y = (float)rect.Bottom; y < (float)rect.Top; y += dashLength + gapLength)
-        //    {
-        //        float y2 = Math.Min(y + dashLength, (float)rect.Top);
-        //        AddLineSegment((float)rect.Left, y, (float)rect.Left, y2);
-        //    }
-        //}
-
-        public void SetLines(Vector2[] lineVertices, Brush lineColor)
+        private void AddLine(Line line, Brush backgroundColor)
         {
-            _lineVertexCount = lineVertices.Length;
-            _drawLines = true;
+            Vector4 color = GetColorFromBrush(backgroundColor);
 
-            var c = new Vector4(0, 0, 0, 0);
-            if (lineColor is SolidColorBrush solidColor)
+            var p1 = line.Start;
+            var p2 = line.End;
+
+            _lineVertices.AddRange(new float[]
             {
-                var solidColorc = solidColor.Color;
-                c = new Vector4(solidColorc.R / 255f, solidColorc.G / 255f, solidColorc.B / 255f, solidColorc.A / 255f);
-            }
-
-            float[] interleaved = new float[_lineVertexCount * 8]; // 3 pos, 4 color, 1 dashCoord
-
-            float totalDistance = 0f;
-            for (int i = 0; i < lineVertices.Length; i++)
-            {
-                if (i > 0)
-                {
-                    totalDistance += (lineVertices[i] - lineVertices[i - 1]).Length;
-                }
-
-                interleaved[i * 8 + 0] = lineVertices[i].X;
-                interleaved[i * 8 + 1] = lineVertices[i].Y;
-                interleaved[i * 8 + 2] = 0f; // Z
-
-                interleaved[i * 8 + 3] = c.X;
-                interleaved[i * 8 + 4] = c.Y;
-                interleaved[i * 8 + 5] = c.Z;
-                interleaved[i * 8 + 6] = c.W;
-
-                interleaved[i * 8 + 7] = totalDistance; // dash progress
-            }
-
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVertexBuffer);
-            GL.BufferData(BufferTarget.ArrayBuffer, interleaved.Length * sizeof(float), interleaved, BufferUsageHint.StreamDraw);
+                (float)p1.X, (float)p1.Y, 0f,  color.X, color.Y, color.Z, color.W,
+                (float)p2.X, (float)p2.Y, 0f,  color.X, color.Y, color.Z, color.W
+            });
         }
+
+        private void AddCircle(Point center, float radius, Brush brush, int segments = 32)
+        {
+            Vector4 color = GetColorFromBrush(brush);
+            float cx = (float)center.X;
+            float cy = (float)center.Y;
+
+            for (int i = 0; i < segments; i++)
+            {
+                float angle1 = i * MathF.PI * 2f / segments;
+                float angle2 = (i + 1) * MathF.PI * 2f / segments;
+
+                float x1 = cx + radius * MathF.Cos(angle1);
+                float y1 = cy + radius * MathF.Sin(angle1);
+                float x2 = cx + radius * MathF.Cos(angle2);
+                float y2 = cy + radius * MathF.Sin(angle2);
+
+                // Triangle fan with center
+                _vertices.AddRange(new float[]
+                {
+                    cx, cy, 0f, color.X, color.Y, color.Z, color.W,
+                    x1, y1, 0f, color.X, color.Y, color.Z, color.W,
+                    x2, y2, 0f, color.X, color.Y, color.Z, color.W,
+                });
+            }
+        }
+
+        private void AddCircleLine(Point center, float radius, Brush brush, int segments = 64)
+        {
+            Vector4 color = GetColorFromBrush(brush);
+            float cx = (float)center.X;
+            float cy = (float)center.Y;
+
+            for (int i = 0; i < segments; i++)
+            {
+                float angle1 = i * MathF.PI * 2f / segments;
+                float angle2 = (i + 1) * MathF.PI * 2f / segments;
+
+                float x1 = cx + radius * MathF.Cos(angle1);
+                float y1 = cy + radius * MathF.Sin(angle1);
+                float x2 = cx + radius * MathF.Cos(angle2);
+                float y2 = cy + radius * MathF.Sin(angle2);
+
+                _lineVertices.AddRange(new float[]
+                {
+                    x1, y1, 0f, color.X, color.Y, color.Z, color.W,
+                    x2, y2, 0f, color.X, color.Y, color.Z, color.W,
+                });
+            }
+        }
+
+        #region Event Handlers
 
         private void View_OnElementChanged()
         {
@@ -549,6 +569,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     }
                 }
             }
+
             if (e.ChangedButton == MouseButton.Right && !_isDragging)
             {
                 var scenePoint = ConvertMouseToScene(e.GetPosition(View));
@@ -567,12 +588,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void View_OnMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Middle)
-            {
-                _isDragging = false;
-                View.ReleaseMouseCapture();
-                Mouse.OverrideCursor = null;
-            }
+            if (e.ChangedButton == MouseButton.Middle) _isDragging = false;
+            View.ReleaseMouseCapture();
+            Mouse.OverrideCursor = null;
         }
 
         private void View_OnMouseMove(object sender, MouseEventArgs e)
@@ -615,10 +633,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
 
             Mouse.OverrideCursor = null;
-            ToolTipService.SetToolTip(View, null);
+            //ToolTipService.SetToolTip(View, null);
         }
 
-        private BT.Geometry.Point ConvertMouseToScene(System.Windows.Point mousePos)
+        #endregion
+
+        #region Helper/Converter
+
+        private Point ConvertMouseToScene(System.Windows.Point mousePos)
         {
             // Reverse the projection used in UpdateProjection()
             var bounds = GetContentBounds();
@@ -642,8 +664,54 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             float x = (float)((mousePos.X - offsetX) / scale + bounds.X);
             float y = (float)((mousePos.Y - offsetY) / scale + bounds.Y);
 
-            return new BT.Geometry.Point(x, y);
+            return new Point(x, y);
         }
+
+        private Vector4 GetColorFromBrush(Brush brush)
+        {
+            if (brush is SolidColorBrush solid)
+            {
+                var c = solid.Color;
+                return new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
+            }
+            return new Vector4(1f, 1f, 1f, 1f);
+        }
+
+        private static BitmapSource RenderBrushToBitmap(DrawingBrush brush, int width = 64, int height = 64)
+        {
+            var dv = new DrawingVisual();
+            using (var ctx = dv.RenderOpen())
+            {
+                ctx.DrawRectangle(brush, null, new Rect(0, 0, width, height));
+            }
+
+            var rtb = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
+            rtb.Render(dv);
+            return rtb;
+        }
+
+        private static int CreateTextureFromBitmap(BitmapSource bmp)
+        {
+            int width = bmp.PixelWidth;
+            int height = bmp.PixelHeight;
+            int stride = width * 4;
+            byte[] pixels = new byte[height * stride];
+            bmp.CopyPixels(pixels, stride, 0);
+
+            int texId = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, texId);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0,
+                OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            return texId;
+        }
+        //var bitmap = RenderBrushToBitmap(myDrawingBrush);
+        //int textureId = CreateTextureFromBitmap(bitmap);
+
+        #endregion
 
         #endregion
 
