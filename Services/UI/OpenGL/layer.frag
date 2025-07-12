@@ -1,28 +1,24 @@
 ﻿#version 430 core
 
-in vec4 fColor;       // from vertex
-in vec2 vTexCoord;    // from vertex shader
-out vec4 FragColor;
+uniform sampler2D texture0;
+uniform int useHatchPattern;
+uniform float hatchScale;
 
-uniform sampler2D uHatch;      // hatch pattern texture
-uniform bool useHatchPattern;  // control whether pattern is enabled
-uniform float hatchScale;      // texture tiling factor (e.g., 10.0)
+in vec4 fColor;       // from layer vertex
+in vec2 vTexCoord;    // from layer vertex
+
+out vec4 outputColor;
 
 void main()
 {   
     vec4 baseColor = fColor;
-
-    if (useHatchPattern)
-    {
-        vec2 tiledCoord = vTexCoord * hatchScale;
-        vec4 hatch = texture(uHatch, tiledCoord);
-
-        // Option 1: multiply blend (dark-on-light)
-        baseColor *= hatch;
-
-        // Option 2 (uncomment to try): overlay blend
-        // baseColor = mix(baseColor, hatch, hatch.a);
-    }
     
-    FragColor = fColor;
+    if (useHatchPattern == 1) {
+        vec2 tiledCoord = vTexCoord * hatchScale;
+        vec4 hatch = texture(texture0, tiledCoord);
+        // overlay blend
+        outputColor = mix(baseColor, hatch, hatch.a);
+    } else {
+        outputColor = baseColor;
+    }
 }

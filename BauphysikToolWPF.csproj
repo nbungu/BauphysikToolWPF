@@ -54,6 +54,7 @@
     <None Remove="Resources\Icons\floor-plan-128.png" />
     <None Remove="Resources\Icons\info_b.png" />
     <None Remove="Resources\Icons\triangle-warning.png" />
+    <None Remove="Resources\test-hatch.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -231,6 +232,9 @@
     <Resource Include="Resources\Icons\list.png" />
     <Resource Include="Resources\Icons\list_w.png" />
     <Resource Include="Resources\Icons\placeholder_256px_light.png" />
+    <Content Include="Resources\test-hatch.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>
