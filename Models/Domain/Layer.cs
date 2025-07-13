@@ -304,6 +304,9 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public ShapeId ShapeId { get; set; }
 
+        [JsonIgnore]
+        public ElementScene.HatchFitMode HatchFitMode { get; set; } = ElementScene.HatchFitMode.OriginalPixelSize;
+
         public IDrawingGeometry Convert()
         {
             return new DrawingGeometry(this);

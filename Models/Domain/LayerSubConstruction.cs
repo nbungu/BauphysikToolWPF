@@ -256,6 +256,8 @@ namespace BauphysikToolWPF.Models.Domain
         public int? TextureId { get; set; }
         [JsonIgnore]
         public ShapeId ShapeId { get; set; }
+        [JsonIgnore]
+        public ElementScene.HatchFitMode HatchFitMode { get; set; } = ElementScene.HatchFitMode.OriginalPixelSize;
 
         public IDrawingGeometry Convert()
         {

@@ -178,11 +178,17 @@ namespace BauphysikToolWPF.Services.UI
             double widthToHeightRatio = isVertical ? (rectangle.Width / rectangle.Height) : (rectangle.Height / rectangle.Width);
             widthToHeightRatio = Math.Max(0.0005, Math.Abs(widthToHeightRatio));
 
-            //Imaginary 60x60 Rectangle
-            double arcRad = 10;
+            double radRatio = 0.167; // 1:6
+            double arcRad = isVertical ? rectangle.Width * radRatio : rectangle.Height * radRatio;
             double arcEndXLeft = arcRad;
-            double arcEndXRight = 60 - arcRad;
+            double arcEndXRight = isVertical ? rectangle.Width - arcRad : rectangle.Height - arcRad;
             double currentYLeft = 0;
+
+            //// Initial 60x60 Square with
+            //double arcRad = 10;
+            //double arcEndXLeft = arcRad;
+            //double arcEndXRight = 60 - arcRad;
+            //double currentYLeft = 0;
 
             //Imaginary Rectangle, coordinate origin is at top left corner
             PathFigure pathFigure = new PathFigure();
@@ -247,7 +253,15 @@ namespace BauphysikToolWPF.Services.UI
             }
 
             // Use the hatch lines as the Drawing's content
-            DrawingBrush brush = new DrawingBrush() { Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.DimGray, lineThickness), hatchContent) };
+            DrawingBrush brush = new DrawingBrush()
+            {
+                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.DimGray, lineThickness), hatchContent),
+                TileMode = TileMode.None,
+                Viewport = new Rect(0, 0, hatchContent.Bounds.Width, hatchContent.Bounds.Height),
+                ViewportUnits = BrushMappingMode.Absolute,
+                Viewbox = new Rect(0, 0, hatchContent.Bounds.Width, hatchContent.Bounds.Height),
+                ViewboxUnits = BrushMappingMode.Absolute,
+            };
             
             InsulationBrush = brush;
             return InsulationBrush;
@@ -286,6 +300,20 @@ namespace BauphysikToolWPF.Services.UI
             return new Pen(new SolidColorBrush(color), thickness)
             {
                 DashStyle = new DashStyle(new double[] { 2, 2 }, 0)
+            };
+        }
+        public static Pen CreateDottedPen(Brush color, double thickness)
+        {
+            return new Pen(color, thickness)
+            {
+                DashStyle = new DashStyle(new double[] { 2, 2 }, 0)
+            };
+        }
+        public static Pen CreateDashedPen(Brush color, double thickness)
+        {
+            return new Pen(color, thickness)
+            {
+                DashStyle = new DashStyle(new double[] { 12, 12 }, 0)
             };
         }
 

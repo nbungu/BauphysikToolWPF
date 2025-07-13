@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -24,15 +25,26 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class ElementScene : IDisposable
     {
+        public enum HatchFitMode
+        {
+            OriginalPixelSize, // Use original size of the hatch pattern
+            FitToWidth,
+            FitToHeight,
+            StretchToFill
+        }
+
         public event Action<ShapeId>? ShapeHovered;
         public event Action<ShapeId>? ShapeClicked;
-        // ShapeClicked?.Invoke(shape.ShapeId);
 
         private Rectangle? _hoveredRectangle;
         private string? _hoveredTooltip;
         private readonly Dictionary<Brush, int> _hatchTextureCache = new();
+        private readonly Dictionary<int, Size> _hatchTextureSizes = new();
 
-        private readonly CrossSectionBuilder _crossSectionBuilder = new();
+        private readonly CrossSectionBuilder _crossSectionBuilder = new()
+        {
+            CanvasSize = new Rectangle(new Point(0, 0), 880, 400), // Default size, will be updated later
+        };
         private bool _needsRebuild = true;
 
         private bool _isDragging = false;
@@ -58,13 +70,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private const double MinZoom = 0.5;
         private const double MaxZoom = 5.0;
 
-        private struct TexturedRect
+        private struct RenderRect
         {
             public Rectangle Rect;
             public Vector4 Color;
             public int? TextureId;
         }
-        private List<TexturedRect> _texturedRects = new();
+        private List<RenderRect> _renderRects = new();
 
         #region Public Properties
 
@@ -100,6 +112,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             OglView.MouseDown += View_OnMouseDown;
             OglView.MouseUp += View_OnMouseUp;
             OglView.MouseMove += View_OnMouseMove;
+            OglView.MouseLeave += View_OnMouseLeave;
 
             OglViewSettings = settings ?? new GLWpfControlSettings
             {
@@ -172,8 +185,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Debug.WriteLine($"Set VertexAttribPointers -> {error}");
 
             int vertexStart = 0;
-            Debug.WriteLine($"_texturedRects.Count = {_texturedRects.Count}");
-            foreach (var rect in _texturedRects)
+            Debug.WriteLine($"_texturedRects.Count = {_renderRects.Count}");
+            foreach (var rect in _renderRects)
             {
                 if (rect.TextureId.HasValue)
                 {
@@ -183,10 +196,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     GL.ActiveTexture(TextureUnit.Texture0);
                     GL.BindTexture(TextureTarget.Texture2D, rect.TextureId.Value);
 
-                    GL.Uniform1(GL.GetUniformLocation(_prgHandle, "texture0"), 0);
-                    GL.Uniform1(GL.GetUniformLocation(_prgHandle, "useHatchPattern"), 1);
-                    GL.Uniform1(GL.GetUniformLocation(_prgHandle, "hatchScale"), 1.0f);
-                    
+                    //GL.Uniform1(GL.GetUniformLocation(_prgHandle, "texture0"), 0);
+                    GL.Uniform1(GL.GetUniformLocation(_prgHandle, "useHatchPattern"), 1); // Sets useHatchPattern to true
+                    GL.Uniform1(GL.GetUniformLocation(_prgHandle, "hatchScale"), 1.0f); // Set hatch scale to 1.0
                     
                     error = GL.GetError();
                     Debug.WriteLine($"BindTexture + Uniforms -> {error}");
@@ -431,13 +443,16 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 geom.ShapeId = new ShapeId(ShapeType.Layer, geom.InternalId);
 
                 // Add rectangle with hatch texture
-                if (geom.DrawingBrush is Brush hatch)
-                    AddRectangle(geom.Rectangle, geom.BackgroundColor, hatch);
+                if (geom.DrawingBrush is DrawingBrush hatch)
+                    //AddRectangle(geom.Rectangle, geom.BackgroundColor);
+                    AddTexturedRectangle(geom.Rectangle, geom.BackgroundColor, hatch, geom.HatchFitMode);
                 else
                     AddRectangle(geom.Rectangle, geom.BackgroundColor);
 
-                AddLine(geom.Rectangle.TopLine, Brushes.Black);
-
+                ////AddLine(geom.Rectangle.TopLine, Brushes.Black);
+                //var pen = BrushesRepo.CreateDottedPen(Brushes.Blue, 1.0);
+                //AddLine(geom.Rectangle.TopLine, pen);
+                //AddLine(geom.Rectangle.TopLine, Brushes.Black);
             }
 
             // Push rectangle data (now 9 floats per vertex)
@@ -471,7 +486,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
 
-        private void AddRectangle(Rectangle rectangle, Brush backgroundColor, Brush hatchBrush = null)
+        private void AddTexturedRectangle(Rectangle rectangle, Brush backgroundColor, DrawingBrush hatchBrush, HatchFitMode hatchFitMode = HatchFitMode.OriginalPixelSize, double texScale = 1.0)
         {
             Vector4 c = GetColorFromBrush(backgroundColor);
 
@@ -482,56 +497,124 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             // Generate or retrieve texture
             int? textureId = null;
-            if (hatchBrush != null)
+
+            if (!_hatchTextureCache.TryGetValue(hatchBrush, out int texId))
             {
-                if (!_hatchTextureCache.TryGetValue(hatchBrush, out int texId))
-                {
-                    // A: Load from layer
-                    var bitmap = RenderBrushToBitmap(hatchBrush);
+                var bitmap = RenderBrushToBitmap(hatchBrush);
 
-                    // B: Load from resources
-                    //var image = new BitmapImage(new Uri("pack://application:,,,/Resources/test-hatch.png")); // pack is a WPF URI for XAML resource loading,
-                    //var bmp = new FormatConvertedBitmap(image, PixelFormats.Pbgra32, null, 0);
-                    //var bitmap = bmp;
+                // B: Load from resources
+                //var image = new BitmapImage(new Uri("pack://application:,,,/Resources/test-hatch.png")); // pack is a WPF URI for XAML resource loading,
+                //var bmp = new FormatConvertedBitmap(image, PixelFormats.Pbgra32, null, 0);
+                //var bitmap = bmp;
 
-                    // B: Load from disk
-                    //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "test-hatch.png");
-                    //var image = new BitmapImage(new Uri(path, UriKind.Absolute));
-                    //var bmp = new FormatConvertedBitmap(image, PixelFormats.Pbgra32, null, 0);
-                    //var bitmap = bmp;
+                // C: Load from disk
+                //string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Resources", "test-hatch.png");
+                //var image = new BitmapImage(new Uri(path, UriKind.Absolute));
+                //var bmp = new FormatConvertedBitmap(image, PixelFormats.Pbgra32, null, 0);
+                //var bitmap = bmp;
 
-                    texId = CreateTextureFromBitmap(bitmap);
-                    if (texId == 0)
-                        Debug.WriteLine("Failed to create texture!");
-                    else
-                        Debug.WriteLine($"Created texture with ID: {texId}");
-                    _hatchTextureCache[hatchBrush] = texId;
-                }
-                textureId = texId;
+                texId = CreateTextureFromBitmap(bitmap);
+                if (texId == 0)
+                    Debug.WriteLine("Failed to create texture!");
+                else
+                    Debug.WriteLine($"Created texture with ID: {texId}");
+                _hatchTextureCache[hatchBrush] = texId;
             }
-
-
+            textureId = texId;
+            
             // Store textured rectangle info for drawing
-            _texturedRects.Add(new TexturedRect
+            _renderRects.Add(new RenderRect
             {
                 Rect = rectangle,
                 Color = c,
                 TextureId = textureId
             });
 
-            // Texture coordinates: (0,0) top-left to (1,1) bottom-right
-            // TODO check texture coordinates for hatch pattern (not 1 and 0)
+            // Texture coordinates scaling based on texture size
+            float texRepeatX = 1f, texRepeatY = 1f;
+
+            if (textureId.HasValue && _hatchTextureSizes.TryGetValue(textureId.Value, out var texSize))
+            {
+                double texWidth = texSize.Width * texScale;
+                double texHeight = texSize.Height * texScale;
+
+                if (hatchBrush is DrawingBrush db && db.Transform is TransformGroup group &&
+                    group.Children.OfType<ScaleTransform>().FirstOrDefault() is ScaleTransform scale)
+                {
+                    // Optional: honor WPF transform scale if used
+                    texWidth /= scale.ScaleX;
+                    texHeight /= scale.ScaleY;
+                }
+
+                var aspect = texWidth / texHeight;
+
+                switch (hatchFitMode)
+                {
+                    case HatchFitMode.FitToWidth:
+                        texRepeatX = 1.0f;
+                        texRepeatY = (float)(h / (w / aspect));
+                        break;
+                    case HatchFitMode.FitToHeight:
+                        texRepeatY = 1.0f;
+                        texRepeatX = (float)(w / (h * aspect));
+                        break;
+                    case HatchFitMode.StretchToFill:
+                        texRepeatY = 1.0f;
+                        texRepeatX = 1.0f;
+                        break;
+                    default:
+                        texRepeatX = (float)(w / texWidth); // raw tiling based on physical texture size
+                        texRepeatY = (float)(h / texHeight);
+                        break;
+                }
+            }
+
+            float[] rect =
+            {
+                // First triangle
+                x,     y,     0f,  c.X, c.Y, c.Z, c.W,  0f,         0f,
+                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,  texRepeatX, 0f,
+                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f,         texRepeatY,
+
+                // Second triangle
+                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,  texRepeatX, 0f,
+                x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,  texRepeatX, texRepeatY,
+                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f,         texRepeatY,
+            };
+            _vertices.AddRange(rect);
+        }
+
+        private void AddRectangle(Rectangle rectangle, Brush backgroundColor)
+        {
+            Vector4 c = GetColorFromBrush(backgroundColor);
+
+            float x = (float)rectangle.X;
+            float y = (float)rectangle.Y;
+            float w = (float)rectangle.Width;
+            float h = (float)rectangle.Height;
+
+            // Generate or retrieve texture
+            int? textureId = null;
+            
+            // Store textured rectangle info for drawing
+            _renderRects.Add(new RenderRect
+            {
+                Rect = rectangle,
+                Color = c,
+                TextureId = textureId
+            });
+
             float[] rect =
             {
                 // First triangle
                 x,     y,     0f,  c.X, c.Y, c.Z, c.W,  0f, 0f,
-                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,  1f, 0f,
-                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f, 1f,
+                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,  0f, 0f,
+                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f, 0f,
 
                 // Second triangle
-                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,  1f, 0f,
-                x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,  1f, 1f,
-                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f, 1f,
+                x + w, y,     0f,  c.X, c.Y, c.Z, c.W,  0f, 0f,
+                x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f, 0f,
+                x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f, 0f,
             };
             _vertices.AddRange(rect);
         }
@@ -548,6 +631,64 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 (float)p1.X, (float)p1.Y, 0f,  color.X, color.Y, color.Z, color.W,
                 (float)p2.X, (float)p2.Y, 0f,  color.X, color.Y, color.Z, color.W
             });
+        }
+
+        private void AddLine(Line line, Pen pen)
+        {
+            Vector4 color = GetColorFromBrush(pen.Brush);
+            var dashStyle = pen.DashStyle;
+            double thickness = pen.Thickness;
+
+            var p1 = line.Start;
+            var p2 = line.End;
+
+            if (dashStyle == null || dashStyle.Dashes.Count == 0)
+            {
+                // Solid line
+                _lineVertices.AddRange(new float[]
+                {
+                    (float)p1.X, (float)p1.Y, 0f,  color.X, color.Y, color.Z, color.W,
+                    (float)p2.X, (float)p2.Y, 0f,  color.X, color.Y, color.Z, color.W
+                });
+                return;
+            }
+
+            // Vector direction
+            double dx = p2.X - p1.X;
+            double dy = p2.Y - p1.Y;
+            double length = Math.Sqrt(dx * dx + dy * dy);
+            if (length == 0) return;
+
+            double ux = dx / length;
+            double uy = dy / length;
+
+            double pos = 0;
+            int dashIndex = 0;
+            bool draw = true;
+
+            while (pos < length)
+            {
+                double dashLength = dashStyle.Dashes[dashIndex % dashStyle.Dashes.Count];
+                double segmentLength = Math.Min(dashLength, length - pos);
+
+                if (draw)
+                {
+                    var sx = p1.X + ux * pos;
+                    var sy = p1.Y + uy * pos;
+                    var ex = p1.X + ux * (pos + segmentLength);
+                    var ey = p1.Y + uy * (pos + segmentLength);
+
+                    _lineVertices.AddRange(new float[]
+                    {
+                        (float)sx, (float)sy, 0f, color.X, color.Y, color.Z, color.W,
+                        (float)ex, (float)ey, 0f, color.X, color.Y, color.Z, color.W
+                    });
+                }
+
+                pos += segmentLength;
+                dashIndex++;
+                draw = !draw;
+            }
         }
 
         private void AddCircle(Point center, float radius, Brush brush, int segments = 32)
@@ -637,7 +778,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             if (e.ChangedButton == MouseButton.Left && !_isDragging)
             {
-               var scenePoint = ConvertMouseToScene(e.GetPosition(OglView));
+                var scenePoint = ConvertMouseToScene(e.GetPosition(OglView));
 
                 foreach (var shape in _crossSectionBuilder.DrawingGeometries)
                 {
@@ -670,7 +811,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (e.ChangedButton == MouseButton.Middle) _isDragging = false;
             OglView.ReleaseMouseCapture();
-            Mouse.OverrideCursor = null;
         }
 
         private void View_OnMouseMove(object sender, MouseEventArgs e)
@@ -690,30 +830,38 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 UpdateProjection(OglViewCurrentSize);
                 RefreshView();
             }
-
-
-            // Hit testing for Interactive View
-
-            var scenePoint = ConvertMouseToScene(e.GetPosition(OglView));
-
-            foreach (var shape in _crossSectionBuilder.DrawingGeometries)
+            else
             {
-                if (shape.Rectangle.Contains(scenePoint))
+                // Hit testing for Interactive View
+
+                var scenePoint = ConvertMouseToScene(e.GetPosition(OglView));
+
+                foreach (var shape in _crossSectionBuilder.DrawingGeometries)
                 {
-                    _hoveredRectangle = shape.Rectangle;
-                    _hoveredTooltip = shape.ShapeId.ToString();
+                    if (shape.Rectangle.Contains(scenePoint))
+                    {
+                        _hoveredRectangle = shape.Rectangle;
+                        _hoveredTooltip = shape.ShapeId.ToString();
 
-                    Mouse.OverrideCursor = Cursors.Hand;
-                    ToolTip tooltip = new ToolTip { Content = shape.ShapeId.ToString() };
-                    ToolTipService.SetToolTip(OglView, tooltip);
+                        Mouse.OverrideCursor = Cursors.Hand;
+                        ToolTip tooltip = new ToolTip { Content = shape.ShapeId.ToString() };
+                        ToolTipService.SetToolTip(OglView, tooltip);
 
-                    ShapeHovered?.Invoke(shape.ShapeId);
-                    return;
+                        ShapeHovered?.Invoke(shape.ShapeId);
+                        return;
+                    }
                 }
+                Mouse.OverrideCursor = null;
+                ToolTipService.SetToolTip(OglView, null);
             }
+        }
 
+        private void View_OnMouseLeave(object sender, MouseEventArgs e)
+        {
             Mouse.OverrideCursor = null;
-            //ToolTipService.SetToolTip(View, null);
+            ToolTipService.SetToolTip(OglView, null);
+            _hoveredRectangle = null;
+            _hoveredTooltip = null;
         }
 
         #endregion
@@ -756,8 +904,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return new Vector4(1f, 1f, 1f, 1f);
         }
 
-        private static BitmapSource RenderBrushToBitmap(Brush brush, int width = 64, int height = 64)
+        private static BitmapSource RenderBrushToBitmap(DrawingBrush brush)
         {
+            int width = (int)brush.Viewbox.Width; // 64
+            int height = (int)brush.Viewbox.Height; // 64
             var dv = new DrawingVisual();
             using (var ctx = dv.RenderOpen())
             {
@@ -769,7 +919,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return rtb;
         }
 
-        private static int CreateTextureFromBitmap(BitmapSource bmp)
+        private int CreateTextureFromBitmap(BitmapSource bmp)
         {
             int width = bmp.PixelWidth;
             int height = bmp.PixelHeight;
@@ -784,16 +934,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
                 width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
 
-            // Recommended filtering
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            ApplyTextureParameters();
 
-            // Repeat pattern tiling
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-
-            // Optional: Generate mipmaps for smoother rendering at smaller scales
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            // Save texture size
+            _hatchTextureSizes[texIdHandle] = new Size(width, height);
 
             // Debug output
             var err = GL.GetError();
@@ -805,6 +949,40 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             Debug.WriteLine($"Texture created successfully: ID = {texIdHandle}, Size = {width}x{height}");
             return texIdHandle;
+        }
+        /// <summary>
+        /// Converts a pixels (e.g. 64 px texture) to normalized screen size,
+        /// where 1.0 = full screen width or height, and 2.0 = half, etc.
+        /// </summary>
+        /// <returns>Normalized size in OpenGL screen units</returns>
+        private static float ConvertPixelsToNormalized(float pixel, float containerPixel, double zoomFactor)
+        {
+            // Adjust for zoom
+            float scaledPixels = pixel * (float)zoomFactor;
+            float baseDivisor = scaledPixels == 0 ? containerPixel : scaledPixels;
+            return containerPixel / baseDivisor;
+        }
+
+        /// <summary>
+        /// Applies consistent OpenGL parameters to a bound texture (e.g. filtering and wrap modes).
+        /// Call this after GL.BindTexture().
+        /// </summary>
+        private static void ApplyTextureParameters()
+        {
+            // Filtering
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            // Don't repeat
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
+
+            // Repeat pattern tiling
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+
+            // Optional: Enable this if you generate mipmaps
+            // GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
         #endregion

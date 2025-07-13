@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using BT.Geometry;
 using BT.Logging;
 using System;
@@ -69,7 +70,7 @@ namespace BauphysikToolWPF.Services.UI
                 var selectedGeometry = DrawingGeometries.FindIndex(g => (string)g.Tag == tag);
                 if (selectedGeometry != -1)
                 {
-                    DrawingGeometries[selectedGeometry] = UpdateLayerGeometry(layer).Convert();
+                    DrawingGeometries[selectedGeometry] = UpdateLayerGeometry(layer);
                 }
             }
             else RebuildCrossSection();
@@ -112,7 +113,7 @@ namespace BauphysikToolWPF.Services.UI
             {
                 // Main Layer Geometry
                 l.Rectangle = l.Rectangle.MoveTo(ptStart);
-                layerDrawings.Add(l.Convert());
+                layerDrawings.Add(l);
                 if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForLayer(l, (l.LayerNumber).ToString()));
 
                 // SubConstruction
@@ -167,7 +168,7 @@ namespace BauphysikToolWPF.Services.UI
                             for (int i = 0; i < numSubconstructions; i++)
                             {
                                 double x = startX + i * (subConstrWidth + spacing);
-                                var subConstrGeometry = l.SubConstruction.Convert();
+                                var subConstrGeometry = l.SubConstruction;
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(x, ptStart.Y));
                                 layerDrawings.Add(subConstrGeometry);
                                 var labelOffset = new Vector(0, 0);
@@ -215,7 +216,7 @@ namespace BauphysikToolWPF.Services.UI
                             for (int i = 0; i < numSubconstructions; i++)
                             {
                                 double y = startY + i * (subConstrHeight + spacing);
-                                var subConstrGeometry = l.SubConstruction.Convert();
+                                var subConstrGeometry = l.SubConstruction;
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(ptStart.X, y));
                                 layerDrawings.Add(subConstrGeometry);
                                 var labelOffset = new Vector(0, 0);
@@ -226,7 +227,7 @@ namespace BauphysikToolWPF.Services.UI
                     }
                     else
                     {
-                        var subConstrGeometry = l.SubConstruction.Convert();
+                        var subConstrGeometry = l.SubConstruction;
                         subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(ptStart);
                         layerDrawings.Add(subConstrGeometry);
                         var labelOffset = new Vector(0, 0);
@@ -285,9 +286,16 @@ namespace BauphysikToolWPF.Services.UI
             {
                 // Main Layer Geometry
                 if (DrawingType == DrawingType.CrossSection)
+                {
                     l.Rectangle = new Rectangle(new Point(0, 0), CanvasSize.Width, l.Thickness * SizeOf1Cm);
+                    //l.HatchFitMode = ElementScene.HatchFitMode.OriginalPixelSize;
+                }
+
                 else if (DrawingType == DrawingType.VerticalCut)
+                {
                     l.Rectangle = new Rectangle(new Point(0, 0), l.Thickness * SizeOf1Cm, CanvasSize.Height);
+                    //l.HatchFitMode = ElementScene.HatchFitMode.OriginalPixelSize;
+                }
 
                 UpdateLayerGeometry(l);
 
@@ -344,6 +352,7 @@ namespace BauphysikToolWPF.Services.UI
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
             layer.Tag = $"Layer_{layer.LayerNumber}";
+            if (layer.Material.MaterialCategory == Enums.MaterialCategory.Insulation) layer.HatchFitMode = ElementScene.HatchFitMode.StretchToFill;
             return layer;
         }
 
@@ -356,6 +365,7 @@ namespace BauphysikToolWPF.Services.UI
             subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.MaterialCategory, 1.0, subConstruction.Rectangle);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             subConstruction.Tag = $"Layer_{layer.LayerNumber}b";
+            if (subConstruction.Material.MaterialCategory == Enums.MaterialCategory.Insulation) subConstruction.HatchFitMode = ElementScene.HatchFitMode.StretchToFill;
             return subConstruction;
         }
     }
