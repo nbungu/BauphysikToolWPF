@@ -113,7 +113,7 @@ namespace BauphysikToolWPF.Services.UI
             {
                 // Main Layer Geometry
                 l.Rectangle = l.Rectangle.MoveTo(ptStart);
-                layerDrawings.Add(l);
+                layerDrawings.Add(l.Convert());
                 if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForLayer(l, (l.LayerNumber).ToString()));
 
                 // SubConstruction
@@ -168,7 +168,7 @@ namespace BauphysikToolWPF.Services.UI
                             for (int i = 0; i < numSubconstructions; i++)
                             {
                                 double x = startX + i * (subConstrWidth + spacing);
-                                var subConstrGeometry = l.SubConstruction;
+                                var subConstrGeometry = l.SubConstruction.Convert(); // Rename to copy?
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(x, ptStart.Y));
                                 layerDrawings.Add(subConstrGeometry);
                                 var labelOffset = new Vector(0, 0);
@@ -216,7 +216,7 @@ namespace BauphysikToolWPF.Services.UI
                             for (int i = 0; i < numSubconstructions; i++)
                             {
                                 double y = startY + i * (subConstrHeight + spacing);
-                                var subConstrGeometry = l.SubConstruction;
+                                var subConstrGeometry = l.SubConstruction.Convert(); // Rename to copy?
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(ptStart.X, y));
                                 layerDrawings.Add(subConstrGeometry);
                                 var labelOffset = new Vector(0, 0);
@@ -227,7 +227,7 @@ namespace BauphysikToolWPF.Services.UI
                     }
                     else
                     {
-                        var subConstrGeometry = l.SubConstruction;
+                        var subConstrGeometry = l.SubConstruction.Convert(); // Rename to copy?
                         subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(ptStart);
                         layerDrawings.Add(subConstrGeometry);
                         var labelOffset = new Vector(0, 0);
