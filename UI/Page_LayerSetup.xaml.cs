@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
+using BauphysikToolWPF.UI.ViewModels;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,13 +11,12 @@ using System.Windows.Media.Media3D;
 
 namespace BauphysikToolWPF.UI
 {
-    // TRY: https://github.com/opentk/GLWpfControl
-
     public partial class Page_LayerSetup : UserControl
     {
         #region private Fields
 
-        private readonly ElementScene? _elementScene = new ElementScene(); // Instance of the OpenGL Test Scene, if needed
+        private readonly Page_LayerSetup_VM _viewModel;
+        private readonly ElementScene _elementScene;
 
         #endregion
 
@@ -25,12 +25,16 @@ namespace BauphysikToolWPF.UI
         {
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
-            
+
+            _elementScene = new ElementScene();
+            _elementScene.ConnectToView(OpenTkControl);  // hook into GL control
+            _elementScene.UseElement(Session.SelectedElement); // load selected data
+            _viewModel = new Page_LayerSetup_VM(_elementScene);
+
+            this.DataContext = _viewModel;
             this.Unloaded += Page_LayerSetup_Unloaded;
-            _elementScene.ConnectToView(OpenTkControl);
-            _elementScene.UseElement(Session.SelectedElement);
         }
-        private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e) => _elementScene?.Dispose();
+        private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e) => _elementScene.Dispose();
 
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

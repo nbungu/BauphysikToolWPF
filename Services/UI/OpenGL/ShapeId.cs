@@ -3,8 +3,9 @@
     public enum ShapeType
     {
         Layer = 0,
-        DimensionalChain = 1,
-        Annotation = 2,
+        SubConstructionLayer = 1,
+        DimensionalChain = 2,
+        Annotation = 3,
         // Extend as needed
     }
 

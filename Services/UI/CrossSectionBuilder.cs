@@ -346,6 +346,8 @@ namespace BauphysikToolWPF.Services.UI
 
         private IDrawingGeometry UpdateLayerGeometry(Layer layer)
         {
+            layer.ShapeId = new ShapeId(ShapeType.Layer, layer.InternalId);
+
             layer.BackgroundColor = new SolidColorBrush(layer.Material.Color);
             layer.DrawingBrush = BrushesRepo.GetHatchPattern(layer.Material.MaterialCategory, 1.0, layer.Rectangle);
             layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
@@ -359,8 +361,8 @@ namespace BauphysikToolWPF.Services.UI
         private IDrawingGeometry UpdateSubConstructionGeometry(Layer layer)
         {
             if (layer.SubConstruction is null) return new DrawingGeometry();
-
             var subConstruction = layer.SubConstruction;
+            subConstruction.ShapeId = new ShapeId(ShapeType.SubConstructionLayer, layer.InternalId);
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
             subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.MaterialCategory, 1.0, subConstruction.Rectangle);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;

@@ -12,9 +12,9 @@
             d:DesignWidth="1400"
             IsVisibleChanged="UserControl_IsVisibleChanged">
 
-    <UserControl.DataContext>
+    <!--<UserControl.DataContext>
         <vm:Page_LayerSetup_VM/>
-    </UserControl.DataContext>
+    </UserControl.DataContext>-->
 
     <!--
     the DataContext is used to specify the data source for a UI element,

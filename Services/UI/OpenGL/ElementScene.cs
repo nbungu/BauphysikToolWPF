@@ -33,9 +33,16 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             StretchToFill
         }
 
+        public enum LineStyle
+        {
+            Solid = 0,
+            Dashed,
+            Dotted
+        }
+
         public event Action<ShapeId>? ShapeHovered;
         public event Action<ShapeId>? ShapeClicked;
-
+        
         private Rectangle? _hoveredRectangle;
         private string? _hoveredTooltip;
         private readonly Dictionary<Brush, int> _hatchTextureCache = new();
@@ -50,21 +57,21 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private bool _isDragging = false;
         private System.Windows.Point _lastMousePosition;
         private Vector2 _panOffset = Vector2.Zero;
-        private bool _disposed;
-        private bool _drawLines;
+        private bool _disposed = false;
         private Matrix4 _projectionMatrix;
         private int _prgHandle;
 
-        // VAO can stay as-is for both your geometry (rectangles) and your new dashed lines, as long as:
-        // All attributes(position, color, dashCoord) are enabled and configured before each draw call.
-        private int _vertexArrayObject;
-        private int _vertexBufferObject;
-        private List<float> _vertices = new(); // Interleaved position + color
-        private int _vertexCount;
-        private int _lineVertexBuffer;
+
+        private List<float> _rectVertices = new(); // Interleaved position + color
+        private List<float> _lineVertices = new(); // Interleaved: position + color
+
+        private int _rectVertexCount;
         private int _lineVertexCount;
 
-        private List<float> _lineVertices = new(); // Interleaved: position + color
+        private int _rectVao;
+        private int _rectVbo;
+        private int _lineVao;
+        private int _lineVbo;
 
         private const double ZoomStep = 0.1;
         private const double MinZoom = 0.5;
@@ -147,88 +154,55 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 _needsRebuild = false;
             }
 
-            ErrorCode error;
-
-            var bgColor = GetColorFromBrush(BackgroundColor);
-            GL.ClearColor(bgColor.X, bgColor.Y, bgColor.Z, bgColor.W);
+            // Clear screen
+            var bg = GetColorFromBrush(BackgroundColor);
+            GL.ClearColor(bg.X, bg.Y, bg.Z, bg.W);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.UseProgram(_prgHandle);
-            error = GL.GetError();
-            Debug.WriteLine($"UseProgram -> {error}");
+            GL.UniformMatrix4(GL.GetUniformLocation(_prgHandle, "uProjection"), false, ref _projectionMatrix);
 
-            int projLocation = GL.GetUniformLocation(_prgHandle, "uProjection");
-            GL.UniformMatrix4(projLocation, false, ref _projectionMatrix);
-            error = GL.GetError();
-            Debug.WriteLine($"Set uProjection -> {error}, location: {projLocation}");
+            int uUseHatch = GL.GetUniformLocation(_prgHandle, "useHatchPattern");
+            int uHatchScale = GL.GetUniformLocation(_prgHandle, "hatchScale");
+            int uTex0 = GL.GetUniformLocation(_prgHandle, "texture0");
 
-            GL.BindVertexArray(_vertexArrayObject);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-            error = GL.GetError();
-            Debug.WriteLine($"Bind VAO/VBO -> {error}");
-
-            int stride = 9 * sizeof(float); // 3 for position, 4 for color, 2 for texture coords
-
-            int positionLocation = 0;
-            GL.EnableVertexAttribArray(positionLocation);
-            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, stride, 0);
-
-            int colorLocation = 1;
-            GL.EnableVertexAttribArray(colorLocation);
-            GL.VertexAttribPointer(colorLocation, 4, VertexAttribPointerType.Float, false, stride, 3 * sizeof(float));
-
-            int texCoordLocation = 2;
-            GL.EnableVertexAttribArray(texCoordLocation);
-            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, stride, 7 * sizeof(float));
-
-            error = GL.GetError();
-            Debug.WriteLine($"Set VertexAttribPointers -> {error}");
-
-            int vertexStart = 0;
-            Debug.WriteLine($"_texturedRects.Count = {_renderRects.Count}");
-            foreach (var rect in _renderRects)
+            // Draw rectangles
+            if (_renderRects.Count > 0)
             {
-                if (rect.TextureId.HasValue)
+                GL.BindVertexArray(_rectVao);
+                GL.ActiveTexture(TextureUnit.Texture0);
+                GL.Uniform1(uTex0, 0);
+
+                int offsetVerts = 0;
+                foreach (var rect in _renderRects)
                 {
-                    int texId = rect.TextureId ?? -1;
-                    Debug.WriteLine($"Drawing rect with TextureId = {texId}");
+                    if (rect.TextureId.HasValue)
+                    {
+                        GL.BindTexture(TextureTarget.Texture2D, rect.TextureId.Value);
+                        GL.Uniform1(uUseHatch, 1);
+                        GL.Uniform1(uHatchScale, 1.0f);
+                    }
+                    else
+                    {
+                        GL.Uniform1(uUseHatch, 0);
+                    }
 
-                    GL.ActiveTexture(TextureUnit.Texture0);
-                    GL.BindTexture(TextureTarget.Texture2D, rect.TextureId.Value);
-
-                    //GL.Uniform1(GL.GetUniformLocation(_prgHandle, "texture0"), 0);
-                    GL.Uniform1(GL.GetUniformLocation(_prgHandle, "useHatchPattern"), 1); // Sets useHatchPattern to true
-                    GL.Uniform1(GL.GetUniformLocation(_prgHandle, "hatchScale"), 1.0f); // Set hatch scale to 1.0
-                    
-                    error = GL.GetError();
-                    Debug.WriteLine($"BindTexture + Uniforms -> {error}");
+                    GL.DrawArrays(PrimitiveType.Triangles, offsetVerts, 6);
+                    offsetVerts += 6;
                 }
-                else
-                {
-                    GL.Uniform1(GL.GetUniformLocation(_prgHandle, "useHatchPattern"), 0);
-                }
-
-                GL.DrawArrays(PrimitiveType.Triangles, vertexStart, 6);
-                error = GL.GetError();
-                Debug.WriteLine($"Draw rectangle from vertex {vertexStart} -> {error}");
-
-                vertexStart += 6;
             }
 
+            // Draw lines
             if (_lineVertexCount > 0)
             {
-                Debug.WriteLine($"Drawing {_lineVertexCount} line vertices...");
-                GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVertexBuffer);
-                GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 7 * sizeof(float), 0);
-                GL.VertexAttribPointer(1, 4, VertexAttribPointerType.Float, false, 7 * sizeof(float), 3 * sizeof(float));
-                GL.EnableVertexAttribArray(0);
-                GL.EnableVertexAttribArray(1);
+                GL.BindVertexArray(_lineVao);
+                GL.Uniform1(uUseHatch, 0); // Ensure no hatch texture
 
-                GL.LineWidth(1.0f);
+                GL.LineWidth(2f);
                 GL.DrawArrays(PrimitiveType.Lines, 0, _lineVertexCount);
-                error = GL.GetError();
-                Debug.WriteLine($"Draw lines -> {error}");
             }
+
+            GL.BindVertexArray(0);
         }
 
         public void ZoomIn()
@@ -274,25 +248,28 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (_disposed) return;
 
-            if (OglView != null)
-            {
-                OglView.Render -= View_OnRender;
-                OglView.MouseWheel -= View_OnMouseWheel;
-                OglView.MouseRightButtonUp -= View_OnMouseRightClick;
-                OglView.MouseDown -= View_OnMouseDown;
-                OglView.MouseUp -= View_OnMouseUp;
-                OglView.MouseMove -= View_OnMouseMove;
-            }
+            OglView.Render -= View_OnRender;
+            OglView.MouseWheel -= View_OnMouseWheel;
+            OglView.MouseRightButtonUp -= View_OnMouseRightClick;
+            OglView.MouseDown -= View_OnMouseDown;
+            OglView.MouseUp -= View_OnMouseUp;
+            OglView.MouseMove -= View_OnMouseMove;
+            OglView.MouseLeave -= View_OnMouseLeave;
 
             Session.SelectedLayerChanged -= View_OnElementChanged;
             Session.SelectedElementChanged -= View_OnElementChanged;
 
-            if (_vertexBufferObject != 0)
-                GL.DeleteBuffer(_vertexBufferObject);
-            if (_lineVertexBuffer != 0)
-                GL.DeleteBuffer(_lineVertexBuffer);
-            if (_vertexArrayObject != 0)
-                GL.DeleteVertexArray(_vertexArrayObject);
+            // Delete GL resources
+            if (_rectVbo != 0)
+                GL.DeleteBuffer(_rectVbo);
+            if (_lineVbo != 0)
+                GL.DeleteBuffer(_lineVbo);
+
+            if (_rectVao != 0)
+                GL.DeleteVertexArray(_rectVao);
+            if (_lineVao != 0)
+                GL.DeleteVertexArray(_lineVao);
+
             if (_prgHandle != 0)
                 GL.DeleteProgram(_prgHandle);
 
@@ -352,16 +329,52 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             #endregion
 
-            _vertexArrayObject = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayObject);
+            int positionLocation = 0;
+            int colorLocation = 1;
+            int texCoordLocation = 2;
+            int dashParamsLocation = 3;
 
-            _vertexBufferObject = GL.GenBuffer();
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
+            #region Rectangle
 
-            _lineVertexBuffer = GL.GenBuffer();
+            // Rectangle VAO
+            GL.GenVertexArrays(1, out _rectVao);
+            GL.BindVertexArray(_rectVao);
+            GL.GenBuffers(1, out _rectVbo);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _rectVbo);
+            // Fill buffer later via RebuildOglGeometry()
 
-            // Initial dummy allocation
-            GL.BufferData(BufferTarget.ArrayBuffer, 0, IntPtr.Zero, BufferUsageHint.DynamicDraw);
+            int strideR = 9 * sizeof(float);
+            GL.EnableVertexAttribArray(positionLocation);
+            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, strideR, 0);
+            GL.EnableVertexAttribArray(colorLocation);
+            GL.VertexAttribPointer(colorLocation, 4, VertexAttribPointerType.Float, false, strideR, 3 * sizeof(float));
+            GL.EnableVertexAttribArray(texCoordLocation);
+            GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, strideR, 7 * sizeof(float));
+            // Note: location 3 (dashParams) is unused for rects
+            GL.BindVertexArray(0);
+
+            #endregion
+
+            #region Line
+
+            // Line VAO
+            GL.GenVertexArrays(1, out _lineVao);
+            GL.BindVertexArray(_lineVao);
+            GL.GenBuffers(1, out _lineVbo);
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVbo);
+            // Fill buffer via AddLine + BufferData
+
+            int strideL = 9 * sizeof(float);
+            GL.EnableVertexAttribArray(positionLocation);
+            GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, strideL, 0);
+            GL.EnableVertexAttribArray(colorLocation);
+            GL.VertexAttribPointer(colorLocation, 4, VertexAttribPointerType.Float, false, strideL, 3 * sizeof(float));
+            GL.EnableVertexAttribArray(dashParamsLocation);
+            GL.VertexAttribPointer(dashParamsLocation, 2, VertexAttribPointerType.Float, false, strideL, 7 * sizeof(float));
+            // location 2 (texCoord) is unused
+            GL.BindVertexArray(0);
+
+            #endregion
         }
 
         /// <summary>
@@ -435,34 +448,44 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void RebuildOglGeometry()
         {
-            _vertices.Clear();
+            _renderRects.Clear();
+            _rectVertices.Clear();
             _lineVertices.Clear();
 
-            foreach (var geom in _crossSectionBuilder.DrawingGeometries)
+            for (int i = 0; i < _crossSectionBuilder.DrawingGeometries.Count; i++)
             {
-                geom.ShapeId = new ShapeId(ShapeType.Layer, geom.InternalId);
+                var geom = _crossSectionBuilder.DrawingGeometries[i];
 
-                // Add rectangle with hatch texture
+                // Add rectangle with or without hatch
                 if (geom.DrawingBrush is DrawingBrush hatch)
-                    //AddRectangle(geom.Rectangle, geom.BackgroundColor);
+                {
                     AddTexturedRectangle(geom.Rectangle, geom.BackgroundColor, hatch, geom.HatchFitMode);
+                }
                 else
+                {
                     AddRectangle(geom.Rectangle, geom.BackgroundColor);
+                }
 
-                ////AddLine(geom.Rectangle.TopLine, Brushes.Black);
-                //var pen = BrushesRepo.CreateDottedPen(Brushes.Blue, 1.0);
-                //AddLine(geom.Rectangle.TopLine, pen);
-                //AddLine(geom.Rectangle.TopLine, Brushes.Black);
+                // Add lines
+                AddLine(geom.Rectangle.BottomLine, Brushes.Black, LineStyle.Dashed);
+                if (i == 0)
+                    AddLine(geom.Rectangle.TopLine, Brushes.Black, LineStyle.Solid);
+
+                if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
+                {
+                    AddLine(geom.Rectangle.LeftLine, Brushes.Black, LineStyle.Solid);
+                    AddLine(geom.Rectangle.RightLine, Brushes.Black, LineStyle.Solid);
+                }
             }
 
-            // Push rectangle data (now 9 floats per vertex)
-            _vertexCount = _vertices.Count / 9;
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _vertexBufferObject);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertices.Count * sizeof(float), _vertices.ToArray(), BufferUsageHint.DynamicDraw);
+            // Upload rectangle vertex data
+            _rectVertexCount = _rectVertices.Count / 9;
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _rectVbo);
+            GL.BufferData(BufferTarget.ArrayBuffer, _rectVertices.Count * sizeof(float), _rectVertices.ToArray(), BufferUsageHint.DynamicDraw);
 
-            // Push line data
-            _lineVertexCount = _lineVertices.Count / 7;
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVertexBuffer);
+            // Upload line vertex data
+            _lineVertexCount = _lineVertices.Count / 9;
+            GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVbo);
             GL.BufferData(BufferTarget.ArrayBuffer, _lineVertices.Count * sizeof(float), _lineVertices.ToArray(), BufferUsageHint.DynamicDraw);
         }
 
@@ -581,7 +604,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,  texRepeatX, texRepeatY,
                 x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f,         texRepeatY,
             };
-            _vertices.AddRange(rect);
+            _rectVertices.AddRange(rect);
         }
 
         private void AddRectangle(Rectangle rectangle, Brush backgroundColor)
@@ -616,21 +639,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 x + w, y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f, 0f,
                 x,     y + h, 0f,  c.X, c.Y, c.Z, c.W,  0f, 0f,
             };
-            _vertices.AddRange(rect);
-        }
-
-        private void AddLine(Line line, Brush lineColor)
-        {
-            Vector4 color = GetColorFromBrush(lineColor);
-
-            var p1 = line.Start;
-            var p2 = line.End;
-
-            _lineVertices.AddRange(new float[]
-            {
-                (float)p1.X, (float)p1.Y, 0f,  color.X, color.Y, color.Z, color.W,
-                (float)p2.X, (float)p2.Y, 0f,  color.X, color.Y, color.Z, color.W
-            });
+            _rectVertices.AddRange(rect);
         }
 
         private void AddLine(Line line, Pen pen)
@@ -691,6 +700,40 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
         }
 
+        private void AddLine(Line line, Brush lineColor, LineStyle style = LineStyle.Solid)
+        {
+            Vector4 color = GetColorFromBrush(lineColor);
+
+            var p1 = line.Start;
+            var p2 = line.End;
+
+            // Dash parameters
+            float dashLength = 0f, gapLength = 0f;
+
+            switch (style)
+            {
+                case LineStyle.Dashed:
+                    dashLength = 8f;
+                    gapLength = 4f;
+                    break;
+                case LineStyle.Dotted:
+                    dashLength = 2f;
+                    gapLength = 4f;
+                    break;
+                case LineStyle.Solid:
+                default:
+                    dashLength = 0f;
+                    gapLength = 0f;
+                    break;
+            }
+
+            _lineVertices.AddRange(new float[]
+            {
+                (float)p1.X, (float)p1.Y, 0f,  color.X, color.Y, color.Z, color.W, dashLength, gapLength,
+                (float)p2.X, (float)p2.Y, 0f,  color.X, color.Y, color.Z, color.W, dashLength, gapLength
+            });
+        }
+
         private void AddCircle(Point center, float radius, Brush brush, int segments = 32)
         {
             Vector4 color = GetColorFromBrush(brush);
@@ -708,7 +751,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 float y2 = cy + radius * MathF.Sin(angle2);
 
                 // Triangle fan with center
-                _vertices.AddRange(new float[]
+                _rectVertices.AddRange(new float[]
                 {
                     cx, cy, 0f, color.X, color.Y, color.Z, color.W,
                     x1, y1, 0f, color.X, color.Y, color.Z, color.W,
@@ -741,10 +784,21 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
         }
 
+        private void ClearTextureCache()
+        {
+            foreach (var texId in _hatchTextureCache.Values)
+            {
+                GL.DeleteTexture(texId);
+            }
+            _hatchTextureCache.Clear();
+            _hatchTextureSizes.Clear();
+        }
+
         #region Event Handlers
 
         private void View_OnElementChanged()
         {
+            ClearTextureCache();
             this.UseElement(Session.SelectedElement);
             this.UpdateProjection(OglViewCurrentSize); 
             RefreshView(); // Force re-render of OpenGL Control programatically
@@ -862,6 +916,16 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             ToolTipService.SetToolTip(OglView, null);
             _hoveredRectangle = null;
             _hoveredTooltip = null;
+        }
+
+        public void SimulateClick(ShapeId shape)
+        {
+            ShapeClicked?.Invoke(shape);
+        }
+
+        public void SimulateHover(ShapeId shape)
+        {
+            ShapeHovered?.Invoke(shape);
         }
 
         #endregion

@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -23,7 +24,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private readonly Element _element;
         
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
-        public Page_LayerSetup_VM()
+        public Page_LayerSetup_VM(ElementScene scene)
         {
             if (Session.SelectedElement is null) return;
 
@@ -38,6 +39,9 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.SelectedLayerChanged += LayerChanged;
             Session.SelectedElementChanged += ElementChanged;
             Session.EnvVarsChanged += EnvVarsChanged;
+
+            scene.ShapeClicked += OnShapeClicked;
+
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += PropertyItemChanged;
@@ -394,6 +398,17 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         #region Who triggers: Event Handlers for UI Events
+
+        private void OnShapeClicked(ShapeId shape)
+        {
+            var targetLayer = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null);
+            if (targetLayer != null)
+            {
+                var index = LayerList.IndexOf(targetLayer);
+                SelectedLayerIndex = index;
+            }
+            Console.WriteLine($"VM Shape clicked: {shape}");
+        }
 
         private void ProjectDataChanged()
         {

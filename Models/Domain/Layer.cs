@@ -2,14 +2,13 @@
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using BT.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
-using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.UI.Enums;
-using Vector4 = OpenTK.Mathematics.Vector4;
 
 namespace BauphysikToolWPF.Models.Domain
 {
