@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -45,28 +46,26 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         
         private Rectangle? _hoveredRectangle;
         private string? _hoveredTooltip;
-        private readonly Dictionary<Brush, int> _hatchTextureCache = new();
-        private readonly Dictionary<int, Size> _hatchTextureSizes = new();
+
 
         private readonly CrossSectionBuilder _crossSectionBuilder = new()
         {
             CanvasSize = new Rectangle(new Point(0, 0), 880, 400), // Default size, will be updated later
         };
         private bool _needsRebuild = true;
-
         private bool _isDragging = false;
         private System.Windows.Point _lastMousePosition;
         private Vector2 _panOffset = Vector2.Zero;
         private bool _disposed = false;
         private Matrix4 _projectionMatrix;
         private int _prgHandle;
+        
 
+        private readonly Dictionary<Brush, int> _hatchTextureCache = new();
+        private readonly Dictionary<int, Size> _hatchTextureSizes = new();
 
-        private List<float> _rectVertices = new(); // Interleaved position + color
-        private List<float> _lineVertices = new(); // Interleaved: position + color
-
-        private int _rectVertexCount;
-        private int _lineVertexCount;
+        private readonly List<float> _rectVertices = new(); // Interleaved position + color
+        private readonly List<float> _lineVertices = new(); // Interleaved: position + color
 
         private int _rectVao;
         private int _rectVbo;
@@ -83,7 +82,17 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             public Vector4 Color;
             public int? TextureId;
         }
-        private List<RenderRect> _renderRects = new();
+        private readonly List<RenderRect> _renderRects = new();
+
+        private struct RenderLine
+        {
+            public Line Line;          // Start/End points
+            public Vector4 Color;      // RGBA
+            public float DashLength;   // e.g., 8
+            public float GapLength;    // e.g., 4
+            public float LineWidth;    // e.g., 2
+        }
+        private readonly List<RenderLine> _renderLines = new();
 
         #region Public Properties
 
@@ -193,16 +202,23 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
 
             // Draw lines
-            if (_lineVertexCount > 0)
+            if (_renderLines.Count > 0)
             {
                 GL.BindVertexArray(_lineVao);
-                GL.Uniform1(uUseHatch, 0); // Ensure no hatch texture
+                GL.Uniform1(uUseHatch, 0);
 
-                GL.LineWidth(2f);
-                GL.DrawArrays(PrimitiveType.Lines, 0, _lineVertexCount);
+                int vertexOffset = 0;
+                foreach (var line in _renderLines)
+                {
+                    GL.LineWidth(line.LineWidth);
+                    GL.DrawArrays(PrimitiveType.Lines, vertexOffset, 2);
+                    vertexOffset += 2;
+                }
             }
 
             GL.BindVertexArray(0);
+
+
         }
 
         public void ZoomIn()
@@ -273,6 +289,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (_prgHandle != 0)
                 GL.DeleteProgram(_prgHandle);
 
+            ClearTextureCache();
+            ClearVertexData();
+
             _disposed = true;
         }
 
@@ -333,6 +352,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             int colorLocation = 1;
             int texCoordLocation = 2;
             int dashParamsLocation = 3;
+            int lineDistanceLocation = 4;
 
             #region Rectangle
 
@@ -343,7 +363,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.BindBuffer(BufferTarget.ArrayBuffer, _rectVbo);
             // Fill buffer later via RebuildOglGeometry()
 
-            int strideR = 9 * sizeof(float);
+            int strideR = 9 * sizeof(float); // 3 pos, 4 color, 2 texture
             GL.EnableVertexAttribArray(positionLocation);
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, strideR, 0);
             GL.EnableVertexAttribArray(colorLocation);
@@ -351,6 +371,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.EnableVertexAttribArray(texCoordLocation);
             GL.VertexAttribPointer(texCoordLocation, 2, VertexAttribPointerType.Float, false, strideR, 7 * sizeof(float));
             // Note: location 3 (dashParams) is unused for rects
+            // Note: location 4 (lineDistance) is unused for rects
             GL.BindVertexArray(0);
 
             #endregion
@@ -364,13 +385,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVbo);
             // Fill buffer via AddLine + BufferData
 
-            int strideL = 9 * sizeof(float);
+            int strideL = 10 * sizeof(float); // 3 pos, 4 color, 2 dash, 1 distance
             GL.EnableVertexAttribArray(positionLocation);
             GL.VertexAttribPointer(positionLocation, 3, VertexAttribPointerType.Float, false, strideL, 0);
             GL.EnableVertexAttribArray(colorLocation);
             GL.VertexAttribPointer(colorLocation, 4, VertexAttribPointerType.Float, false, strideL, 3 * sizeof(float));
             GL.EnableVertexAttribArray(dashParamsLocation);
             GL.VertexAttribPointer(dashParamsLocation, 2, VertexAttribPointerType.Float, false, strideL, 7 * sizeof(float));
+            GL.EnableVertexAttribArray(lineDistanceLocation);
+            GL.VertexAttribPointer(lineDistanceLocation, 1, VertexAttribPointerType.Float, false, strideL, 9 * sizeof(float));
             // location 2 (texCoord) is unused
             GL.BindVertexArray(0);
 
@@ -448,9 +471,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void RebuildOglGeometry()
         {
-            _renderRects.Clear();
-            _rectVertices.Clear();
-            _lineVertices.Clear();
+            ClearVertexData();
 
             for (int i = 0; i < _crossSectionBuilder.DrawingGeometries.Count; i++)
             {
@@ -468,8 +489,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
                 // Add lines
                 AddLine(geom.Rectangle.BottomLine, Brushes.Black, LineStyle.Dashed);
-                if (i == 0)
-                    AddLine(geom.Rectangle.TopLine, Brushes.Black, LineStyle.Solid);
+
+                if (i == 0) AddLine(geom.Rectangle.TopLine, Brushes.Black, LineStyle.Solid, 2.0);
 
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
@@ -479,12 +500,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
 
             // Upload rectangle vertex data
-            _rectVertexCount = _rectVertices.Count / 9;
             GL.BindBuffer(BufferTarget.ArrayBuffer, _rectVbo);
             GL.BufferData(BufferTarget.ArrayBuffer, _rectVertices.Count * sizeof(float), _rectVertices.ToArray(), BufferUsageHint.DynamicDraw);
 
             // Upload line vertex data
-            _lineVertexCount = _lineVertices.Count / 9;
             GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVbo);
             GL.BufferData(BufferTarget.ArrayBuffer, _lineVertices.Count * sizeof(float), _lineVertices.ToArray(), BufferUsageHint.DynamicDraw);
         }
@@ -644,68 +663,62 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void AddLine(Line line, Pen pen)
         {
+            if (pen == null || pen.Brush == null)
+                return;
+
+            // Extract color
             Vector4 color = GetColorFromBrush(pen.Brush);
-            var dashStyle = pen.DashStyle;
-            double thickness = pen.Thickness;
+
+            // Determine dash pattern
+            float dashLength = 0f, gapLength = 0f;
+
+            if (pen.DashStyle != null && pen.DashStyle.Dashes.Count > 0)
+            {
+                var dashes = pen.DashStyle.Dashes;
+
+                // Basic support for common dash/dot styles
+                if (dashes.Count == 1)
+                {
+                    dashLength = (float)dashes[0];
+                    gapLength = dashLength; // assume equal gap
+                }
+                else if (dashes.Count >= 2)
+                {
+                    dashLength = (float)dashes[0];
+                    gapLength = (float)dashes[1];
+                }
+            }
 
             var p1 = line.Start;
             var p2 = line.End;
 
-            if (dashStyle == null || dashStyle.Dashes.Count == 0)
+            float length = (float)line.Length;
+
+            _renderLines.Add(new RenderLine
             {
-                // Solid line
-                _lineVertices.AddRange(new float[]
-                {
-                    (float)p1.X, (float)p1.Y, 0f,  color.X, color.Y, color.Z, color.W,
-                    (float)p2.X, (float)p2.Y, 0f,  color.X, color.Y, color.Z, color.W
-                });
-                return;
-            }
+                Line = line,
+                Color = color,
+                DashLength = dashLength,
+                GapLength = gapLength,
+                LineWidth = (float)pen.Thickness
+            });
 
-            // Vector direction
-            double dx = p2.X - p1.X;
-            double dy = p2.Y - p1.Y;
-            double length = Math.Sqrt(dx * dx + dy * dy);
-            if (length == 0) return;
-
-            double ux = dx / length;
-            double uy = dy / length;
-
-            double pos = 0;
-            int dashIndex = 0;
-            bool draw = true;
-
-            while (pos < length)
+            _lineVertices.AddRange(new float[]
             {
-                double dashLength = dashStyle.Dashes[dashIndex % dashStyle.Dashes.Count];
-                double segmentLength = Math.Min(dashLength, length - pos);
-
-                if (draw)
-                {
-                    var sx = p1.X + ux * pos;
-                    var sy = p1.Y + uy * pos;
-                    var ex = p1.X + ux * (pos + segmentLength);
-                    var ey = p1.Y + uy * (pos + segmentLength);
-
-                    _lineVertices.AddRange(new float[]
-                    {
-                        (float)sx, (float)sy, 0f, color.X, color.Y, color.Z, color.W,
-                        (float)ex, (float)ey, 0f, color.X, color.Y, color.Z, color.W
-                    });
-                }
-
-                pos += segmentLength;
-                dashIndex++;
-                draw = !draw;
-            }
+                (float)p1.X, (float)p1.Y, 0f,  color.X, color.Y, color.Z, color.W, dashLength, gapLength, 0f,    // First vertex = start of line
+                (float)p2.X, (float)p2.Y, 0f,  color.X, color.Y, color.Z, color.W, dashLength, gapLength, length // Second vertex = end of line
+            });
         }
 
-        private void AddLine(Line line, Brush lineColor, LineStyle style = LineStyle.Solid)
+        private void AddLine(Line line, Brush? lineColor = null, LineStyle style = LineStyle.Solid, double thickness = 1.0)
         {
+            lineColor ??= Brushes.Black;
             Vector4 color = GetColorFromBrush(lineColor);
 
             var p1 = line.Start;
             var p2 = line.End;
+
+            float length = (float)line.Length;
 
             // Dash parameters
             float dashLength = 0f, gapLength = 0f;
@@ -726,62 +739,28 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     gapLength = 0f;
                     break;
             }
+            _renderLines.Add(new RenderLine
+            {
+                Line = line,
+                Color = color,
+                DashLength = dashLength,
+                GapLength = gapLength,
+                LineWidth = (float)thickness
+            });
 
             _lineVertices.AddRange(new float[]
             {
-                (float)p1.X, (float)p1.Y, 0f,  color.X, color.Y, color.Z, color.W, dashLength, gapLength,
-                (float)p2.X, (float)p2.Y, 0f,  color.X, color.Y, color.Z, color.W, dashLength, gapLength
+                (float)p1.X, (float)p1.Y, 0f,  color.X, color.Y, color.Z, color.W, dashLength, gapLength, 0f,    // First vertex = start of line
+                (float)p2.X, (float)p2.Y, 0f,  color.X, color.Y, color.Z, color.W, dashLength, gapLength, length // Second vertex = end of line
             });
         }
 
-        private void AddCircle(Point center, float radius, Brush brush, int segments = 32)
+        private void ClearVertexData()
         {
-            Vector4 color = GetColorFromBrush(brush);
-            float cx = (float)center.X;
-            float cy = (float)center.Y;
-
-            for (int i = 0; i < segments; i++)
-            {
-                float angle1 = i * MathF.PI * 2f / segments;
-                float angle2 = (i + 1) * MathF.PI * 2f / segments;
-
-                float x1 = cx + radius * MathF.Cos(angle1);
-                float y1 = cy + radius * MathF.Sin(angle1);
-                float x2 = cx + radius * MathF.Cos(angle2);
-                float y2 = cy + radius * MathF.Sin(angle2);
-
-                // Triangle fan with center
-                _rectVertices.AddRange(new float[]
-                {
-                    cx, cy, 0f, color.X, color.Y, color.Z, color.W,
-                    x1, y1, 0f, color.X, color.Y, color.Z, color.W,
-                    x2, y2, 0f, color.X, color.Y, color.Z, color.W,
-                });
-            }
-        }
-
-        private void AddCircleLine(Point center, float radius, Brush brush, int segments = 64)
-        {
-            Vector4 color = GetColorFromBrush(brush);
-            float cx = (float)center.X;
-            float cy = (float)center.Y;
-
-            for (int i = 0; i < segments; i++)
-            {
-                float angle1 = i * MathF.PI * 2f / segments;
-                float angle2 = (i + 1) * MathF.PI * 2f / segments;
-
-                float x1 = cx + radius * MathF.Cos(angle1);
-                float y1 = cy + radius * MathF.Sin(angle1);
-                float x2 = cx + radius * MathF.Cos(angle2);
-                float y2 = cy + radius * MathF.Sin(angle2);
-
-                _lineVertices.AddRange(new float[]
-                {
-                    x1, y1, 0f, color.X, color.Y, color.Z, color.W,
-                    x2, y2, 0f, color.X, color.Y, color.Z, color.W,
-                });
-            }
+            _rectVertices.Clear();
+            _lineVertices.Clear();
+            _renderRects.Clear();
+            _renderLines.Clear();
         }
 
         private void ClearTextureCache()

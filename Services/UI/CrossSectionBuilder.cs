@@ -253,7 +253,7 @@ namespace BauphysikToolWPF.Services.UI
                     20
                 ),
                 BackgroundColor = Brushes.Transparent, // Hintergrund durchsichtig, da Kreis separat gezeichnet wird
-                DrawingBrush = BrushesRepo.CreateCircleWithNumberBrush(labelText, Brushes.White, Brushes.Black, 1, Brushes.Black, new Vector(4, 0)),
+                DrawingBrush = BrushesRepo.GetCircleWithNumberBrush(labelText, Brushes.White, Brushes.Black, 1, Brushes.Black, new Vector(4, 0)),
                 ZIndex = 100,
                 Opacity = 1.0,
                 Tag = $"Label_{labelText}"
@@ -272,7 +272,7 @@ namespace BauphysikToolWPF.Services.UI
                     20
                 ),
                 BackgroundColor = Brushes.Transparent,
-                DrawingBrush = BrushesRepo.CreateCircleWithNumberBrush(labelText, Brushes.White, Brushes.Gray, 1, Brushes.Gray, new Vector(8, 0)),
+                DrawingBrush = BrushesRepo.GetCircleWithNumberBrush(labelText, Brushes.White, Brushes.Gray, 1, Brushes.Gray, new Vector(8, 0)),
                 ZIndex = 100,
                 Opacity = 1.0,
                 Tag = $"Label_{labelText}"

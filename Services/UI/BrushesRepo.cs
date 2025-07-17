@@ -295,21 +295,21 @@ namespace BauphysikToolWPF.Services.UI
             return AirLayerBrush;
         }
 
-        public static Pen CreateDottedPen(Color color, double thickness)
+        public static Pen GetDottedPen(Color color, double thickness)
         {
             return new Pen(new SolidColorBrush(color), thickness)
             {
                 DashStyle = new DashStyle(new double[] { 2, 2 }, 0)
             };
         }
-        public static Pen CreateDottedPen(Brush color, double thickness)
+        public static Pen GetDottedPen(Brush color, double thickness)
         {
             return new Pen(color, thickness)
             {
                 DashStyle = new DashStyle(new double[] { 2, 2 }, 0)
             };
         }
-        public static Pen CreateDashedPen(Brush color, double thickness)
+        public static Pen GetDashedPen(Brush color, double thickness)
         {
             return new Pen(color, thickness)
             {
@@ -317,7 +317,7 @@ namespace BauphysikToolWPF.Services.UI
             };
         }
 
-        public static DrawingBrush CreateCircleWithNumberBrush(string text, Brush backgroundColor, Brush borderBrush, double borderThickness, Brush textColor, Vector textOffset = new Vector())
+        public static DrawingBrush GetCircleWithNumberBrush(string text, Brush backgroundColor, Brush borderBrush, double borderThickness, Brush textColor, Vector textOffset = new Vector())
         {
             double radius = 10; // Kleinerer Kreis mit 20px Durchmesser
 
@@ -360,10 +360,5 @@ namespace BauphysikToolWPF.Services.UI
                 ViewportUnits = BrushMappingMode.Absolute
             };
         }
-
-        //public static DrawingBrush CreateCircleWithNumberBrush(string text, double radius, Brush backgroundColor, Brush borderBrush, double borderThickness)
-        //{
-
-        //}
     }
 }

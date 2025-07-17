@@ -4,6 +4,7 @@ in vec4 fColor;       // from layer vertex
 in vec2 vTexCoord;    // from layer vertex
 in vec2 vDashParams;
 in vec2 vFragPos;
+in float vLineDistance;
 
 uniform sampler2D texture0;
 uniform int useHatchPattern;
@@ -21,13 +22,10 @@ void main()
         float dashLength = vDashParams.x;
         float gapLength = vDashParams.y;
         float total = dashLength + gapLength;
-
-        float coord = length(vFragPos.xy); // crude dash coord based on world pos
-
-        float dashPos = mod(coord, total);
+        float dashPos = mod(vLineDistance, total);
         if (dashPos > dashLength)
         {
-            discard; // we're in the gap
+            discard; // inside the gap
         }
     }
     
