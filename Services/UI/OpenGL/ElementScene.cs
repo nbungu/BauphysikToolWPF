@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security.Policy;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,6 +16,7 @@ using System.Windows.Media.Imaging;
 using Line = BT.Geometry.Line;
 using Point = BT.Geometry.Point;
 using Rectangle = BT.Geometry.Rectangle;
+using Size = System.Drawing.Size;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -47,7 +47,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private Rectangle? _hoveredRectangle;
         private string? _hoveredTooltip;
 
-
         private readonly CrossSectionBuilder _crossSectionBuilder = new()
         {
             CanvasSize = new Rectangle(new Point(0, 0), 880, 400), // Default size, will be updated later
@@ -75,7 +74,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private const double ZoomStep = 0.1;
         private const double MinZoom = 0.5;
         private const double MaxZoom = 5.0;
-
+        
         private struct RenderRect
         {
             public Rectangle Rect;
@@ -112,12 +111,16 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public double ZoomFactor { get; private set; } = 1.0;
         public GLWpfControl OglView { get; private set; }
         public GLWpfControlSettings OglViewSettings { get; private set; }
-        public Size OglViewCurrentSize => new Size(OglView.ActualWidth, OglView.ActualHeight);
+        public Size OglViewCurrentSize => new Size((int)OglView.ActualWidth, (int)OglView.ActualHeight);
 
         #endregion
 
         public void ConnectToView(GLWpfControl view, GLWpfControlSettings? settings = null)
         {
+            if (view is null) throw new ArgumentNullException(nameof(view), "OpenGL control cannot be null");
+
+            _bgColor = (Brush)System.Windows.Application.Current.Resources["PrimaryLightBrush"];
+
             Session.SelectedLayerChanged += View_OnElementChanged;
             Session.SelectedElementChanged += View_OnElementChanged;
 
@@ -148,6 +151,32 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             _crossSectionBuilder.RebuildCrossSection();
             _needsRebuild = true;
         }
+
+        //public void RenderNew()
+        //{
+        //    GL.ClearColor(Color4.Transparent);
+        //    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+        //    GL.Viewport(OglViewCurrentSize);
+
+        //    GL.MatrixMode(MatrixMode.Projection);
+        //    GL.LoadIdentity();
+
+        //    GL.Ortho(0, 100, 0, 50, -1, 1);
+
+        //    GL.MatrixMode(MatrixMode.Modelview);
+        //    GL.LoadIdentity();
+
+        //    GL.Color3(0.5, 0.5, 0.5);
+        //    GL.Begin(PrimitiveType.Lines);
+        //    GL.Vertex2(0, 10);
+        //    GL.Vertex2(100, 10); // X
+        //    GL.Vertex2(0, 10);
+        //    GL.Vertex2(0, 35);   // Y
+            
+        //    GL.End();
+        //}
+
 
         /// <summary>
         /// Renders the scene.
@@ -215,10 +244,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     vertexOffset += 2;
                 }
             }
-
             GL.BindVertexArray(0);
-
-
         }
 
         public void ZoomIn()
@@ -494,21 +520,25 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
-                    AddLine(geom.Rectangle.LeftLine, Brushes.Black, LineStyle.Solid);
-                    AddLine(geom.Rectangle.RightLine, Brushes.Black, LineStyle.Solid);
+                    AddLine(geom.Rectangle.LeftLine);
+                    AddLine(geom.Rectangle.RightLine);
                 }
             }
 
-            // Upload rectangle vertex data
+            // Upload rectangle vertex data to the GPU
             GL.BindBuffer(BufferTarget.ArrayBuffer, _rectVbo);
             GL.BufferData(BufferTarget.ArrayBuffer, _rectVertices.Count * sizeof(float), _rectVertices.ToArray(), BufferUsageHint.DynamicDraw);
+            var err = GL.GetError();
+            if (err != ErrorCode.NoError) Debug.WriteLine($"OpenGL error after uploading buffer: {err}");
 
-            // Upload line vertex data
+            // Upload line vertex data to the GPU
             GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVbo);
             GL.BufferData(BufferTarget.ArrayBuffer, _lineVertices.Count * sizeof(float), _lineVertices.ToArray(), BufferUsageHint.DynamicDraw);
+            err = GL.GetError();
+            if (err != ErrorCode.NoError) Debug.WriteLine($"OpenGL error after uploading buffer: {err}");
         }
 
-        private Rectangle GetContentBounds()
+        private Rectangle GetContentBounds(float padding = 0) 
         {
             if (_crossSectionBuilder.DrawingGeometries.Count == 0)
                 return new Rectangle(0, 0, 1, 1); // Prevent divide by zero
@@ -519,10 +549,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             foreach (var layer in _crossSectionBuilder.DrawingGeometries)
             {
                 var r = layer.Rectangle;
-                minX = MathF.Min(minX, (float)r.X);
-                minY = MathF.Min(minY, (float)r.Y);
-                maxX = MathF.Max(maxX, (float)r.X + (float)r.Width);
-                maxY = MathF.Max(maxY, (float)r.Y + (float)r.Height);
+                minX = MathF.Min(minX, (float)r.X) - padding;
+                minY = MathF.Min(minY, (float)r.Y) - padding;
+                maxX = MathF.Max(maxX, (float)r.X + (float)r.Width) + padding;
+                maxY = MathF.Max(maxY, (float)r.Y + (float)r.Height) + padding;
             }
 
             return new Rectangle(minX, minY, maxX - minX, maxY - minY);

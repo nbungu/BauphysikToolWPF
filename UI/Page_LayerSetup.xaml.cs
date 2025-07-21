@@ -15,7 +15,6 @@ namespace BauphysikToolWPF.UI
     {
         #region private Fields
 
-        private readonly Page_LayerSetup_VM _viewModel;
         private readonly ElementScene _elementScene;
 
         #endregion
@@ -29,9 +28,9 @@ namespace BauphysikToolWPF.UI
             _elementScene = new ElementScene();
             _elementScene.ConnectToView(OpenTkControl);  // hook into GL control
             _elementScene.UseElement(Session.SelectedElement); // load selected data
-            _viewModel = new Page_LayerSetup_VM(_elementScene);
 
-            this.DataContext = _viewModel;
+            // View Model
+            this.DataContext = new Page_LayerSetup_VM(_elementScene);
             this.Unloaded += Page_LayerSetup_Unloaded;
         }
         private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e) => _elementScene.Dispose();
