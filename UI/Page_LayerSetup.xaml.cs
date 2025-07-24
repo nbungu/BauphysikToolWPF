@@ -10,12 +10,13 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
 namespace BauphysikToolWPF.UI
+
 {
     public partial class Page_LayerSetup : UserControl
     {
         #region private Fields
 
-        private readonly ElementScene _elementScene;
+        private readonly ElementSceneController _elementScene;
 
         #endregion
 
@@ -25,7 +26,7 @@ namespace BauphysikToolWPF.UI
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
-            _elementScene = new ElementScene();
+            _elementScene = new ElementSceneController();
             _elementScene.ConnectToView(OpenTkControl);  // hook into GL control
             _elementScene.UseElement(Session.SelectedElement); // load selected data
 

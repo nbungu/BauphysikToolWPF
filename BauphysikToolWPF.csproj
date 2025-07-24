@@ -43,6 +43,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Services\UI\OpenGL\ElementScene.cs" />
     <Compile Remove="Services\UI\OpenGL\GLWindow.cs" />
     <Compile Remove="Services\UI\OpenGL\IOpenGLScene.cs" />
   </ItemGroup>

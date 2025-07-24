@@ -25,7 +25,7 @@ namespace BauphysikToolWPF.Models.UI
         public int? TextureId { get; set; }
         public bool IsValid => Rectangle != Rectangle.Empty;
         public ShapeId ShapeId { get; set; }
-        public ElementScene.HatchFitMode HatchFitMode { get; set; }
+        public HatchFitMode HatchFitMode { get; set; }
 
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
         {

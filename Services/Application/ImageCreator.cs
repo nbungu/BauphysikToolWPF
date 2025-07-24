@@ -8,6 +8,7 @@ using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.UI;
 using BT.Logging;
+using Brushes = System.Windows.Media.Brushes;
 
 namespace BauphysikToolWPF.Services.Application
 {

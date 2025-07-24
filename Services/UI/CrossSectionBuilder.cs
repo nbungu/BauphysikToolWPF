@@ -252,8 +252,8 @@ namespace BauphysikToolWPF.Services.UI
                     20, // Kreis-Durchmesser 20px
                     20
                 ),
-                BackgroundColor = Brushes.Transparent, // Hintergrund durchsichtig, da Kreis separat gezeichnet wird
-                DrawingBrush = BrushesRepo.GetCircleWithNumberBrush(labelText, Brushes.White, Brushes.Black, 1, Brushes.Black, new Vector(4, 0)),
+                BackgroundColor = System.Windows.Media.Brushes.Transparent, // Hintergrund durchsichtig, da Kreis separat gezeichnet wird
+                DrawingBrush = Brushes.GetCircleWithNumberBrush(labelText, System.Windows.Media.Brushes.White, System.Windows.Media.Brushes.Black, 1, System.Windows.Media.Brushes.Black, new Vector(4, 0)),
                 ZIndex = 100,
                 Opacity = 1.0,
                 Tag = $"Label_{labelText}"
@@ -271,8 +271,8 @@ namespace BauphysikToolWPF.Services.UI
                     20, // Kreis-Durchmesser
                     20
                 ),
-                BackgroundColor = Brushes.Transparent,
-                DrawingBrush = BrushesRepo.GetCircleWithNumberBrush(labelText, Brushes.White, Brushes.Gray, 1, Brushes.Gray, new Vector(8, 0)),
+                BackgroundColor = System.Windows.Media.Brushes.Transparent,
+                DrawingBrush = Brushes.GetCircleWithNumberBrush(labelText, System.Windows.Media.Brushes.White, System.Windows.Media.Brushes.Gray, 1, System.Windows.Media.Brushes.Gray, new Vector(8, 0)),
                 ZIndex = 100,
                 Opacity = 1.0,
                 Tag = $"Label_{labelText}"
@@ -349,12 +349,12 @@ namespace BauphysikToolWPF.Services.UI
             layer.ShapeId = new ShapeId(ShapeType.Layer, layer.InternalId);
 
             layer.BackgroundColor = new SolidColorBrush(layer.Material.Color);
-            layer.DrawingBrush = BrushesRepo.GetHatchPattern(layer.Material.MaterialCategory, 1.0, layer.Rectangle);
-            layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            layer.DrawingBrush = Brushes.GetBrush(layer.Material.MaterialCategory, layer.Rectangle, 1.0);
+            layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : System.Windows.Media.Brushes.Black;
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
             layer.Tag = $"Layer_{layer.LayerNumber}";
-            if (layer.Material.MaterialCategory == Enums.MaterialCategory.Insulation) layer.HatchFitMode = ElementScene.HatchFitMode.StretchToFill;
+            if (layer.Material.MaterialCategory == Enums.MaterialCategory.Insulation) layer.HatchFitMode = HatchFitMode.StretchToFill;
             return layer;
         }
 
@@ -364,10 +364,10 @@ namespace BauphysikToolWPF.Services.UI
             var subConstruction = layer.SubConstruction;
             subConstruction.ShapeId = new ShapeId(ShapeType.SubConstructionLayer, layer.InternalId);
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
-            subConstruction.DrawingBrush = BrushesRepo.GetHatchPattern(subConstruction.Material.MaterialCategory, 1.0, subConstruction.Rectangle);
-            subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            subConstruction.DrawingBrush = Brushes.GetBrush(subConstruction.Material.MaterialCategory, subConstruction.Rectangle, 1.0);
+            subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : System.Windows.Media.Brushes.Black;
             subConstruction.Tag = $"Layer_{layer.LayerNumber}b";
-            if (subConstruction.Material.MaterialCategory == Enums.MaterialCategory.Insulation) subConstruction.HatchFitMode = ElementScene.HatchFitMode.StretchToFill;
+            if (subConstruction.Material.MaterialCategory == Enums.MaterialCategory.Insulation) subConstruction.HatchFitMode = HatchFitMode.StretchToFill;
             return subConstruction;
         }
     }

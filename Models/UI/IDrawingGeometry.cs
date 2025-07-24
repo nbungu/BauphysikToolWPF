@@ -2,7 +2,6 @@
 using System.Windows.Media;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using Brush = System.Windows.Media.Brush;
-using static BauphysikToolWPF.Services.UI.OpenGL.ElementScene;
 
 namespace BauphysikToolWPF.Models.UI
 {

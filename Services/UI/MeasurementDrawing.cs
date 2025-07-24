@@ -124,7 +124,7 @@ namespace BauphysikToolWPF.Services.UI
                     if (intervalWidthInCm > 0)
                     {
                         string formattedValueString = NumberConverter.ConvertToString(intervalWidthInCm, 2);
-                        var label = new FormattedText(formattedValueString, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 14, Brushes.DimGray, 1.0);
+                        var label = new FormattedText(formattedValueString, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 14, System.Windows.Media.Brushes.DimGray, 1.0);
 
                         // Create the text drawing
                         var labelOrigin = (selectedInterval + intervals[i]) / 2;
@@ -158,7 +158,7 @@ namespace BauphysikToolWPF.Services.UI
             // Use the lines as the Drawing's content
             var brush = new DrawingBrush
             {
-                Drawing = new GeometryDrawing(Brushes.DimGray, new Pen(Brushes.DimGray, 0.6), hatchContent),
+                Drawing = new GeometryDrawing(System.Windows.Media.Brushes.DimGray, new Pen(System.Windows.Media.Brushes.DimGray, 0.6), hatchContent),
             };
             geometry.DrawingBrush = brush;
 
