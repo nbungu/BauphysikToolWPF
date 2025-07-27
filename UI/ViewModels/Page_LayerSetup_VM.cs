@@ -29,9 +29,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (Session.SelectedElement is null) return;
 
             _element = Session.SelectedElement;
-            _element.SortLayers();
-            _element.AssignEffectiveLayers();
-            _element.AssignInternalIdsToLayers();
             _dialogService = new DialogService();
 
             // Allow child Windows to trigger UpdateAll of this Window
@@ -41,7 +38,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.EnvVarsChanged += EnvVarsChanged;
 
             scene.ShapeClicked += OnShapeClicked;
-
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += PropertyItemChanged;

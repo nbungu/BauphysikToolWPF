@@ -23,8 +23,6 @@ namespace BauphysikToolWPF.Services.UI
     }
     public class CrossSectionBuilder
     {
-        //private Rectangle _defaultCrossSectionRectangle = new Rectangle(new Point(0, 0), 880, 400);
-        //private Rectangle _defaultVerticalCutRectangle = new Rectangle(new Point(0, 0), 400, 880);
         private bool _isOverflowing;
 
         // Static, because globally valid for all Instances
@@ -36,8 +34,7 @@ namespace BauphysikToolWPF.Services.UI
         public AlignmentVariant Alignment { get; set; }
         public List<IDrawingGeometry> DrawingGeometries { get; private set; }
         public bool LastDrawingSuccessful { get; private set; }
-        public bool DrawWithLayerLabels { get; set; } = true; // Default to true, can be set to false if labels are not needed
-
+        
         public CrossSectionBuilder()
         {
             Element = new Element();
@@ -62,25 +59,11 @@ namespace BauphysikToolWPF.Services.UI
             Logger.LogInfo($"Updated cross section drawing of element: {Element}.");
         }
 
-        public void UpdateSingleDrawing(Layer layer)
-        {
-            if (LastDrawingSuccessful)
-            {
-                var tag = $"{layer.LayerNumber}";
-                var selectedGeometry = DrawingGeometries.FindIndex(g => (string)g.Tag == tag);
-                if (selectedGeometry != -1)
-                {
-                    DrawingGeometries[selectedGeometry] = UpdateLayerGeometry(layer);
-                }
-            }
-            else RebuildCrossSection();
-        }
-
         // Vertikalschnitt, Canvas in PX
         // Querschnitt, Canvas in PX
         private List<IDrawingGeometry> GetDrawing()
         {
-            if (Element is null || !Element.IsValid) return new List<IDrawingGeometry>();
+            if (!Element.IsValid) return new List<IDrawingGeometry>();
 
             SetUpPixelResolution();
 
@@ -114,7 +97,6 @@ namespace BauphysikToolWPF.Services.UI
                 // Main Layer Geometry
                 l.Rectangle = l.Rectangle.MoveTo(ptStart);
                 layerDrawings.Add(l.Convert());
-                if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForLayer(l, (l.LayerNumber).ToString()));
 
                 // SubConstruction
                 if (l.SubConstruction != null)
@@ -171,9 +153,6 @@ namespace BauphysikToolWPF.Services.UI
                                 var subConstrGeometry = l.SubConstruction.Convert(); // Rename to copy?
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(x, ptStart.Y));
                                 layerDrawings.Add(subConstrGeometry);
-                                var labelOffset = new Vector(0, 0);
-                                if (l.SubConstruction.Direction == Enums.ConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
-                                if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                             }
                         }
                         // Stack vertically
@@ -219,9 +198,6 @@ namespace BauphysikToolWPF.Services.UI
                                 var subConstrGeometry = l.SubConstruction.Convert(); // Rename to copy?
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(ptStart.X, y));
                                 layerDrawings.Add(subConstrGeometry);
-                                var labelOffset = new Vector(0, 0);
-                                if (l.SubConstruction.Direction == Enums.ConstructionDirection.Vertical) labelOffset = new Vector(24, 0);
-                                if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                             }
                         }
                     }
@@ -230,10 +206,6 @@ namespace BauphysikToolWPF.Services.UI
                         var subConstrGeometry = l.SubConstruction.Convert(); // Rename to copy?
                         subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(ptStart);
                         layerDrawings.Add(subConstrGeometry);
-                        var labelOffset = new Vector(0, 0);
-                        if (l.SubConstruction.Direction == Enums.ConstructionDirection.Horizontal) labelOffset = new Vector(24, 0);
-                        if (l.SubConstruction.Direction == Enums.ConstructionDirection.Vertical) labelOffset = new Vector(0, 24);
-                        if (DrawWithLayerLabels) layerDrawings.Add(GetLabelForSubContruction(subConstrGeometry, $"{l.LayerNumber}b", labelOffset));
                     }
                 }
                 // Update Origin
@@ -241,43 +213,6 @@ namespace BauphysikToolWPF.Services.UI
                 else if (DrawingType == DrawingType.VerticalCut) ptStart = l.Rectangle.TopRight;
             }
             return layerDrawings;
-        }
-
-        private IDrawingGeometry GetLabelForLayer(IDrawingGeometry layerGeometry, string labelText)
-        {
-            var labelGeometry = new DrawingGeometry()
-            {
-                Rectangle = new Rectangle(
-                    new Point(layerGeometry.Rectangle.Left + layerGeometry.Rectangle.Width / 2 - 10, layerGeometry.Rectangle.Top + layerGeometry.Rectangle.Height / 2 - 10),
-                    20, // Kreis-Durchmesser 20px
-                    20
-                ),
-                BackgroundColor = System.Windows.Media.Brushes.Transparent, // Hintergrund durchsichtig, da Kreis separat gezeichnet wird
-                DrawingBrush = Brushes.GetCircleWithNumberBrush(labelText, System.Windows.Media.Brushes.White, System.Windows.Media.Brushes.Black, 1, System.Windows.Media.Brushes.Black, new Vector(4, 0)),
-                ZIndex = 100,
-                Opacity = 1.0,
-                Tag = $"Label_{labelText}"
-            };
-            return labelGeometry;
-        }
-        private IDrawingGeometry GetLabelForSubContruction(IDrawingGeometry layerGeometry, string labelText, Vector labelOffset = new Vector())
-        {
-            // Label für SubConstruction hinzufügen (mit "b")
-            var subConstrLabel = new DrawingGeometry()
-            {
-                Rectangle = new Rectangle(
-                    new Point(layerGeometry.Rectangle.Left + layerGeometry.Rectangle.Width / 2 - 10 + labelOffset.X,
-                        layerGeometry.Rectangle.Top + layerGeometry.Rectangle.Height / 2 - 10 + labelOffset.Y),
-                    20, // Kreis-Durchmesser
-                    20
-                ),
-                BackgroundColor = System.Windows.Media.Brushes.Transparent,
-                DrawingBrush = Brushes.GetCircleWithNumberBrush(labelText, System.Windows.Media.Brushes.White, System.Windows.Media.Brushes.Gray, 1, System.Windows.Media.Brushes.Gray, new Vector(8, 0)),
-                ZIndex = 100,
-                Opacity = 1.0,
-                Tag = $"Label_{labelText}"
-            };
-            return subConstrLabel;
         }
 
         private void UpdateGeometries()
@@ -344,31 +279,47 @@ namespace BauphysikToolWPF.Services.UI
             }
         }
 
-        private IDrawingGeometry UpdateLayerGeometry(Layer layer)
+        private void UpdateLayerGeometry(Layer layer)
         {
             layer.ShapeId = new ShapeId(ShapeType.Layer, layer.InternalId);
 
             layer.BackgroundColor = new SolidColorBrush(layer.Material.Color);
-            layer.DrawingBrush = Brushes.GetBrush(layer.Material.MaterialCategory, layer.Rectangle, 1.0);
+            layer.DrawingBrush = TextureBrushes.GetBrush(layer.Material.MaterialCategory, layer.Rectangle, 1.0);
             layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : System.Windows.Media.Brushes.Black;
             layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
             layer.Tag = $"Layer_{layer.LayerNumber}";
             if (layer.Material.MaterialCategory == Enums.MaterialCategory.Insulation) layer.HatchFitMode = HatchFitMode.StretchToFill;
-            return layer;
         }
 
-        private IDrawingGeometry UpdateSubConstructionGeometry(Layer layer)
+        private void UpdateSubConstructionGeometry(Layer layer)
         {
-            if (layer.SubConstruction is null) return new DrawingGeometry();
+            if (layer.SubConstruction is null) return;
             var subConstruction = layer.SubConstruction;
             subConstruction.ShapeId = new ShapeId(ShapeType.SubConstructionLayer, layer.InternalId);
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
-            subConstruction.DrawingBrush = Brushes.GetBrush(subConstruction.Material.MaterialCategory, subConstruction.Rectangle, 1.0);
+            subConstruction.DrawingBrush = TextureBrushes.GetBrush(subConstruction.Material.MaterialCategory, subConstruction.Rectangle, 1.0);
             subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : System.Windows.Media.Brushes.Black;
             subConstruction.Tag = $"Layer_{layer.LayerNumber}b";
             if (subConstruction.Material.MaterialCategory == Enums.MaterialCategory.Insulation) subConstruction.HatchFitMode = HatchFitMode.StretchToFill;
-            return subConstruction;
+        }
+
+        public Rectangle GetContentBounds(double pad = 0.0)
+        {
+            if (DrawingGeometries.Count == 0)
+                return new Rectangle(0, 0, 1, 1);
+
+            float minX = float.MaxValue, minY = float.MaxValue;
+            float maxX = float.MinValue, maxY = float.MinValue;
+            foreach (var g in DrawingGeometries)
+            {
+                var r = g.Rectangle;
+                minX = MathF.Min(minX, (float)r.X) - (float)pad;
+                minY = MathF.Min(minY, (float)r.Y) - (float)pad;
+                maxX = MathF.Max(maxX, (float)r.X + (float)r.Width) + (float)pad;
+                maxY = MathF.Max(maxY, (float)r.Y + (float)r.Height) + (float)pad;
+            }
+            return new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
     }
 }

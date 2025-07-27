@@ -1,12 +1,13 @@
+using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.Application;
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Brush = System.Windows.Media.Brush;
 using Color = System.Windows.Media.Color;
 using Line = BT.Geometry.Line;
 using Pen = System.Windows.Media.Pen;
@@ -22,17 +23,18 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     public class SceneBuilder
     {
         private readonly ElementSceneController _parent;
-
         private int _zIndex = 0; // Z-level for rendering order, can be used to layer elements in the scene
 
         private TextureManager TextureManager => _parent.TextureManager;
         private SdfFont? SdfFont => TextureManager.SdfFont;
-        
+
+        public int Padding { get; private set; } = 4; // Padding around the scene boundaries for better visibility
         public List<float> RectVertices { get; private set; } = new();
         public List<float> LineVertices { get; private set; } = new();
         public List<(int? TextureId, int Count)> RectBatches { get; private set; } = new();
         public List<(float LineWidth, int Count)> LineBatches { get; private set; } = new();
 
+        
         public SceneBuilder(ElementSceneController parent)
         {
             _parent = parent;
@@ -44,7 +46,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             LineVertices.Clear();
             RectBatches.Clear();
             LineBatches.Clear();
-            
+
+            var elementBounds = GetContentBounds(drawingGeometries);
+            AddLine(elementBounds.LeftLine, style: LineStyle.Dashed);
+            AddLine(elementBounds.RightLine, style: LineStyle.Dashed);
+
+
             foreach (var geom in drawingGeometries)
             {
                 _zIndex = 0;
@@ -57,19 +64,27 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     AddRectangle(geom.Rectangle, geom.BackgroundColor);
                 }
                 _zIndex = 1;
-                AddLine(geom.Rectangle.BottomLine, System.Windows.Media.Brushes.Black, LineStyle.Dashed);
-                if (geom.ShapeId.Index == 0)
-                    AddLine(geom.Rectangle.TopLine, System.Windows.Media.Brushes.Black, LineStyle.Solid, 2.0);
+                AddLine(geom.Rectangle.BottomLine, Brushes.Black);
+                if (geom.ShapeId.Index == 0) AddLine(geom.Rectangle.TopLine, Brushes.Black);
 
+                string layerNumber = "";
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
                     AddLine(geom.Rectangle.LeftLine);
                     AddLine(geom.Rectangle.RightLine);
+
+                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).InternalId.ToString() + "b";
                 }
+                else if (geom.ShapeId.Type == ShapeType.Layer)
+                {
+                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).InternalId.ToString();
+                }
+
                 _zIndex = 2;
-                AddCircle(geom.Rectangle.Center, 12, System.Windows.Media.Brushes.White, System.Windows.Media.Brushes.Black);
+                AddCircle(geom.Rectangle.Center, 12, Brushes.White, Brushes.Black);
                 _zIndex = 3;
-                AddText("1", geom.Rectangle.Center, System.Windows.Media.Brushes.Black, 20, 1.0, TextAlignment.Center);
+                
+                AddText(layerNumber, geom.Rectangle.Center, Brushes.Black, 20, 1.0, TextAlignment.Center);
             }
         }
 
@@ -138,7 +153,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void AddLine(Line line, Brush? lineColor = null, LineStyle style = LineStyle.Solid, double thickness = 1.0, double opacity = 1.0)
         {
-            lineColor ??= System.Windows.Media.Brushes.Black;
+            lineColor ??= Brushes.Black;
             // Extract color and apply opacity (in alpha channel)
             if (lineColor is SolidColorBrush solid)
             {
@@ -162,7 +177,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private void AddLine(Point ptStart, Point ptEnd, Brush? lineColor = null, LineStyle style = LineStyle.Solid, double thickness = 1.0, double opacity = 1.0)
         {
             var line = new Line(ptStart, ptEnd);
-            lineColor ??= System.Windows.Media.Brushes.Black;
+            lineColor ??= Brushes.Black;
             // Extract color and apply opacity (in alpha channel)
             if (lineColor is SolidColorBrush solid)
             {
@@ -185,7 +200,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void AddLine(Line line, Pen pen)
         {
-            if (pen == null || pen.Brush == null) return;
+            if (pen.Brush == null) return;
 
             // Extract color
             Vector4 color = GetColorFromBrush(pen.Brush);
@@ -425,7 +440,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
                 var rect = new Rectangle(gx, gy, gw, gh);
 
-                var uv = glyph.UVRect;
+                var uv = Rectangle.FromRectF(glyph.UVRect);
                 var verts = CreateRectVertices(rect, color, uv, _zIndex);
                 // Manually assign correct UVs later if needed
 
@@ -435,6 +450,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 x += glyph.Advance * scale * 0.9f; // * 0.9f to reduce char spacing
             }
         }
+
 
         private static float[] CreateRectVertices(Rectangle r, Vector4 col, float uX = 0f, float uY = 0f, int zLevel = 0)
         {
@@ -454,7 +470,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 x,     y + h, z, col.X, col.Y, col.Z, col.W, 0,     uY,
             };
         }
-        private static float[] CreateRectVertices(Rectangle r, Vector4 col, RectangleF uv, int zLevel = 0)
+        private static float[] CreateRectVertices(Rectangle r, Vector4 col, Rectangle uv, int zLevel = 0)
         {
             float x = (float)r.X;
             float y = (float)r.Y;
@@ -462,10 +478,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             float w = (float)r.Width;
             float h = (float)r.Height;
 
-            float u1 = uv.X;
-            float v1 = uv.Y;
-            float u2 = uv.X + uv.Width;
-            float v2 = uv.Y + uv.Height;
+            float u1 = (float)uv.X;
+            float v1 = (float)uv.Y;
+            float u2 = u1 + (float)uv.Width;
+            float v2 = v1 + (float)uv.Height;
 
             return new float[]
             {
@@ -541,6 +557,64 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 0;
 
             return new Vector2(offsetX, offsetY);
+        }
+
+        public Rectangle GetSceneBoundaries()
+        {
+            double minX = double.MaxValue;
+            double minY = double.MaxValue;
+            double maxX = double.MinValue;
+            double maxY = double.MinValue;
+
+            // Each rect vertex = 9 floats: x, y, z, r, g, b, a, u, v
+            for (int i = 0; i < RectVertices.Count; i += 9)
+            {
+                float x = RectVertices[i];
+                float y = RectVertices[i + 1];
+
+                if (x < minX) minX = x;
+                if (y < minY) minY = y;
+                if (x > maxX) maxX = x;
+                if (y > maxY) maxY = y;
+            }
+
+            // Each line vertex = 10 floats: x, y, z, r, g, b, a, dash, gap, distance
+            for (int i = 0; i < LineVertices.Count; i += 10)
+            {
+                float x = LineVertices[i];
+                float y = LineVertices[i + 1];
+
+                if (x < minX) minX = x;
+                if (y < minY) minY = y;
+                if (x > maxX) maxX = x;
+                if (y > maxY) maxY = y;
+            }
+
+            // If no geometry was found
+            if (RectVertices.Count == 0 && LineVertices.Count == 0)
+                return new Rectangle(0, 0, 0, 0);
+
+            return new Rectangle(
+                minX - Padding,
+                minY - Padding,
+                (maxX - minX) + Padding * 2,
+                (maxY - minY) + Padding * 2
+            );
+        }
+
+        private Rectangle GetContentBounds(IEnumerable<IDrawingGeometry> drawingGeometries, double pad = 0.0)
+        {
+            float minX = float.MaxValue, minY = float.MaxValue;
+            float maxX = float.MinValue, maxY = float.MinValue;
+            foreach (var g in drawingGeometries)
+            {
+                var r = g.Rectangle;
+                minX = MathF.Min(minX, (float)r.X) - (float)pad;
+                minY = MathF.Min(minY, (float)r.Y) - (float)pad;
+                maxX = MathF.Max(maxX, (float)r.X + (float)r.Width) + (float)pad;
+                maxY = MathF.Max(maxY, (float)r.Y + (float)r.Height) + (float)pad;
+            }
+            return new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
     }
 

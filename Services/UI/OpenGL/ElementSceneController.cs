@@ -9,6 +9,8 @@ using System.Windows.Input;
 using OpenTK.Windowing.Common;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
+using BauphysikToolWPF.Models.UI;
+using System.Collections.Generic;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -77,14 +79,17 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void UseElement(Element element)
         {
             CrossSectionBuilder.Element = element;
-            CrossSectionBuilder.DrawWithLayerLabels = false;
-            CrossSectionBuilder.RebuildCrossSection();
             Rebuild();
         }
 
         public void ZoomIn() => SetZoom(_zoom + 0.1f);
         public void ZoomOut() => SetZoom(_zoom - 0.1f);
-        public void ResetView() { _zoom = 1f; _pan = Vector2.Zero; Invalidate(); }
+        public void ResetView()
+        {
+            _zoom = 1f;
+            _pan = Vector2.Zero;
+            Invalidate();
+        }
         public void SetZoom(double zoom)
         {
             _zoom = (float)Math.Clamp(zoom, 0.5, 5.0);
@@ -104,7 +109,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private void OnRender(TimeSpan _)
         {
             var size = new System.Drawing.Size((int)_view.ActualWidth, (int)_view.ActualHeight);
-            var bounds = GetContentBounds();
+            var bounds = SceneBuilder.GetSceneBoundaries();
             var proj = BuildProjection(size, bounds);
 
             Renderer.Render(
@@ -117,46 +122,32 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private Matrix4 BuildProjection(System.Drawing.Size control, BT.Geometry.Rectangle content)
         {
-            float cw = control.Width, ch = control.Height;
-            float ew = (float)content.Width, eh = (float)content.Height;
+            var rectF = content.ToRectangleF();
+            
+            float ctrlW = control.Width, ctrlH = control.Height;
+            float contW = rectF.Width, contH = rectF.Height;
 
-            float scaleX = cw / ew, scaleY = ch / eh;
+            float scaleX = ctrlW / contW, scaleY = ctrlH / contH;
             float scale = MathF.Min(scaleX, scaleY) * _zoom;
 
-            float dx = 0, dy = 0;
-            if (ew * scale < cw) dx = (cw - ew * scale) / 2f / (cw / 2f);
-            if (eh * scale < ch) dy = (ch - eh * scale) / 2f / (ch / 2f);
+            // Inital offsets set to the top-left corner of the content rectangle
+            float dx = -rectF.X / (ctrlW / 2f), dy = -rectF.Y / (ctrlH / 2f);
+            if (contW * scale < ctrlW) dx = (ctrlW - contW * scale) / 2f / (ctrlW / 2f);
+            if (contH * scale < ctrlH) dy = (ctrlH - contH * scale) / 2f / (ctrlH / 2f);
 
             var zIndexStart = -100f;
             var zIndexEnd = 100f;
+
             Matrix4 view = Matrix4.CreateTranslation(1f, -1f, 0) *
                            Matrix4.CreateScale(scale) *
                            Matrix4.CreateTranslation(-1f + dx + _pan.X, 1f - dy + _pan.Y, 0);
 
-            return Matrix4.CreateOrthographicOffCenter(0, cw, ch, 0, zIndexStart, zIndexEnd) * view;
-        }
-
-        private BT.Geometry.Rectangle GetContentBounds(float pad = 0)
-        {
-            if (CrossSectionBuilder.DrawingGeometries.Count == 0)
-                return new BT.Geometry.Rectangle(0, 0, 1, 1);
-
-            float minX = float.MaxValue, minY = float.MaxValue;
-            float maxX = float.MinValue, maxY = float.MinValue;
-            foreach (var g in CrossSectionBuilder.DrawingGeometries)
-            {
-                var r = g.Rectangle;
-                minX = MathF.Min(minX, (float)r.X) - pad;
-                minY = MathF.Min(minY, (float)r.Y) - pad;
-                maxX = MathF.Max(maxX, (float)r.X + (float)r.Width) + pad;
-                maxY = MathF.Max(maxY, (float)r.Y + (float)r.Height) + pad;
-            }
-            return new BT.Geometry.Rectangle(minX, minY, maxX - minX, maxY - minY);
+            return Matrix4.CreateOrthographicOffCenter(0, ctrlW, ctrlH, 0, zIndexStart, zIndexEnd) * view;
         }
 
         private BT.Geometry.Point ConvertMouseToScene(Point mouse)
         {
-            var bounds = GetContentBounds();
+            var bounds = SceneBuilder.GetSceneBoundaries();
             float cw = (float)_view.ActualWidth, ch = (float)_view.ActualHeight;
             float ew = (float)bounds.Width, eh = (float)bounds.Height;
 
@@ -192,11 +183,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (e.ChangedButton == MouseButton.Left)
             {
                 var pt = ConvertMouseToScene(e.GetPosition(_view));
-                foreach (var shape in CrossSectionBuilder.DrawingGeometries)
+                foreach (var geom in CrossSectionBuilder.DrawingGeometries)
                 {
-                    if (shape.Rectangle.Contains(pt))
+                    if (geom.Rectangle.Contains(pt))
                     {
-                        ShapeClicked?.Invoke(shape.ShapeId);
+                        ShapeClicked?.Invoke(geom.ShapeId);
                         break;
                     }
                 }

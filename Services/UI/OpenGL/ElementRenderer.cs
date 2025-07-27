@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private int _rectVao, _rectVbo;
         private int _lineVao, _lineVbo;
         private bool _initialized;
-        private Brush _bgColor = System.Windows.Media.Brushes.Transparent;
+        private Brush _bgColor = Brushes.Transparent;
 
         private TextureManager TextureManager => _parent.TextureManager;
         private int SdfFontTextureId => TextureManager.SdfFont?.TextureId ?? -1;

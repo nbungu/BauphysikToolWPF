@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Models.Domain.Helper;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
@@ -17,18 +18,26 @@ namespace BauphysikToolWPF.UI
         #region private Fields
 
         private readonly ElementSceneController _elementScene;
+        private readonly Element _element; // Selected Element from Session
 
         #endregion
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public Page_LayerSetup()
         {
+            if (Session.SelectedElement is null) return;
+
+            _element = Session.SelectedElement;
+            _element.SortLayers();
+            _element.AssignEffectiveLayers();
+            _element.AssignInternalIdsToLayers();
+
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
             _elementScene = new ElementSceneController();
             _elementScene.ConnectToView(OpenTkControl);  // hook into GL control
-            _elementScene.UseElement(Session.SelectedElement); // load selected data
+            _elementScene.UseElement(_element); // load selected data
 
             // View Model
             this.DataContext = new Page_LayerSetup_VM(_elementScene);
@@ -39,13 +48,12 @@ namespace BauphysikToolWPF.UI
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (Session.SelectedElement is null) return;
-            var element = Session.SelectedElement;
+            if (_element is null) return;
 
             // Only save if leaving this page
-            element.UnselectAllLayers();
+            _element.UnselectAllLayers();
 
-            if (!IsVisible && element.IsValid)
+            if (!IsVisible && _element.IsValid)
             {
                 // TODO: 
                 //element.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);

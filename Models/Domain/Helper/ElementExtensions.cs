@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
@@ -26,6 +27,12 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                 element.Layers.ForEach(e => e.LayerPosition = index++);
             }
             return element;
+        }
+
+        public static Layer? GetLayerByShapeId(this Element element, ShapeId shape)
+        {
+            if (element.Layers.Count == 0) return null;
+            return element.Layers.FirstOrDefault(l => l.ShapeId.Type == ShapeType.Layer && l.ShapeId.Index == shape.Index);
         }
 
         public static void AssignEffectiveLayers(this Element element)
