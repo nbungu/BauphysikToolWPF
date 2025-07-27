@@ -9,17 +9,33 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 {
     public class ElementRenderer : IDisposable
     {
+        private readonly ElementSceneController _parent;
+
         private int _shaderProgram;
         private int _rectVao, _rectVbo;
         private int _lineVao, _lineVbo;
         private bool _initialized;
         private Brush _bgColor = System.Windows.Media.Brushes.Transparent;
 
+        private TextureManager TextureManager => _parent.TextureManager;
+        private int SdfFontTextureId => TextureManager.SdfFont?.TextureId ?? -1;
+
+        public ElementRenderer(ElementSceneController parent)
+        {
+            _parent = parent;
+        }
+
         public void Initialize()
         {
             if (_initialized) return;
+
+            // Load Fonts
+            TextureManager.SetDefaultFont();
+
+            // Load Shader
             _shaderProgram = CompileShaderProgram();
 
+            // Set Background Color
             _bgColor = (Brush)System.Windows.Application.Current.Resources["PrimaryLightBrush"];
 
             // Line Smoothing and Opacity
@@ -28,7 +44,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
-            //
+
+            // depth testing (zIndex)
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Lequal); // Lower Z = further, higher Z = in front
 
             // Setup rectangle VAO/VBO
             GL.GenVertexArrays(1, out _rectVao);
@@ -75,6 +94,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             // Clear screen
             var bg = SceneBuilder.GetColorFromBrush(_bgColor);
             GL.ClearColor(bg.X, bg.Y, bg.Z, bg.W);
+
+            // Use Z-Buffer for depth Sorting
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.UseProgram(_shaderProgram);
@@ -83,6 +104,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             int uHatchScale = GL.GetUniformLocation(_shaderProgram, "hatchScale");
             int uTex0 = GL.GetUniformLocation(_shaderProgram, "texture0");
             GL.Uniform1(uTex0, 0);
+
+            int uIsSdfText = GL.GetUniformLocation(_shaderProgram, "isSdfText");
+            int uSdfFont = GL.GetUniformLocation(_shaderProgram, "sdfFont");
+            GL.Uniform1(uSdfFont, 1); // Bind SDF to texture unit 1
 
             // Rectangles
             if (rectVertices.Length > 0)
@@ -96,13 +121,25 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 {
                     if (batch.TextureId.HasValue)
                     {
-                        GL.BindTexture(TextureTarget.Texture2D, batch.TextureId.Value);
-                        GL.Uniform1(uUseHatch, 1);
-                        GL.Uniform1(uHatchScale, 1.0f);
+                        if (batch.TextureId.Value == SdfFontTextureId)
+                        {
+                            GL.ActiveTexture(TextureUnit.Texture1);
+                            GL.BindTexture(TextureTarget.Texture2D, batch.TextureId.Value); // sdfFont goes to unit 1
+                            GL.Uniform1(uUseHatch, 0);
+                            GL.Uniform1(uIsSdfText, 1);
+                        }
+                        else
+                        {
+                            GL.ActiveTexture(TextureUnit.Texture0);
+                            GL.BindTexture(TextureTarget.Texture2D, batch.TextureId.Value);
+                            GL.Uniform1(uUseHatch, 1);
+                            GL.Uniform1(uHatchScale, 1.0f);
+                        }
                     }
                     else
                     {
                         GL.Uniform1(uUseHatch, 0);
+                        GL.Uniform1(uIsSdfText, 0);
                     }
                     GL.DrawArrays(PrimitiveType.Triangles, offset, batch.Count);
                     offset += batch.Count;
@@ -117,6 +154,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 GL.BindBuffer(BufferTarget.ArrayBuffer, _lineVbo);
                 GL.BufferData(BufferTarget.ArrayBuffer, lineVertices.Length * sizeof(float), lineVertices, BufferUsageHint.DynamicDraw);
                 GL.Uniform1(uUseHatch, 0);
+                GL.Uniform1(uIsSdfText, 0);
 
                 int vertexOffset = 0;
                 foreach (var batch in lineBatches)

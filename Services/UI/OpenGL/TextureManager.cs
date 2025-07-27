@@ -2,6 +2,8 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -17,8 +19,22 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class TextureManager : IDisposable
     {
+        private readonly ElementSceneController _parent;
+
         private readonly Dictionary<Brush, int> _hatchTextureCache = new();
         private readonly Dictionary<int, Size> _hatchTextureSizes = new();
+
+        public SdfFont? SdfFont;
+
+        public TextureManager(ElementSceneController parent)
+        {
+            _parent = parent;
+        }
+
+        public void SetDefaultFont()
+        {
+            SdfFont = SdfFontLoader.LoadFromFntFile("Resources/Fonts/segoeUI.fnt", this);
+        }
 
         public int? GetTextureIdForBrush(DrawingBrush brush)
         {
@@ -110,6 +126,51 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             return texId;
         }
+        public int CreateTextTextureFromBitmap(Bitmap bmp)
+        {
+            int width = bmp.Width;
+            int height = bmp.Height;
+
+            // Lock bitmap data for direct memory access
+            var rect = new Rectangle(0, 0, width, height);
+            var data = bmp.LockBits(rect, ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            int texId = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, texId);
+
+            GL.TexImage2D(TextureTarget.Texture2D,
+                0,
+                PixelInternalFormat.Rgba,
+                width,
+                height,
+                0,
+                PixelFormat.Bgra,
+                PixelType.UnsignedByte,
+                data.Scan0);
+
+            bmp.UnlockBits(data);
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            ApplyTextTextureParameters();
+
+            _hatchTextureSizes[texId] = new Size(width, height);
+
+            var err = GL.GetError();
+            if (err != ErrorCode.NoError)
+            {
+                Debug.WriteLine($"OpenGL Error in CreateTextTextureFromBitmap: {err}");
+                return 0;
+            }
+
+            return texId;
+        }
+
+        public int LoadTextureFromFile(string filePath)
+        {
+            using var bitmap = new Bitmap(filePath);
+            return CreateTextTextureFromBitmap(bitmap); // Reuse your existing logic
+        }
 
         private static void ApplyTextureParameters()
         {
@@ -119,10 +180,22 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
         }
 
+        //private static void ApplyTextTextureParameters()
+        //{
+        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+        //}
         private static void ApplyTextTextureParameters()
         {
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            //Enable mipmaps for minification
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+
+            //Regular bilinear filtering for magnification
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            //Clamp edges to avoid sampling outside the atlas
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
         }

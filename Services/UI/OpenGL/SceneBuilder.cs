@@ -1,12 +1,17 @@
-using OpenTK.Mathematics;
-using System.Collections.Generic;
-using System.Windows.Media;
 using BauphysikToolWPF.Models.UI;
-using Line = BT.Geometry.Line;
-using Rectangle = BT.Geometry.Rectangle;
+using OpenTK.Mathematics;
 using System;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BT.Geometry;
+using Brush = System.Windows.Media.Brush;
+using Color = System.Windows.Media.Color;
+using Line = BT.Geometry.Line;
+using Pen = System.Windows.Media.Pen;
+using Point = BT.Geometry.Point;
+using Rectangle = BT.Geometry.Rectangle;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -16,16 +21,21 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class SceneBuilder
     {
-        private readonly TextureManager _textureManager;
+        private readonly ElementSceneController _parent;
 
+        private int _zIndex = 0; // Z-level for rendering order, can be used to layer elements in the scene
+
+        private TextureManager TextureManager => _parent.TextureManager;
+        private SdfFont? SdfFont => TextureManager.SdfFont;
+        
         public List<float> RectVertices { get; private set; } = new();
         public List<float> LineVertices { get; private set; } = new();
         public List<(int? TextureId, int Count)> RectBatches { get; private set; } = new();
         public List<(float LineWidth, int Count)> LineBatches { get; private set; } = new();
 
-        public SceneBuilder(TextureManager textureManager)
+        public SceneBuilder(ElementSceneController parent)
         {
-            _textureManager = textureManager;
+            _parent = parent;
         }
 
         public void BuildFrom(IEnumerable<IDrawingGeometry> drawingGeometries)
@@ -34,9 +44,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             LineVertices.Clear();
             RectBatches.Clear();
             LineBatches.Clear();
-
+            
             foreach (var geom in drawingGeometries)
             {
+                _zIndex = 0;
                 if (geom.DrawingBrush is DrawingBrush hatch)
                 {
                     AddTexturedRectangle(geom.Rectangle, geom.BackgroundColor, hatch, geom.HatchFitMode);
@@ -45,7 +56,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 {
                     AddRectangle(geom.Rectangle, geom.BackgroundColor);
                 }
-
+                _zIndex = 1;
                 AddLine(geom.Rectangle.BottomLine, System.Windows.Media.Brushes.Black, LineStyle.Dashed);
                 if (geom.ShapeId.Index == 0)
                     AddLine(geom.Rectangle.TopLine, System.Windows.Media.Brushes.Black, LineStyle.Solid, 2.0);
@@ -55,8 +66,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     AddLine(geom.Rectangle.LeftLine);
                     AddLine(geom.Rectangle.RightLine);
                 }
-                //AddCircle(geom.Rectangle.Center, 20, System.Windows.Media.Brushes.White, System.Windows.Media.Brushes.Black);
-               // AddTextLabel(geom.Rectangle.Center, "Section A", System.Windows.Media.Brushes.Black, 18, 0.9);
+                _zIndex = 2;
+                AddCircle(geom.Rectangle.Center, 12, System.Windows.Media.Brushes.White, System.Windows.Media.Brushes.Black);
+                _zIndex = 3;
+                AddText("1", geom.Rectangle.Center, System.Windows.Media.Brushes.Black, 20, 1.0, TextAlignment.Center);
             }
         }
 
@@ -70,7 +83,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
             Vector4 color = GetColorFromBrush(bgColor);
             int? texId = null;
-            var verts = CreateRectVertices(rect, color);
+            var verts = CreateRectVertices(rect, color, _zIndex);
             RectVertices.AddRange(verts);
             RectBatches.Add((texId, 6));
         }
@@ -85,8 +98,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 bgColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
             }
             Vector4 color = GetColorFromBrush(bgColor);
-            var texId = _textureManager.GetTextureIdForBrush(hatch);
-            var texSize = texId.HasValue ? _textureManager.GetTextureSize(texId.Value) : null;
+            var texId = TextureManager.GetTextureIdForBrush(hatch);
+            var texSize = texId.HasValue ? TextureManager.GetTextureSize(texId.Value) : null;
 
             float texRepeatX = 1f, texRepeatY = 1f;
 
@@ -118,7 +131,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 }
             }
 
-            var verts = CreateRectVertices(rect, color, texRepeatX, texRepeatY);
+            var verts = CreateRectVertices(rect, color, texRepeatX, texRepeatY, _zIndex);
             RectVertices.AddRange(verts);
             RectBatches.Add((texId, 6));
         }
@@ -141,11 +154,35 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 case LineStyle.Dotted: dash = 2f; gap = 4f; break;
             }
 
-            var verts = CreateLineVertices(line, col, dash, gap);
+            var verts = CreateLineVertices(line, col, dash, gap, _zIndex);
             LineVertices.AddRange(verts);
             LineBatches.Add(((float)thickness, 2));
         }
         
+        private void AddLine(Point ptStart, Point ptEnd, Brush? lineColor = null, LineStyle style = LineStyle.Solid, double thickness = 1.0, double opacity = 1.0)
+        {
+            var line = new Line(ptStart, ptEnd);
+            lineColor ??= System.Windows.Media.Brushes.Black;
+            // Extract color and apply opacity (in alpha channel)
+            if (lineColor is SolidColorBrush solid)
+            {
+                var c = solid.Color;
+                byte alpha = (byte)(opacity * 255);
+                lineColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
+            }
+            Vector4 col = GetColorFromBrush(lineColor);
+            float dash = 0f, gap = 0f;
+            switch (style)
+            {
+                case LineStyle.Dashed: dash = 8f; gap = 4f; break;
+                case LineStyle.Dotted: dash = 2f; gap = 4f; break;
+            }
+
+            var verts = CreateLineVertices(line, col, dash, gap, _zIndex);
+            LineVertices.AddRange(verts);
+            LineBatches.Add(((float)thickness, 2));
+        }
+
         private void AddLine(Line line, Pen pen)
         {
             if (pen == null || pen.Brush == null) return;
@@ -173,7 +210,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 }
             }
 
-            var verts = CreateLineVertices(line, color, dashLength, gapLength);
+            var verts = CreateLineVertices(line, color, dashLength, gapLength, _zIndex);
             LineVertices.AddRange(verts);
             LineBatches.Add(((float)pen.Thickness, 2));
         }
@@ -188,41 +225,20 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 fillColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
             }
             Vector4 fill = GetColorFromBrush(fillColor);
+            var circleVerts = CreateCircleVertices(center, radius, fill, segments, _zIndex);
 
-            // Center vertex
-            float cx = (float)center.X;
-            float cy = (float)center.Y;
-
-            // Build triangle fan (center + outer ring)
-            var verts = new List<float>();
-            for (int i = 0; i < segments; i++)
-            {
-                float angle1 = MathF.PI * 2f * i / segments;
-                float angle2 = MathF.PI * 2f * (i + 1) / segments;
-
-                float x1 = cx + MathF.Cos(angle1) * (float)radius;
-                float y1 = cy + MathF.Sin(angle1) * (float)radius;
-                float x2 = cx + MathF.Cos(angle2) * (float)radius;
-                float y2 = cy + MathF.Sin(angle2) * (float)radius;
-
-                // Triangle: center, edge1, edge2
-                verts.AddRange(new float[]
-                {
-                    cx, cy, 0f, fill.X, fill.Y, fill.Z, fill.W, 0f, 0f,
-                    x1, y1, 0f, fill.X, fill.Y, fill.Z, fill.W, 0f, 0f,
-                    x2, y2, 0f, fill.X, fill.Y, fill.Z, fill.W, 0f, 0f
-                });
-            }
-
-            RectVertices.AddRange(verts);
+            RectVertices.AddRange(circleVerts);
             RectBatches.Add((null, segments * 3));
 
-            // Optionally add outline as a dashed/polyline
+            // Optional outline
             if (outlineColor != null)
             {
                 Vector4 col = GetColorFromBrush(outlineColor);
                 var outlineVerts = new List<float>();
                 float dash = 0f, gap = 0f;
+
+                float cx = (float)center.X;
+                float cy = (float)center.Y;
 
                 for (int i = 0; i < segments; i++)
                 {
@@ -234,12 +250,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     float x2 = cx + MathF.Cos(angle2) * (float)radius;
                     float y2 = cy + MathF.Sin(angle2) * (float)radius;
 
-                    var length = MathF.Sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
-                    outlineVerts.AddRange(new float[]
-                    {
-                x1, y1, 0f, col.X, col.Y, col.Z, col.W, dash, gap, 0f,
-                x2, y2, 0f, col.X, col.Y, col.Z, col.W, dash, gap, length
-                    });
+                    var verts = CreateLineVertices(new Line(x1, y1, x2, y2), col, dash, gap, _zIndex);
+                    outlineVerts.AddRange(verts);
                 }
 
                 LineVertices.AddRange(outlineVerts);
@@ -247,7 +259,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
         }
 
-        public void AddTextLabel(Point position, string text, Brush color, double fontSize = 16, double opacity = 1.0)
+        /// <summary>
+        /// rasterized texture-based text
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="text"></param>
+        /// <param name="color"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="opacity"></param>
+        public void AddTextRasterized(Point position, string text, Brush color, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
@@ -275,7 +295,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 dc.DrawText(new FormattedText(
                     text,
                     System.Globalization.CultureInfo.InvariantCulture,
-                    System.Windows.FlowDirection.LeftToRight,
+                    FlowDirection.LeftToRight,
                     new Typeface("Segoe UI"),
                     fontSize,
                     solid,
@@ -287,44 +307,217 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             bmp.Render(drawingVisual);
 
             // Upload to OpenGL texture
-            int texId = _textureManager.CreateTextTextureFromBitmap(bmp);
+            int texId = TextureManager.CreateTextTextureFromBitmap(bmp);
             if (texId == -1) return;
 
+            var offset = GetAlignedOffset(alignment, width, height);
+            var alignedPosition = new Point(position.X + offset.X, position.Y + offset.Y);
+
             // Create rectangle for text quad
-            var rect = new Rectangle(position.X, position.Y, width, height);
+            var rect = new Rectangle(alignedPosition.X, alignedPosition.Y, width, height);
             Vector4 white = new(1f, 1f, 1f, 1f); // vertex color = white, since texture has pre-colored glyphs
-            var verts = CreateRectVertices(rect, white, 1f, 1f);
+            var verts = CreateRectVertices(rect, white, 1f, 1f, _zIndex);
             RectVertices.AddRange(verts);
             RectBatches.Add((texId, 6));
         }
-        private static float[] CreateRectVertices(Rectangle r, Vector4 col, float uX = 0f, float uY = 0f)
+
+        /// <summary>
+        /// polyline-only vector outlines
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="position"></param>
+        /// <param name="brush"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="opacity"></param>
+        public void AddTextVectorized(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return;
+
+            if (brush is not SolidColorBrush solidBrush)
+                return;
+
+
+            var c = solidBrush.Color;
+            var alpha = (byte)(opacity * 255);
+            var solidColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
+            var formatted = new FormattedText(
+                text,
+                System.Globalization.CultureInfo.InvariantCulture,
+                FlowDirection.LeftToRight,
+                new Typeface("Segoe UI"),
+                fontSize,
+                solidColor,
+                VisualTreeHelper.GetDpi(new System.Windows.Controls.Control()).PixelsPerDip);
+
+            var geometry = formatted.BuildGeometry(new System.Windows.Point(position.X, position.Y));
+            var flattened = geometry.GetFlattenedPathGeometry(0.25, ToleranceType.Absolute);
+
+            foreach (var figure in flattened.Figures)
+            {
+                var start = figure.StartPoint;
+                foreach (var seg in figure.Segments)
+                {
+                    if (seg is PolyLineSegment poly)
+                    {
+                        var prev = start;
+                        foreach (var pt in poly.Points)
+                        {
+                            var line = new Line(new Point(prev.X, prev.Y), new Point(pt.X, pt.Y));
+                            AddLine(line, brush, LineStyle.Solid, 1.0, opacity);
+                            prev = pt;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// SDF-based text rendering using a preloaded font texture atlas.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="position"></param>
+        /// <param name="brush"></param>
+        /// <param name="fontSize"></param>
+        /// <param name="opacity"></param>
+        public void AddText(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
+        {
+            if (string.IsNullOrWhiteSpace(text) || brush is not SolidColorBrush solidBrush || SdfFont is null)
+                return;
+
+            var color = GetColorFromBrush(new SolidColorBrush(Color.FromArgb(
+                (byte)(opacity * 255),
+                solidBrush.Color.R,
+                solidBrush.Color.G,
+                solidBrush.Color.B)));
+
+            float scale = (float)(fontSize / SdfFont.LineHeight);
+
+            // Measure text dimensions
+            float totalWidth = 0f;
+            float maxHeight = 0f;
+
+            foreach (char c in text)
+            {
+                if (!SdfFont.Glyphs.TryGetValue(c, out var glyph))
+                    continue;
+
+                totalWidth += glyph.Advance * scale * 0.9f; // * 0.9f to reduce char spacing
+                float glyphHeight = glyph.Bounds.Height * scale;
+                if (glyphHeight > maxHeight)
+                    maxHeight = glyphHeight;
+            }
+            // Apply alignment offset
+            var offset = GetAlignedOffset(alignment, totalWidth, maxHeight);
+            float x = (float)position.X + offset.X;
+            float y = (float)position.Y + offset.Y - maxHeight * 0.4f; // TESTING: Static offset (maxHeight * scale)
+
+            // Second pass: layout and render
+            foreach (char c in text)
+            {
+                if (!SdfFont.Glyphs.TryGetValue(c, out var glyph))
+                    continue;
+
+                float gx = x + glyph.Bounds.X * scale;
+                float gy = y + glyph.Bounds.Y * scale;
+                float gw = glyph.Bounds.Width * scale;
+                float gh = glyph.Bounds.Height * scale;
+
+                var rect = new Rectangle(gx, gy, gw, gh);
+
+                var uv = glyph.UVRect;
+                var verts = CreateRectVertices(rect, color, uv, _zIndex);
+                // Manually assign correct UVs later if needed
+
+                RectVertices.AddRange(verts);
+                RectBatches.Add((SdfFont.TextureId, 6));
+
+                x += glyph.Advance * scale * 0.9f; // * 0.9f to reduce char spacing
+            }
+        }
+
+        private static float[] CreateRectVertices(Rectangle r, Vector4 col, float uX = 0f, float uY = 0f, int zLevel = 0)
         {
             float x = (float)r.X;
             float y = (float)r.Y;
+            float z = zLevel;
             float w = (float)r.Width;
             float h = (float)r.Height;
 
             return new float[]
             {
-                x,     y,     0, col.X, col.Y, col.Z, col.W, 0,     0,
-                x + w, y,     0, col.X, col.Y, col.Z, col.W, uX,    0,
-                x,     y + h, 0, col.X, col.Y, col.Z, col.W, 0,     uY,
-                x + w, y,     0, col.X, col.Y, col.Z, col.W, uX,    0,
-                x + w, y + h, 0, col.X, col.Y, col.Z, col.W, uX,    uY,
-                x,     y + h, 0, col.X, col.Y, col.Z, col.W, 0,     uY,
+                x,     y,     z, col.X, col.Y, col.Z, col.W, 0,     0,
+                x + w, y,     z, col.X, col.Y, col.Z, col.W, uX,    0,
+                x,     y + h, z, col.X, col.Y, col.Z, col.W, 0,     uY,
+                x + w, y,     z, col.X, col.Y, col.Z, col.W, uX,    0,
+                x + w, y + h, z, col.X, col.Y, col.Z, col.W, uX,    uY,
+                x,     y + h, z, col.X, col.Y, col.Z, col.W, 0,     uY,
             };
         }
-        private static float[] CreateLineVertices(Line l, Vector4 col, float dash, float gap)
+        private static float[] CreateRectVertices(Rectangle r, Vector4 col, RectangleF uv, int zLevel = 0)
+        {
+            float x = (float)r.X;
+            float y = (float)r.Y;
+            float z = zLevel;
+            float w = (float)r.Width;
+            float h = (float)r.Height;
+
+            float u1 = uv.X;
+            float v1 = uv.Y;
+            float u2 = uv.X + uv.Width;
+            float v2 = uv.Y + uv.Height;
+
+            return new float[]
+            {
+                x,     y,     z, col.X, col.Y, col.Z, col.W, u1, v1,
+                x + w, y,     z, col.X, col.Y, col.Z, col.W, u2, v1,
+                x,     y + h, z, col.X, col.Y, col.Z, col.W, u1, v2,
+                x + w, y,     z, col.X, col.Y, col.Z, col.W, u2, v1,
+                x + w, y + h, z, col.X, col.Y, col.Z, col.W, u2, v2,
+                x,     y + h, z, col.X, col.Y, col.Z, col.W, u1, v2,
+            };
+        }
+        private static float[] CreateLineVertices(Line l, Vector4 col, float dash, float gap, int zLevel = 0)
         {
             var p1 = l.Start;
             var p2 = l.End;
+            float z = zLevel;
+
             float length = (float)l.Length;
 
             return new float[]
             {
-                (float)p1.X, (float)p1.Y, 0f, col.X, col.Y, col.Z, col.W, dash, gap, 0f,
-                (float)p2.X, (float)p2.Y, 0f, col.X, col.Y, col.Z, col.W, dash, gap, length
+                (float)p1.X, (float)p1.Y, z, col.X, col.Y, col.Z, col.W, dash, gap, 0f,
+                (float)p2.X, (float)p2.Y, z, col.X, col.Y, col.Z, col.W, dash, gap, length
             };
+        }
+        private static float[] CreateCircleVertices(Point center, double radius, Vector4 color, int segments = 32, int zLevel = 0)
+        {
+            float cx = (float)center.X;
+            float cy = (float)center.Y;
+            float r = (float)radius;
+
+            var verts = new List<float>(segments * 3 * 9); // 3 vertices per triangle, 9 floats per vertex
+
+            for (int i = 0; i < segments; i++)
+            {
+                float angle1 = MathF.PI * 2f * i / segments;
+                float angle2 = MathF.PI * 2f * (i + 1) / segments;
+
+                float x1 = cx + MathF.Cos(angle1) * r;
+                float y1 = cy + MathF.Sin(angle1) * r;
+                float x2 = cx + MathF.Cos(angle2) * r;
+                float y2 = cy + MathF.Sin(angle2) * r;
+
+                verts.AddRange(new float[]
+                {
+                    cx, cy, zLevel, color.X, color.Y, color.Z, color.W, 0f, 0f, // center
+                    x1, y1, zLevel, color.X, color.Y, color.Z, color.W, 0f, 0f, // edge1
+                    x2, y2, zLevel, color.X, color.Y, color.Z, color.W, 0f, 0f  // edge2
+                });
+            }
+
+            return verts.ToArray();
         }
 
         public static Vector4 GetColorFromBrush(Brush b)
@@ -336,6 +529,36 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
             return new Vector4(1f, 1f, 1f, 1f);
         }
+
+        private static Vector2 GetAlignedOffset(TextAlignment alignment, double width, double height)
+        {
+            float offsetX = alignment.HasFlag(TextAlignment.CenterH) ? -(float)width / 2 :
+                alignment.HasFlag(TextAlignment.Right) ? -(float)width :
+                0;
+
+            float offsetY = alignment.HasFlag(TextAlignment.CenterV) ? -(float)height / 2 :
+                alignment.HasFlag(TextAlignment.Bottom) ? -(float)height :
+                0;
+
+            return new Vector2(offsetX, offsetY);
+        }
+    }
+
+    [Flags]
+    public enum TextAlignment
+    {
+        // Horizontal
+        Left = 1 << 0,  // 000001
+        CenterH = 1 << 1,  // 000010
+        Right = 1 << 2,  // 000100
+
+        // Vertical
+        Top = 1 << 3,  // 001000
+        CenterV = 1 << 4,  // 010000
+        Bottom = 1 << 5,  // 100000
+
+        // Combined
+        Center = CenterH | CenterV // 010010
     }
 
     public enum HatchFitMode
