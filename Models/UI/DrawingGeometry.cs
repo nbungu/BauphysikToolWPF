@@ -46,6 +46,13 @@ namespace BauphysikToolWPF.Models.UI
 
         public DrawingGeometry() { }
 
+        public DrawingGeometry(ShapeId shapeId, Rectangle rectangle, int zIndex)
+        {
+            ShapeId = shapeId;
+            Rectangle = rectangle;
+            ZIndex = zIndex;
+        }
+
         public DrawingGeometry Copy()
         {
             return new DrawingGeometry(this);

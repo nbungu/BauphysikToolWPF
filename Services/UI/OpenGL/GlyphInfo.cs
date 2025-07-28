@@ -84,8 +84,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (imageFile == null)
                 throw new FileNotFoundException("No texture page defined in FNT file.");
 
-            string atlasPath = Path.Combine(dir, imageFile);
-            int texId = texManager.LoadTextureFromFile(atlasPath);
+            string fontAtlasPath = Path.Combine(dir, imageFile);
+
+            using var fontAtlasBitmap = new Bitmap(fontAtlasPath);
+
+            int texId = texManager.CreateFontTextureFromBitmap(fontAtlasBitmap);
 
             return new SdfFont(glyphs, texId, lineHeight);
         }

@@ -4,7 +4,6 @@ using BauphysikToolWPF.Services.Application;
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -28,24 +27,28 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private TextureManager TextureManager => _parent.TextureManager;
         private SdfFont? SdfFont => TextureManager.SdfFont;
 
-        public int Padding { get; private set; } = 4; // Padding around the scene boundaries for better visibility
+        public List<IDrawingGeometry> SceneShapes { get; private set; } = new();
+        public int ScenePadding { get; private set; } = 4; // Padding around the scene boundaries for better visibility
+        public Rectangle SceneBounds => GetSceneBoundaries();
         public List<float> RectVertices { get; private set; } = new();
         public List<float> LineVertices { get; private set; } = new();
         public List<(int? TextureId, int Count)> RectBatches { get; private set; } = new();
         public List<(float LineWidth, int Count)> LineBatches { get; private set; } = new();
 
-        
         public SceneBuilder(ElementSceneController parent)
         {
             _parent = parent;
         }
 
+        #region public
+        
         public void BuildFrom(IEnumerable<IDrawingGeometry> drawingGeometries)
         {
             RectVertices.Clear();
             LineVertices.Clear();
             RectBatches.Clear();
             LineBatches.Clear();
+            SceneShapes.Clear();
 
             var elementBounds = GetContentBounds(drawingGeometries);
             AddLine(elementBounds.LeftLine, style: LineStyle.Dashed);
@@ -58,10 +61,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 if (geom.DrawingBrush is DrawingBrush hatch)
                 {
                     AddTexturedRectangle(geom.Rectangle, geom.BackgroundColor, hatch, geom.HatchFitMode);
+                    SceneShapes.Add(geom);
                 }
                 else
                 {
                     AddRectangle(geom.Rectangle, geom.BackgroundColor);
+                    SceneShapes.Add(geom);
                 }
                 _zIndex = 1;
                 AddLine(geom.Rectangle.BottomLine, Brushes.Black);
@@ -73,7 +78,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     AddLine(geom.Rectangle.LeftLine);
                     AddLine(geom.Rectangle.RightLine);
 
-                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).InternalId.ToString() + "b";
+                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).InternalId + "b";
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
                 {
@@ -82,12 +87,18 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
                 _zIndex = 2;
                 AddCircle(geom.Rectangle.Center, 12, Brushes.White, Brushes.Black);
-                _zIndex = 3;
+                // Make the circles behave like if a layer is clicked
+                SceneShapes.Add(new DrawingGeometry(new ShapeId(ShapeType.Layer, geom.InternalId), Rectangle.FromCircle(geom.Rectangle.Center, 12), _zIndex));
                 
+                _zIndex = 3;
                 AddText(layerNumber, geom.Rectangle.Center, Brushes.Black, 20, 1.0, TextAlignment.Center);
             }
         }
 
+        #endregion
+
+        #region private methods
+        
         private void AddRectangle(Rectangle rect, Brush bgColor, double opacity = 1.0)
         {
             if (bgColor is SolidColorBrush solid)
@@ -96,7 +107,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 byte alpha = (byte)(opacity * 255);
                 bgColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
             }
-            Vector4 color = GetColorFromBrush(bgColor);
+            Vector4 color = bgColor.ToVectorColor();
             int? texId = null;
             var verts = CreateRectVertices(rect, color, _zIndex);
             RectVertices.AddRange(verts);
@@ -112,7 +123,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 byte alpha = (byte)(opacity * 255);
                 bgColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
             }
-            Vector4 color = GetColorFromBrush(bgColor);
+            Vector4 color = bgColor.ToVectorColor();
             var texId = TextureManager.GetTextureIdForBrush(hatch);
             var texSize = texId.HasValue ? TextureManager.GetTextureSize(texId.Value) : null;
 
@@ -161,7 +172,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 byte alpha = (byte)(opacity * 255);
                 lineColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
             }
-            Vector4 col = GetColorFromBrush(lineColor);
+            Vector4 col = lineColor.ToVectorColor();
             float dash = 0f, gap = 0f;
             switch (style)
             {
@@ -185,7 +196,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 byte alpha = (byte)(opacity * 255);
                 lineColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
             }
-            Vector4 col = GetColorFromBrush(lineColor);
+            Vector4 col = lineColor.ToVectorColor();
             float dash = 0f, gap = 0f;
             switch (style)
             {
@@ -203,7 +214,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (pen.Brush == null) return;
 
             // Extract color
-            Vector4 color = GetColorFromBrush(pen.Brush);
+            Vector4 color = pen.Brush.ToVectorColor();
 
             // Determine dash pattern
             float dashLength = 0f, gapLength = 0f;
@@ -239,7 +250,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 byte alpha = (byte)(opacity * 255);
                 fillColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
             }
-            Vector4 fill = GetColorFromBrush(fillColor);
+            Vector4 fill = fillColor.ToVectorColor();
             var circleVerts = CreateCircleVertices(center, radius, fill, segments, _zIndex);
 
             RectVertices.AddRange(circleVerts);
@@ -248,7 +259,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             // Optional outline
             if (outlineColor != null)
             {
-                Vector4 col = GetColorFromBrush(outlineColor);
+                Vector4 col = outlineColor.ToVectorColor();
                 var outlineVerts = new List<float>();
                 float dash = 0f, gap = 0f;
 
@@ -282,7 +293,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <param name="color"></param>
         /// <param name="fontSize"></param>
         /// <param name="opacity"></param>
-        public void AddTextRasterized(Point position, string text, Brush color, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
+        private void AddTextRasterized(Point position, string text, Brush color, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
@@ -322,7 +333,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             bmp.Render(drawingVisual);
 
             // Upload to OpenGL texture
-            int texId = TextureManager.CreateTextTextureFromBitmap(bmp);
+            int texId = TextureManager.CreateTextureFromBitmap(bmp, isText: true);
             if (texId == -1) return;
 
             var offset = GetAlignedOffset(alignment, width, height);
@@ -344,7 +355,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <param name="brush"></param>
         /// <param name="fontSize"></param>
         /// <param name="opacity"></param>
-        public void AddTextVectorized(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0)
+        private void AddTextVectorized(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0)
         {
             if (string.IsNullOrWhiteSpace(text))
                 return;
@@ -395,16 +406,16 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <param name="brush"></param>
         /// <param name="fontSize"></param>
         /// <param name="opacity"></param>
-        public void AddText(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
+        private void AddText(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
         {
             if (string.IsNullOrWhiteSpace(text) || brush is not SolidColorBrush solidBrush || SdfFont is null)
                 return;
 
-            var color = GetColorFromBrush(new SolidColorBrush(Color.FromArgb(
+            var color = new SolidColorBrush(Color.FromArgb(
                 (byte)(opacity * 255),
                 solidBrush.Color.R,
                 solidBrush.Color.G,
-                solidBrush.Color.B)));
+                solidBrush.Color.B)).ToVectorColor();
 
             float scale = (float)(fontSize / SdfFont.LineHeight);
 
@@ -536,16 +547,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return verts.ToArray();
         }
 
-        public static Vector4 GetColorFromBrush(Brush b)
-        {
-            if (b is SolidColorBrush s)
-            {
-                var c = s.Color;
-                return new Vector4(c.R / 255f, c.G / 255f, c.B / 255f, c.A / 255f);
-            }
-            return new Vector4(1f, 1f, 1f, 1f);
-        }
-
         private static Vector2 GetAlignedOffset(TextAlignment alignment, double width, double height)
         {
             float offsetX = alignment.HasFlag(TextAlignment.CenterH) ? -(float)width / 2 :
@@ -559,7 +560,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return new Vector2(offsetX, offsetY);
         }
 
-        public Rectangle GetSceneBoundaries()
+        private Rectangle GetSceneBoundaries()
         {
             double minX = double.MaxValue;
             double minY = double.MaxValue;
@@ -595,10 +596,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 return new Rectangle(0, 0, 0, 0);
 
             return new Rectangle(
-                minX - Padding,
-                minY - Padding,
-                (maxX - minX) + Padding * 2,
-                (maxY - minY) + Padding * 2
+                minX - ScenePadding,
+                minY - ScenePadding,
+                (maxX - minX) + ScenePadding * 2,
+                (maxY - minY) + ScenePadding * 2
             );
         }
 
@@ -616,6 +617,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
             return new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
+
+        #endregion
     }
 
     [Flags]

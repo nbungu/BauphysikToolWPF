@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Brush = System.Windows.Media.Brush;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using Size = System.Drawing.Size;
+using Rectangle = BT.Geometry.Rectangle;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -41,7 +41,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (_hatchTextureCache.TryGetValue(brush, out int id))
                 return id;
 
-            var bitmap = RenderBrushToBitmap(brush);
+            var bitmap = brush.ToBitmapSource();
             int texId = CreateTextureFromBitmap(bitmap);
             if (texId != 0)
             {
@@ -55,23 +55,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return _hatchTextureSizes.TryGetValue(textureId, out var size) ? size : null;
         }
 
-        private static BitmapSource RenderBrushToBitmap(DrawingBrush brush)
-        {
-            int width = (int)brush.Viewbox.Width;
-            int height = (int)brush.Viewbox.Height;
-
-            var dv = new DrawingVisual();
-            using (var ctx = dv.RenderOpen())
-            {
-                ctx.DrawRectangle(brush, null, new Rect(0, 0, width, height));
-            }
-
-            var rtb = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
-            rtb.Render(dv);
-            return rtb;
-        }
-
-        public int CreateTextureFromBitmap(BitmapSource bmp)
+        public int CreateTextureFromBitmap(BitmapSource bmp, bool isText = false)
         {
             int width = bmp.PixelWidth;
             int height = bmp.PixelHeight;
@@ -85,7 +69,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
                 width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
 
-            ApplyTextureParameters();
+            if (isText) ApplyFontTextureParameters();
+            else ApplyTextureParameters();
 
             _hatchTextureSizes[texId] = new Size(width, height);
 
@@ -99,40 +84,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return texId;
         }
 
-        public int CreateTextTextureFromBitmap(BitmapSource bmp)
-        {
-            int width = bmp.PixelWidth;
-            int height = bmp.PixelHeight;
-            int stride = width * 4;
-            byte[] pixels = new byte[height * stride];
-            bmp.CopyPixels(pixels, stride, 0);
-
-            int texId = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, texId);
-
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba,
-                width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-
-            ApplyTextTextureParameters();
-
-            _hatchTextureSizes[texId] = new Size(width, height);
-
-            var err = GL.GetError();
-            if (err != ErrorCode.NoError)
-            {
-                Debug.WriteLine($"OpenGL Error in CreateTextureFromBitmap: {err}");
-                return 0;
-            }
-
-            return texId;
-        }
-        public int CreateTextTextureFromBitmap(Bitmap bmp)
+        public int CreateFontTextureFromBitmap(Bitmap bmp)
         {
             int width = bmp.Width;
             int height = bmp.Height;
 
             // Lock bitmap data for direct memory access
-            var rect = new Rectangle(0, 0, width, height);
+            var rect = new Rectangle(0, 0, width, height).ToWpfRectangle();
             var data = bmp.LockBits(rect, ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
             int texId = GL.GenTexture();
@@ -152,7 +110,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            ApplyTextTextureParameters();
+            ApplyFontTextureParameters();
 
             _hatchTextureSizes[texId] = new Size(width, height);
 
@@ -166,12 +124,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return texId;
         }
 
-        public int LoadTextureFromFile(string filePath)
-        {
-            using var bitmap = new Bitmap(filePath);
-            return CreateTextTextureFromBitmap(bitmap); // Reuse your existing logic
-        }
-
         private static void ApplyTextureParameters()
         {
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
@@ -179,15 +131,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
         }
-
-        //private static void ApplyTextTextureParameters()
-        //{
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-        //}
-        private static void ApplyTextTextureParameters()
+        private static void ApplyFontTextureParameters()
         {
             //Enable mipmaps for minification
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);

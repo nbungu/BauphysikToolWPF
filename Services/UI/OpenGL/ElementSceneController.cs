@@ -1,16 +1,17 @@
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Services.Application;
 using OpenTK.Mathematics;
+using OpenTK.Windowing.Common;
 using OpenTK.Wpf;
 using System;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using OpenTK.Windowing.Common;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
-using BauphysikToolWPF.Models.UI;
-using System.Collections.Generic;
+using Point = BT.Geometry.Point;
+using Rectangle = BT.Geometry.Rectangle;
+using Size = System.Windows.Size;
+using Vector = BT.Geometry.Vector;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -29,7 +30,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private bool _disposed;
 
         private float _zoom = 1f;
-        private Vector2 _pan = Vector2.Zero;
+        private Vector _pan = Vector.Empty;
         private Point _lastMousePos;
         private bool _dragging;
 
@@ -56,8 +57,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 Profile = ContextProfile.Core,
                 ContextFlags = ContextFlags.Default,
                 RenderContinuously = false,
-                //Samples = 8,
-                //TransparentBackground = true,
+                Samples = 8,
             };
 
             view.Render += OnRender;
@@ -87,7 +87,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void ResetView()
         {
             _zoom = 1f;
-            _pan = Vector2.Zero;
+            _pan = Vector.Empty;
             Invalidate();
         }
         public void SetZoom(double zoom)
@@ -108,8 +108,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void OnRender(TimeSpan _)
         {
-            var size = new System.Drawing.Size((int)_view.ActualWidth, (int)_view.ActualHeight);
-            var bounds = SceneBuilder.GetSceneBoundaries();
+            var size = new Size((int)_view.ActualWidth, (int)_view.ActualHeight);
+            var bounds = SceneBuilder.SceneBounds;
             var proj = BuildProjection(size, bounds);
 
             Renderer.Render(
@@ -120,11 +120,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 proj);
         }
 
-        private Matrix4 BuildProjection(System.Drawing.Size control, BT.Geometry.Rectangle content)
+        private Matrix4 BuildProjection(Size control, Rectangle content)
         {
             var rectF = content.ToRectangleF();
-            
-            float ctrlW = control.Width, ctrlH = control.Height;
+
+            float ctrlW = (float)control.Width, ctrlH = (float)control.Height;
             float contW = rectF.Width, contH = rectF.Height;
 
             float scaleX = ctrlW / contW, scaleY = ctrlH / contH;
@@ -140,28 +140,28 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             Matrix4 view = Matrix4.CreateTranslation(1f, -1f, 0) *
                            Matrix4.CreateScale(scale) *
-                           Matrix4.CreateTranslation(-1f + dx + _pan.X, 1f - dy + _pan.Y, 0);
+                           Matrix4.CreateTranslation(-1f + dx + (float)_pan.X, 1f - dy + (float)_pan.Y, 0);
 
             return Matrix4.CreateOrthographicOffCenter(0, ctrlW, ctrlH, 0, zIndexStart, zIndexEnd) * view;
         }
 
-        private BT.Geometry.Point ConvertMouseToScene(Point mouse)
+        private Point ConvertMouseToScene(Point mouse)
         {
-            var bounds = SceneBuilder.GetSceneBoundaries();
+            var bounds = SceneBuilder.SceneBounds;
             float cw = (float)_view.ActualWidth, ch = (float)_view.ActualHeight;
             float ew = (float)bounds.Width, eh = (float)bounds.Height;
 
             float scale = MathF.Min(cw / ew, ch / eh) * _zoom;
 
-            float panPxX = _pan.X * cw / 2f;
-            float panPxY = _pan.Y * ch / 2f;
+            float panPxX = (float)_pan.X * cw / 2f;
+            float panPxY = (float)_pan.Y * ch / 2f;
 
             float offsetX = (cw - ew * scale) / 2f + panPxX;
             float offsetY = (ch - eh * scale) / 2f + panPxY;
 
             float x = (float)((mouse.X - offsetX) / scale + bounds.X);
             float y = (float)((mouse.Y - offsetY) / scale + bounds.Y);
-            return new BT.Geometry.Point(x, y);
+            return new Point(x, y);
         }
 
         private void OnWheel(object s, MouseWheelEventArgs e)
@@ -172,18 +172,18 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void OnMouseDown(object s, MouseButtonEventArgs e)
         {
+            var cur = e.GetPosition(_view).ToPoint();
             if (e.ChangedButton == MouseButton.Middle)
             {
                 _dragging = true;
-                _lastMousePos = e.GetPosition(_view);
+                _lastMousePos = cur;
                 _view.CaptureMouse();
                 Mouse.OverrideCursor = Cursors.ScrollAll;
             }
-
             if (e.ChangedButton == MouseButton.Left)
             {
-                var pt = ConvertMouseToScene(e.GetPosition(_view));
-                foreach (var geom in CrossSectionBuilder.DrawingGeometries)
+                var pt = ConvertMouseToScene(cur);
+                foreach (var geom in SceneBuilder.SceneShapes)
                 {
                     if (geom.Rectangle.Contains(pt))
                     {
@@ -206,22 +206,22 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void OnMouseMove(object s, MouseEventArgs e)
         {
+            var cur = e.GetPosition(_view).ToPoint();
             if (_dragging)
             {
-                var cur = e.GetPosition(_view);
                 Vector delta = cur - _lastMousePos;
                 _lastMousePos = cur;
 
                 float dx = (float)(2.0 * delta.X / _view.ActualWidth);
                 float dy = (float)(-2.0 * delta.Y / _view.ActualHeight);
 
-                _pan += new Vector2(dx, dy);
+                _pan += new Vector(dx, dy);
                 Invalidate();
             }
             else
             {
-                var pt = ConvertMouseToScene(e.GetPosition(_view));
-                foreach (var shape in CrossSectionBuilder.DrawingGeometries)
+                var pt = ConvertMouseToScene(cur);
+                foreach (var shape in SceneBuilder.SceneShapes)
                 {
                     if (shape.Rectangle.Contains(pt))
                     {

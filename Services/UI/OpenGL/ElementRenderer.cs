@@ -92,7 +92,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                            Matrix4 projectionMatrix)
         {
             // Clear screen
-            var bg = SceneBuilder.GetColorFromBrush(_bgColor);
+            var bg = _bgColor.ToVectorColor();
             GL.ClearColor(bg.X, bg.Y, bg.Z, bg.W);
 
             // Use Z-Buffer for depth Sorting
