@@ -4,6 +4,7 @@ using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -12,7 +13,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels

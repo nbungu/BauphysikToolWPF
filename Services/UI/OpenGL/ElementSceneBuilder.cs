@@ -35,7 +35,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private float ZoomFactor => _parent.ZoomFactor; // Current zoom factor from the OglController
 
         public List<IDrawingGeometry> SceneShapes { get; } = new();
-        public int ScenePadding { get; set; } = 0;
+        public int ScenePadding { get; set; } = 1; // Avoids clipping
         public Rectangle SceneBounds => GetSceneBoundaries();
         public List<float> RectVertices { get; } = new();
         public List<float> LineVertices { get; } = new();

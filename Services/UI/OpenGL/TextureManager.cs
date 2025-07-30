@@ -33,7 +33,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public void SetDefaultFont()
         {
-            SdfFont = SdfFontLoader.LoadFromFntFile("Resources/Fonts/segoeUI.fnt", this);
+            SdfFont = FontLoader.LoadFromFntFile("Resources/Fonts/segoeUI.fnt", this);
         }
 
         public int? GetTextureIdForBrush(DrawingBrush brush)
