@@ -12,6 +12,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public List<(float LineWidth, int Count)> LineBatches { get; }
         public Rectangle SceneBounds { get; }
         public List<IDrawingGeometry> SceneShapes { get; }
+        public bool IsTextSizeZoomable { get; set; }
         public void BuildScene();
     }
 }

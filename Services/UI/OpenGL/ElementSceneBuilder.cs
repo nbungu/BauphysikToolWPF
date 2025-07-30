@@ -27,13 +27,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private int _zIndex; // Z-level for rendering order, can be used to layer elements in the scene
 
         public bool DebugMode { get; set; } = false; // Enable debug mode for additional rendering features
-
+        public bool IsTextSizeZoomable { get; set; } = false;
         private TextureManager TextureManager => _parent.TextureManager;
         private SdfFont? SdfFont => TextureManager.SdfFont;
         private double SizeOf1Cm => CrossSectionBuilder.SizeOf1Cm; // Size of 1 cm in OpenGL units, used for scaling dimensions
 
+        private float ZoomFactor => _parent.ZoomFactor; // Current zoom factor from the OglController
+
         public List<IDrawingGeometry> SceneShapes { get; } = new();
-        public int ScenePadding { get; set; } = 0; // Padding around the scene boundaries for better visibility
+        public int ScenePadding { get; set; } = 0;
         public Rectangle SceneBounds => GetSceneBoundaries();
         public List<float> RectVertices { get; } = new();
         public List<float> LineVertices { get; } = new();
@@ -53,6 +55,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public void BuildScene()
         {
+            _crossSectionBuilder.DrawingType = DrawingType.CrossSection;
             _crossSectionBuilder.RebuildCrossSection();
 
             if (!_crossSectionBuilder.DrawingGeometries.Any()) return;
@@ -88,38 +91,41 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 //if (geom.ShapeId.Index == 0) AddLine(geom.Rectangle.TopLine, Brushes.Black);
 
                 string layerNumber = "";
-                int fontSize = 20;
+                int fontSize = 18;
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
                     AddLine(geom.Rectangle.LeftLine);
                     AddLine(geom.Rectangle.RightLine);
-                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).InternalId + "b";
+                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber + "b";
                     fontSize = 16;
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
                 {
-                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).InternalId.ToString();
+                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
 
                     DrawSingleDimChain(geom.Rectangle.RightLine,
                         40,
                         Math.Round(geom.Rectangle.Height / SizeOf1Cm, 2).ToString(),
                         geom.BorderPen.Brush,
                         TextAlignment.Left | TextAlignment.CenterV,
-                        new ShapeId(ShapeType.Layer, geom.InternalId));
+                        new ShapeId(ShapeType.Layer, geom.InternalId),
+                        fontSize: 16);
                 }
 
                 _zIndex = 2;
-                AddCircle(geom.Rectangle.Center, 12, Brushes.White, Brushes.Black);
-                // Make the circles behave like if a layer is clicked
-                SceneShapes.Add(new DrawingGeometry(new ShapeId(ShapeType.Layer, geom.InternalId), Rectangle.FromCircle(geom.Rectangle.Center, 12), _zIndex));
+                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, fontSize, geom.Opacity, new ShapeId(ShapeType.Layer, geom.InternalId));
+                
+                //AddCircle(geom.Rectangle.Center, 12 * (1/ZoomFactor), Brushes.White, Brushes.Black);
+                //// Make the circles behave like if a layer is clicked
+                //SceneShapes.Add(new DrawingGeometry(new ShapeId(ShapeType.Layer, geom.InternalId), Rectangle.FromCircle(geom.Rectangle.Center, 12), _zIndex));
 
-                _zIndex = 3;
-                AddText(layerNumber, geom.Rectangle.Center, Brushes.Black, fontSize, 1.0, TextAlignment.Center);
+                //_zIndex = 3;
+                //AddText(layerNumber, geom.Rectangle.Center, Brushes.Black, fontSize, 1.0, TextAlignment.Center);
             }
             DrawSingleDimChain(elementBounds.RightLine,
                 120, 
                 Math.Round(elementBounds.Height / SizeOf1Cm, 2).ToString(),
-                alignment: TextAlignment.Left | TextAlignment.CenterV);
+                alignment: TextAlignment.Left | TextAlignment.CenterV, fontSize: 18);
 
             if (DebugMode)
             {
@@ -135,7 +141,18 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 AddText("3", elementBounds.TopRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Top);
                 AddText("5", elementBounds.Center, Brushes.Black, 24, alignment: TextAlignment.Center);
             }
+        }
 
+        private void AddLayerTextMarker(Point pt, string text, int fontSize, double opacity = 1.0, ShapeId? shp = null)
+        {
+            var charLength = text.Length;
+            var zoomFactor = IsTextSizeZoomable ? (1 / ZoomFactor) : 1.0;
+            AddCircle(pt, (fontSize / 2 + 2*charLength) * zoomFactor, Brushes.White, Brushes.Black, opacity: opacity);
+            // Make the circles behave like if a layer is clicked
+            if (shp is ShapeId id) SceneShapes.Add(new DrawingGeometry(id, Rectangle.FromCircle(pt, (fontSize / 2 + 2 * charLength) * zoomFactor), _zIndex));
+           
+            _zIndex++;
+            AddText(text, pt, Brushes.Black, fontSize, 1.0, TextAlignment.Center);
         }
 
         //public void UpdateShapeOpacity(IDrawingGeometry shape, float newOpacity)
@@ -416,12 +433,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         //    }
         //}
 
-        private void DrawSingleDimChain(Line line, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null)
+        private void DrawSingleDimChain(Line line, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null, int fontSize = 24)
         {
-            DrawSingleDimChain(line.Start, line.End, distance, displayedValue, lineColor, alignment, shp);
+            DrawSingleDimChain(line.Start, line.End, distance, displayedValue, lineColor, alignment, shp, fontSize);
         }
 
-        private void DrawSingleDimChain(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null)
+        private void DrawSingleDimChain(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null, int fontSize = 24)
         {
             lineColor ??= Brushes.Black;
             int tickSize = 8;
@@ -455,7 +472,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             AddLine(offsetLine.End - diagOffset, offsetLine.End + diagOffset, lineColor);
 
             var pos = offsetLine.GetCenter() - tickOffset * 2;
-            AddText(displayedValue, pos, lineColor, fontSize: 24, alignment: alignment, shp: shp);
+            AddText(displayedValue, pos, lineColor, fontSize: fontSize, alignment: alignment, shp: shp);
         }
 
         private void AddCircle(Point center, double radius, Brush fillColor, Brush? outlineColor = null, int outlineWidth = 1, int segments = 32, double opacity = 1.0)
@@ -628,13 +645,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (string.IsNullOrWhiteSpace(text) || brush is not SolidColorBrush solidBrush || SdfFont is null)
                 return;
 
+            var zoomFactor = IsTextSizeZoomable ? 1 / ZoomFactor : 1f;
+
             var color = new SolidColorBrush(Color.FromArgb(
                 (byte)(opacity * 255),
                 solidBrush.Color.R,
                 solidBrush.Color.G,
                 solidBrush.Color.B)).ToVectorColor();
 
-            float scale = (float)(fontSize / SdfFont.LineHeight);
+            float scale = (float)(fontSize / SdfFont.LineHeight) * zoomFactor;
 
             // Measure text dimensions
             float totalWidth = 0f;

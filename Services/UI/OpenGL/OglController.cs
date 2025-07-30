@@ -28,7 +28,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private GLWpfControl _view;
         private bool _disposed;
 
-        private float _zoom = 1f;
+        public float ZoomFactor { get; private set; } = 1f;
         private Vector _pan = Vector.Empty;
         private Point _lastMousePos;
         private bool _dragging;
@@ -75,18 +75,19 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         }
 
         private void Invalidate() => _view.InvalidateVisual();
-        public void ZoomIn() => SetZoom(_zoom + 0.1f);
-        public void ZoomOut() => SetZoom(_zoom - 0.1f);
+        public void ZoomIn() => SetZoom(ZoomFactor + 0.2f);
+        public void ZoomOut() => SetZoom(ZoomFactor - 0.2f);
         public void ResetView()
         {
-            _zoom = 1f;
+            SetZoom(1.0);
             _pan = Vector.Empty;
             Invalidate();
         }
         public void SetZoom(double zoom)
         {
-            _zoom = (float)Math.Clamp(zoom, 0.5, 5.0);
-            Invalidate();
+            ZoomFactor = (float)Math.Clamp(zoom, 0.4, 6.0);
+            if (SceneBuilder.IsTextSizeZoomable) Redraw();
+            else Invalidate();
         }
 
         public void Redraw()
@@ -119,7 +120,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             float scaleX = ctrlW / contW;
             float scaleY = ctrlH / contH;
-            float scale = MathF.Min(scaleX, scaleY) * _zoom;
+            float scale = MathF.Min(scaleX, scaleY) * ZoomFactor;
 
             float baseDivisorWidth = ctrlW / 2f;
             float baseDivisorHeight = ctrlH / 2f;
@@ -151,7 +152,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             float cw = (float)_view.ActualWidth, ch = (float)_view.ActualHeight;
             float ew = (float)bounds.Width, eh = (float)bounds.Height;
 
-            float scale = MathF.Min(cw / ew, ch / eh) * _zoom;
+            float scale = MathF.Min(cw / ew, ch / eh) * ZoomFactor;
 
             float panPxX = (float)_pan.X * cw / 2f;
             float panPxY = (float)_pan.Y * ch / 2f;
