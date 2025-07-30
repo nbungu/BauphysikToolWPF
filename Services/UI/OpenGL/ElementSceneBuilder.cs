@@ -26,6 +26,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private readonly CrossSectionBuilder _crossSectionBuilder;
         private int _zIndex; // Z-level for rendering order, can be used to layer elements in the scene
 
+        public bool DebugMode { get; set; } = false; // Enable debug mode for additional rendering features
+
         private TextureManager TextureManager => _parent.TextureManager;
         private SdfFont? SdfFont => TextureManager.SdfFont;
         private double SizeOf1Cm => CrossSectionBuilder.SizeOf1Cm; // Size of 1 cm in OpenGL units, used for scaling dimensions
@@ -119,18 +121,21 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 Math.Round(elementBounds.Height / SizeOf1Cm, 2).ToString(),
                 alignment: TextAlignment.Left | TextAlignment.CenterV);
 
-            // TODO: FOR DEBUG
-            //AddLine(SceneBounds.TopLine, Brushes.Blue, LineStyle.Dashed);
-            //AddLine(SceneBounds.LeftLine, Brushes.Blue, LineStyle.Dashed);
-            //AddLine(SceneBounds.RightLine, Brushes.Blue, LineStyle.Dashed);
-            //AddLine(SceneBounds.BottomLine, Brushes.Blue, LineStyle.Dashed);
-            //AddLine(SceneBounds.BottomLeft, SceneBounds.TopRight);
-            //AddLine(SceneBounds.TopLeft, SceneBounds.BottomRight);
-            //AddText("0", elementBounds.TopLeft, Brushes.Black, 24, alignment: TextAlignment.Left | TextAlignment.Top);
-            //AddText("1", elementBounds.BottomLeft, Brushes.Black, 24, alignment: TextAlignment.Left | TextAlignment.Bottom);
-            //AddText("2", elementBounds.BottomRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Bottom);
-            //AddText("3", elementBounds.TopRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Top);
-            //AddText("5", elementBounds.Center, Brushes.Black, 24, alignment: TextAlignment.Center);
+            if (DebugMode)
+            {
+                AddLine(SceneBounds.TopLine, Brushes.Blue, LineStyle.Dashed);
+                AddLine(SceneBounds.LeftLine, Brushes.Blue, LineStyle.Dashed);
+                AddLine(SceneBounds.RightLine, Brushes.Blue, LineStyle.Dashed);
+                AddLine(SceneBounds.BottomLine, Brushes.Blue, LineStyle.Dashed);
+                AddLine(SceneBounds.BottomLeft, SceneBounds.TopRight);
+                AddLine(SceneBounds.TopLeft, SceneBounds.BottomRight);
+                AddText("0", elementBounds.TopLeft, Brushes.Black, 24, alignment: TextAlignment.Left | TextAlignment.Top);
+                AddText("1", elementBounds.BottomLeft, Brushes.Black, 24, alignment: TextAlignment.Left | TextAlignment.Bottom);
+                AddText("2", elementBounds.BottomRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Bottom);
+                AddText("3", elementBounds.TopRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Top);
+                AddText("5", elementBounds.Center, Brushes.Black, 24, alignment: TextAlignment.Center);
+            }
+
         }
 
         //public void UpdateShapeOpacity(IDrawingGeometry shape, float newOpacity)
@@ -651,7 +656,19 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             float x = (float)position.X + padX * scale + alignmentOffset.X;
             float y = (float)position.Y + padY * scale + alignmentOffset.Y; // TESTING: Static offset (maxHeight * scale)
 
-            var boundingBox = new Rectangle(x, y, totalWidth, maxHeight);
+            var boundingBox = new Rectangle((float)position.X + alignmentOffset.X, 
+                (float)position.Y + alignmentOffset.Y,
+                totalWidth,
+                maxHeight);
+
+            if (DebugMode)
+            {
+                AddLine(boundingBox.TopLine);
+                AddLine(boundingBox.BottomLine);
+                AddLine(boundingBox.LeftLine);
+                AddLine(boundingBox.RightLine);
+            }
+            
             // Second pass: layout and render
             foreach (char c in text)
             {
