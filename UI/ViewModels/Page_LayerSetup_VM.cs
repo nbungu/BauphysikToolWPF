@@ -38,6 +38,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.EnvVarsChanged += EnvVarsChanged;
 
             scene.ShapeClicked += OnShapeClicked;
+            scene.ShapeDoubleClicked += OnShapeDoubleClicked;
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += PropertyItemChanged;
@@ -404,6 +405,18 @@ namespace BauphysikToolWPF.UI.ViewModels
                 SelectedLayerIndex = index;
             }
             Console.WriteLine($"VM Shape clicked: {shape}");
+        }
+
+        private void OnShapeDoubleClicked(ShapeId shape)
+        {
+            var targetLayer = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null);
+            if (targetLayer != null)
+            {
+                var index = LayerList.IndexOf(targetLayer);
+                SelectedLayerIndex = index;
+                LayerDoubleClick();
+            }
+            Console.WriteLine($"VM Shape double clicked: {shape}");
         }
 
         private void ProjectDataChanged()

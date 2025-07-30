@@ -67,42 +67,49 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             SceneShapes.Clear();
 
             var elementBounds = GetContentBounds(_crossSectionBuilder.DrawingGeometries);
+
+            _zIndex = 0;
             AddLine(elementBounds.LeftLine, style: LineStyle.Dashed);
             AddLine(elementBounds.RightLine, style: LineStyle.Dashed);
 
             foreach (var geom in _crossSectionBuilder.DrawingGeometries)
             {
-                _zIndex = 0;
-                AddLine(geom.Rectangle.TopLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
-                if (geom.TextureBrush is DrawingBrush hatch)
+                _zIndex = -1;
+                AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity);
+                SceneShapes.Add(geom);
+
+                
+
+                
+                // When highlighted
+                if (geom.BorderPen.Brush != Brushes.Black)
                 {
-                    AddTexturedRectangle(geom.Rectangle, geom.BackgroundColor, hatch, geom.HatchFitMode, geom.Opacity);
-                    SceneShapes.Add(geom);
+                    _zIndex = 1;
+                    AddLine(geom.Rectangle.LeftLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                    AddLine(geom.Rectangle.RightLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                    AddLine(geom.Rectangle.TopLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                    AddLine(geom.Rectangle.BottomLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
                 }
                 else
                 {
-                    AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.Opacity);
-                    SceneShapes.Add(geom);
+                    _zIndex = 0;
+                    AddLine(geom.Rectangle.TopLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                    AddLine(geom.Rectangle.BottomLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
                 }
-                AddLine(geom.Rectangle.BottomLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
 
-                _zIndex = 1;
-                //AddLine(geom.Rectangle.BottomLine, Brushes.Black);
-                //if (geom.ShapeId.Index == 0) AddLine(geom.Rectangle.TopLine, Brushes.Black);
-
-                string layerNumber = "";
+                
+                string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
                 int fontSize = 18;
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
+                    _zIndex = 0;
                     AddLine(geom.Rectangle.LeftLine);
                     AddLine(geom.Rectangle.RightLine);
-                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber + "b";
+                    layerNumber += "b";
                     fontSize = 16;
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
                 {
-                    layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
-
                     DrawSingleDimChain(geom.Rectangle.RightLine,
                         40,
                         Math.Round(geom.Rectangle.Height / SizeOf1Cm, 2).ToString(),
@@ -113,7 +120,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 }
 
                 _zIndex = 2;
-                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, fontSize, geom.Opacity, new ShapeId(ShapeType.Layer, geom.InternalId));
+                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, fontSize, geom.BorderPen.Brush, geom.Opacity, new ShapeId(ShapeType.Layer, geom.InternalId));
                 
                 //AddCircle(geom.Rectangle.Center, 12 * (1/ZoomFactor), Brushes.White, Brushes.Black);
                 //// Make the circles behave like if a layer is clicked
@@ -123,7 +130,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 //AddText(layerNumber, geom.Rectangle.Center, Brushes.Black, fontSize, 1.0, TextAlignment.Center);
             }
             DrawSingleDimChain(elementBounds.RightLine,
-                120, 
+                110, 
                 Math.Round(elementBounds.Height / SizeOf1Cm, 2).ToString(),
                 alignment: TextAlignment.Left | TextAlignment.CenterV, fontSize: 18);
 
@@ -142,19 +149,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 AddText("5", elementBounds.Center, Brushes.Black, 24, alignment: TextAlignment.Center);
             }
         }
-
-        private void AddLayerTextMarker(Point pt, string text, int fontSize, double opacity = 1.0, ShapeId? shp = null)
-        {
-            var charLength = text.Length;
-            var zoomFactor = IsTextSizeZoomable ? (1 / ZoomFactor) : 1.0;
-            AddCircle(pt, (fontSize / 2 + 2*charLength) * zoomFactor, Brushes.White, Brushes.Black, opacity: opacity);
-            // Make the circles behave like if a layer is clicked
-            if (shp is ShapeId id) SceneShapes.Add(new DrawingGeometry(id, Rectangle.FromCircle(pt, (fontSize / 2 + 2 * charLength) * zoomFactor), _zIndex));
-           
-            _zIndex++;
-            AddText(text, pt, Brushes.Black, fontSize, 1.0, TextAlignment.Center);
-        }
-
+        
         //public void UpdateShapeOpacity(IDrawingGeometry shape, float newOpacity)
         //{
         //    const int vertexStride = 9;
@@ -175,24 +170,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         #region private methods
 
-        private int AddRectangle(Rectangle rect, Brush bgColor, double opacity = 1.0)
-        {
-            if (bgColor is SolidColorBrush solid)
-            {
-                var c = solid.Color;
-                byte alpha = (byte)(opacity * 255);
-                bgColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
-            }
-            Vector4 color = bgColor.ToVectorColor();
-            int? texId = null;
-            var verts = CreateRectVertices(rect, color, _zIndex);
-            var vertexStartIndex = RectVertices.Count;
-            RectVertices.AddRange(verts);
-            RectBatches.Add((texId, 6));
-            return vertexStartIndex;
-        }
-
-        private void AddTexturedRectangle(Rectangle rect, Brush bgColor, DrawingBrush hatch, HatchFitMode mode, double opacity = 1.0)
+        private int AddRectangle(Rectangle rect, Brush bgColor, Brush? textureBrush = null, HatchFitMode mode = HatchFitMode.FitToHeight, double opacity = 1.0)
         {
             // Extract color and apply opacity (in alpha channel)
             if (bgColor is SolidColorBrush solid)
@@ -202,43 +180,64 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 bgColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
             }
             Vector4 color = bgColor.ToVectorColor();
-            var texId = TextureManager.GetTextureIdForBrush(hatch);
-            var texSize = texId.HasValue ? TextureManager.GetTextureSize(texId.Value) : null;
+            int? texId = null;
 
-            float texRepeatX = 1f, texRepeatY = 1f;
-
-            if (texSize.HasValue)
+            float[] verts;
+            if (textureBrush is DrawingBrush hatch)
             {
-                float w = (float)rect.Width;
-                float h = (float)rect.Height;
-                float texW = texSize.Value.Width;
-                float texH = texSize.Value.Height;
-
-                double aspect = texW / (double)texH;
-                switch (mode)
+                texId = TextureManager.GetTextureIdForBrush(hatch);
+                var texSize = texId.HasValue ? TextureManager.GetTextureSize(texId.Value) : null;
+                float texRepeatX = 1f, texRepeatY = 1f;
+                if (texSize.HasValue)
                 {
-                    case HatchFitMode.FitToWidth:
-                        texRepeatX = 1f;
-                        texRepeatY = (float)(h / (w / aspect));
-                        break;
-                    case HatchFitMode.FitToHeight:
-                        texRepeatY = 1f;
-                        texRepeatX = (float)(w / (h * aspect));
-                        break;
-                    case HatchFitMode.StretchToFill:
-                        texRepeatX = texRepeatY = 1f;
-                        break;
-                    default:
-                        texRepeatX = w / texW;
-                        texRepeatY = h / texH;
-                        break;
-                }
-            }
+                    float w = (float)rect.Width;
+                    float h = (float)rect.Height;
+                    float texW = texSize.Value.Width;
+                    float texH = texSize.Value.Height;
 
-            var verts = CreateRectVertices(rect, color, texRepeatX, texRepeatY, _zIndex);
+                    double aspect = texW / (double)texH;
+                    switch (mode)
+                    {
+                        case HatchFitMode.FitToWidth:
+                            texRepeatX = 1f;
+                            texRepeatY = (float)(h / (w / aspect));
+                            break;
+                        case HatchFitMode.FitToHeight:
+                            texRepeatY = 1f;
+                            texRepeatX = (float)(w / (h * aspect));
+                            break;
+                        case HatchFitMode.StretchToFill:
+                            texRepeatX = texRepeatY = 1f;
+                            break;
+                        default:
+                            texRepeatX = w / texW;
+                            texRepeatY = h / texH;
+                            break;
+                    }
+                }
+                verts = CreateRectVertices(rect, color, texRepeatX, texRepeatY, _zIndex);
+            }
+            else
+            {
+                verts = CreateRectVertices(rect, color, _zIndex);
+            }
+            
             var vertexStartIndex = RectVertices.Count;
             RectVertices.AddRange(verts);
             RectBatches.Add((texId, 6));
+            return vertexStartIndex;
+        }
+
+        private void AddLayerTextMarker(Point pt, string text, int fontSize, Brush color, double opacity = 1.0, ShapeId? shp = null)
+        {
+            var charLength = text.Length;
+            var zoomFactor = IsTextSizeZoomable ? (1 / ZoomFactor) : 1.0;
+            AddCircle(pt, (fontSize / 2 + 2 * charLength) * zoomFactor, Brushes.White, color, opacity: opacity);
+            // Make the circles behave like if a layer is clicked
+            if (shp is ShapeId id) SceneShapes.Add(new DrawingGeometry(id, Rectangle.FromCircle(pt, (fontSize / 2 + 2 * charLength) * zoomFactor), _zIndex));
+
+            _zIndex++;
+            AddText(text, pt, color, fontSize, 1.0, TextAlignment.Center);
         }
         private void AddRectangle(IDrawingGeometry geom)
         {

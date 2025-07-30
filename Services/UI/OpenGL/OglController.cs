@@ -32,9 +32,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private Vector _pan = Vector.Empty;
         private Point _lastMousePos;
         private bool _dragging;
+        private DateTime _lastLeftClickTime = DateTime.MinValue;
+        private const int DoubleClickThresholdMs = 300;
 
         public event Action<ShapeId>? ShapeHovered;
         public event Action<ShapeId>? ShapeClicked;
+        public event Action<ShapeId>? ShapeDoubleClicked;
+        public event Action<ShapeId>? ShapeRightClicked;
 
         public OglController()
         {
@@ -173,7 +177,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void OnMouseDown(object s, MouseButtonEventArgs e)
         {
+            var now = DateTime.Now;
             var cur = e.GetPosition(_view).ToPoint();
+            
             if (e.ChangedButton == MouseButton.Middle)
             {
                 _dragging = true;
@@ -184,11 +190,40 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (e.ChangedButton == MouseButton.Left)
             {
                 var pt = ConvertMouseToScene(cur);
+                // Double click
+                if ((now - _lastLeftClickTime).TotalMilliseconds <= DoubleClickThresholdMs)
+                {
+                    foreach (var geom in SceneBuilder.SceneShapes)
+                    {
+                        if (geom.Rectangle.Contains(pt))
+                        {
+                            ShapeDoubleClicked?.Invoke(geom.ShapeId); // <-- Your new event
+                            break;
+                        }
+                    }
+                }
+                // Single Click
+                else
+                {
+                    foreach (var geom in SceneBuilder.SceneShapes)
+                    {
+                        if (geom.Rectangle.Contains(pt))
+                        {
+                            ShapeClicked?.Invoke(geom.ShapeId);
+                            break;
+                        }
+                    }
+                }
+                _lastLeftClickTime = now;
+            }
+            if (e.ChangedButton == MouseButton.Right)
+            {
+                var pt = ConvertMouseToScene(cur);
                 foreach (var geom in SceneBuilder.SceneShapes)
                 {
                     if (geom.Rectangle.Contains(pt))
                     {
-                        ShapeClicked?.Invoke(geom.ShapeId);
+                        ShapeRightClicked?.Invoke(geom.ShapeId);
                         break;
                     }
                 }
