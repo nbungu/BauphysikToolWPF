@@ -19,14 +19,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class TextureManager : IDisposable
     {
-        private readonly ElementSceneController _parent;
+        private readonly OglController _parent;
 
         private readonly Dictionary<Brush, int> _hatchTextureCache = new();
         private readonly Dictionary<int, Size> _hatchTextureSizes = new();
 
         public SdfFont? SdfFont;
 
-        public TextureManager(ElementSceneController parent)
+        public TextureManager(OglController parent)
         {
             _parent = parent;
         }

@@ -150,7 +150,7 @@
                 <Label Grid.Column="0" Content="Außen" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                 <Label Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-                <Grid Grid.Column="1">
+                <Grid Grid.Column="1" Margin="8">
                     <glWpfControl:GLWpfControl x:Name="OpenTkControl"/>
                 </Grid>
             </Grid>

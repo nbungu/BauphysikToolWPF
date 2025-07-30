@@ -4,6 +4,7 @@ using BauphysikToolWPF.Services.Application;
 using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -19,87 +20,140 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// Converts geometry from CrossSectionBuilder into OpenGL-ready vertex data (rectangles and lines),
     /// and provides vertex streams + texture usage data for the renderer.
     /// </summary>
-    public class SceneBuilder
+    public class ElementSceneBuilder : IOglSceneBuilder
     {
-        private readonly ElementSceneController _parent;
-        private int _zIndex = 0; // Z-level for rendering order, can be used to layer elements in the scene
+        private readonly OglController _parent;
+        private readonly CrossSectionBuilder _crossSectionBuilder;
+        private int _zIndex; // Z-level for rendering order, can be used to layer elements in the scene
 
         private TextureManager TextureManager => _parent.TextureManager;
         private SdfFont? SdfFont => TextureManager.SdfFont;
+        private double SizeOf1Cm => CrossSectionBuilder.SizeOf1Cm; // Size of 1 cm in OpenGL units, used for scaling dimensions
 
-        public List<IDrawingGeometry> SceneShapes { get; private set; } = new();
-        public int ScenePadding { get; private set; } = 4; // Padding around the scene boundaries for better visibility
+        public List<IDrawingGeometry> SceneShapes { get; } = new();
+        public int ScenePadding { get; set; } = 0; // Padding around the scene boundaries for better visibility
         public Rectangle SceneBounds => GetSceneBoundaries();
-        public List<float> RectVertices { get; private set; } = new();
-        public List<float> LineVertices { get; private set; } = new();
-        public List<(int? TextureId, int Count)> RectBatches { get; private set; } = new();
-        public List<(float LineWidth, int Count)> LineBatches { get; private set; } = new();
+        public List<float> RectVertices { get; } = new();
+        public List<float> LineVertices { get; } = new();
+        public List<(int? TextureId, int Count)> RectBatches { get; } = new();
+        public List<(float LineWidth, int Count)> LineBatches { get; } = new();
 
-        public SceneBuilder(ElementSceneController parent)
+        public ElementSceneBuilder(OglController parent)
         {
             _parent = parent;
+            _crossSectionBuilder = new CrossSectionBuilder()
+            {
+                Element = Session.SelectedElement,
+            };
         }
 
         #region public
-        
-        public void BuildFrom(IEnumerable<IDrawingGeometry> drawingGeometries)
+
+        public void BuildScene()
         {
+            _crossSectionBuilder.RebuildCrossSection();
+
+            if (!_crossSectionBuilder.DrawingGeometries.Any()) return;
+            
             RectVertices.Clear();
             LineVertices.Clear();
             RectBatches.Clear();
             LineBatches.Clear();
             SceneShapes.Clear();
 
-            var elementBounds = GetContentBounds(drawingGeometries);
+            var elementBounds = GetContentBounds(_crossSectionBuilder.DrawingGeometries);
             AddLine(elementBounds.LeftLine, style: LineStyle.Dashed);
             AddLine(elementBounds.RightLine, style: LineStyle.Dashed);
 
-
-            foreach (var geom in drawingGeometries)
+            foreach (var geom in _crossSectionBuilder.DrawingGeometries)
             {
                 _zIndex = 0;
-                if (geom.DrawingBrush is DrawingBrush hatch)
+                AddLine(geom.Rectangle.TopLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                if (geom.TextureBrush is DrawingBrush hatch)
                 {
-                    AddTexturedRectangle(geom.Rectangle, geom.BackgroundColor, hatch, geom.HatchFitMode);
+                    AddTexturedRectangle(geom.Rectangle, geom.BackgroundColor, hatch, geom.HatchFitMode, geom.Opacity);
                     SceneShapes.Add(geom);
                 }
                 else
                 {
-                    AddRectangle(geom.Rectangle, geom.BackgroundColor);
+                    AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.Opacity);
                     SceneShapes.Add(geom);
                 }
+                AddLine(geom.Rectangle.BottomLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+
                 _zIndex = 1;
-                AddLine(geom.Rectangle.BottomLine, Brushes.Black);
-                if (geom.ShapeId.Index == 0) AddLine(geom.Rectangle.TopLine, Brushes.Black);
+                //AddLine(geom.Rectangle.BottomLine, Brushes.Black);
+                //if (geom.ShapeId.Index == 0) AddLine(geom.Rectangle.TopLine, Brushes.Black);
 
                 string layerNumber = "";
+                int fontSize = 20;
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
                     AddLine(geom.Rectangle.LeftLine);
                     AddLine(geom.Rectangle.RightLine);
-
                     layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).InternalId + "b";
+                    fontSize = 16;
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
                 {
                     layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).InternalId.ToString();
+
+                    DrawSingleDimChain(geom.Rectangle.RightLine,
+                        40,
+                        Math.Round(geom.Rectangle.Height / SizeOf1Cm, 2).ToString(),
+                        geom.BorderPen.Brush,
+                        TextAlignment.Left | TextAlignment.CenterV,
+                        new ShapeId(ShapeType.Layer, geom.InternalId));
                 }
 
                 _zIndex = 2;
                 AddCircle(geom.Rectangle.Center, 12, Brushes.White, Brushes.Black);
                 // Make the circles behave like if a layer is clicked
                 SceneShapes.Add(new DrawingGeometry(new ShapeId(ShapeType.Layer, geom.InternalId), Rectangle.FromCircle(geom.Rectangle.Center, 12), _zIndex));
-                
+
                 _zIndex = 3;
-                AddText(layerNumber, geom.Rectangle.Center, Brushes.Black, 20, 1.0, TextAlignment.Center);
+                AddText(layerNumber, geom.Rectangle.Center, Brushes.Black, fontSize, 1.0, TextAlignment.Center);
             }
+            DrawSingleDimChain(elementBounds.RightLine,
+                120, 
+                Math.Round(elementBounds.Height / SizeOf1Cm, 2).ToString(),
+                alignment: TextAlignment.Left | TextAlignment.CenterV);
+
+            // TODO: FOR DEBUG
+            //AddLine(SceneBounds.TopLine, Brushes.Blue, LineStyle.Dashed);
+            //AddLine(SceneBounds.LeftLine, Brushes.Blue, LineStyle.Dashed);
+            //AddLine(SceneBounds.RightLine, Brushes.Blue, LineStyle.Dashed);
+            //AddLine(SceneBounds.BottomLine, Brushes.Blue, LineStyle.Dashed);
+            //AddLine(SceneBounds.BottomLeft, SceneBounds.TopRight);
+            //AddLine(SceneBounds.TopLeft, SceneBounds.BottomRight);
+            //AddText("0", elementBounds.TopLeft, Brushes.Black, 24, alignment: TextAlignment.Left | TextAlignment.Top);
+            //AddText("1", elementBounds.BottomLeft, Brushes.Black, 24, alignment: TextAlignment.Left | TextAlignment.Bottom);
+            //AddText("2", elementBounds.BottomRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Bottom);
+            //AddText("3", elementBounds.TopRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Top);
+            //AddText("5", elementBounds.Center, Brushes.Black, 24, alignment: TextAlignment.Center);
         }
+
+        //public void UpdateShapeOpacity(IDrawingGeometry shape, float newOpacity)
+        //{
+        //    const int vertexStride = 9;
+        //    int baseIndex = shape.VertexStartIndex;
+
+        //    if (baseIndex < 0 || baseIndex + 6 * vertexStride > RectVertices.Count)
+        //        return; // safety check
+
+        //    for (int i = 0; i < 6; i++)
+        //    {
+        //        int alphaIndex = baseIndex + i * vertexStride + 6; // index of `a`
+        //        RectVertices[alphaIndex] = newOpacity;
+        //    }
+        //    shape.Opacity = newOpacity;
+        //}
 
         #endregion
 
         #region private methods
-        
-        private void AddRectangle(Rectangle rect, Brush bgColor, double opacity = 1.0)
+
+        private int AddRectangle(Rectangle rect, Brush bgColor, double opacity = 1.0)
         {
             if (bgColor is SolidColorBrush solid)
             {
@@ -110,8 +164,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Vector4 color = bgColor.ToVectorColor();
             int? texId = null;
             var verts = CreateRectVertices(rect, color, _zIndex);
+            var vertexStartIndex = RectVertices.Count;
             RectVertices.AddRange(verts);
             RectBatches.Add((texId, 6));
+            return vertexStartIndex;
         }
 
         private void AddTexturedRectangle(Rectangle rect, Brush bgColor, DrawingBrush hatch, HatchFitMode mode, double opacity = 1.0)
@@ -158,6 +214,62 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
 
             var verts = CreateRectVertices(rect, color, texRepeatX, texRepeatY, _zIndex);
+            var vertexStartIndex = RectVertices.Count;
+            RectVertices.AddRange(verts);
+            RectBatches.Add((texId, 6));
+        }
+        private void AddRectangle(IDrawingGeometry geom)
+        {
+            // Extract color and apply opacity (in alpha channel)
+            var bgColor = geom.BackgroundColor;
+            if (bgColor is SolidColorBrush solid)
+            {
+                var c = solid.Color;
+                byte alpha = (byte)(geom.Opacity * 255);
+                bgColor = new SolidColorBrush(Color.FromArgb(alpha, c.R, c.G, c.B));
+            }
+            Vector4 color = bgColor.ToVectorColor();
+            
+            int? texId = null;
+            float texRepeatX = 0f, texRepeatY = 0f;
+            if (geom.TextureBrush is DrawingBrush drawingBrush)
+            {
+                texId = TextureManager.GetTextureIdForBrush(drawingBrush);
+                var texSize = texId.HasValue ? TextureManager.GetTextureSize(texId.Value) : null;
+
+                texRepeatX = 1f;
+                texRepeatY = 1f;
+
+                if (texSize.HasValue)
+                {
+                    float w = (float)geom.Rectangle.Width;
+                    float h = (float)geom.Rectangle.Height;
+                    float texW = texSize.Value.Width;
+                    float texH = texSize.Value.Height;
+
+                    double aspect = texW / (double)texH;
+                    switch (geom.HatchFitMode)
+                    {
+                        case HatchFitMode.FitToWidth:
+                            texRepeatX = 1f;
+                            texRepeatY = (float)(h / (w / aspect));
+                            break;
+                        case HatchFitMode.FitToHeight:
+                            texRepeatY = 1f;
+                            texRepeatX = (float)(w / (h * aspect));
+                            break;
+                        case HatchFitMode.StretchToFill:
+                            texRepeatX = texRepeatY = 1f;
+                            break;
+                        default:
+                            texRepeatX = w / texW;
+                            texRepeatY = h / texH;
+                            break;
+                    }
+                }
+            }
+            var verts = CreateRectVertices(geom.Rectangle, color, texRepeatX, texRepeatY, _zIndex);
+            geom.VertexStartIndex = RectVertices.Count; // Store vertex start index in the geometry
             RectVertices.AddRange(verts);
             RectBatches.Add((texId, 6));
         }
@@ -213,7 +325,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (pen.Brush == null) return;
 
-            // Extract color
+            // Extract colo.
             Vector4 color = pen.Brush.ToVectorColor();
 
             // Determine dash pattern
@@ -240,7 +352,107 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             LineVertices.AddRange(verts);
             LineBatches.Add(((float)pen.Thickness, 2));
         }
-        
+
+        //public void AddDimensionalChainsHorizontal(Point ptStart, double[] xIncrements, double distance, bool drawAbove)
+        //{
+        //    if (xIncrements is null || xIncrements.Length < 1) return;
+            
+        //    var xCoords = new List<double> { ptStart.X };
+        //    for (int i = 0; i < xIncrements.Length; i++)
+        //    {
+        //        double lastX = xCoords[^1];
+        //        double nextX = lastX + xIncrements[i];
+        //        xCoords.Add(nextX);
+        //    }
+        //    if (drawAbove) xCoords.Reverse();
+        //    for (int i = 0; i < xCoords.Count - 1; i++)
+        //    {
+        //        double startX = xCoords[i];
+        //        double endX = xCoords[i + 1];
+        //        var startPt = new Point(startX, ptStart.Y);
+        //        var endPt = new Point(endX, ptStart.Y);
+
+        //        var text = (new Line(startPt, endPt).Length * CrossSectionBuilder.SizeOf1Cm).ToString();
+        //        DrawSingleDimChain(startPt,
+        //            endPt,
+        //            distance,
+        //            text,
+        //            alignment: TextAlignment.Bottom | TextAlignment.CenterH);
+        //    }
+        //}
+        //public void AddDimensionalChainsVertical(Point ptStart, double[] yIncrements, double distance, bool drawRight)
+        //{
+        //    if (yIncrements is null || yIncrements.Length < 1) return;
+
+        //    var yCoords = new List<double> { ptStart.Y };
+        //    for (int i = 0; i < yIncrements.Length; i++)
+        //    {
+        //        double lastY = yCoords[^1];
+        //        double nextY = lastY + yIncrements[i];
+        //        yCoords.Add(nextY);
+        //    }
+
+        //    if (drawRight) yCoords.Reverse();
+
+        //    for (int i = 0; i < yCoords.Count - 1; i++)
+        //    {
+        //        double startY = yCoords[i];
+        //        double endY = yCoords[i + 1];
+        //        var startPt = new Point(ptStart.X, startY);
+        //        var endPt = new Point(ptStart.X, endY);
+        //        var text = (new Line(startPt, endPt).Length * CrossSectionBuilder.SizeOf1Cm).ToString();
+        //        DrawSingleDimChain(
+        //            startPt,
+        //            endPt,
+        //            distance,
+        //            text,
+        //            alignment: TextAlignment.CenterV | (drawRight ? TextAlignment.Left : TextAlignment.Right)
+        //        );
+        //    }
+        //}
+
+        private void DrawSingleDimChain(Line line, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null)
+        {
+            DrawSingleDimChain(line.Start, line.End, distance, displayedValue, lineColor, alignment, shp);
+        }
+
+        private void DrawSingleDimChain(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null)
+        {
+            lineColor ??= Brushes.Black;
+            int tickSize = 8;
+            var line = new Line(ptStart, ptEnd);
+
+            // Direction vector from start to end
+            var vect = ptEnd - ptStart;
+            var length = vect.Length;
+            if (length == 0) return;
+
+            // Normalize direction and get perpendicular (normal) vector
+            var vectNormalized = vect.Normalize();
+            var nVect = vectNormalized.Normal();
+            
+            // Offset the dimension line by the normal * distance
+            var offsetLine = new Line(line, distance);
+            
+            // Draw the main dimension line
+            AddLine(offsetLine, lineColor);
+
+            // Perpendicular ticks at both ends (along the normal direction)
+            var tickOffset = nVect * tickSize;
+
+            AddLine(offsetLine.Start - tickOffset, offsetLine.Start + tickOffset, lineColor);
+            AddLine(offsetLine.End - tickOffset, offsetLine.End + tickOffset, lineColor);
+
+            // 45° diagonal cross ticks (offset ±45° between normal and direction)
+            var diagOffset = (vectNormalized - nVect).Normalize() * tickSize;
+
+            AddLine(offsetLine.Start - diagOffset, offsetLine.Start + diagOffset, lineColor);
+            AddLine(offsetLine.End - diagOffset, offsetLine.End + diagOffset, lineColor);
+
+            var pos = offsetLine.GetCenter() - tickOffset * 2;
+            AddText(displayedValue, pos, lineColor, fontSize: 24, alignment: alignment, shp: shp);
+        }
+
         private void AddCircle(Point center, double radius, Brush fillColor, Brush? outlineColor = null, int outlineWidth = 1, int segments = 32, double opacity = 1.0)
         {
             // Apply opacity to fill color
@@ -302,7 +514,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var formattedText = new FormattedText(
                 text,
                 System.Globalization.CultureInfo.InvariantCulture,
-                System.Windows.FlowDirection.LeftToRight,
+                FlowDirection.LeftToRight,
                 new Typeface("Segoe UI"),
                 fontSize,
                 color,
@@ -406,7 +618,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <param name="brush"></param>
         /// <param name="fontSize"></param>
         /// <param name="opacity"></param>
-        private void AddText(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
+        private void AddText(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null)
         {
             if (string.IsNullOrWhiteSpace(text) || brush is not SolidColorBrush solidBrush || SdfFont is null)
                 return;
@@ -434,10 +646,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     maxHeight = glyphHeight;
             }
             // Apply alignment offset
-            var offset = GetAlignedOffset(alignment, totalWidth, maxHeight);
-            float x = (float)position.X + offset.X;
-            float y = (float)position.Y + offset.Y - maxHeight * 0.4f; // TESTING: Static offset (maxHeight * scale)
+            float padX = SdfFont.OffsetX * 0.0f, padY = SdfFont.OffsetY*0.9f; // *0.9f just for fine tuning
+            var alignmentOffset = GetAlignedOffset(alignment, totalWidth, maxHeight);
+            float x = (float)position.X + padX * scale + alignmentOffset.X;
+            float y = (float)position.Y + padY * scale + alignmentOffset.Y; // TESTING: Static offset (maxHeight * scale)
 
+            var boundingBox = new Rectangle(x, y, totalWidth, maxHeight);
             // Second pass: layout and render
             foreach (char c in text)
             {
@@ -460,6 +674,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
                 x += glyph.Advance * scale * 0.9f; // * 0.9f to reduce char spacing
             }
+            // Add to Shapes if a ShapeId is given
+            if (shp is ShapeId id) SceneShapes.Add(new DrawingGeometry(id, boundingBox, _zIndex));
         }
 
 

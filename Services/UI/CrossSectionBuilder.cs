@@ -243,16 +243,14 @@ namespace BauphysikToolWPF.Services.UI
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Width * SizeOf1Cm, l.SubConstruction.Thickness * SizeOf1Cm);
                             l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
-                            l.SubConstruction.RectangleStrokeDashArray = new DoubleCollection();
-                            l.SubConstruction.RectangleBorderThickness = 0.5;
+                            l.SubConstruction.BorderPen = Pens.GetSolidPen(Brushes.Black, 0.5);
                         }
                         // if sub construction runs parallel to main layer
                         else
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.Rectangle.Width, l.SubConstruction.Thickness * SizeOf1Cm);
                             l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 0.4 : 0.2;
-                            l.SubConstruction.RectangleStrokeDashArray = new DoubleCollection(new double[] { 16, 12 });
-                            l.SubConstruction.RectangleBorderThickness = 1.2;
+                            l.SubConstruction.BorderPen = Pens.GetDashedPen(Brushes.Black, 1.2);
                         }
                     }
                     else if (DrawingType == DrawingType.VerticalCut)
@@ -262,16 +260,14 @@ namespace BauphysikToolWPF.Services.UI
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Thickness * SizeOf1Cm, l.SubConstruction.Width * SizeOf1Cm);
                             l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
-                            l.SubConstruction.RectangleStrokeDashArray = new DoubleCollection();
-                            l.SubConstruction.RectangleBorderThickness = 0.5;
+                            l.SubConstruction.BorderPen = Pens.GetSolidPen(Brushes.Black, 0.5);
                         }
                         // if sub construction runs parallel to main layer
                         else
                         {
                             l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Thickness * SizeOf1Cm, l.Rectangle.Height);
                             l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 0.4 : 0.2;
-                            l.SubConstruction.RectangleStrokeDashArray = new DoubleCollection(new double[] { 16, 12 });
-                            l.SubConstruction.RectangleBorderThickness = 1.2;
+                            l.SubConstruction.BorderPen = Pens.GetDashedPen(Brushes.Black, 1.2);
                         }
                     }
                     UpdateSubConstructionGeometry(l);
@@ -284,9 +280,8 @@ namespace BauphysikToolWPF.Services.UI
             layer.ShapeId = new ShapeId(ShapeType.Layer, layer.InternalId);
 
             layer.BackgroundColor = new SolidColorBrush(layer.Material.Color);
-            layer.DrawingBrush = TextureBrushes.GetBrush(layer.Material.MaterialCategory, layer.Rectangle, 1.0);
-            layer.RectangleBorderColor = layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : System.Windows.Media.Brushes.Black;
-            layer.RectangleBorderThickness = layer.IsSelected ? 2 : 0.2;
+            layer.TextureBrush = Textures.GetBrush(layer.Material.MaterialCategory, layer.Rectangle, 1.0);
+            layer.BorderPen = Pens.GetSolidPen(layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black, layer.IsSelected ? 2 : 0.4);
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
             layer.Tag = $"Layer_{layer.LayerNumber}";
             if (layer.Material.MaterialCategory == Enums.MaterialCategory.Insulation) layer.HatchFitMode = HatchFitMode.StretchToFill;
@@ -298,28 +293,11 @@ namespace BauphysikToolWPF.Services.UI
             var subConstruction = layer.SubConstruction;
             subConstruction.ShapeId = new ShapeId(ShapeType.SubConstructionLayer, layer.InternalId);
             subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
-            subConstruction.DrawingBrush = TextureBrushes.GetBrush(subConstruction.Material.MaterialCategory, subConstruction.Rectangle, 1.0);
-            subConstruction.RectangleBorderColor = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : System.Windows.Media.Brushes.Black;
+            subConstruction.TextureBrush = Textures.GetBrush(subConstruction.Material.MaterialCategory, subConstruction.Rectangle, 1.0);
+            subConstruction.BorderPen.Brush = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
             subConstruction.Tag = $"Layer_{layer.LayerNumber}b";
+            //if (subConstruction.IsSelected) subConstruction.Opacity *= 0.7; // Make selected layers slightly more transparent
             if (subConstruction.Material.MaterialCategory == Enums.MaterialCategory.Insulation) subConstruction.HatchFitMode = HatchFitMode.StretchToFill;
-        }
-
-        public Rectangle GetContentBounds(double pad = 0.0)
-        {
-            if (DrawingGeometries.Count == 0)
-                return new Rectangle(0, 0, 1, 1);
-
-            float minX = float.MaxValue, minY = float.MaxValue;
-            float maxX = float.MinValue, maxY = float.MinValue;
-            foreach (var g in DrawingGeometries)
-            {
-                var r = g.Rectangle;
-                minX = MathF.Min(minX, (float)r.X) - (float)pad;
-                minY = MathF.Min(minY, (float)r.Y) - (float)pad;
-                maxX = MathF.Max(maxX, (float)r.X + (float)r.Width) + (float)pad;
-                maxY = MathF.Max(maxY, (float)r.Y + (float)r.Height) + (float)pad;
-            }
-            return new Rectangle(minX, minY, maxX - minX, maxY - minY);
         }
     }
 }

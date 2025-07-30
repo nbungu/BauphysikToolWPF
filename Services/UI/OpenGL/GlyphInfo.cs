@@ -18,12 +18,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public Dictionary<char, GlyphInfo> Glyphs { get; } = new();
         public int TextureId { get; }
         public float LineHeight { get; }
-
-        public SdfFont(Dictionary<char, GlyphInfo> glyphs, int textureId, float lineHeight)
+        public float OffsetX { get; }
+        public float OffsetY { get; }
+        public SdfFont(Dictionary<char, GlyphInfo> glyphs, int textureId, float lineHeight, float offX, float offY)
         {
             Glyphs = glyphs;
             TextureId = textureId;
             LineHeight = lineHeight;
+            OffsetX = offX;
+            OffsetY = offY;
         }
     }
 
@@ -37,6 +40,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var glyphs = new Dictionary<char, GlyphInfo>();
             float lineHeight = 32; // fallback default
             int texWidth = 1, texHeight = 1;
+            float paddingX = -2, paddingY = -24; // See in Hiero Padding Settings
 
             string dir = Path.GetDirectoryName(fntPath)!;
             string[] lines = File.ReadAllLines(fntPath);
@@ -90,7 +94,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             int texId = texManager.CreateFontTextureFromBitmap(fontAtlasBitmap);
 
-            return new SdfFont(glyphs, texId, lineHeight);
+            return new SdfFont(glyphs, texId, lineHeight, paddingX, paddingY); // , offsetX, offsetY
         }
 
         private static int GetInt(string line, string key) =>

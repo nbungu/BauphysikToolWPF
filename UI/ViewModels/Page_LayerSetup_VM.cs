@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private readonly Element _element;
         
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
-        public Page_LayerSetup_VM(ElementSceneController scene)
+        public Page_LayerSetup_VM(OglController scene)
         {
             if (Session.SelectedElement is null) return;
 
@@ -450,7 +450,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 LayerList[i].IsSelected = (i == value);
             }
-            RefreshDrawingsLayerSelected();
+            Session.OnSelectedLayerIndexChanged();
         }
 
         #endregion
@@ -463,11 +463,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedLayer.RefreshPropertyBag();
             OnPropertyChanged(nameof(LayerPropertyBag));
             OnPropertyChanged(nameof(LayerSubConstrPropertyBag));
-        }
-        private void RefreshDrawingsLayerSelected()
-        {
-           // _crossSection.UpdateDrawings();
-            OnPropertyChanged(nameof(CrossSectionBuilder));
         }
 
         private void RefreshGauges()

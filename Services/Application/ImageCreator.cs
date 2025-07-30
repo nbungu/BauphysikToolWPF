@@ -30,16 +30,10 @@ namespace BauphysikToolWPF.Services.Application
                     Brush backgroundBrush = geometry.BackgroundColor.Clone();
                     backgroundBrush.Opacity = geometry.Opacity; // Apply opacity
 
-                    // Define the pen with the stroke dash array
-                    Pen rectanglePen = new Pen(geometry.RectangleBorderColor, geometry.RectangleBorderThickness)
-                    {
-                        DashStyle = new DashStyle(geometry.RectangleStrokeDashArray, 0)
-                    };
-
                     // Zeichne das Hauptrechteck
                     drawingContext.DrawRectangle(
                         backgroundBrush,
-                        rectanglePen,
+                        geometry.BorderPen,
                         new Rect(
                             geometry.Rectangle.TopLeft.X,
                             geometry.Rectangle.TopLeft.Y,
@@ -48,9 +42,9 @@ namespace BauphysikToolWPF.Services.Application
                     );
 
                     // Falls es eine spezielle Brush (z. B. Schraffur oder Labels) gibt, zeichnen
-                    if (geometry.DrawingBrush != null)
+                    if (geometry.TextureBrush != null)
                     {
-                        Brush drawingBrush = geometry.DrawingBrush.Clone();
+                        Brush drawingBrush = geometry.TextureBrush.Clone();
                         drawingBrush.Opacity = geometry.Opacity;
 
                         drawingContext.DrawRectangle(

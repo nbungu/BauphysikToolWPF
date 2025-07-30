@@ -1,4 +1,3 @@
-using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Services.Application;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -19,12 +18,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// Central controller for the OpenGL scene: manages view state, connects OpenTK to WPF control,
     /// handles mouse interactions (zoom, pan, hover, click), and delegates rendering to submodules.
     /// </summary>
-    public class ElementSceneController : IDisposable
+    public class OglController : IDisposable
     {
-        public readonly ElementRenderer Renderer;
-        public readonly TextureManager TextureManager;
-        public readonly SceneBuilder SceneBuilder;
-        public readonly CrossSectionBuilder CrossSectionBuilder;
+        public OglRenderer Renderer { get; }
+        public TextureManager TextureManager { get; }
+        public IOglSceneBuilder SceneBuilder { get; }
+
 
         private GLWpfControl _view;
         private bool _disposed;
@@ -37,15 +36,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public event Action<ShapeId>? ShapeHovered;
         public event Action<ShapeId>? ShapeClicked;
 
-        public ElementSceneController()
+        public OglController()
         {
-            Renderer = new ElementRenderer(this);
+            Renderer = new OglRenderer(this);
             TextureManager = new TextureManager(this);
-            SceneBuilder = new SceneBuilder(this);
-
-            CrossSectionBuilder = new CrossSectionBuilder();
+            SceneBuilder = new ElementSceneBuilder(this);
         }
-
 
         public void ConnectToView(GLWpfControl view, GLWpfControlSettings? settings = null)
         {
@@ -70,18 +66,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             view.Start(settings);
 
+            // TODO: outsourcen
+            Session.SelectedElementChanged += Redraw;
+            Session.SelectedLayerChanged += Redraw;
+            Session.SelectedLayerIndexChanged += Redraw;
+
             Renderer.Initialize();
-            
-            Session.SelectedElementChanged += Rebuild;
-            Session.SelectedLayerChanged += Rebuild;
         }
 
-        public void UseElement(Element element)
-        {
-            CrossSectionBuilder.Element = element;
-            Rebuild();
-        }
-
+        private void Invalidate() => _view.InvalidateVisual();
         public void ZoomIn() => SetZoom(_zoom + 0.1f);
         public void ZoomOut() => SetZoom(_zoom - 0.1f);
         public void ResetView()
@@ -96,15 +89,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Invalidate();
         }
 
-        public void Rebuild()
+        public void Redraw()
         {
             TextureManager.Dispose();
-            CrossSectionBuilder.RebuildCrossSection();
-            SceneBuilder.BuildFrom(CrossSectionBuilder.DrawingGeometries);
+            SceneBuilder.BuildScene();
             Invalidate();
         }
-
-        private void Invalidate() => _view.InvalidateVisual();
 
         private void OnRender(TimeSpan _)
         {
@@ -127,20 +117,30 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             float ctrlW = (float)control.Width, ctrlH = (float)control.Height;
             float contW = rectF.Width, contH = rectF.Height;
 
-            float scaleX = ctrlW / contW, scaleY = ctrlH / contH;
+            float scaleX = ctrlW / contW;
+            float scaleY = ctrlH / contH;
             float scale = MathF.Min(scaleX, scaleY) * _zoom;
 
+            float baseDivisorWidth = ctrlW / 2f;
+            float baseDivisorHeight = ctrlH / 2f;
+
             // Inital offsets set to the top-left corner of the content rectangle
-            float dx = -rectF.X / (ctrlW / 2f), dy = -rectF.Y / (ctrlH / 2f);
-            if (contW * scale < ctrlW) dx = (ctrlW - contW * scale) / 2f / (ctrlW / 2f);
-            if (contH * scale < ctrlH) dy = (ctrlH - contH * scale) / 2f / (ctrlH / 2f);
+            float originOffsetX = rectF.X / baseDivisorWidth;
+            float originOffsetY = rectF.Y / baseDivisorHeight;
+
+            var dx = 0f;
+            var dy = 0f;
+            if (contW * scale < ctrlW) dx = (ctrlW - contW * scale) / 2f / baseDivisorWidth;
+            if (contH * scale < ctrlH) dy = (ctrlH - contH * scale) / 2f / baseDivisorHeight;
 
             var zIndexStart = -100f;
             var zIndexEnd = 100f;
 
-            Matrix4 view = Matrix4.CreateTranslation(1f, -1f, 0) *
+            Matrix4 view = Matrix4.CreateTranslation(originOffsetX, originOffsetY, 0) *
+                           Matrix4.CreateTranslation(1f, -1f, 0) *
                            Matrix4.CreateScale(scale) *
                            Matrix4.CreateTranslation(-1f + dx + (float)_pan.X, 1f - dy + (float)_pan.Y, 0);
+                           
 
             return Matrix4.CreateOrthographicOffCenter(0, ctrlW, ctrlH, 0, zIndexStart, zIndexEnd) * view;
         }
@@ -256,8 +256,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             _view.MouseMove -= OnMouseMove;
             _view.MouseLeave -= OnMouseLeave;
 
-            Session.SelectedElementChanged -= Rebuild;
-            Session.SelectedLayerChanged -= Rebuild;
+            Session.SelectedElementChanged -= Redraw;
+            Session.SelectedLayerChanged -= Redraw;
+            Session.SelectedLayerIndexChanged -= Redraw;
 
             _disposed = true;
         }

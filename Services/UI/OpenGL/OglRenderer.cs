@@ -7,9 +7,9 @@ using System.Windows.Media;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
-    public class ElementRenderer : IDisposable
+    public class OglRenderer : IDisposable
     {
-        private readonly ElementSceneController _parent;
+        private readonly OglController _parent;
 
         private int _shaderProgram;
         private int _rectVao, _rectVbo;
@@ -20,7 +20,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private TextureManager TextureManager => _parent.TextureManager;
         private int SdfFontTextureId => TextureManager.SdfFont?.TextureId ?? -1;
 
-        public ElementRenderer(ElementSceneController parent)
+        public OglRenderer(OglController parent)
         {
             _parent = parent;
         }

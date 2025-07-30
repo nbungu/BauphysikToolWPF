@@ -8,7 +8,7 @@ using Vector = BT.Geometry.Vector;
 
 namespace BauphysikToolWPF.Services.UI
 {
-    public static class TextureBrushes
+    public static class Textures
     {
         private static double _lastLineThickness;
         private static Rectangle _lastInsulationRectangle;

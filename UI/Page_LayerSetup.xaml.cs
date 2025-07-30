@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.UI
     {
         #region private Fields
 
-        private readonly ElementSceneController _elementScene;
+        private readonly OglController _oglController;
         private readonly Element _element; // Selected Element from Session
 
         #endregion
@@ -35,19 +35,20 @@ namespace BauphysikToolWPF.UI
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
-            _elementScene = new ElementSceneController();
-            _elementScene.ConnectToView(OpenTkControl);  // hook into GL control
-            _elementScene.UseElement(_element); // load selected data
+            _oglController = new OglController();
+            _oglController.ConnectToView(OpenTkControl);  // hook into GL control
 
             // View Model
-            this.DataContext = new Page_LayerSetup_VM(_elementScene);
+            this.DataContext = new Page_LayerSetup_VM(_oglController);
             this.Unloaded += Page_LayerSetup_Unloaded;
         }
-        private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e) => _elementScene.Dispose();
+        private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e) => _oglController.Dispose();
 
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
+
+
             if (_element is null) return;
 
             // Only save if leaving this page

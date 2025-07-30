@@ -2,6 +2,7 @@
 {
     public enum ShapeType
     {
+        None = -1,
         Layer = 0,
         SubConstructionLayer = 1,
         DimensionalChain = 2,
@@ -19,7 +20,7 @@
             Type = type;
             Index = index;
         }
-
+        public static readonly ShapeId None = new ShapeId(ShapeType.None, -1);
         public override string ToString() => $"{Type}[{Index}]";
     }
 }

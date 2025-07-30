@@ -160,7 +160,7 @@ namespace BauphysikToolWPF.Services.UI
             {
                 Drawing = new GeometryDrawing(System.Windows.Media.Brushes.DimGray, new Pen(System.Windows.Media.Brushes.DimGray, 0.6), hatchContent),
             };
-            geometry.DrawingBrush = brush;
+            geometry.TextureBrush = brush;
 
             return geometry;
         }
