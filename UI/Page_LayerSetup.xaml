@@ -8,8 +8,7 @@
              xmlns:glWpfControl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
              mc:Ignorable="d"
             d:DesignHeight="1200"
-            d:DesignWidth="1400"
-            IsVisibleChanged="UserControl_IsVisibleChanged">
+            d:DesignWidth="1400">
 
     <!--<UserControl.DataContext>
         <vm:Page_LayerSetup_VM/>

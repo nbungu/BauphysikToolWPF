@@ -34,14 +34,27 @@ namespace BauphysikToolWPF.Services.UI
         public AlignmentVariant Alignment { get; set; }
         public List<IDrawingGeometry> DrawingGeometries { get; private set; }
         public bool LastDrawingSuccessful { get; private set; }
-        
+
         public CrossSectionBuilder()
         {
             Element = new Element();
-            CanvasSize = new Rectangle(new Point(0, 0), 880, 400); // Default size for CrossSection
             DrawingType = DrawingType.CrossSection;
+            CanvasSize = new Rectangle(new Point(0, 0), 880, 400);
             Alignment = AlignmentVariant.EvenSpacingCentered;
             DrawingGeometries = new List<IDrawingGeometry>();
+        }
+
+        public CrossSectionBuilder(Element element, DrawingType type)
+        {
+            Element = element;
+            DrawingType = type;
+            if (DrawingType == DrawingType.CrossSection)
+                CanvasSize = new Rectangle(new Point(0, 0), 880, 400);
+            else if (DrawingType == DrawingType.VerticalCut)
+                CanvasSize = new Rectangle(new Point(0, 0), 400, 880);
+            else CanvasSize = new Rectangle(new Point(0, 0), 880, 880);
+            Alignment = AlignmentVariant.EvenSpacingCentered;
+            DrawingGeometries = GetDrawing();
         }
 
         public CrossSectionBuilder(Element? element, Rectangle canvasSize, DrawingType drawingType, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)

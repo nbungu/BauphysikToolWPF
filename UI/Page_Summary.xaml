@@ -5,15 +5,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
-             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             xmlns:glWpfControl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
              mc:Ignorable="d"
              d:DesignHeight="700"
              d:DesignWidth="1200">
 
-    <UserControl.DataContext>
-        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
+    <!--<UserControl.DataContext>
         <vm:Page_Summary_VM/>
-    </UserControl.DataContext>
+    </UserControl.DataContext>-->
 
     <!--
     the DataContext is used to specify the data source for a UI element,
@@ -67,59 +66,10 @@
             <Label Grid.Row="2" Content="Außen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
             <Label Grid.Row="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-            <Viewbox Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
-                <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                <Grid x:Name="ZoomableGrid1"
-                      Margin="8"
-                      MouseWheel="ZoomableGrid1_OnMouseWheel"
-                      MouseMove="ZoomableGrid1_OnMouseMove"
-                      MouseRightButtonDown="ZoomableGrid1_OnMouseRightButtonDown"
-                      MouseLeftButtonDown="ZoomableGrid1_OnMouseLeftButtonDown"
-                      MouseLeftButtonUp="ZoomableGrid1_OnMouseLeftButtonUp"
-                      RenderTransformOrigin="0.0,0.0">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <Grid.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform x:Name="Grid1ScaleTransform"/>
-                            <TranslateTransform x:Name="Grid1TranslateTransform"/>
-                        </TransformGroup>
-                    </Grid.RenderTransform>
+            <Grid Grid.Row="1" Margin="8">
+                <glWpfControl:GLWpfControl x:Name="OpenTkControlHorizontal"/>
+            </Grid>
 
-                    <!-- "Layers Canvas" -->
-                    <controls:LayersCanvas x:Name="LayersCanvasCrossSection" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeCrossSection.Width}" Height="{Binding CanvasSizeCrossSection.Height}" DrawingGeometries="{Binding CrossSectionDrawing}"/>
-
-                    <!-- "Vertical Measurement Grid" -->
-                    <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvasCrossSection, Path=Height}" DrawingGeometry="{Binding LayerMeasurementCrossSection}" Margin="32,0"/>
-
-                    <!-- "Vertical Measurement Grid Full" -->
-                    <controls:MeasurementChain Grid.Row="0" Grid.Column="2" Height="{Binding ElementName=LayersCanvasCrossSection, Path=Height}" DrawingGeometry="{Binding LayerMeasurementFullCrossSection}" Margin="32,0"/>
-
-                    <!-- "Horizontal Measurement Grid Test" -->
-                    <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvasCrossSection, Path=Width}" DrawingGeometry="{Binding SubConstructionMeasurementCrossSection}" Margin="0,32">
-                        <controls:MeasurementChain.Style>
-                            <Style TargetType="controls:MeasurementChain">
-                                <Setter Property="Visibility" Value="Visible"/>
-                                <Style.Triggers>
-                                    <DataTrigger Binding="{Binding SubConstructionMeasurementCrossSection.Count}" Value="0">
-                                        <Setter Property="Visibility" Value="Collapsed"/>
-                                    </DataTrigger>
-                                </Style.Triggers>
-                            </Style>
-                        </controls:MeasurementChain.Style>
-                    </controls:MeasurementChain>
-
-                </Grid>
-            </Viewbox>
         </Grid>
 
         <!--GridSplitter - Horizontal-->
@@ -139,56 +89,10 @@
                 <Label Grid.Column="2" Content="Außen" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                 <Label Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-                <Viewbox Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" >
-                    <!--Style for Rotation Style="{StaticResource ViewBoxStyle}"-->
-                    <!--Keep this Margin to avoid clipping of LayerPosition circles and width measurement numbers!-->
-                    <Grid x:Name="ZoomableGrid2" Margin="8"
-                          MouseWheel="ZoomableGrid2_OnMouseWheel"
-                          MouseMove="ZoomableGrid2_OnMouseMove"
-                          MouseRightButtonDown="ZoomableGrid2_OnMouseRightButtonDown"
-                          MouseLeftButtonDown="ZoomableGrid2_OnMouseLeftButtonDown"
-                          MouseLeftButtonUp="ZoomableGrid2_OnMouseLeftButtonUp"
-                          RenderTransformOrigin="0.0,0.0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RenderTransform>
-                            <TransformGroup>
-                                <ScaleTransform x:Name="Grid2ScaleTransform"/>
-                                <TranslateTransform x:Name="Grid2TranslateTransform"/>
-                            </TransformGroup>
-                        </Grid.RenderTransform>
+                <Grid Grid.Column="1" Margin="8">
+                    <glWpfControl:GLWpfControl x:Name="OpenTkControlVertical"/>
+                </Grid>
 
-                        <!-- "Layers Canvas" -->
-                        <controls:LayersCanvas x:Name="LayersCanvasVerticalCut" Grid.Row="0" Grid.Column="0" Width="{Binding CanvasSizeVerticalCut.Width}" Height="{Binding CanvasSizeVerticalCut.Height}" DrawingGeometries="{Binding VerticalCutDrawing}"/>
-
-                        <!-- "Horizontal Measurement for Layers" -->
-                        <controls:MeasurementChain Grid.Row="1" Grid.Column="0" Width="{Binding ElementName=LayersCanvasVerticalCut, Path=Width}" DrawingGeometry="{Binding LayerMeasurementVerticalCut}" Margin="0,32"/>
-
-                        <!-- "Horizontal Measurement for Element" -->
-                        <controls:MeasurementChain Grid.Row="2" Grid.Column="0" Width="{Binding ElementName=LayersCanvasVerticalCut, Path=Width}" DrawingGeometry="{Binding LayerMeasurementFullVerticalCut}" Margin="0,32"/>
-
-                        <!-- "Vertical Measurement for SubConstructions" -->
-                        <controls:MeasurementChain Grid.Row="0" Grid.Column="1" Height="{Binding ElementName=LayersCanvasVerticalCut, Path=Height}" DrawingGeometry="{Binding SubConstructionMeasurementVerticalCut}" Margin="32,0">
-                            <controls:MeasurementChain.Style>
-                                <Style TargetType="controls:MeasurementChain">
-                                    <Setter Property="Visibility" Value="Visible"/>
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding SubConstructionMeasurementVerticalCut.Count}" Value="0">
-                                            <Setter Property="Visibility" Value="Collapsed"/>
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </controls:MeasurementChain.Style>
-                        </controls:MeasurementChain>
-                    </Grid>
-                </Viewbox>
             </Grid>
         </Grid>
 

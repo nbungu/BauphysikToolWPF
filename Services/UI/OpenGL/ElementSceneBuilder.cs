@@ -1,3 +1,4 @@
+using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
@@ -22,7 +23,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class ElementSceneBuilder : IOglSceneBuilder
     {
-        private readonly OglController _parent;
+        private OglController _parent;
         private readonly CrossSectionBuilder _crossSectionBuilder;
         private int _zIndex; // Z-level for rendering order, can be used to layer elements in the scene
 
@@ -45,17 +46,25 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public ElementSceneBuilder(OglController parent)
         {
             _parent = parent;
-            _crossSectionBuilder = new CrossSectionBuilder()
-            {
-                Element = Session.SelectedElement,
-            };
+            _crossSectionBuilder = new CrossSectionBuilder(Session.SelectedElement, DrawingType.CrossSection);
+        }
+        public ElementSceneBuilder(Element element, DrawingType drawingType = DrawingType.CrossSection)
+        {
+            _crossSectionBuilder = new CrossSectionBuilder(element, drawingType);
+        }
+
+        public void ConnectToController(OglController controller)
+        {
+            _parent = controller;
         }
 
         #region public
 
         public void BuildScene()
         {
-            _crossSectionBuilder.DrawingType = DrawingType.CrossSection;
+            if (_parent is null) throw new InvalidOperationException("OglController is not connected.");
+
+            // TODO: Unterscheiden zwischen Vertikalschnitt und Querschnitt!
             _crossSectionBuilder.RebuildCrossSection();
 
             if (!_crossSectionBuilder.DrawingGeometries.Any()) return;

@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     {
         public OglRenderer Renderer { get; }
         public TextureManager TextureManager { get; }
-        public IOglSceneBuilder SceneBuilder { get; }
+        public IOglSceneBuilder SceneBuilder { get; private set; }
 
 
         private GLWpfControl _view;
@@ -44,11 +44,19 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             Renderer = new OglRenderer(this);
             TextureManager = new TextureManager(this);
-            SceneBuilder = new ElementSceneBuilder(this);
+        }
+        public OglController(IOglSceneBuilder sceneBuilder)
+        {
+            Renderer = new OglRenderer(this);
+            TextureManager = new TextureManager(this);
+            SetSceneBuilder(sceneBuilder);
         }
 
         public void ConnectToView(GLWpfControl view, GLWpfControlSettings? settings = null)
         {
+            if (view is null) throw new InvalidOperationException("View not connected.");
+            if (SceneBuilder is null) throw new InvalidOperationException("Scene builder not connected.");
+            
             _view = view;
             settings ??= new GLWpfControlSettings
             {
@@ -76,6 +84,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Session.SelectedLayerIndexChanged += Redraw;
 
             Renderer.Initialize();
+            Console.WriteLine("[OGL] Renderer initialized");
+        }
+
+        public void SetSceneBuilder(IOglSceneBuilder sceneBuilder)
+        {
+            sceneBuilder.ConnectToController(this);
+            SceneBuilder = sceneBuilder;
         }
 
         private void Invalidate() => _view.InvalidateVisual();
@@ -113,6 +128,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 SceneBuilder.RectBatches,
                 SceneBuilder.LineBatches,
                 proj);
+            Console.WriteLine("[OGL] Render called");
         }
 
         private Matrix4 BuildProjection(Size control, Rectangle content)
@@ -152,6 +168,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private Point ConvertMouseToScene(Point mouse)
         {
+            if (SceneBuilder.SceneBounds.Area < 1E-06) return Point.Empty; // No valid scene bounds, return empty point
+            
             var bounds = SceneBuilder.SceneBounds;
             float cw = (float)_view.ActualWidth, ch = (float)_view.ActualHeight;
             float ew = (float)bounds.Width, eh = (float)bounds.Height;
@@ -297,6 +315,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Session.SelectedLayerIndexChanged -= Redraw;
 
             _disposed = true;
+            Console.WriteLine("[OGL] Renderer disposed");
         }
     }
 }

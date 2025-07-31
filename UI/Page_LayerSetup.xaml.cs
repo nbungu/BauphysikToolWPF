@@ -35,30 +35,26 @@ namespace BauphysikToolWPF.UI
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
-            _oglController = new OglController();
+            _oglController = new OglController(new ElementSceneBuilder(_element, DrawingType.CrossSection));
             _oglController.ConnectToView(OpenTkControl);  // hook into GL control
 
             // View Model
             this.DataContext = new Page_LayerSetup_VM(_oglController);
-            this.Unloaded += Page_LayerSetup_Unloaded;
+            this.IsVisibleChanged += UserControl_IsVisibleChanged; // Save current canvas as image, just before closing Page_LayerSetup Page
         }
-        private void Page_LayerSetup_Unloaded(object sender, RoutedEventArgs e) => _oglController.Dispose();
 
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-
-
-            if (_element is null) return;
-
             // Only save if leaving this page
             _element.UnselectAllLayers();
 
             if (!IsVisible && _element.IsValid)
             {
+                _oglController.Dispose();
                 // TODO: 
                 //element.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
-                
+
                 //ImageCreator.RenderElementPreviewImage(element);
                 //element.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
             }
