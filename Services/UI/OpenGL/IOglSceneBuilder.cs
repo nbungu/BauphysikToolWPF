@@ -6,6 +6,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 {
     public interface IOglSceneBuilder
     {
+        public TextureManager TextureManager { get; set; }
         public List<float> RectVertices { get; }
         public List<float> LineVertices { get; }
         public List<(int? TextureId, int Count)> RectBatches { get; }
@@ -13,7 +14,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public Rectangle SceneBounds { get; }
         public List<IDrawingGeometry> SceneShapes { get; }
         public bool IsTextSizeZoomable { get; set; }
+        public float ZoomFactor { get; set; }
         public void BuildScene();
-        public void ConnectToController(OglController controller);
     }
 }

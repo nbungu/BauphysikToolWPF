@@ -20,44 +20,40 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class OglController : IDisposable
     {
-        public OglRenderer Renderer { get; }
-        public TextureManager TextureManager { get; }
+        public OglRenderer Renderer { get; private set; }
+        public TextureManager TextureManager { get; private set; }
         public IOglSceneBuilder SceneBuilder { get; private set; }
+        public GLWpfControl View { get; private set; }
+        public float ZoomFactor { get; set; } = 1f;
+        public bool IsViewConnected => View != null;
 
-
-        private GLWpfControl _view;
-        private bool _disposed;
-
-        public float ZoomFactor { get; private set; } = 1f;
-        private Vector _pan = Vector.Empty;
-        private Point _lastMousePos;
-        private bool _dragging;
-        private DateTime _lastLeftClickTime = DateTime.MinValue;
-        private const int DoubleClickThresholdMs = 300;
 
         public event Action<ShapeId>? ShapeHovered;
         public event Action<ShapeId>? ShapeClicked;
         public event Action<ShapeId>? ShapeDoubleClicked;
         public event Action<ShapeId>? ShapeRightClicked;
 
-        public OglController()
+
+        private bool _disposed;
+        private Vector _pan = Vector.Empty;
+        private Point _lastMousePos;
+        private bool _dragging;
+        private DateTime _lastLeftClickTime = DateTime.MinValue;
+        private const int DoubleClickThresholdMs = 300;
+
+
+        public OglController(GLWpfControl view, IOglSceneBuilder sceneBuilder)
         {
+            TextureManager = new TextureManager();
             Renderer = new OglRenderer(this);
-            TextureManager = new TextureManager(this);
-        }
-        public OglController(IOglSceneBuilder sceneBuilder)
-        {
-            Renderer = new OglRenderer(this);
-            TextureManager = new TextureManager(this);
-            SetSceneBuilder(sceneBuilder);
+            // Order is relevant!
+            ConnectToView(view);
+            SetNewSceneBuilder(sceneBuilder);
         }
 
         public void ConnectToView(GLWpfControl view, GLWpfControlSettings? settings = null)
         {
-            if (view is null) throw new InvalidOperationException("View not connected.");
-            if (SceneBuilder is null) throw new InvalidOperationException("Scene builder not connected.");
-            
-            _view = view;
+            View = view ?? throw new InvalidOperationException("View not connected.");
             settings ??= new GLWpfControlSettings
             {
                 MajorVersion = 4,
@@ -87,13 +83,20 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Console.WriteLine("[OGL] Renderer initialized");
         }
 
-        public void SetSceneBuilder(IOglSceneBuilder sceneBuilder)
+        /// <summary>
+        /// Set the SceneBuilder after a View has been connected.
+        /// </summary>
+        /// <param name="sceneBuilder"></param>
+        public void SetNewSceneBuilder(IOglSceneBuilder sceneBuilder)
         {
-            sceneBuilder.ConnectToController(this);
+            if (sceneBuilder is null) throw new ArgumentNullException(nameof(sceneBuilder), "SceneBuilder cannot be null.");
+            if (!IsViewConnected) throw new InvalidOperationException("View must be connected before setting a new SceneBuilder.");
+            
+            sceneBuilder.TextureManager = TextureManager;
             SceneBuilder = sceneBuilder;
         }
 
-        private void Invalidate() => _view.InvalidateVisual();
+        public void Invalidate() => View.InvalidateVisual();
         public void ZoomIn() => SetZoom(ZoomFactor + 0.2f);
         public void ZoomOut() => SetZoom(ZoomFactor - 0.2f);
         public void ResetView()
@@ -112,13 +115,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void Redraw()
         {
             TextureManager.Dispose();
+            SceneBuilder.ZoomFactor = ZoomFactor;
             SceneBuilder.BuildScene();
             Invalidate();
         }
 
         private void OnRender(TimeSpan _)
         {
-            var size = new Size((int)_view.ActualWidth, (int)_view.ActualHeight);
+            var size = new Size((int)View.ActualWidth, (int)View.ActualHeight);
             var bounds = SceneBuilder.SceneBounds;
             var proj = BuildProjection(size, bounds);
 
@@ -171,7 +175,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (SceneBuilder.SceneBounds.Area < 1E-06) return Point.Empty; // No valid scene bounds, return empty point
             
             var bounds = SceneBuilder.SceneBounds;
-            float cw = (float)_view.ActualWidth, ch = (float)_view.ActualHeight;
+            float cw = (float)View.ActualWidth, ch = (float)View.ActualHeight;
             float ew = (float)bounds.Width, eh = (float)bounds.Height;
 
             float scale = MathF.Min(cw / ew, ch / eh) * ZoomFactor;
@@ -196,13 +200,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private void OnMouseDown(object s, MouseButtonEventArgs e)
         {
             var now = DateTime.Now;
-            var cur = e.GetPosition(_view).ToPoint();
+            var cur = e.GetPosition(View).ToPoint();
             
             if (e.ChangedButton == MouseButton.Middle)
             {
                 _dragging = true;
                 _lastMousePos = cur;
-                _view.CaptureMouse();
+                View.CaptureMouse();
                 Mouse.OverrideCursor = Cursors.ScrollAll;
             }
             if (e.ChangedButton == MouseButton.Left)
@@ -253,21 +257,21 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (e.ChangedButton == MouseButton.Middle)
             {
                 _dragging = false;
-                _view.ReleaseMouseCapture();
+                View.ReleaseMouseCapture();
                 Mouse.OverrideCursor = null;
             }
         }
 
         private void OnMouseMove(object s, MouseEventArgs e)
         {
-            var cur = e.GetPosition(_view).ToPoint();
+            var cur = e.GetPosition(View).ToPoint();
             if (_dragging)
             {
                 Vector delta = cur - _lastMousePos;
                 _lastMousePos = cur;
 
-                float dx = (float)(2.0 * delta.X / _view.ActualWidth);
-                float dy = (float)(-2.0 * delta.Y / _view.ActualHeight);
+                float dx = (float)(2.0 * delta.X / View.ActualWidth);
+                float dy = (float)(-2.0 * delta.Y / View.ActualHeight);
 
                 _pan += new Vector(dx, dy);
                 Invalidate();
@@ -280,12 +284,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     if (shape.Rectangle.Contains(pt))
                     {
                         ShapeHovered?.Invoke(shape.ShapeId);
-                        ToolTipService.SetToolTip(_view, shape.ShapeId.ToString());
+                        ToolTipService.SetToolTip(View, shape.ShapeId.ToString());
                         Mouse.OverrideCursor = Cursors.Hand;
                         return;
                     }
                 }
-                ToolTipService.SetToolTip(_view, null);
+                ToolTipService.SetToolTip(View, null);
                 Mouse.OverrideCursor = null;
             }
         }
@@ -293,7 +297,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private void OnMouseLeave(object s, MouseEventArgs e)
         {
             Mouse.OverrideCursor = null;
-            ToolTipService.SetToolTip(_view, null);
+            ToolTipService.SetToolTip(View, null);
         }
 
         public void Dispose()
@@ -303,12 +307,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Renderer.Dispose();
             TextureManager.Dispose();
 
-            _view.Render -= OnRender;
-            _view.MouseWheel -= OnWheel;
-            _view.MouseDown -= OnMouseDown;
-            _view.MouseUp -= OnMouseUp;
-            _view.MouseMove -= OnMouseMove;
-            _view.MouseLeave -= OnMouseLeave;
+            View.Render -= OnRender;
+            View.MouseWheel -= OnWheel;
+            View.MouseDown -= OnMouseDown;
+            View.MouseUp -= OnMouseUp;
+            View.MouseMove -= OnMouseMove;
+            View.MouseLeave -= OnMouseLeave;
 
             Session.SelectedElementChanged -= Redraw;
             Session.SelectedLayerChanged -= Redraw;

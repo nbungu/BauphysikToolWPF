@@ -35,8 +35,8 @@ namespace BauphysikToolWPF.UI
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
-            _oglController = new OglController(new ElementSceneBuilder(_element, DrawingType.CrossSection));
-            _oglController.ConnectToView(OpenTkControl);  // hook into GL control
+            _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
+            _oglController.Redraw(); // Initial render to display the scene
 
             // View Model
             this.DataContext = new Page_LayerSetup_VM(_oglController);
