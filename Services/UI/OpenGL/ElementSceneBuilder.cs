@@ -87,9 +87,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity);
                 SceneShapes.Add(geom);
 
-                
-
-                
                 // When highlighted
                 if (geom.BorderPen.Brush != Brushes.Black)
                 {
