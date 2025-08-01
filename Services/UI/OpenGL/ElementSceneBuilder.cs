@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using BT.Geometry;
 using Rectangle = BT.Geometry.Rectangle;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
@@ -41,6 +42,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             LineBatches.Clear();
             SceneShapes.Clear();
 
+            DebugMode = false;
             if (_crossSectionBuilder.DrawingType == DrawingType.CrossSection)
             {
                 DrawFullCrossSectionScene();
@@ -57,7 +59,83 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void DrawFullVerticalCutScene()
         {
+            var elementBounds = GetContentBounds(_crossSectionBuilder.DrawingGeometries);
 
+            ZIndex = 0;
+            AddLine(elementBounds.TopLine, style: LineStyle.Dashed);
+            AddLine(elementBounds.BottomLine, style: LineStyle.Dashed);
+
+            foreach (var geom in _crossSectionBuilder.DrawingGeometries)
+            {
+                ZIndex = -1;
+                AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity);
+                SceneShapes.Add(geom);
+
+                // When highlighted
+                if (geom.BorderPen.Brush != Brushes.Black)
+                {
+                    ZIndex = 1;
+                    AddLine(geom.Rectangle.LeftLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                    AddLine(geom.Rectangle.RightLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                    AddLine(geom.Rectangle.TopLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                    AddLine(geom.Rectangle.BottomLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                }
+                else
+                {
+                    ZIndex = 0;
+                    AddLine(geom.Rectangle.LeftLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                    AddLine(geom.Rectangle.RightLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
+                }
+
+
+                Point markerPos = geom.Rectangle.Center;
+                int fontSize = 18;
+                string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
+                if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
+                {
+                    if (geom.Rectangle.Height < elementBounds.Height)
+                    {
+                        ZIndex = 0;
+                        AddLine(geom.Rectangle.TopLine);
+                        AddLine(geom.Rectangle.BottomLine);
+                    }
+                    layerNumber += "b";
+                    fontSize = 16;
+                    markerPos += new Vector(0, 2*fontSize); // Adjust position for sub-construction layers
+                }
+                else if (geom.ShapeId.Type == ShapeType.Layer)
+                {
+                    DrawSingleDimChain(geom.Rectangle.TopLine,
+                        40,
+                        Math.Round(geom.Rectangle.Width / SizeOf1Cm, 2).ToString(),
+                        geom.BorderPen.Brush,
+                        TextAlignment.Bottom | TextAlignment.CenterH,
+                        new ShapeId(ShapeType.Layer, geom.InternalId),
+                        fontSize: 16);
+                }
+
+                ZIndex = 2;
+                AddLayerTextMarker(markerPos, layerNumber, fontSize, geom.BorderPen.Brush, geom.Opacity, new ShapeId(ShapeType.Layer, geom.InternalId));
+            }
+            //DrawSingleDimChain(elementBounds.RightLine,
+            //    110,
+            //    Math.Round(elementBounds.Height / SizeOf1Cm, 2).ToString(),
+            //    alignment: TextAlignment.Bottom | TextAlignment.CenterH, fontSize: 18);
+
+            if (DebugMode)
+            {
+                AddLine(SceneBounds.TopLine, Brushes.Blue, LineStyle.Dashed);
+                AddLine(SceneBounds.LeftLine, Brushes.Blue, LineStyle.Dashed);
+                AddLine(SceneBounds.RightLine, Brushes.Blue, LineStyle.Dashed);
+                AddLine(SceneBounds.BottomLine, Brushes.Blue, LineStyle.Dashed);
+                AddLine(SceneBounds.BottomLeft, SceneBounds.TopRight);
+                AddLine(SceneBounds.TopLeft, SceneBounds.BottomRight);
+                AddText("0", elementBounds.TopLeft, Brushes.Black, 24, alignment: TextAlignment.Left | TextAlignment.Top);
+                AddText("1", elementBounds.BottomLeft, Brushes.Black, 24, alignment: TextAlignment.Left | TextAlignment.Bottom);
+                AddText("2", elementBounds.BottomRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Bottom);
+                AddText("3", elementBounds.TopRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Top);
+                AddText("5", elementBounds.Center, Brushes.Black, 24, alignment: TextAlignment.Center);
+            }
         }
 
         private void DrawFullCrossSectionScene()

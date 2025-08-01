@@ -20,32 +20,39 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class OglController : IDisposable
     {
-        public OglRenderer Renderer { get; private set; }
-        public TextureManager TextureManager { get; private set; }
-        public IOglSceneBuilder SceneBuilder { get; private set; }
-        public GLWpfControl View { get; private set; }
-        public float ZoomFactor { get; set; } = 1f;
-        public bool IsViewConnected => View != null;
-
-
         public event Action<ShapeId>? ShapeHovered;
         public event Action<ShapeId>? ShapeClicked;
         public event Action<ShapeId>? ShapeDoubleClicked;
         public event Action<ShapeId>? ShapeRightClicked;
 
+        #region public properties
+        
+        public IOglSceneBuilder SceneBuilder { get; private set; }
+        public GLWpfControl View { get; private set; }
+        public bool IsSceneInteractive { get; set; } = true;
+        public bool IsViewConnected => View != null;
+        public float ZoomFactor => _zoomFactor;
 
+        #endregion
+
+        #region private fields
+
+        private readonly OglRenderer _oglRenderer;
+        private readonly TextureManager _textureManager;
         private bool _disposed;
+        private float _zoomFactor = 1.0f; // Used to track zoom changes
         private Vector _pan = Vector.Empty;
         private Point _lastMousePos;
         private bool _dragging;
         private DateTime _lastLeftClickTime = DateTime.MinValue;
         private const int DoubleClickThresholdMs = 300;
 
+        #endregion
 
         public OglController(GLWpfControl view, IOglSceneBuilder sceneBuilder)
         {
-            TextureManager = new TextureManager();
-            Renderer = new OglRenderer(this);
+            _textureManager = new TextureManager();
+            _oglRenderer = new OglRenderer(_textureManager);
             // Order is relevant!
             ConnectToView(view);
             SetNewSceneBuilder(sceneBuilder);
@@ -79,7 +86,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Session.SelectedLayerChanged += Redraw;
             Session.SelectedLayerIndexChanged += Redraw;
 
-            Renderer.Initialize();
+            _oglRenderer.Initialize();
             Console.WriteLine("[OGL] Renderer initialized");
         }
 
@@ -92,7 +99,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (sceneBuilder is null) throw new ArgumentNullException(nameof(sceneBuilder), "SceneBuilder cannot be null.");
             if (!IsViewConnected) throw new InvalidOperationException("View must be connected before setting a new SceneBuilder.");
             
-            sceneBuilder.TextureManager = TextureManager;
+            sceneBuilder.TextureManager = _textureManager;
             SceneBuilder = sceneBuilder;
         }
 
@@ -107,14 +114,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         }
         public void SetZoom(double zoom)
         {
-            ZoomFactor = (float)Math.Clamp(zoom, 0.4, 6.0);
+            _zoomFactor = (float)Math.Clamp(zoom, 0.4, 6.0);
             if (SceneBuilder.IsTextSizeZoomable) Redraw();
             else Invalidate();
         }
 
         public void Redraw()
         {
-            TextureManager.Dispose();
+            _textureManager.Dispose();
             SceneBuilder.ZoomFactor = ZoomFactor;
             SceneBuilder.BuildScene();
             Invalidate();
@@ -126,7 +133,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var bounds = SceneBuilder.SceneBounds;
             var proj = BuildProjection(size, bounds);
 
-            Renderer.Render(
+            _oglRenderer.Render(
                 SceneBuilder.RectVertices.ToArray(),
                 SceneBuilder.LineVertices.ToArray(),
                 SceneBuilder.RectBatches,
@@ -209,6 +216,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 View.CaptureMouse();
                 Mouse.OverrideCursor = Cursors.ScrollAll;
             }
+
+            if (!IsSceneInteractive) return;
+
             if (e.ChangedButton == MouseButton.Left)
             {
                 var pt = ConvertMouseToScene(cur);
@@ -278,6 +288,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
             else
             {
+                if (!IsSceneInteractive) return;
+
                 var pt = ConvertMouseToScene(cur);
                 foreach (var shape in SceneBuilder.SceneShapes)
                 {
@@ -304,8 +316,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (_disposed) return;
 
-            Renderer.Dispose();
-            TextureManager.Dispose();
+            _oglRenderer.Dispose();
+            _textureManager.Dispose();
 
             View.Render -= OnRender;
             View.MouseWheel -= OnWheel;

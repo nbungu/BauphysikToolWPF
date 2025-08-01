@@ -9,20 +9,17 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 {
     public class OglRenderer : IDisposable
     {
-        private readonly OglController _parent;
-
         private int _shaderProgram;
         private int _rectVao, _rectVbo;
         private int _lineVao, _lineVbo;
         private bool _initialized;
         private Brush _bgColor = Brushes.Transparent;
+        private readonly TextureManager _textureManager;
+        private int SdfFontTextureId => _textureManager.SdfFont?.TextureId ?? -1;
 
-        private TextureManager TextureManager => _parent.TextureManager;
-        private int SdfFontTextureId => TextureManager.SdfFont?.TextureId ?? -1;
-
-        public OglRenderer(OglController parent)
+        public OglRenderer(TextureManager texManager)
         {
-            _parent = parent;
+            _textureManager = texManager ?? throw new ArgumentNullException(nameof(texManager));
         }
 
         public void Initialize()
@@ -30,7 +27,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (_initialized) return;
 
             // Load Fonts
-            TextureManager.SetDefaultFont();
+            _textureManager.SetDefaultFont();
 
             // Load Shader
             _shaderProgram = CompileShaderProgram();

@@ -332,8 +332,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             // Perpendicular ticks at both ends (along the normal direction)
             var tickOffset = nVect * tickSize;
 
-            AddLine(offsetLine.Start - tickOffset, offsetLine.Start + tickOffset, lineColor);
-            AddLine(offsetLine.End - tickOffset, offsetLine.End + tickOffset, lineColor);
+            AddLine(offsetLine.Start - tickOffset, offsetLine.Start + tickOffset.Scale(2), lineColor);
+            AddLine(offsetLine.End - tickOffset, offsetLine.End + tickOffset.Scale(2), lineColor);
 
             // 45° diagonal cross ticks (offset ±45° between normal and direction)
             var diagOffset = (vectNormalized - nVect).Normalize() * tickSize;
