@@ -31,6 +31,7 @@ namespace BauphysikToolWPF.UI
             _oglController = new OglController(OpenTkControlVertical, new ElementSceneBuilder(_element, DrawingType.VerticalCut));
             _oglController.Redraw(); // Initial render to display the scene
             _oglController.IsSceneInteractive = false; // Disable interaction with the scene
+            _oglController.IsTextSizeZoomable = true; // Disable editing of the scene
 
             // View Model
             this.DataContext = new Page_Summary_VM();

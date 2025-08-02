@@ -36,12 +36,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             if (!_crossSectionBuilder.DrawingGeometries.Any()) return;
             
-            RectVertices.Clear();
-            LineVertices.Clear();
-            RectBatches.Clear();
-            LineBatches.Clear();
-            SceneShapes.Clear();
-
             DebugMode = false;
             if (_crossSectionBuilder.DrawingType == DrawingType.CrossSection)
             {
@@ -68,8 +62,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             foreach (var geom in _crossSectionBuilder.DrawingGeometries)
             {
                 ZIndex = -1;
-                AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity);
-                SceneShapes.Add(geom);
+                AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity, geom.ShapeId);
 
                 // When highlighted
                 if (geom.BorderPen.Brush != Brushes.Black)
@@ -87,9 +80,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     AddLine(geom.Rectangle.RightLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
                 }
 
-
                 Point markerPos = geom.Rectangle.Center;
-                int fontSize = 18;
+                int fontSize = 20;
                 string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
@@ -100,28 +92,34 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                         AddLine(geom.Rectangle.BottomLine);
                     }
                     layerNumber += "b";
-                    fontSize = 16;
+                    fontSize = 18;
                     markerPos += new Vector(0, 2*fontSize); // Adjust position for sub-construction layers
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
                 {
-                    DrawSingleDimChain(geom.Rectangle.TopLine,
-                        40,
-                        Math.Round(geom.Rectangle.Width / SizeOf1Cm, 2).ToString(),
-                        geom.BorderPen.Brush,
-                        TextAlignment.Bottom | TextAlignment.CenterH,
-                        new ShapeId(ShapeType.Layer, geom.InternalId),
-                        fontSize: 16);
+                    //DrawSingleDimChain(geom.Rectangle.TopLine,
+                    //    40,
+                    //    Math.Round(geom.Rectangle.Width / SizeOf1Cm, 2).ToString(),
+                    //    geom.BorderPen.Brush,
+                    //    TextAlignment.Bottom | TextAlignment.CenterH,
+                    //    fontSize: 16,
+                    //    new ShapeId(ShapeType.Layer, geom.InternalId));
                 }
-
+                
                 ZIndex = 2;
-                AddLayerTextMarker(markerPos, layerNumber, fontSize, geom.BorderPen.Brush, geom.Opacity, new ShapeId(ShapeType.Layer, geom.InternalId));
+                AddLayerTextMarker(markerPos, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: new ShapeId(ShapeType.Layer, geom.InternalId));
             }
-            //DrawSingleDimChain(elementBounds.RightLine,
-            //    110,
-            //    Math.Round(elementBounds.Height / SizeOf1Cm, 2).ToString(),
-            //    alignment: TextAlignment.Bottom | TextAlignment.CenterH, fontSize: 18);
 
+            AddDimensionalChainsHorizontal(elementBounds.TopLeft,
+                _crossSectionBuilder.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.Layer).Select(geom => geom.Rectangle.Width).ToArray(),
+                50,
+                oneCmConversion: SizeOf1Cm);
+
+            AddDimensionalChainsHorizontal(elementBounds.TopLeft,
+                new []{ elementBounds.Width },
+                110,
+                oneCmConversion: SizeOf1Cm);
+            
             if (DebugMode)
             {
                 AddLine(SceneBounds.TopLine, Brushes.Blue, LineStyle.Dashed);
@@ -149,8 +147,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             foreach (var geom in _crossSectionBuilder.DrawingGeometries)
             {
                 ZIndex = -1;
-                AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity);
-                SceneShapes.Add(geom);
+                AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity, geom.ShapeId);
 
                 // When highlighted
                 if (geom.BorderPen.Brush != Brushes.Black)
@@ -168,35 +165,46 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     AddLine(geom.Rectangle.BottomLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
                 }
 
-
+                int fontSize = 20;
                 string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
-                int fontSize = 18;
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
                     ZIndex = 0;
                     AddLine(geom.Rectangle.LeftLine);
                     AddLine(geom.Rectangle.RightLine);
+                    fontSize = 18;
                     layerNumber += "b";
-                    fontSize = 16;
+                    // Single Sub Construction Dim Chain
+                    //DrawSingleDimChain(geom.Rectangle.LeftLine,
+                    //    -40,
+                    //    Math.Round(geom.Rectangle.Height / SizeOf1Cm, 2).ToString(),
+                    //    geom.BorderPen.Brush,
+                    //    TextAlignment.Right | TextAlignment.CenterV,
+                    //    new ShapeId(ShapeType.Layer, geom.InternalId),
+                    //    fontSize: 16);
+                    //AddDimensionalChainsVertical(geom.Rectangle.TopLeft, new[] { geom.Rectangle.Height }, 40, true);
+                    AddDimensionalChainsHorizontal(geom.Rectangle.TopLeft, new[] { geom.Rectangle.Width }, 50, oneCmConversion: SizeOf1Cm, drawBelow: false);
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
                 {
+                    // Single Layers Dim Chain
                     DrawSingleDimChain(geom.Rectangle.RightLine,
                         40,
                         Math.Round(geom.Rectangle.Height / SizeOf1Cm, 2).ToString(),
                         geom.BorderPen.Brush,
                         TextAlignment.Left | TextAlignment.CenterV,
-                        new ShapeId(ShapeType.Layer, geom.InternalId),
-                        fontSize: 16);
+                        shp: new ShapeId(ShapeType.Layer, geom.InternalId));
                 }
 
                 ZIndex = 2;
-                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, fontSize, geom.BorderPen.Brush, geom.Opacity, new ShapeId(ShapeType.Layer, geom.InternalId));
+                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: new ShapeId(ShapeType.Layer, geom.InternalId));
             }
+
+            // Full Element Dim Chain
             DrawSingleDimChain(elementBounds.RightLine,
                 110,
                 Math.Round(elementBounds.Height / SizeOf1Cm, 2).ToString(),
-                alignment: TextAlignment.Left | TextAlignment.CenterV, fontSize: 18);
+                alignment: TextAlignment.Left | TextAlignment.CenterV);
 
             if (DebugMode)
             {

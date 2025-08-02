@@ -31,6 +31,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public GLWpfControl View { get; private set; }
         public bool IsSceneInteractive { get; set; } = true;
         public bool IsViewConnected => View != null;
+        public bool IsTextSizeZoomable
+        {
+            get => SceneBuilder.IsTextSizeZoomable;
+            set => SceneBuilder.IsTextSizeZoomable = value;
+        }
         public float ZoomFactor => _zoomFactor;
 
         #endregion
@@ -40,10 +45,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private readonly OglRenderer _oglRenderer;
         private readonly TextureManager _textureManager;
         private bool _disposed;
+        private bool _dragging;
         private float _zoomFactor = 1.0f; // Used to track zoom changes
         private Vector _pan = Vector.Empty;
-        private Point _lastMousePos;
-        private bool _dragging;
+        private Point _lastMousePos = Point.Empty;
         private DateTime _lastLeftClickTime = DateTime.MinValue;
         private const int DoubleClickThresholdMs = 300;
 
@@ -123,7 +128,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             _textureManager.Dispose();
             SceneBuilder.ZoomFactor = ZoomFactor;
+
+            // IOglSceneBuilder
+            SceneBuilder.RectVertices.Clear();
+            SceneBuilder.LineVertices.Clear();
+            SceneBuilder.RectBatches.Clear();
+            SceneBuilder.LineBatches.Clear();
+            SceneBuilder.SceneShapes.Clear();
             SceneBuilder.BuildScene();
+
             Invalidate();
         }
 
