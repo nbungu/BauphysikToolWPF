@@ -38,13 +38,14 @@ void main()
         // overlay blend
         outputColor = mix(baseColor, hatch, hatch.a);
     } else if (isSdfText == 1) {
-        float sdfDist = texture(sdfFont, vTexCoord).a; // sample alpha channel (.a)
+        float sdfDist = texture(sdfFont, vTexCoord).a; // sample alpha channel (.a), (use .r or .a based on atlas export)
         float smoothing = fwidth(sdfDist) * 0.5; // dynamic smoothing based on screen-space derivatives
-        float alpha = smoothstep(0.28, 0.72, sdfDist); // Tweak the threshold: Closer to 0.5 = sharper edges
-        //float alpha = smoothstep(0.33, 0.67, sdfDist); // Tweak the threshold: Closer to 0.5 = sharper edges
-        //float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, sdfDist);
-        // Apply gamma correction for final output
-        alpha = pow(alpha, 1.0 / 1.5); // linear to sRGB gamma
+        float alpha = smoothstep(0.45, 0.52, sdfDist); // Tweak the threshold: Closer to 0.5 = sharper edges
+        
+        // Discard fragments with very low alpha (fixes visible "bounding box" around each char)
+        if (alpha < 0.01)
+            discard;
+
         outputColor = vec4(baseColor.rgb, baseColor.a * alpha);
     } else {
         outputColor = baseColor;
