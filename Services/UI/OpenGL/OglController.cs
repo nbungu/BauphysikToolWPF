@@ -26,16 +26,18 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public event Action<ShapeId>? ShapeRightClicked;
 
         #region public properties
-        
+
         public IOglSceneBuilder SceneBuilder { get; private set; }
         public GLWpfControl View { get; private set; }
         public bool IsSceneInteractive { get; set; } = true;
         public bool IsViewConnected => View != null;
+
         public bool IsTextSizeZoomable
         {
             get => SceneBuilder.IsTextSizeZoomable;
             set => SceneBuilder.IsTextSizeZoomable = value;
         }
+
         public float ZoomFactor => _zoomFactor;
 
         #endregion
@@ -82,6 +84,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             view.MouseUp += OnMouseUp;
             view.MouseMove += OnMouseMove;
             view.MouseLeave += OnMouseLeave;
+            view.KeyDown += OnKeyDown;
             view.MouseRightButtonUp += (_, __) => ResetView();
 
             view.Start(settings);
@@ -101,9 +104,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <param name="sceneBuilder"></param>
         public void SetNewSceneBuilder(IOglSceneBuilder sceneBuilder)
         {
-            if (sceneBuilder is null) throw new ArgumentNullException(nameof(sceneBuilder), "SceneBuilder cannot be null.");
-            if (!IsViewConnected) throw new InvalidOperationException("View must be connected before setting a new SceneBuilder.");
-            
+            if (sceneBuilder is null)
+                throw new ArgumentNullException(nameof(sceneBuilder), "SceneBuilder cannot be null.");
+            if (!IsViewConnected)
+                throw new InvalidOperationException("View must be connected before setting a new SceneBuilder.");
+
             sceneBuilder.TextureManager = _textureManager;
             SceneBuilder = sceneBuilder;
         }
@@ -111,12 +116,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void Invalidate() => View.InvalidateVisual();
         public void ZoomIn() => SetZoom(ZoomFactor + 0.2f);
         public void ZoomOut() => SetZoom(ZoomFactor - 0.2f);
+
         public void ResetView()
         {
             SetZoom(1.0);
             _pan = Vector.Empty;
             Invalidate();
         }
+
         public void SetZoom(double zoom)
         {
             _zoomFactor = (float)Math.Clamp(zoom, 0.4, 6.0);
@@ -187,7 +194,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                            Matrix4.CreateTranslation(1f, -1f, 0) *
                            Matrix4.CreateScale(scale) *
                            Matrix4.CreateTranslation(-1f + dx + (float)_pan.X, 1f - dy + (float)_pan.Y, 0);
-                           
+
 
             return Matrix4.CreateOrthographicOffCenter(0, ctrlW, ctrlH, 0, zIndexStart, zIndexEnd) * view;
         }
@@ -205,6 +212,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             View.MouseUp -= OnMouseUp;
             View.MouseMove -= OnMouseMove;
             View.MouseLeave -= OnMouseLeave;
+            View.KeyDown -= OnKeyDown;
 
             Session.SelectedElementChanged -= Redraw;
             Session.SelectedLayerChanged -= Redraw;
@@ -219,7 +227,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private Point ConvertMouseToScene(Point mouse)
         {
             if (SceneBuilder.SceneBounds.Area < 1E-06) return Point.Empty; // No valid scene bounds, return empty point
-            
+
             var bounds = SceneBuilder.SceneBounds;
             float cw = (float)View.ActualWidth, ch = (float)View.ActualHeight;
             float ew = (float)bounds.Width, eh = (float)bounds.Height;
@@ -247,7 +255,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             var now = DateTime.Now;
             var cur = e.GetPosition(View).ToPoint();
-            
+
             if (e.ChangedButton == MouseButton.Middle)
             {
                 _dragging = true;
@@ -285,8 +293,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                         }
                     }
                 }
+
                 _lastLeftClickTime = now;
             }
+
             if (e.ChangedButton == MouseButton.Right)
             {
                 var pt = ConvertMouseToScene(cur);
@@ -340,6 +350,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                         return;
                     }
                 }
+
                 ToolTipService.SetToolTip(View, null);
                 Mouse.OverrideCursor = null;
             }
@@ -352,5 +363,19 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         }
 
         #endregion
+
+        private void OnKeyDown(object s, KeyEventArgs e)
+        {
+            if (e.Key == Key.Add || e.Key == Key.OemPlus)
+            {
+                ZoomIn();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Subtract || e.Key == Key.OemMinus)
+            {
+                ZoomOut();
+                e.Handled = true;
+            }
+        }
     }
 }

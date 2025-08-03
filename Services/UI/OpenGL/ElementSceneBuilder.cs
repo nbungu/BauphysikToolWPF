@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     /// </summary>
     public class ElementSceneBuilder : OglDrawingRepo, IOglSceneBuilder
     {
-        private readonly CrossSectionBuilder _crossSectionBuilder;
+        public readonly CrossSectionBuilder CrossSectionBuilder;
         private readonly int _scenePadding = 1; // Avoids clipping
 
         public Rectangle SceneBounds => GetSceneBoundaries();
@@ -25,23 +25,23 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         
         public ElementSceneBuilder(Element element, DrawingType drawingType = DrawingType.CrossSection)
         {
-            _crossSectionBuilder = new CrossSectionBuilder(element, drawingType);
+            CrossSectionBuilder = new CrossSectionBuilder(element, drawingType);
         }
 
         #region public
 
         public void BuildScene()
         {
-            _crossSectionBuilder.RebuildCrossSection();
+            CrossSectionBuilder.RebuildCrossSection();
 
-            if (!_crossSectionBuilder.DrawingGeometries.Any()) return;
+            if (!CrossSectionBuilder.DrawingGeometries.Any()) return;
             
             DebugMode = false;
-            if (_crossSectionBuilder.DrawingType == DrawingType.CrossSection)
+            if (CrossSectionBuilder.DrawingType == DrawingType.CrossSection)
             {
                 DrawFullCrossSectionScene();
             }
-            else if (_crossSectionBuilder.DrawingType == DrawingType.VerticalCut)
+            else if (CrossSectionBuilder.DrawingType == DrawingType.VerticalCut)
             {
                 DrawFullVerticalCutScene();
             }
@@ -53,13 +53,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void DrawFullVerticalCutScene()
         {
-            var elementBounds = GetContentBounds(_crossSectionBuilder.DrawingGeometries);
+            var elementBounds = GetContentBounds(CrossSectionBuilder.DrawingGeometries);
 
             ZIndex = 0;
             AddLine(elementBounds.TopLine, style: LineStyle.Dashed);
             AddLine(elementBounds.BottomLine, style: LineStyle.Dashed);
 
-            foreach (var geom in _crossSectionBuilder.DrawingGeometries)
+            foreach (var geom in CrossSectionBuilder.DrawingGeometries)
             {
                 ZIndex = -1;
                 AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity, geom.ShapeId);
@@ -111,7 +111,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
 
             AddDimensionalChainsHorizontal(elementBounds.TopLeft,
-                _crossSectionBuilder.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.Layer).Select(geom => geom.Rectangle.Width).ToArray(),
+                CrossSectionBuilder.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.Layer).Select(geom => geom.Rectangle.Width).ToArray(),
                 50,
                 oneCmConversion: SizeOf1Cm);
 
@@ -138,13 +138,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void DrawFullCrossSectionScene()
         {
-            var elementBounds = GetContentBounds(_crossSectionBuilder.DrawingGeometries);
+            var elementBounds = GetContentBounds(CrossSectionBuilder.DrawingGeometries);
 
             ZIndex = 0;
             AddLine(elementBounds.LeftLine, style: LineStyle.Dashed);
             AddLine(elementBounds.RightLine, style: LineStyle.Dashed);
 
-            foreach (var geom in _crossSectionBuilder.DrawingGeometries)
+            foreach (var geom in CrossSectionBuilder.DrawingGeometries)
             {
                 int fontSize = 48;
                 string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
@@ -189,22 +189,30 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 }
             }
 
+            double[] intervals;
+
             // Vertical full element
             DrawSingleDimChain(elementBounds.RightLine, 120, NumberConverter.ConvertToString(elementBounds.Height / SizeOf1Cm),
                 alignment: TextAlignment.Left | TextAlignment.CenterV);
 
             // Vertical Layers
-            var intervals = MeasurementDrawing.GetMeasurementChainIntervals(_crossSectionBuilder.DrawingGeometries.Where(g => g.ShapeId.Type == ShapeType.Layer), Axis.Z, false);
-            AddDimensionalChainsVertical(elementBounds.Right, intervals, 50, false, SizeOf1Cm);
+            if (CrossSectionBuilder.DrawingGeometries.Count > 1)
+            {
+                intervals = MeasurementDrawing.GetMeasurementChainIntervals(CrossSectionBuilder.DrawingGeometries.Where(g => g.ShapeId.Type == ShapeType.Layer), Axis.Z, false);
+                AddDimensionalChainsVertical(elementBounds.Right, intervals, 40, false, SizeOf1Cm);
+            }
+            
+            // Sub Constructions
+            if (CrossSectionBuilder.DrawingGeometries.Any(g => g.ShapeId.Type == ShapeType.SubConstructionLayer))
+            {
+                // Vertical Sub Constructions
+                intervals = MeasurementDrawing.GetMeasurementChainIntervals(CrossSectionBuilder.DrawingGeometries, Axis.Z, true);
+                AddDimensionalChainsVertical(elementBounds.Left, intervals, 40, true, SizeOf1Cm);
 
-            // Vertical Sub Constructions
-            intervals = MeasurementDrawing.GetMeasurementChainIntervals(_crossSectionBuilder.DrawingGeometries, Axis.Z, true);
-            AddDimensionalChainsVertical(elementBounds.Left, intervals, 50, true, SizeOf1Cm);
-
-            // Horizontal Sub Constructions
-            intervals = MeasurementDrawing.GetMeasurementChainIntervals(_crossSectionBuilder.DrawingGeometries, Axis.X, true);
-            AddDimensionalChainsHorizontal(elementBounds.Top, intervals, 50, false, SizeOf1Cm);
-
+                // Horizontal Sub Constructions
+                intervals = MeasurementDrawing.GetMeasurementChainIntervals(CrossSectionBuilder.DrawingGeometries, Axis.X, true);
+                AddDimensionalChainsHorizontal(elementBounds.Top, intervals, 40, false, SizeOf1Cm);
+            }
 
             if (DebugMode)
             {

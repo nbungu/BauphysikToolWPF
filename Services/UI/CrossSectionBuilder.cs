@@ -30,7 +30,21 @@ namespace BauphysikToolWPF.Services.UI
 
         public Element Element { get; set; }
         public Rectangle CanvasSize { get; set; }
-        public DrawingType DrawingType { get; set; }
+        private DrawingType _drawingType = DrawingType.CrossSection;
+
+        public DrawingType DrawingType
+        {
+            get => _drawingType;
+            set
+            {
+                if (value == DrawingType.CrossSection)
+                    CanvasSize = new Rectangle(new Point(0, 0), 880, 400);
+                else if (value == DrawingType.VerticalCut)
+                    CanvasSize = new Rectangle(new Point(0, 0), 400, 880);
+                else CanvasSize = new Rectangle(new Point(0, 0), 880, 880);
+                _drawingType = value;
+            }
+        }
         public AlignmentVariant Alignment { get; set; }
         public List<IDrawingGeometry> DrawingGeometries { get; private set; }
         public bool LastDrawingSuccessful { get; private set; }
@@ -39,7 +53,6 @@ namespace BauphysikToolWPF.Services.UI
         {
             Element = new Element();
             DrawingType = DrawingType.CrossSection;
-            CanvasSize = new Rectangle(new Point(0, 0), 880, 400);
             Alignment = AlignmentVariant.EvenSpacingCentered;
             DrawingGeometries = new List<IDrawingGeometry>();
         }
@@ -48,11 +61,6 @@ namespace BauphysikToolWPF.Services.UI
         {
             Element = element;
             DrawingType = type;
-            if (DrawingType == DrawingType.CrossSection)
-                CanvasSize = new Rectangle(new Point(0, 0), 880, 400);
-            else if (DrawingType == DrawingType.VerticalCut)
-                CanvasSize = new Rectangle(new Point(0, 0), 400, 880);
-            else CanvasSize = new Rectangle(new Point(0, 0), 880, 880);
             Alignment = AlignmentVariant.EvenSpacingCentered;
             DrawingGeometries = GetDrawing();
         }
@@ -60,8 +68,8 @@ namespace BauphysikToolWPF.Services.UI
         public CrossSectionBuilder(Element? element, Rectangle canvasSize, DrawingType drawingType, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {
             Element = element ?? throw new ArgumentNullException(nameof(element), "Element cannot be null.");
-            CanvasSize = canvasSize;
             DrawingType = drawingType;
+            CanvasSize = canvasSize;
             Alignment = variant;
             DrawingGeometries = GetDrawing();
         }

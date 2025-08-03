@@ -24,8 +24,7 @@
     <Grid Background="{StaticResource PrimaryLightBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="40"/>
-            <RowDefinition Height=".35*" MinHeight="240"/>
-            <RowDefinition Height=".55*" MinHeight="240"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*" MinWidth="320"/>
@@ -33,7 +32,7 @@
         </Grid.ColumnDefinitions>
 
         <!--Top -->
-        <Border Grid.ColumnSpan="2" Background="{StaticResource PrimaryMediumBrush}">
+        <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                     <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
@@ -51,60 +50,47 @@
             </Grid>
         </Border>
 
-        <Label Grid.Column="0" Grid.Row="1" Content="Querschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16"/>
-
         <!--Cross Section Image-->
-        <Grid Grid.Column="0" Grid.Row="1" Margin="16,32,16,16" ClipToBounds="True">
-
+        <Grid Grid.Column="0" Grid.Row="1" Margin="16" ClipToBounds="True">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
 
-            <Label Grid.Row="0" Content="Innen" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
-            <Label Grid.Row="2" Content="Außen" VerticalAlignment="Top" HorizontalAlignment="Center"/>
-            <Label Grid.Row="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Label Grid.Row="0" Grid.Column="1" Content="Innen" Visibility="{Binding CrossSectionLabelsVisibility}" VerticalAlignment="Bottom" HorizontalAlignment="Center"/>
+            <Label Grid.Row="2" Grid.Column="1" Content="Außen" Visibility="{Binding CrossSectionLabelsVisibility}" VerticalAlignment="Top" HorizontalAlignment="Center"/>
 
-            <Grid Grid.Row="1" Margin="8">
-                <glWpfControl:GLWpfControl x:Name="OpenTkControlHorizontal"/>
+            <Label Grid.Row="1" Grid.Column="0" Content="Innen" Visibility="{Binding VerticalCutLabelsVisibility}" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+            <Label Grid.Row="1" Grid.Column="2" Content="Außen" Visibility="{Binding VerticalCutLabelsVisibility}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+
+            <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" >
+                <RadioButton IsChecked="{Binding IsCrossSectionChecked}" GroupName="View" Content="Querschnitt" Style="{StaticResource RadioButton01_B}" Margin="0,4,4,0"/>
+                <RadioButton IsChecked="{Binding IsVerticalCutChecked}" GroupName="View" Content="Vertikalschnitt" Style="{StaticResource RadioButton01_B}" Margin="4,4,0,0"/>
+            </StackPanel>
+
+            <Label Grid.Row="1" Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+
+            <Grid Grid.Row="1" Grid.Column="1" Margin="8">
+                <glWpfControl:GLWpfControl x:Name="OpenTkControl"/>
             </Grid>
 
-        </Grid>
-
-        <!--GridSplitter - Horizontal-->
-        <GridSplitter Grid.Column="0" Grid.Row="2" Height="6" Margin="124, -3, 16,0" HorizontalAlignment="Stretch" VerticalAlignment="Top" Style="{StaticResource GridSplitterStyleDotted}" />
-        <Label Grid.Column="0" Grid.Row="2" Content="Vertikalschnitt" FontWeight="Bold" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="16, -16, 0,0"/>
-
-        <!--Vertical Cut Image-->
-        <Grid Grid.Column="0" Grid.Row="2" Margin="16" ClipToBounds="True">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <Label Grid.Column="0" Content="Innen" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                <Label Grid.Column="2" Content="Außen" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                <Label Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-
-                <Grid Grid.Column="1" Margin="8">
-                    <glWpfControl:GLWpfControl x:Name="OpenTkControlVertical"/>
-                </Grid>
-
-            </Grid>
         </Grid>
 
         <!--Grid Splitter-->
-        <controls:ExpandableGridSplitter Grid.Row="1" Grid.Column="1" Grid.RowSpan="2"
+        <controls:ExpandableGridSplitter Grid.Row="1" Grid.Column="1"
                                          HorizontalAlignment="Left"
                                          VerticalAlignment="Stretch"
                                          Width="22"
                                          Background="Transparent"
                                          Margin="-11,16,0,16"/>
 
-        <Grid Grid.Row="1" Grid.Column="1" Grid.RowSpan="2" Margin="16">
+        <Grid Grid.Row="1" Grid.Column="1" Margin="16">
             <ScrollViewer VerticalScrollBarVisibility="Hidden" CanContentScroll="False" PreviewMouseWheel="UIElement_OnPreviewMouseWheel">
                 <StackPanel>
                     <controls:Gauge Title="U-Wert:"
