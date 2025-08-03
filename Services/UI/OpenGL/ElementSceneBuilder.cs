@@ -107,7 +107,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 }
                 
                 ZIndex = 2;
-                AddLayerTextMarker(markerPos, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: new ShapeId(ShapeType.Layer, geom.InternalId));
+                AddLayerTextMarker(markerPos, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: new ShapeId(ShapeType.Annotation, geom.InternalId));
             }
 
             AddDimensionalChainsHorizontal(elementBounds.TopLeft,
@@ -146,7 +146,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             foreach (var geom in _crossSectionBuilder.DrawingGeometries)
             {
-                ZIndex = -1;
+                if (geom.ShapeId.Type == ShapeType.Layer) ZIndex = -2;
+                else if (geom.ShapeId.Type == ShapeType.SubConstructionLayer) ZIndex = -1;
+                
                 AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity, geom.ShapeId);
 
                 // When highlighted
@@ -167,6 +169,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
                 int fontSize = 20;
                 string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
+
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
                     ZIndex = 0;
@@ -175,36 +178,35 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     fontSize = 18;
                     layerNumber += "b";
                     // Single Sub Construction Dim Chain
-                    //DrawSingleDimChain(geom.Rectangle.LeftLine,
-                    //    -40,
-                    //    Math.Round(geom.Rectangle.Height / SizeOf1Cm, 2).ToString(),
-                    //    geom.BorderPen.Brush,
-                    //    TextAlignment.Right | TextAlignment.CenterV,
-                    //    new ShapeId(ShapeType.Layer, geom.InternalId),
-                    //    fontSize: 16);
-                    //AddDimensionalChainsVertical(geom.Rectangle.TopLeft, new[] { geom.Rectangle.Height }, 40, true);
-                    AddDimensionalChainsHorizontal(geom.Rectangle.TopLeft, new[] { geom.Rectangle.Width }, 50, oneCmConversion: SizeOf1Cm, drawBelow: false);
+                    DrawSingleDimChain(geom.Rectangle.TopLine,
+                        20,
+                        NumberConverter.ConvertToString(geom.Rectangle.Width / SizeOf1Cm),
+                        Brushes.DimGray, TextAlignment.Bottom | TextAlignment.CenterH, shp: new ShapeId(ShapeType.DimensionalChain, geom.InternalId));
+
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
                 {
                     // Single Layers Dim Chain
                     DrawSingleDimChain(geom.Rectangle.RightLine,
                         40,
-                        Math.Round(geom.Rectangle.Height / SizeOf1Cm, 2).ToString(),
+                        NumberConverter.ConvertToString(geom.Rectangle.Height / SizeOf1Cm),
                         geom.BorderPen.Brush,
                         TextAlignment.Left | TextAlignment.CenterV,
-                        shp: new ShapeId(ShapeType.Layer, geom.InternalId));
+                        shp: new ShapeId(ShapeType.DimensionalChain, geom.InternalId));
                 }
 
                 ZIndex = 2;
-                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: new ShapeId(ShapeType.Layer, geom.InternalId));
+                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: geom.ShapeId);
             }
-
             // Full Element Dim Chain
             DrawSingleDimChain(elementBounds.RightLine,
-                110,
-                Math.Round(elementBounds.Height / SizeOf1Cm, 2).ToString(),
+                120,
+                NumberConverter.ConvertToString(elementBounds.Height / SizeOf1Cm),
                 alignment: TextAlignment.Left | TextAlignment.CenterV);
+
+            var test = MeasurementDrawing.GetMeasurementChainIntervals(_crossSectionBuilder.DrawingGeometries, Axis.X, true);
+            AddDimensionalChainsHorizontal(elementBounds.Y, test, 50, oneCmConversion: SizeOf1Cm);
+
 
             if (DebugMode)
             {

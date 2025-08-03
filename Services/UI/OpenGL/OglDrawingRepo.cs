@@ -1,9 +1,9 @@
 ﻿using BauphysikToolWPF.Models.UI;
 using BT.Geometry;
 using OpenTK.Mathematics;
-using PdfSharp.Drawing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -26,6 +26,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public List<(int? TextureId, int Count)> RectBatches { get; } = new();
         public List<(float LineWidth, int Count)> LineBatches { get; } = new();
         public List<IDrawingGeometry> SceneShapes { get; } = new();
+
+        #region Basics
 
         public int AddRectangle(Rectangle rect, Brush bgColor, Brush? textureBrush = null, HatchFitMode mode = HatchFitMode.FitToHeight, double opacity = 1.0, ShapeId? shp = null)
         {
@@ -88,20 +90,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (shp is ShapeId id) SceneShapes.Add(new DrawingGeometry(id, rect, ZIndex));
 
             return vertexStartIndex;
-        }
-
-        public void AddLayerTextMarker(Point pt, string text, Brush color, int fontSize = 24, double opacity = 1.0, ShapeId? shp = null)
-        {
-            if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
-
-            var charLength = text.Length;
-            var zoomFactor = IsTextSizeZoomable ? (1 / ZoomFactor) : 1.0;
-            AddCircle(pt, (fontSize / 2 + 2 * charLength) * zoomFactor, Brushes.White, color, opacity: opacity);
-            // Make the circles behave like if a layer is clicked
-            if (shp is ShapeId id) SceneShapes.Add(new DrawingGeometry(id, Rectangle.FromCircle(pt, (fontSize / 2 + 2 * charLength) * zoomFactor), ZIndex));
-
-            ZIndex++;
-            AddText(text, pt, color, fontSize, 1.0, TextAlignment.Center);
         }
         
         public void AddRectangle(IDrawingGeometry geom)
@@ -247,151 +235,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             LineBatches.Add(((float)pen.Thickness, 2));
         }
 
-        public void AddDimensionalChainsHorizontal(Point ptStart, double[] xIncrements, double distance, int fontSize = 24, bool drawBelow = false, double oneCmConversion = 1)
-        {
-            if (xIncrements is null || xIncrements.Length < 1) return;
-
-            var xCoords = new List<double> { ptStart.X };
-            for (int i = 0; i < xIncrements.Length; i++)
-            {
-                double lastX = xCoords[^1];
-                double nextX = lastX + xIncrements[i];
-                xCoords.Add(nextX);
-            }
-            if (drawBelow) xCoords.Reverse();
-            for (int i = 0; i < xCoords.Count - 1; i++)
-            {
-                double startX = xCoords[i];
-                double endX = xCoords[i + 1];
-                var startPt = new Point(startX, ptStart.Y);
-                var endPt = new Point(endX, ptStart.Y);
-                var widthInCm = Math.Round(new Line(startPt, endPt).Length / oneCmConversion, 2).ToString();
-
-                // Only last one is a full chain, others are just start ticks
-                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, widthInCm, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH, fontSize);
-                else
-                {
-                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, widthInCm, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH, fontSize);
-                }
-            }
-        }
-
-        public void AddDimensionalChainsVertical(Point ptStart, double[] yIncrements, double distance, bool drawLeft = true, double oneCmConversion = 1)
-        {
-            if (yIncrements is null || yIncrements.Length < 1) return;
-
-            var yCoords = new List<double> { ptStart.Y };
-            for (int i = 0; i < yIncrements.Length; i++)
-            {
-                double lastY = yCoords[^1];
-                double nextY = lastY + yIncrements[i];
-                yCoords.Add(nextY);
-            }
-
-            if (drawLeft) yCoords.Reverse();
-
-            for (int i = 0; i < yCoords.Count - 1; i++)
-            {
-                double startY = yCoords[i];
-                double endY = yCoords[i + 1];
-                var startPt = new Point(ptStart.X, startY);
-                var endPt = new Point(ptStart.X, endY);
-                var heightInCm = Math.Round(new Line(startPt, endPt).Length / oneCmConversion, 2).ToString();
-
-                // Only last one is a full chain, others are just start ticks
-                if (i == yCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, heightInCm, alignment: TextAlignment.CenterV | (drawLeft ? TextAlignment.Right : TextAlignment.Left));
-                else
-                {
-                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, heightInCm, alignment: TextAlignment.CenterV | (drawLeft ? TextAlignment.Right : TextAlignment.Left));
-                }
-            }
-        }
-
-        private void DrawSingleDimChainOnlyStartTick(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 24, ShapeId? shp = null)
-        {
-            if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
-
-            lineColor ??= Brushes.Black;
-            int tickSize = 8;
-            var line = new Line(ptStart, ptEnd);
-
-            // Direction vector from start to end
-            var vect = ptEnd - ptStart;
-            var length = vect.Length;
-            if (length == 0) return;
-
-            // Normalize direction and get perpendicular (normal) vector
-            var vectNormalized = vect.Normalize();
-            var nVect = vectNormalized.Normal();
-
-            // Offset the dimension line by the normal * distance
-            var offsetLine = new Line(line, distance);
-
-            // Draw the main dimension line
-            AddLine(offsetLine, lineColor);
-
-            // Perpendicular ticks at both ends (along the normal direction)
-            var tickOffset = nVect * tickSize;
-
-            AddLine(offsetLine.Start - tickOffset, offsetLine.Start + tickOffset.Scale(2), lineColor);
-
-            // 45° diagonal cross ticks (offset ±45° between normal and direction)
-            var diagOffset = (vectNormalized - nVect).Normalize() * tickSize;
-
-            AddLine(offsetLine.Start - diagOffset, offsetLine.Start + diagOffset, lineColor);
-            
-            var pos = offsetLine.GetCenter() - tickOffset * 2;
-            AddText(displayedValue, pos, lineColor, fontSize: fontSize, alignment: alignment, shp: shp);
-        }
-
-        public void DrawSingleDimChain(Line line, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 24, ShapeId? shp = null)
-        {
-            DrawSingleDimChain(line.Start, line.End, distance, displayedValue, lineColor, alignment, fontSize, shp);
-        }
-
-        public void DrawSingleDimChain(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 24, ShapeId? shp = null)
-        {
-            if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
-            
-            lineColor ??= Brushes.Black;
-            int tickSize = 8;
-            var line = new Line(ptStart, ptEnd);
-
-            // Direction vector from start to end
-            var vect = ptEnd - ptStart;
-            var length = vect.Length;
-            if (length == 0) return;
-
-            // Normalize direction and get perpendicular (normal) vector
-            var vectNormalized = vect.Normalize();
-            var nVect = vectNormalized.Normal();
-
-            // Offset the dimension line by the normal * distance
-            var offsetLine = new Line(line, distance);
-
-            // Draw the main dimension line
-            AddLine(offsetLine, lineColor);
-
-            // Perpendicular ticks at both ends (along the normal direction)
-            var tickOffset = nVect * tickSize;
-
-            AddLine(offsetLine.Start - tickOffset, offsetLine.Start + tickOffset.Scale(2), lineColor);
-            AddLine(offsetLine.End - tickOffset, offsetLine.End + tickOffset.Scale(2), lineColor);
-
-            // 45° diagonal cross ticks (offset ±45° between normal and direction)
-            var diagOffset = (vectNormalized - nVect).Normalize() * tickSize;
-
-            AddLine(offsetLine.Start - diagOffset, offsetLine.Start + diagOffset, lineColor);
-            AddLine(offsetLine.End - diagOffset, offsetLine.End + diagOffset, lineColor);
-
-            var pos = offsetLine.GetCenter() - tickOffset * 2;
-            AddText(displayedValue, pos, lineColor, fontSize: fontSize, alignment: alignment, shp: shp);
-        }
-
         public void AddCircle(Point center, double radius, Brush fillColor, Brush? outlineColor = null, int outlineWidth = 1, int segments = 32, double opacity = 1.0)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
-            
+
             // Apply opacity to fill color
             if (fillColor is SolidColorBrush solidFill)
             {
@@ -434,6 +281,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
         }
 
+        #endregion
+
+        #region Text
+
         /// <summary>
         /// rasterized texture-based text
         /// </summary>
@@ -445,7 +296,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void AddTextRasterized(Point position, string text, Brush color, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
-            
+
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
@@ -509,7 +360,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void AddTextVectorized(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
-            
+
             if (string.IsNullOrWhiteSpace(text))
                 return;
 
@@ -562,7 +413,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void AddText(string text, Point position, Brush brush, double fontSize = 16, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
-            
+
             if (string.IsNullOrWhiteSpace(text) || brush is not SolidColorBrush solidBrush || SdfFont is null)
                 return;
 
@@ -634,6 +485,187 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             // Add to Shapes if a ShapeId is given
             if (shp is ShapeId id) SceneShapes.Add(new DrawingGeometry(id, boundingBox, ZIndex));
         }
+
+        public void AddLayerTextMarker(Point pt, string text, Brush color, int fontSize = 24, double opacity = 1.0, ShapeId? shp = null)
+        {
+            if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
+
+            var charLength = text.Length;
+            var zoomFactor = IsTextSizeZoomable ? (1 / ZoomFactor) : 1.0;
+            AddCircle(pt, (fontSize / 2 + 2 * charLength) * zoomFactor, Brushes.White, color, opacity: opacity);
+            // Make the circles behave like if a layer is clicked
+            if (shp is ShapeId id) SceneShapes.Add(new DrawingGeometry(id, Rectangle.FromCircle(pt, (fontSize / 2 + 2 * charLength) * zoomFactor), ZIndex));
+
+            ZIndex++;
+            AddText(text, pt, color, fontSize, 1.0, TextAlignment.Center);
+        }
+
+        #endregion
+
+        #region Dimensional Chains
+
+        public void AddDimensionalChainsHorizontal(Point ptStart, double[] xIncrements, double distance, int fontSize = 24, bool drawBelow = false, double oneCmConversion = 1)
+        {
+            if (xIncrements is null || xIncrements.Length < 1) return;
+
+            var xCoords = new List<double> { ptStart.X };
+            for (int i = 0; i < xIncrements.Length; i++)
+            {
+                double lastX = xCoords[^1];
+                double nextX = lastX + xIncrements[i];
+                xCoords.Add(nextX);
+            }
+            AddDimensionalChainsHorizontal(ptStart.Y, xCoords.ToArray(), distance, fontSize, drawBelow, oneCmConversion);
+        }
+
+        public void AddDimensionalChainsHorizontal(double yValue, double[] xValues, double distance, int fontSize = 24, bool drawBelow = false, double oneCmConversion = 1)
+        {
+            if (xValues is null || xValues.Length <= 1) return;
+
+            var xCoords = xValues.ToList();
+
+            if (drawBelow) xCoords.Reverse();
+            for (int i = 0; i < xCoords.Count - 1; i++)
+            {
+                double startX = xCoords[i];
+                double endX = xCoords[i + 1];
+                var startPt = new Point(startX, yValue);
+                var endPt = new Point(endX, yValue);
+                var widthInCm = new Line(startPt, endPt).Length / oneCmConversion;
+
+                string formattedValueString = NumberConverter.ConvertToString(widthInCm, 2);
+
+                // Only last one is a full chain, others are just start ticks
+                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH, fontSize);
+                else
+                {
+                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH, fontSize);
+                }
+            }
+        }
+
+        public void AddDimensionalChainsVertical(double xValue, double[] yValues, double distance, bool drawLeft = true, double oneCmConversion = 1)
+        {
+            if (yValues is null || yValues.Length <= 1) return;
+
+            var yCoords = yValues.ToList();
+            
+            if (drawLeft) yCoords.Reverse();
+            for (int i = 0; i < yCoords.Count - 1; i++)
+            {
+                double startY = yCoords[i];
+                double endY = yCoords[i + 1];
+                var startPt = new Point(xValue, startY);
+                var endPt = new Point(xValue, endY);
+
+                var heightInCm = new Line(startPt, endPt).Length / oneCmConversion;
+                string formattedValueString = NumberConverter.ConvertToString(heightInCm, 2);
+
+                // Only last one is a full chain, others are just start ticks
+                if (i == yCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, alignment: TextAlignment.CenterV | (drawLeft ? TextAlignment.Right : TextAlignment.Left));
+                else
+                {
+                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, alignment: TextAlignment.CenterV | (drawLeft ? TextAlignment.Right : TextAlignment.Left));
+                }
+            }
+        }
+
+        public void AddDimensionalChainsVertical(Point ptStart, double[] yIncrements, double distance, bool drawLeft = true, double oneCmConversion = 1)
+        {
+            if (yIncrements is null || yIncrements.Length < 1) return;
+
+            var yCoords = new List<double> { ptStart.Y };
+            for (int i = 0; i < yIncrements.Length; i++)
+            {
+                double lastY = yCoords[^1];
+                double nextY = lastY + yIncrements[i];
+                yCoords.Add(nextY);
+            }
+            AddDimensionalChainsVertical(ptStart.Y, yCoords.ToArray(), distance, drawLeft, oneCmConversion);
+        }
+        
+        public void DrawSingleDimChain(Line line, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 24, ShapeId? shp = null)
+        {
+            DrawSingleDimChain(line.Start, line.End, distance, displayedValue, lineColor, alignment, fontSize, shp);
+        }
+
+        public void DrawSingleDimChain(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 24, ShapeId? shp = null)
+        {
+            if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
+            
+            lineColor ??= Brushes.Black;
+            int tickSize = 10;
+            var line = new Line(ptStart, ptEnd);
+
+            // Direction vector from start to end
+            var vect = ptEnd - ptStart;
+            var length = vect.Length;
+            if (length == 0) return;
+
+            // Normalize direction and get perpendicular (normal) vector
+            var vectNormalized = vect.Normalize();
+            var nVect = vectNormalized.Normal();
+
+            // Offset the dimension line by the normal * distance
+            var offsetLine = new Line(line, distance);
+
+            // Draw the main dimension line
+            AddLine(offsetLine, lineColor);
+
+            // Perpendicular ticks at both ends (along the normal direction)
+            var tickOffset = nVect * tickSize;
+
+            AddLine(offsetLine.Start - tickOffset, offsetLine.Start + tickOffset.Scale(2), lineColor);
+            AddLine(offsetLine.End - tickOffset, offsetLine.End + tickOffset.Scale(2), lineColor);
+
+            // 45° diagonal cross ticks (offset ±45° between normal and direction)
+            var diagOffset = (vectNormalized - nVect).Normalize() * tickSize;
+
+            AddLine(offsetLine.Start - diagOffset, offsetLine.Start + diagOffset, lineColor);
+            AddLine(offsetLine.End - diagOffset, offsetLine.End + diagOffset, lineColor);
+
+            var pos = offsetLine.GetCenter() - tickOffset * 2;
+            AddText(displayedValue, pos, lineColor, fontSize: fontSize, alignment: alignment, shp: shp);
+        }
+
+        private void DrawSingleDimChainOnlyStartTick(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 24, ShapeId? shp = null)
+        {
+            if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
+
+            lineColor ??= Brushes.Black;
+            int tickSize = 10;
+            var line = new Line(ptStart, ptEnd);
+
+            // Direction vector from start to end
+            var vect = ptEnd - ptStart;
+            var length = vect.Length;
+            if (length == 0) return;
+
+            // Normalize direction and get perpendicular (normal) vector
+            var vectNormalized = vect.Normalize();
+            var nVect = vectNormalized.Normal();
+
+            // Offset the dimension line by the normal * distance
+            var offsetLine = new Line(line, distance);
+
+            // Draw the main dimension line
+            AddLine(offsetLine, lineColor);
+
+            // Perpendicular ticks at both ends (along the normal direction)
+            var tickOffset = nVect * tickSize;
+
+            AddLine(offsetLine.Start - tickOffset, offsetLine.Start + tickOffset.Scale(2), lineColor);
+
+            // 45° diagonal cross ticks (offset ±45° between normal and direction)
+            var diagOffset = (vectNormalized - nVect).Normalize() * tickSize;
+
+            AddLine(offsetLine.Start - diagOffset, offsetLine.Start + diagOffset, lineColor);
+
+            var pos = offsetLine.GetCenter() - tickOffset * 2;
+            AddText(displayedValue, pos, lineColor, fontSize: fontSize, alignment: alignment, shp: shp);
+        }
+
+        #endregion
 
         #region private
 

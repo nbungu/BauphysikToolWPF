@@ -409,12 +409,16 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void OnShapeDoubleClicked(ShapeId shape)
         {
-            var targetLayer = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null);
-            if (targetLayer != null)
+            var layerShapeTarget = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null);
+            
+            if (layerShapeTarget != null)
             {
-                var index = LayerList.IndexOf(targetLayer);
+                var index = LayerList.IndexOf(layerShapeTarget);
                 SelectedLayerIndex = index;
-                LayerDoubleClick();
+
+                if (shape.Type == ShapeType.SubConstructionLayer) EditSubConstructionLayer(SelectedLayer?.InternalId ?? -1);
+                else if (shape.Type == ShapeType.DimensionalChain) LayerDoubleClick(); // TODO: Put focus on thickness TextBox;
+                else LayerDoubleClick();
             }
             Console.WriteLine($"VM Shape double clicked: {shape}");
         }

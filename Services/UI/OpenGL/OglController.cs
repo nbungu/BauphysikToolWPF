@@ -136,6 +136,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             SceneBuilder.LineBatches.Clear();
             SceneBuilder.SceneShapes.Clear();
             SceneBuilder.BuildScene();
+            // Sort the list in place by z-Index for correct hit testing
+            SceneBuilder.SceneShapes.Sort((a, b) => b.ZIndex.CompareTo(a.ZIndex));
 
             Invalidate();
         }
@@ -238,11 +240,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 // Double click
                 if ((now - _lastLeftClickTime).TotalMilliseconds <= DoubleClickThresholdMs)
                 {
-                    foreach (var geom in SceneBuilder.SceneShapes)
+                    foreach (var shp in SceneBuilder.SceneShapes)
                     {
-                        if (geom.Rectangle.Contains(pt))
+                        if (shp.Rectangle.Contains(pt))
                         {
-                            ShapeDoubleClicked?.Invoke(geom.ShapeId); // <-- Your new event
+                            ShapeDoubleClicked?.Invoke(shp.ShapeId); // <-- Your new event
                             break;
                         }
                     }
@@ -250,11 +252,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 // Single Click
                 else
                 {
-                    foreach (var geom in SceneBuilder.SceneShapes)
+                    foreach (var shp in SceneBuilder.SceneShapes)
                     {
-                        if (geom.Rectangle.Contains(pt))
+                        if (shp.Rectangle.Contains(pt))
                         {
-                            ShapeClicked?.Invoke(geom.ShapeId);
+                            ShapeClicked?.Invoke(shp.ShapeId);
                             break;
                         }
                     }
@@ -264,11 +266,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (e.ChangedButton == MouseButton.Right)
             {
                 var pt = ConvertMouseToScene(cur);
-                foreach (var geom in SceneBuilder.SceneShapes)
+                foreach (var shp in SceneBuilder.SceneShapes)
                 {
-                    if (geom.Rectangle.Contains(pt))
+                    if (shp.Rectangle.Contains(pt))
                     {
-                        ShapeRightClicked?.Invoke(geom.ShapeId);
+                        ShapeRightClicked?.Invoke(shp.ShapeId);
                         break;
                     }
                 }

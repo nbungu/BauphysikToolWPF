@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using Point = System.Windows.Point;
 
 namespace BauphysikToolWPF.Services.UI
@@ -36,6 +37,13 @@ namespace BauphysikToolWPF.Services.UI
             if (removeFirstAndLast) intervals = RemoveFirstAndLast(intervals);
             return GetMeasurementDrawing(intervals, intervalDirection);
         }
+        public static double[] GetMeasurementChainIntervals(IEnumerable<IDrawingGeometry> geometries, Axis intervalDirection = Axis.Z, bool removeFirstAndLast = false)
+        {
+            var intervals = GetGeometryIntervals(geometries, intervalDirection);
+            if (intervals.Length == 0) return Array.Empty<double>();
+            if (removeFirstAndLast) intervals = RemoveFirstAndLast(intervals);
+            return intervals;
+        }
 
         public static DrawingGeometry GetMeasurementChain(double[] intervals, Axis intervalDirection = Axis.Z, bool removeFirstAndLast = false)
         {
@@ -51,14 +59,17 @@ namespace BauphysikToolWPF.Services.UI
             DrawingGeometry chainGeometry = new DrawingGeometry();
             if (builderService.DrawingType == DrawingType.CrossSection)
             {
-                chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true);
+                chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.SubConstructionLayer), Axis.X, true);
+                //chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true);
             }
             else if (builderService.DrawingType == DrawingType.VerticalCut)
             {
-                chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z, true);
+                chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.SubConstructionLayer), Axis.Z, true);
+                //chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z, true);
             }
             return chainGeometry.IsValid ? chainGeometry.ToList() : new List<DrawingGeometry>(0);
         }
+
         public static List<DrawingGeometry> GetFullLayerMeasurementChain(CrossSectionBuilder builderService)
         {
             // Only show when more than one layer is present, otherwise no need to show full measurement chain

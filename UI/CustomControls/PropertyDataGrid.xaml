@@ -40,6 +40,7 @@
             <Setter Property="GridLinesVisibility" Value="All"/>
             <Setter Property="VerticalGridLinesBrush" Value="{StaticResource PrimaryBorderBrush}"/>
             <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource PrimaryBorderBrush}"/>
+            <Setter Property="Focusable" Value="False" />
         </Style>
 
         <Style x:Key="DataGridRowStyle" TargetType="{x:Type DataGridRow}">
@@ -61,6 +62,8 @@
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Focusable" Value="False" />
+            <Setter Property="IsTabStop" Value="False" />
             <Style.Triggers>
 
                 <DataTrigger Binding="{Binding IsReadonly}" Value="True">
@@ -79,6 +82,7 @@
             <Setter Property="FontWeight" Value="Bold" />
             <Setter Property="Visibility" Value="Collapsed" />
             <Setter Property="Width" Value="Auto" />
+            <Setter Property="Focusable" Value="False" />
             <!-- Set the width of the row header -->
             <Setter Property="Template">
                 <Setter.Value>
@@ -113,13 +117,13 @@
                 <DataGridTemplateColumn Width="Auto" IsReadOnly="True" MinWidth="80">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Grid HorizontalAlignment="Stretch">
+                            <Grid HorizontalAlignment="Stretch" Focusable="False">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
-                                <Label Grid.Column="0" Content="{Binding Name}" FontWeight="Regular" ToolTip="{Binding Comment}" FontSize="12" HorizontalAlignment="Left" VerticalAlignment="Stretch"/>
-                                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBaseText}" SubscriptText="{Binding SymbolSubscriptText}" VerticalAlignment="Stretch" Margin="0,0,8,0" FontWeight="DemiBold" Foreground="{StaticResource PrimaryDarkBrush}"/>
+                                <Label Grid.Column="0" Content="{Binding Name}" FontWeight="Regular" ToolTip="{Binding Comment}" FontSize="12" HorizontalAlignment="Left" IsTabStop="False" Focusable="False" VerticalAlignment="Stretch"/>
+                                <controls:SubscriptLabel Grid.Column="1" BaseText="{Binding SymbolBaseText}" SubscriptText="{Binding SymbolSubscriptText}" Focusable="False" IsTabStop="False" VerticalAlignment="Stretch" Margin="0,0,8,0" FontWeight="DemiBold" Foreground="{StaticResource PrimaryDarkBrush}"/>
                             </Grid>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
