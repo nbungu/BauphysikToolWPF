@@ -51,6 +51,8 @@
   <ItemGroup>
     <None Remove="Resources\Fonts\segoeUI.fnt" />
     <None Remove="Resources\Fonts\segoeUI.png" />
+    <None Remove="Resources\Fonts\segoeUI1.png" />
+    <None Remove="Resources\Fonts\segoeUI2.png" />
     <None Remove="Resources\Fonts\segoeUI_0.png" />
     <None Remove="Resources\Fonts\segoeUI_1.png" />
     <None Remove="Resources\Fonts\segoeUI_2.png" />

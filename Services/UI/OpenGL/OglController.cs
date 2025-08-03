@@ -183,7 +183,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var zIndexStart = -100f;
             var zIndexEnd = 100f;
 
-            Matrix4 view = Matrix4.CreateTranslation(originOffsetX, originOffsetY, 0) *
+            Matrix4 view = Matrix4.CreateTranslation(-originOffsetX, originOffsetY, 0) *
                            Matrix4.CreateTranslation(1f, -1f, 0) *
                            Matrix4.CreateScale(scale) *
                            Matrix4.CreateTranslation(-1f + dx + (float)_pan.X, 1f - dy + (float)_pan.Y, 0);
@@ -191,6 +191,30 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             return Matrix4.CreateOrthographicOffCenter(0, ctrlW, ctrlH, 0, zIndexStart, zIndexEnd) * view;
         }
+
+        public void Dispose()
+        {
+            if (_disposed) return;
+
+            _oglRenderer.Dispose();
+            _textureManager.Dispose();
+
+            View.Render -= OnRender;
+            View.MouseWheel -= OnWheel;
+            View.MouseDown -= OnMouseDown;
+            View.MouseUp -= OnMouseUp;
+            View.MouseMove -= OnMouseMove;
+            View.MouseLeave -= OnMouseLeave;
+
+            Session.SelectedElementChanged -= Redraw;
+            Session.SelectedLayerChanged -= Redraw;
+            Session.SelectedLayerIndexChanged -= Redraw;
+
+            _disposed = true;
+            Console.WriteLine("[OGL] Renderer disposed");
+        }
+
+        #region Mouse Events
 
         private Point ConvertMouseToScene(Point mouse)
         {
@@ -327,26 +351,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             ToolTipService.SetToolTip(View, null);
         }
 
-        public void Dispose()
-        {
-            if (_disposed) return;
-
-            _oglRenderer.Dispose();
-            _textureManager.Dispose();
-
-            View.Render -= OnRender;
-            View.MouseWheel -= OnWheel;
-            View.MouseDown -= OnMouseDown;
-            View.MouseUp -= OnMouseUp;
-            View.MouseMove -= OnMouseMove;
-            View.MouseLeave -= OnMouseLeave;
-
-            Session.SelectedElementChanged -= Redraw;
-            Session.SelectedLayerChanged -= Redraw;
-            Session.SelectedLayerIndexChanged -= Redraw;
-
-            _disposed = true;
-            Console.WriteLine("[OGL] Renderer disposed");
-        }
+        #endregion
     }
 }

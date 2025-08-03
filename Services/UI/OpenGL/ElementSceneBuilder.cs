@@ -81,7 +81,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 }
 
                 Point markerPos = geom.Rectangle.Center;
-                int fontSize = 20;
+                int fontSize = 48;
                 string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
@@ -92,7 +92,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                         AddLine(geom.Rectangle.BottomLine);
                     }
                     layerNumber += "b";
-                    fontSize = 18;
+                    fontSize = 40;
                     markerPos += new Vector(0, 2*fontSize); // Adjust position for sub-construction layers
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
@@ -146,12 +146,33 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             foreach (var geom in _crossSectionBuilder.DrawingGeometries)
             {
-                if (geom.ShapeId.Type == ShapeType.Layer) ZIndex = -2;
-                else if (geom.ShapeId.Type == ShapeType.SubConstructionLayer) ZIndex = -1;
-                
-                AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity, geom.ShapeId);
+                int fontSize = 48;
+                string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
 
-                // When highlighted
+                // Rectangle
+                if (geom.ShapeId.Type == ShapeType.Layer)
+                {
+                    ZIndex = -2;
+                    AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity, geom.ShapeId);
+                }
+                else if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
+                {
+                    ZIndex = -1;
+                    AddRectangle(geom.Rectangle, geom.BackgroundColor, geom.TextureBrush, geom.HatchFitMode, geom.Opacity, geom.ShapeId);
+                    
+                    ZIndex = 0;
+                    AddLine(geom.Rectangle.LeftLine);
+                    AddLine(geom.Rectangle.RightLine);
+
+                    fontSize = 40;
+                    layerNumber += "b";
+                }
+
+                // Layer Marker
+                ZIndex = 2;
+                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: geom.ShapeId);
+
+                // Rectangle Borders
                 if (geom.BorderPen.Brush != Brushes.Black)
                 {
                     ZIndex = 1;
@@ -166,46 +187,23 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     AddLine(geom.Rectangle.TopLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
                     AddLine(geom.Rectangle.BottomLine, geom.BorderPen.Brush, LineStyle.Solid, geom.BorderPen.Thickness);
                 }
-
-                int fontSize = 20;
-                string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
-
-                if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
-                {
-                    ZIndex = 0;
-                    AddLine(geom.Rectangle.LeftLine);
-                    AddLine(geom.Rectangle.RightLine);
-                    fontSize = 18;
-                    layerNumber += "b";
-                    // Single Sub Construction Dim Chain
-                    DrawSingleDimChain(geom.Rectangle.TopLine,
-                        20,
-                        NumberConverter.ConvertToString(geom.Rectangle.Width / SizeOf1Cm),
-                        Brushes.DimGray, TextAlignment.Bottom | TextAlignment.CenterH, shp: new ShapeId(ShapeType.DimensionalChain, geom.InternalId));
-
-                }
-                else if (geom.ShapeId.Type == ShapeType.Layer)
-                {
-                    // Single Layers Dim Chain
-                    DrawSingleDimChain(geom.Rectangle.RightLine,
-                        40,
-                        NumberConverter.ConvertToString(geom.Rectangle.Height / SizeOf1Cm),
-                        geom.BorderPen.Brush,
-                        TextAlignment.Left | TextAlignment.CenterV,
-                        shp: new ShapeId(ShapeType.DimensionalChain, geom.InternalId));
-                }
-
-                ZIndex = 2;
-                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: geom.ShapeId);
             }
-            // Full Element Dim Chain
-            DrawSingleDimChain(elementBounds.RightLine,
-                120,
-                NumberConverter.ConvertToString(elementBounds.Height / SizeOf1Cm),
+
+            // Vertical full element
+            DrawSingleDimChain(elementBounds.RightLine, 120, NumberConverter.ConvertToString(elementBounds.Height / SizeOf1Cm),
                 alignment: TextAlignment.Left | TextAlignment.CenterV);
 
-            var test = MeasurementDrawing.GetMeasurementChainIntervals(_crossSectionBuilder.DrawingGeometries, Axis.X, true);
-            AddDimensionalChainsHorizontal(elementBounds.Y, test, 50, oneCmConversion: SizeOf1Cm);
+            // Vertical Layers
+            var intervals = MeasurementDrawing.GetMeasurementChainIntervals(_crossSectionBuilder.DrawingGeometries.Where(g => g.ShapeId.Type == ShapeType.Layer), Axis.Z, false);
+            AddDimensionalChainsVertical(elementBounds.Right, intervals, 50, false, SizeOf1Cm);
+
+            // Vertical Sub Constructions
+            intervals = MeasurementDrawing.GetMeasurementChainIntervals(_crossSectionBuilder.DrawingGeometries, Axis.Z, true);
+            AddDimensionalChainsVertical(elementBounds.Left, intervals, 50, true, SizeOf1Cm);
+
+            // Horizontal Sub Constructions
+            intervals = MeasurementDrawing.GetMeasurementChainIntervals(_crossSectionBuilder.DrawingGeometries, Axis.X, true);
+            AddDimensionalChainsHorizontal(elementBounds.Top, intervals, 50, false, SizeOf1Cm);
 
 
             if (DebugMode)

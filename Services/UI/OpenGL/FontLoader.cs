@@ -20,13 +20,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public float LineHeight { get; }
         public float OffsetX { get; }
         public float OffsetY { get; }
-        public SdfFont(Dictionary<char, GlyphInfo> glyphs, int textureId, float lineHeight, float offX, float offY)
+        public float Padding { get; }
+        public SdfFont(Dictionary<char, GlyphInfo> glyphs, int textureId, float lineHeight, float offX = 0f, float offY = 0f, float padding = 0f)
         {
             Glyphs = glyphs;
             TextureId = textureId;
             LineHeight = lineHeight;
             OffsetX = offX;
             OffsetY = offY;
+            Padding = padding;
         }
     }
 
@@ -40,7 +42,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var glyphs = new Dictionary<char, GlyphInfo>();
             float lineHeight = 32; // fallback default
             int texWidth = 1, texHeight = 1;
-            float paddingX = -2, paddingY = -24; // See in Hiero Padding Settings
+
+            // See in Hiero Padding Settings:
+            float paddingTop = 12, paddingBottom = 12, paddingLeft = 12, paddingRight = 12; 
+            float paddingX = 0, paddingY = 0;
 
             string dir = Path.GetDirectoryName(fntPath)!;
             string[] lines = File.ReadAllLines(fntPath);
@@ -70,7 +75,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     float height = GetInt(line, "height");
                     float xoffset = GetInt(line, "xoffset");
                     float yoffset = GetInt(line, "yoffset");
-                    float xadvance = GetInt(line, "xadvance");
+                    float xadvance = GetInt(line, "xadvance") - (paddingLeft + paddingRight); // or + xoffset to subtract padding
 
                     var bounds = new RectangleF(xoffset, yoffset, width, height);
                     var uvRect = new RectangleF(x / texWidth, y / texHeight, width / texWidth, height / texHeight);
@@ -94,7 +99,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             int texId = texManager.CreateFontTextureFromBitmap(fontAtlasBitmap);
 
-            return new SdfFont(glyphs, texId, lineHeight, paddingX, paddingY); // , offsetX, offsetY
+            return new SdfFont(glyphs, texId, lineHeight, 0f, 0f, 12f);
         }
 
         private static int GetInt(string line, string key) =>
