@@ -14,7 +14,7 @@ namespace BauphysikToolWPF.Models.UI
         // Instance Variables
         public DrawingGeometrySortingType SortingType { get; set; }
 
-        public DrawingGeometryComparer(DrawingGeometrySortingType sortingType = DrawingGeometrySortingType.ZIndexAscending)
+        public DrawingGeometryComparer(DrawingGeometrySortingType sortingType)
         {
             SortingType = sortingType;
         }
