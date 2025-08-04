@@ -75,7 +75,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 Profile = ContextProfile.Core,
                 ContextFlags = ContextFlags.Default,
                 RenderContinuously = false,
-                Samples = 8,
+                //Samples = 8,
             };
 
             view.Render += OnRender;

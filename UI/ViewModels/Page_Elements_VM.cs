@@ -90,15 +90,15 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             var props = new List<IPropertyItem>()
             {
-                new PropertyItem<bool>("Inhomogen", () => Session.SelectedElement.IsInhomogeneous),
-                new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValueUserDef, value => Session.SelectedElement.UValueUserDef = value) { DecimalPlaces = 3 },
-                new PropertyItem<double>(Symbol.RValueElement, () => Session.SelectedElement.RGesValueUserDef, value => Session.SelectedElement.RGesValueUserDef = value),
-                new PropertyItem<double>(Symbol.RValueTotal, () => Session.SelectedElement.RTotValueUserDef, value => Session.SelectedElement.RTotValueUserDef = value),
-                new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedElement.AreaMassDensUserDef, value => Session.SelectedElement.AreaMassDensUserDef = value),
-                new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedElement.SdThicknessCustom, value => Session.SelectedElement.SdThicknessCustom = value) { DecimalPlaces = 1 },
+                new PropertyItem<bool>("Inhomogen", () => SelectedElement.IsInhomogeneous),
+                new PropertyItem<double>(Symbol.UValue, () => SelectedElement.UValueUserDef, value => SelectedElement.UValueUserDef = value) { DecimalPlaces = 3 },
+                new PropertyItem<double>(Symbol.RValueElement, () => SelectedElement.RGesValueUserDef, value => SelectedElement.RGesValueUserDef = value),
+                new PropertyItem<double>(Symbol.RValueTotal, () => SelectedElement.RTotValueUserDef, value => SelectedElement.RTotValueUserDef = value),
+                new PropertyItem<double>(Symbol.AreaMassDensity, () => SelectedElement.AreaMassDensUserDef, value => SelectedElement.AreaMassDensUserDef = value),
+                new PropertyItem<double>(Symbol.SdThickness, () => SelectedElement.SdThicknessCustom, value => SelectedElement.SdThicknessCustom = value) { DecimalPlaces = 1 },
             };
-            var propertyTitle = Session.SelectedElement.Name + " - Eigenschaften";
-            var windowTitle = Session.SelectedElement.Name + " - Eigenschaften";
+            var propertyTitle = SelectedElement.Name + " - Eigenschaften";
+            var windowTitle = SelectedElement.Name + " - Eigenschaften";
             _dialogService.ShowPropertyBagDialog(props, propertyTitle, windowTitle);
         }
 
