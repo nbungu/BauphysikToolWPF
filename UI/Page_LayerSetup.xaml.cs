@@ -11,7 +11,6 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
 namespace BauphysikToolWPF.UI
-
 {
     public partial class Page_LayerSetup : UserControl
     {
@@ -19,6 +18,7 @@ namespace BauphysikToolWPF.UI
 
         private readonly OglController _oglController;
         private readonly Element _element; // Selected Element from Session
+        private readonly Page_LayerSetup_VM _viewModel; // Selected Element from Session
 
         #endregion
 
@@ -35,26 +35,30 @@ namespace BauphysikToolWPF.UI
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
+            // OpenGL Controller
             _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
             _oglController.Redraw(); // Initial render to display the scene
-
+            
             // View Model
-            this.DataContext = new Page_LayerSetup_VM(_oglController);
+            _viewModel = new Page_LayerSetup_VM(_oglController);
+            this.DataContext = _viewModel;
+
+            // Event Handlers
             this.IsVisibleChanged += UserControl_IsVisibleChanged; // Save current canvas as image, just before closing Page_LayerSetup Page
+            this.KeyDown += Page_LayerSetup_KeyDown; // Handle KeyDown events for this page
         }
 
         // Save current canvas as image, just before closing Page_LayerSetup Page
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            // Only save if leaving this page
             _element.UnselectAllLayers();
 
             if (!IsVisible && _element.IsValid)
             {
                 _oglController.Dispose();
-                // TODO: 
-                //element.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
 
+                // TODO: Save Document Image
+                //element.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
                 //ImageCreator.RenderElementPreviewImage(element);
                 //element.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
             }
@@ -64,6 +68,21 @@ namespace BauphysikToolWPF.UI
         private void numericData_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
+        }
+
+        private void Page_LayerSetup_KeyDown(object sender, KeyEventArgs e)
+        {
+            // Handle Escape key to close the dropdown of ComboBox
+            if (e.Key == Key.Delete)
+            {
+                // Removes selected Layer
+                _viewModel.DeleteLayer();
+            }
+            else if (e.Key == Key.Enter)
+            {
+                // Edits the selected Layer
+                _viewModel.EditLayer();
+            }
         }
 
         /// <summary>

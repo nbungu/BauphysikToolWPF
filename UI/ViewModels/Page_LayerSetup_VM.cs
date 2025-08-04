@@ -59,7 +59,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void AddLayer() => _dialogService.ShowAddNewLayerDialog();
 
         [RelayCommand]
-        private void EditLayer() => _dialogService.ShowEditLayerDialog(SelectedLayer?.InternalId ?? -1);
+        public void EditLayer() => _dialogService.ShowEditLayerDialog(SelectedLayer?.InternalId ?? -1);
 
         [RelayCommand]
         private void AddSubConstructionLayer(int targetLayerInternalId = -1)
@@ -76,7 +76,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DeleteSubConstructionLayer(int targetLayerInternalId = -1) 
+        public void DeleteSubConstructionLayer(int targetLayerInternalId = -1) 
         {
             if (targetLayerInternalId == -1) targetLayerInternalId = SelectedLayer?.InternalId ?? -1;
             var targetLayer = _element.Layers.FirstOrDefault(l => l?.InternalId == targetLayerInternalId, null);
@@ -85,7 +85,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DeleteLayer()
+        public void DeleteLayer()
         {
             if (SelectedLayer is null) return;
             var newIndex = SelectedLayerIndex - 1;
@@ -95,7 +95,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DeleteAllLayer()
+        public void DeleteAllLayer()
         {
             MessageBoxResult result = _dialogService.ShowDeleteConfirmationDialog();
 
