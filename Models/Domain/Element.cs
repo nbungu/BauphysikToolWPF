@@ -169,18 +169,55 @@ namespace BauphysikToolWPF.Models.Domain
 
         #region Custom User defined Result values
 
+        public bool IsUserDefValuesEnabled => _rGesValueUserDef != null || _rTotValueUserDef != null || _qValueUserDef != null || _uValueUserDef != null || _areaMassDensUserDef != null || _sdThicknessUserDef != null;
+
+        private double? _rGesValueUserDef; // nullable to track user assignment
         [JsonIgnore]
-        public double RGesValueUserDef { get; set; } // R_ges in m²K/W
+        public double RGesValueUserDef
+        {
+            get => _rGesValueUserDef ?? RGesValue; // fallback to default if not set
+            set => _rGesValueUserDef = value;
+        }
+
+        private double? _rTotValueUserDef;
         [JsonIgnore]
-        public double RTotValueUserDef { get; set; } // R_tot in m²K/W
+        public double RTotValueUserDef
+        {
+            get => _rTotValueUserDef ?? RTotValue;
+            set => _rTotValueUserDef = value;
+        }
+
+        private double? _qValueUserDef;
         [JsonIgnore]
-        public double QValueUserDef { get; set; } // q in W/m²
+        public double QValueUserDef
+        {
+            get => _qValueUserDef ?? QValue;
+            set => _qValueUserDef = value;
+        }
+
+        private double? _uValueUserDef;
         [JsonIgnore]
-        public double UValueUserDef { get; set; } // U in W/m²K
+        public double UValueUserDef
+        {
+            get => _uValueUserDef ?? UValue;
+            set => _uValueUserDef = value;
+        }
+
+        private double? _areaMassDensUserDef;
         [JsonIgnore]
-        public double AreaMassDensUserDef { get; set; } // m' in kg/m²
+        public double AreaMassDensUserDef
+        {
+            get => _areaMassDensUserDef ?? AreaMassDens;
+            set => _areaMassDensUserDef = value;
+        }
+
+        private double? _sdThicknessUserDef;
         [JsonIgnore]
-        public double SdThicknessCustom { get; set; } // sd in m
+        public double SdThicknessUserDef
+        {
+            get => _sdThicknessUserDef ?? SdThickness;
+            set => _sdThicknessUserDef = value;
+        }
 
         #endregion
 

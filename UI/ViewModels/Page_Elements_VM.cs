@@ -30,7 +30,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.SelectedProject.AssignInternalIdsToElements();
             Session.SelectedProject.AssignAsParentToElements();
             Session.SelectedProject.SortElements(SelectedSorting);
-            Session.SelectedProject.RenderMissingElementImages(); // If Images are not rendered yet
+            //Session.SelectedProject.RenderMissingElementImages(); // If Images are not rendered yet
 
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
@@ -90,20 +90,17 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             var props = new List<IPropertyItem>()
             {
-                new PropertyItem<bool>("Inhomogen", () => SelectedElement.IsInhomogeneous),
-                new PropertyItem<double>(Symbol.UValue, () => SelectedElement.UValueUserDef, value => SelectedElement.UValueUserDef = value) { DecimalPlaces = 3 },
-                new PropertyItem<double>(Symbol.RValueElement, () => SelectedElement.RGesValueUserDef, value => SelectedElement.RGesValueUserDef = value),
-                new PropertyItem<double>(Symbol.RValueTotal, () => SelectedElement.RTotValueUserDef, value => SelectedElement.RTotValueUserDef = value),
-                new PropertyItem<double>(Symbol.AreaMassDensity, () => SelectedElement.AreaMassDensUserDef, value => SelectedElement.AreaMassDensUserDef = value),
-                new PropertyItem<double>(Symbol.SdThickness, () => SelectedElement.SdThicknessCustom, value => SelectedElement.SdThicknessCustom = value) { DecimalPlaces = 1 },
+                new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValueUserDef, value => Session.SelectedElement.UValueUserDef = value) { DecimalPlaces = 3 },
+                new PropertyItem<double>(Symbol.RValueElement, () => Session.SelectedElement.RGesValueUserDef, value => Session.SelectedElement.RGesValueUserDef = value),
+                new PropertyItem<double>(Symbol.RValueTotal, () => Session.SelectedElement.RTotValueUserDef, value => Session.SelectedElement.RTotValueUserDef = value),
+                new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedElement.AreaMassDensUserDef, value => Session.SelectedElement.AreaMassDensUserDef = value),
+                new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedElement.SdThicknessUserDef, value => Session.SelectedElement.SdThicknessUserDef = value) { DecimalPlaces = 1 },
             };
-            var propertyTitle = SelectedElement.Name + " - Eigenschaften";
-            var windowTitle = SelectedElement.Name + " - Eigenschaften";
+            var propertyTitle = "Bauphysikalische Daten";
+            var windowTitle = Session.SelectedElement.Name + " - bauphysikalische Daten überschreiben";
             _dialogService.ShowPropertyBagDialog(props, propertyTitle, windowTitle);
         }
-
         
-
         [RelayCommand]
         private void CopyElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
