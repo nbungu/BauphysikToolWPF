@@ -761,7 +761,7 @@
             </Style.Triggers>
         </Style>
 
-        <!--Custom RadioButton01_A: Exclusive Group, Checkstates etc.-->
+        <!--Custom RadioButton01_A: Icon, Exclusive Group, Checkstates etc.-->
         <Style x:Key="RadioButton01_A" TargetType="{x:Type RadioButton}">
             <!--Set default properties of the button-->
             <Setter Property="BorderThickness" Value="2"/>
@@ -795,7 +795,8 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
-        <!--Custom RadioButton01_A: Exclusive Group, Checkstates etc.-->
+
+        <!--Custom RadioButton01_B: NO Icon, Exclusive Group, Checkstates etc.-->
         <Style x:Key="RadioButton01_B" TargetType="{x:Type RadioButton}">
             <!--Set default properties of the button-->
             <Setter Property="BorderThickness" Value="2"/>

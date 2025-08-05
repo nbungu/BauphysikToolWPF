@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using Point = System.Windows.Point;
 
 namespace BauphysikToolWPF.Services.UI
@@ -36,6 +37,13 @@ namespace BauphysikToolWPF.Services.UI
             if (removeFirstAndLast) intervals = RemoveFirstAndLast(intervals);
             return GetMeasurementDrawing(intervals, intervalDirection);
         }
+        public static double[] GetMeasurementChainIntervals(IEnumerable<IDrawingGeometry> geometries, Axis intervalDirection = Axis.Z, bool removeFirstAndLast = false)
+        {
+            var intervals = GetGeometryIntervals(geometries, intervalDirection);
+            if (intervals.Length == 0) return Array.Empty<double>();
+            if (removeFirstAndLast) intervals = RemoveFirstAndLast(intervals);
+            return intervals;
+        }
 
         public static DrawingGeometry GetMeasurementChain(double[] intervals, Axis intervalDirection = Axis.Z, bool removeFirstAndLast = false)
         {
@@ -45,46 +53,49 @@ namespace BauphysikToolWPF.Services.UI
         }
         
 
-        public static List<DrawingGeometry> GetSubConstructionMeasurementChain(CrossSectionDrawing drawingService)
+        public static List<DrawingGeometry> GetSubConstructionMeasurementChain(CrossSectionBuilder builderService)
         {
-            if (drawingService.Element.Layers.Count == 0) return new List<DrawingGeometry>(0);
+            if (builderService.Element.Layers.Count == 0) return new List<DrawingGeometry>(0);
             DrawingGeometry chainGeometry = new DrawingGeometry();
-            if (drawingService.DrawingType == DrawingType.CrossSection)
+            if (builderService.DrawingType == DrawingType.CrossSection)
             {
-                chainGeometry = GetMeasurementChain(drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true);
+                chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.SubConstructionLayer), Axis.X, true);
+                //chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.X, true);
             }
-            else if (drawingService.DrawingType == DrawingType.VerticalCut)
+            else if (builderService.DrawingType == DrawingType.VerticalCut)
             {
-                chainGeometry = GetMeasurementChain(drawingService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z, true);
+                chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.SubConstructionLayer), Axis.Z, true);
+                //chainGeometry = GetMeasurementChain(builderService.DrawingGeometries.Where(g => g.ZIndex == 1), Axis.Z, true);
             }
             return chainGeometry.IsValid ? chainGeometry.ToList() : new List<DrawingGeometry>(0);
         }
-        public static List<DrawingGeometry> GetFullLayerMeasurementChain(CrossSectionDrawing drawingService)
+
+        public static List<DrawingGeometry> GetFullLayerMeasurementChain(CrossSectionBuilder builderService)
         {
             // Only show when more than one layer is present, otherwise no need to show full measurement chain
-            if (drawingService.Element.Layers.Count <= 1) return new List<DrawingGeometry>(0);
+            if (builderService.Element.Layers.Count <= 1) return new List<DrawingGeometry>(0);
             DrawingGeometry chainGeometry = new DrawingGeometry();
-            if (drawingService.DrawingType == DrawingType.CrossSection)
+            if (builderService.DrawingType == DrawingType.CrossSection)
             {
-                chainGeometry = GetMeasurementChain(new[] { 0, drawingService.CanvasSize.Height }, Axis.Z);
+                chainGeometry = GetMeasurementChain(new[] { 0, builderService.CanvasSize.Height }, Axis.Z);
             }
-            else if (drawingService.DrawingType == DrawingType.VerticalCut)
+            else if (builderService.DrawingType == DrawingType.VerticalCut)
             {
-                chainGeometry = GetMeasurementChain(new[] { 0, drawingService.CanvasSize.Width }, Axis.X);
+                chainGeometry = GetMeasurementChain(new[] { 0, builderService.CanvasSize.Width }, Axis.X);
             }
             return chainGeometry.IsValid ? chainGeometry.ToList() : new List<DrawingGeometry>(0);
         }
-        public static List<DrawingGeometry> GetLayerMeasurementChain(CrossSectionDrawing drawingService)
+        public static List<DrawingGeometry> GetLayerMeasurementChain(CrossSectionBuilder builderService)
         {
-            if (drawingService.Element.Layers.Count == 0) return new List<DrawingGeometry>(0);
+            if (builderService.Element.Layers.Count == 0) return new List<DrawingGeometry>(0);
             DrawingGeometry chainGeometry = new DrawingGeometry();
-            if (drawingService.DrawingType == DrawingType.CrossSection)
+            if (builderService.DrawingType == DrawingType.CrossSection)
             {
-                chainGeometry = GetMeasurementChain(drawingService.Element.Layers, Axis.Z);
+                chainGeometry = GetMeasurementChain(builderService.Element.Layers, Axis.Z);
             }
-            else if (drawingService.DrawingType == DrawingType.VerticalCut)
+            else if (builderService.DrawingType == DrawingType.VerticalCut)
             {
-                chainGeometry = GetMeasurementChain(drawingService.Element.Layers, Axis.X);
+                chainGeometry = GetMeasurementChain(builderService.Element.Layers, Axis.X);
             }
             return chainGeometry.IsValid ? chainGeometry.ToList() : new List<DrawingGeometry>(0);
         }
@@ -120,11 +131,11 @@ namespace BauphysikToolWPF.Services.UI
                 if (i > 0)
                 {
                     // Draw the Label
-                    var intervalWidthInCm = Math.Round(Math.Abs(intervals[i] - selectedInterval) / CrossSectionDrawing.SizeOf1Cm, 2);
+                    var intervalWidthInCm = Math.Round(Math.Abs(intervals[i] - selectedInterval) / CrossSectionBuilder.SizeOf1Cm, 2);
                     if (intervalWidthInCm > 0)
                     {
                         string formattedValueString = NumberConverter.ConvertToString(intervalWidthInCm, 2);
-                        var label = new FormattedText(formattedValueString, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 14, Brushes.DimGray, 1.0);
+                        var label = new FormattedText(formattedValueString, CultureInfo.CurrentCulture, FlowDirection.LeftToRight, new Typeface("Arial"), 14, System.Windows.Media.Brushes.DimGray, 1.0);
 
                         // Create the text drawing
                         var labelOrigin = (selectedInterval + intervals[i]) / 2;
@@ -158,9 +169,9 @@ namespace BauphysikToolWPF.Services.UI
             // Use the lines as the Drawing's content
             var brush = new DrawingBrush
             {
-                Drawing = new GeometryDrawing(Brushes.DimGray, new Pen(Brushes.DimGray, 0.6), hatchContent),
+                Drawing = new GeometryDrawing(System.Windows.Media.Brushes.DimGray, new Pen(System.Windows.Media.Brushes.DimGray, 0.6), hatchContent),
             };
-            geometry.DrawingBrush = brush;
+            geometry.TextureBrush = brush;
 
             return geometry;
         }

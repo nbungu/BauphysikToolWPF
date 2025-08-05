@@ -119,7 +119,7 @@
                         Need to pass the DataContext in a different way: e.g. using PlacementTarget and the Tag property to expose the DataBinding (FO0_LandingPage_VM).
                         The Tag Property can be used to hold any kind of user specified Data.-->
                         <ContextMenu x:Name="WrapPanel_ContextMenu">
-                            <MenuItem Header="Eigenschaften" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <MenuItem Header="Informationen" Command="{Binding Path=PlacementTarget.Tag.EditElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Edit_B}" />
                                 </MenuItem.Icon>

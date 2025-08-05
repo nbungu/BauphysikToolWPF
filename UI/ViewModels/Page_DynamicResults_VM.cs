@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
         private Element _element;
-        private readonly CrossSectionDrawing _verticalCut;
+        private readonly CrossSectionBuilder _verticalCut;
         private static DynamicTempCalc _dynamicTempCalc = new DynamicTempCalc();
 
         public Page_DynamicResults_VM()
@@ -33,7 +33,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             _element = Session.SelectedElement;
 
-            _verticalCut = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
+            _verticalCut = new CrossSectionBuilder(_element, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
             _dynamicTempCalc = new DynamicTempCalc(_element, _element.ThermalCalcConfig);
             _dynamicTempCalc.CalculateHomogeneous();
             _dynamicTempCalc.CalculateDynamicValues();

@@ -1,6 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using BauphysikToolWPF.Services.UI.OpenGL;
+using System.Collections.Generic;
 using System.Windows.Media;
-using BT.Geometry;
+using BauphysikToolWPF.Services.UI;
+using Brush = System.Windows.Media.Brush;
+using Brushes = System.Windows.Media.Brushes;
+using Rectangle = BT.Geometry.Rectangle;
 
 namespace BauphysikToolWPF.Models.UI
 {
@@ -12,30 +16,41 @@ namespace BauphysikToolWPF.Models.UI
 
         // Appearance of the Layer as a 2D Rectangle
         public Brush BackgroundColor { get; set; } = Brushes.Transparent;
-        public Brush DrawingBrush { get; set; } = new DrawingBrush();
-        public Brush RectangleBorderColor { get; set; } = Brushes.Transparent;
-        public double RectangleBorderThickness { get; set; }
-        public DoubleCollection RectangleStrokeDashArray { get; set; } = new DoubleCollection();
+        public Brush TextureBrush { get; set; } = new DrawingBrush();
+        public Pen BorderPen { get; set; } = Pens.GetSolidPen(Brushes.Black, 1.0);
         public double Opacity { get; set; } = 1.0;
         public int ZIndex { get; set; }
         public object Tag { get; set; } = new object();
+        public int? TextureId { get; set; }
         public bool IsValid => Rectangle != Rectangle.Empty;
+        public ShapeId ShapeId { get; set; }
+        public int VertexStartIndex { get; set; } = -1; // For OpenGL rendering, where this shape's vertices start in the vertex buffer
+        public HatchFitMode HatchFitMode { get; set; }
 
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
         {
             InternalId = drawingGeometry.InternalId;
             Rectangle = drawingGeometry.Rectangle;
             BackgroundColor = drawingGeometry.BackgroundColor;
-            DrawingBrush = drawingGeometry.DrawingBrush;
-            RectangleBorderColor = drawingGeometry.RectangleBorderColor;
-            RectangleBorderThickness = drawingGeometry.RectangleBorderThickness;
-            RectangleStrokeDashArray = drawingGeometry.RectangleStrokeDashArray;
+            TextureBrush = drawingGeometry.TextureBrush;
+            BorderPen = drawingGeometry.BorderPen;
             Opacity = drawingGeometry.Opacity;
             ZIndex = drawingGeometry.ZIndex;
             Tag = drawingGeometry.Tag;
+            HatchFitMode = drawingGeometry.HatchFitMode;
+            ShapeId = drawingGeometry.ShapeId;
+            VertexStartIndex = drawingGeometry.VertexStartIndex;
+            TextureId = drawingGeometry.TextureId;
         }
 
         public DrawingGeometry() { }
+
+        public DrawingGeometry(ShapeId shapeId, Rectangle rectangle, int zIndex)
+        {
+            ShapeId = shapeId;
+            Rectangle = rectangle;
+            ZIndex = zIndex;
+        }
 
         public DrawingGeometry Copy()
         {

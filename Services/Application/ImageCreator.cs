@@ -8,6 +8,7 @@ using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.UI;
 using BT.Logging;
+using Brushes = System.Windows.Media.Brushes;
 
 namespace BauphysikToolWPF.Services.Application
 {
@@ -29,16 +30,10 @@ namespace BauphysikToolWPF.Services.Application
                     Brush backgroundBrush = geometry.BackgroundColor.Clone();
                     backgroundBrush.Opacity = geometry.Opacity; // Apply opacity
 
-                    // Define the pen with the stroke dash array
-                    Pen rectanglePen = new Pen(geometry.RectangleBorderColor, geometry.RectangleBorderThickness)
-                    {
-                        DashStyle = new DashStyle(geometry.RectangleStrokeDashArray, 0)
-                    };
-
                     // Zeichne das Hauptrechteck
                     drawingContext.DrawRectangle(
                         backgroundBrush,
-                        rectanglePen,
+                        geometry.BorderPen,
                         new Rect(
                             geometry.Rectangle.TopLeft.X,
                             geometry.Rectangle.TopLeft.Y,
@@ -47,9 +42,9 @@ namespace BauphysikToolWPF.Services.Application
                     );
 
                     // Falls es eine spezielle Brush (z. B. Schraffur oder Labels) gibt, zeichnen
-                    if (geometry.DrawingBrush != null)
+                    if (geometry.TextureBrush != null)
                     {
-                        Brush drawingBrush = geometry.DrawingBrush.Clone();
+                        Brush drawingBrush = geometry.TextureBrush.Clone();
                         drawingBrush.Opacity = geometry.Opacity;
 
                         drawingContext.DrawRectangle(
@@ -165,7 +160,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             // Create a CrossSectionDrawing for the selected element
             var canvasSize = new BT.Geometry.Rectangle(new BT.Geometry.Point(0, 0), 880, 400);
-            var drawingService = new CrossSectionDrawing(element, canvasSize, DrawingType.CrossSection);
+            var drawingService = new CrossSectionBuilder(element, canvasSize, DrawingType.CrossSection);
             var drawingContents = drawingService.DrawingGeometries;
             var imgWidth = (int)drawingService.CanvasSize.Width;
             var imgHeight = (int)drawingService.CanvasSize.Height;

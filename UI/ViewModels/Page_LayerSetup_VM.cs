@@ -4,8 +4,8 @@ using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using BauphysikToolWPF.UI.CustomControls;
-using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
@@ -14,35 +14,31 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using static BauphysikToolWPF.Models.UI.Enums;
-using Point = BT.Geometry.Point;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
     //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
     public partial class Page_LayerSetup_VM : ObservableObject
     {
-        private readonly CrossSectionDrawing _crossSection = new CrossSectionDrawing();
         private readonly IDialogService _dialogService;
         private readonly Element _element;
-
+        
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
-        public Page_LayerSetup_VM()
+        public Page_LayerSetup_VM(OglController scene)
         {
             if (Session.SelectedElement is null) return;
 
             _element = Session.SelectedElement;
-            _element.SortLayers();
-            _element.AssignEffectiveLayers();
-            _element.AssignInternalIdsToLayers();
-
             _dialogService = new DialogService();
-            _crossSection = new CrossSectionDrawing(_element, new Rectangle(new Point(0, 0), 880, 400), DrawingType.CrossSection);
-            
+
             // Allow child Windows to trigger UpdateAll of this Window
             Session.SelectedProjectChanged += ProjectDataChanged;
             Session.SelectedLayerChanged += LayerChanged;
             Session.SelectedElementChanged += ElementChanged;
             Session.EnvVarsChanged += EnvVarsChanged;
+
+            scene.ShapeClicked += OnShapeClicked;
+            scene.ShapeDoubleClicked += OnShapeDoubleClicked;
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += PropertyItemChanged;
@@ -63,7 +59,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void AddLayer() => _dialogService.ShowAddNewLayerDialog();
 
         [RelayCommand]
-        private void EditLayer() => _dialogService.ShowEditLayerDialog(SelectedLayer?.InternalId ?? -1);
+        public void EditLayer() => _dialogService.ShowEditLayerDialog(SelectedLayer?.InternalId ?? -1);
 
         [RelayCommand]
         private void AddSubConstructionLayer(int targetLayerInternalId = -1)
@@ -80,7 +76,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DeleteSubConstructionLayer(int targetLayerInternalId = -1) 
+        public void DeleteSubConstructionLayer(int targetLayerInternalId = -1) 
         {
             if (targetLayerInternalId == -1) targetLayerInternalId = SelectedLayer?.InternalId ?? -1;
             var targetLayer = _element.Layers.FirstOrDefault(l => l?.InternalId == targetLayerInternalId, null);
@@ -89,7 +85,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DeleteLayer()
+        public void DeleteLayer()
         {
             if (SelectedLayer is null) return;
             var newIndex = SelectedLayerIndex - 1;
@@ -99,7 +95,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DeleteAllLayer()
+        public void DeleteAllLayer()
         {
             MessageBoxResult result = _dialogService.ShowDeleteConfirmationDialog();
 
@@ -209,12 +205,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedLayer?.SubConstruction != null ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
         public Visibility NoLayersVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
-        public List<IDrawingGeometry> CrossSectionDrawing => _crossSection.DrawingGeometries;
-        public Rectangle CanvasSize => _crossSection.CanvasSize;
-        public List<DrawingGeometry> LayerMeasurement => MeasurementDrawing.GetLayerMeasurementChain(_crossSection);
-        public List<DrawingGeometry> LayerMeasurementFull => MeasurementDrawing.GetFullLayerMeasurementChain(_crossSection);
-        public List<DrawingGeometry> SubConstructionMeasurement => MeasurementDrawing.GetSubConstructionMeasurementChain(_crossSection);
-        
         public List<string> TiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Select(e => e.Name).ToList();
         public List<string> TeKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Select(e => e.Name).ToList();
         public List<string> RsiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Select(e => e.Name).ToList();
@@ -401,6 +391,33 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         #region Who triggers: Event Handlers for UI Events
 
+        private void OnShapeClicked(ShapeId shape)
+        {
+            var targetLayer = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null);
+            if (targetLayer != null)
+            {
+                var index = LayerList.IndexOf(targetLayer);
+                SelectedLayerIndex = index;
+            }
+            Console.WriteLine($"VM Shape clicked: {shape}");
+        }
+
+        private void OnShapeDoubleClicked(ShapeId shape)
+        {
+            var layerShapeTarget = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null);
+            
+            if (layerShapeTarget != null)
+            {
+                var index = LayerList.IndexOf(layerShapeTarget);
+                SelectedLayerIndex = index;
+
+                if (shape.Type == ShapeType.SubConstructionLayer) EditSubConstructionLayer(SelectedLayer?.InternalId ?? -1);
+                else if (shape.Type == ShapeType.DimensionalChain) LayerDoubleClick(); // TODO: Put focus on thickness TextBox;
+                else LayerDoubleClick();
+            }
+            Console.WriteLine($"VM Shape double clicked: {shape}");
+        }
+
         private void ProjectDataChanged()
         {
             RefreshGauges();
@@ -409,7 +426,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void ElementChanged()
         {
             RefreshGauges();
-            RefreshDrawingsFull();
             RefreshPropertyGrid();
             RefreshLayerCollection();
             RefreshElementTimeStamp();
@@ -421,7 +437,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void LayerChanged()
         {
             RefreshGauges();
-            RefreshDrawingsFull();
             RefreshPropertyGrid();
             RefreshLayerCollection();
             RefreshLayerTimeStamp();
@@ -447,7 +462,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 LayerList[i].IsSelected = (i == value);
             }
-            RefreshDrawingsLayerSelected();
+            Session.OnSelectedLayerIndexChanged();
         }
 
         #endregion
@@ -460,21 +475,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedLayer.RefreshPropertyBag();
             OnPropertyChanged(nameof(LayerPropertyBag));
             OnPropertyChanged(nameof(LayerSubConstrPropertyBag));
-        }
-
-        private void RefreshDrawingsFull()
-        {
-            _crossSection.UpdateDrawings();
-            OnPropertyChanged(nameof(CrossSectionDrawing));
-            OnPropertyChanged(nameof(CanvasSize));
-            OnPropertyChanged(nameof(LayerMeasurement));
-            OnPropertyChanged(nameof(LayerMeasurementFull));
-            OnPropertyChanged(nameof(SubConstructionMeasurement));
-        }
-        private void RefreshDrawingsLayerSelected()
-        {
-            _crossSection.UpdateDrawings();
-            OnPropertyChanged(nameof(CrossSectionDrawing));
         }
 
         private void RefreshGauges()

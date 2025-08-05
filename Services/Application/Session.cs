@@ -20,6 +20,7 @@ namespace BauphysikToolWPF.Services.Application
         public static event Notify? NewElementAdded;
         public static event Notify? ElementRemoved;
         public static event Notify? SelectedLayerChanged;
+        public static event Notify? SelectedLayerIndexChanged;
         public static event Notify? EnvelopeItemsChanged;
         public static event NotifyPageChanged? PageChanged;
         public static event EnvVarChangedHandler? EnvVarsChanged;
@@ -60,6 +61,11 @@ namespace BauphysikToolWPF.Services.Application
             if (SelectedProject == null) return;
             if (updateIsModified) SelectedProject.IsModified = true;
             SelectedLayerChanged?.Invoke();
+        }
+        public static void OnSelectedLayerIndexChanged()
+        {
+            if (SelectedProject == null) return;
+            SelectedLayerIndexChanged?.Invoke();
         }
         public static void OnEnvVarsChanged(Symbol changedVar)
         {

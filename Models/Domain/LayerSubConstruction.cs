@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using BT.Geometry;
 using System;
 using System.Collections.Generic;
@@ -9,8 +10,10 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
+using BauphysikToolWPF.Services.UI;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
+using Vector4 = OpenTK.Mathematics.Vector4;
 
 namespace BauphysikToolWPF.Models.Domain
 {
@@ -235,21 +238,25 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public Rectangle Rectangle { get; set; } = Rectangle.Empty;
         [JsonIgnore]
-        public Brush RectangleBorderColor { get; set; } = Brushes.Black;
-        [JsonIgnore]
-        public double RectangleBorderThickness { get; set; } = 0.2;
-        [JsonIgnore]
-        public DoubleCollection RectangleStrokeDashArray { get; set; } = new DoubleCollection();
+        public Pen BorderPen { get; set; } = Pens.GetSolidPen(Brushes.Black, 1.0);
         [JsonIgnore]
         public Brush BackgroundColor { get; set; } = Brushes.Transparent;
         [JsonIgnore]
-        public Brush DrawingBrush { get; set; } = new DrawingBrush();
+        public Brush TextureBrush { get; set; } = new DrawingBrush();
         [JsonIgnore]
         public double Opacity { get; set; } = 1;
         [JsonIgnore]
         public int ZIndex { get; set; } = 1;
         [JsonIgnore]
         public object Tag { get; set; } = new object();
+        [JsonIgnore]
+        public int? TextureId { get; set; }
+        [JsonIgnore]
+        public ShapeId ShapeId { get; set; }
+        [JsonIgnore]
+        public int VertexStartIndex { get; set; } // For OpenGL rendering, where this shape's vertices start in the vertex buffer
+        [JsonIgnore]
+        public HatchFitMode HatchFitMode { get; set; } = HatchFitMode.OriginalPixelSize;
 
         public IDrawingGeometry Convert()
         {
