@@ -18,8 +18,7 @@ namespace BauphysikToolWPF.Models.UI
         object Tag { get; set; }
         int? TextureId { get; set; } // Texture ID for OpenGL rendering, if applicable
         ShapeId ShapeId { get; set; } // Unique ID for this shape, used to identify it in the OpenGL scene
-        int VertexStartIndex { get; set; }
         HatchFitMode HatchFitMode { get; set; } // How to fit the hatch pattern inside the rectangle
-        IDrawingGeometry Convert();
+        IDrawingGeometry CopyGeometry();
     }
 }

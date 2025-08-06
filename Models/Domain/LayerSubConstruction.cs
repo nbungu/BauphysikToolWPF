@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using BT.Geometry;
 using System;
@@ -10,10 +11,8 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
-using BauphysikToolWPF.Services.UI;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
-using Vector4 = OpenTK.Mathematics.Vector4;
 
 namespace BauphysikToolWPF.Models.Domain
 {
@@ -254,11 +253,9 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public ShapeId ShapeId { get; set; }
         [JsonIgnore]
-        public int VertexStartIndex { get; set; } // For OpenGL rendering, where this shape's vertices start in the vertex buffer
-        [JsonIgnore]
         public HatchFitMode HatchFitMode { get; set; } = HatchFitMode.OriginalPixelSize;
 
-        public IDrawingGeometry Convert()
+        public IDrawingGeometry CopyGeometry()
         {
             return new DrawingGeometry(this);
         }

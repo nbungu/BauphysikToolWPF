@@ -24,7 +24,6 @@ namespace BauphysikToolWPF.Models.UI
         public int? TextureId { get; set; }
         public bool IsValid => Rectangle != Rectangle.Empty;
         public ShapeId ShapeId { get; set; }
-        public int VertexStartIndex { get; set; } = -1; // For OpenGL rendering, where this shape's vertices start in the vertex buffer
         public HatchFitMode HatchFitMode { get; set; }
 
         public DrawingGeometry(IDrawingGeometry drawingGeometry)
@@ -37,10 +36,9 @@ namespace BauphysikToolWPF.Models.UI
             Opacity = drawingGeometry.Opacity;
             ZIndex = drawingGeometry.ZIndex;
             Tag = drawingGeometry.Tag;
-            HatchFitMode = drawingGeometry.HatchFitMode;
-            ShapeId = drawingGeometry.ShapeId;
-            VertexStartIndex = drawingGeometry.VertexStartIndex;
             TextureId = drawingGeometry.TextureId;
+            ShapeId = drawingGeometry.ShapeId;
+            HatchFitMode = drawingGeometry.HatchFitMode;
         }
 
         public DrawingGeometry() { }
@@ -52,19 +50,9 @@ namespace BauphysikToolWPF.Models.UI
             ZIndex = zIndex;
         }
 
-        public DrawingGeometry Copy()
+        public IDrawingGeometry CopyGeometry()
         {
             return new DrawingGeometry(this);
-        }
-
-        public IDrawingGeometry Convert()
-        {
-            return new DrawingGeometry(this);
-        }
-
-        public void UpdateGeometry()
-        {
-            throw new System.NotImplementedException();
         }
 
         // For use as single collection Type in XAML Items Source of Canvas

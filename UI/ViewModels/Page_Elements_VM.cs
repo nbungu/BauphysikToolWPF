@@ -148,14 +148,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // This method will be called whenever SortingPropertyIndex changes
         // Workaround since Combobox has no Command or Click option
-        partial void OnSortingPropertyIndexChanged(int value)
-        {
-            RefreshXamlBindings();
-        }
-        partial void OnGroupingPropertyIndexChanged(int value)
-        {
-            RefreshXamlBindings();
-        }
+        partial void OnSortingPropertyIndexChanged(int value) => RefreshXamlBindings();
+
+        partial void OnGroupingPropertyIndexChanged(int value) => RefreshXamlBindings();
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
@@ -199,6 +194,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         public IEnumerable<string> GroupingProperties => ElementGroupingTypeMapping.Values; // Has to match ElementSortingType enum values (+Order)
         public ICollectionView? GroupedElements => IsGroupingEnabled && HasItems ? GetGroupedItemsSource() : null;
         public Visibility NoElementsVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
+        public List<IPropertyItem> ElementProperties => Session.SelectedElement != null ? new List<IPropertyItem>()
+        {
+            new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValueUserDef, value => Session.SelectedElement.UValueUserDef = value) { DecimalPlaces = 3 },
+            new PropertyItem<double>(Symbol.RValueElement, () => Session.SelectedElement.RGesValueUserDef, value => Session.SelectedElement.RGesValueUserDef = value),
+            new PropertyItem<double>(Symbol.RValueTotal, () => Session.SelectedElement.RTotValueUserDef, value => Session.SelectedElement.RTotValueUserDef = value),
+            new PropertyItem<double>(Symbol.AreaMassDensity, () => Session.SelectedElement.AreaMassDensUserDef, value => Session.SelectedElement.AreaMassDensUserDef = value),
+            new PropertyItem<double>(Symbol.SdThickness, () => Session.SelectedElement.SdThicknessUserDef, value => Session.SelectedElement.SdThicknessUserDef = value) { DecimalPlaces = 1 },
+            new PropertyItem<string>("Erstellt:", () => Session.SelectedElement.CreatedAtString),
+            new PropertyItem<string>("Geändert:", () => Session.SelectedElement.UpdatedAtString),
+        } : new List<IPropertyItem>();
 
         private void UpdateOnNewElementAdded()
         {
@@ -243,6 +248,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(ElementToolsAvailable));
             OnPropertyChanged(nameof(ElementInfoVisibility));
             OnPropertyChanged(nameof(NoElementsVisibility));
+            OnPropertyChanged(nameof(ElementProperties));
         }
 
         private ICollectionView GetGroupedItemsSource()

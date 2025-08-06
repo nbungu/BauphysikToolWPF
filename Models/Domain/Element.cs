@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Calculation;
 using BauphysikToolWPF.Models.Database;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using System;
@@ -8,9 +9,8 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Models.Domain.Helper;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {

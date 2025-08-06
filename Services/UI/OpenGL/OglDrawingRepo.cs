@@ -145,7 +145,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 }
             }
             var verts = CreateRectVertices(geom.Rectangle, color, texRepeatX, texRepeatY, ZIndex);
-            geom.VertexStartIndex = RectVertices.Count; // Store vertex start index in the geometry
+            //geom.VertexStartIndex = RectVertices.Count; // Store vertex start index in the geometry
             RectVertices.AddRange(verts);
             RectBatches.Add((texId, 6));
         }
@@ -518,6 +518,19 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
             AddDimensionalChainsHorizontal(ptStart.Y, xCoords.ToArray(), distance, drawBelow, oneCmConversion);
         }
+        public void AddDimensionalChainsHorizontal(Point ptStart, double[] xIncrements, double[] xDisplayValues, double distance, bool drawBelow = false)
+        {
+            if (xIncrements is null || xIncrements.Length < 1) return;
+
+            var xCoords = new List<double> { ptStart.X };
+            for (int i = 0; i < xIncrements.Length; i++)
+            {
+                double lastX = xCoords[^1];
+                double nextX = lastX + xIncrements[i];
+                xCoords.Add(nextX);
+            }
+            AddDimensionalChainsHorizontal(ptStart.Y, xCoords.ToArray(), xDisplayValues, distance, drawBelow);
+        }
 
         public void AddDimensionalChainsHorizontal(double yValue, double[] xValues, double distance, bool drawBelow = false, double oneCmConversion = 1)
         {
@@ -535,6 +548,30 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 var widthInCm = new Line(startPt, endPt).Length / oneCmConversion;
 
                 string formattedValueString = NumberConverter.ConvertToString(widthInCm, 2);
+
+                // Only last one is a full chain, others are just start ticks
+                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                else
+                {
+                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                }
+            }
+        }
+        public void AddDimensionalChainsHorizontal(double yValue, double[] xValues, double[] displayValues, double distance, bool drawBelow = false)
+        {
+            if (xValues is null || xValues.Length <= 1) return;
+
+            var xCoords = xValues.ToList();
+
+            if (drawBelow) xCoords.Reverse();
+            for (int i = 0; i < xCoords.Count - 1; i++)
+            {
+                double startX = xCoords[i];
+                double endX = xCoords[i + 1];
+                var startPt = new Point(startX, yValue);
+                var endPt = new Point(endX, yValue);
+
+                string formattedValueString = NumberConverter.ConvertToString(displayValues[i], 2);
 
                 // Only last one is a full chain, others are just start ticks
                 if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);

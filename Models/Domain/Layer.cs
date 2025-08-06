@@ -300,12 +300,9 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public ShapeId ShapeId { get; set; }
         [JsonIgnore]
-        public int VertexStartIndex { get; set; } // For OpenGL rendering, where this shape's vertices start in the vertex buffer
-
-        [JsonIgnore]
         public HatchFitMode HatchFitMode { get; set; } = HatchFitMode.OriginalPixelSize;
 
-        public IDrawingGeometry Convert()
+        public IDrawingGeometry CopyGeometry()
         {
             return new DrawingGeometry(this);
         }

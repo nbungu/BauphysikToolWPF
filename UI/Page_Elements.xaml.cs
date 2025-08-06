@@ -1,4 +1,5 @@
 ﻿using System.Windows.Controls;
+using BauphysikToolWPF.UI.ViewModels;
 
 namespace BauphysikToolWPF.UI
 {
@@ -9,6 +10,9 @@ namespace BauphysikToolWPF.UI
         {
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
+
+            // View Model
+            this.DataContext = new Page_Elements_VM(); // View Model
         }
     }
 }

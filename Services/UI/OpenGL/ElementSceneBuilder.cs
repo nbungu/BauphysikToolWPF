@@ -110,15 +110,19 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 AddLayerTextMarker(markerPos, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: new ShapeId(ShapeType.Annotation, geom.InternalId));
             }
 
-            AddDimensionalChainsHorizontal(elementBounds.TopLeft,
-                CrossSectionBuilder.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.Layer).Select(geom => geom.Rectangle.Width).ToArray(),
-                50,
-                oneCmConversion: SizeOf1Cm);
 
-            AddDimensionalChainsHorizontal(elementBounds.TopLeft,
-                new []{ elementBounds.Width },
-                110,
-                oneCmConversion: SizeOf1Cm);
+            // TESTING:
+            var relevantGeometries = CrossSectionBuilder.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.Layer);
+            double[] xIncrements = relevantGeometries.Select(geom => geom.Rectangle.Width).ToArray();
+
+            var matchingLayers = CrossSectionBuilder.Element.Layers
+                .Where(layer => relevantGeometries.Any(dg => dg.ShapeId.Type == layer.ShapeId.Type && dg.ShapeId.Index == layer.ShapeId.Index))
+                .ToList();
+            double[] layerWidths = matchingLayers.Select(layer => layer.Thickness).ToArray();
+
+            AddDimensionalChainsHorizontal(elementBounds.TopLeft, xIncrements, layerWidths, 50);
+
+            AddDimensionalChainsHorizontal(elementBounds.TopLeft, new []{ elementBounds.Width }, 110, oneCmConversion: SizeOf1Cm);
             
             if (DebugMode)
             {

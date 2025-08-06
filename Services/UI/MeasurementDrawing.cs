@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.Services.UI
 
         public static DrawingGeometry GetMeasurementChain(IEnumerable<Layer> layers, Axis intervalDirection = Axis.Z)
         {
-            var intervals = layers.Select(l => l.Convert()).SelectMany(e => new[] { e.Rectangle.Top, e.Rectangle.Bottom }).ToArray();
+            var intervals = layers.Select(l => l.CopyGeometry()).SelectMany(e => new[] { e.Rectangle.Top, e.Rectangle.Bottom }).ToArray();
             if (intervals.Length == 0) return new DrawingGeometry();
 
             return GetMeasurementDrawing(intervals, intervalDirection);

@@ -5,15 +5,10 @@
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
-             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              mc:Ignorable="d" 
              d:DesignHeight="700"
              d:DesignWidth="1200">
-
-    <UserControl.DataContext>
-        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
-        <vm:Page_Elements_VM/> 
-    </UserControl.DataContext>
 
     <UserControl.Resources>
 
@@ -288,8 +283,13 @@
                         <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>
 
                         <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.PreviewImage}" Margin="0,8,0,8"/>
-
-                        <StackPanel Orientation="Horizontal">
+                        
+                        <Expander Header="Bauteildaten" IsExpanded="True" Background="Transparent" Margin="0">
+                            <customControls:PropertyDataGrid x:Name="ElementPropertiesDataGrid"
+                                                             Properties="{Binding ElementProperties}"
+                                                             Background="Transparent"/>
+                        </Expander>
+                        <!--<StackPanel Orientation="Horizontal">
                             <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>
                             <Label Content="{Binding SelectedElement.OrientationTypeName}" HorizontalAlignment="Left"/>
                         </StackPanel>
@@ -316,8 +316,8 @@
                         <StackPanel Orientation="Horizontal">
                             <Label Content="Gerändert:" HorizontalAlignment="Left" Width="96"/>
                             <Label Content="{Binding SelectedElement.UpdatedAtString}" HorizontalAlignment="Left"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal" Margin="0,16,0,0">
+                        </StackPanel>-->
+                        <StackPanel Orientation="Horizontal" Margin="8,16,0,0">
                             <Image Source="{StaticResource ButtonIcon_Tags_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
                             <Label Content="Tags:" HorizontalAlignment="Left"/>
                         </StackPanel>
@@ -327,7 +327,7 @@
                             Background="Transparent"                          
                             BorderThickness="0"
                             Margin="0,8,0,8"/>
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal" Margin="8,0,0,0">
                             <Image Source="{StaticResource ButtonIcon_Comment_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
                             <Label Content="Kommentar:" HorizontalAlignment="Left"/>
                         </StackPanel>

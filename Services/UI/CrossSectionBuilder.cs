@@ -117,7 +117,7 @@ namespace BauphysikToolWPF.Services.UI
             {
                 // Main Layer Geometry
                 l.Rectangle = l.Rectangle.MoveTo(ptStart);
-                layerDrawings.Add(l.Convert());
+                layerDrawings.Add(l.CopyGeometry());
 
                 // SubConstruction
                 if (l.SubConstruction != null)
@@ -171,7 +171,7 @@ namespace BauphysikToolWPF.Services.UI
                             for (int i = 0; i < numSubconstructions; i++)
                             {
                                 double x = startX + i * (subConstrWidth + spacing);
-                                var subConstrGeometry = l.SubConstruction.Convert(); // Rename to copy?
+                                var subConstrGeometry = l.SubConstruction.CopyGeometry(); // Rename to copy?
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(x, ptStart.Y));
                                 layerDrawings.Add(subConstrGeometry);
                             }
@@ -216,7 +216,7 @@ namespace BauphysikToolWPF.Services.UI
                             for (int i = 0; i < numSubconstructions; i++)
                             {
                                 double y = startY + i * (subConstrHeight + spacing);
-                                var subConstrGeometry = l.SubConstruction.Convert(); // Rename to copy?
+                                var subConstrGeometry = l.SubConstruction.CopyGeometry(); // Rename to copy?
                                 subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(new Point(ptStart.X, y));
                                 layerDrawings.Add(subConstrGeometry);
                             }
@@ -224,7 +224,7 @@ namespace BauphysikToolWPF.Services.UI
                     }
                     else
                     {
-                        var subConstrGeometry = l.SubConstruction.Convert(); // Rename to copy?
+                        var subConstrGeometry = l.SubConstruction.CopyGeometry(); // Rename to copy?
                         subConstrGeometry.Rectangle = subConstrGeometry.Rectangle.MoveTo(ptStart);
                         layerDrawings.Add(subConstrGeometry);
                     }
@@ -235,90 +235,98 @@ namespace BauphysikToolWPF.Services.UI
             }
             return layerDrawings;
         }
-
         private void UpdateGeometries()
         {
-            foreach (var l in Element.Layers)
+            foreach (var layer in Element.Layers)
             {
-                // Main Layer Geometry
-                if (DrawingType == DrawingType.CrossSection)
-                {
-                    l.Rectangle = new Rectangle(new Point(0, 0), CanvasSize.Width, l.Thickness * SizeOf1Cm);
-                    //l.HatchFitMode = ElementScene.HatchFitMode.OriginalPixelSize;
-                }
+                // Metadata
+                layer.ShapeId = new ShapeId(ShapeType.Layer, layer.InternalId);
+                layer.Tag = $"Layer_{layer.LayerNumber}";
+                // UI
+                SetLayerRectangle(layer);
+                SetLayerVisuals(layer);
 
-                else if (DrawingType == DrawingType.VerticalCut)
+                if (layer.SubConstruction != null)
                 {
-                    l.Rectangle = new Rectangle(new Point(0, 0), l.Thickness * SizeOf1Cm, CanvasSize.Height);
-                    //l.HatchFitMode = ElementScene.HatchFitMode.OriginalPixelSize;
-                }
-
-                UpdateLayerGeometry(l);
-
-                if (l.SubConstruction != null)
-                {
-                    if (DrawingType == DrawingType.CrossSection)
-                    {
-                        // if it shows Faces of Cutted Vertical/Crosssections
-                        if ((int)DrawingType == (int)l.SubConstruction.Direction)
-                        {
-                            l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Width * SizeOf1Cm, l.SubConstruction.Thickness * SizeOf1Cm);
-                            l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
-                            l.SubConstruction.BorderPen = Pens.GetSolidPen(Brushes.Black, 0.5);
-                        }
-                        // if sub construction runs parallel to main layer
-                        else
-                        {
-                            l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.Rectangle.Width, l.SubConstruction.Thickness * SizeOf1Cm);
-                            l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 0.4 : 0.2;
-                            l.SubConstruction.BorderPen = Pens.GetDashedPen(Brushes.Black, 1.2);
-                        }
-                    }
-                    else if (DrawingType == DrawingType.VerticalCut)
-                    {
-                        // if it shows Faces of Cutted Vertical/Crosssections
-                        if ((int)DrawingType == (int)l.SubConstruction.Direction)
-                        {
-                            l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Thickness * SizeOf1Cm, l.SubConstruction.Width * SizeOf1Cm);
-                            l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 1 : 0.4;
-                            l.SubConstruction.BorderPen = Pens.GetSolidPen(Brushes.Black, 0.5);
-                        }
-                        // if sub construction runs parallel to main layer
-                        else
-                        {
-                            l.SubConstruction.Rectangle = new Rectangle(new Point(0, 0), l.SubConstruction.Thickness * SizeOf1Cm, l.Rectangle.Height);
-                            l.SubConstruction.Opacity = l.SubConstruction.IsEffective ? 0.4 : 0.2;
-                            l.SubConstruction.BorderPen = Pens.GetDashedPen(Brushes.Black, 1.2);
-                        }
-                    }
-                    UpdateSubConstructionGeometry(l);
+                    // Metadata
+                    layer.SubConstruction.ShapeId = new ShapeId(ShapeType.SubConstructionLayer, layer.InternalId);
+                    layer.SubConstruction.Tag = $"Layer_{layer.LayerNumber}b";
+                    // UI
+                    SetSubConstructionRectangle(layer);
+                    SetSubConstructionVisuals(layer);
                 }
             }
         }
 
-        private void UpdateLayerGeometry(Layer layer)
+        private void SetLayerRectangle(Layer layer)
         {
-            layer.ShapeId = new ShapeId(ShapeType.Layer, layer.InternalId);
+            switch (DrawingType)
+            {
+                case DrawingType.CrossSection:
+                    layer.Rectangle = new Rectangle(
+                        new Point(0, 0),
+                        CanvasSize.Width,
+                        layer.Thickness * SizeOf1Cm
+                    );
+                    break;
 
+                case DrawingType.VerticalCut:
+                    layer.Rectangle = new Rectangle(
+                        new Point(0, 0),
+                        layer.Thickness * SizeOf1Cm,
+                        CanvasSize.Height
+                    );
+                    break;
+            }
+        }
+        private void SetSubConstructionRectangle(Layer layer)
+        {
+            var sub = layer.SubConstruction;
+            bool isCutFace = (int)DrawingType == (int)sub.Direction;
+
+            switch (DrawingType)
+            {
+                case DrawingType.CrossSection:
+                    sub.Rectangle = isCutFace
+                        ? new Rectangle(new Point(0, 0), sub.Width * SizeOf1Cm, sub.Thickness * SizeOf1Cm)
+                        : new Rectangle(new Point(0, 0), layer.Rectangle.Width, sub.Thickness * SizeOf1Cm);
+                    break;
+
+                case DrawingType.VerticalCut:
+                    sub.Rectangle = isCutFace
+                        ? new Rectangle(new Point(0, 0), sub.Thickness * SizeOf1Cm, sub.Width * SizeOf1Cm)
+                        : new Rectangle(new Point(0, 0), sub.Thickness * SizeOf1Cm, layer.Rectangle.Height);
+                    break;
+            }
+        }
+        private void SetSubConstructionVisuals(Layer layer)
+        {
+            var sub = layer.SubConstruction;
+            bool isCutFace = (int)DrawingType == (int)sub.Direction;
+
+            if (isCutFace)
+            {
+                sub.Opacity = sub.IsEffective ? 1 : 0.4;
+                sub.BorderPen = Pens.GetSolidPen(Brushes.Black, 0.5);
+            }
+            else
+            {
+                sub.Opacity = sub.IsEffective ? 0.4 : 0.2;
+                sub.BorderPen = Pens.GetDashedPen(Brushes.Black, 1.2);
+            }
+            sub.BackgroundColor = new SolidColorBrush(sub.Material.Color);
+            sub.TextureBrush = Textures.GetBrush(sub.Material.MaterialCategory, sub.Rectangle, 1.0);
+            sub.BorderPen.Brush = sub.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
+            if (sub.Material.MaterialCategory == Enums.MaterialCategory.Insulation) sub.HatchFitMode = HatchFitMode.StretchToFill;
+        }
+
+        private void SetLayerVisuals(Layer layer)
+        {
             layer.BackgroundColor = new SolidColorBrush(layer.Material.Color);
             layer.TextureBrush = Textures.GetBrush(layer.Material.MaterialCategory, layer.Rectangle, 1.0);
             layer.BorderPen = Pens.GetSolidPen(layer.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black, layer.IsSelected ? 2 : 0.4);
             layer.Opacity = layer.IsEffective ? 1 : 0.3;
-            layer.Tag = $"Layer_{layer.LayerNumber}";
             if (layer.Material.MaterialCategory == Enums.MaterialCategory.Insulation) layer.HatchFitMode = HatchFitMode.StretchToFill;
-        }
-
-        private void UpdateSubConstructionGeometry(Layer layer)
-        {
-            if (layer.SubConstruction is null) return;
-            var subConstruction = layer.SubConstruction;
-            subConstruction.ShapeId = new ShapeId(ShapeType.SubConstructionLayer, layer.InternalId);
-            subConstruction.BackgroundColor = new SolidColorBrush(subConstruction.Material.Color);
-            subConstruction.TextureBrush = Textures.GetBrush(subConstruction.Material.MaterialCategory, subConstruction.Rectangle, 1.0);
-            subConstruction.BorderPen.Brush = subConstruction.IsSelected ? new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1473e6")) : Brushes.Black;
-            subConstruction.Tag = $"Layer_{layer.LayerNumber}b";
-            //if (subConstruction.IsSelected) subConstruction.Opacity *= 0.7; // Make selected layers slightly more transparent
-            if (subConstruction.Material.MaterialCategory == Enums.MaterialCategory.Insulation) subConstruction.HatchFitMode = HatchFitMode.StretchToFill;
         }
     }
 }

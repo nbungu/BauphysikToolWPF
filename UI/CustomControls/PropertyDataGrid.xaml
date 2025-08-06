@@ -41,6 +41,7 @@
             <Setter Property="VerticalGridLinesBrush" Value="{StaticResource PrimaryBorderBrush}"/>
             <Setter Property="HorizontalGridLinesBrush" Value="{StaticResource PrimaryBorderBrush}"/>
             <Setter Property="Focusable" Value="False" />
+            <Setter Property="IsTabStop" Value="False" />
         </Style>
 
         <Style x:Key="DataGridRowStyle" TargetType="{x:Type DataGridRow}">
@@ -65,7 +66,6 @@
             <Setter Property="Focusable" Value="False" />
             <Setter Property="IsTabStop" Value="False" />
             <Style.Triggers>
-
                 <DataTrigger Binding="{Binding IsReadonly}" Value="True">
                     <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
                 </DataTrigger>
@@ -113,6 +113,7 @@
                   ColumnHeaderStyle="{StaticResource DataGridColumnHeaderStyle}"
                   Background="{StaticResource SecondaryLightBlueBrush}">
             <DataGrid.Columns>
+
                 <!-- Left Column -->
                 <DataGridTemplateColumn Width="Auto" IsReadOnly="True" MinWidth="80">
                     <DataGridTemplateColumn.CellTemplate>
@@ -143,6 +144,7 @@
                                                         <ColumnDefinition Width="*"/>
                                                         <ColumnDefinition Width="Auto"/>
                                                     </Grid.ColumnDefinitions>
+                                                    <!--Content-->
                                                     <TextBox x:Name="DynamicTextBox"
                                                              Grid.Column="0"
                                                              FontWeight="Normal"
@@ -157,7 +159,10 @@
                                                             </MultiBinding>
                                                         </TextBox.Text>
                                                     </TextBox>
-                                                    <controls:FractionLabel Grid.Column="1" CounterText="{Binding UnitCounterText}" DenominatorText="{Binding UnitDenominatorText}">
+                                                    <!--Unit-->
+                                                    <controls:FractionLabel Grid.Column="1"
+                                                                            CounterText="{Binding UnitCounterText}"
+                                                                            DenominatorText="{Binding UnitDenominatorText}">
                                                         <controls:FractionLabel.Style>
                                                             <Style TargetType="controls:FractionLabel">
                                                                 <Setter Property="FontWeight" Value="Normal"/>
