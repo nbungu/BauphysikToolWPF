@@ -6,6 +6,7 @@ using System;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
 using Point = BT.Geometry.Point;
@@ -26,23 +27,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public event Action<ShapeId>? ShapeDoubleClicked;
         public event Action<ShapeId>? ShapeRightClicked;
 
-        #region public properties
-
-        public IOglSceneBuilder SceneBuilder { get; private set; }
-        public GLWpfControl View { get; private set; }
-        public bool IsSceneInteractive { get; set; } = true;
-        public bool IsViewConnected => View != null;
-
-        public bool IsTextSizeZoomable
-        {
-            get => SceneBuilder.IsTextSizeZoomable;
-            set => SceneBuilder.IsTextSizeZoomable = value;
-        }
-        public float ZoomFactor => _zoomFactor;
-        public Size CurrentSceneSize => new Size(SceneBuilder.SceneBounds.Width, SceneBuilder.SceneBounds.Height);
-        public Size CurrentViewSize => new Size((int)View.ActualWidth, (int)View.ActualHeight);
-
-        #endregion
 
         #region private fields
 
@@ -55,6 +39,23 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private Point _lastMousePos = Point.Empty;
         private DateTime _lastLeftClickTime = DateTime.MinValue;
         private const int DoubleClickThresholdMs = 300;
+
+        #endregion
+
+        #region public properties
+
+        public IOglSceneBuilder SceneBuilder { get; private set; }
+        public GLWpfControl View { get; private set; }
+        public bool IsSceneInteractive { get; set; } = true;
+        public bool IsViewConnected => View != null;
+        public bool IsTextSizeZoomable
+        {
+            get => SceneBuilder.IsTextSizeZoomable;
+            set => SceneBuilder.IsTextSizeZoomable = value;
+        }
+        public float ZoomFactor => _zoomFactor;
+        public Size CurrentSceneSize => new Size(SceneBuilder.SceneBounds.Width, SceneBuilder.SceneBounds.Height);
+        public Size CurrentViewSize => new Size((int)View.ActualWidth, (int)View.ActualHeight);
 
         #endregion
 
@@ -77,7 +78,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 Profile = ContextProfile.Core,
                 ContextFlags = ContextFlags.Default,
                 RenderContinuously = false,
-                //Samples = 8,
             };
 
             view.Render += OnRender;
@@ -157,8 +157,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var bounds = SceneBuilder.SceneBounds;
             var proj = BuildProjection(size, bounds);
 
-            //View.MakeCurrent(); // Ensure OpenGL context is active for this thread
-
             _oglRenderer.Render(
                 SceneBuilder.RectVertices.ToArray(),
                 SceneBuilder.LineVertices.ToArray(),
@@ -226,26 +224,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Console.WriteLine("[OGL] Renderer disposed");
         }
 
-        /// <summary>
-        /// Captures an image of the currently visible OpenGL scene in the view.
-        /// </summary>
-        public BitmapSource GetCurrentSceneImage()
-        {
-            int width = (int)View.ActualWidth;
-            int height = (int)View.ActualHeight;
-            return _oglRenderer.CaptureCurrentViewport(width, height);
-        }
-
-        public byte[] GetCurrentSceneImageAsBytes()
-        {
-            var bmp = GetCurrentSceneImage();
-            return ImageCreator.EncodeBitmapSourceToPng(bmp);
-        }
+        #region Scene Image Capture
 
         /// <summary>
         /// Captures an offscreen image of the OpenGL scene at the given resolution and zoom factor.
         /// </summary>
-        public BitmapSource GetOffscreenSceneImage(int width, int height, double zoom = 1.0, int dpi = 96)
+        public BitmapSource GetSceneImage(int width, int height, double zoom = 1.0, int dpi = 96)
         {
             var originalZoom = ZoomFactor;
             SetZoom(zoom); // Temporarily apply the zoom
@@ -270,8 +254,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <summary>
         /// Captures an offscreen image of the OpenGL scene at the given resolution and zoom factor.
         /// </summary>
-        public BitmapSource GetOffscreenSceneImage(Size size, double zoom = 1.0, int dpi = 96)
+        public BitmapSource GetSceneImage(double zoom = 1.0, int dpi = 96)
         {
+            var size = CurrentSceneSize;
             var originalZoom = ZoomFactor;
             SetZoom(zoom); // Temporarily apply the zoom
             try
@@ -293,16 +278,18 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
         }
 
-        public byte[] GetOffscreenSceneImageAsBytes(int width, int height, double zoom = 1.0, int dpi = 96)
+        public byte[] GetSceneImageAsBytes(int width, int height, double zoom = 1.0, int dpi = 96)
         {
-            var bmp = GetOffscreenSceneImage(width, height, zoom, dpi);
+            var bmp = GetSceneImage(width, height, zoom, dpi);
             return ImageCreator.EncodeBitmapSourceToPng(bmp);
         }
-        public byte[] GetOffscreenSceneImageAsBytes(Size size, double zoom = 1.0, int dpi = 96)
+        public byte[] GetSceneImageAsBytes(double zoom = 1.0, int dpi = 96)
         {
-            var bmp = GetOffscreenSceneImage(size, zoom, dpi);
+            var bmp = GetSceneImage(zoom, dpi);
             return ImageCreator.EncodeBitmapSourceToPng(bmp);
         }
+
+        #endregion
 
         #region Mouse Events
 

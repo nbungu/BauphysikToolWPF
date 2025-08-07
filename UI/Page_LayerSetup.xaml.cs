@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.UI
     {
         #region private Fields
 
-        private readonly OglController _oglController;
+        public readonly OglController _oglController;
         private readonly Element _element; // Selected Element from Session
         private readonly Page_LayerSetup_VM _viewModel; // Selected Element from Session
 
@@ -56,7 +56,7 @@ namespace BauphysikToolWPF.UI
             
             if (!IsVisible && _element.IsValid)
             {
-                Session.SelectedElement.Image = _oglController.GetOffscreenSceneImageAsBytes(_oglController.CurrentSceneSize);
+                Session.SelectedElement.Image = _oglController.GetSceneImageAsBytes();
                 Session.SelectedElement.DocumentImage = Session.SelectedElement.Image;
                 _oglController.Dispose();
             }

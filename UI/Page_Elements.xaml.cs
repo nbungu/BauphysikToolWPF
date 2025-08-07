@@ -1,4 +1,6 @@
 ﻿using System.Windows.Controls;
+using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.ViewModels;
 
 namespace BauphysikToolWPF.UI
@@ -13,6 +15,8 @@ namespace BauphysikToolWPF.UI
 
             // View Model
             this.DataContext = new Page_Elements_VM(); // View Model
+
+            //Session.SelectedProject.RenderMissingElementImages();
         }
     }
 }

@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
@@ -18,6 +19,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private Brush _bgColor = Brushes.Transparent;
         private readonly TextureManager _textureManager;
         private int SdfFontTextureId => _textureManager.SdfFont?.TextureId ?? -1;
+        public BitmapSource LastCapturedImage { get; private set; }
 
         public OglRenderer(TextureManager texManager)
         {
@@ -206,7 +208,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception("Failed to create framebuffer");
         
-
             GL.Viewport(0, 0, width, height);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
@@ -224,22 +225,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             var bmp = BitmapSource.Create(width, height, dpi, dpi, PixelFormats.Bgra32, null, pixels, width * 4);
             bmp.Freeze();
-
-            return FlipVertically(bmp);
+            LastCapturedImage = FlipVertically(bmp);
+            return LastCapturedImage;
         }
-
-        public BitmapSource CaptureCurrentViewport(int width, int height)
-        {
-            GL.Enable(EnableCap.DepthTest); // Ensure depth test is enabled (safe even if not used)
-
-            byte[] pixels = new byte[width * height * 4];
-            GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
-
-            var bmp = BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgra32, null, pixels, width * 4);
-            bmp.Freeze();
-            return FlipVertically(bmp);
-        }
-
         private static BitmapSource FlipVertically(BitmapSource source)
         {
             var transform = new ScaleTransform(1, -1, 0.5, 0.5);

@@ -187,6 +187,21 @@ namespace BauphysikToolWPF.Services.Application
             Logger.LogInfo($"Image saved to {path}");
         }
 
+        //public static void RenderElementPreviewImage(Element element)
+        //{
+        //    // Create a CrossSectionDrawing for the selected element
+        //    var canvasSize = new BT.Geometry.Rectangle(new BT.Geometry.Point(0, 0), 880, 400);
+        //    var drawingService = new CrossSectionBuilder(element, canvasSize, DrawingType.CrossSection);
+        //    var drawingContents = drawingService.DrawingGeometries;
+        //    var imgWidth = (int)drawingService.CanvasSize.Width;
+        //    var imgHeight = (int)drawingService.CanvasSize.Height;
+
+        //    // Capture images using the GeometryRenderer
+        //    var imageBytes = CaptureOffscreenVisualAsImage(drawingContents, imgWidth, imgHeight);
+
+        //    // Update the selected element with the captured images
+        //    element.Image = imageBytes;
+        //}
         public static void RenderElementPreviewImage(Element element)
         {
             // Create a CrossSectionDrawing for the selected element
