@@ -4,6 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -86,10 +88,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void Render(float[] rectVertices, float[] lineVertices,
                            List<(int? TextureId, int Count)> rectBatches,
                            List<(float LineWidth, int Count)> lineBatches,
-                           Matrix4 projectionMatrix)
+                           Matrix4 projectionMatrix,
+                           Vector4? clearColorOverride = null)
         {
             // Clear screen
-            var bg = _bgColor.ToVectorColor();
+            var bg = clearColorOverride ?? _bgColor.ToVectorColor();
             GL.ClearColor(bg.X, bg.Y, bg.Z, bg.W);
 
             // Use Z-Buffer for depth Sorting
@@ -172,6 +175,81 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.DeleteVertexArray(_lineVao);
             GL.DeleteProgram(_shaderProgram);
         }
+
+        #region Image capturing
+
+        public BitmapSource CaptureOffscreenToBitmap(
+            float[] rectVertices,
+            float[] lineVertices,
+            List<(int? TextureId, int Count)> rectBatches,
+            List<(float LineWidth, int Count)> lineBatches,
+            Matrix4 projection,
+            int width,
+            int height,
+            float dpi = 96f)
+        {
+            int fbo, tex;
+
+            // Generate framebuffer
+            GL.GenFramebuffers(1, out fbo);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+
+            // Create color texture
+            GL.GenTextures(1, out tex);
+            GL.BindTexture(TextureTarget.Texture2D, tex);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, tex, 0);
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                throw new Exception("Failed to create framebuffer");
+        
+
+            GL.Viewport(0, 0, width, height);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            // Render to FBO using the existing Render logic
+            Render(rectVertices, lineVertices, rectBatches, lineBatches, projection, new Vector4(0f, 0f, 0f, 0f));
+
+            // Read pixels back
+            byte[] pixels = new byte[width * height * 4];
+            GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+
+            // Cleanup
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            GL.DeleteFramebuffer(fbo);
+            GL.DeleteTexture(tex);
+
+            var bmp = BitmapSource.Create(width, height, dpi, dpi, PixelFormats.Bgra32, null, pixels, width * 4);
+            bmp.Freeze();
+
+            return FlipVertically(bmp);
+        }
+
+        public BitmapSource CaptureCurrentViewport(int width, int height)
+        {
+            GL.Enable(EnableCap.DepthTest); // Ensure depth test is enabled (safe even if not used)
+
+            byte[] pixels = new byte[width * height * 4];
+            GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+
+            var bmp = BitmapSource.Create(width, height, 96, 96, PixelFormats.Bgra32, null, pixels, width * 4);
+            bmp.Freeze();
+            return FlipVertically(bmp);
+        }
+
+        private static BitmapSource FlipVertically(BitmapSource source)
+        {
+            var transform = new ScaleTransform(1, -1, 0.5, 0.5);
+            var tb = new TransformedBitmap(source, transform);
+            tb.Freeze();
+            return tb;
+        }
+
+        #endregion
+
 
         private int CompileShaderProgram()
         {

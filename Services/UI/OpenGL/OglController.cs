@@ -5,6 +5,7 @@ using OpenTK.Wpf;
 using System;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
 using Point = BT.Geometry.Point;
@@ -37,8 +38,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             get => SceneBuilder.IsTextSizeZoomable;
             set => SceneBuilder.IsTextSizeZoomable = value;
         }
-
         public float ZoomFactor => _zoomFactor;
+        public Size CurrentSceneSize => new Size(SceneBuilder.SceneBounds.Width, SceneBuilder.SceneBounds.Height);
+        public Size CurrentViewSize => new Size((int)View.ActualWidth, (int)View.ActualHeight);
 
         #endregion
 
@@ -151,9 +153,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         private void OnRender(TimeSpan _)
         {
-            var size = new Size((int)View.ActualWidth, (int)View.ActualHeight);
+            var size = CurrentViewSize;
             var bounds = SceneBuilder.SceneBounds;
             var proj = BuildProjection(size, bounds);
+
+            //View.MakeCurrent(); // Ensure OpenGL context is active for this thread
 
             _oglRenderer.Render(
                 SceneBuilder.RectVertices.ToArray(),
@@ -220,6 +224,84 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             _disposed = true;
             Console.WriteLine("[OGL] Renderer disposed");
+        }
+
+        /// <summary>
+        /// Captures an image of the currently visible OpenGL scene in the view.
+        /// </summary>
+        public BitmapSource GetCurrentSceneImage()
+        {
+            int width = (int)View.ActualWidth;
+            int height = (int)View.ActualHeight;
+            return _oglRenderer.CaptureCurrentViewport(width, height);
+        }
+
+        public byte[] GetCurrentSceneImageAsBytes()
+        {
+            var bmp = GetCurrentSceneImage();
+            return ImageCreator.EncodeBitmapSourceToPng(bmp);
+        }
+
+        /// <summary>
+        /// Captures an offscreen image of the OpenGL scene at the given resolution and zoom factor.
+        /// </summary>
+        public BitmapSource GetOffscreenSceneImage(int width, int height, double zoom = 1.0, int dpi = 96)
+        {
+            var originalZoom = ZoomFactor;
+            SetZoom(zoom); // Temporarily apply the zoom
+            try
+            {
+                var projection = BuildProjection(new Size(width, height), SceneBuilder.SceneBounds);
+                return _oglRenderer.CaptureOffscreenToBitmap(
+                    SceneBuilder.RectVertices.ToArray(),
+                    SceneBuilder.LineVertices.ToArray(),
+                    SceneBuilder.RectBatches,
+                    SceneBuilder.LineBatches,
+                    projection,
+                    width,
+                    height,
+                    dpi);
+            }
+            finally
+            {
+                SetZoom(originalZoom); // Restore previous zoom
+            }
+        }
+        /// <summary>
+        /// Captures an offscreen image of the OpenGL scene at the given resolution and zoom factor.
+        /// </summary>
+        public BitmapSource GetOffscreenSceneImage(Size size, double zoom = 1.0, int dpi = 96)
+        {
+            var originalZoom = ZoomFactor;
+            SetZoom(zoom); // Temporarily apply the zoom
+            try
+            {
+                var projection = BuildProjection(size, SceneBuilder.SceneBounds);
+                return _oglRenderer.CaptureOffscreenToBitmap(
+                    SceneBuilder.RectVertices.ToArray(),
+                    SceneBuilder.LineVertices.ToArray(),
+                    SceneBuilder.RectBatches,
+                    SceneBuilder.LineBatches,
+                    projection,
+                    (int)size.Width,
+                    (int)size.Height,
+                    dpi);
+            }
+            finally
+            {
+                SetZoom(originalZoom); // Restore previous zoom
+            }
+        }
+
+        public byte[] GetOffscreenSceneImageAsBytes(int width, int height, double zoom = 1.0, int dpi = 96)
+        {
+            var bmp = GetOffscreenSceneImage(width, height, zoom, dpi);
+            return ImageCreator.EncodeBitmapSourceToPng(bmp);
+        }
+        public byte[] GetOffscreenSceneImageAsBytes(Size size, double zoom = 1.0, int dpi = 96)
+        {
+            var bmp = GetOffscreenSceneImage(size, zoom, dpi);
+            return ImageCreator.EncodeBitmapSourceToPng(bmp);
         }
 
         #region Mouse Events
@@ -364,6 +446,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         #endregion
 
+        #region Key Events
+
         private void OnKeyDown(object s, KeyEventArgs e)
         {
             if (e.Key == Key.Add || e.Key == Key.OemPlus)
@@ -377,5 +461,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 e.Handled = true;
             }
         }
+
+        #endregion
     }
 }

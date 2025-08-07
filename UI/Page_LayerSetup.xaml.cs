@@ -39,7 +39,7 @@ namespace BauphysikToolWPF.UI
             _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
             _oglController.IsTextSizeZoomable = true;
             _oglController.Redraw(); // Initial render to display the scene
-            
+
             // View Model
             _viewModel = new Page_LayerSetup_VM(_oglController);
             this.DataContext = _viewModel;
@@ -53,15 +53,12 @@ namespace BauphysikToolWPF.UI
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             _element.UnselectAllLayers();
-
+            
             if (!IsVisible && _element.IsValid)
             {
+                Session.SelectedElement.Image = _oglController.GetOffscreenSceneImageAsBytes(_oglController.CurrentSceneSize);
+                Session.SelectedElement.DocumentImage = Session.SelectedElement.Image;
                 _oglController.Dispose();
-
-                // TODO: Save Document Image
-                //element.DocumentImage = ImageCreator.CaptureUIElementAsImage(ZoomableGrid, includeMargins: true);
-                //ImageCreator.RenderElementPreviewImage(element);
-                //element.Image = ImageCreator.CaptureUIElementAsImage(LayersCanvas, includeMargins: true);
             }
         }
 

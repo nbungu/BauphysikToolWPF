@@ -1,13 +1,13 @@
-﻿using System;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.UI;
+using BT.Logging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Services.UI;
-using BT.Logging;
 using Brushes = System.Windows.Media.Brushes;
 
 namespace BauphysikToolWPF.Services.Application
@@ -149,10 +149,41 @@ namespace BauphysikToolWPF.Services.Application
             }
         }
 
-        public static void SaveImageToFile(byte[] imageData, string fileName)
+        public static void SaveToImage(byte[] imageData, string fileName)
         {
             string path = Path.Combine(PathService.LocalProgramDataPath, "BauphysikTool", fileName);
             File.WriteAllBytes(path, imageData);
+            Logger.LogInfo($"Image saved to {path}");
+        }
+
+        public static void SaveToImageInDownloadsFolder(byte[] imageData, string fileName)
+        {
+            string path = Path.Combine(PathService.DownloadsFolderPath, fileName);
+            File.WriteAllBytes(path, imageData);
+            Logger.LogInfo($"Image saved to {path}");
+        }
+
+        public static void SaveToImage(BitmapSource bmp, string fileName)
+        {
+            string path = Path.Combine(PathService.LocalProgramDataPath, "BauphysikTool", fileName);
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+            using (var fs = new FileStream(path, FileMode.Create))
+            {
+                encoder.Save(fs);
+            }
+            Logger.LogInfo($"Image saved to {path}");
+        }
+
+        public static void SaveToImageInDownloadsFolder(BitmapSource bmp, string fileName)
+        {
+            string path = Path.Combine(PathService.DownloadsFolderPath, fileName);
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(bmp));
+            using (var fs = new FileStream(path, FileMode.Create))
+            {
+                encoder.Save(fs);
+            }
             Logger.LogInfo($"Image saved to {path}");
         }
 
@@ -190,6 +221,15 @@ namespace BauphysikToolWPF.Services.Application
             }
             image.Freeze();
             return image;
+        }
+
+        public static byte[] EncodeBitmapSourceToPng(BitmapSource image)
+        {
+            var encoder = new PngBitmapEncoder();
+            encoder.Frames.Add(BitmapFrame.Create(image));
+            using var ms = new MemoryStream();
+            encoder.Save(ms);
+            return ms.ToArray();
         }
     }
 }
