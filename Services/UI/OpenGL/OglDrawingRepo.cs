@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Point = BT.Geometry.Point;
+using Size = BT.Geometry.Size;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -47,14 +48,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (textureBrush is DrawingBrush hatch)
             {
                 texId = TextureManager.GetTextureIdForBrush(hatch);
-                var texSize = texId.HasValue ? TextureManager.GetTextureSize(texId.Value) : null;
+                Size texSize = texId.HasValue ? TextureManager.GetTextureSize(texId.Value) : Size.Empty;
                 float texRepeatX = 1f, texRepeatY = 1f;
-                if (texSize.HasValue)
+                
+                if (!texSize.IsEmpty)
                 {
                     float w = (float)rect.Width;
                     float h = (float)rect.Height;
-                    float texW = texSize.Value.Width;
-                    float texH = texSize.Value.Height;
+                    float texW = (float)texSize.Width;
+                    float texH = (float)texSize.Height;
 
                     double aspect = texW / (double)texH;
                     switch (mode)
@@ -111,17 +113,17 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (geom.TextureBrush is DrawingBrush drawingBrush)
             {
                 texId = TextureManager.GetTextureIdForBrush(drawingBrush);
-                var texSize = texId.HasValue ? TextureManager.GetTextureSize(texId.Value) : null;
+                var texSize = texId.HasValue ? TextureManager.GetTextureSize(texId.Value) : Size.Empty;
 
                 texRepeatX = 1f;
                 texRepeatY = 1f;
 
-                if (texSize.HasValue)
+                if (!texSize.IsEmpty)
                 {
                     float w = (float)geom.Rectangle.Width;
                     float h = (float)geom.Rectangle.Height;
-                    float texW = texSize.Value.Width;
-                    float texH = texSize.Value.Height;
+                    float texW = (float)texSize.Width;
+                    float texH = (float)texSize.Height;
 
                     double aspect = texW / (double)texH;
                     switch (geom.HatchFitMode)
@@ -550,10 +552,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 string formattedValueString = NumberConverter.ConvertToString(widthInCm, 2);
 
                 // Only last one is a full chain, others are just start ticks
-                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
                 else
                 {
-                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
                 }
             }
         }
@@ -574,10 +576,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 string formattedValueString = NumberConverter.ConvertToString(displayValues[i], 2);
 
                 // Only last one is a full chain, others are just start ticks
-                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
                 else
                 {
-                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.Black, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
                 }
             }
         }
@@ -631,7 +633,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
             
-            lineColor ??= Brushes.Black;
+            lineColor ??= Brushes.DimGray;
             int tickSize = 10;
             var line = new Line(ptStart, ptEnd);
 
@@ -670,7 +672,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
 
-            lineColor ??= Brushes.Black;
+            lineColor ??= Brushes.DimGray;
             int tickSize = 10;
             var line = new Line(ptStart, ptEnd);
 

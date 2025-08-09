@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using BauphysikToolWPF.Services.UI.OpenGL;
+﻿using BauphysikToolWPF.Services.UI.OpenGL;
+using System.Linq;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 
 namespace BauphysikToolWPF.Models.Domain.Helper

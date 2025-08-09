@@ -2,12 +2,11 @@ using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
+using BT.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using BT.Geometry;
-using Rectangle = BT.Geometry.Rectangle;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -81,7 +80,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 }
 
                 Point markerPos = geom.Rectangle.Center;
-                int fontSize = 48;
+                int fontSize = 40;
                 string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
@@ -92,7 +91,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                         AddLine(geom.Rectangle.BottomLine);
                     }
                     layerNumber += "b";
-                    fontSize = 40;
+                    fontSize = 36;
                     markerPos += new Vector(0, 2*fontSize); // Adjust position for sub-construction layers
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
@@ -150,7 +149,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             foreach (var geom in CrossSectionBuilder.DrawingGeometries)
             {
-                int fontSize = 48;
+                int fontSize = 40;
                 string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
 
                 // Rectangle
@@ -168,7 +167,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     AddLine(geom.Rectangle.LeftLine);
                     AddLine(geom.Rectangle.RightLine);
 
-                    fontSize = 40;
+                    fontSize = 36;
                     layerNumber += "b";
                 }
 

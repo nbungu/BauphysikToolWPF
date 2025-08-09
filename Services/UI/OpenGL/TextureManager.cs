@@ -8,8 +8,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Brush = System.Windows.Media.Brush;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
-using Size = System.Drawing.Size;
 using Rectangle = BT.Geometry.Rectangle;
+using Size = BT.Geometry.Size;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -43,9 +43,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return texId;
         }
 
-        public Size? GetTextureSize(int textureId)
+        public Size GetTextureSize(int textureId)
         {
-            return _hatchTextureSizes.TryGetValue(textureId, out var size) ? size : null;
+            return _hatchTextureSizes.TryGetValue(textureId, out var size) ? size : Size.Empty;
         }
 
         public int CreateTextureFromBitmap(BitmapSource bmp, bool isText = false)

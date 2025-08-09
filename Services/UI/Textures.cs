@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using Point = System.Windows.Point;
-using Vector = BT.Geometry.Vector;
+using Size = System.Windows.Size;
 
 namespace BauphysikToolWPF.Services.UI
 {
@@ -12,6 +12,7 @@ namespace BauphysikToolWPF.Services.UI
     {
         private static double _lastLineThickness;
         private static Rectangle _lastInsulationRectangle;
+        //private static Rectangle _lastWoodRectangle;
         private static bool _redraw = true;
 
         public static DrawingBrush? PlasterBrush { get; private set; }
@@ -39,6 +40,10 @@ namespace BauphysikToolWPF.Services.UI
                 case MaterialCategory.Concrete:
                     if (_redraw || ConcreteBrush is null) ConcreteBrush = GetConcreteBrush(lineThickness);
                     return ConcreteBrush;
+                //case MaterialCategory.Wood:
+                //    _lastWoodRectangle = rectangle;
+                //    if (_redraw || WoodBrush is null) WoodBrush = GetWoodBrush(rectangle, lineThickness);
+                //    return WoodBrush;
                 case MaterialCategory.Masonry:
                     if (_redraw || MasonryBrush is null) MasonryBrush = GetMasonryBrush(lineThickness);
                     return MasonryBrush;
@@ -83,7 +88,7 @@ namespace BauphysikToolWPF.Services.UI
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush()
             {
-                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(System.Windows.Media.Brushes.Black, lineThickness), hatchContent),
+                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.Black, lineThickness), hatchContent),
                 TileMode = TileMode.FlipXY,
                 Viewport = new Rect(0, 0, 128, 128),
                 ViewportUnits = BrushMappingMode.Absolute,
@@ -109,7 +114,7 @@ namespace BauphysikToolWPF.Services.UI
             // Use the hatch lines as the Drawing's content
             DrawingBrush brush = new DrawingBrush
             {
-                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(System.Windows.Media.Brushes.Black, lineThickness), hatchContent),
+                Drawing = new GeometryDrawing(new SolidColorBrush(), new Pen(Brushes.Black, lineThickness), hatchContent),
                 TileMode = TileMode.Tile,
                 Viewport = new Rect(0, 0, 32, 32),
                 ViewportUnits = BrushMappingMode.Absolute,
@@ -290,50 +295,6 @@ namespace BauphysikToolWPF.Services.UI
             return brush;
         }
 
-        public static DrawingBrush GetCircleWithNumberBrush(string text, Brush backgroundColor, Brush borderBrush, double borderThickness, Brush textColor, Vector textOffset = new Vector())
-        {
-            double radius = 10; // Kleinerer Kreis mit 20px Durchmesser
-
-            // Kreis-Geometrie
-            EllipseGeometry circleGeometry = new EllipseGeometry(new Point(radius, radius), radius, radius);
-
-            // Text-Formatierung
-            FormattedText formattedText = new FormattedText(
-                text,
-                System.Globalization.CultureInfo.CurrentCulture,
-                FlowDirection.LeftToRight,
-                new Typeface(new FontFamily("Arial"), FontStyles.Normal, FontWeights.Normal, FontStretches.Normal),
-                14, // Schriftgröße
-                textColor,
-                1.0 // PixelsPerDip
-            )
-            {
-                TextAlignment = TextAlignment.Center
-            };
-
-            // Zeichnung erstellen
-            DrawingGroup drawingGroup = new DrawingGroup();
-
-            // Kreis-Hintergrund
-            drawingGroup.Children.Add(new GeometryDrawing(backgroundColor, new Pen(borderBrush, borderThickness), circleGeometry));
-
-            // Text als gezeichnetes Bild einfügen (kein Geometry)
-            DrawingVisual visual = new DrawingVisual();
-            using (DrawingContext ctx = visual.RenderOpen())
-            {
-                ctx.DrawText(formattedText, new Point(radius - formattedText.Width / 2 + textOffset.X, radius - formattedText.Height / 2 + textOffset.Y));
-            }
-            drawingGroup.Children.Add(visual.Drawing);
-
-            return new DrawingBrush
-            {
-                Drawing = drawingGroup,
-                TileMode = TileMode.None,
-                Viewport = new Rect(0, 0, radius * 2, radius * 2),
-                ViewportUnits = BrushMappingMode.Absolute
-            };
-        }
-
         private static bool NeedRedraw(MaterialCategory category, double lineThickness, Rectangle rectangle)
         {
             // Always redraw if line thickness has changed since last call
@@ -345,6 +306,12 @@ namespace BauphysikToolWPF.Services.UI
                 if (Math.Abs(rectangle.Width - _lastInsulationRectangle.Width) > 1E-06 ||
                     Math.Abs(rectangle.Height - _lastInsulationRectangle.Height) > 1E-06) return true;
             }
+            //
+            //if (category == MaterialCategory.Wood)
+            //{
+            //    if (Math.Abs(rectangle.Width - _lastWoodRectangle.Width) > 1E-06 ||
+            //        Math.Abs(rectangle.Height - _lastWoodRectangle.Height) > 1E-06) return true;
+            //}
             return false;
         }
     }

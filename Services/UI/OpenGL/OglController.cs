@@ -1,4 +1,5 @@
 using BauphysikToolWPF.Services.Application;
+using BT.Geometry;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Wpf;
@@ -6,13 +7,8 @@ using System;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
-using Point = BT.Geometry.Point;
-using Rectangle = BT.Geometry.Rectangle;
-using Size = System.Windows.Size;
-using Vector = BT.Geometry.Vector;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -26,8 +22,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public event Action<ShapeId>? ShapeClicked;
         public event Action<ShapeId>? ShapeDoubleClicked;
         public event Action<ShapeId>? ShapeRightClicked;
-
-
+        
         #region private fields
 
         private readonly OglRenderer _oglRenderer;
