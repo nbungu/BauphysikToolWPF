@@ -150,7 +150,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             var size = CurrentViewSize;
             var bounds = SceneBuilder.SceneBounds;
-            var proj = BuildProjection(size, bounds);
+            var proj = BuildProjection(size, bounds, ZoomFactor, _pan);
 
             _oglRenderer.Render(
                 SceneBuilder.RectVertices.ToArray(),
@@ -161,8 +161,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Console.WriteLine("[OGL] Render called");
         }
 
-        private Matrix4 BuildProjection(Size control, Rectangle content)
+        public static Matrix4 BuildProjection(Size control, Rectangle content, float zoom = 1f, Vector? pan = null)
         {
+            Vector panVect = pan ?? Vector.Empty;
+
             var rectF = content.ToRectangleF();
 
             float ctrlW = (float)control.Width, ctrlH = (float)control.Height;
@@ -170,7 +172,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             float scaleX = ctrlW / contW;
             float scaleY = ctrlH / contH;
-            float scale = MathF.Min(scaleX, scaleY) * ZoomFactor;
+            float scale = MathF.Min(scaleX, scaleY) * zoom;
 
             float baseDivisorWidth = ctrlW / 2f;
             float baseDivisorHeight = ctrlH / 2f;
@@ -190,7 +192,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             Matrix4 view = Matrix4.CreateTranslation(-originOffsetX, originOffsetY, 0) *
                            Matrix4.CreateTranslation(1f, -1f, 0) *
                            Matrix4.CreateScale(scale) *
-                           Matrix4.CreateTranslation(-1f + dx + (float)_pan.X, 1f - dy + (float)_pan.Y, 0);
+                           Matrix4.CreateTranslation(-1f + dx + (float)panVect.X, 1f - dy + (float)panVect.Y, 0);
 
 
             return Matrix4.CreateOrthographicOffCenter(0, ctrlW, ctrlH, 0, zIndexStart, zIndexEnd) * view;
@@ -226,12 +228,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// </summary>
         public BitmapSource GetSceneImage(int width, int height, double zoom = 1.0, int dpi = 96)
         {
+            if (!SceneBuilder.IsValid) return new BitmapImage(); // Return empty image if scene is invalid
+            
             var originalZoom = ZoomFactor;
             SetZoom(zoom); // Temporarily apply the zoom
             try
             {
-                var projection = BuildProjection(new Size(width, height), SceneBuilder.SceneBounds);
-                return _oglRenderer.CaptureOffscreenToBitmap(
+                var projection = BuildProjection(new Size(width, height), SceneBuilder.SceneBounds, ZoomFactor, _pan);
+                return _oglRenderer.CaptureRendering(
                     SceneBuilder.RectVertices.ToArray(),
                     SceneBuilder.LineVertices.ToArray(),
                     SceneBuilder.RectBatches,
@@ -251,13 +255,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// </summary>
         public BitmapSource GetSceneImage(double zoom = 1.0, int dpi = 96)
         {
+            if (!SceneBuilder.IsValid) return new BitmapImage(); // Return empty image if scene is invalid
+
             var size = CurrentSceneSize;
             var originalZoom = ZoomFactor;
             SetZoom(zoom); // Temporarily apply the zoom
             try
             {
-                var projection = BuildProjection(size, SceneBuilder.SceneBounds);
-                return _oglRenderer.CaptureOffscreenToBitmap(
+                var projection = BuildProjection(size, SceneBuilder.SceneBounds, ZoomFactor, _pan);
+                return _oglRenderer.CaptureRendering(
                     SceneBuilder.RectVertices.ToArray(),
                     SceneBuilder.LineVertices.ToArray(),
                     SceneBuilder.RectBatches,
@@ -276,12 +282,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public byte[] GetSceneImageAsBytes(int width, int height, double zoom = 1.0, int dpi = 96)
         {
             var bmp = GetSceneImage(width, height, zoom, dpi);
-            return ImageCreator.EncodeBitmapSourceToPng(bmp);
+            return bmp.ToByteArray();
         }
         public byte[] GetSceneImageAsBytes(double zoom = 1.0, int dpi = 96)
         {
             var bmp = GetSceneImage(zoom, dpi);
-            return ImageCreator.EncodeBitmapSourceToPng(bmp);
+            return bmp.ToByteArray();
         }
 
         #endregion

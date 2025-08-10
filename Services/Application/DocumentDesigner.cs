@@ -330,9 +330,7 @@ namespace BauphysikToolWPF.Services.Application
 
             // Draw image from Image property
 
-            var imgToDraw = element.DocumentImage;
-            // Use small image if big one is not available
-            if (imgToDraw.Length == 0) imgToDraw = element.Image;
+            var imgToDraw = element.Image;
 
             if (imgToDraw.Length == 0)
             {

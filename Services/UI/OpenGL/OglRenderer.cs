@@ -179,7 +179,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         #region Image capturing
 
-        public BitmapSource CaptureOffscreenToBitmap(
+        public BitmapSource CaptureRendering(
             float[] rectVertices,
             float[] lineVertices,
             List<(int? TextureId, int Count)> rectBatches,

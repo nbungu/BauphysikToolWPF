@@ -1,7 +1,6 @@
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Services.Application;
 using BT.Geometry;
 using System;
 using System.Collections.Generic;
@@ -18,13 +17,19 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     {
         public readonly CrossSectionBuilder CrossSectionBuilder;
         private readonly int _scenePadding = 1; // Avoids clipping
-
+        
+        public bool IsValid => CrossSectionBuilder.Element.IsValid && CrossSectionBuilder.DrawingGeometries.Any();
         public Rectangle SceneBounds => GetSceneBoundaries();
         private double SizeOf1Cm => CrossSectionBuilder.SizeOf1Cm; // Size of 1 cm in OpenGL units, used for scaling dimensions
         
         public ElementSceneBuilder(Element element, DrawingType drawingType = DrawingType.CrossSection)
         {
             CrossSectionBuilder = new CrossSectionBuilder(element, drawingType);
+        }
+
+        public ElementSceneBuilder()
+        {
+            CrossSectionBuilder = new CrossSectionBuilder();
         }
 
         #region public

@@ -62,10 +62,9 @@ namespace BauphysikToolWPF.UI
         {
             _element.UnselectAllLayers();
             
-            if (!IsVisible && _element.IsValid)
+            if (!IsVisible)
             {
                 Session.SelectedElement.Image = _oglController.GetSceneImageAsBytes();
-                Session.SelectedElement.DocumentImage = Session.SelectedElement.Image;
                 _oglController.Dispose();
             }
         }

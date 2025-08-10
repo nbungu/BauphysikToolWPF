@@ -1,8 +1,7 @@
-﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.UI.CustomControls;
-using System;
+﻿using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using BT.Logging;
 
 namespace BauphysikToolWPF.Services.Application
 {
@@ -67,19 +66,16 @@ namespace BauphysikToolWPF.Services.Application
                     Marshal.FreeCoTaskMem(outPath);
                     return path;
                 }
-                else
-                {
-                    throw new ExternalException("Failed to retrieve Downloads folder path.", result);
-                }
+                throw new ExternalException("Failed to retrieve Downloads folder path.", result);
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error retrieving Downloads folder: {ex.Message}");
+                Logger.LogError($"Error retrieving Downloads folder: {ex.Message}");
                 // Fallback to UserProfile + "Downloads"
                 string fallbackPath = Path.Combine(
                     Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads");
 
-                Console.WriteLine("Falling back to default path:");
+                Logger.LogInfo($"Falling back to default path: {fallbackPath}");
                 return fallbackPath;
             }
         }

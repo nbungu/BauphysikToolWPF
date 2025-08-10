@@ -4,6 +4,7 @@ using System;
 using System.Linq;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.UI.Enums;
+using BauphysikToolWPF.Services.UI;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
 {
@@ -87,22 +88,51 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         public static void RenderMissingElementImages(this Project project)
         {
             var elementsWithoutImage = project.Elements.Where(e => e.Image == Array.Empty<byte>()).ToList();
-            //elementsWithoutImage.ForEach(ImageCreator.RenderElementPreviewImage);
+            var elementScene = new ElementSceneBuilder();
+            elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
+
             foreach (var element in elementsWithoutImage)
             {
-                var bmp = OglOffscreenScene.CaptureElementImage(
-                    element,
+                if (element.Layers.Count == 0)
+                {
+                    element.Image = Array.Empty<byte>();
+                    continue;
+                }
+
+                elementScene.CrossSectionBuilder.Element = element;
+                var bmp = OglOffscreenScene.CaptureSceneImage(
+                    elementScene,
                     800, // Width
                     600, // Height
                     zoom: 1.0, // Zoom factor
                     dpi: 96 // DPI
                 );
-                element.Image = ImageCreator.EncodeBitmapSourceToPng(bmp);
+                element.Image = bmp.ToByteArray();
             }
         }
         public static void RenderAllElementImages(this Project project)
         {
-            project.Elements.ForEach(ImageCreator.RenderElementPreviewImage);
+            var elementScene = new ElementSceneBuilder();
+            elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
+            
+            foreach (var element in project.Elements)
+            {
+                if (element.Layers.Count == 0)
+                {
+                    element.Image = Array.Empty<byte>();
+                    continue;
+                }
+                    
+                elementScene.CrossSectionBuilder.Element = element;
+                var bmp = OglOffscreenScene.CaptureSceneImage(
+                    elementScene,
+                    800, // Width
+                    600, // Height
+                    zoom: 1.0, // Zoom factor
+                    dpi: 96 // DPI
+                );
+                element.Image = bmp.ToByteArray();
+            }
         }
 
         public static void AssignAsParentToElements(this Project project)

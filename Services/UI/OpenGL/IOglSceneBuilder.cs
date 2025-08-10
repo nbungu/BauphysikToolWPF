@@ -15,6 +15,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public List<IDrawingGeometry> SceneShapes { get; }
         public bool IsTextSizeZoomable { get; set; }
         public float ZoomFactor { get; set; }
+        public bool IsValid { get; }
         public void BuildScene();
     }
 }

@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 using static BauphysikToolWPF.Models.Domain.Helper.Enums;
 
@@ -80,9 +81,6 @@ namespace BauphysikToolWPF.Models.Domain
         public Color Color => ColorCode == "#00FFFFFF" ? Colors.Transparent : (Color)ColorConverter.ConvertFromString(ColorCode); // HEX 'ColorCode' Property to 'Color' Type
 
         [JsonIgnore]
-        public byte[] DocumentImage { get; set; } = Array.Empty<byte>();
-
-        [JsonIgnore]
         public byte[] Image { get; set; } = Array.Empty<byte>();
 
         [JsonIgnore]
@@ -97,7 +95,7 @@ namespace BauphysikToolWPF.Models.Domain
         }
         
         [JsonIgnore]
-        public BitmapImage PreviewImage => ImageCreator.ByteArrayToBitmap(Image);
+        public BitmapImage PreviewImage => Image.ToBitmapImage(); // Converts the Image byte[] to a BitmapImage for UI display
 
         [JsonIgnore]
         public double Thickness // d in cm
@@ -288,7 +286,6 @@ namespace BauphysikToolWPF.Models.Domain
             copy.OrientationType = this.OrientationType;
             copy.Name = this.Name + "-Kopie";
             copy.Image = this.Image;
-            copy.DocumentImage = this.DocumentImage;
             copy.ColorCode = this.ColorCode;
             copy.Tag = this.Tag;
             copy.Comment = this.Comment;
