@@ -16,8 +16,8 @@ namespace BauphysikToolWPF.UI
     {
         #region private Fields
 
-        public readonly OglController _oglController;
-        private readonly Element _element; // Selected Element from Session
+        private OglController _oglController;
+        private Element _element; // Selected Element from Session
         private readonly Page_LayerSetup_VM _viewModel; // Selected Element from Session
 
         #endregion
@@ -25,20 +25,12 @@ namespace BauphysikToolWPF.UI
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public Page_LayerSetup()
         {
-            if (Session.SelectedElement is null) return;
-
-            _element = Session.SelectedElement;
-            _element.SortLayers();
-            _element.AssignEffectiveLayers();
-            _element.AssignInternalIdsToLayers();
+            InitalizeElement();
 
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
-            // OpenGL Controller
-            _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
-            _oglController.IsTextSizeZoomable = true;
-            _oglController.Redraw(); // Initial render to display the scene
+            InitalizeOglView();
 
             // View Model
             _viewModel = new Page_LayerSetup_VM(_oglController);
@@ -47,6 +39,22 @@ namespace BauphysikToolWPF.UI
             // Event Handlers
             this.IsVisibleChanged += UserControl_IsVisibleChanged; // Save current canvas as image, just before closing Page_LayerSetup Page
             this.KeyDown += Page_LayerSetup_KeyDown; // Handle KeyDown events for this page
+        }
+
+        private void InitalizeElement()
+        {
+            if (Session.SelectedElement is null) return;
+            _element = Session.SelectedElement;
+            _element.SortLayers();
+            _element.AssignEffectiveLayers();
+            _element.AssignInternalIdsToLayers();
+        }
+
+        private void InitalizeOglView()
+        {
+            _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
+            _oglController.IsTextSizeZoomable = true;
+            _oglController.Redraw(); // Initial render to display the scene
         }
 
         // Save current canvas as image, just before closing Page_LayerSetup Page

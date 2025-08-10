@@ -81,7 +81,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
                 Point markerPos = geom.Rectangle.Center;
                 int fontSize = 40;
-                string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
+                string layerNumber = CrossSectionBuilder.Element.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
                     if (geom.Rectangle.Height < elementBounds.Height)
@@ -150,7 +150,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             foreach (var geom in CrossSectionBuilder.DrawingGeometries)
             {
                 int fontSize = 40;
-                string layerNumber = Session.SelectedElement.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
+                string layerNumber = CrossSectionBuilder.Element.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
 
                 // Rectangle
                 if (geom.ShapeId.Type == ShapeType.Layer)

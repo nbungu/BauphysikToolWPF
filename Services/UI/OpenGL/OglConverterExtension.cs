@@ -6,7 +6,7 @@ using Point = BT.Geometry.Point;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
-    public static class OglConverter
+    public static class OglConverterExtension
     {
         public static Vector4 ToVectorColor(this Brush b)
         {
@@ -28,7 +28,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             {
                 ctx.DrawRectangle(brush, null, new Rect(0, 0, width, height));
             }
-
             var rtb = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
             rtb.Render(dv);
             return rtb;

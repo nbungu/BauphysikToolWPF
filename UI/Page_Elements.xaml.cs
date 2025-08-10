@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.UI
             // View Model
             this.DataContext = new Page_Elements_VM(); // View Model
 
-            //Session.SelectedProject.RenderMissingElementImages();
+            Session.SelectedProject.RenderMissingElementImages();
         }
     }
 }

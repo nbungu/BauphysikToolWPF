@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Services.Application;
 using System;
 using System.Linq;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
@@ -86,7 +87,18 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         public static void RenderMissingElementImages(this Project project)
         {
             var elementsWithoutImage = project.Elements.Where(e => e.Image == Array.Empty<byte>()).ToList();
-            elementsWithoutImage.ForEach(ImageCreator.RenderElementPreviewImage);
+            //elementsWithoutImage.ForEach(ImageCreator.RenderElementPreviewImage);
+            foreach (var element in elementsWithoutImage)
+            {
+                var bmp = OglOffscreenScene.CaptureElementImage(
+                    element,
+                    800, // Width
+                    600, // Height
+                    zoom: 1.0, // Zoom factor
+                    dpi: 96 // DPI
+                );
+                element.Image = ImageCreator.EncodeBitmapSourceToPng(bmp);
+            }
         }
         public static void RenderAllElementImages(this Project project)
         {
