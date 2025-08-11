@@ -34,6 +34,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             int dpi = 96)
         {
             if (scene == null) throw new ArgumentNullException(nameof(scene));
+            if (width <= 0 || height <= 0) throw new ArgumentOutOfRangeException("Width and height must be positive integers.");
 
             // Create an invisible OpenGL context using OpenTK's GameWindow
             var nativeSettings = new NativeWindowSettings

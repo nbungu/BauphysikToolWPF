@@ -33,7 +33,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private Vector _pan = Vector.Empty;
         private Point _lastMousePos = Point.Empty;
         private DateTime _lastLeftClickTime = DateTime.MinValue;
-        private const int DoubleClickThresholdMs = 300;
+        private const int DoubleClickThresholdMs = 250;
 
         #endregion
 
@@ -41,6 +41,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public IOglSceneBuilder SceneBuilder { get; private set; }
         public GLWpfControl View { get; private set; }
+        public bool ForceFlushTexturesOnRender { get; set; } = false; // Forces a flush of the OpenGL context on each render call
         public bool IsSceneInteractive { get; set; } = true;
         public bool IsViewConnected => View != null;
         public bool IsTextSizeZoomable
@@ -130,7 +131,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public void Redraw()
         {
-            _textureManager.Dispose();
+            if (ForceFlushTexturesOnRender) _textureManager.Dispose();
             SceneBuilder.ZoomFactor = ZoomFactor;
 
             // IOglSceneBuilder

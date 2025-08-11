@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.ViewModels;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI
 {
@@ -10,12 +11,18 @@ namespace BauphysikToolWPF.UI
         // Constructor
         public Page_Elements()
         {
+            InitializeElements();
+            
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
+        }
 
-            // View Model
-            this.DataContext = new Page_Elements_VM(); // View Model
-
+        private void InitializeElements()
+        {
+            if (Session.SelectedProject is null) return;
+            Session.SelectedProject.AssignInternalIdsToElements();
+            Session.SelectedProject.AssignAsParentToElements();
+            Session.SelectedProject.SortElements(ElementSortingType.DateDescending);
             Session.SelectedProject.RenderMissingElementImages();
         }
     }

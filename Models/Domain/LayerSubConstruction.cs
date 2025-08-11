@@ -241,7 +241,7 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public Brush BackgroundColor { get; set; } = Brushes.Transparent;
         [JsonIgnore]
-        public Brush TextureBrush { get; set; } = new DrawingBrush();
+        public Brush? TextureBrush { get; set; } = new DrawingBrush();
         [JsonIgnore]
         public double Opacity { get; set; } = 1;
         [JsonIgnore]

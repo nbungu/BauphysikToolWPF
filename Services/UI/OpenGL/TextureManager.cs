@@ -50,6 +50,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public int CreateTextureFromBitmap(BitmapSource bmp, bool isText = false)
         {
+            while (GL.GetError() != ErrorCode.NoError) { }
+
             int width = bmp.PixelWidth;
             int height = bmp.PixelHeight;
             int stride = width * 4;
@@ -70,15 +72,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var err = GL.GetError();
             if (err != ErrorCode.NoError)
             {
-                Debug.WriteLine($"OpenGL Error in CreateTextureFromBitmap: {err}");
-                return 0;
+                Debug.WriteLine($"[OGL] TextureManager: Error in CreateTextureFromBitmap: {err}");
             }
-
             return texId;
         }
 
         public int CreateFontTextureFromBitmap(Bitmap bmp)
         {
+            while (GL.GetError() != ErrorCode.NoError) { }
+
             int width = bmp.Width;
             int height = bmp.Height;
 
@@ -110,10 +112,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var err = GL.GetError();
             if (err != ErrorCode.NoError)
             {
-                Debug.WriteLine($"OpenGL Error in CreateTextTextureFromBitmap: {err}");
-                return 0;
+                Debug.WriteLine($"[OGL] TextureManager: Error in CreateTextTextureFromBitmap: {err}");
             }
-
             return texId;
         }
 
@@ -137,12 +137,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
         }
 
+        // flushing GPU resources to free VRAM
         public void Dispose()
         {
-            foreach (var texId in _hatchTextureCache.Values)
-            {
-                GL.DeleteTexture(texId);
-            }
+            foreach (var texId in _hatchTextureCache.Values) GL.DeleteTexture(texId);
             _hatchTextureCache.Clear();
             _hatchTextureSizes.Clear();
         }

@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -10,7 +11,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using BauphysikToolWPF.Models.UI;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -26,12 +26,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (Session.SelectedProject is null) return;
 
             _dialogService = new DialogService();
-
-            Session.SelectedProject.AssignInternalIdsToElements();
-            Session.SelectedProject.AssignAsParentToElements();
-            Session.SelectedProject.SortElements(SelectedSorting);
-            //Session.SelectedProject.RenderMissingElementImages(); // If Images are not rendered yet
-
+            
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             Session.NewProjectAdded += UpdateNewProjectAdded;

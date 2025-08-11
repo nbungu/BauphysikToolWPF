@@ -6,15 +6,20 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:viewModels="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="700"
              d:DesignWidth="1200">
+
+    <UserControl.DataContext>
+        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
+        <viewModels:Page_Elements_VM/>
+    </UserControl.DataContext>
 
     <UserControl.Resources>
 
         <!-- Checks if Element of WrapPanel is currently SelectedElement -->
         <ui:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
-        <ui:NumberConverter x:Key="NumberConverter" />
 
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->

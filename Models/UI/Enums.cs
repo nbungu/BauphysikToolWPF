@@ -343,7 +343,7 @@ namespace BauphysikToolWPF.Models.UI
 
         public enum ElementSortingType
         {
-            DateDescending,
+            DateDescending = 0,
             DateAscending,
             NameAscending,
             NameDescending,

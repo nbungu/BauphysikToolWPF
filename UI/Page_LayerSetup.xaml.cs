@@ -25,7 +25,7 @@ namespace BauphysikToolWPF.UI
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
         public Page_LayerSetup()
         {
-            InitalizeElement();
+            InitalizeLayers();
 
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
@@ -41,7 +41,7 @@ namespace BauphysikToolWPF.UI
             this.KeyDown += Page_LayerSetup_KeyDown; // Handle KeyDown events for this page
         }
 
-        private void InitalizeElement()
+        private void InitalizeLayers()
         {
             if (Session.SelectedElement is null) return;
             _element = Session.SelectedElement;
@@ -52,6 +52,7 @@ namespace BauphysikToolWPF.UI
 
         private void InitalizeOglView()
         {
+            
             _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
             _oglController.IsTextSizeZoomable = true;
             _oglController.Redraw(); // Initial render to display the scene

@@ -68,6 +68,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             newItem.InternalId = project.EnvelopeItems.DefaultIfEmpty().Max(e => e?.InternalId ?? 0) + 1;
             project.EnvelopeItems.Add(newItem);
         }
+
         public static void DuplicateEnvelopeItemById(this Project project, int envelopeItemId)
         {
             if (project.EnvelopeItems.Count == 0) return;
@@ -102,8 +103,8 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                 elementScene.CrossSectionBuilder.Element = element;
                 var bmp = OglOffscreenScene.CaptureSceneImage(
                     elementScene,
-                    800, // Width
-                    600, // Height
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width, // Width
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height, // Height
                     zoom: 1.0, // Zoom factor
                     dpi: 96 // DPI
                 );
@@ -126,8 +127,8 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                 elementScene.CrossSectionBuilder.Element = element;
                 var bmp = OglOffscreenScene.CaptureSceneImage(
                     elementScene,
-                    800, // Width
-                    600, // Height
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width, // Width
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height, // Height
                     zoom: 1.0, // Zoom factor
                     dpi: 96 // DPI
                 );

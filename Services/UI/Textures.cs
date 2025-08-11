@@ -23,9 +23,9 @@ namespace BauphysikToolWPF.Services.UI
         public static DrawingBrush? AirLayerBrush { get; private set; }
         public static DrawingBrush? SealantBrush { get; private set; }
 
-        public static DrawingBrush GetBrush(MaterialCategory category, Rectangle rectangle, double lineThickness = 1.0)
+        public static DrawingBrush? GetBrush(MaterialCategory category, Rectangle rectangle, double lineThickness = 1.0)
         {
-            if (rectangle.Width <= 0 || rectangle.Height <= 0) return new DrawingBrush();
+            if (rectangle.Width <= 0 || rectangle.Height <= 0) return null;
 
             _redraw = NeedRedraw(category, lineThickness, rectangle);
             _lastLineThickness = lineThickness;
@@ -57,7 +57,7 @@ namespace BauphysikToolWPF.Services.UI
                     if (_redraw || AirLayerBrush is null) AirLayerBrush = GetAirLayerBrush(lineThickness);
                     return AirLayerBrush;
                 default:
-                    return new DrawingBrush();
+                    return null;
             }
         }
 
