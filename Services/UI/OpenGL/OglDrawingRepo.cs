@@ -18,6 +18,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private SdfFont? SdfFont => TextureManager.SdfFont;
         private bool CanDraw => TextureManager != null && SdfFont != null;
         public int ZIndex { get; set; } = 0;
+
+        /// <summary>
+        /// Gets or sets the font size. 
+        /// If <see cref="IsTextSizeZoomable"/> is <c>false</c>, the value represents a fixed height in screen pixels, 
+        /// independent of zoom or viewport scaling. 
+        /// If <see cref="IsTextSizeZoomable"/> is <c>true</c>, the value is interpreted as a height in world units, 
+        /// and scales along with the rest of the scene.
+        /// </summary>
+        public int FontSize { get; set; } = 32;
         public float ZoomFactor { get; set; } = 1f;
         public bool IsTextSizeZoomable { get; set; } = false;
         public bool DebugMode { get; set; } = false; // Enable debug mode for additional rendering features
@@ -295,7 +304,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <param name="color"></param>
         /// <param name="fontSize"></param>
         /// <param name="opacity"></param>
-        public void AddTextRasterized(Point position, string text, Brush color, double fontSize = 24, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
+        public void AddTextRasterized(Point position, string text, Brush color, double fontSize = 32, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
 
@@ -359,7 +368,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <param name="brush"></param>
         /// <param name="fontSize"></param>
         /// <param name="opacity"></param>
-        public void AddTextVectorized(string text, Point position, Brush brush, double fontSize = 24, double opacity = 1.0)
+        public void AddTextVectorized(string text, Point position, Brush brush, double fontSize = 32, double opacity = 1.0)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
 
@@ -412,7 +421,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <param name="brush"></param>
         /// <param name="fontSize"></param>
         /// <param name="opacity"></param>
-        public void AddText(string text, Point position, Brush brush, double fontSize = 48, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null)
+        public void AddText(string text, Point position, Brush brush, double fontSize = 32, double opacity = 1.0, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, ShapeId? shp = null)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
 
@@ -487,7 +496,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (shp is ShapeId id) SceneShapes.Add(new DrawingGeometry(id, boundingBox, ZIndex));
         }
 
-        public void AddLayerTextMarker(Point pt, string text, Brush color, int fontSize = 40, double opacity = 1.0, ShapeId? shp = null)
+        public void AddLayerTextMarker(Point pt, string text, Brush color, int fontSize = 32, double opacity = 1.0, ShapeId? shp = null)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
 
@@ -507,7 +516,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         #region Dimensional Chains
 
-        public void AddDimensionalChainsHorizontal(Point ptStart, double[] xIncrements, double distance, bool drawBelow = false, double oneCmConversion = 1)
+        public void AddDimensionalChainsHorizontal(Point ptStart, double[] xIncrements, double distance, bool drawBelow = false, double oneCmConversion = 1, int fontSize = 32)
         {
             if (xIncrements is null || xIncrements.Length < 1) return;
 
@@ -518,9 +527,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 double nextX = lastX + xIncrements[i];
                 xCoords.Add(nextX);
             }
-            AddDimensionalChainsHorizontal(ptStart.Y, xCoords.ToArray(), distance, drawBelow, oneCmConversion);
+            AddDimensionalChainsHorizontal(ptStart.Y, xCoords.ToArray(), distance, drawBelow, oneCmConversion, fontSize);
         }
-        public void AddDimensionalChainsHorizontal(Point ptStart, double[] xIncrements, double[] xDisplayValues, double distance, bool drawBelow = false)
+        public void AddDimensionalChainsHorizontal(Point ptStart, double[] xIncrements, double[] xDisplayValues, double distance, bool drawBelow = false, int fontSize = 32)
         {
             if (xIncrements is null || xIncrements.Length < 1) return;
 
@@ -531,10 +540,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 double nextX = lastX + xIncrements[i];
                 xCoords.Add(nextX);
             }
-            AddDimensionalChainsHorizontal(ptStart.Y, xCoords.ToArray(), xDisplayValues, distance, drawBelow);
+            AddDimensionalChainsHorizontal(ptStart.Y, xCoords.ToArray(), xDisplayValues, distance, drawBelow, fontSize);
         }
 
-        public void AddDimensionalChainsHorizontal(double yValue, double[] xValues, double distance, bool drawBelow = false, double oneCmConversion = 1)
+        public void AddDimensionalChainsHorizontal(double yValue, double[] xValues, double distance, bool drawBelow = false, double oneCmConversion = 1, int fontSize = 32)
         {
             if (xValues is null || xValues.Length <= 1) return;
 
@@ -552,14 +561,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 string formattedValueString = NumberConverter.ConvertToString(widthInCm, 2);
 
                 // Only last one is a full chain, others are just start ticks
-                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH, fontSize);
                 else
                 {
-                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH, fontSize);
                 }
             }
         }
-        public void AddDimensionalChainsHorizontal(double yValue, double[] xValues, double[] displayValues, double distance, bool drawBelow = false)
+        public void AddDimensionalChainsHorizontal(double yValue, double[] xValues, double[] displayValues, double distance, bool drawBelow = false, int fontSize = 32)
         {
             if (xValues is null || xValues.Length <= 1) return;
 
@@ -576,15 +585,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 string formattedValueString = NumberConverter.ConvertToString(displayValues[i], 2);
 
                 // Only last one is a full chain, others are just start ticks
-                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                if (i == xCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH, fontSize);
                 else
                 {
-                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH);
+                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, Brushes.DimGray, (drawBelow ? TextAlignment.Top : TextAlignment.Bottom) | TextAlignment.CenterH, fontSize);
                 }
             }
         }
 
-        public void AddDimensionalChainsVertical(double xValue, double[] yValues, double distance, bool drawLeft = false, double oneCmConversion = 1)
+        public void AddDimensionalChainsVertical(double xValue, double[] yValues, double distance, bool drawLeft = false, double oneCmConversion = 1, int fontSize = 32)
         {
             if (yValues is null || yValues.Length <= 1) return;
 
@@ -602,15 +611,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 string formattedValueString = NumberConverter.ConvertToString(heightInCm, 2);
 
                 // Only last one is a full chain, others are just start ticks
-                if (i == yCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, alignment: TextAlignment.CenterV | (drawLeft ? TextAlignment.Right : TextAlignment.Left));
+                if (i == yCoords.Count - 2) DrawSingleDimChain(startPt, endPt, distance, formattedValueString, alignment: TextAlignment.CenterV | (drawLeft ? TextAlignment.Right : TextAlignment.Left), fontSize: fontSize);
                 else
                 {
-                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, alignment: TextAlignment.CenterV | (drawLeft ? TextAlignment.Right : TextAlignment.Left));
+                    DrawSingleDimChainOnlyStartTick(startPt, endPt, distance, formattedValueString, alignment: TextAlignment.CenterV | (drawLeft ? TextAlignment.Right : TextAlignment.Left), fontSize: fontSize);
                 }
             }
         }
 
-        public void AddDimensionalChainsVertical(Point ptStart, double[] yIncrements, double distance, bool drawLeft = false, double oneCmConversion = 1)
+        public void AddDimensionalChainsVertical(Point ptStart, double[] yIncrements, double distance, bool drawLeft = false, double oneCmConversion = 1, int fontSize = 32)
         {
             if (yIncrements is null || yIncrements.Length < 1) return;
 
@@ -621,15 +630,15 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 double nextY = lastY + yIncrements[i];
                 yCoords.Add(nextY);
             }
-            AddDimensionalChainsVertical(ptStart.Y, yCoords.ToArray(), distance, drawLeft, oneCmConversion);
+            AddDimensionalChainsVertical(ptStart.Y, yCoords.ToArray(), distance, drawLeft, oneCmConversion, fontSize);
         }
         
-        public void DrawSingleDimChain(Line line, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 40, ShapeId? shp = null)
+        public void DrawSingleDimChain(Line line, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 32, ShapeId? shp = null)
         {
             DrawSingleDimChain(line.Start, line.End, distance, displayedValue, lineColor, alignment, fontSize, shp);
         }
 
-        public void DrawSingleDimChain(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 40, ShapeId? shp = null)
+        public void DrawSingleDimChain(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 32, ShapeId? shp = null)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
             
@@ -668,7 +677,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             AddText(displayedValue, pos, lineColor, fontSize: fontSize, alignment: alignment, shp: shp);
         }
 
-        private void DrawSingleDimChainOnlyStartTick(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 40, ShapeId? shp = null)
+        private void DrawSingleDimChainOnlyStartTick(Point ptStart, Point ptEnd, double distance, string displayedValue, Brush? lineColor = null, TextAlignment alignment = TextAlignment.Left | TextAlignment.Top, int fontSize = 32, ShapeId? shp = null)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
 

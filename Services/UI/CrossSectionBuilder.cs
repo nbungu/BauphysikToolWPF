@@ -39,6 +39,9 @@ namespace BauphysikToolWPF.Services.UI
                 UpdateCanvasSize();
             }
         }
+        /// <summary>
+        /// Canvas Size in Pixels.
+        /// </summary>
         public Size CanvasSize { get; set; }
 
         private DrawingType _drawingType = DrawingType.CrossSection;
@@ -89,10 +92,10 @@ namespace BauphysikToolWPF.Services.UI
         private void UpdateCanvasSize()
         {
             if (DrawingType == DrawingType.CrossSection)
-                CanvasSize = new Size(1280, 720);
+                CanvasSize = new Size(960, 480);
             else if (DrawingType == DrawingType.VerticalCut)
-                CanvasSize = new Size(720, 1280);
-            else CanvasSize = new Size(720, 720);
+                CanvasSize = new Size(480, 960);
+            else CanvasSize = new Size(480, 480);
         }
 
         // Vertikalschnitt, Canvas in PX

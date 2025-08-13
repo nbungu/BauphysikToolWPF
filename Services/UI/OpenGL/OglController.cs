@@ -83,6 +83,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             view.MouseMove += OnMouseMove;
             view.MouseLeave += OnMouseLeave;
             view.KeyDown += OnKeyDown;
+            view.SizeChanged += (_, __) => Redraw();
             view.MouseRightButtonUp += (_, __) => ResetView();
 
             view.Start(settings);
@@ -125,14 +126,16 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void SetZoom(double zoom)
         {
             _zoomFactor = (float)Math.Clamp(zoom, 0.4, 6.0);
-            if (SceneBuilder.IsTextSizeZoomable) Redraw();
-            else Invalidate();
+            if (SceneBuilder.IsTextSizeZoomable) Invalidate();
+            else Redraw();
         }
 
         public void Redraw()
         {
             if (ForceFlushTexturesOnRender) _textureManager.Dispose();
             SceneBuilder.ZoomFactor = ZoomFactor;
+
+            UpdateFontSizeForViewport(32);
 
             // IOglSceneBuilder
             SceneBuilder.RectVertices.Clear();
@@ -160,6 +163,32 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 SceneBuilder.LineBatches,
                 proj);
             Console.WriteLine("[OGL] Render called");
+        }
+
+        /// <summary>
+        /// For fonts to stay the same screen size
+        /// regardless of viewport size or zoom,
+        /// you need to render them in screen space instead of world space.
+        /// text rendering becomes viewport-independent
+        /// </summary>
+        private void UpdateFontSizeForViewport(int desiredPixelHeight = 32)
+        {
+            // Avoid divide-by-zero if viewport or scene bounds are not valid
+            if (View.ActualHeight <= 0 || SceneBuilder.SceneBounds.Height <= 0)
+                return;
+
+            // Pixels per world unit: how many screen pixels represent one unit in the scene
+            float ctrlH = (float)View.ActualHeight, ctrlW = (float)View.ActualWidth;
+            float contH = (float)SceneBuilder.SceneBounds.Height, contW = (float)SceneBuilder.SceneBounds.Width;
+            float scaleY = ctrlH / contH, scaleX = ctrlW / contW;
+            float scale = MathF.Min(scaleX, scaleY) * ZoomFactor;
+            float pixelsPerWorldUnit = scale;
+
+            // Convert desired pixel height into equivalent world-space height
+            float worldHeight = desiredPixelHeight / pixelsPerWorldUnit;
+
+            // Assign as world-units font size (assuming SceneBuilder.FontSize is in world units)
+            SceneBuilder.FontSize = (int)worldHeight;
         }
 
         public static Matrix4 BuildProjection(Size control, Rectangle content, float zoom = 1f, Vector? pan = null)
@@ -227,7 +256,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         #region Scene Image Capture
 
         /// <summary>
-        /// Captures an offscreen image of the OpenGL scene at the given resolution and zoom factor.
+        /// Captures an image of the current OpenGL scene at the given resolution and zoom factor.
         /// </summary>
         public BitmapSource GetSceneImage(int width, int height, double zoom = 1.0, int dpi = 96)
         {
@@ -254,7 +283,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
         }
         /// <summary>
-        /// Captures an offscreen image of the OpenGL scene at the given resolution and zoom factor.
+        /// Captures an image of the current OpenGL scene at the given resolution and zoom factor.
         /// </summary>
         public BitmapSource GetSceneImage(double zoom = 1.0, int dpi = 96)
         {

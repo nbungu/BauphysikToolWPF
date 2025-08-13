@@ -21,7 +21,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public bool IsValid => CrossSectionBuilder.Element.IsValid && CrossSectionBuilder.DrawingGeometries.Any();
         public Rectangle SceneBounds => GetSceneBoundaries();
         private double SizeOf1Cm => CrossSectionBuilder.SizeOf1Cm; // Size of 1 cm in OpenGL units, used for scaling dimensions
-        
+
         public ElementSceneBuilder(Element element, DrawingType drawingType = DrawingType.CrossSection)
         {
             CrossSectionBuilder = new CrossSectionBuilder(element, drawingType);
@@ -147,7 +147,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private void DrawFullCrossSectionScene()
         {
             var elementBounds = GetContentBounds(CrossSectionBuilder.DrawingGeometries);
-            int fontSize = (int)SizeOf1Cm * 2;
             int dimChainOffset = (int)SizeOf1Cm * 2;
 
             ZIndex = 0;
@@ -178,7 +177,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
                 // Layer Marker
                 ZIndex = 2;
-                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: geom.ShapeId);
+                AddLayerTextMarker(geom.Rectangle.Center, layerNumber, geom.BorderPen.Brush, FontSize, opacity: geom.Opacity, shp: geom.ShapeId);
 
                 // Rectangle Borders
                 if (geom.BorderPen.Brush != Brushes.Black)
@@ -202,13 +201,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             // Vertical full element
             DrawSingleDimChain(elementBounds.RightLine, dimChainOffset * 3,
                 NumberConverter.ConvertToString(elementBounds.Height / SizeOf1Cm), 
-                alignment: TextAlignment.Left | TextAlignment.CenterV, fontSize: fontSize);
+                alignment: TextAlignment.Left | TextAlignment.CenterV, fontSize: FontSize);
 
             // Vertical Layers
             if (CrossSectionBuilder.DrawingGeometries.Count > 1)
             {
                 intervals = MeasurementDrawing.GetMeasurementChainIntervals(CrossSectionBuilder.DrawingGeometries.Where(g => g.ShapeId.Type == ShapeType.Layer), Axis.Z, false);
-                AddDimensionalChainsVertical(elementBounds.Right, intervals, dimChainOffset, false, SizeOf1Cm);
+                AddDimensionalChainsVertical(elementBounds.Right, intervals, dimChainOffset, false, SizeOf1Cm, FontSize);
             }
 
             // Sub Constructions
@@ -216,11 +215,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             {
                 // Vertical Sub Constructions
                 intervals = MeasurementDrawing.GetMeasurementChainIntervals(CrossSectionBuilder.DrawingGeometries, Axis.Z, true);
-                AddDimensionalChainsVertical(elementBounds.Left, intervals, dimChainOffset, true, SizeOf1Cm);
+                AddDimensionalChainsVertical(elementBounds.Left, intervals, dimChainOffset, true, SizeOf1Cm, FontSize);
 
                 // Horizontal Sub Constructions
                 intervals = MeasurementDrawing.GetMeasurementChainIntervals(CrossSectionBuilder.DrawingGeometries, Axis.X, true);
-                AddDimensionalChainsHorizontal(elementBounds.Top, intervals, dimChainOffset, false, SizeOf1Cm);
+                AddDimensionalChainsHorizontal(elementBounds.Top, intervals, dimChainOffset, false, SizeOf1Cm, FontSize);
             }
 
             if (DebugMode)

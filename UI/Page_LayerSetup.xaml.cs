@@ -52,9 +52,8 @@ namespace BauphysikToolWPF.UI
 
         private void InitalizeOglView()
         {
-            
             _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
-            _oglController.IsTextSizeZoomable = true;
+            _oglController.IsTextSizeZoomable = false;
             _oglController.Redraw(); // Initial render to display the scene
         }
 
