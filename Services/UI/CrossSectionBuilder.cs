@@ -26,23 +26,29 @@ namespace BauphysikToolWPF.Services.UI
         private bool _isOverflowing;
 
         // Static, because globally valid for all Instances
-        public static double SizeOf1Cm = 16.0; // starting value
+        public static double SizeOf1Cm; // starting value
 
-        public Element Element { get; set; }
-        public Rectangle CanvasSize { get; set; }
+        private Element _element;
+
+        public Element Element
+        {
+            get => _element;
+            set
+            {
+                _element = value;
+                UpdateCanvasSize();
+            }
+        }
+        public Size CanvasSize { get; set; }
+
         private DrawingType _drawingType = DrawingType.CrossSection;
-
         public DrawingType DrawingType
         {
             get => _drawingType;
             set
             {
-                if (value == DrawingType.CrossSection)
-                    CanvasSize = new Rectangle(new Point(0, 0), 880, 400);
-                else if (value == DrawingType.VerticalCut)
-                    CanvasSize = new Rectangle(new Point(0, 0), 400, 880);
-                else CanvasSize = new Rectangle(new Point(0, 0), 880, 880);
                 _drawingType = value;
+                UpdateCanvasSize();
             }
         }
         public AlignmentVariant Alignment { get; set; }
@@ -65,7 +71,7 @@ namespace BauphysikToolWPF.Services.UI
             DrawingGeometries = GetDrawing();
         }
 
-        public CrossSectionBuilder(Element? element, Rectangle canvasSize, DrawingType drawingType, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
+        public CrossSectionBuilder(Element? element, Size canvasSize, DrawingType drawingType, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {
             Element = element ?? throw new ArgumentNullException(nameof(element), "Element cannot be null.");
             DrawingType = drawingType;
@@ -78,6 +84,15 @@ namespace BauphysikToolWPF.Services.UI
         {
             DrawingGeometries = GetDrawing();
             Logger.LogInfo($"Updated cross section drawing of element: {Element}.");
+        }
+
+        private void UpdateCanvasSize()
+        {
+            if (DrawingType == DrawingType.CrossSection)
+                CanvasSize = new Size(1280, 720);
+            else if (DrawingType == DrawingType.VerticalCut)
+                CanvasSize = new Size(720, 1280);
+            else CanvasSize = new Size(720, 720);
         }
 
         // Vertikalschnitt, Canvas in PX
@@ -105,9 +120,9 @@ namespace BauphysikToolWPF.Services.UI
         {
             if (DrawingType == DrawingType.CrossSection) SizeOf1Cm = CanvasSize.Height / Element.Thickness;
             else if (DrawingType == DrawingType.VerticalCut) SizeOf1Cm = CanvasSize.Width / Element.Thickness;
-            else SizeOf1Cm = 16.67;
+            else SizeOf1Cm = 1.0;
         }
-        
+
         private List<IDrawingGeometry> ReturnStackedGeometries()
         {
             var layerDrawings = new List<IDrawingGeometry>();
@@ -152,7 +167,7 @@ namespace BauphysikToolWPF.Services.UI
                                     
                                     // Add padding to the width when overflowing. Creates an extra space of half the width of the SubConstr on each side.
                                     totalSubconstructionsWidth += l.SubConstruction.Width * SizeOf1Cm;
-                                    CanvasSize = new Rectangle(CanvasSize.Left, CanvasSize.Top, totalSubconstructionsWidth, CanvasSize.Height);
+                                    CanvasSize = new Size(totalSubconstructionsWidth, CanvasSize.Height);
                                     return GetDrawing();
                                 }
                                 // If it fits within the CanvasSize width, center normally
@@ -197,7 +212,7 @@ namespace BauphysikToolWPF.Services.UI
                                 {
                                     // Add padding to the width when overflowing. Creates an extra space of half the width of the SubConstr on each side.
                                     totalSubconstructionsHeight += l.SubConstruction.Width * SizeOf1Cm;
-                                    CanvasSize = new Rectangle(CanvasSize.Left, CanvasSize.Top, CanvasSize.Width, totalSubconstructionsHeight);
+                                    CanvasSize = new Size(CanvasSize.Width, totalSubconstructionsHeight);
                                     return GetDrawing();
                                 }
                                 // If it fits within the CanvasSize width, center normally

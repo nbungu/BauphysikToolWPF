@@ -33,7 +33,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             _element = Session.SelectedElement;
 
-            _verticalCut = new CrossSectionBuilder(_element, new Rectangle(new Point(0, 0), 360, 450), DrawingType.VerticalCut);
+            _verticalCut = new CrossSectionBuilder(_element, new Size(360, 450), DrawingType.VerticalCut);
             _dynamicTempCalc = new DynamicTempCalc(_element, _element.ThermalCalcConfig);
             _dynamicTempCalc.CalculateHomogeneous();
             _dynamicTempCalc.CalculateDynamicValues();
@@ -99,7 +99,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         // Vertical Cut
         public List<IDrawingGeometry> VerticalCutDrawing => _verticalCut.DrawingGeometries;
-        public Rectangle CanvasSizeVerticalCut => _verticalCut.CanvasSize;
+        public Size CanvasSizeVerticalCut => _verticalCut.CanvasSize;
         public ISeries[] DataPoints_i => GetDataPoints_i();
         public ISeries[] DataPoints_e => GetDataPoints_e();
         public Axis[] YAxes_i => DrawYAxes();

@@ -1,7 +1,6 @@
-﻿using System.Windows.Controls;
-using BauphysikToolWPF.Models.Domain.Helper;
+﻿using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.UI.ViewModels;
+using System.Windows.Controls;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI

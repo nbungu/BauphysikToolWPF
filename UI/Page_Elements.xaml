@@ -93,7 +93,7 @@
         <ItemsPanelTemplate x:Key="WrapPanelTemplate">
             <WrapPanel ItemWidth="144" ItemHeight="208" SnapsToDevicePixels="True" Focusable="True"/>
         </ItemsPanelTemplate>
-        
+
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
         <DataTemplate x:Key="WrapPanelItemDesignTemplate">
             <Grid Margin="8">
@@ -154,14 +154,14 @@
         <ItemsPanelTemplate x:Key="TagsWrapPanelTemplate">
             <WrapPanel ItemWidth="Auto" ItemHeight="Auto" SnapsToDevicePixels="True"/>
         </ItemsPanelTemplate>
-        
+
         <!--Here: Binding (DataContext) is typeof 'TagList' set by ItemsSource Property-->
         <DataTemplate x:Key="TagsWrapPanelItemDesignTemplate">
             <Grid Margin="4">
                 <Button Content="{Binding}" Style="{StaticResource ButtonTagB}"/>
             </Grid>
         </DataTemplate>
-        
+
         <Style x:Key="WrapPanelGroupingHeader" TargetType="{x:Type GroupItem}">
             <Setter Property="Template">
                 <Setter.Value>
@@ -258,7 +258,7 @@
                    FontStyle="Italic"
                    Foreground="Gray"/>
         </Grid>
-        
+
         <!-- Right -->
         <Grid Grid.Row="1" Grid.Column="2" Margin="16">
             <Grid.RowDefinitions>
@@ -276,7 +276,7 @@
                 <Button Style="{StaticResource ButtonMiniTransparent}" Tag="{StaticResource ButtonIcon_Delete_B}" ToolTip="Löschen" Command="{Binding DeleteElementCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
                 <Button Style="{StaticResource ButtonMiniTransparent}" Tag="{StaticResource ButtonIcon_ExportPDF_B}" ToolTip="Bauteil-PDF erstellen" Command="{Binding CreateSingleElementPdfCommand}" CommandParameter="{Binding SelectedElement.InternalId}" IsEnabled="{Binding ElementToolsAvailable}" Margin="0,0,8,0"/>
             </StackPanel>
-            
+
             <Border Grid.Row="2" CornerRadius="8" Background="{StaticResource PrimaryMediumBrush}" Margin="0,0,0,8">
                 <ScrollViewer VerticalScrollBarVisibility="Hidden" Margin="8" ClipToBounds="True" Visibility="{Binding ElementInfoVisibility}">
                     <StackPanel>
@@ -288,7 +288,7 @@
                         <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>
 
                         <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.PreviewImage}" Margin="0,8,0,8"/>
-                        
+
                         <Expander Header="Bauteildaten" IsExpanded="True" Background="Transparent" Margin="0">
                             <customControls:PropertyDataGrid x:Name="ElementPropertiesDataGrid"
                                                              Properties="{Binding ElementProperties}"

@@ -168,7 +168,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             var rectF = content.ToRectangleF();
 
+            // pixel dimensions of the control.
             float ctrlW = (float)control.Width, ctrlH = (float)control.Height;
+            // scene bounds in whatever coordinate space or unit your drawing shapes use
             float contW = rectF.Width, contH = rectF.Height;
 
             float scaleX = ctrlW / contW;
