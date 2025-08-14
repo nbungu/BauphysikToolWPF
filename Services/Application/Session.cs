@@ -85,6 +85,7 @@ namespace BauphysikToolWPF.Services.Application
 
         #endregion
 
+
         public static string ProjectFilePath { get; set; } = string.Empty;
 
         public static Project? SelectedProject { get; set; }

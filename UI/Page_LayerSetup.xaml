@@ -149,6 +149,24 @@
                 <Label Grid.Column="0" Content="Außen" VerticalAlignment="Bottom" HorizontalAlignment="Left"/>
                 <Label Grid.Column="1" Visibility="{Binding NoLayersVisibility}" Content="Keine Abbildung verfügbar" Foreground="Gray" FontStyle="Italic" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
+                <StackPanel Grid.Column="0" Orientation="Vertical" Margin="0" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Button ToolTip="Maßketten ein-/ausschalten"
+                            Command="{Binding ToggleDecorationVisibilityCommand}"
+                            Margin="0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource ButtonMiniTransparent}">
+                                <Setter Property="Tag" Value="{StaticResource ButtonIcon_Hide_B}" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ShowDecoration}" Value="True">
+                                        <Setter Property="Tag" Value="{StaticResource ButtonIcon_Show_B}" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+
+
                 <Grid Grid.Column="1" Margin="8">
                     <glWpfControl:GLWpfControl x:Name="OpenTkControl"/>
                 </Grid>

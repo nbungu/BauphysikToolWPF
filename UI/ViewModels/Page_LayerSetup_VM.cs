@@ -22,12 +22,15 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         private readonly IDialogService _dialogService;
         private readonly Element _element;
-        
+        private readonly OglController _oglController;
+
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM(OglController scene)
         {
             if (Session.SelectedElement is null) return;
 
+            // TODO: Move OglController to Session Data
+            _oglController = scene;
             _element = Session.SelectedElement;
             _dialogService = new DialogService();
 
@@ -37,8 +40,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.SelectedElementChanged += ElementChanged;
             Session.EnvVarsChanged += EnvVarsChanged;
 
-            scene.ShapeClicked += OnShapeClicked;
-            scene.ShapeDoubleClicked += OnShapeDoubleClicked;
+            _oglController.ShapeClicked += OnShapeClicked;
+            _oglController.ShapeDoubleClicked += OnShapeDoubleClicked;
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += PropertyItemChanged;
@@ -142,6 +145,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void LayerDoubleClick() => EditLayer();
 
+        [RelayCommand]
+        private void ToggleDecorationVisibility()
+        {
+           _oglController.ShowSceneDecoration = !_oglController.ShowSceneDecoration;
+           OnPropertyChanged(nameof(ShowDecoration));
+        }
+
         // This method will be called whenever SelectedLayer changes
         //partial void OnSelectedListViewItemChanged(Layer? value) => SelectedLayerIndexChanged(value);
         partial void OnSelectedLayerIndexChanged(int value) => SelectedLayerIndexChanged(value);
@@ -193,6 +203,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         * Not Observable, not directly mutated by user input
         */
        
+        public bool ShowDecoration => _oglController.ShowSceneDecoration;
         public string Title => $"'{_element.Name}' - Schichtaufbau ";
         public string SelectedElementColorCode => _element.ColorCode;
         public string SelectedElementConstructionName => _element.Construction.TypeName;

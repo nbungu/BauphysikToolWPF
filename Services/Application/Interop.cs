@@ -5,44 +5,6 @@ namespace BauphysikToolWPF.Services.Application
 {
     internal static class Interop
     {
-        #region OpenGL Interop
-
-        [DllImport("user32.dll")]
-        internal static extern int SetWindowLong(IntPtr hWnd, int nIndex, uint dwNewLong);
-
-        [DllImport("user32.dll")]
-        internal static extern uint GetWindowLong(IntPtr hWnd, int nIndex);
-
-        [DllImport("user32.dll")]
-        internal static extern int SetParent(IntPtr hWndChild, IntPtr hWndParent);
-
-        [DllImport("user32.dll")]
-        internal static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        [DllImport("user32.dll")]
-        internal static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, uint dwFlags);
-
-        [DllImport("user32.dll")]
-        internal static extern bool EnableWindow(IntPtr hWnd, bool bEnable);
-
-        internal const int GWL_STYLE = -16;
-        internal const int GWL_EXSTYLE = -20;
-
-        internal const int SW_SHOWNA = 8;
-
-        internal const uint WS_CHILD = 0x40000000;
-        internal const uint WS_POPUP = 0x80000000;
-
-        internal const uint WS_EX_TOOLWINDOW = 0x00000080;
-        internal const uint WS_EX_NOACTIVATE = 0x08000000;
-        internal const uint WS_EX_LAYERED = 0x00080000; // supported for child windows too, from Windows 8 further.
-        internal const uint WS_EX_TRANSPARENT = 0x00000020;
-
-        internal const uint LWA_ALPHA = 0x00000002;
-        internal const uint LWA_COLORKEY = 0x00000001;
-
-        #endregion
-
         #region Monitor API for Resizing: Fix for Window Maximized placement (7px cut off)
 
         [DllImport("user32.dll")]

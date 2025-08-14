@@ -30,6 +30,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private bool _disposed;
         private bool _dragging;
         private float _zoomFactor = 1.0f; // Used to track zoom changes
+        private float _scale = 1.0f; // Used to track scale changes for text rendering
         private Vector _pan = Vector.Empty;
         private Point _lastMousePos = Point.Empty;
         private DateTime _lastLeftClickTime = DateTime.MinValue;
@@ -41,20 +42,38 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public IOglSceneBuilder SceneBuilder { get; private set; }
         public GLWpfControl View { get; private set; }
+
+        // TODO: Config
         public bool ForceFlushTexturesOnRender { get; set; } = false; // Forces a flush of the OpenGL context on each render call
         public bool IsSceneInteractive { get; set; } = true;
         public bool IsViewConnected => View != null;
         public bool IsTextSizeZoomable
         {
             get => SceneBuilder.IsTextSizeZoomable;
-            set => SceneBuilder.IsTextSizeZoomable = value;
+            set
+            {
+                SceneBuilder.IsTextSizeZoomable = value;
+                Redraw();
+            }
         }
+
+        public bool ShowSceneDecoration
+        {
+            get => SceneBuilder.ShowSceneDecoration;
+            set
+            {
+                SceneBuilder.ShowSceneDecoration = value;
+                Redraw();
+            }
+        }
+
+
         public float ZoomFactor => _zoomFactor;
         public Size CurrentSceneSize => new Size(SceneBuilder.SceneBounds.Width, SceneBuilder.SceneBounds.Height);
         public Size CurrentViewSize => new Size((int)View.ActualWidth, (int)View.ActualHeight);
 
         #endregion
-
+        
         public OglController(GLWpfControl view, IOglSceneBuilder sceneBuilder)
         {
             _textureManager = new TextureManager();
@@ -135,6 +154,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (ForceFlushTexturesOnRender) _textureManager.Dispose();
             SceneBuilder.ZoomFactor = ZoomFactor;
 
+            // TODO: Dont manage font size here
             UpdateFontSizeForViewport(32);
 
             // IOglSceneBuilder
@@ -144,6 +164,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             SceneBuilder.LineBatches.Clear();
             SceneBuilder.SceneShapes.Clear();
             SceneBuilder.BuildScene();
+
             // Sort the list in place by z-Index for correct hit testing
             SceneBuilder.SceneShapes.Sort((a, b) => b.ZIndex.CompareTo(a.ZIndex));
 
@@ -177,11 +198,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (View.ActualHeight <= 0 || SceneBuilder.SceneBounds.Height <= 0)
                 return;
 
-            // Pixels per world unit: how many screen pixels represent one unit in the scene
+            // pixel dimensions of the control.
             float ctrlH = (float)View.ActualHeight, ctrlW = (float)View.ActualWidth;
+            // scene bounds in whatever coordinate space or unit your drawing shapes use
             float contH = (float)SceneBuilder.SceneBounds.Height, contW = (float)SceneBuilder.SceneBounds.Width;
             float scaleY = ctrlH / contH, scaleX = ctrlW / contW;
             float scale = MathF.Min(scaleX, scaleY) * ZoomFactor;
+
+            // Pixels per world unit: how many screen pixels represent one unit in the scene
             float pixelsPerWorldUnit = scale;
 
             // Convert desired pixel height into equivalent world-space height
@@ -191,16 +215,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             SceneBuilder.FontSize = (int)worldHeight;
         }
 
-        public static Matrix4 BuildProjection(Size control, Rectangle content, float zoom = 1f, Vector? pan = null)
+        public static Matrix4 BuildProjection(Size viewportSize, Rectangle sceneContent, float zoom = 1f, Vector? pan = null)
         {
             Vector panVect = pan ?? Vector.Empty;
-
-            var rectF = content.ToRectangleF();
-
+            
             // pixel dimensions of the control.
-            float ctrlW = (float)control.Width, ctrlH = (float)control.Height;
+            float ctrlW = (float)viewportSize.Width, ctrlH = (float)viewportSize.Height;
             // scene bounds in whatever coordinate space or unit your drawing shapes use
-            float contW = rectF.Width, contH = rectF.Height;
+            float contW = (float)sceneContent.Width, contH = (float)sceneContent.Height;
 
             float scaleX = ctrlW / contW;
             float scaleY = ctrlH / contH;
@@ -210,8 +232,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             float baseDivisorHeight = ctrlH / 2f;
 
             // Inital offsets set to the top-left corner of the content rectangle
-            float originOffsetX = rectF.X / baseDivisorWidth;
-            float originOffsetY = rectF.Y / baseDivisorHeight;
+            float originOffsetX = (float)sceneContent.X / baseDivisorWidth;
+            float originOffsetY = (float)sceneContent.Y / baseDivisorHeight;
 
             var dx = 0f;
             var dy = 0f;

@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.Models.Domain;
-using BT.Geometry;
+﻿using BT.Geometry;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;

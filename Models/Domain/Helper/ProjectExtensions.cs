@@ -89,7 +89,10 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         public static void RenderMissingElementImages(this Project project)
         {
             var elementsWithoutImage = project.Elements.Where(e => e.Image == Array.Empty<byte>()).ToList();
+            if (elementsWithoutImage.Count == 0) return;
+
             var elementScene = new ElementSceneBuilder();
+            elementScene.ShowSceneDecoration = false; // Disable scene decoration for image rendering
             elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
 
             foreach (var element in elementsWithoutImage)

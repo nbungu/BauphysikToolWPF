@@ -22,7 +22,7 @@ namespace BauphysikToolWPF.UI
             Session.SelectedProject.AssignInternalIdsToElements();
             Session.SelectedProject.AssignAsParentToElements();
             Session.SelectedProject.SortElements(ElementSortingType.DateDescending);
-            //Session.SelectedProject.RenderMissingElementImages();
+            Session.SelectedProject.RenderMissingElementImages();
         }
     }
 }

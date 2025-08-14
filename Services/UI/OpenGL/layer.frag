@@ -40,7 +40,7 @@ void main()
     } else if (isSdfText == 1) {
         float sdfDist = texture(sdfFont, vTexCoord).a; // sample alpha channel (.a), (use .r or .a based on atlas export)
         float smoothing = fwidth(sdfDist) * 0.5; // dynamic smoothing based on screen-space derivatives
-        float alpha = smoothstep(0.45, 0.53, sdfDist); // Tweak the threshold: Closer to 0.5 = sharper edges
+        float alpha = smoothstep(0.44, 0.54, sdfDist); // Tweak the threshold: Closer to 0.5 = sharper edges
         
         // Discard fragments with very low alpha (fixes visible "bounding box" around each char)
         if (alpha < 0.01)
