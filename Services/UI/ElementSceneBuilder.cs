@@ -1,13 +1,14 @@
-using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Models.UI;
-using BT.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
+using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.UI.OpenGL;
+using BT.Geometry;
 
-namespace BauphysikToolWPF.Services.UI.OpenGL
+namespace BauphysikToolWPF.Services.UI
 {
     /// <summary>
     /// Converts geometry from CrossSectionBuilder into OpenGL-ready vertex data (rectangles and lines),

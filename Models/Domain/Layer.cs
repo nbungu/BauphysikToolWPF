@@ -2,13 +2,13 @@
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using BT.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
-using BauphysikToolWPF.Services.UI;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
@@ -84,19 +84,16 @@ namespace BauphysikToolWPF.Models.Domain
                 {
                     _propertyBag = new List<IPropertyItem>()
                     {
+                        new PropertyItem<string>("Material", () => Material.Name),
                         new PropertyItem<string>("Kategorie", () => Material.CategoryName),
-                        new PropertyItem<string>("Materialquelle", () => Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
+                        //new PropertyItem<string>("Materialquelle", () => Material.IsUserDefined ? "Benutzerdefiniert" : "aus Materialdatenbank"),
                         new PropertyItem<double>(Symbol.Thickness, () => Thickness, value => Thickness = value),
-                        new PropertyItem<double>(Symbol.ThermalConductivity, () => Material.ThermalConductivity) { DecimalPlaces = 3 },
                         new PropertyItem<double>(Symbol.RValueLayer, () => R_Value)
                         {
                             SymbolSubscriptText = $"{LayerNumber}"
                         },
-                        new PropertyItem<int>(Symbol.RawDensity, () => Material.BulkDensity),
                         new PropertyItem<double>(Symbol.AreaMassDensity, () => AreaMassDensity),
                         new PropertyItem<double>(Symbol.SdThickness, () => Sd_Thickness) { DecimalPlaces = 1 },
-                        new PropertyItem<double>(Symbol.VapourDiffusionResistance, () => Material.DiffusionResistance),
-                        new PropertyItem<int>(Symbol.SpecificHeatCapacity, () => Material.SpecificHeatCapacity),
                         new PropertyItem<double>(Symbol.ArealHeatCapacity, () => ArealHeatCapacity)
                         {
                             SymbolSubscriptText = $"{LayerNumber}"

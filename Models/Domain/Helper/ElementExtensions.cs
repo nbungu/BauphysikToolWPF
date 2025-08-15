@@ -1,4 +1,6 @@
-﻿using BauphysikToolWPF.Services.UI.OpenGL;
+﻿using System;
+using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using System.Linq;
 using static BauphysikToolWPF.Models.Database.Helper.Enums;
 
@@ -121,6 +123,30 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         public static void UnselectAllLayers(this Element element)
         {
             element.Layers.ForEach(l => l.IsSelected = false);
+        }
+
+        public static void RenderOffscreenImage(this Element element, bool withDecorations = true)
+        {
+            var elementScene = new ElementSceneBuilder();
+            elementScene.ShowSceneDecoration = withDecorations;
+            elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
+
+            if (element.Layers.Count == 0)
+            {
+                element.Image = Array.Empty<byte>();
+            }
+            else
+            {
+                elementScene.CrossSectionBuilder.Element = element;
+                var bmp = OglOffscreenScene.CaptureSceneImage(
+                    elementScene,
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width, // Width
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height, // Height
+                    zoom: 1.0, // Zoom factor
+                    dpi: 96 // DPI
+                );
+                element.Image = bmp.ToByteArray();
+            }
         }
     }
 }

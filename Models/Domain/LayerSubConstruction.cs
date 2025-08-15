@@ -74,7 +74,6 @@ namespace BauphysikToolWPF.Models.Domain
                         new PropertyItem<double>(Symbol.Width, () => Width, value => Width = value),
                         new PropertyItem<double>(Symbol.Distance, () => Spacing, value => Spacing = value),
                         new PropertyItem<double>("Achsenabstand", Symbol.Distance, () => AxisSpacing, value => AxisSpacing = value),
-                        new PropertyItem<double>(Symbol.ThermalConductivity, () => Material.ThermalConductivity) { DecimalPlaces = 3},
                         new PropertyItem<double>(Symbol.RValueLayer, () => R_Value)
                         {
                             SymbolSubscriptText = $"{LayerNumber}b"

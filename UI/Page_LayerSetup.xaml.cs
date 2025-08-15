@@ -64,7 +64,7 @@ namespace BauphysikToolWPF.UI
             
             if (!IsVisible)
             {
-                Session.SelectedElement.Image = _oglController.GetSceneImageAsBytes();
+                Session.SelectedElement.RenderOffscreenImage(withDecorations: false);
                 _oglController.Dispose();
             }
         }

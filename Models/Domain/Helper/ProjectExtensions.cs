@@ -1,10 +1,9 @@
 ﻿using BauphysikToolWPF.Models.Database;
-using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using System;
 using System.Linq;
-using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.UI.Enums;
-using BauphysikToolWPF.Services.UI;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
 {
@@ -86,13 +85,17 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             );
         }
 
-        public static void RenderMissingElementImages(this Project project)
+
+        /// <summary>
+        /// Renders only elements without images via offscreen capturing and assigns the resulting images to the elements.
+        /// </summary>
+        public static void RenderMissingElementImages(this Project project, bool withDecorations = true)
         {
             var elementsWithoutImage = project.Elements.Where(e => e.Image == Array.Empty<byte>()).ToList();
             if (elementsWithoutImage.Count == 0) return;
 
             var elementScene = new ElementSceneBuilder();
-            elementScene.ShowSceneDecoration = false; // Disable scene decoration for image rendering
+            elementScene.ShowSceneDecoration = withDecorations;
             elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
 
             foreach (var element in elementsWithoutImage)
@@ -114,9 +117,14 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                 element.Image = bmp.ToByteArray();
             }
         }
-        public static void RenderAllElementImages(this Project project)
+
+        /// <summary>
+        /// Renders all elements via offscreen capturing and assigns the resulting images to the elements.
+        /// </summary>
+        public static void RenderAllElementImages(this Project project, bool withDecorations = true)
         {
             var elementScene = new ElementSceneBuilder();
+            elementScene.ShowSceneDecoration = withDecorations;
             elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
             
             foreach (var element in project.Elements)

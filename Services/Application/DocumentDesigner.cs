@@ -1,14 +1,14 @@
-﻿using System;
-using System.Diagnostics;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.UI;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
+using System;
+using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Services.Application
@@ -19,6 +19,8 @@ namespace BauphysikToolWPF.Services.Application
         {
             if (project == null) return;
 
+            // Force rendering of all element images
+            project.RenderAllElementImages(withDecorations: true);
             
             XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
             //XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
@@ -211,6 +213,8 @@ namespace BauphysikToolWPF.Services.Application
         public static void CreateSingleElementDocument(Element? element)
         {
             if (element is null) return;
+
+            element.RenderOffscreenImage(withDecorations: true);
 
             // Create a new PDF document
             PdfDocument document = new PdfDocument();

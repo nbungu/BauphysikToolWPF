@@ -214,7 +214,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             // Update InternalIds and render new images
             Session.SelectedProject.AssignAsParentToElements();
             Session.SelectedProject.AssignInternalIdsToElements(true);
-            Session.SelectedProject.RenderAllElementImages();
+            Session.SelectedProject.RenderAllElementImages(withDecorations: false);
             // update UI
             RefreshXamlBindings();
         }

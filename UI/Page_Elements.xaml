@@ -292,7 +292,8 @@
                         <Expander Header="Bauteildaten" IsExpanded="True" Background="Transparent" Margin="0">
                             <customControls:PropertyDataGrid x:Name="ElementPropertiesDataGrid"
                                                              Properties="{Binding ElementProperties}"
-                                                             Background="Transparent"/>
+                                                             Background="Transparent"
+                                                             PreviewMouseWheel="ElementPropertiesDataGrid_OnPreviewMouseWheel"/>
                         </Expander>
                         <!--<StackPanel Orientation="Horizontal">
                             <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>

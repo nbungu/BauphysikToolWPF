@@ -175,12 +175,25 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
             Vector4 col = lineColor.ToVectorColor();
             float dash = 0f, gap = 0f;
-            switch (style)
-            {
-                case LineStyle.Dashed: dash = 8f; gap = 4f; break;
-                case LineStyle.Dotted: dash = 2f; gap = 4f; break;
-            }
 
+            // TODO: Create separate Dash Height Property instead of using FontSize
+            if (IsTextSizeZoomable)
+            {
+                switch (style)
+                {
+                    case LineStyle.Dashed: dash = 8f; gap = 4f; break;
+                    case LineStyle.Dotted: dash = 2f; gap = 4f; break;
+                }
+            }
+            else
+            {
+                switch (style)
+                {
+                    case LineStyle.Dashed: dash = FontSize / 2; gap = FontSize / 4; break;
+                    case LineStyle.Dotted: dash = FontSize / 8; gap = FontSize / 4; break;
+                }
+            }
+            
             var verts = CreateLineVertices(line, col, dash, gap, ZIndex);
             LineVertices.AddRange(verts);
             LineBatches.Add(((float)thickness, 2));
@@ -201,10 +214,23 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
             Vector4 col = lineColor.ToVectorColor();
             float dash = 0f, gap = 0f;
-            switch (style)
+
+            // TODO: Create separate Dash Height Property instead of using FontSize
+            if (IsTextSizeZoomable)
             {
-                case LineStyle.Dashed: dash = 8f; gap = 4f; break;
-                case LineStyle.Dotted: dash = 2f; gap = 4f; break;
+                switch (style)
+                {
+                    case LineStyle.Dashed: dash = 8f; gap = 4f; break;
+                    case LineStyle.Dotted: dash = 2f; gap = 4f; break;
+                }
+            }
+            else
+            {
+                switch (style)
+                {
+                    case LineStyle.Dashed: dash = FontSize / 2; gap = FontSize / 4; break;
+                    case LineStyle.Dotted: dash = FontSize / 8; gap = FontSize / 4; break;
+                }
             }
 
             var verts = CreateLineVertices(line, col, dash, gap, ZIndex);
