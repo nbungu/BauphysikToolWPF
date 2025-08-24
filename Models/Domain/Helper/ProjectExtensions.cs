@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Models.Database;
-using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using System;
 using System.Linq;
@@ -93,35 +92,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             var elementsWithoutImage = project.Elements.Where(e => e.Image == Array.Empty<byte>()).ToList();
             if (elementsWithoutImage.Count == 0) return;
 
-            var elementScene = new ElementSceneBuilder();
-            elementScene.ShowSceneDecoration = withDecorations;
-            elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
-
-            // Output target settings
-            int dpi = target == RenderTarget.Screen ? 96 : 300;
-            int targetFactor = target == RenderTarget.Screen ? 1 : 3; // 1 for screen, 3 for print
-
-            foreach (var element in elementsWithoutImage)
-            {
-                if (element.Layers.Count == 0)
-                {
-                    element.Image = Array.Empty<byte>();
-                    continue;
-                }
-
-                // Ensure Layer numbering is correct
-                if (withDecorations) element.AssignInternalIdsToLayers();
-
-                elementScene.CrossSectionBuilder.Element = element;
-                var bmp = OglOffscreenScene.CaptureSceneImage(
-                    elementScene,
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width * targetFactor, // Width
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height * targetFactor, // Height
-                    zoom: 1.0, // Zoom factor
-                    dpi: dpi // DPI
-                );
-                element.Image = bmp.ToByteArray();
-            }
+            OglOffscreenScene.SetElementImages(elementsWithoutImage, target, withDecorations);
         }
 
         /// <summary>
@@ -129,35 +100,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         /// </summary>
         public static void RenderAllElementImages(this Project project, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
         {
-            var elementScene = new ElementSceneBuilder();
-            elementScene.ShowSceneDecoration = withDecorations;
-            elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
-
-            // Output target settings
-            int dpi = target == RenderTarget.Screen ? 96 : 300;
-            int targetFactor = target == RenderTarget.Screen ? 1 : 3; // 1 for screen, 3 for print
-
-            foreach (var element in project.Elements)
-            {
-                if (element.Layers.Count == 0)
-                {
-                    element.Image = Array.Empty<byte>();
-                    continue;
-                }
-
-                // Ensure Layer numbering is correct
-                if (withDecorations) element.AssignInternalIdsToLayers();
-
-                elementScene.CrossSectionBuilder.Element = element;
-                var bmp = OglOffscreenScene.CaptureSceneImage(
-                    elementScene,
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width * targetFactor, // Width
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height * targetFactor, // Height
-                    zoom: 1.0, // Zoom factor
-                    dpi: dpi // DPI
-                );
-                element.Image = bmp.ToByteArray();
-            }
+            OglOffscreenScene.SetElementImages(project.Elements, target, withDecorations);
         }
 
         public static void AssignAsParentToElements(this Project project)

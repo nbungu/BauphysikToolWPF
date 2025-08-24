@@ -1,6 +1,5 @@
-﻿using System;
-using BauphysikToolWPF.Services.UI;
-using BauphysikToolWPF.Services.UI.OpenGL;
+﻿using BauphysikToolWPF.Services.UI.OpenGL;
+using System.Collections.Generic;
 using System.Linq;
 using static BauphysikToolWPF.Models.Database.Enums;
 
@@ -127,33 +126,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
 
         public static void RenderOffscreenImage(this Element element, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
         {
-            var elementScene = new ElementSceneBuilder();
-            elementScene.ShowSceneDecoration = withDecorations;
-            elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
-
-            // Ensure Layer numbering is correct
-            if (withDecorations) element.AssignInternalIdsToLayers();
-
-            // Output target settings
-            int dpi = target == RenderTarget.Screen ? 96 : 300;
-            int targetFactor = target == RenderTarget.Screen ? 1 : 3; // 1 for screen, 3 for print
-
-            if (element.Layers.Count == 0)
-            {
-                element.Image = Array.Empty<byte>();
-            }
-            else
-            {
-                elementScene.CrossSectionBuilder.Element = element;
-                var bmp = OglOffscreenScene.CaptureSceneImage(
-                    elementScene,
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width * targetFactor, // Width
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height * targetFactor, // Height
-                    zoom: 1.0, // Zoom factor
-                    dpi: dpi // DPI
-                );
-                element.Image = bmp.ToByteArray();
-            }
+            OglOffscreenScene.SetElementImages(new List<Element>() { element }, target, withDecorations);
         }
     }
 }

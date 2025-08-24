@@ -1,9 +1,12 @@
-﻿using BT.Geometry;
+﻿using BauphysikToolWPF.Models.Domain;
+using BT.Geometry;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using System;
+using System.Collections.Generic;
 using System.Windows.Media.Imaging;
+using BauphysikToolWPF.Models.Domain.Helper;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -88,6 +91,39 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             );
 
             return bmp;
+        }
+
+        /// <summary>
+        /// Renders elements via offscreen capturing and assigns the resulting images to the elements.
+        /// </summary>
+        public static void SetElementImages(IEnumerable<Element> elements, RenderTarget target, bool withDecorations)
+        {
+            var elementScene = new ElementSceneBuilder();
+            elementScene.ShowSceneDecoration = withDecorations;
+            elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
+            elementScene.Dpi = target == RenderTarget.Screen ? 96 : 200;
+
+            foreach (var element in elements)
+            {
+                if (element.Layers.Count == 0)
+                {
+                    element.Image = Array.Empty<byte>();
+                    continue;
+                }
+
+                // Ensure Layer numbering is correct
+                if (withDecorations) element.AssignInternalIdsToLayers();
+
+                elementScene.CrossSectionBuilder.Element = element;
+                var bmp = CaptureSceneImage(
+                    elementScene,
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width * elementScene.DpiScaleFactor, // Width
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height * elementScene.DpiScaleFactor, // Height
+                    zoom: 1.0, // Zoom factor
+                    dpi: elementScene.Dpi // DPI
+                );
+                element.Image = bmp.ToByteArray();
+            }
         }
     }
 

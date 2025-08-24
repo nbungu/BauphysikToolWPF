@@ -17,6 +17,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public bool ShowSceneDecoration { get; set; }
         public float WorldUnitsPerPixel { get; set; }
         public float ZoomFactor { get; set; }
+        public int Dpi { get; set; }
+        public int DpiScaleFactor { get; }
         public bool IsValid { get; }
         public void BuildScene();
     }

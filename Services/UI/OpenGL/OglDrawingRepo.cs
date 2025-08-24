@@ -18,7 +18,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public TextureManager TextureManager { get; set; }
         private SdfFont? SdfFont => TextureManager.SdfFont;
         private bool CanDraw => TextureManager != null && SdfFont != null;
+        public int DpiScaleFactor => Dpi > 96 ? Dpi / 96 : 1; // Scale for high DPI targets like Document output
         public int ZIndex { get; set; }
+        public int Dpi { get; set; } = 96; // Default DPI for Screen Target
+        //public RenderTarget TargetOutput { get; set; } = RenderTarget.Screen;
         public float WorldUnitsPerPixel { get; set; } = 1f;
         public float ZoomFactor { get; set; } = 1f;
         public bool IsTextSizeZoomable { get; set; } = false;
@@ -29,7 +32,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public List<(float LineWidth, int Count)> LineBatches { get; } = new();
         public List<IDrawingGeometry> SceneShapes { get; } = new();
 
-        #region Basics
+        #region Rectangles
 
         public int AddRectangle(Rectangle rect, Brush bgColor, Brush? textureBrush = null, HatchFitMode mode = HatchFitMode.FitToHeight, double opacity = 1.0, ShapeId? shp = null)
         {
@@ -153,6 +156,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             RectBatches.Add((texId, 6));
         }
 
+        #endregion
+
+        #region Lines
+
         public void AddLine(Line line, Brush? lineColor = null, LineStyle style = LineStyle.Solid, double thickness = 1.0, double opacity = 1.0)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
@@ -185,10 +192,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     case LineStyle.Dotted: dash = 2f * WorldUnitsPerPixel; gap = 4f * WorldUnitsPerPixel; break;
                 }
             }
-            
+
             var verts = CreateLineVertices(line, col, dash, gap, ZIndex);
             LineVertices.AddRange(verts);
-            LineBatches.Add(((float)thickness, 2));
+            LineBatches.Add(((float)thickness * DpiScaleFactor, 2));
         }
 
         public void AddLine(Point ptStart, Point ptEnd, Brush? lineColor = null, LineStyle style = LineStyle.Solid, double thickness = 1.0, double opacity = 1.0)
@@ -227,7 +234,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             var verts = CreateLineVertices(line, col, dash, gap, ZIndex);
             LineVertices.AddRange(verts);
-            LineBatches.Add(((float)thickness, 2));
+            LineBatches.Add(((float)thickness * DpiScaleFactor, 2));
         }
 
         public void AddLine(Line line, Pen pen)
@@ -235,7 +242,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
             
             if (pen.Brush == null) return;
-
+            
             // Extract colo.
             Vector4 color = pen.Brush.ToVectorColor();
 
@@ -261,9 +268,13 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             var verts = CreateLineVertices(line, color, dashLength, gapLength, ZIndex);
             LineVertices.AddRange(verts);
-            LineBatches.Add(((float)pen.Thickness, 2));
+            LineBatches.Add(((float)pen.Thickness * DpiScaleFactor, 2));
         }
 
+        #endregion
+
+        #region Circles
+        
         public void AddCircle(Point center, double radius, Brush fillColor, Brush? outlineColor = null, int outlineWidth = 1, int segments = 32, double opacity = 1.0)
         {
             if (!CanDraw) throw new InvalidOperationException("Cannot draw: TextureManager or SdfFont is not initialized.");
@@ -306,12 +317,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 }
 
                 LineVertices.AddRange(outlineVerts);
-                LineBatches.Add((outlineWidth, segments * 2));
+                LineBatches.Add((outlineWidth * DpiScaleFactor, segments * 2));
             }
         }
 
         #endregion
-
+        
         #region Text
 
         /// <summary>
@@ -328,6 +339,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             if (string.IsNullOrWhiteSpace(text))
                 return;
+            
+            fontSizePx *= DpiScaleFactor;
 
             // Render text to bitmap
             var formattedText = new FormattedText(
@@ -396,6 +409,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (brush is not SolidColorBrush solidBrush)
                 return;
 
+            fontSizePx *= DpiScaleFactor;
+
 
             var c = solidBrush.Color;
             var alpha = (byte)(opacity * 255);
@@ -448,6 +463,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             var zoomFactor = IsTextSizeZoomable ? ZoomFactor : 1f;
             var fontHeight = IsTextSizeZoomable ? fontSizePx : fontSizePx * WorldUnitsPerPixel;
+
+            fontHeight *= DpiScaleFactor;
 
             var color = new SolidColorBrush(Color.FromArgb(
                 (byte)(opacity * 255),
@@ -521,6 +538,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             var zoomFactor = IsTextSizeZoomable ? ZoomFactor : 1.0;
             var fontHeight = IsTextSizeZoomable ? fontSizePx : fontSizePx * WorldUnitsPerPixel;
+
+            fontHeight *= DpiScaleFactor;
 
             var rad = fontHeight / 3 * zoomFactor;
 
