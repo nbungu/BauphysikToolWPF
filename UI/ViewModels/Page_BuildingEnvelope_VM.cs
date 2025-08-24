@@ -3,7 +3,6 @@ using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -167,6 +166,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(IsRowSelected))]
+        [NotifyPropertyChangedFor(nameof(SelectedRoomName))]
+        [NotifyPropertyChangedFor(nameof(AddToSelectedRoomLabel))]
         private static EnvelopeItem? _selectedEnvelopeItem;
 
         [ObservableProperty]
@@ -193,6 +194,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             );
 
         public bool IsRowSelected => SelectedEnvelopeItem != null;
+        public string SelectedRoomName => SelectedEnvelopeItem != null ? $"Selektion: Raum-Nr. {SelectedEnvelopeItem.RoomNumber}" : "kein Raum gewählt";
+        public string AddToSelectedRoomLabel => SelectedEnvelopeItem != null ? $"Bauteil hinzufügen (Raum-Nr. {SelectedEnvelopeItem.RoomNumber})" : "Bauteil hinzufügen";
         public Visibility PresetActiveVisibility => AnyPresetActive ? Visibility.Visible : Visibility.Collapsed;
         public bool AnyPresetActive => IsElementPresetChecked || IsRoomPresetChecked;
         public bool HasItems => ItemsCount > 0;
@@ -271,6 +274,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             OnPropertyChanged(nameof(OrderedEnvelopeItems));
             OnPropertyChanged(nameof(IsRowSelected));
+            OnPropertyChanged(nameof(SelectedRoomName));
             OnPropertyChanged(nameof(AnyPresetActive));
             OnPropertyChanged(nameof(ItemsCountString));
             OnPropertyChanged(nameof(RoomCountString));

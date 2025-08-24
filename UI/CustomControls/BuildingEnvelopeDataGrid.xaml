@@ -1,13 +1,12 @@
 ﻿<UserControl x:Class="BauphysikToolWPF.UI.CustomControls.BuildingEnvelopeDataGrid"
              x:Name="BuildingEnvelopeDataGridControl"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
-             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
-             xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
+             xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="400"
              d:DesignWidth="1600"
@@ -140,6 +139,7 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
                                             </Grid.ColumnDefinitions>
 
                                             <!-- First Button -->
@@ -147,7 +147,6 @@
 
                                             <!-- Second Button -->
                                             <Button Grid.Column="1" Style="{StaticResource RoundIconButtonStyle}" ToolTip="Erstellt neuen Bereich der thermischen Hüllfläche, zugehörig zum aktuellen Raum" Command="{Binding DataContext.AddEnvelopeItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" Margin="16,0,0,0" VerticalAlignment="Center" Cursor="Hand"/>
-
                                         </Grid>
                                         <!--<Grid>
                                             <Grid.ColumnDefinitions>
@@ -356,25 +355,41 @@
                 </DataGrid.RowStyle>
 
                 <DataGrid.Columns>
-
+                    
                     <!-- IsSelected Arrow Column -->
                     <DataGridTemplateColumn Width="36" CanUserResize="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
-                                <Path Data="M 0 0 L 6 5 L 0 10 Z"
-                                      Fill="{StaticResource PrimaryDarkBrush}"
-                                      Stretch="Uniform"
-                                      Width="8"
-                                      Height="10"
-                                      HorizontalAlignment="Center"
-                                      VerticalAlignment="Center"
-                                      Visibility="{Binding IsSelectedArrowVisibility}"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="16"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0"
+                                               Text="{Binding RoomNumber}" 
+                                               VerticalAlignment="Center"
+                                               HorizontalAlignment="Center"
+                                               Foreground="Black"
+                                               Margin="8,0,0,0"
+                                               IsEnabled="{Binding ShowRoomData}"
+                                               Visibility="{Binding ShowRoomDataVisibility}"/>
+                                    <Path Grid.Column="1"
+                                          Data="M 0 0 L 6 5 L 0 10 Z"
+                                          Fill="{StaticResource PrimaryDarkBrush}"
+                                          Stretch="Uniform"
+                                          Width="8"
+                                          Height="10"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center"
+                                          Visibility="{Binding IsSelectedArrowVisibility}"/>
+                                </Grid>
                             </DataTemplate>
+
                         </DataGridTemplateColumn.CellTemplate>
 
                         <DataGridTemplateColumn.HeaderTemplate>
                             <DataTemplate>
-                                <TextBlock Text="" />
+                                <TextBlock Text="Nr." Margin="8,0,0,0" />
                                 <!-- Leave header blank or insert a hint icon -->
                             </DataTemplate>
                         </DataGridTemplateColumn.HeaderTemplate>

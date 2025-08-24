@@ -1,13 +1,11 @@
 ﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
-using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {

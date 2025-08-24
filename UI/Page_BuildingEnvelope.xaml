@@ -58,7 +58,7 @@
                         Tag="{StaticResource ButtonIcon_AddLayer_W}"
                         Margin="0,0,8,0"/>
 
-                    <Button Content="Bauteil hinzufügen"
+                    <Button Content="{Binding AddToSelectedRoomLabel}"
                             ToolTip="Erstellt neuen Bereich der thermischen Hüllfläche, zugehörig zum aktuellen Raum"
                             Style="{StaticResource ButtonMini}"
                             Command="{Binding AddEnvelopeItemCommand}"
@@ -94,9 +94,8 @@
                 </StackPanel>
 
                 <StackPanel Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Right" VerticalAlignment="Stretch">
-                    <TextBlock Text="{Binding RoomCountString}" FontWeight="Bold" FontSize="12"/>
-                    <TextBlock Text="{Binding ItemsCountString}" FontSize="12"/>
-                    
+                    <TextBlock Text="{Binding RoomCountString}" HorizontalAlignment="Right" FontSize="12"/>
+                    <TextBlock Text="{Binding SelectedRoomName}" FontWeight="Bold" FontSize="12"/>
                 </StackPanel>
                
 

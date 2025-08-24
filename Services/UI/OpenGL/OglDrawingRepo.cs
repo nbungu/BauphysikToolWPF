@@ -373,6 +373,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 ), new System.Windows.Point(0, 0));
             }
 
+            // TODO: Handle DPI scaling properly
             var bmp = new RenderTargetBitmap(width, height, 96, 96, PixelFormats.Pbgra32);
             bmp.Render(drawingVisual);
 

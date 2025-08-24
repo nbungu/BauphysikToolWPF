@@ -137,6 +137,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             sceneBuilder.TextureManager = _textureManager;
             SceneBuilder = sceneBuilder;
+            SceneBuilder.Dpi = 96;
         }
 
         public void Invalidate() => View.InvalidateVisual();
@@ -305,7 +306,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <summary>
         /// Captures an image of the current OpenGL scene at the given resolution and zoom factor.
         /// </summary>
-        public BitmapSource GetSceneImage(int width, int height, double zoom = 1.0, int dpi = 96)
+        public BitmapSource GetSceneImage(int width, int height, double zoom = 1.0)
         {
             if (!SceneBuilder.IsValid) return new BitmapImage(); // Return empty image if scene is invalid
             
@@ -322,7 +323,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     projection,
                     width,
                     height,
-                    dpi);
+                    SceneBuilder.Dpi);
             }
             finally
             {
@@ -332,7 +333,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <summary>
         /// Captures an image of the current OpenGL scene at the given resolution and zoom factor.
         /// </summary>
-        public BitmapSource GetSceneImage(double zoom = 1.0, int dpi = 96)
+        public BitmapSource GetSceneImage(double zoom = 1.0)
         {
             if (!SceneBuilder.IsValid) return new BitmapImage(); // Return empty image if scene is invalid
 
@@ -350,7 +351,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                     projection,
                     (int)size.Width,
                     (int)size.Height,
-                    dpi);
+                    SceneBuilder.Dpi);
             }
             finally
             {
@@ -358,14 +359,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
         }
 
-        public byte[] GetSceneImageAsBytes(int width, int height, double zoom = 1.0, int dpi = 96)
+        public byte[] GetSceneImageAsBytes(int width, int height, double zoom = 1.0)
         {
-            var bmp = GetSceneImage(width, height, zoom, dpi);
+            var bmp = GetSceneImage(width, height, zoom);
             return bmp.ToByteArray();
         }
-        public byte[] GetSceneImageAsBytes(double zoom = 1.0, int dpi = 96)
+        public byte[] GetSceneImageAsBytes(double zoom = 1.0)
         {
-            var bmp = GetSceneImage(zoom, dpi);
+            var bmp = GetSceneImage(zoom);
             return bmp.ToByteArray();
         }
 

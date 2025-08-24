@@ -1,4 +1,5 @@
 ﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BT.Geometry;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -6,7 +7,6 @@ using OpenTK.Windowing.Desktop;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Models.Domain.Helper;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
