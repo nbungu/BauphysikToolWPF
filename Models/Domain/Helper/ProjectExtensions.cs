@@ -88,7 +88,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         /// <summary>
         /// Renders only elements without images via offscreen capturing and assigns the resulting images to the elements.
         /// </summary>
-        public static void RenderMissingElementImages(this Project project, bool withDecorations = true)
+        public static void RenderMissingElementImages(this Project project, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
         {
             var elementsWithoutImage = project.Elements.Where(e => e.Image == Array.Empty<byte>()).ToList();
             if (elementsWithoutImage.Count == 0) return;
@@ -96,6 +96,10 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             var elementScene = new ElementSceneBuilder();
             elementScene.ShowSceneDecoration = withDecorations;
             elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
+
+            // Output target settings
+            int dpi = target == RenderTarget.Screen ? 96 : 300;
+            int targetFactor = target == RenderTarget.Screen ? 1 : 3; // 1 for screen, 3 for print
 
             foreach (var element in elementsWithoutImage)
             {
@@ -105,13 +109,16 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                     continue;
                 }
 
+                // Ensure Layer numbering is correct
+                if (withDecorations) element.AssignInternalIdsToLayers();
+
                 elementScene.CrossSectionBuilder.Element = element;
                 var bmp = OglOffscreenScene.CaptureSceneImage(
                     elementScene,
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width, // Width
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height, // Height
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width * targetFactor, // Width
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height * targetFactor, // Height
                     zoom: 1.0, // Zoom factor
-                    dpi: 96 // DPI
+                    dpi: dpi // DPI
                 );
                 element.Image = bmp.ToByteArray();
             }
@@ -120,12 +127,16 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         /// <summary>
         /// Renders all elements via offscreen capturing and assigns the resulting images to the elements.
         /// </summary>
-        public static void RenderAllElementImages(this Project project, bool withDecorations = true)
+        public static void RenderAllElementImages(this Project project, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
         {
             var elementScene = new ElementSceneBuilder();
             elementScene.ShowSceneDecoration = withDecorations;
             elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
-            
+
+            // Output target settings
+            int dpi = target == RenderTarget.Screen ? 96 : 300;
+            int targetFactor = target == RenderTarget.Screen ? 1 : 3; // 1 for screen, 3 for print
+
             foreach (var element in project.Elements)
             {
                 if (element.Layers.Count == 0)
@@ -133,14 +144,17 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                     element.Image = Array.Empty<byte>();
                     continue;
                 }
-                    
+
+                // Ensure Layer numbering is correct
+                if (withDecorations) element.AssignInternalIdsToLayers();
+
                 elementScene.CrossSectionBuilder.Element = element;
                 var bmp = OglOffscreenScene.CaptureSceneImage(
                     elementScene,
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width, // Width
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height, // Height
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width * targetFactor, // Width
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height * targetFactor, // Height
                     zoom: 1.0, // Zoom factor
-                    dpi: 96 // DPI
+                    dpi: dpi // DPI
                 );
                 element.Image = bmp.ToByteArray();
             }

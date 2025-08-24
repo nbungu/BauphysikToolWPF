@@ -1,4 +1,3 @@
-using BauphysikToolWPF.Services.Application;
 using BT.Geometry;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
@@ -120,11 +119,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             view.MouseRightButtonUp += _resetViewHandler;
 
             view.Start(settings);
-
-            // TODO: outsourcen
-            Session.SelectedElementChanged += Redraw;
-            Session.SelectedLayerChanged += Redraw;
-            Session.SelectedLayerIndexChanged += Redraw;
 
             _oglRenderer.Initialize();
             Console.WriteLine("[OGL] Renderer initialized");
@@ -301,10 +295,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             View.SizeChanged -= _sizeChangedHandler;
             View.MouseRightButtonUp -= _resetViewHandler;
-
-            Session.SelectedElementChanged -= Redraw;
-            Session.SelectedLayerChanged -= Redraw;
-            Session.SelectedLayerIndexChanged -= Redraw;
 
             _disposed = true;
             Console.WriteLine("[OGL] Renderer disposed");

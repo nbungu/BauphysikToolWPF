@@ -1,6 +1,6 @@
-﻿using BauphysikToolWPF.Repositories;
+﻿using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
@@ -11,7 +11,6 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using BauphysikToolWPF.Models.Domain.Helper;
 
 namespace BauphysikToolWPF
 {
@@ -91,21 +90,11 @@ namespace BauphysikToolWPF
             timer.Start();
         }
 
-        private void MinimizeCommand(object sender, RoutedEventArgs e)
-        {
-            WindowState = WindowState.Minimized;
-        }
+        private void MinimizeCommand(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;
 
-        private void MaximizeCommand(object sender, RoutedEventArgs e)
-        {
-            if (WindowState == WindowState.Maximized) WindowState = WindowState.Normal;
-            else WindowState = WindowState.Maximized;
-        }
+        private void MaximizeCommand(object sender, RoutedEventArgs e) => WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
 
-        private void CloseCommand(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
+        private void CloseCommand(object sender, RoutedEventArgs e) => this.Close();
 
         private void MainWindow_StateChanged(object sender, EventArgs e)
         {
@@ -113,7 +102,6 @@ namespace BauphysikToolWPF
             {
                 this.RestoredWindowState = this.WindowState;
             }
-
             this.RefreshMaximizeRestoreButton();
         }
         private void MainWindow_OnLoaded(object sender, RoutedEventArgs e)
@@ -122,7 +110,6 @@ namespace BauphysikToolWPF
             {
                 this.RestoredWindowState = this.WindowState;
             }
-
             this.RefreshMaximizeRestoreButton();
         }
 

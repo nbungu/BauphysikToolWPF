@@ -271,9 +271,6 @@ namespace BauphysikToolWPF.Models.Domain
 
         #endregion
 
-        #region ctors
-        #endregion
-
         #region Public Methods
 
         public EnvelopeItem Copy()

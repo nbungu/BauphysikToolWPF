@@ -55,6 +55,11 @@ namespace BauphysikToolWPF.UI
             _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
             _oglController.IsTextSizeZoomable = false;
             _oglController.Redraw(); // Initial render to display the scene
+
+
+            Session.SelectedElementChanged += _oglController.Redraw;
+            Session.SelectedLayerChanged += _oglController.Redraw;
+            Session.SelectedLayerIndexChanged += _oglController.Redraw;
         }
 
         // Save current canvas as image, just before closing Page_LayerSetup Page
@@ -64,7 +69,12 @@ namespace BauphysikToolWPF.UI
             
             if (!IsVisible)
             {
-                Session.SelectedElement.RenderOffscreenImage(withDecorations: false);
+                Session.SelectedElement.RenderOffscreenImage(target: RenderTarget.Screen, withDecorations: false);
+
+                Session.SelectedElementChanged -= _oglController.Redraw;
+                Session.SelectedLayerChanged -= _oglController.Redraw;
+                Session.SelectedLayerIndexChanged -= _oglController.Redraw;
+
                 _oglController.Dispose();
             }
         }

@@ -5,7 +5,6 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
-             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:application="clr-namespace:BauphysikToolWPF.Services.Application"
              mc:Ignorable="d"
              d:DesignHeight="1200"

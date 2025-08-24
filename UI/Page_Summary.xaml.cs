@@ -41,11 +41,22 @@ namespace BauphysikToolWPF.UI
             _oglController.Redraw(); // Initial render to display the scene
             _oglController.IsSceneInteractive = false; // Disable interaction with the scene
             _oglController.IsTextSizeZoomable = false; // Disable editing of the scene
+
+            Session.SelectedElementChanged += _oglController.Redraw;
+            Session.SelectedLayerChanged += _oglController.Redraw;
+            Session.SelectedLayerIndexChanged += _oglController.Redraw;
         }
 
         private void Page_Summary_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            if (!IsVisible) _oglController.Dispose();
+            if (!IsVisible)
+            {
+                Session.SelectedElementChanged -= _oglController.Redraw;
+                Session.SelectedLayerChanged -= _oglController.Redraw;
+                Session.SelectedLayerIndexChanged -= _oglController.Redraw;
+
+                _oglController.Dispose();
+            }
         }
 
         private void UIElement_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)

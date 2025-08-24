@@ -1,16 +1,14 @@
-﻿using BauphysikToolWPF.Services.UI;
+﻿using BauphysikToolWPF.Services.Application;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Media;
-using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.Models.UI
 {
     public class NavigationContent : INotifyPropertyChanged // To reflect changes being made in a collection -> OnPropertyChanged(nameof(ParentPages)) not needed
     {
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged(string propertyName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        protected void OnPropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
         public NavigationPage Page { get; set; } // parent page of the NavigationMenu ListBoxItem
         public string PageName => NavigationManager.PageNameMapping.TryGetValue(Page, out var name) ? name : Page.ToString();

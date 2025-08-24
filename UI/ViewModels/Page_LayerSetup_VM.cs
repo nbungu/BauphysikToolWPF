@@ -30,7 +30,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             if (Session.SelectedElement is null) return;
 
-            // TODO: Move OglController to Session Data
             _oglController = scene;
             _element = Session.SelectedElement;
             _dialogService = new DialogService();

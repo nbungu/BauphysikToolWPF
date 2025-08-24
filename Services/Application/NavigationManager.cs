@@ -80,7 +80,7 @@ namespace BauphysikToolWPF.Services.Application
             { NavigationPage.TemperatureCurve, "ButtonIcon_LayerTemps_Flat" },
             { NavigationPage.GlaserCurve, "ButtonIcon_Glaser_Flat" },
             { NavigationPage.DynamicHeatCalc, "ButtonIcon_Dynamic_Flat" },
-            { NavigationPage.BuildingEnvelope, "ButtonIcon_House_B" },
+            { NavigationPage.BuildingEnvelope, "Favicon" },
             { NavigationPage.EnvelopeSummary, "ButtonIcon_Summary_Flat" },
         };
 

@@ -143,10 +143,10 @@
                                             </Grid.ColumnDefinitions>
 
                                             <!-- First Button -->
-                                            <Button x:Name="FirstButton" Style="{StaticResource RoundIconButtonStyle_Highlighted}" ToolTip="Erstellt neuen Raum" Command="{Binding DataContext.AddEnvelopeItemRoomCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" VerticalAlignment="Center"/>
+                                            <Button x:Name="FirstButton" Style="{StaticResource RoundIconButtonStyle_Highlighted}" ToolTip="Erstellt neuen Raum" Command="{Binding DataContext.AddEnvelopeItemRoomCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" VerticalAlignment="Center" Cursor="Hand"/>
 
                                             <!-- Second Button -->
-                                            <Button Grid.Column="1" Style="{StaticResource RoundIconButtonStyle}" ToolTip="Erstellt neuen Bereich der thermischen Hüllfläche, zugehörig zum aktuellen Raum" Command="{Binding DataContext.AddEnvelopeItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" Margin="16,0,0,0" VerticalAlignment="Center" />
+                                            <Button Grid.Column="1" Style="{StaticResource RoundIconButtonStyle}" ToolTip="Erstellt neuen Bereich der thermischen Hüllfläche, zugehörig zum aktuellen Raum" Command="{Binding DataContext.AddEnvelopeItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" Margin="16,0,0,0" VerticalAlignment="Center" Cursor="Hand"/>
 
                                         </Grid>
                                         <!--<Grid>

@@ -1,6 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
@@ -20,7 +20,7 @@ namespace BauphysikToolWPF.Services.Application
             if (project == null) return;
 
             // Force rendering of all element images
-            project.RenderAllElementImages(withDecorations: true);
+            project.RenderAllElementImages(target: RenderTarget.Document, withDecorations: true);
             
             XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
             //XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
@@ -214,7 +214,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             if (element is null) return;
 
-            element.RenderOffscreenImage(withDecorations: true);
+            element.RenderOffscreenImage(target: RenderTarget.Document, withDecorations: true);
 
             // Create a new PDF document
             PdfDocument document = new PdfDocument();

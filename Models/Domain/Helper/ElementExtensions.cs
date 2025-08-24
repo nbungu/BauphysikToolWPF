@@ -125,11 +125,18 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             element.Layers.ForEach(l => l.IsSelected = false);
         }
 
-        public static void RenderOffscreenImage(this Element element, bool withDecorations = true)
+        public static void RenderOffscreenImage(this Element element, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
         {
             var elementScene = new ElementSceneBuilder();
             elementScene.ShowSceneDecoration = withDecorations;
             elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
+
+            // Ensure Layer numbering is correct
+            if (withDecorations) element.AssignInternalIdsToLayers();
+
+            // Output target settings
+            int dpi = target == RenderTarget.Screen ? 96 : 300;
+            int targetFactor = target == RenderTarget.Screen ? 1 : 3; // 1 for screen, 3 for print
 
             if (element.Layers.Count == 0)
             {
@@ -140,10 +147,10 @@ namespace BauphysikToolWPF.Models.Domain.Helper
                 elementScene.CrossSectionBuilder.Element = element;
                 var bmp = OglOffscreenScene.CaptureSceneImage(
                     elementScene,
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width, // Width
-                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height, // Height
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Width * targetFactor, // Width
+                    (int)elementScene.CrossSectionBuilder.CanvasSize.Height * targetFactor, // Height
                     zoom: 1.0, // Zoom factor
-                    dpi: 96 // DPI
+                    dpi: dpi // DPI
                 );
                 element.Image = bmp.ToByteArray();
             }

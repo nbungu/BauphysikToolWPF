@@ -90,4 +90,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             return bmp;
         }
     }
+
+    public enum RenderTarget
+    {
+        Screen,
+        Document
+    }
 }
