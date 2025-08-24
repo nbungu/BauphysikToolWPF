@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using BauphysikToolWPF.Services.Application;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.UI.Converter
 {
     public class PageTemplateSelector : DataTemplateSelector
     {

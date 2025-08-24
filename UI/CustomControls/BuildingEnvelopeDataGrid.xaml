@@ -7,6 +7,7 @@
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="400"
              d:DesignWidth="1600"
@@ -14,8 +15,8 @@
 
     <UserControl.Resources>
 
-        <ui:NumberConverter x:Key="NumberConverter"/>
-        <ui:TooltipNotEmptyToVisibilityConverter x:Key="TooltipNotEmptyToVisibilityConverter"/>
+        <converter:NumberConverter x:Key="NumberConverter"/>
+        <converter:TooltipNotEmptyToVisibilityConverter x:Key="TooltipNotEmptyToVisibilityConverter"/>
 
         <ObjectDataProvider x:Key="OrientationTypeNames"
                             MethodName="GetOrientationTypeNames"

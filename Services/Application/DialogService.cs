@@ -1,10 +1,11 @@
-﻿using BauphysikToolWPF.Models.UI;
+﻿using System.Collections.Generic;
+using System.Windows;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.UI;
 using BauphysikToolWPF.UI.CustomControls;
-using System.Collections.Generic;
-using System.Windows;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.Application
 {
     public class DialogService : IDialogService
     {

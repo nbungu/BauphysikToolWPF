@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BauphysikToolWPF.Models.Domain.Helper
+namespace BauphysikToolWPF.Models.Domain
 {
     public class Enums
     {

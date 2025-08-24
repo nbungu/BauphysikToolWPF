@@ -1,4 +1,4 @@
-﻿namespace BauphysikToolWPF.Services.UI
+﻿namespace BauphysikToolWPF.Services.Application
 {
     public interface IFileDialogService
     {

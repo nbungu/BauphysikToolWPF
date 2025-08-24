@@ -1,8 +1,8 @@
-﻿using BauphysikToolWPF.Models.UI;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+using BauphysikToolWPF.Models.UI;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.UI.Converter
 {
     public class PropertyValueTemplateSelector : DataTemplateSelector
     {

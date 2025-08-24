@@ -6,6 +6,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
              mc:Ignorable="d"
              d:DesignHeight="320"
              d:DesignWidth="320"
@@ -13,7 +14,7 @@
 
     <UserControl.Resources>
 
-        <ui:NumberConverter x:Key="NumberConverter"/>
+        <converter:NumberConverter x:Key="NumberConverter"/>
 
         <!-- 
 
@@ -136,8 +137,8 @@
                         <DataTemplate>
                             <ContentControl Content="{Binding}">
                                 <ContentControl.ContentTemplateSelector>
-                                    <ui:PropertyValueTemplateSelector>
-                                        <ui:PropertyValueTemplateSelector.TextBoxTemplate>
+                                    <converter:PropertyValueTemplateSelector>
+                                        <converter:PropertyValueTemplateSelector.TextBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -187,8 +188,8 @@
                                                     </controls:FractionLabel>
                                                 </Grid>
                                             </DataTemplate>
-                                        </ui:PropertyValueTemplateSelector.TextBoxTemplate>
-                                        <ui:PropertyValueTemplateSelector.ComboBoxTemplate>
+                                        </converter:PropertyValueTemplateSelector.TextBoxTemplate>
+                                        <converter:PropertyValueTemplateSelector.ComboBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>
                                                     <Grid.ColumnDefinitions>
@@ -204,8 +205,8 @@
                                                               FontWeight="Normal"/>
                                                 </Grid>
                                             </DataTemplate>
-                                        </ui:PropertyValueTemplateSelector.ComboBoxTemplate>
-                                        <ui:PropertyValueTemplateSelector.CheckBoxTemplate>
+                                        </converter:PropertyValueTemplateSelector.ComboBoxTemplate>
+                                        <converter:PropertyValueTemplateSelector.CheckBoxTemplate>
                                             <DataTemplate>
                                                 <Grid>
                                                     <CheckBox IsChecked="{Binding Value}"
@@ -215,8 +216,8 @@
                                                               Click="CheckBox_Click"/>
                                                 </Grid>
                                             </DataTemplate>
-                                        </ui:PropertyValueTemplateSelector.CheckBoxTemplate>
-                                    </ui:PropertyValueTemplateSelector>
+                                        </converter:PropertyValueTemplateSelector.CheckBoxTemplate>
+                                    </converter:PropertyValueTemplateSelector>
                                 </ContentControl.ContentTemplateSelector>
                             </ContentControl>
                         </DataTemplate>

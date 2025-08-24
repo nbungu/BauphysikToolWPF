@@ -6,7 +6,7 @@ using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Windows.Media;
-using Enums = BauphysikToolWPF.Models.Database.Helper.Enums;
+using Enums = BauphysikToolWPF.Models.Database.Enums;
 
 namespace BauphysikToolWPF.Services.UI
 {

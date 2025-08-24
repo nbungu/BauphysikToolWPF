@@ -7,6 +7,7 @@
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="1200" d:DesignWidth="1200">
 
@@ -17,9 +18,9 @@
 
     <UserControl.Resources>
 
-        <ui:FileTypeToIconConverter x:Key="FileTypeToIconConverter"/>
-        <ui:FilePathToFileNameConverter x:Key="FilePathToFileNameConverter"/>
-        <ui:FilePathToIsFoundConverter x:Key="FilePathToIsFoundConverter"/>
+        <converter:FileTypeToIconConverter x:Key="FileTypeToIconConverter"/>
+        <converter:FilePathToFileNameConverter x:Key="FilePathToFileNameConverter"/>
+        <converter:FilePathToIsFoundConverter x:Key="FilePathToIsFoundConverter"/>
 
         <!-- Custom ScrollViewer Style -->
         <Style x:Key="CustomScrollViewerStyle" TargetType="ScrollViewer">

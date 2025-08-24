@@ -74,6 +74,10 @@ namespace BauphysikToolWPF.UI
         {
             e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
         }
+        private void numericData_PreviewTextInput_Positive(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = TextInputValidation.NumericCurrentCulturePositive.IsMatch(e.Text);
+        }
 
         private void Page_LayerSetup_KeyDown(object sender, KeyEventArgs e)
         {

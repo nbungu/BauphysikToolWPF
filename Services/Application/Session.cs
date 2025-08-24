@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Services.UI;
 using System.Linq;
 using static BauphysikToolWPF.Models.UI.Enums;
 

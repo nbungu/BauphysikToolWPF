@@ -1,9 +1,9 @@
-﻿using BauphysikToolWPF.Models.Domain;
+﻿using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 
-namespace BauphysikToolWPF.Services.Application
+namespace BauphysikToolWPF.Models.Domain.Helper
 {
-    public class DomainModelFactory
+    public class ProjectFactory
     {
         public static void CreateNewProject()
         {

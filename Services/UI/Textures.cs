@@ -2,7 +2,7 @@
 using System;
 using System.Windows;
 using System.Windows.Media;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
 using Point = System.Windows.Point;
 using Size = System.Windows.Size;
 

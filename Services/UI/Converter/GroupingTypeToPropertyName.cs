@@ -1,10 +1,10 @@
-﻿using BauphysikToolWPF.Models.Domain;
-using System;
+﻿using System;
 using System.Globalization;
 using System.Windows.Data;
+using BauphysikToolWPF.Models.Domain;
 using static BauphysikToolWPF.Models.UI.Enums;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.UI.Converter
 {
     public class GroupingTypeToPropertyName : IValueConverter
     {

@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
+             xmlns:application="clr-namespace:BauphysikToolWPF.Services.Application"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:glWpfControl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
              mc:Ignorable="d"
@@ -19,9 +19,6 @@
     while the ItemsSource is used to specify the data source for a list of items.
     Both can be used for binding to display and modify data in the UI.
     -->
-    <UserControl.Resources>
-        <ui:NumberConverter x:Key="NumberConverter" />
-    </UserControl.Resources>
 
     <!--Main Grid: 2x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
@@ -34,7 +31,7 @@
         <Border Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.ElementCatalogue}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static application:NavigationPage.ElementCatalogue}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4" ToolTip="Zurück zu: Bauteilübersicht"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -44,7 +41,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.Summary}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static application:NavigationPage.Summary}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4" ToolTip="Weiter zu: Umgebungsbedingungen"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -217,13 +214,13 @@
 
 
                         <!--Gewählte Schicht + Eigenschaften-->
-                        <Expander Header="Schicht-Eigenschaften" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding LayerPropertiesExpanderVisibility}">
+                        <Expander Header="{Binding PropertyHeader1}" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding LayerPropertiesExpanderVisibility}">
                             <controls:PropertyDataGrid x:Name="LayerPropertiesDataGrid"
                                                        Properties="{Binding LayerPropertyBag}"/>
                         </Expander>
 
                         <!--Balkenlage + Eigenschaften-->
-                        <Expander Header="Schicht-Balkenlage" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding SubConstructionExpanderVisibility}">
+                        <Expander Header="{Binding PropertyHeader2}" IsExpanded="True" Margin="0,0,0,8" Visibility="{Binding SubConstructionExpanderVisibility}">
                             <controls:PropertyDataGrid x:Name="LayerSubConstructionPropertiesDataGrid"
                                                        Properties="{Binding LayerSubConstrPropertyBag}"/>
                         </Expander>
@@ -235,19 +232,19 @@
                                 <controls:SubscriptLabel BaseText="θ" SubscriptText="i" AppendText=" - Raumluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="24" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                                     <ComboBox ItemsSource="{Binding TiKeys}" SelectedIndex="{Binding TiIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding TiValue, Converter={StaticResource NumberConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding TiValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <Label Content="°C" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                                 <controls:SubscriptLabel BaseText="R" SubscriptText="si" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="24" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
                                     <ComboBox ItemsSource="{Binding RsiKeys}" SelectedIndex="{Binding RsiIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding RsiValue, Converter={StaticResource NumberConverter}}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding RsiValue}" PreviewTextInput="numericData_PreviewTextInput_Positive" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                                 <controls:SubscriptLabel BaseText="Φ" SubscriptText="i" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="24" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                                     <ComboBox ItemsSource="{Binding RelFiKeys}" SelectedIndex="{Binding RelFiIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding RelFiValue, Converter={StaticResource NumberConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding RelFiValue}" PreviewTextInput="numericData_PreviewTextInput_Positive" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <Label Content="%" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                             </StackPanel>
@@ -260,19 +257,19 @@
                                 <controls:SubscriptLabel BaseText="θ" SubscriptText="e" AppendText=" - Außenluft" VerticalAlignment="Top" HorizontalAlignment="Left" Height="24" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                                     <ComboBox ItemsSource="{Binding TeKeys}" SelectedIndex="{Binding TeIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding TeValue, Converter={StaticResource NumberConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding TeValue}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <Label Content="°C" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                                 <controls:SubscriptLabel BaseText="R" SubscriptText="se" AppendText=" - Übergangswiderstand" VerticalAlignment="Top" HorizontalAlignment="Left" Height="24" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                                     <ComboBox ItemsSource="{Binding RseKeys}" SelectedIndex="{Binding RseIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding RseValue, Converter={StaticResource NumberConverter}}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding RseValue}" PreviewTextInput="numericData_PreviewTextInput_Positive" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <controls:FractionLabel CounterText="m²K" DenominatorText="W" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="4,-5,0,0" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                                 <controls:SubscriptLabel BaseText="Φ" SubscriptText="e" AppendText=" - Rel. Feuchte" VerticalAlignment="Top" HorizontalAlignment="Left" Height="24" Foreground="Black" FontWeight="DemiBold"/>
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom" >
                                     <ComboBox ItemsSource="{Binding RelFeKeys}" SelectedIndex="{Binding RelFeIndex}" Width="176" Foreground="Black" FontWeight="Normal"/>
-                                    <TextBox Text="{Binding RelFeValue, Converter={StaticResource NumberConverter}, ConverterParameter=1}" PreviewTextInput="numericData_PreviewTextInput" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
+                                    <TextBox Text="{Binding RelFeValue}" PreviewTextInput="numericData_PreviewTextInput_Positive" MaxLength="5" Margin="8,0,0,0" Foreground="Black" FontWeight="Normal"/>
                                     <Label Content="%" Foreground="Black" FontWeight="Normal"/>
                                 </StackPanel>
                             </StackPanel>

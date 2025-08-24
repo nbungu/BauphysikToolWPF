@@ -1,6 +1,7 @@
-﻿using Microsoft.Win32;
+﻿using BauphysikToolWPF.Services.UI;
+using Microsoft.Win32;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.Application
 {
     public class FileDialogService : IFileDialogService
     {

@@ -7,6 +7,8 @@
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
+             xmlns:application="clr-namespace:BauphysikToolWPF.Services.Application"
+             xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="700"
              d:DesignWidth="1200">
@@ -17,7 +19,7 @@
     </UserControl.DataContext>
 
     <UserControl.Resources>
-        <ui:NumberConverter x:Key="NumberConverter" />
+        <converter:NumberConverter x:Key="NumberConverter" />
     </UserControl.Resources>
 
     <!--Main Grid 2x2-->
@@ -35,7 +37,7 @@
         <Border Grid.ColumnSpan="2" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.Summary}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static application:NavigationPage.Summary}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -45,7 +47,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static application:NavigationPage.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>

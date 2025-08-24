@@ -1,10 +1,10 @@
-﻿using BauphysikToolWPF.Services.Application;
-using System;
+﻿using System;
 using System.Globalization;
 using System.IO;
 using System.Windows.Data;
+using BauphysikToolWPF.Services.Application;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.UI.Converter
 {
     public class FilePathToIsFoundConverter : IValueConverter
     {

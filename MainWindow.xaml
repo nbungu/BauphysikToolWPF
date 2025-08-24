@@ -6,6 +6,7 @@
     xmlns:ui1="clr-namespace:BauphysikToolWPF.Services.UI"
     xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
     xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+    xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
     d:DataContext="{d:DesignInstance vm:MainWindow_VM}"
     mc:Ignorable="d"
     Title="{Binding Title}"
@@ -33,7 +34,7 @@
 
     <Window.Resources>
         
-        <ui1:PageTemplateSelector x:Key="PageTemplateSelector" />
+        <converter:PageTemplateSelector x:Key="PageTemplateSelector" />
 
         <!--
         PARENT PAGES

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.UI.Converter
 {
     // In order to use the Visibility binding,
     // you need a value converter that converts an empty string

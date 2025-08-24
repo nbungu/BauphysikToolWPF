@@ -11,7 +11,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain

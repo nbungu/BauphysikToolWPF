@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.UI.Converter
 {
     public class NumberConverter : IValueConverter, IMultiValueConverter
     {
@@ -12,12 +12,27 @@ namespace BauphysikToolWPF.Services.UI
             var returnValue = new NumberConverter().Convert(value, null, decimals, culture);
             return (string)returnValue ?? string.Empty;
         }
-        public static object Convert(object value, int decimals = 2)
+
+        public static double ConvertToDouble(object value, int decimals = 6)
         {
-            var culture = CultureInfo.CurrentCulture; // Use current culture for parsing
-            var returnValue = new NumberConverter().Convert(value, null, decimals, culture);
-            return returnValue ?? string.Empty;
+            var culture = CultureInfo.CurrentCulture;
+
+            if (value is double d)
+            {
+                return Math.Round(d, decimals);
+            }
+
+            if (value is string s)
+            {
+                // Reuse ConvertBack logic
+                var result = new NumberConverter().ConvertBack(s, typeof(double), decimals, culture);
+                if (result is double parsed)
+                    return Math.Round(parsed, decimals);
+            }
+
+            return 0.0;
         }
+
 
         public object Convert(object? value, Type targetType, object parameter, CultureInfo culture)
         {

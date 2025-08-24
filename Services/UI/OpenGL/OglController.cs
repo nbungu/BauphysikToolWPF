@@ -4,11 +4,15 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Wpf;
 using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
+using Point = BT.Geometry.Point;
+using Size = BT.Geometry.Size;
+using Vector = BT.Geometry.Vector;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -36,6 +40,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private DateTime _lastLeftClickTime = DateTime.MinValue;
         private const int DoubleClickThresholdMs = 250;
 
+        private SizeChangedEventHandler _sizeChangedHandler;
+        private MouseButtonEventHandler _resetViewHandler;
+
         #endregion
 
         #region public properties
@@ -43,7 +50,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public IOglSceneBuilder SceneBuilder { get; private set; }
         public GLWpfControl View { get; private set; }
 
-        // TODO: Config
         public bool ForceFlushTexturesOnRender { get; set; } = false; // Forces a flush of the OpenGL context on each render call
         public bool IsSceneInteractive { get; set; } = true;
         public bool IsViewConnected => View != null;
@@ -56,7 +62,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 Redraw();
             }
         }
-
         public bool ShowSceneDecoration
         {
             get => SceneBuilder.ShowSceneDecoration;
@@ -66,14 +71,19 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 Redraw();
             }
         }
-
-
         public float ZoomFactor => _zoomFactor;
         public Size CurrentSceneSize => new Size(SceneBuilder.SceneBounds.Width, SceneBuilder.SceneBounds.Height);
         public Size CurrentViewSize => new Size((int)View.ActualWidth, (int)View.ActualHeight);
 
+        /// <summary>
+        /// Conversion factor between screen pixels and world units. 
+        /// Multiply by a pixel size to get the equivalent size in world units,
+        /// or divide a world size by this factor to get its screen size in pixels.
+        /// </summary>
+        public float WorldUnitsPerPixel => GetWorldUnitsPerPixel();
+
         #endregion
-        
+
         public OglController(GLWpfControl view, IOglSceneBuilder sceneBuilder)
         {
             _textureManager = new TextureManager();
@@ -102,8 +112,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             view.MouseMove += OnMouseMove;
             view.MouseLeave += OnMouseLeave;
             view.KeyDown += OnKeyDown;
-            view.SizeChanged += (_, __) => Redraw();
-            view.MouseRightButtonUp += (_, __) => ResetView();
+
+            _sizeChangedHandler = (_, __) => Redraw();
+            _resetViewHandler = (_, __) => ResetView();
+
+            view.SizeChanged += _sizeChangedHandler;
+            view.MouseRightButtonUp += _resetViewHandler;
 
             view.Start(settings);
 
@@ -137,9 +151,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public void ResetView()
         {
-            SetZoom(1.0);
             _pan = Vector.Empty;
-            Invalidate();
+            SetZoom(1.0);
         }
 
         public void SetZoom(double zoom)
@@ -149,13 +162,41 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             else Redraw();
         }
 
+        //public void SetZoom(double zoom, Point? cursorPos = null)
+        //{
+        //    float newZoom = (float)Math.Clamp(zoom, 0.4, 6.0);
+
+        //    if (cursorPos.HasValue && View != null && SceneBuilder != null)
+        //    {
+        //        // 1. World position under cursor before zoom
+        //        var worldBefore = ConvertMouseToScene(cursorPos.Value);
+
+        //        // 2. Apply zoom
+        //        _zoomFactor = newZoom;
+
+        //        // 3. World position under cursor after zoom
+        //        var worldAfter = ConvertMouseToScene(cursorPos.Value);
+
+        //        // 4. Compute difference and adjust pan
+        //        var dx = (float)(worldBefore.X - worldAfter.X) / (float)SceneBuilder.SceneBounds.Width * 2f;
+        //        var dy = (float)(worldBefore.Y - worldAfter.Y) / (float)SceneBuilder.SceneBounds.Height * 2f;
+        //        _pan += new Vector(dx, dy);
+        //    }
+        //    else
+        //    {
+        //        _zoomFactor = newZoom;
+        //    }
+
+        //    if (SceneBuilder.IsTextSizeZoomable) Invalidate();
+        //    else Redraw();
+        //}
+
         public void Redraw()
         {
             if (ForceFlushTexturesOnRender) _textureManager.Dispose();
             SceneBuilder.ZoomFactor = ZoomFactor;
-
-            // TODO: Dont manage font size here
-            UpdateFontSizeForViewport(32);
+            SceneBuilder.WorldUnitsPerPixel = WorldUnitsPerPixel;
+            // TODO: WorldUnitsPerPixel (because of SceneBuilder.SceneBounds) Changes between two consecutive right clicks (ResetView)
 
             // IOglSceneBuilder
             SceneBuilder.RectVertices.Clear();
@@ -187,32 +228,23 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         }
 
         /// <summary>
-        /// For fonts to stay the same screen size
-        /// regardless of viewport size or zoom,
-        /// you need to render them in screen space instead of world space.
-        /// text rendering becomes viewport-independent
+        /// Conversion factor between screen pixels and world units. 
+        /// Multiply by a pixel size to get the equivalent size in world units,
+        /// or divide a world size by this factor to get its screen size in pixels.
         /// </summary>
-        private void UpdateFontSizeForViewport(int desiredPixelHeight = 32)
+        private float GetWorldUnitsPerPixel()
         {
-            // Avoid divide-by-zero if viewport or scene bounds are not valid
             if (View.ActualHeight <= 0 || SceneBuilder.SceneBounds.Height <= 0)
-                return;
+                return 1f; // Safe fallback
 
             // pixel dimensions of the control.
             float ctrlH = (float)View.ActualHeight, ctrlW = (float)View.ActualWidth;
             // scene bounds in whatever coordinate space or unit your drawing shapes use
             float contH = (float)SceneBuilder.SceneBounds.Height, contW = (float)SceneBuilder.SceneBounds.Width;
             float scaleY = ctrlH / contH, scaleX = ctrlW / contW;
-            float scale = MathF.Min(scaleX, scaleY) * ZoomFactor;
+            float pixelsPerWorldUnit = MathF.Min(scaleX, scaleY) * ZoomFactor;
 
-            // Pixels per world unit: how many screen pixels represent one unit in the scene
-            float pixelsPerWorldUnit = scale;
-
-            // Convert desired pixel height into equivalent world-space height
-            float worldHeight = desiredPixelHeight / pixelsPerWorldUnit;
-
-            // Assign as world-units font size (assuming SceneBuilder.FontSize is in world units)
-            SceneBuilder.FontSize = (int)worldHeight;
+            return 1f / pixelsPerWorldUnit;
         }
 
         public static Matrix4 BuildProjection(Size viewportSize, Rectangle sceneContent, float zoom = 1f, Vector? pan = null)
@@ -266,6 +298,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             View.MouseMove -= OnMouseMove;
             View.MouseLeave -= OnMouseLeave;
             View.KeyDown -= OnKeyDown;
+
+            View.SizeChanged -= _sizeChangedHandler;
+            View.MouseRightButtonUp -= _resetViewHandler;
 
             Session.SelectedElementChanged -= Redraw;
             Session.SelectedLayerChanged -= Redraw;
@@ -348,25 +383,38 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         #region Mouse Events
 
+        /// <summary>
+        /// Converts a mouse position in screen (pixel) coordinates into scene (world) coordinates, 
+        /// taking into account the current projection, zoom factor, and pan offset.
+        /// 
+        /// Steps:
+        /// 1. Builds the current projection matrix with zoom and pan.
+        /// 2. Inverts the projection to map from Normalized Device Coordinates (NDC) back to world space.
+        /// 3. Converts the mouse position from pixel space into NDC [-1, 1].
+        /// 4. Transforms the NDC position with the inverted projection to obtain the world coordinate.
+        /// 
+        /// This ensures hit-testing and interactions remain correct even when the scene 
+        /// is zoomed or panned.
+        /// </summary>
         private Point ConvertMouseToScene(Point mouse)
         {
-            if (SceneBuilder.SceneBounds.Area < 1E-06) return Point.Empty; // No valid scene bounds, return empty point
+            if (SceneBuilder.SceneBounds.Area < 1E-06)
+                return Point.Empty;
 
             var bounds = SceneBuilder.SceneBounds;
-            float cw = (float)View.ActualWidth, ch = (float)View.ActualHeight;
-            float ew = (float)bounds.Width, eh = (float)bounds.Height;
+            var viewport = CurrentViewSize;
 
-            float scale = MathF.Min(cw / ew, ch / eh) * ZoomFactor;
+            var proj = BuildProjection(viewport, bounds, _zoomFactor, _pan);
 
-            float panPxX = (float)_pan.X * cw / 2f;
-            float panPxY = (float)_pan.Y * ch / 2f;
+            Matrix4.Invert(proj, out var invProj);
 
-            float offsetX = (cw - ew * scale) / 2f + panPxX;
-            float offsetY = (ch - eh * scale) / 2f + panPxY;
+            float ndcX = (float)(2.0 * mouse.X / viewport.Width - 1.0);
+            float ndcY = (float)(1.0 - 2.0 * mouse.Y / viewport.Height);
 
-            float x = (float)((mouse.X - offsetX) / scale + bounds.X);
-            float y = (float)((mouse.Y - offsetY) / scale + bounds.Y);
-            return new Point(x, y);
+            var vec = new Vector4(ndcX, ndcY, 0, 1); // OpenTK.Mathematics.Vector4
+            var world = vec * invProj;
+
+            return new Point(world.X, world.Y);
         }
 
         private void OnWheel(object s, MouseWheelEventArgs e)
@@ -374,6 +422,17 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (e.Delta > 0) ZoomIn();
             else ZoomOut();
         }
+
+        //private void OnWheel(object s, MouseWheelEventArgs e)
+        //{
+        //    var cursorPos = e.GetPosition(View);
+        //    var pt = new Point(cursorPos.X, cursorPos.Y);
+
+        //    if (e.Delta > 0)
+        //        SetZoom(ZoomFactor * 1.2, pt);
+        //    else
+        //        SetZoom(ZoomFactor / 1.2, pt);
+        //}
 
         private void OnMouseDown(object s, MouseButtonEventArgs e)
         {

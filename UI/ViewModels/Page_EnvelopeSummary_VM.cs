@@ -11,8 +11,8 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using BauphysikToolWPF.Repositories;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
+using static BauphysikToolWPF.Models.Domain.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels

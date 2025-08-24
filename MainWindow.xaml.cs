@@ -11,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using BauphysikToolWPF.Models.Domain.Helper;
 
 namespace BauphysikToolWPF
 {
@@ -140,7 +141,7 @@ namespace BauphysikToolWPF
                             string? filePath = _fileDialogService.ShowSaveFileDialog($"{saveFileName}.btk", "BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
                             if (filePath != null)
                             {
-                                DomainModelSerializer.SaveProjectToFile(Session.SelectedProject, filePath);
+                                ProjectSerializer.SaveProjectToFile(Session.SelectedProject, filePath);
                                 RecentProjectsManager.AddRecentProject(filePath);
                             }
                             else
@@ -151,7 +152,7 @@ namespace BauphysikToolWPF
                         }
                         else
                         {
-                            DomainModelSerializer.SaveProjectToFile(Session.SelectedProject, Session.ProjectFilePath);
+                            ProjectSerializer.SaveProjectToFile(Session.SelectedProject, Session.ProjectFilePath);
                         }
                         break;
                     case MessageBoxResult.No:

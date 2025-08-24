@@ -1,4 +1,4 @@
-﻿using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+﻿using static BauphysikToolWPF.Models.Domain.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {

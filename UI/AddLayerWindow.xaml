@@ -7,6 +7,7 @@
         xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
         xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
         xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+        xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
         mc:Ignorable="d"
         Title="{Binding Title}"
         Background="{StaticResource PrimaryLightBrush}"
@@ -21,7 +22,7 @@
 
     <Window.Resources>
 
-        <ui:NumberConverter x:Key="NumberConverter" />
+        <converter:NumberConverter x:Key="NumberConverter" />
 
         <ObjectDataProvider x:Key="MaterialCategoryNames"
                             MethodName="GetMaterialCategoryNames"

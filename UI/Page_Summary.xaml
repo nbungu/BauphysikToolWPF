@@ -3,7 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
+             xmlns:application="clr-namespace:BauphysikToolWPF.Services.Application"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:glWpfControl="clr-namespace:OpenTK.Wpf;assembly=GLWpfControl"
              mc:Ignorable="d"
@@ -35,7 +35,7 @@
         <Border Grid.Row="0" Grid.ColumnSpan="2" Background="{StaticResource PrimaryMediumBrush}">
             <Grid>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static application:NavigationPage.LayerSetup}" Tag="{StaticResource ButtonIcon_Prev_B}" Margin="4"/>
                     <Label Content="Zurück"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -45,7 +45,7 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
-                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static ui:NavigationPage.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
+                    <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static application:NavigationPage.TemperatureCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
                 </StackPanel>
             </Grid>
         </Border>
@@ -70,6 +70,21 @@
             <Label Grid.Row="1" Grid.Column="2" Content="Außen" Visibility="{Binding VerticalCutLabelsVisibility}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
 
             <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" >
+                <Button ToolTip="Maßketten ein-/ausschalten"
+                        Command="{Binding ToggleDecorationVisibilityCommand}"
+                        Margin="0,0,16,0"
+                        VerticalAlignment="Center">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ButtonMiniTransparent}">
+                            <Setter Property="Tag" Value="{StaticResource ButtonIcon_Hide_B}" />
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding ShowDecoration}" Value="True">
+                                    <Setter Property="Tag" Value="{StaticResource ButtonIcon_Show_B}" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                </Button>
                 <RadioButton IsChecked="{Binding IsCrossSectionChecked}" GroupName="View" Content="Querschnitt" Style="{StaticResource RadioButton01_B}" Margin="0,4,4,0"/>
                 <RadioButton IsChecked="{Binding IsVerticalCutChecked}" GroupName="View" Content="Vertikalschnitt" Style="{StaticResource RadioButton01_B}" Margin="4,4,0,0"/>
             </StackPanel>

@@ -6,6 +6,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
+             xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="450"
              d:DesignWidth="800"
@@ -14,7 +15,7 @@
 
     <UserControl.Resources>
 
-        <ui:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <converter:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
 
         <!--Custom Label for Subscript Text-->
         <Style TargetType="{x:Type controls:SubscriptLabel}">

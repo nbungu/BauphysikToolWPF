@@ -5,6 +5,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
+             xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
              mc:Ignorable="d" 
              x:Name="RootGauge"
              d:DesignHeight="120"
@@ -13,11 +14,11 @@
 
     <UserControl.Resources>
         <!-- Value to position converter -->
-        <ui:ValueAndWidthToOffsetConverter x:Key="ValueAndWidthToOffsetConverter" />
-        <ui:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
-        <ui:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converter:ValueAndWidthToOffsetConverter x:Key="ValueAndWidthToOffsetConverter" />
+        <converter:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <converter:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <!--<BooleanToVisibilityConverter x:Key="BoolToVisibilityConverter"/>-->
-        <ui:NumberConverter x:Key="NumberConverter" />
+        <converter:NumberConverter x:Key="NumberConverter" />
     </UserControl.Resources>
 
     <Grid x:Name="RootGrid">

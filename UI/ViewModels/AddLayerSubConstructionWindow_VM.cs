@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels

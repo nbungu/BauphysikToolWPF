@@ -6,8 +6,8 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Windows;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
+using static BauphysikToolWPF.Models.Domain.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {

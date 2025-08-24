@@ -1,6 +1,6 @@
 ﻿using BauphysikToolWPF.Services.Application;
 using SQLite;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
 
 namespace BauphysikToolWPF.Models.Database
 {

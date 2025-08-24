@@ -37,6 +37,13 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void SwitchPage(NavigationPage desiredPage) => MainWindow.SetPage(desiredPage);
 
+        [RelayCommand]
+        private void ToggleDecorationVisibility()
+        {
+            _oglController.ShowSceneDecoration = !_oglController.ShowSceneDecoration;
+            OnPropertyChanged(nameof(ShowDecoration));
+        }
+
         partial void OnIsCrossSectionCheckedChanged(bool value)
         {
             if (_oglController.SceneBuilder is ElementSceneBuilder sceneBuilder)
@@ -72,7 +79,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility NoLayersVisibility => _element.Layers.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public Visibility CrossSectionLabelsVisibility => IsCrossSectionChecked ? Visibility.Visible : Visibility.Collapsed;
         public Visibility VerticalCutLabelsVisibility => IsCrossSectionChecked ? Visibility.Collapsed : Visibility.Visible;
-        
+        public bool ShowDecoration => _oglController.ShowSceneDecoration;
+
         // Results
 
         private GaugeItem? _uValueGauge;

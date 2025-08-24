@@ -1,11 +1,10 @@
-﻿using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Services.Application;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using BauphysikToolWPF.Models.UI;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.Application
 {
     // Top-level type. Defined outside of class. Part of namespace BauphysikToolWPF. Accessible from whole application
     public enum NavigationPage

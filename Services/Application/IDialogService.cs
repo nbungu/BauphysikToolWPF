@@ -1,8 +1,8 @@
-﻿using BauphysikToolWPF.Models.UI;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Windows;
+using BauphysikToolWPF.Models.UI;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.Application
 {
     public interface IDialogService
     {

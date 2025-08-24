@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
+using BauphysikToolWPF.Services.UI.Converter;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -171,6 +172,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(LayerSubConstrPropertyBag))]
         [NotifyPropertyChangedFor(nameof(SubConstructionExpanderVisibility))]
         [NotifyPropertyChangedFor(nameof(LayerPropertiesExpanderVisibility))]
+        [NotifyPropertyChangedFor(nameof(PropertyHeader1))]
+        [NotifyPropertyChangedFor(nameof(PropertyHeader2))]
         private Layer? _selectedLayer;
 
         [ObservableProperty]
@@ -202,9 +205,11 @@ namespace BauphysikToolWPF.UI.ViewModels
         * 
         * Not Observable, not directly mutated by user input
         */
-       
-        public bool ShowDecoration => _oglController.ShowSceneDecoration;
+
         public string Title => $"'{_element.Name}' - Schichtaufbau ";
+        public bool ShowDecoration => _oglController.ShowSceneDecoration;
+        public string PropertyHeader1 => $"Schicht: {SelectedLayer?.Material.Name}";
+        public string PropertyHeader2 => $"Balkenlage: {SelectedLayer?.SubConstruction?.Material.Name}";
         public string SelectedElementColorCode => _element.ColorCode;
         public string SelectedElementConstructionName => _element.Construction.TypeName;
         public ObservableCollection<Layer> LayerList => new ObservableCollection<Layer>(_element.Layers);
@@ -289,113 +294,113 @@ namespace BauphysikToolWPF.UI.ViewModels
         // On Initial Startup (default value for not assigned int)
         // Index is -1:
         // On custom user input
-        public double TiValue
+        public string TiValue
         {
             get
             {
                 double? value = (_tiIndex == -1) ? _element.ThermalCalcConfig.Ti : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Find(e => e.Name == TiKeys[_tiIndex])?.Value;
                 _element.ThermalCalcConfig.Ti = value ?? 0.0;
-                return _element.ThermalCalcConfig.Ti;
+                return NumberConverter.ConvertToString(_element.ThermalCalcConfig.Ti, 1);
             }
             set
             {
                 // Save custom user input
-                _element.ThermalCalcConfig.Ti = value;
+                _element.ThermalCalcConfig.Ti = NumberConverter.ConvertToDouble(value);
                 // Changing ti_Index Triggers TiValue getter due to NotifyProperty
                 TiIndex = -1;
-                if (Math.Abs(value) > 40) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
+                if (Math.Abs(_element.ThermalCalcConfig.Ti) > 40) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
             }
         }
-        public double TeValue
+        public string TeValue
         {
             get
             {
                 double? value = (_teIndex == -1) ? _element.ThermalCalcConfig.Te : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Find(e => e.Name == TeKeys[_teIndex])?.Value;
                 _element.ThermalCalcConfig.Te = value ?? 0.0;
-                return _element.ThermalCalcConfig.Te;
+                return NumberConverter.ConvertToString(_element.ThermalCalcConfig.Te, 1);
             }
             set
             {
-                _element.ThermalCalcConfig.Te = value;
+                _element.ThermalCalcConfig.Te = NumberConverter.ConvertToDouble(value);
                 TeIndex = -1;
-                if (Math.Abs(value) > 50) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
+                if (Math.Abs(_element.ThermalCalcConfig.Te) > 50) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
             }
         }
-        public double RsiValue
+        public string RsiValue
         {
             get
             {
                 double? value = (_rsiIndex == -1) ? _element.ThermalCalcConfig.Rsi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Name == RsiKeys[_rsiIndex])?.Value;
                 _element.ThermalCalcConfig.Rsi = value ?? 0.0;
-                return _element.ThermalCalcConfig.Rsi;
+                return NumberConverter.ConvertToString(_element.ThermalCalcConfig.Rsi);
             }
             set
             {
-                if (value < 0)
+                if (NumberConverter.ConvertToDouble(value) < 0)
                 {
                     MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Error);
                     return;
                 }
-                _element.ThermalCalcConfig.Rsi = value;
+                _element.ThermalCalcConfig.Rsi = NumberConverter.ConvertToDouble(value);
                 RsiIndex = -1;
-                if (value > 1) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
+                if (_element.ThermalCalcConfig.Rsi > 1) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
             }
         }
-        public double RseValue
+        public string RseValue
         {
             get
             {
                 double? value = (_rseIndex == -1) ? _element.ThermalCalcConfig.Rse : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Name == RseKeys[_rseIndex])?.Value;
                 _element.ThermalCalcConfig.Rse = value ?? 0.0;
-                return _element.ThermalCalcConfig.Rse;
+                return NumberConverter.ConvertToString(_element.ThermalCalcConfig.Rse);
             }
             set
             {
-                if (value < 0)
+                if (NumberConverter.ConvertToDouble(value) < 0)
                 {
                     MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Error);
                     return;
                 }
-                _element.ThermalCalcConfig.Rse = value;
+                _element.ThermalCalcConfig.Rse = NumberConverter.ConvertToDouble(value);
                 RseIndex = -1;
-                if (value > 1) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
+                if (_element.ThermalCalcConfig.Rse > 1) MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Warning);
             }
         }
-        public double RelFiValue
+        public string RelFiValue
         {
             get
             {
                 double? value = (_relFiIndex == -1) ? _element.ThermalCalcConfig.RelFi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Name == RelFiKeys[_relFiIndex])?.Value;
                 _element.ThermalCalcConfig.RelFi = value ?? 0.0;
-                return _element.ThermalCalcConfig.RelFi;
+                return NumberConverter.ConvertToString(_element.ThermalCalcConfig.RelFi, 1);
             }
             set
             {
-                if (value < 0 || value > 100)
+                if (NumberConverter.ConvertToDouble(value) < 0 || NumberConverter.ConvertToDouble(value) > 100)
                 {
                     MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Error);
                     return;
                 }
-                _element.ThermalCalcConfig.RelFi = value;
+                _element.ThermalCalcConfig.RelFi = NumberConverter.ConvertToDouble(value);
                 RelFiIndex = -1;
             }
         }
-        public double RelFeValue
+        public string RelFeValue
         {
             get
             {
                 double? value = (_relFeIndex == -1) ? _element.ThermalCalcConfig.RelFe : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Name == RelFeKeys[_relFeIndex])?.Value;
                 _element.ThermalCalcConfig.RelFe = value ?? 0.0;
-                return _element.ThermalCalcConfig.RelFe;
+                return NumberConverter.ConvertToString(_element.ThermalCalcConfig.RelFe, 1);
             }
             set
             {
-                if (value < 0 || value > 100)
+                if (NumberConverter.ConvertToDouble(value) < 0 || NumberConverter.ConvertToDouble(value) > 100)
                 {
                     MainWindow.ShowToast("Unrealistischer Wert!", ToastType.Error);
                     return;
                 }
-                _element.ThermalCalcConfig.RelFe = value;
+                _element.ThermalCalcConfig.RelFe = NumberConverter.ConvertToDouble(value);
                 RelFeIndex = -1;
             }
         }

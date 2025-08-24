@@ -7,8 +7,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using BauphysikToolWPF.Models.Domain.Helper;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
+using static BauphysikToolWPF.Models.Domain.Enums;
 using System.Collections.ObjectModel;
 using BauphysikToolWPF.Repositories;
 

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Media;
+using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.Models.UI
 {

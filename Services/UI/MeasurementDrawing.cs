@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
+using BauphysikToolWPF.Services.UI.Converter;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using Point = System.Windows.Point;
 

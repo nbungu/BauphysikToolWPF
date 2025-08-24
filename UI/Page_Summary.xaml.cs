@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI
         //
 
         // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call.
-        private readonly OglController _oglController;
+        private OglController _oglController;
         private readonly Element _element; // Selected Element from Session
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
@@ -28,14 +28,19 @@ namespace BauphysikToolWPF.UI
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)                                                    
 
-            _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.VerticalCut));
-            _oglController.Redraw(); // Initial render to display the scene
-            _oglController.IsSceneInteractive = false; // Disable interaction with the scene
-            _oglController.IsTextSizeZoomable = true; // Disable editing of the scene
-
+            InitalizeOglView();
+            
             // View Model
             this.DataContext = new Page_Summary_VM(_oglController);
             this.IsVisibleChanged += Page_Summary_IsVisibleChanged;
+        }
+
+        private void InitalizeOglView()
+        {
+            _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.VerticalCut));
+            _oglController.Redraw(); // Initial render to display the scene
+            _oglController.IsSceneInteractive = false; // Disable interaction with the scene
+            _oglController.IsTextSizeZoomable = false; // Disable editing of the scene
         }
 
         private void Page_Summary_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

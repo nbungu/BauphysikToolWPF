@@ -10,8 +10,8 @@ using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BauphysikToolWPF.Services.UI.OpenGL;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
+using static BauphysikToolWPF.Models.Domain.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {

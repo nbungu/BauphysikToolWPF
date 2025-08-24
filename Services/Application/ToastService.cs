@@ -1,6 +1,6 @@
 ﻿using BauphysikToolWPF.UI.CustomControls;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.Application
 {
     public class ToastService : IToastService
     {

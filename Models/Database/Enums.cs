@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using BauphysikToolWPF.Repositories;
 
-namespace BauphysikToolWPF.Models.Database.Helper
+namespace BauphysikToolWPF.Models.Database
 {
     public class Enums
     {

@@ -7,6 +7,7 @@
              xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
              xmlns:customControls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:viewModels="clr-namespace:BauphysikToolWPF.UI.ViewModels"
+             xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
              mc:Ignorable="d" 
              d:DesignHeight="700"
              d:DesignWidth="1200">
@@ -19,7 +20,7 @@
     <UserControl.Resources>
 
         <!-- Checks if Element of WrapPanel is currently SelectedElement -->
-        <ui:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
+        <converter:IsSelectedElementConverter x:Key="IsSelectedElementConverter"/>
 
         <!--Custom ButtonGridPanel: light rounded corners, click effects-->
         <!--Here: Binding (DataContext) is typeof 'Element' set by ItemsSource Property-->
@@ -287,7 +288,7 @@
 
                         <Label Content="{Binding SelectedElement.Construction.TypeName}" HorizontalAlignment="Left"/>
 
-                        <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.PreviewImage}" Margin="0,8,0,8"/>
+                        <Image SnapsToDevicePixels="True" Source="{Binding SelectedElement.PreviewImage}" Margin="8"/>
 
                         <Expander Header="Bauteildaten" IsExpanded="True" Background="Transparent" Margin="0">
                             <customControls:PropertyDataGrid x:Name="ElementPropertiesDataGrid"
@@ -295,34 +296,6 @@
                                                              Background="Transparent"
                                                              PreviewMouseWheel="ElementPropertiesDataGrid_OnPreviewMouseWheel"/>
                         </Expander>
-                        <!--<StackPanel Orientation="Horizontal">
-                            <Label Content="Ausrichtung:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.OrientationTypeName}" HorizontalAlignment="Left"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="U-Wert:" HorizontalAlignment="Left" Width="96" FontWeight="DemiBold"/>
-                            <Label Content="{Binding SelectedElement.UValue, Converter={StaticResource NumberConverter}, ConverterParameter=3}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left" FontWeight="DemiBold"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="R-Wert:" HorizontalAlignment="Left" Width="96" FontWeight="DemiBold"/>
-                            <Label Content="{Binding SelectedElement.RGesValue, Converter={StaticResource NumberConverter}}" ContentStringFormat='&#8203;{0} m²K/W' HorizontalAlignment="Left" FontWeight="DemiBold"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="m':" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.AreaMassDens, Converter={StaticResource NumberConverter}}" ContentStringFormat='&#8203;{0} kg/m²' HorizontalAlignment="Left"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="sd-Wert:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.SdThickness, Converter={StaticResource NumberConverter}, ConverterParameter=1}" ContentStringFormat='&#8203;{0} m' HorizontalAlignment="Left"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="Erstellt:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.CreatedAtString}" HorizontalAlignment="Left"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
-                            <Label Content="Gerändert:" HorizontalAlignment="Left" Width="96"/>
-                            <Label Content="{Binding SelectedElement.UpdatedAtString}" HorizontalAlignment="Left"/>
-                        </StackPanel>-->
                         <StackPanel Orientation="Horizontal" Margin="8,16,0,0">
                             <Image Source="{StaticResource ButtonIcon_Tags_B}" HorizontalAlignment="Left" Width="20" Height="20"/>
                             <Label Content="Tags:" HorizontalAlignment="Left"/>

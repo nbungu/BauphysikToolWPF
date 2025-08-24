@@ -5,7 +5,7 @@ using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
 
 namespace BauphysikToolWPF.Calculation
 {

@@ -3,7 +3,7 @@ using System.Globalization;
 using System.IO;
 using System.Windows.Data;
 
-namespace BauphysikToolWPF.Services.UI
+namespace BauphysikToolWPF.Services.UI.Converter
 {
     public class FilePathToFileNameConverter : IValueConverter
     {

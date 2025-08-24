@@ -1,5 +1,5 @@
 ﻿using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -35,8 +35,8 @@ namespace BauphysikToolWPF.UI.CustomControls
                 var propertyItem = textBox.DataContext as IPropertyItem ?? null;
                 var type = propertyItem?.Value.GetType();
                 if (type is null) return;
-                if (type == typeof(double)) e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
-                else if (type == typeof(int)) e.Handled = TextInputValidation.IntegerCurrentCulture.IsMatch(e.Text);
+                if (type == typeof(double)) e.Handled = TextInputValidation.NumericCurrentCulturePositive.IsMatch(e.Text);
+                else if (type == typeof(int)) e.Handled = TextInputValidation.IntegerCurrentCulturePositive.IsMatch(e.Text);
             }
         }
 

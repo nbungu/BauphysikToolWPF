@@ -2,7 +2,7 @@
 using SQLite;
 using System;
 using System.Windows.Media;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
 
 namespace BauphysikToolWPF.Models.Database
 {

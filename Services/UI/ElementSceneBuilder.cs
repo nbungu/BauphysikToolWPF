@@ -1,12 +1,13 @@
+using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Models.UI;
+using BauphysikToolWPF.Services.UI.Converter;
+using BauphysikToolWPF.Services.UI.OpenGL;
+using BT.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Media;
-using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Services.UI.OpenGL;
-using BT.Geometry;
 
 namespace BauphysikToolWPF.Services.UI
 {
@@ -59,8 +60,9 @@ namespace BauphysikToolWPF.Services.UI
 
         private void DrawFullVerticalCutScene()
         {
+            //var fontSizePx = 28;
             var elementBounds = GetContentBounds(CrossSectionBuilder.DrawingGeometries);
-
+            
             ZIndex = 0;
             AddLine(elementBounds.TopLine, style: LineStyle.Dashed);
             AddLine(elementBounds.BottomLine, style: LineStyle.Dashed);
@@ -87,7 +89,6 @@ namespace BauphysikToolWPF.Services.UI
                 }
 
                 Point markerPos = geom.Rectangle.Center;
-                int fontSize = 40;
                 string layerNumber = CrossSectionBuilder.Element.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
@@ -98,8 +99,7 @@ namespace BauphysikToolWPF.Services.UI
                         AddLine(geom.Rectangle.BottomLine);
                     }
                     layerNumber += "b";
-                    fontSize = 36;
-                    markerPos += new Vector(0, 2*fontSize); // Adjust position for sub-construction layers
+                    markerPos += new Vector(0, 32*WorldUnitsPerPixel); // Adjust position for sub-construction layers
                 }
                 else if (geom.ShapeId.Type == ShapeType.Layer)
                 {
@@ -113,23 +113,24 @@ namespace BauphysikToolWPF.Services.UI
                 }
                 
                 ZIndex = 2;
-                AddLayerTextMarker(markerPos, layerNumber, geom.BorderPen.Brush, fontSize, opacity: geom.Opacity, shp: new ShapeId(ShapeType.Annotation, geom.InternalId));
+                if (ShowSceneDecoration) AddLayerTextMarker(markerPos, layerNumber, geom.BorderPen.Brush, 32, opacity: geom.Opacity, shp: new ShapeId(ShapeType.Annotation, geom.InternalId));
             }
 
+            if (ShowSceneDecoration)
+            {
+                // TESTING:
+                var relevantGeometries = CrossSectionBuilder.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.Layer);
+                double[] xIncrements = relevantGeometries.Select(geom => geom.Rectangle.Width).ToArray();
 
-            // TESTING:
-            var relevantGeometries = CrossSectionBuilder.DrawingGeometries.Where(geom => geom.ShapeId.Type == ShapeType.Layer);
-            double[] xIncrements = relevantGeometries.Select(geom => geom.Rectangle.Width).ToArray();
+                var matchingLayers = CrossSectionBuilder.Element.Layers
+                    .Where(layer => relevantGeometries.Any(dg => dg.ShapeId.Type == layer.ShapeId.Type && dg.ShapeId.Index == layer.ShapeId.Index))
+                    .ToList();
+                double[] layerWidths = matchingLayers.Select(layer => layer.Thickness).ToArray();
 
-            var matchingLayers = CrossSectionBuilder.Element.Layers
-                .Where(layer => relevantGeometries.Any(dg => dg.ShapeId.Type == layer.ShapeId.Type && dg.ShapeId.Index == layer.ShapeId.Index))
-                .ToList();
-            double[] layerWidths = matchingLayers.Select(layer => layer.Thickness).ToArray();
+                AddDimensionalChainsHorizontal(elementBounds.TopLeft, xIncrements, layerWidths, 50, fontSizePx: 32);
+                AddDimensionalChainsHorizontal(elementBounds.TopLeft, new[] { elementBounds.Width }, 110, oneCmConversion: SizeOf1Cm, fontSizePx: 32);
+            }
 
-            AddDimensionalChainsHorizontal(elementBounds.TopLeft, xIncrements, layerWidths, 50);
-
-            AddDimensionalChainsHorizontal(elementBounds.TopLeft, new []{ elementBounds.Width }, 110, oneCmConversion: SizeOf1Cm);
-            
             if (DebugMode)
             {
                 AddLine(SceneBounds.TopLine, Brushes.Blue, LineStyle.Dashed);
@@ -148,8 +149,9 @@ namespace BauphysikToolWPF.Services.UI
 
         private void DrawFullCrossSectionScene()
         {
+            var fontSizePx = 32;
             var elementBounds = GetContentBounds(CrossSectionBuilder.DrawingGeometries);
-            int dimChainOffset = (int)SizeOf1Cm * 2;
+            int dimChainOffset = (int)SizeOf1Cm * 3;
 
             ZIndex = 0;
             AddLine(elementBounds.LeftLine, style: LineStyle.Dashed);
@@ -179,7 +181,7 @@ namespace BauphysikToolWPF.Services.UI
 
                 // Layer Marker
                 ZIndex = 2;
-                if (ShowSceneDecoration) AddLayerTextMarker(geom.Rectangle.Center, layerNumber, geom.BorderPen.Brush, FontSize, opacity: geom.Opacity, shp: geom.ShapeId);
+                if (ShowSceneDecoration) AddLayerTextMarker(geom.Rectangle.Center, layerNumber, geom.BorderPen.Brush, fontSizePx, opacity: geom.Opacity, shp: geom.ShapeId);
 
                 // Rectangle Borders
                 if (geom.BorderPen.Brush != Brushes.Black)
@@ -205,13 +207,13 @@ namespace BauphysikToolWPF.Services.UI
                 // Vertical full element
                 DrawSingleDimChain(elementBounds.RightLine, dimChainOffset * 3,
                     NumberConverter.ConvertToString(elementBounds.Height / SizeOf1Cm),
-                    alignment: TextAlignment.Left | TextAlignment.CenterV, fontSize: FontSize);
+                    alignment: TextAlignment.Left | TextAlignment.CenterV, fontSizePx: fontSizePx);
 
                 // Vertical Layers
                 if (CrossSectionBuilder.DrawingGeometries.Count > 1)
                 {
                     intervals = MeasurementDrawing.GetMeasurementChainIntervals(CrossSectionBuilder.DrawingGeometries.Where(g => g.ShapeId.Type == ShapeType.Layer), Axis.Z, false);
-                    AddDimensionalChainsVertical(elementBounds.Right, intervals, dimChainOffset, false, SizeOf1Cm, FontSize);
+                    AddDimensionalChainsVertical(elementBounds.Right, intervals, dimChainOffset, false, SizeOf1Cm, fontSizePx);
                 }
 
                 // Sub Constructions
@@ -219,11 +221,11 @@ namespace BauphysikToolWPF.Services.UI
                 {
                     // Vertical Sub Constructions
                     intervals = MeasurementDrawing.GetMeasurementChainIntervals(CrossSectionBuilder.DrawingGeometries, Axis.Z, true);
-                    AddDimensionalChainsVertical(elementBounds.Left, intervals, dimChainOffset, true, SizeOf1Cm, FontSize);
+                    AddDimensionalChainsVertical(elementBounds.Left, intervals, dimChainOffset, true, SizeOf1Cm, fontSizePx);
 
                     // Horizontal Sub Constructions
                     intervals = MeasurementDrawing.GetMeasurementChainIntervals(CrossSectionBuilder.DrawingGeometries, Axis.X, true);
-                    AddDimensionalChainsHorizontal(elementBounds.Top, intervals, dimChainOffset, false, SizeOf1Cm, FontSize);
+                    AddDimensionalChainsHorizontal(elementBounds.Top, intervals, dimChainOffset, false, SizeOf1Cm, fontSizePx);
                 }
             }
 

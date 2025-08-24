@@ -3,8 +3,8 @@ using BauphysikToolWPF.Models.Domain;
 using BT.Logging;
 using System.Collections.Generic;
 using System.Linq;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
+using static BauphysikToolWPF.Models.Domain.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Calculation

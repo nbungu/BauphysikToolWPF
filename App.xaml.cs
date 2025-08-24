@@ -7,6 +7,7 @@ using System.Windows;
 using BauphysikToolWPF.Repositories;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BauphysikToolWPF.Models.Domain.Helper;
 
 namespace BauphysikToolWPF
 {
@@ -43,7 +44,7 @@ namespace BauphysikToolWPF
                     try
                     {
                         // Load the project from the specified file
-                        Project loadedProject = DomainModelSerializer.GetProjectFromFile(filePath);
+                        Project loadedProject = ProjectSerializer.GetProjectFromFile(filePath);
                         Session.SelectedProject = loadedProject;
                         Session.ProjectFilePath = filePath;
                         RecentProjectsManager.AddRecentProject(filePath);

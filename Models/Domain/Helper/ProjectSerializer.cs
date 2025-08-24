@@ -1,14 +1,14 @@
-﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.UI.CustomControls;
-using BT.Logging;
-using System;
+﻿using System;
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.UI.CustomControls;
+using BT.Logging;
 
-namespace BauphysikToolWPF.Services.Application
+namespace BauphysikToolWPF.Models.Domain.Helper
 {
-    public static class DomainModelSerializer
+    public static class ProjectSerializer
     {
         public static void SaveProjectToFile(Project? project, string filePath)
         {

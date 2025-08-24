@@ -3,7 +3,7 @@ using SQLite;
 using SQLiteNetExtensions.Extensions;
 using System.Collections.Generic;
 using System.Linq;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Repositories

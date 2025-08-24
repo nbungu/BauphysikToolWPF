@@ -85,7 +85,6 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             );
         }
 
-
         /// <summary>
         /// Renders only elements without images via offscreen capturing and assigns the resulting images to the elements.
         /// </summary>

@@ -13,7 +13,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using static BauphysikToolWPF.Models.Domain.Helper.Enums;
+using BauphysikToolWPF.Models.Domain.Helper;
+using static BauphysikToolWPF.Models.Domain.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -67,7 +68,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                         Save();
                         break;
                     case MessageBoxResult.No:
-                        DomainModelFactory.CreateNewProject();
+                        ProjectFactory.CreateNewProject();
                         Session.OnNewProjectAdded(false);
                         break;
                     case MessageBoxResult.Cancel:
@@ -77,7 +78,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
             else
             {
-                DomainModelFactory.CreateNewProject();
+                ProjectFactory.CreateNewProject();
                 Session.OnNewProjectAdded(false);
             }
         }
@@ -89,7 +90,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (!File.Exists(Session.ProjectFilePath)) SaveTo();
             else
             {
-                DomainModelSerializer.SaveProjectToFile(Session.SelectedProject, Session.ProjectFilePath);
+                ProjectSerializer.SaveProjectToFile(Session.SelectedProject, Session.ProjectFilePath);
                 Session.SelectedProject.IsModified = false;
                 Session.OnSelectedProjectChanged(false);
             }
@@ -102,7 +103,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             string? filePath = _fileDialogService.ShowSaveFileDialog("project.btk", "BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
             if (filePath != null)
             {
-                DomainModelSerializer.SaveProjectToFile(Session.SelectedProject, filePath);
+                ProjectSerializer.SaveProjectToFile(Session.SelectedProject, filePath);
                 Session.ProjectFilePath = filePath;
                 Session.SelectedProject.IsModified = false;
                 RecentProjectsManager.AddRecentProject(filePath);
@@ -115,7 +116,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             string? filePath = _fileDialogService.ShowOpenFileDialog("BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
             if (filePath != null)
             {
-                Project loadedProject = DomainModelSerializer.GetProjectFromFile(filePath);
+                Project loadedProject = ProjectSerializer.GetProjectFromFile(filePath);
 
                 Session.SelectedProject = loadedProject;
                 Session.ProjectFilePath = filePath;
@@ -163,7 +164,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (SelectedListViewItem is null) return;
 
             var filePath = SelectedListViewItem.FilePath;
-            Project loadedProject = DomainModelSerializer.GetProjectFromFile(filePath);
+            Project loadedProject = ProjectSerializer.GetProjectFromFile(filePath);
 
             Session.SelectedProject = loadedProject;
             Session.ProjectFilePath = filePath;

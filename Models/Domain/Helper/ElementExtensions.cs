@@ -2,7 +2,7 @@
 using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using System.Linq;
-using static BauphysikToolWPF.Models.Database.Helper.Enums;
+using static BauphysikToolWPF.Models.Database.Enums;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
 {
