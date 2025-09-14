@@ -2,6 +2,7 @@
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using System.Collections.Generic;
+using static BauphysikToolWPF.Calculation.EnvelopeCalculation;
 using static BauphysikToolWPF.Models.Database.Enums;
 
 namespace BauphysikToolWPF.Models.Database
@@ -22,6 +23,9 @@ namespace BauphysikToolWPF.Models.Database
 
         [NotNull]
         public ConstructionGroup ConstructionGroup { get; set; } = ConstructionGroup.NotDefined;
+
+        [NotNull]
+        public TransmissionTransfer TransmissionType { get; set; } = TransmissionTransfer.ToOutside;
 
         [NotNull]
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();

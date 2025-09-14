@@ -25,7 +25,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedElementName = _targetElement != null ? _targetElement.Name : "Neue Konstruktion";
             SelectedElementShortName = _targetElement != null ? _targetElement.ShortName : "";
             SelectedConstruction = _targetElement != null ? (int)_targetElement.Construction.ConstructionType : (int)ConstructionType.Aussenwand;
-            SelectedOrientation = _targetElement != null ? (int)_targetElement.OrientationType : (int)OrientationType.North;
             TagList = _targetElement != null ? _targetElement.TagList : new List<string>(0);
             SelectedElementComment = _targetElement != null ? _targetElement.Comment : "";
             SelectedElementColor = _targetElement != null ? _targetElement.ColorCode : "#00FFFFFF";
@@ -104,7 +103,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                 _targetElement.Name = SelectedElementName;
                 _targetElement.ShortName = SelectedElementShortName;
                 _targetElement.ConstructionId = SelectedConstruction;
-                _targetElement.OrientationType = (OrientationType)SelectedOrientation;
                 _targetElement.TagList = TagList;
                 _targetElement.Comment = SelectedElementComment;
                 _targetElement.ColorCode = SelectedElementColor;
@@ -118,7 +116,6 @@ namespace BauphysikToolWPF.UI.ViewModels
                     Name = SelectedElementName,
                     ShortName = SelectedElementShortName,
                     ConstructionId = SelectedConstruction,
-                    OrientationType = (OrientationType)SelectedOrientation,
                     TagList = TagList,
                     Comment = SelectedElementComment,
                     ColorCode = SelectedElementColor

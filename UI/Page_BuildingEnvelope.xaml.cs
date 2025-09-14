@@ -1,4 +1,6 @@
-﻿using System.Windows.Controls;
+﻿using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Services.Application;
+using System.Windows.Controls;
 
 namespace BauphysikToolWPF.UI
 {
@@ -9,7 +11,16 @@ namespace BauphysikToolWPF.UI
     {
         public Page_BuildingEnvelope()
         {
+            InitalizeEnvelopeItems();
+
             InitializeComponent();
+        }
+
+        private void InitalizeEnvelopeItems()
+        {
+            if (Session.SelectedProject is null) return;
+
+            Session.SelectedProject.AssignInternalIdsToEnvelopeItems();
         }
     }
 }

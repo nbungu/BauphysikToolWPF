@@ -33,6 +33,8 @@ namespace BauphysikToolWPF
         {
             InitializeComponent();
 
+            Session.NewProjectAdded += UpdateNewProjectAdded;
+
             _toastNotification = this.Toast;
             _mainWindowContent = this.MainWindowContent;
             _dialogService = new DialogService();
@@ -43,7 +45,7 @@ namespace BauphysikToolWPF
             if (UpdaterManager.NewVersionAvailable)
             {
                 Logger.LogInfo($"Found new Version! Notifying User");
-                ShowToast($"New Version Available: {UpdaterManager.LocalUpdaterManagerFile.LatestTag}. Besuchen Sie bauphysik-tool.de für ein kostenloses Update!", ToastType.Info, 6);
+                ShowToast($"Neue Version verfügbar: {UpdaterManager.LocalUpdaterManagerFile.LatestTag}. Besuchen Sie bauphysik-tool.de für ein kostenloses Update!", ToastType.Info, 6);
                 UpdaterManager.LocalUpdaterManagerFile.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
                 UpdaterManager.WriteToLocalUpdaterFile(UpdaterManager.LocalUpdaterManagerFile);
             }
@@ -88,6 +90,21 @@ namespace BauphysikToolWPF
                 timer.Stop();
             };
             timer.Start();
+        }
+        
+        private void UpdateNewProjectAdded()
+        {
+            _dialogService.ShowLoadingDialog("Lädt, bitte warten...", minDurationMs: 400);
+
+            Session.SelectedElementId = -1;
+
+            // Update InternalIds and render new images
+            Session.SelectedProject.AssignAsParentToElements();
+            Session.SelectedProject.AssignInternalIdsToElements(true);
+            Session.SelectedProject.AssignInternalIdsToEnvelopeItems(true);
+            Session.SelectedProject.RenderAllElementImages(withDecorations: false);
+
+            _dialogService.CloseLoadingDialog();
         }
 
         private void MinimizeCommand(object sender, RoutedEventArgs e) => WindowState = WindowState.Minimized;

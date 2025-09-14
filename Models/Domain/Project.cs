@@ -23,6 +23,8 @@ namespace BauphysikToolWPF.Models.Domain
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public List<Element> Elements { get; set; } = new List<Element>(0);
         public List<EnvelopeItem> EnvelopeItems { get; set; } = new List<EnvelopeItem>(0);
+        public int LastUsedSortingType { get; set; }
+        public int LastUsedGroupingType { get; set; }
 
         #endregion
 
@@ -55,11 +57,7 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public List<string> LinkedFilesList // Converts string of LinkedFiles, separated by Comma, to a List of LinkedFiles
         {
-            get
-            {
-                if (LinkedFilePaths == string.Empty) return new List<string>();
-                return LinkedFilePaths.Split(',').ToList(); // Splits elements of a string into a List
-            }
+            get => LinkedFilePaths == string.Empty ? new List<string>() : LinkedFilePaths.Split(',').ToList(); // Splits elements of a string into a List
             set
             {
                 if (value != null) LinkedFilePaths = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   

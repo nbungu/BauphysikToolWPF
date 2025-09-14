@@ -29,6 +29,10 @@
                             MethodName="GetElements"
                             ObjectType="{x:Type vm:Page_BuildingEnvelope_VM}"/>
 
+        <ObjectDataProvider x:Key="TransmissionTransferTypeNames"
+                            MethodName="GetTransmissionTransferTypeNames"
+                            ObjectType="{x:Type vm:Page_BuildingEnvelope_VM}"/>
+
         <Style x:Key="RoundIconButtonStyle" TargetType="Button">
             <Setter Property="Width" Value="24"/>
             <Setter Property="Height" Value="24"/>
@@ -148,36 +152,6 @@
                                             <!-- Second Button -->
                                             <Button Grid.Column="1" Style="{StaticResource RoundIconButtonStyle}" ToolTip="Erstellt neuen Bereich der thermischen Hüllfläche, zugehörig zum aktuellen Raum" Command="{Binding DataContext.AddEnvelopeItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" Margin="16,0,0,0" VerticalAlignment="Center" Cursor="Hand"/>
                                         </Grid>
-                                        <!--<Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-
-                                            --><!-- First Button --><!--
-                                            <Button x:Name="FirstButton" Style="{StaticResource RoundIconButtonStyle_Highlighted}" Margin="0,24,0,0" HorizontalAlignment="Left" VerticalAlignment="Top" />
-
-                                            --><!-- Second Button --><!--  
-                                            <Button Grid.Column="1" Style="{StaticResource RoundIconButtonStyle}" Margin="16,0,10,0" VerticalAlignment="Top" />
-
-                                            --><!-- Vertical Line --><!--
-                                            <Line Grid.Column="0"
-                                                  Stroke="{StaticResource PrimaryHighlightBrush}"
-                                                  StrokeThickness="2"
-                                                  VerticalAlignment="Top"
-                                                  X1="0" X2="0"
-                                                  Y1="-20" Y2="12"
-                                                  Margin="12"/>
-
-                                            --><!-- Horizontal Line --><!--
-                                            <Line Grid.Column="1"
-                                                  Stroke="{StaticResource PrimaryMediumBrush}"
-                                                  StrokeThickness="2"
-                                                  VerticalAlignment="Top"
-                                                  X1="-24" X2="4"
-                                                  Y1="0" Y2="0"
-                                                  Margin="12"/>
-                                        </Grid>-->
                                     </Border>
                                 </StackPanel>
                             </ScrollViewer>
@@ -291,6 +265,7 @@
                     <ColumnDefinition Width="72"/>
                     <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="88"/>
+                    <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="88"/>
                     <ColumnDefinition Width="88"/>
@@ -304,16 +279,16 @@
                 <Border Grid.Column="0" Grid.ColumnSpan="4" Background="{StaticResource SecondaryLightBlueBrush}" BorderThickness="1,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Info" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="4" Grid.ColumnSpan="5" Background="{StaticResource SecondaryLightYellowBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                <Border Grid.Column="4" Grid.ColumnSpan="6" Background="{StaticResource SecondaryLightYellowBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Bauteil" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="9" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                <Border Grid.Column="10" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Netto Raum" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="12" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
+                <Border Grid.Column="13" Grid.ColumnSpan="3" Background="{StaticResource SecondaryLightGreenBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}">
                     <TextBlock Text="Brutto Raum" HorizontalAlignment="Center" Padding="4"/>
                 </Border>
-                <Border Grid.Column="15" Background="{StaticResource PrimaryLightBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
+                <Border Grid.Column="16" Background="{StaticResource PrimaryLightBrush}" BorderThickness="0,1,1,0" BorderBrush="{StaticResource PrimaryBorderBrush}"/>
             </Grid>
 
             <DataGrid Grid.Row="1"
@@ -399,6 +374,7 @@
                                 <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorderBrush}"/>
                                 <Setter Property="BorderThickness" Value="0,0,0,2"/>
                                 <Setter Property="Background" Value="{StaticResource SecondaryLightBlueBrush}"/>
+                                <Setter Property="ToolTip" Value="Raumnummer"/>
                             </Style>
                         </DataGridTemplateColumn.HeaderStyle>
                     </DataGridTemplateColumn>
@@ -537,6 +513,43 @@
                         </DataGridTextColumn.HeaderStyle>
                     </DataGridTextColumn>
 
+                    <!--Fx Column-->
+                    <DataGridTextColumn Header="Fx"
+                                        Binding="{Binding FxValue, Converter={StaticResource NumberConverter}}"
+                                        Width="88"
+                                        ElementStyle="{StaticResource DataGridTextColumn_Numeric_ElementStyle}"
+                                        EditingElementStyle="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
+                        <DataGridTextColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Tag" Value="-"/>
+                                <Setter Property="Background" Value="{StaticResource SecondaryLightYellowBrush}"/>
+                                <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                                <Setter Property="ToolTip" Value="Temperatur-Korrekturfaktor: Für alle Bauteilflächen, die an die Außenluft grenzen, ist der Fx-Wert = 1,0. Für alle anderen, wird ein Temperatur-Korrekturfaktor ungleich 1,0 berücksichtigt."/>
+                            </Style>
+                        </DataGridTextColumn.HeaderStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Transmissionsart Column -->
+                    <DataGridComboBoxColumn x:Name="EnvelopeItem_TransmissionTransferTypeColumn"
+                                            Header="Transmissionsart"
+                                            SelectedItemBinding="{Binding TransmissionTransferTypeName}"
+                                            ItemsSource="{Binding Source={StaticResource TransmissionTransferTypeNames}}"
+                                            Width="120">
+                        <DataGridComboBoxColumn.ElementStyle>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}"/>
+                        </DataGridComboBoxColumn.ElementStyle>
+                        <DataGridComboBoxColumn.EditingElementStyle>
+                            <Style TargetType="ComboBox" BasedOn="{StaticResource DataGridComboBox}"/>
+                        </DataGridComboBoxColumn.EditingElementStyle>
+                        <DataGridComboBoxColumn.HeaderStyle>
+                            <Style TargetType="DataGridColumnHeader">
+                                <Setter Property="Background" Value="{StaticResource SecondaryLightYellowBrush}"/>
+                                <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                                <Setter Property="ToolTip" Value="Relevant für Anrechnung des Fx-Wertes."/>
+                            </Style>
+                        </DataGridComboBoxColumn.HeaderStyle>
+                    </DataGridComboBoxColumn>
+
                     <!-- Ausrichtung Column -->
                     <DataGridComboBoxColumn x:Name="EnvelopeItem_OrientationSelectionColumn"
                                             Header="Ausrichtung"
@@ -553,25 +566,10 @@
                             <Style TargetType="DataGridColumnHeader">
                                 <Setter Property="Background" Value="{StaticResource SecondaryLightYellowBrush}"/>
                                 <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
+                                <Setter Property="ToolTip" Value="Relevant für Berechnung des sommerlichen Wärmeschutzes."/>
                             </Style>
                         </DataGridComboBoxColumn.HeaderStyle>
                     </DataGridComboBoxColumn>
-
-                     <!--Fx Column--> 
-                    <DataGridTextColumn Header="Fx"
-                                        Binding="{Binding FxValue, Converter={StaticResource NumberConverter}}"
-                                        Width="88"
-                                        ElementStyle="{StaticResource DataGridTextColumn_Numeric_ElementStyle}"
-                                        EditingElementStyle="{StaticResource DataGridTextColumn_Numeric_EditingStyle}">
-                        <DataGridTextColumn.HeaderStyle>
-                            <Style TargetType="DataGridColumnHeader">
-                                <Setter Property="Tag" Value="-"/>
-                                <Setter Property="Background" Value="{StaticResource SecondaryLightYellowBrush}"/>
-                                <Setter Property="Template" Value="{StaticResource SortableHeaderTemplate}"/>
-                                <Setter Property="ToolTip" Value="Temperatur-Korrekturfaktor: Für alle Bauteilflächen, die an die Außenluft grenzen, ist der Fx-Wert = 1,0. Für alle anderen, wird ein Temperatur-Korrekturfaktor ungleich 1,0 berücksichtigt."/>
-                            </Style>
-                        </DataGridTextColumn.HeaderStyle>
-                    </DataGridTextColumn>
 
                     <!-- Netto Höhe Column -->
                     <DataGridTextColumn Header="Höhe"

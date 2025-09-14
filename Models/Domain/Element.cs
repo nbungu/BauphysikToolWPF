@@ -11,7 +11,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.Database.Enums;
-using static BauphysikToolWPF.Models.Domain.Enums;
 
 namespace BauphysikToolWPF.Models.Domain
 {
@@ -24,25 +23,12 @@ namespace BauphysikToolWPF.Models.Domain
         private string _shortName = string.Empty;
         public string ShortName
         {
-            get
-            {
-                if (string.IsNullOrWhiteSpace(_shortName))
-                {
-                    if (ConstructionTypeShortNameMapping.TryGetValue(Construction.ConstructionType, out string mappedShort))
-                    {
-                        return mappedShort + InternalId;
-                    }
-                    // Fallback to just InternalId if nothing else is available
-                    return InternalId.ToString();
-                }
-                return _shortName;
-            }
+            get => string.IsNullOrWhiteSpace(_shortName) ? ToShortName() : _shortName;
             set => _shortName = value;
         }
         public string ColorCode { get; set; } = "#00FFFFFF";
         public string Tag { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;
-        public OrientationType OrientationType { get; set; } = OrientationType.North;
         public long CreatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public long UpdatedAt { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
         public int ConstructionId { get; set; } = 0;
@@ -59,9 +45,6 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public Project? ParentProject { get; set; }
-
-        [JsonIgnore]
-        public string OrientationTypeName => OrientationTypeMapping[OrientationType];
 
         [JsonIgnore]
         public Construction Construction => DatabaseAccess.QueryConstructionById(ConstructionId, recursive: true);
@@ -86,12 +69,8 @@ namespace BauphysikToolWPF.Models.Domain
         [JsonIgnore]
         public List<string> TagList // Converts string of Tags, separated by Comma, to a List of Tags
         {
-            get
-            {
-                if (Tag == string.Empty) return new List<string>();
-                return Tag.Split(',').ToList(); // Splits elements of a string into a List
-            }
-            set => Tag = (value.Count == 0) ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
+            get => Tag == string.Empty ? new List<string>() : Tag.Split(',').ToList(); // Splits elements of a string into a List
+            set => Tag = value.Count == 0 ? "" : string.Join(",", value); // Joins elements of a list into a single string with the words separated by commas   
         }
         
         [JsonIgnore]
@@ -109,67 +88,13 @@ namespace BauphysikToolWPF.Models.Domain
             }
         }
 
-        [JsonIgnore]
-        public double SdThickness // sd in m
-        {
-            get
-            {
-                double fullWidth = 0;
-                if (Layers.Count == 0) return fullWidth;
-                foreach (Layer layer in Layers)
-                {
-                    if (!layer.IsEffective) continue;
-                    fullWidth += layer.Sd_Thickness;
-                }
-                return Math.Round(fullWidth, 2);
-            }
-        }
-
-        [JsonIgnore]
-        public double AreaMassDens // m' in kg/m²
-        {
-            get
-            {
-                if (Layers.Count == 0) return 0;
-                double val = 0;
-                foreach (Layer layer in Layers)
-                {
-                    if (layer.SubConstruction != null)
-                    {
-                        val += layer.AreaMassDensity;
-                        val += layer.SubConstruction.AreaMassDensity;
-                    }
-                    else val += layer.AreaMassDensity;
-                }
-                return Math.Round(val, 2);
-            }
-        }
-
-        [JsonIgnore]
-        public double ArealHeatCapacity // C in kJ/m²K
-        {
-            get
-            {
-                if (Layers.Count == 0) return 0;
-                double val = 0;
-                foreach (Layer layer in Layers)
-                {
-                    if (layer.SubConstruction != null)
-                    {
-                        val += layer.ArealHeatCapacity;
-                        val += layer.SubConstruction.ArealHeatCapacity;
-                    }
-                    else val += layer.ArealHeatCapacity;
-                }
-                return Math.Round(val, 2);
-            }
-        }
 
         #region Custom User defined Result values
 
         public bool IsUserDefValuesEnabled => _rGesValueUserDef != null || _rTotValueUserDef != null || _qValueUserDef != null || _uValueUserDef != null || _areaMassDensUserDef != null || _sdThicknessUserDef != null;
 
         private double? _rGesValueUserDef; // nullable to track user assignment
+        
         [JsonIgnore]
         public double RGesValueUserDef
         {
@@ -178,6 +103,7 @@ namespace BauphysikToolWPF.Models.Domain
         }
 
         private double? _rTotValueUserDef;
+        
         [JsonIgnore]
         public double RTotValueUserDef
         {
@@ -186,6 +112,7 @@ namespace BauphysikToolWPF.Models.Domain
         }
 
         private double? _qValueUserDef;
+        
         [JsonIgnore]
         public double QValueUserDef
         {
@@ -194,6 +121,7 @@ namespace BauphysikToolWPF.Models.Domain
         }
 
         private double? _uValueUserDef;
+        
         [JsonIgnore]
         public double UValueUserDef
         {
@@ -202,6 +130,7 @@ namespace BauphysikToolWPF.Models.Domain
         }
 
         private double? _areaMassDensUserDef;
+        
         [JsonIgnore]
         public double AreaMassDensUserDef
         {
@@ -210,6 +139,7 @@ namespace BauphysikToolWPF.Models.Domain
         }
 
         private double? _sdThicknessUserDef;
+        
         [JsonIgnore]
         public double SdThicknessUserDef
         {
@@ -229,6 +159,12 @@ namespace BauphysikToolWPF.Models.Domain
         public double QValue => ThermalResults.QValue; // q in W/m²
         [JsonIgnore]
         public double UValue => ThermalResults.UValue; // U in W/m²K
+        [JsonIgnore]
+        public double SdThickness => ThermalResults.CalcSdThickness(); // sd in m
+        [JsonIgnore]
+        public double AreaMassDens => ThermalResults.CalcArealMassDensity();// m' in kg/m²
+        [JsonIgnore]
+        public double ArealHeatCapacity => ThermalResults.CalcArealHeatCapacity(); // C in kJ/m²K
 
         /// <summary>
         /// Recalculate Flag only gets set by LayerSetup Page: All Changes to the Layers and EnvVars,
@@ -247,7 +183,7 @@ namespace BauphysikToolWPF.Models.Domain
             {
                 if (Recalculate)
                 {
-                    _thermalResults = new ThermalValuesCalc(this, this.ThermalCalcConfig);
+                    _thermalResults = new ThermalValuesCalc(this, ThermalCalcConfig);
                     Recalculate = false;
                 }
                 return _thermalResults;
@@ -279,7 +215,6 @@ namespace BauphysikToolWPF.Models.Domain
         {
             var copy = new Element();
             copy.ConstructionId = this.ConstructionId;
-            copy.OrientationType = this.OrientationType;
             copy.Name = this.Name + "-Kopie";
             copy.Image = this.Image;
             copy.ColorCode = this.ColorCode;
@@ -304,6 +239,16 @@ namespace BauphysikToolWPF.Models.Domain
         public override string ToString() // Überschreibt/überlagert vererbte standard ToString() Methode 
         {
             return Name + " - " + Construction.TypeName;
+        }
+
+        public string ToShortName()
+        {
+            if (ConstructionTypeShortNameMapping.TryGetValue(Construction.ConstructionType, out string mappedShort))
+            {
+                return mappedShort + InternalId;
+            }
+            // Fallback to just InternalId if nothing else is available
+            return InternalId.ToString();
         }
 
         public void UpdateTimestamp()

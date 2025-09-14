@@ -38,6 +38,9 @@
             <ui:Page_BuildingEnvelope/>
         </DataTemplate>
         <DataTemplate x:Key="21">
+            <ui:Page_ThermalBridges/>
+        </DataTemplate>
+        <DataTemplate x:Key="22">
             <ui:Page_EnvelopeSummary/>
         </DataTemplate>
 

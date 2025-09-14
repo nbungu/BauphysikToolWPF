@@ -24,8 +24,6 @@ namespace BauphysikToolWPF.Services.UI.Converter
                 {
                     case ElementGroupingType.Type:
                         return element.Construction.TypeName;
-                    case ElementGroupingType.Orientation:
-                        return element.OrientationTypeName;
                     case ElementGroupingType.Tag:
                         return element.TagList;
                     default:

@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Services.Application;
+﻿using System;
+using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Windows;
+using static BauphysikToolWPF.Calculation.EnvelopeCalculation;
 using static BauphysikToolWPF.Models.Database.Enums;
 using static BauphysikToolWPF.Models.Domain.Enums;
 
@@ -32,6 +34,7 @@ namespace BauphysikToolWPF.Models.Domain
             get => _roomHeightGross;
             set
             {
+                if (Math.Abs(value - _roomHeightGross) < 1E-06) return; // No change
                 if (value < 0)
                 {
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
@@ -49,6 +52,7 @@ namespace BauphysikToolWPF.Models.Domain
             get => _roomAreaGross;
             set
             {
+                if (Math.Abs(value - _roomAreaGross) < 1E-06) return; // No change
                 if (value < 0)
                 {
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
@@ -66,6 +70,7 @@ namespace BauphysikToolWPF.Models.Domain
             get => _roomVolumeGross;
             set
             {
+                if (Math.Abs(value - _roomVolumeGross) < 1E-06) return; // No change
                 if (value < 0)
                 {
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
@@ -82,6 +87,7 @@ namespace BauphysikToolWPF.Models.Domain
             get => _roomHeightNet;
             set
             {
+                if (Math.Abs(value - _roomHeightNet) < 1E-06) return; // No change
                 if (value < 0)
                 {
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
@@ -99,6 +105,7 @@ namespace BauphysikToolWPF.Models.Domain
             get => _roomAreaNet;
             set
             {
+                if (Math.Abs(value - _roomAreaNet) < 1E-06) return; // No change
                 if (value < 0)
                 {
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
@@ -116,6 +123,7 @@ namespace BauphysikToolWPF.Models.Domain
             get => _roomVolumeNet;
             set
             {
+                if (Math.Abs(value - _roomVolumeNet) < 1E-06) return; // No change
                 if (value < 0)
                 {
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
@@ -132,6 +140,7 @@ namespace BauphysikToolWPF.Models.Domain
             get => _envelopeArea;
             set
             {
+                if (Math.Abs(value - _envelopeArea) < 1E-06) return; // No change
                 if (value < 0)
                 {
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
@@ -147,6 +156,7 @@ namespace BauphysikToolWPF.Models.Domain
             get => _uValue;
             set
             {
+                if (Math.Abs(value - _uValue) < 1E-06) return; // No change
                 if (value < 0)
                 {
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
@@ -163,8 +173,11 @@ namespace BauphysikToolWPF.Models.Domain
             get => _elementInternalId;
             set
             {
-                _elementInternalId = value; 
-                UValue = Element?.UValue ?? 0; // Update UValue when ElementInternalId changes
+                if (value == _elementInternalId) return; // No change
+                _elementInternalId = value;
+                // Update other Properties when ElementInternalId changes
+                UValue = Element?.UValue ?? 0;
+                TransmissionTransferType = Element?.Construction.TransmissionType ?? TransmissionTransfer.ToOutside;
             }
         }
 
@@ -175,6 +188,7 @@ namespace BauphysikToolWPF.Models.Domain
             get => _fxValue;
             set
             {
+                if (Math.Abs(value - _fxValue) < 1E-04) return; // No change
                 if (value < 0)
                 {
                     MainWindow.ShowToast("Wert darf nicht negativ sein!", ToastType.Error);
@@ -184,6 +198,21 @@ namespace BauphysikToolWPF.Models.Domain
                 _fxValue = value;
             }
         }
+
+        private TransmissionTransfer _transmissionTransferType = TransmissionTransfer.ToOutside;
+        public TransmissionTransfer TransmissionTransferType
+        {
+            get => _transmissionTransferType;
+            set
+            {
+                if (value == _transmissionTransferType) return; // No change
+                _transmissionTransferType = value;
+                OnPropertyChanged(nameof(TransmissionTransferTypeName)); // This is the relevant property for ComboBox binding
+            }
+        }
+
+        public ThermalBridgeItem ThermalBridge { get; set; } = new ThermalBridgeItem();
+
         public string Tag { get; set; } = string.Empty;
         public string Comment { get; set; } = string.Empty;
         public OrientationType OrientationType { get; set; } = OrientationType.North;
@@ -216,7 +245,6 @@ namespace BauphysikToolWPF.Models.Domain
                 if (_isSelected != value)
                 {
                     _isSelected = value;
-                    OnPropertyChanged();
                     OnPropertyChanged(nameof(IsSelectedArrowVisibility)); // Notify change
                 }
             }
@@ -229,6 +257,7 @@ namespace BauphysikToolWPF.Models.Domain
         public int RoomGroupColorIndex => RoomNumber % 2; // 0 if even, 1 if odd
         [JsonIgnore]
         public bool ShowRoomData { get; set; } // For UI purposes
+
         [JsonIgnore]
         public Visibility ShowRoomDataVisibility => ShowRoomData ? Visibility.Visible : Visibility.Collapsed;
 
@@ -269,6 +298,20 @@ namespace BauphysikToolWPF.Models.Domain
             }
         }
 
+        [JsonIgnore]
+        public string TransmissionTransferTypeName
+        {
+            get => TransmissionTransferMapping[TransmissionTransferType];
+            set
+            {
+                var match = TransmissionTransferMapping.FirstOrDefault(x => x.Value == value);
+                if (!match.Equals(default(KeyValuePair<TransmissionTransfer, string>)))
+                {
+                    TransmissionTransferType = match.Key;
+                }
+            }
+        }
+
         #endregion
 
         #region Public Methods
@@ -277,9 +320,6 @@ namespace BauphysikToolWPF.Models.Domain
         {
             var copy = new EnvelopeItem
             {
-                ElementInternalId = this.ElementInternalId,
-                CreatedAt = this.CreatedAt,
-                UpdatedAt = TimeStamp.GetCurrentUnixTimestamp(),
                 RoomNumber = this.RoomNumber,
                 RoomName = this.RoomName,
                 FloorLevel = this.FloorLevel,
@@ -290,11 +330,17 @@ namespace BauphysikToolWPF.Models.Domain
                 RoomAreaNet = this.RoomAreaNet,
                 RoomVolumeNet = this.RoomVolumeNet,
                 EnvelopeArea = this.EnvelopeArea,
+                UValue = this.UValue,
+                ElementInternalId = this.ElementInternalId,
                 FxValue = this.FxValue,
+                TransmissionTransferType = this.TransmissionTransferType,
                 Tag = this.Tag,
+                ThermalBridge = this.ThermalBridge.Copy(),
                 Comment = this.Comment,
                 OrientationType = this.OrientationType,
                 RoomUsageType = this.RoomUsageType,
+                CreatedAt = this.CreatedAt,
+                UpdatedAt = TimeStamp.GetCurrentUnixTimestamp(),
             };
             return copy;
         }

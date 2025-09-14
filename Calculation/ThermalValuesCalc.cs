@@ -191,8 +191,56 @@ namespace BauphysikToolWPF.Calculation
             }
         }
 
+        public double CalcArealHeatCapacity()
+        {
+            if (Element is null || Element.Layers.Count == 0) return 0;
+            
+            // TODO: only Relevant Layers?
+            double val = 0;
+            foreach (Layer layer in Element.Layers)
+            {
+                if (layer.SubConstruction != null)
+                {
+                    val += layer.ArealHeatCapacity;
+                    val += layer.SubConstruction.ArealHeatCapacity;
+                }
+                else val += layer.ArealHeatCapacity;
+            }
+            return Math.Round(val, 2);
+        }
+
+        public double CalcArealMassDensity()
+        {
+            if (Element is null || Element.Layers.Count == 0) return 0;
+            // TODO: only Relevant Layers?
+            double val = 0;
+            foreach (Layer layer in Element.Layers)
+            {
+                if (layer.SubConstruction != null)
+                {
+                    val += layer.AreaMassDensity;
+                    val += layer.SubConstruction.AreaMassDensity;
+                }
+                else val += layer.AreaMassDensity;
+            }
+            return Math.Round(val, 2);
+        }
+
+        public double CalcSdThickness()
+        {
+            if (Element is null || Element.Layers.Count == 0) return 0;
+            // TODO: only Relevant Layers?
+            double fullWidth = 0;
+            foreach (Layer layer in Element.Layers)
+            {
+                if (!layer.IsEffective) continue;
+                fullWidth += layer.Sd_Thickness;
+            }
+            return Math.Round(fullWidth, 2);
+        }
+
         #region private methods
-        
+
         private bool PrepareMappingsForInhomogeneous()
         {
             SetCalculationAreaBoundaries();

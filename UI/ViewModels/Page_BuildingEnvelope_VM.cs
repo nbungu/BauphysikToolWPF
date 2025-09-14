@@ -34,11 +34,9 @@ namespace BauphysikToolWPF.UI.ViewModels
             _envelopeCalc = new EnvelopeCalculation(OrderedEnvelopeItems);
             _dialogService = new DialogService();
 
-            Session.SelectedProject.AssignInternalIdsToEnvelopeItems();
-
             SetShowRoomDataFirstInGroupOnly(OrderedEnvelopeItems);
 
-            Session.NewProjectAdded += UpdateNewProjectAdded;
+            Session.NewProjectAdded += UpdateXamlBindings;
             Session.EnvelopeItemsChanged += UpdateXamlBindings;
             PropertyItem<double>.PropertyChanged += UpdatePropertyBags;
             PropertyItem<int>.PropertyChanged += UpdatePropertyBags;
@@ -214,15 +212,22 @@ namespace BauphysikToolWPF.UI.ViewModels
             new PropertyItem<double>("Nettoraumvolumen", Symbol.Volume, () => _envelopeCalc.HeatedRoomVolume) { SymbolSubscriptText = "", Comment = "Volumen einer konditionierten Zone bzw. eines gesamten Gebäudes, das dem Luftaustausch unterliegt. Es wird aus der entsprechenden Nettogrundfläche durch Multiplikation mit der lichten Raumhöhe ermittelt."},
             new PropertyItem<double>(Symbol.PrimaryEnergy, () => _envelopeCalc.AnnualPrimaryEnergy),
             new PropertyItem<double>(Symbol.PrimaryEnergyPerArea, () => _envelopeCalc.AnnualPrimaryEnergyPerArea),
-            new PropertyItem<double>("Transmissionswärmeverlust", Symbol.TransmissionHeatTransferCoef, () => _envelopeCalc.AnnualPrimaryEnergy),
-            new PropertyItem<double>(Symbol.SpecificHeatTransmissionLoss, () => _envelopeCalc.AnnualPrimaryEnergyPerArea),
-
-            new PropertyItem<int>("Berücksichtigung Wärmebrücken", () => (int)_envelopeCalc.ThermalBridgeSurcharge, value => _envelopeCalc.ThermalBridgeSurcharge = (ThermalBridgeSurchargeType)value)
+            new PropertyItem<double>("Transmissionswärmeverlust (nach außen)", Symbol.TransmissionHeatTransferCoef, () => _envelopeCalc.AnnualPrimaryEnergy)
             {
-                PropertyValues = ThermalBridgeSurchargeMapping.Values.Cast<object>().ToArray()
+                SymbolSubscriptText = "T,D",
+                Comment = "Transmissionswärmetransferkoeffizient zwischen der beheizten und/oder gekühlten Gebäudezone und außen in W/K."
             },
-            new PropertyItem<double>(Symbol.ThermalBridgeSurcharge, () => _envelopeCalc.ThermalBridgeSurchargeValue, value => _envelopeCalc.ThermalBridgeSurchargeValue = value) { IsReadonly = !_envelopeCalc.IsThermalBridgeSurchargeCustomValue },
-            new PropertyItem<int>("Berücksichtigung Fx-Wert", () => (int)_envelopeCalc.Fx, value => _envelopeCalc.Fx = (FxType)value)
+            new PropertyItem<double>("Transmissionswärmeverlust (gegen unbeheizt)", Symbol.TransmissionHeatTransferCoef, () => _envelopeCalc.AnnualPrimaryEnergy)
+            {
+                SymbolSubscriptText = "T,iu",
+                Comment = "Transmissionswärmetransferkoeffizient zwischen beheizten und/oder gekühlten und unbeheizten Gebäudezonen in W/K."
+            },
+            new PropertyItem<double>("Transmissionswärmeverlust (über Erdreich)", Symbol.TransmissionHeatTransferCoef, () => _envelopeCalc.AnnualPrimaryEnergy)
+            {
+                SymbolSubscriptText = "T,s",
+                Comment = "Transmissionswärmetransferkoeffizient der beheizten und/oder gekühlten Gebäudezone über Erdreichflächen in W/K." 
+            },
+            new PropertyItem<int>("Berücksichtigung Fx-Wert", () => (int)_envelopeCalc.FxMode, value => _envelopeCalc.FxMode = (FxType)value)
             {
                 PropertyValues = FxTypeMapping.Values.Cast<object>().ToArray()
             },
@@ -261,6 +266,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         public IEnumerable<Element> GetElements() => Session.SelectedProject?.Elements.OrderBy(e => e.InternalId) ?? Enumerable.Empty<Element>();
         public IEnumerable<string> GetOrientationTypeNames() => OrientationTypeMapping.Values;
         public IEnumerable<string> GetUsageZoneNames() => RoomUsageTypeMapping.Values;
+        public IEnumerable<string> GetTransmissionTransferTypeNames() => TransmissionTransferMapping.Values;
+
+
         //public IEnumerable<string> GetTempCorrFactorNames() => DatabaseAccess.QueryEnvVarsBySymbol(Symbol.TempCorrectionFactor).Select(e => e.Name);
 
         /// <summary>
@@ -289,17 +297,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateEnvelopeItemDependencies(object? sender, PropertyChangedEventArgs e)
         {
-            //SetShowRoomDataFirstInGroupOnly(OrderedEnvelopeItems);
-            //OnPropertyChanged(nameof(OrderedEnvelopeItems));
             OnPropertyChanged(nameof(TestPropBag));
-        }
-        private void UpdateNewProjectAdded()
-        {
-            // Update InternalIds
-            Session.SelectedProject.AssignInternalIdsToEnvelopeItems(true);
-
-            // update UI
-            UpdateXamlBindings();
         }
 
         private void SetEventHandler(EnvelopeItem? item)
@@ -334,8 +332,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void SetAsSelected(EnvelopeItem? item, IEnumerable<EnvelopeItem> items)
         {
             if (item == null) return;
-            items.ToList().ForEach(i => i.IsSelected = false); // Deselect all items first
-            item.IsSelected = true;
+            items.ToList().ForEach(i => i.IsSelected = i.InternalId == item.InternalId); // Deselect all items first
         }
     }
 }

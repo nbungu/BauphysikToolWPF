@@ -369,7 +369,6 @@ namespace BauphysikToolWPF.Models.UI
         {
             { ElementGroupingType.None, "Ohne" },
             { ElementGroupingType.Type, "Konstruktions-Typ" },
-            { ElementGroupingType.Orientation, "Ausrichtung" },
             { ElementGroupingType.Tag, "Tags" }
         };
     }

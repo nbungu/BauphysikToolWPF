@@ -119,10 +119,6 @@
                       SelectedValue="{Binding SelectedConstruction, Mode=TwoWay}"/>
         </StackPanel>
         <StackPanel Orientation="Vertical" Margin="0,0,0,8">
-            <Label Content="Ausrichtung" HorizontalAlignment="Left"/>
-            <ComboBox ItemsSource="{Binding OrientationList}" SelectedIndex="{Binding SelectedOrientation}"/>
-        </StackPanel>
-        <StackPanel Orientation="Vertical" Margin="0,0,0,8">
             <Label Content="Farbe" HorizontalAlignment="Left"/>
             <Grid>
                 <Grid.ColumnDefinitions>

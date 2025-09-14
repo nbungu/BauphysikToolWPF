@@ -1,15 +1,14 @@
 ﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Models.Domain.Helper;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -22,8 +21,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from MainWindow.cs due to Class-Binding in xaml via DataContext
         public MainWindow_VM()
         {
-            Session.SelectedProjectChanged += RefreshXamlBindings;
-            Session.NewProjectAdded += RefreshXamlBindings;
+            Session.SelectedProjectChanged += UpdateXamlBindings;
+            Session.NewProjectAdded += UpdateXamlBindings;
             Session.SelectedLayerChanged += RefreshIsEditedTag;
             Session.SelectedElementChanged += RefreshIsEditedTag;
             Session.PageChanged += OnPageChanged;
@@ -190,7 +189,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         #endregion
 
-        private void RefreshXamlBindings()
+        private void UpdateXamlBindings()
         {
             OnPropertyChanged(nameof(Title));
             OnPropertyChanged(nameof(ProjectName));            
@@ -198,9 +197,6 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(IsProjectLoaded));
             OnPropertyChanged(nameof(SaveButtonVisibility));
             OnPropertyChanged(nameof(AvailableChildGroups));
-
-            // Dont need sice relevant collection properties have INotifyPropertyChanged implemented
-            //OnPropertyChanged(nameof(ParentPages));
         }
 
         private void RefreshIsEditedTag()

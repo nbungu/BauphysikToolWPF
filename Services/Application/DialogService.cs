@@ -1,9 +1,11 @@
-﻿using System.Collections.Generic;
-using System.Windows;
-using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Services.UI;
+﻿using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.UI;
 using BauphysikToolWPF.UI.CustomControls;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Threading;
+using System.Windows;
+using static System.Windows.Application;
 
 namespace BauphysikToolWPF.Services.Application
 {
@@ -13,7 +15,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             var dialog = new SaveConfirmationDialog
             {
-                Owner = System.Windows.Application.Current.MainWindow,
+                Owner = Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -25,7 +27,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             var dialog = new SaveExitConfirmationDialog
             {
-                Owner = System.Windows.Application.Current.MainWindow,
+                Owner = Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -37,7 +39,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             var dialog = new DeleteConfirmationDialog()
             {
-                Owner = System.Windows.Application.Current.MainWindow,
+                Owner = Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -48,7 +50,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             var dialog = new AddElementWindow
             {
-                Owner = System.Windows.Application.Current.MainWindow,
+                Owner = Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -58,7 +60,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             var dialog = new AddElementWindow(targetElementInternalId)
             {
-                Owner = System.Windows.Application.Current.MainWindow,
+                Owner = Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -69,7 +71,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             var dialog = new AddLayerWindow
             {
-                Owner = System.Windows.Application.Current.MainWindow,
+                Owner = Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -80,7 +82,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             var dialog = new AddLayerWindow(targetLayerInternalId)
             {
-                Owner = System.Windows.Application.Current.MainWindow,
+                Owner = Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -91,7 +93,7 @@ namespace BauphysikToolWPF.Services.Application
         {
             var dialog = new AddLayerSubConstructionWindow(targetLayerInternalId)
             {
-                Owner = System.Windows.Application.Current.MainWindow,
+                Owner = Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             // Open as modal (Parent window pauses, waiting for the window to be closed)
@@ -104,11 +106,60 @@ namespace BauphysikToolWPF.Services.Application
         {
             var dialog = new PropertyWindow(propertyItems, propertyTitle, windowTitle)
             {
-                Owner = System.Windows.Application.Current.MainWindow,
+                Owner = Current.MainWindow,
                 WindowStartupLocation = WindowStartupLocation.CenterOwner
             };
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             dialog.ShowDialog();
+        }
+
+        private LoadingDialog? _loadingDialog;
+        private Stopwatch? _stopwatch;
+        private int _minDurationMs;
+
+        public void ShowLoadingDialog(string message = "Loading, please wait...", int minDurationMs = 400)
+        {
+            if (_loadingDialog != null) return;
+
+            _minDurationMs = minDurationMs;
+            _stopwatch = Stopwatch.StartNew();
+
+            Current.Dispatcher.Invoke(() =>
+            {
+                _loadingDialog = new LoadingDialog
+                {
+                    Owner = Current.MainWindow,
+                    WindowStartupLocation = WindowStartupLocation.CenterOwner
+                };
+
+                // Set initial message text (assumes you added a public method/property in LoadingDialog)
+                _loadingDialog.UpdateMessage(message);
+
+                _loadingDialog.Show();
+            });
+        }
+
+        public void CloseLoadingDialog()
+        {
+            if (_loadingDialog == null || _stopwatch == null)
+                return;
+
+            int elapsedMs = (int)_stopwatch.ElapsedMilliseconds;
+            int remainingMs = _minDurationMs - elapsedMs;
+
+            if (remainingMs > 0)
+            {
+                // Sleep off the UI thread to avoid blocking UI - do it synchronously if you want a simpler solution
+                Thread.Sleep(remainingMs);
+            }
+
+            Current.Dispatcher.Invoke(() =>
+            {
+                _loadingDialog?.Close();
+                _loadingDialog = null;
+            });
+
+            _stopwatch = null;
         }
     }
 }

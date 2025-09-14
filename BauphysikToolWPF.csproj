@@ -256,6 +256,9 @@
     <Compile Update="UI\CustomControls\SaveExitConfirmationDialog.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="UI\Page_ThermalBridges.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="UI\Page_EnvelopeSummary.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -277,6 +280,12 @@
     <None Update="Services\UI\OpenGL\layer.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="UI\Page_ThermalBridges.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
 </Project>

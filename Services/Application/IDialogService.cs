@@ -16,5 +16,7 @@ namespace BauphysikToolWPF.Services.Application
         void ShowAddNewSubconstructionDialog(int targetLayerInternalId);
         void ShowEditSubconstructionDialog(int targetLayerInternalId);
         void ShowPropertyBagDialog(IEnumerable<IPropertyItem> propertyItems, string propertyTitle, string windowTitle);
+        void ShowLoadingDialog(string message, int minDurationMs);
+        void CloseLoadingDialog();
     }
 }

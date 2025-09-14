@@ -1,8 +1,8 @@
 ﻿using BauphysikToolWPF.Models.Application;
 using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.Services.UI;
 using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -13,7 +13,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Models.Domain.Helper;
 using static BauphysikToolWPF.Models.Domain.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -27,14 +26,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
         public Page_Project_VM()
         {
-            //Session.SelectedProject.AssignInternalIdsToElements();
-
-            // Allow other UserControls to trigger RefreshXamlBindings of this Window
-            Session.SelectedProjectChanged += RefreshXamlBindings;
-            Session.NewProjectAdded += RefreshXamlBindings;
-
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
+
+            // Allow other UserControls to trigger RefreshXamlBindings of this Window
+            Session.SelectedProjectChanged += UpdateXamlBindings;
+            Session.NewProjectAdded += UpdateXamlBindings;
         }
 
         /*
@@ -260,7 +257,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility NoRecentProjectEntriesVisibility => RecentProjects.Count > 0 ? Visibility.Collapsed : Visibility.Visible;
         public bool ElementPageAvailable => ProjectDataVisibility == Visibility.Visible || SelectedListViewItem != null;
 
-        private void RefreshXamlBindings()
+        private void UpdateXamlBindings()
         {
             // For updating fields/variables
             ProjectName = Session.SelectedProject?.Name ?? "";

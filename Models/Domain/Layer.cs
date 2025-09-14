@@ -204,7 +204,7 @@ namespace BauphysikToolWPF.Models.Domain
             get
             {
                 if (!Material.IsValid || !IsEffective) return 0;
-                return Math.Round(Material.ThermalConductivity / System.Convert.ToDouble(Material.BulkDensity / Material.SpecificHeatCapacity), 2);
+                return Math.Round(Material.ThermalConductivity / Convert.ToDouble(Material.BulkDensity / Material.SpecificHeatCapacity), 2);
             }
         }
 

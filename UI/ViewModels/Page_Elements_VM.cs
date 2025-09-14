@@ -2,7 +2,7 @@
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.UI.Converter;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -11,7 +11,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using BauphysikToolWPF.Services.UI.Converter;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -30,10 +29,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
-            Session.NewProjectAdded += UpdateNewProjectAdded;
+            Session.NewProjectAdded += UpdateOnNewProjectAdded;
             Session.NewElementAdded += UpdateOnNewElementAdded;
             Session.ElementRemoved += UpdateOnElementRemoved;
-            Session.SelectedElementChanged += RefreshXamlBindings;
+            Session.SelectedElementChanged += UpdateXamlBindings;
         }
         
         /*
@@ -112,7 +111,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             Session.SelectedElementId = selectedInternalId;
             if (Session.SelectedElement != null) Session.SelectedElement.RefreshResults();
-            RefreshXamlBindings();
+            UpdateXamlBindings();
         }
 
         [RelayCommand]
@@ -139,14 +138,26 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void CreateFullPdf()
         {
+            _dialogService.ShowLoadingDialog("Lädt, bitte warten...", minDurationMs: 400);
+
             DocumentDesigner.FullCatalogueExport(Session.SelectedProject);
+
+            _dialogService.CloseLoadingDialog();
         }
 
         // This method will be called whenever SortingPropertyIndex changes
         // Workaround since Combobox has no Command or Click option
-        partial void OnSortingPropertyIndexChanged(int value) => RefreshXamlBindings();
+        partial void OnSortingPropertyIndexChanged(int value)
+        {
+            Session.SelectedProject.LastUsedSortingType = value;
+            UpdateXamlBindings();
+        }
 
-        partial void OnGroupingPropertyIndexChanged(int value) => RefreshXamlBindings();
+        partial void OnGroupingPropertyIndexChanged(int value)
+        {
+            Session.SelectedProject.LastUsedGroupingType = value;
+            UpdateXamlBindings();
+        }
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
@@ -155,17 +166,10 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [ObservableProperty]
-        private static int _sortingPropertyIndex; // As Static Class Variable to Save the Selection after Switching Pages!
+        private int _sortingPropertyIndex = Session.SelectedProject?.LastUsedSortingType ?? 0; // As Static Class Variable to Save the Selection after Switching Pages!
 
         [ObservableProperty]
-        private static int _groupingPropertyIndex; // As Static Class Variable to Save the Selection after Switching Pages!
-
-        // TODO NotifyPropertyChangedFor einarbeiten
-        //[ObservableProperty]
-        //[NotifyPropertyChangedFor(nameof(ElementToolsAvailable))]
-        //[NotifyPropertyChangedFor(nameof(ElementInfoVisibility))]
-        //[NotifyPropertyChangedFor(nameof(HasItems))]
-        //private List<Element>? _elements;
+        private int _groupingPropertyIndex = Session.SelectedProject?.LastUsedGroupingType ?? 0; // As Static Class Variable to Save the Selection after Switching Pages!
 
         /*
          * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
@@ -204,20 +208,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void UpdateOnNewElementAdded()
         {
             Session.SelectedElementId = Session.SelectedProject.Elements.Last().InternalId;
-            RefreshXamlBindings();
-        }
-
-        private void UpdateNewProjectAdded()
-        {
-            // reset SelectedElement
-            Session.SelectedElementId = -1;
-
-            // Update InternalIds and render new images
-            Session.SelectedProject.AssignAsParentToElements();
-            Session.SelectedProject.AssignInternalIdsToElements(true);
-            Session.SelectedProject.RenderAllElementImages(withDecorations: false);
-            // update UI
-            RefreshXamlBindings();
+            UpdateXamlBindings();
         }
         private void UpdateOnElementRemoved()
         {
@@ -227,13 +218,15 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (Session.SelectedProject.Elements.Count > 0)
                 Session.SelectedElementId = Session.SelectedProject.Elements.Last().InternalId;
             // update UI
-            RefreshXamlBindings();
+            UpdateXamlBindings();
         }
 
-        private void RefreshXamlBindings()
+        private void UpdateXamlBindings()
         {
             // For Updating MVVM Properties
             Session.SelectedProject.SortElements(SelectedSorting);
+
+            // TODO: NotifyPropertyChangedFor einarbeiten,statt OnPropertyChanged(nameof(Elements));
             OnPropertyChanged(nameof(Elements));
 
             // For updating MVVM Capsulated Properties
@@ -245,6 +238,14 @@ namespace BauphysikToolWPF.UI.ViewModels
             OnPropertyChanged(nameof(ElementInfoVisibility));
             OnPropertyChanged(nameof(NoElementsVisibility));
             OnPropertyChanged(nameof(ElementProperties));
+        }
+
+        private void UpdateOnNewProjectAdded()
+        {
+            _sortingPropertyIndex = Session.SelectedProject?.LastUsedSortingType ?? 0;
+            _groupingPropertyIndex = Session.SelectedProject?.LastUsedGroupingType ?? 0;
+
+            UpdateXamlBindings();
         }
 
         private ICollectionView GetGroupedItemsSource()

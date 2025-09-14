@@ -18,7 +18,8 @@ namespace BauphysikToolWPF.Services.Application
         GlaserCurve = 14,
         DynamicHeatCalc = 15,
         BuildingEnvelope = 20,
-        EnvelopeSummary = 21
+        ThermalBridges = 21,
+        EnvelopeSummary = 22
     }
 
     public static class NavigationManager
@@ -43,7 +44,7 @@ namespace BauphysikToolWPF.Services.Application
             {
                 PageGroups = new List<NavigationGroupContent>()
                 {
-                    new NavigationGroupContent("", new List<NavigationPage>(2) { NavigationPage.EnvelopeSummary }),
+                    new NavigationGroupContent("", new List<NavigationPage>(2) { NavigationPage.ThermalBridges, NavigationPage.EnvelopeSummary }),
                 }
             }
         };
@@ -57,6 +58,7 @@ namespace BauphysikToolWPF.Services.Application
             { NavigationPage.GlaserCurve, "Glaser-Diagramm"},
             { NavigationPage.DynamicHeatCalc, "Dynamisch"},
             { NavigationPage.BuildingEnvelope, "Gebäudehülle"},
+            { NavigationPage.ThermalBridges, "Wärmebrücken"},
             { NavigationPage.EnvelopeSummary, "Zusammenfassung"},
         };
         public static readonly Dictionary<NavigationPage, string> PageTooltipMapping = new()
@@ -69,6 +71,7 @@ namespace BauphysikToolWPF.Services.Application
             { NavigationPage.GlaserCurve, "Zeigt Glaser-Diagramm im Bauteilquerschnitt."},
             { NavigationPage.DynamicHeatCalc, "Dynamische Wärmeberechnung"},
             { NavigationPage.BuildingEnvelope, "Eingabe der Gebäudehülle"},
+            { NavigationPage.ThermalBridges, "Eingabe der Wärmebrücken"},
             { NavigationPage.EnvelopeSummary, "Zusammenfassung der Hüllflächenergebnisse und Anpassung der Berechnungs-Randbedingungen."},
         };
         public static readonly Dictionary<NavigationPage, string> PageIconMapping = new()
@@ -81,6 +84,7 @@ namespace BauphysikToolWPF.Services.Application
             { NavigationPage.GlaserCurve, "ButtonIcon_Glaser_Flat" },
             { NavigationPage.DynamicHeatCalc, "ButtonIcon_Dynamic_Flat" },
             { NavigationPage.BuildingEnvelope, "Favicon" },
+            { NavigationPage.ThermalBridges, "ButtonIcon_Summary_Flat" },
             { NavigationPage.EnvelopeSummary, "ButtonIcon_Summary_Flat" },
         };
 
