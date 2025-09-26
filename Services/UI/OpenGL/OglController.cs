@@ -152,7 +152,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public void SetZoom(double zoom)
         {
-            _zoomFactor = (float)Math.Clamp(zoom, 0.4, 6.0);
+            _zoomFactor = (float)Math.Clamp(zoom, 0.5, 3.0);
             if (SceneBuilder.IsTextSizeZoomable) Invalidate();
             else Redraw();
         }
