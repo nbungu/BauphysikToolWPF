@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
@@ -9,12 +10,25 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Windows.Media;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Services.Application
 {
     public class DocumentDesigner
     {
+        private const int MarginTop = 32;
+        private const int MarginBottom = 32;
+        private const int MarginOuter = 32; // the smaller margin
+        private const int MarginInner = 48; // the larger margin
+
+
+
+        private const int Padding = 8;
+        private const int RowHeight = 14;
+        private const string FontFamilyRegular = "Arial";
+        private const string FontFamilyForData = "Verdana";
+
         public static void FullCatalogueExport(Project? project)
         {
             if (project == null) return;
@@ -22,12 +36,10 @@ namespace BauphysikToolWPF.Services.Application
             // Force rendering of all element images
             project.RenderAllElementImages(target: RenderTarget.Document, withDecorations: true);
             
-            XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
-            //XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
-            //XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
-            XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
-            XFont tableBodyFont = new XFont("Verdana", 7, XFontStyleEx.Regular);
-            XFont tableBodyFont2 = new XFont("Verdana", 8, XFontStyleEx.Bold);
+            XFont titleFont = new XFont(FontFamilyRegular, 10, XFontStyleEx.Bold);
+            XFont tableHeaderFont = new XFont(FontFamilyRegular, 8, XFontStyleEx.Bold);
+            XFont tableBodyFont = new XFont(FontFamilyForData, 8, XFontStyleEx.Regular);
+            XFont tableBodyFontBold = new XFont(FontFamilyForData, 8, XFontStyleEx.Bold);
 
             var thinPen = new XPen(XColors.Black, 0.5); // 0.5pt line
 
@@ -42,19 +54,24 @@ namespace BauphysikToolWPF.Services.Application
             // Get an XGraphics object for drawing
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
-            // Draw title
-            gfx.DrawString("1. Übersichtsliste: U- und R-Werte aller Bauteile", titleFont, XBrushes.Black,
-                new XRect(0, 20, page.Width, 30),
-                XStringFormats.TopCenter);
+            var (marginLeft, marginRight) = GetPageMargins(document.PageCount);
+
+            // Draw Header and Footer
+            DrawHeader(out double headerBottom, gfx, page, project.Name, marginLeft, marginRight);
+            DrawFooter(gfx, page, project.UserName, document.PageCount);
+            
+            double startX = marginLeft;
+            double startY = headerBottom + 2 * Padding;
+            double contentWidth = page.Width - marginLeft - marginRight;
+
+            gfx.DrawString("Liste: U- und R-Werte aller Bauteile", titleFont, XBrushes.Black,
+                new XRect(startX, startY, contentWidth, titleFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight + Padding;
 
             project.SortElements(ElementSortingType.TypeNameAscending);
             var elements = project.Elements;
 
-            // Define starting point and table layout
-            double startX = 40;
-            double startY = 70;
-            double cellHeight = 20;
-            double maxWidth = page.Width - startX * 2;
+            double cellHeight = RowHeight + 0.5 * Padding;
 
             var tf = new XTextFormatter(gfx);
 
@@ -64,7 +81,7 @@ namespace BauphysikToolWPF.Services.Application
 
             double[] columnProportions = { 28, 24, 140, 120, 56, 64, 64 }; // Original widths
             double totalWeight = columnProportions.Sum();
-            double[] columnWidths = columnProportions.Select(p => p / totalWeight * maxWidth).ToArray();
+            double[] columnWidths = columnProportions.Select(p => p / totalWeight * contentWidth).ToArray();
 
             // Adjust data table size to match new header count
             string[,] data = new string[elements.Count, secondRowHeaders.Length];
@@ -73,12 +90,12 @@ namespace BauphysikToolWPF.Services.Application
             {
                 var el = elements[i];
                 data[i, 0] = el.ShortName;
-                data[i, 1] = ""; // Color visual only
-                data[i, 2] = el.Name; // Bauteilbezeichnung
-                data[i, 3] = el.Construction.TypeName; // Kategorie
+                data[i, 1] = "";                        // Color visual only
+                data[i, 2] = el.Name;                   // Bauteilbezeichnung
+                data[i, 3] = el.Construction.TypeName;  // Kategorie
                 data[i, 4] = el.UValue.ToString("F3", CultureInfo.CurrentCulture);
                 data[i, 5] = $"R = {el.RTotValue.ToString("F2", CultureInfo.CurrentCulture)}";
-                data[i, 6] = "R ≥ 1,20";
+                data[i, 6] = $"R ≥ {el.Requirements.RMin:0.00}";
             }
 
             // Draw table headers with line break support
@@ -122,7 +139,7 @@ namespace BauphysikToolWPF.Services.Application
             currentX = startX;
             for (int i = 0; i < secondRowHeaders.Length; i++)
             {
-                if (secondRowHeaders[i] == ""){
+                if (secondRowHeaders[i] == "") {
                     currentX += columnWidths[i]; // Skip empty header
                     continue;
                 }
@@ -162,7 +179,7 @@ namespace BauphysikToolWPF.Services.Application
                     // Special case: draw color box for column 1
                     if (col == 1)
                     {
-                        System.Windows.Media.Color mediaColor = System.Windows.Media.Colors.Transparent;
+                        Color mediaColor = Colors.Transparent;
                         try { mediaColor = elements[row].Color; } catch { }
 
                         // Convert to PdfSharp XColor
@@ -175,7 +192,7 @@ namespace BauphysikToolWPF.Services.Application
                         var contentRect = new XRect(currentX + 4, currentY + 4, columnWidths[col] - 8, rowHeight - 8);
                         if (col == 4) // U-Wert hervorheben mit anderer Font
                         {
-                            tf.DrawString(data[row, col], tableBodyFont2, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                            tf.DrawString(data[row, col], tableBodyFontBold, XBrushes.Black, contentRect, XStringFormats.TopLeft);
                         }
                         else
                         {
@@ -248,98 +265,203 @@ namespace BauphysikToolWPF.Services.Application
         {
             var project = element.ParentProject;
 
-            XFont titleFont = new XFont("Verdana", 10, XFontStyleEx.Bold);
-            XFont titleFontSm = new XFont("Verdana", 9, XFontStyleEx.Bold);
-            XFont bodyFont = new XFont("Verdana", 9, XFontStyleEx.Regular);
-            XFont bodyFontItalic = new XFont("Verdana", 9, XFontStyleEx.Italic);
-            XFont bodyFontBold = new XFont("Verdana", 9, XFontStyleEx.Bold);
-            XFont tableHeaderFont = new XFont("Verdana", 8, XFontStyleEx.Bold);
-            XFont tableBodyFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
-            XFont tableBodyFontBold = new XFont("Verdana", 8, XFontStyleEx.Bold);
+            XFont titleFont = new XFont(FontFamilyRegular, 10, XFontStyleEx.Bold);
+            XFont titleFontSm = new XFont(FontFamilyRegular, 9, XFontStyleEx.Bold);
+            XFont bodyFont = new XFont(FontFamilyRegular, 9, XFontStyleEx.Regular);
+            XFont bodyFontItalic = new XFont(FontFamilyRegular, 9, XFontStyleEx.Italic);
+            XFont bodyFontBold = new XFont(FontFamilyRegular, 9, XFontStyleEx.Bold);
+            XFont tableHeaderFont = new XFont(FontFamilyRegular, 8, XFontStyleEx.Bold);
+            XFont tableBodyFont = new XFont(FontFamilyForData, 8, XFontStyleEx.Regular);
+            XFont tableBodyFontBold = new XFont(FontFamilyForData, 8, XFontStyleEx.Bold);
 
             // Add a page
             PdfPage page = document.AddPage();
             page.Size = PdfSharp.PageSize.A4;
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
+            var (marginLeft, marginRight) = GetPageMargins(document.PageCount);
+            
             // Draw Header and Footer
-            DrawHeader(gfx, page, project.Name, DateTime.Now.ToString("yyyy-MM-dd"));
+            DrawHeader(out double headerBottom, gfx, page, project.Name, marginLeft, marginRight);
             DrawFooter(gfx, page, project.UserName, document.PageCount);
 
-            double startY = 50;
+            double startX = marginLeft;
+            double startY = headerBottom + 2 * Padding;
+            double contentWidth = page.Width - marginLeft - marginRight;
+            double contentHeight = page.Height - MarginTop - MarginBottom;
 
-            // Draw title
-            gfx.DrawString($"Bauteil: {element.Name}", titleFont, XBrushes.Black,
-                new XRect(new XUnitPt(50), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(30)), XStringFormats.TopLeft);
-            startY += 16;
+            #region Title, Caption and Color Circle
 
-            gfx.DrawString($"Bauteiltyp: \"{element.Construction.TypeName}\"", bodyFontItalic, XBrushes.Black,
-                new XRect(new XUnitPt(50), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-            startY += 32;
+            double circleDiameter = 0;
+            if (element.Color != Colors.Transparent)
+            {
+                // Kreis rechts neben dem Titel
+                circleDiameter = 10; // z. B. 12pt
+                double circleX = startX; // 5pt Abstand vom Rand
+                double circleY = startY; // vertikal mittig
+                Color mediaColor = Colors.Transparent;
+                try { mediaColor = element.Color; } catch { }
+                // Convert to PdfSharp XColor
+                XColor fillColor = XColor.FromArgb(mediaColor.A, mediaColor.R, mediaColor.G, mediaColor.B);
+                gfx.DrawEllipse(new XSolidBrush(fillColor), circleX, circleY, circleDiameter, circleDiameter);
+            }
+            var titleX = circleDiameter > 0 ? startX + circleDiameter + Padding : startX;
+            var titleRect = new XRect(titleX, startY, contentWidth / 2, titleFont.GetHeight());
+            gfx.DrawString($"{element.ShortName} | {element.Name}", titleFont, XBrushes.Black, titleRect, XStringFormats.TopLeft);
+            startY += RowHeight;
 
-            // Draw Element Properties
-            gfx.DrawString($"Rges = {element.RGesValue:0.00} m²K/W (nur Bauteil)", bodyFont, XBrushes.Black,
-                new XRect(new XUnitPt(70), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-            startY += 16;
-            gfx.DrawString($"RT = {element.RTotValue:0.00} m²K/W (inkl. Übergangswiderstände)", bodyFont, XBrushes.Black,
-                new XRect(new XUnitPt(70), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-            startY += 16;
-            gfx.DrawString($"U = {element.UValue:0.000} W/m²K", bodyFontBold, XBrushes.Black,
-                new XRect(new XUnitPt(70), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-            startY += 16;
-            gfx.DrawString($"m' = {element.AreaMassDens:0.00} kg/m²", bodyFont, XBrushes.Black,
-                new XRect(new XUnitPt(70), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-            startY += 24;
+            gfx.DrawString($"Bauteiltyp: {element.Construction.TypeName}", bodyFontItalic, XBrushes.Black,
+                new XRect(startX, startY, contentWidth / 2, bodyFontItalic.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight + Padding;
 
-            var str = element.IsInhomogeneous ? "Ja" : "Nein";
-            gfx.DrawString($"Inhomogener Schichtaufbau: {str}", bodyFont, XBrushes.Black,
-                new XRect(new XUnitPt(70), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-            startY += 16;
+            #endregion
+
+            var startRightBlockTop = startY;
+            var startRightBlockLeft = marginLeft + contentWidth / 2;
+
+            #region Draw Element Properties
+
+            //
+            gfx.DrawString("U", bodyFontBold, XBrushes.Black,
+                new XRect(startX, startY, marginLeft + 28, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            DrawWrappedText(gfx, $"= {element.UValueUserDef:0.000} W/m²K", bodyFontBold, XBrushes.Black,
+                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFontBold.GetHeight()), bodyFontBold.GetHeight());
+            startY += RowHeight;
+            
+            //text = element.Requirements.IsUValueOk ? "Wert eingehalten" : "Wert nicht Eingehalten!";
+            //color = element.Requirements.IsUValueOk ? XBrushes.DarkGreen : XBrushes.Red;
+            //DrawWrappedText(gfx, $"{text}", bodyFontBold, color,
+            //    new XRect(marginLeft + 32, startY, contentWidth / 2 - (marginLeft + 32), bodyFont.GetHeight()), bodyFont.GetHeight());
+            //startY += RowHeight;
+            //
+            gfx.DrawString("Rges", bodyFontBold, XBrushes.Black,
+                new XRect(startX, startY, marginLeft + 28, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            DrawWrappedText(gfx, $"= {element.RGesValueUserDef:0.00} m²K/W", bodyFontBold, XBrushes.Black,
+                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFont.GetHeight()), bodyFont.GetHeight());
+            startY += RowHeight;
+
+            
+            //var text = element.Requirements.IsRValueOk ? "Wert eingehalten" : "Wert nicht Eingehalten!";
+            //var color = element.Requirements.IsRValueOk ? XBrushes.DarkGreen : XBrushes.Red;
+            //DrawWrappedText(gfx, $"{text}", bodyFontBold, color,
+            //    new XRect(marginLeft + 32, startY, contentWidth / 2 - (marginLeft + 32), bodyFont.GetHeight()), bodyFont.GetHeight());
+            //startY += RowHeight;
+            //
+            gfx.DrawString("RT", bodyFont, XBrushes.Black,
+                new XRect(startX, startY, marginLeft + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            DrawWrappedText(gfx, $"= {element.RTotValueUserDef:0.00} m²K/W (inkl. Übergangswiderstände)", bodyFont, XBrushes.Black,
+                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFont.GetHeight()), bodyFont.GetHeight());
+            startY += RowHeight;
+            //
+            gfx.DrawString("m'", bodyFont, XBrushes.Black,
+                new XRect(startX, startY, marginLeft + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            DrawWrappedText(gfx, $"= {element.AreaMassDensUserDef:0.00} kg/m²", bodyFont, XBrushes.Black,
+                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFont.GetHeight()), bodyFont.GetHeight());
+            startY += RowHeight;
+            //
+            gfx.DrawString("sd", bodyFont, XBrushes.Black,
+                new XRect(startX, startY, marginLeft + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            DrawWrappedText(gfx, $"= {element.SdThicknessUserDef:0.0} m", bodyFont, XBrushes.Black,
+                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFont.GetHeight()), bodyFont.GetHeight());
+            startY += RowHeight;
+            //
+            var text = element.IsInhomogeneous ? "Ja" : "Nein";
+            gfx.DrawString($"Inhomogener Schichtaufbau: {text}", bodyFont, XBrushes.Black,
+                new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
+
+            gfx.DrawString($"Bauteil zuletzt geändert: {element.UpdatedAtString}", bodyFont, XBrushes.Black,
+                new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
+
+            #endregion
+
+            #region Vertical Separator Line
+
+            //gfx.DrawLine(new XPen(XColors.Gray, 0.5), contentWidth / 2, startRightBlockTop, contentWidth / 2, startY);
+
+            #endregion
+
+            #region Comment Section
+
+            //// Right side for other data
+            //gfx.DrawString("Wärmeschutz", bodyFontBold, XBrushes.Black,
+            //    new XRect(startRightBlockLeft + Padding, startRightBlockTop, contentWidth / 2, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            //startRightBlockTop += RowHeight;
+
+            //circleDiameter = 6; // z. B. 12pt
+            //var text = element.Requirements.IsRValueOk ? "OK" : "nicht OK";
+            //var color = element.Requirements.IsRValueOk ? XBrushes.DarkGreen : XBrushes.Red;
+
+            //gfx.DrawString($"{text}", bodyFont, color,
+            //    new XRect(startRightBlockLeft, startRightBlockTop, marginLeft + 32, bodyFont.GetHeight()), XStringFormats.TopLeft);
+
+            var color = element.Requirements.IsUValueOk ? XBrushes.DarkGreen : XBrushes.Red;
+            gfx.DrawString($"{element.Requirements.UMaxCaption}:", bodyFont, XBrushes.Black,
+                new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 2 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            gfx.DrawString($"U ≤ {element.Requirements.UMax:0.000} W/m²K", bodyFontBold, color,
+                new XRect(startRightBlockLeft + contentWidth / 3 + 2 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            startRightBlockTop += RowHeight;
+
+            color = element.Requirements.IsRValueOk ? XBrushes.DarkGreen : XBrushes.Red;
+            gfx.DrawString($"{element.Requirements.RMinCaption}:", bodyFont, XBrushes.Black,
+                new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 2 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            gfx.DrawString($"R ≥ {element.Requirements.RMin:0.00} m²K/W", bodyFontBold, color,
+                new XRect(startRightBlockLeft + contentWidth / 3 + 2 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            startRightBlockTop += RowHeight;
+
+            //text = element.Requirements.IsUValueOk ? "Wert eingehalten" : "Wert nicht Eingehalten!";
+            //color = element.Requirements.IsUValueOk ? XBrushes.DarkGreen : XBrushes.Red;
+            //gfx.DrawString($"{text}", bodyFont, color,
+            //    new XRect(startRightBlockLeft, startRightBlockTop, marginLeft + 32, bodyFont.GetHeight()), XStringFormats.TopLeft);
+
+
+            
+
+            //gfx.DrawString("Feuchteschutz", bodyFontBold, XBrushes.Black,
+            //    new XRect(startRightBlockLeft + Padding, startRightBlockTop, contentWidth / 2, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            //startRightBlockTop += RowHeight;
+
+            //gfx.DrawString("Maximalwert nach XY:", bodyFont, XBrushes.Black,
+            //    new XRect(startRightBlockLeft + Padding, startRightBlockTop, marginLeft + 32, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            //startRightBlockTop += RowHeight;
+            //gfx.DrawString("Maximalwert nach XY:", bodyFont, XBrushes.Black,
+            //    new XRect(startRightBlockLeft + Padding, startRightBlockTop, marginLeft + 32, bodyFont.GetHeight()), XStringFormats.TopLeft);
+
+
+            #endregion
 
             if (element.Comment != string.Empty)
             {
-                gfx.DrawString($"Kommentar:", bodyFont, XBrushes.Black,
-                    new XRect(new XUnitPt(70), new XUnitPt(startY),
-                        new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
+                gfx.DrawString("Kommentar:", bodyFont, XBrushes.Black,
+                    new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
                 var textBlockHeight = DrawWrappedText(gfx, $"\"{element.Comment}\"", bodyFont, XBrushes.Black,
-                    new XRect(new XUnitPt(130), new XUnitPt(startY),
-                        new XUnitPt(page.Width - 160), new XUnitPt(80)), bodyFont.GetHeight());
-                startY += textBlockHeight + 16;
+                    new XRect(marginLeft + 60, startY, page.Width - 4 * marginLeft, 80), bodyFont.GetHeight());
+                startY += textBlockHeight + RowHeight;
             }
 
             // Draw Layer Information
-            startY += 8; // Extra padding
+            startY += Padding; // Extra padding
             gfx.DrawString("Querschnitt", titleFontSm, XBrushes.Black,
-                new XRect(new XUnitPt(70), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(30)), XStringFormats.TopLeft);
-            startY += 16;
+                new XRect(startX, startY, contentWidth, titleFontSm.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
 
             gfx.DrawString("von innen nach außen", bodyFont, XBrushes.Black,
-                new XRect(new XUnitPt(70), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-            startY += 16;
+                new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
 
             #region Image
 
             // Draw image from Image property
 
             var imgToDraw = element.Image;
-
             if (imgToDraw.Length == 0)
             {
                 // No image available, skip drawing
-                startY += 16;
+                startY += RowHeight;
                 gfx.DrawString("Keine Abbildung verfügbar", bodyFontItalic, XBrushes.Black,
-                    new XRect(new XUnitPt(70 + 35), new XUnitPt(startY),
-                        new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-                startY += 32;
+                    new XRect(0, startY, page.Width, bodyFontItalic.GetHeight()), XStringFormats.TopCenter);
+                startY += RowHeight + Padding;
             }
             else
             {
@@ -354,37 +476,35 @@ namespace BauphysikToolWPF.Services.Application
                     double originalHeight = image.PixelHeight;
 
                     // Define the maximum dimensions based on page size and desired margins
-                    double maxWidth = page.Width - 100; // Leave 50 units of margin on each side
-                    double maxHeight = page.Height - 200; // Leave 100 units of margin at top and bottom
+                    double maxWidth = contentWidth; // Leave 50 units of margin on each side
+                    double maxHeight = contentHeight; // Leave 100 units of margin at top and bottom
 
                     // Calculate the scaling factor
                     double scale = Math.Min(maxWidth / originalWidth, maxHeight / originalHeight);
 
                     // Scale the width and height based on the scaling factor
-                    double scaledWidth = originalWidth * scale;
-                    double scaledHeight = originalHeight * scale;
+                    double scaledWidth = originalWidth * scale * 0.8;
+                    double scaledHeight = originalHeight * scale * 0.8;
 
                     // Draw the image with scaled dimensions
-                    gfx.DrawImage(image, 70, startY, scaledWidth, scaledHeight);
+                    gfx.DrawImage(image, 2 * marginLeft, startY, scaledWidth, scaledHeight);
 
                     // Update imageHeight for subsequent content positioning
-                    imageHeight = scaledHeight + 10; // Add margin below the image
+                    imageHeight = scaledHeight + Padding; // Add margin below the image
                 }
-                startY += imageHeight + 8;
+                startY += imageHeight + Padding;
             }
             
             #endregion
 
             // Draw Layer Information
             gfx.DrawString("Schichtaufbau", titleFontSm, XBrushes.Black,
-                new XRect(new XUnitPt(70), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(30)), XStringFormats.TopLeft);
-            startY += 16;
+                new XRect(startX, startY, contentWidth, titleFontSm.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
 
             gfx.DrawString("von innen nach außen", bodyFont, XBrushes.Black,
-                new XRect(new XUnitPt(70), new XUnitPt(startY),
-                    new XUnitPt(page.Width - 100), new XUnitPt(20)), XStringFormats.TopLeft);
-            startY += 16;
+                new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
 
             #region Table
 
@@ -392,8 +512,7 @@ namespace BauphysikToolWPF.Services.Application
             string[,] data = GetLayerData(element);
 
             // Draw table headers
-            double startX = 70;
-            double cellHeight = 16;
+            double cellHeight = RowHeight;
             double[] columnWidths = { 200, 48, 60, 60, 60, 60 };
 
             double currentY = startY;
@@ -485,22 +604,59 @@ namespace BauphysikToolWPF.Services.Application
             return data;
         }
 
-        private static void DrawHeader(XGraphics gfx, PdfPage page, string projectName, string date)
-        {
-            XFont headerFont = new XFont("Verdana", 10, XFontStyleEx.Regular);
-            gfx.DrawString($"Projekt: {projectName} | Datum: {date}", headerFont, XBrushes.Gray,
-                new XRect(new XUnitPt(0), new XUnitPt(0),
-                    new XUnitPt(page.Width), new XUnitPt(30)), XStringFormats.TopCenter);
-        }
-
         private static void DrawFooter(XGraphics gfx, PdfPage page, string author, int pageNumber)
         {
-            XFont footerFont = new XFont("Verdana", 8, XFontStyleEx.Regular);
+            XFont footerFont = new XFont(FontFamilyRegular, 8, XFontStyleEx.Regular);
             gfx.DrawString($"Bearbeiter: {author} | Seite {pageNumber}", footerFont, XBrushes.Gray,
-                new XRect(new XUnitPt(0), new XUnitPt(page.Height - 30),
-                    new XUnitPt(page.Width), new XUnitPt(30)), XStringFormats.TopCenter);
+                new XRect(0, page.Height - MarginBottom, page.Width, footerFont.GetHeight()), XStringFormats.TopCenter);
         }
 
+        private static void DrawHeader(out double bottomY, XGraphics gfx, PdfPage page, string projectName, int marginLeft, int marginRight)
+        {
+            XFont headerFont = new XFont(FontFamilyRegular, 8, XFontStyleEx.Regular);
+
+            // Linke Spalte (3 Zeilen, linksbündig)
+            string[] leftLines =
+            {
+                $"Bauphysik Tool {UpdaterManager.LocalUpdaterManagerFile.CurrentTag}",
+                "www.bauphysik-tool.de",
+                ""
+            };
+
+            // Rechte Spalte (3 Zeilen, rechtsbündig)
+            string[] rightLines =
+            {
+                $"Projekt: {projectName}",
+                $"Erzeugt am: {DateTime.Now.ToString("dd.MM.yyyy")}",
+                ""
+            };
+
+            double contentWidth = page.Width - marginLeft - marginRight;
+            double lineHeight = (int)headerFont.GetHeight();
+            double currentY = MarginTop;
+
+            // Linke Seite zeichnen
+            foreach (var line in leftLines)
+            {
+                gfx.DrawString(line, headerFont, XBrushes.Black,
+                    new XRect(marginLeft, currentY, contentWidth / 2, lineHeight), XStringFormats.TopLeft);
+                currentY += lineHeight;
+            }
+
+            // Rechte Seite zeichnen
+            currentY = MarginTop;
+            foreach (var line in rightLines)
+            {
+                gfx.DrawString(line, headerFont, XBrushes.Black,
+                    new XRect(0, currentY, page.Width - marginRight, lineHeight), XStringFormats.TopRight);
+                currentY += lineHeight;
+            }
+
+            // Linie unten durchgehend
+            bottomY = MarginTop + lineHeight * 3 + 2; // unterhalb der 3 Zeilen
+            gfx.DrawLine(new XPen(XColors.Black, 1.0), marginLeft, bottomY, page.Width - marginRight, bottomY);
+        }
+        
         private static double DrawWrappedText(XGraphics gfx, string text, XFont font, XBrush brush, XRect rect, double lineHeight)
         {
             // Split the text into words
@@ -537,6 +693,16 @@ namespace BauphysikToolWPF.Services.Application
 
             // Return the total height of the wrapped text block
             return totalHeight;
+        }
+
+        private static (int left, int right) GetPageMargins(int pageNumber)
+        {
+            // Odd page → larger left margin
+            if (pageNumber % 2 == 1)
+                return (MarginInner, MarginOuter);
+            // Even page → larger right margin
+            else
+                return (MarginOuter, MarginInner);
         }
 
         #endregion
