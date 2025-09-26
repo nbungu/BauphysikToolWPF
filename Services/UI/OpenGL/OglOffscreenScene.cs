@@ -68,7 +68,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             sceneBuilder.LineBatches.Clear();
             sceneBuilder.SceneShapes.Clear();
             sceneBuilder.BuildScene();
-            sceneBuilder.SceneShapes.Sort((a, b) => b.ZIndex.CompareTo(a.ZIndex));
 
             // Use identical projection math from OglController.BuildProjection()
             var projection = OglController.BuildProjection(

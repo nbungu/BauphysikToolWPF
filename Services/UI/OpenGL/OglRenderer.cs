@@ -179,6 +179,57 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         #region Image capturing
 
+        //public BitmapSource CaptureRendering(
+        //    float[] rectVertices,
+        //    float[] lineVertices,
+        //    List<(int? TextureId, int Count)> rectBatches,
+        //    List<(float LineWidth, int Count)> lineBatches,
+        //    Matrix4 projection,
+        //    int width,
+        //    int height,
+        //    float dpi = 96f)
+        //{
+        //    // FBO setup block
+
+        //    int fbo, tex;
+
+        //    // Generate framebuffer
+        //    GL.GenFramebuffers(1, out fbo);
+        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, fbo);
+
+        //    // Create color texture
+        //    GL.GenTextures(1, out tex);
+        //    GL.BindTexture(TextureTarget.Texture2D, tex);
+        //    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, IntPtr.Zero);
+        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+
+        //    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, tex, 0);
+
+        //    if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+        //        throw new Exception("Failed to create framebuffer");
+        
+        //    GL.Viewport(0, 0, width, height);
+        //    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+        //    // Render to FBO using the existing Render logic
+        //    Render(rectVertices, lineVertices, rectBatches, lineBatches, projection, new Vector4(0f, 0f, 0f, 0f));
+
+        //    // Read pixels back
+        //    byte[] pixels = new byte[width * height * 4];
+        //    GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
+
+        //    // Cleanup
+        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+        //    GL.DeleteFramebuffer(fbo);
+        //    GL.DeleteTexture(tex);
+
+        //    var bmp = BitmapSource.Create(width, height, dpi, dpi, PixelFormats.Bgra32, null, pixels, width * 4);
+        //    bmp.Freeze();
+        //    LastCapturedImage = FlipVertically(bmp);
+        //    return LastCapturedImage;
+        //}
+
         public BitmapSource CaptureRendering(
             float[] rectVertices,
             float[] lineVertices,
@@ -189,7 +240,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             int height,
             float dpi = 96f)
         {
-            int fbo, tex;
+            // FBO setup block
+
+            int fbo, tex, rbo;
 
             // Generate framebuffer
             GL.GenFramebuffers(1, out fbo);
@@ -198,35 +251,59 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             // Create color texture
             GL.GenTextures(1, out tex);
             GL.BindTexture(TextureTarget.Texture2D, tex);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, IntPtr.Zero);
+            // Use a specific internal format
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, tex, 0);
 
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-                throw new Exception("Failed to create framebuffer");
-        
+            // Create and attach a depth renderbuffer (required for depth testing)
+            GL.GenRenderbuffers(1, out rbo);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, width, height);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rbo);
+
+            // Ensure we draw to color attachment 0
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+
+            // Check completeness
+            var status = GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer);
+            if (status != FramebufferErrorCode.FramebufferComplete)
+            {
+                // Clean up any allocated resources before throwing
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                if (tex != 0) GL.DeleteTexture(tex);
+                if (rbo != 0) GL.DeleteRenderbuffer(rbo);
+                if (fbo != 0) GL.DeleteFramebuffer(fbo);
+                throw new Exception($"Failed to create framebuffer: {status}");
+            }
+
+            // Setup viewport and clear (explicit depth clear)
             GL.Viewport(0, 0, width, height);
+            GL.ClearDepth(1.0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             // Render to FBO using the existing Render logic
             Render(rectVertices, lineVertices, rectBatches, lineBatches, projection, new Vector4(0f, 0f, 0f, 0f));
 
+            // sets the pack alignment to 1 for safety (avoids row-padding surprises)
+            GL.PixelStore(PixelStoreParameter.PackAlignment, 1);
             // Read pixels back
             byte[] pixels = new byte[width * height * 4];
             GL.ReadPixels(0, 0, width, height, PixelFormat.Bgra, PixelType.UnsignedByte, pixels);
 
-            // Cleanup
+            // clean up textures/renderbuffers
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             GL.DeleteFramebuffer(fbo);
             GL.DeleteTexture(tex);
+            GL.DeleteRenderbuffer(rbo);
 
             var bmp = BitmapSource.Create(width, height, dpi, dpi, PixelFormats.Bgra32, null, pixels, width * 4);
             bmp.Freeze();
             LastCapturedImage = FlipVertically(bmp);
             return LastCapturedImage;
         }
+
         private static BitmapSource FlipVertically(BitmapSource source)
         {
             var transform = new ScaleTransform(1, -1, 0.5, 0.5);
