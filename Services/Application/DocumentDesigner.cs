@@ -317,55 +317,61 @@ namespace BauphysikToolWPF.Services.Application
             #endregion
 
             var startRightBlockTop = startY;
-            var startRightBlockLeft = marginLeft + contentWidth / 2;
 
             #region Draw Element Properties
 
-            //
-            gfx.DrawString("U", bodyFontBold, XBrushes.Black,
-                new XRect(startX, startY, marginLeft + 28, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
-            DrawWrappedText(gfx, $"= {element.UValueUserDef:0.000} W/m²K", bodyFontBold, XBrushes.Black,
-                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFontBold.GetHeight()), bodyFontBold.GetHeight());
-            startY += RowHeight;
-            
-            //text = element.Requirements.IsUValueOk ? "Wert eingehalten" : "Wert nicht Eingehalten!";
-            //color = element.Requirements.IsUValueOk ? XBrushes.DarkGreen : XBrushes.Red;
-            //DrawWrappedText(gfx, $"{text}", bodyFontBold, color,
-            //    new XRect(marginLeft + 32, startY, contentWidth / 2 - (marginLeft + 32), bodyFont.GetHeight()), bodyFont.GetHeight());
-            //startY += RowHeight;
-            //
-            gfx.DrawString("Rges", bodyFontBold, XBrushes.Black,
-                new XRect(startX, startY, marginLeft + 28, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
-            DrawWrappedText(gfx, $"= {element.RGesValueUserDef:0.00} m²K/W", bodyFontBold, XBrushes.Black,
-                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFont.GetHeight()), bodyFont.GetHeight());
+            var text = "";
+            var textWidth = 0.0;
+            var maxTextWidth = textWidth;
+            var infoAsterisk = "";
+
+            // U-Value
+            gfx.DrawString("U", bodyFontBold, XBrushes.Black, new XRect(startX, startY, startX + 28, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            infoAsterisk = Math.Abs(element.UValueUserDef - element.UValue) > 1E-04 ? " *" : "";
+            text = $"= {element.UValueUserDef:0.000} W/m²K{infoAsterisk}";
+            textWidth = gfx.MeasureString(text, bodyFontBold).Width;
+            gfx.DrawString(text, bodyFontBold, XBrushes.Black, new XRect(startX + 28, startY, textWidth, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            maxTextWidth = Math.Max(maxTextWidth, textWidth);
             startY += RowHeight;
 
+            // R-ges
+            gfx.DrawString("Rges", bodyFontBold, XBrushes.Black, new XRect(startX, startY, startX + 28, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            infoAsterisk = Math.Abs(element.RGesValueUserDef - element.RGesValue) > 1E-04 ? " *" : "";
+            text = $"= {element.RGesValueUserDef:0.00} m²K/W{infoAsterisk}";
+            textWidth = gfx.MeasureString(text, bodyFontBold).Width;
+            gfx.DrawString(text, bodyFontBold, XBrushes.Black, new XRect(startX + 28, startY, textWidth, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            maxTextWidth = Math.Max(maxTextWidth, textWidth);
+            startY += RowHeight;
             
-            //var text = element.Requirements.IsRValueOk ? "Wert eingehalten" : "Wert nicht Eingehalten!";
-            //var color = element.Requirements.IsRValueOk ? XBrushes.DarkGreen : XBrushes.Red;
-            //DrawWrappedText(gfx, $"{text}", bodyFontBold, color,
-            //    new XRect(marginLeft + 32, startY, contentWidth / 2 - (marginLeft + 32), bodyFont.GetHeight()), bodyFont.GetHeight());
-            //startY += RowHeight;
-            //
-            gfx.DrawString("RT", bodyFont, XBrushes.Black,
-                new XRect(startX, startY, marginLeft + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            DrawWrappedText(gfx, $"= {element.RTotValueUserDef:0.00} m²K/W (inkl. Übergangswiderstände)", bodyFont, XBrushes.Black,
-                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFont.GetHeight()), bodyFont.GetHeight());
+            // R-T
+            gfx.DrawString("RT", bodyFont, XBrushes.Black, new XRect(startX, startY, startX + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            infoAsterisk = Math.Abs(element.RTotValueUserDef - element.RTotValue) > 1E-04 ? " *" : "";
+            text = $"= {element.RTotValueUserDef:0.00} m²K/W (inkl. Übergangswiderstände){infoAsterisk}";
+            textWidth = gfx.MeasureString(text, bodyFont).Width;
+            gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX + 28, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            maxTextWidth = Math.Max(maxTextWidth, textWidth);
             startY += RowHeight;
-            //
-            gfx.DrawString("m'", bodyFont, XBrushes.Black,
-                new XRect(startX, startY, marginLeft + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            DrawWrappedText(gfx, $"= {element.AreaMassDensUserDef:0.00} kg/m²", bodyFont, XBrushes.Black,
-                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFont.GetHeight()), bodyFont.GetHeight());
+
+            // m'
+            gfx.DrawString("m'", bodyFont, XBrushes.Black, new XRect(startX, startY, startX + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            infoAsterisk = Math.Abs(element.AreaMassDensUserDef - element.AreaMassDens) > 1E-04 ? " *" : "";
+            text = $"= {element.AreaMassDensUserDef:0.00} kg/m²{infoAsterisk}";
+            textWidth = gfx.MeasureString(text, bodyFont).Width;
+            gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX + 28, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            maxTextWidth = Math.Max(maxTextWidth, textWidth);
             startY += RowHeight;
-            //
-            gfx.DrawString("sd", bodyFont, XBrushes.Black,
-                new XRect(startX, startY, marginLeft + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            DrawWrappedText(gfx, $"= {element.SdThicknessUserDef:0.0} m", bodyFont, XBrushes.Black,
-                new XRect(marginLeft + 28, startY, contentWidth / 2 - (marginLeft + 28), bodyFont.GetHeight()), bodyFont.GetHeight());
+
+            // sd
+            gfx.DrawString("sd", bodyFont, XBrushes.Black, new XRect(startX, startY, startX + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            infoAsterisk = Math.Abs(element.SdThicknessUserDef - element.SdThickness) > 1E-04 ? " *" : "";
+            text = $"= {element.SdThicknessUserDef:0.0} m{infoAsterisk}";
+            textWidth = gfx.MeasureString(text, bodyFont).Width;
+            gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX + 28, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            maxTextWidth = Math.Max(maxTextWidth, textWidth);
             startY += RowHeight;
+
             //
-            var text = element.IsInhomogeneous ? "Ja" : "Nein";
+            text = element.IsInhomogeneous ? "Ja" : "Nein";
             gfx.DrawString($"Inhomogener Schichtaufbau: {text}", bodyFont, XBrushes.Black,
                 new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
             startY += RowHeight;
@@ -374,69 +380,40 @@ namespace BauphysikToolWPF.Services.Application
                 new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
             startY += RowHeight;
 
+            if (element.IsUserDefValuesEnabled)
+            {
+                startY += Padding; // Extra space
+                gfx.DrawString("* Hinweis: frei eingegebener Wert, der nicht aus der Berechnung stammt.", bodyFontItalic, XBrushes.Gray,
+                    new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+                startY += RowHeight;
+            }
+            
             #endregion
 
-            #region Vertical Separator Line
-
-            //gfx.DrawLine(new XPen(XColors.Gray, 0.5), contentWidth / 2, startRightBlockTop, contentWidth / 2, startY);
-
-            #endregion
-
-            #region Comment Section
-
-            //// Right side for other data
-            //gfx.DrawString("Wärmeschutz", bodyFontBold, XBrushes.Black,
-            //    new XRect(startRightBlockLeft + Padding, startRightBlockTop, contentWidth / 2, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
-            //startRightBlockTop += RowHeight;
-
-            //circleDiameter = 6; // z. B. 12pt
-            //var text = element.Requirements.IsRValueOk ? "OK" : "nicht OK";
-            //var color = element.Requirements.IsRValueOk ? XBrushes.DarkGreen : XBrushes.Red;
-
-            //gfx.DrawString($"{text}", bodyFont, color,
-            //    new XRect(startRightBlockLeft, startRightBlockTop, marginLeft + 32, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            var startRightBlockLeft = marginLeft + 28 + maxTextWidth + Padding;
 
             var color = element.Requirements.IsUValueOk ? XBrushes.DarkGreen : XBrushes.Red;
-            gfx.DrawString($"{element.Requirements.UMaxCaption}:", bodyFont, XBrushes.Black,
-                new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 2 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            gfx.DrawString($"→ {element.Requirements.UMaxCaption}:", bodyFont, XBrushes.Black,
+                new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
             gfx.DrawString($"U ≤ {element.Requirements.UMax:0.000} W/m²K", bodyFontBold, color,
-                new XRect(startRightBlockLeft + contentWidth / 3 + 2 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+                new XRect(startRightBlockLeft + contentWidth / 3 + 3 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
             startRightBlockTop += RowHeight;
 
             color = element.Requirements.IsRValueOk ? XBrushes.DarkGreen : XBrushes.Red;
-            gfx.DrawString($"{element.Requirements.RMinCaption}:", bodyFont, XBrushes.Black,
-                new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 2 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            gfx.DrawString($"→ {element.Requirements.RMinCaption}:", bodyFont, XBrushes.Black,
+                new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
             gfx.DrawString($"R ≥ {element.Requirements.RMin:0.00} m²K/W", bodyFontBold, color,
-                new XRect(startRightBlockLeft + contentWidth / 3 + 2 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+                new XRect(startRightBlockLeft + contentWidth / 3 + 3 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
             startRightBlockTop += RowHeight;
 
-            //text = element.Requirements.IsUValueOk ? "Wert eingehalten" : "Wert nicht Eingehalten!";
-            //color = element.Requirements.IsUValueOk ? XBrushes.DarkGreen : XBrushes.Red;
-            //gfx.DrawString($"{text}", bodyFont, color,
-            //    new XRect(startRightBlockLeft, startRightBlockTop, marginLeft + 32, bodyFont.GetHeight()), XStringFormats.TopLeft);
-
-
-            
-
-            //gfx.DrawString("Feuchteschutz", bodyFontBold, XBrushes.Black,
-            //    new XRect(startRightBlockLeft + Padding, startRightBlockTop, contentWidth / 2, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
-            //startRightBlockTop += RowHeight;
-
-            //gfx.DrawString("Maximalwert nach XY:", bodyFont, XBrushes.Black,
-            //    new XRect(startRightBlockLeft + Padding, startRightBlockTop, marginLeft + 32, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            //startRightBlockTop += RowHeight;
-            //gfx.DrawString("Maximalwert nach XY:", bodyFont, XBrushes.Black,
-            //    new XRect(startRightBlockLeft + Padding, startRightBlockTop, marginLeft + 32, bodyFont.GetHeight()), XStringFormats.TopLeft);
-
-
-            #endregion
 
             if (element.Comment != string.Empty)
             {
-                gfx.DrawString("Kommentar:", bodyFont, XBrushes.Black,
-                    new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+                text = "Kommentar: ";
+                textWidth = gfx.MeasureString(text, bodyFont).Width;
+                gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
                 var textBlockHeight = DrawWrappedText(gfx, $"\"{element.Comment}\"", bodyFont, XBrushes.Black,
-                    new XRect(marginLeft + 60, startY, page.Width - 4 * marginLeft, 80), bodyFont.GetHeight());
+                    new XRect(marginLeft + textWidth, startY, contentWidth - textWidth, 80), bodyFont.GetHeight());
                 startY += textBlockHeight + RowHeight;
             }
 

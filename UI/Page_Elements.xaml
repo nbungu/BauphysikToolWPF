@@ -125,11 +125,12 @@
                                     <Image Source="{StaticResource ButtonIcon_Edit_B}" />
                                 </MenuItem.Icon>
                             </MenuItem>
-                            <MenuItem Header="Bauphysikalische Daten" Command="{Binding Path=PlacementTarget.Tag.ShowExtendedPropertiesCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
+                            <!--TODO: Temporär raus-->
+                            <!--<MenuItem Header="Bauphysikalische Daten" Command="{Binding Path=PlacementTarget.Tag.ShowExtendedPropertiesCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Edit_B}" />
                                 </MenuItem.Icon>
-                            </MenuItem>
+                            </MenuItem>-->
                             <MenuItem Header="Kopieren" Command="{Binding Path=PlacementTarget.Tag.CopyElementCommand, RelativeSource={RelativeSource AncestorType=ContextMenu}}" CommandParameter="{Binding Path=PlacementTarget.CommandParameter, RelativeSource={RelativeSource AncestorType=ContextMenu}}">
                                 <MenuItem.Icon>
                                     <Image Source="{StaticResource ButtonIcon_Copy_B}" />
