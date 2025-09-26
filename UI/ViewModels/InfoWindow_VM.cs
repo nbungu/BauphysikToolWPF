@@ -1,4 +1,5 @@
-﻿using BauphysikToolWPF.Repositories;
+﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -6,7 +7,6 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.Diagnostics;
 using System.Windows;
-using BauphysikToolWPF.Models.Domain;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
