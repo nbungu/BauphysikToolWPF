@@ -77,7 +77,7 @@ namespace BauphysikToolWPF.Services.Application
             string[] headers = { "Nr.", "Bauteilbezeichnung", "", "Kategorie", "U-Wert\nGEG\n[W/(m²K)]", "Wärmedurchlasswiderstand\nR [m²K/W]", "" };
             string[] secondRowHeaders = { "", "", "", "", "", "Ist-Wert", "Soll-Wert\nDIN 4108-2" }; // New row header for Wärmedurchlasswiderstand
 
-            double[] columnProportions = { 28, 24, 140, 120, 56, 64, 64 }; // Original widths
+            double[] columnProportions = { 34, 24, 140, 120, 56, 64, 64 }; // Original widths
             double totalWeight = columnProportions.Sum();
             double[] columnWidths = columnProportions.Select(p => p / totalWeight * contentWidth).ToArray();
 
@@ -339,7 +339,7 @@ namespace BauphysikToolWPF.Services.Application
             textWidth = gfx.MeasureString(text, bodyFontBold).Width;
             gfx.DrawString(text, bodyFontBold, XBrushes.Black, new XRect(startX + 28, startY, textWidth, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
             maxTextWidth = Math.Max(maxTextWidth, textWidth);
-            startY += RowHeight;
+            startY += RowHeight + Padding;
             
             // R-T
             gfx.DrawString("RT", bodyFont, XBrushes.Black, new XRect(startX, startY, startX + 28, bodyFont.GetHeight()), XStringFormats.TopLeft);
@@ -347,7 +347,7 @@ namespace BauphysikToolWPF.Services.Application
             text = $"= {element.RTotValueUserDef:0.00} m²K/W (inkl. Übergangswiderstände){infoAsterisk}";
             textWidth = gfx.MeasureString(text, bodyFont).Width;
             gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX + 28, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            maxTextWidth = Math.Max(maxTextWidth, textWidth);
+            //maxTextWidth = Math.Max(maxTextWidth, textWidth);
             startY += RowHeight;
 
             // m'
@@ -356,7 +356,7 @@ namespace BauphysikToolWPF.Services.Application
             text = $"= {element.AreaMassDensUserDef:0.00} kg/m²{infoAsterisk}";
             textWidth = gfx.MeasureString(text, bodyFont).Width;
             gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX + 28, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            maxTextWidth = Math.Max(maxTextWidth, textWidth);
+            //maxTextWidth = Math.Max(maxTextWidth, textWidth);
             startY += RowHeight;
 
             // sd
@@ -365,8 +365,9 @@ namespace BauphysikToolWPF.Services.Application
             text = $"= {element.SdThicknessUserDef:0.0} m{infoAsterisk}";
             textWidth = gfx.MeasureString(text, bodyFont).Width;
             gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX + 28, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            maxTextWidth = Math.Max(maxTextWidth, textWidth);
-            startY += RowHeight;
+            //maxTextWidth = Math.Max(maxTextWidth, textWidth);
+            startY += RowHeight + Padding;
+
 
             //
             text = element.IsInhomogeneous ? "Ja" : "Nein";
@@ -440,33 +441,15 @@ namespace BauphysikToolWPF.Services.Application
             }
             else
             {
-                double imageHeight;
-                using (MemoryStream ms = new MemoryStream(imgToDraw, 0, imgToDraw.Length, false, true))
-                {
-                    ms.Position = 0; // Ensure the stream position is at the start
-                    XImage image = XImage.FromStream(ms);
-
-                    // Get the original width and height of the image
-                    double originalWidth = image.PixelWidth;
-                    double originalHeight = image.PixelHeight;
-
-                    // Define the maximum dimensions based on page size and desired margins
-                    double maxWidth = contentWidth; // Leave 50 units of margin on each side
-                    double maxHeight = contentHeight; // Leave 100 units of margin at top and bottom
-
-                    // Calculate the scaling factor
-                    double scale = Math.Min(maxWidth / originalWidth, maxHeight / originalHeight);
-
-                    // Scale the width and height based on the scaling factor
-                    double scaledWidth = originalWidth * scale * 0.8;
-                    double scaledHeight = originalHeight * scale * 0.8;
-
-                    // Draw the image with scaled dimensions
-                    gfx.DrawImage(image, 2 * marginLeft, startY, scaledWidth, scaledHeight);
-
-                    // Update imageHeight for subsequent content positioning
-                    imageHeight = scaledHeight + Padding; // Add margin below the image
-                }
+                double imageHeight = DrawScaledImage(
+                    gfx,
+                    imgToDraw,
+                    marginLeft,
+                    startY,
+                    contentWidth,   // max width
+                    6.0,            // target height in cm
+                    240.0           // render DPI of offscreen renderer // TODO:
+                );
                 startY += imageHeight + Padding;
             }
             
@@ -678,6 +661,54 @@ namespace BauphysikToolWPF.Services.Application
             // Even page → larger right margin
             else
                 return (MarginOuter, MarginInner);
+        }
+
+        private static double DrawScaledImage(
+            XGraphics gfx,
+            byte[] imgBytes,
+            double x, double y,
+            double maxWidthPt,
+            double targetHeightCm,
+            double renderDpi,
+            double padding = 0)
+        {
+            double imageHeight = 0;
+
+            using (MemoryStream ms = new MemoryStream(imgBytes, 0, imgBytes.Length, false, true))
+            {
+                ms.Position = 0;
+                using (XImage image = XImage.FromStream(ms))
+                {
+                    // Convert pixels -> points based on render DPI
+                    double widthPt = image.PixelWidth * 72.0 / renderDpi;
+                    double heightPt = image.PixelHeight * 72.0 / renderDpi;
+
+                    // Target height in points
+                    double targetHeightPt = targetHeightCm * 72.0 / 2.54; // cm → pt
+
+                    // Scale to target height
+                    double scale = targetHeightPt / heightPt;
+                    double scaledWidth = widthPt * scale;
+                    double scaledHeight = heightPt * scale;
+
+                    // Clamp by maximum width
+                    if (scaledWidth > maxWidthPt)
+                    {
+                        scale = maxWidthPt / widthPt;
+                        scaledWidth = widthPt * scale;
+                        scaledHeight = heightPt * scale;
+                    }
+                    // Draw centered
+                    double xPos = x + (maxWidthPt - scaledWidth) / 2.0;
+                    gfx.DrawImage(image, xPos, y, scaledWidth, scaledHeight);
+                    // Draw Left-aligned
+                    //gfx.DrawImage(image, x, y, scaledWidth, scaledHeight);
+
+                    imageHeight = scaledHeight + padding;
+                }
+            }
+
+            return imageHeight; // return how much vertical space was consumed
         }
 
         #endregion

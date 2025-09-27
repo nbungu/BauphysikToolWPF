@@ -137,7 +137,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             sceneBuilder.TextureManager = _textureManager;
             SceneBuilder = sceneBuilder;
-            SceneBuilder.Dpi = 96;
+            SceneBuilder.Dpi = 96; // 96 DPI means 1 pt = 1 px at 100% zoom. (150/300 DPI for print quality)
         }
 
         public void Invalidate() => View.InvalidateVisual();

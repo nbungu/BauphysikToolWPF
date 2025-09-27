@@ -126,7 +126,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
 
         public static void RenderOffscreenImage(this Element element, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
         {
-            OglOffscreenScene.SetElementImages(new List<Element>() { element }, target, withDecorations);
+            OglOffscreenScene.GenerateImagesOfElements(new List<Element>() { element }, target, withDecorations);
         }
     }
 }

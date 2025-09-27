@@ -92,15 +92,15 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             var elementsWithoutImage = project.Elements.Where(e => e.Image == Array.Empty<byte>()).ToList();
             if (elementsWithoutImage.Count == 0) return;
 
-            OglOffscreenScene.SetElementImages(elementsWithoutImage, target, withDecorations);
+            OglOffscreenScene.GenerateImagesOfElements(elementsWithoutImage, target, withDecorations);
         }
 
         /// <summary>
         /// Renders all elements via offscreen capturing and assigns the resulting images to the elements.
         /// </summary>
-        public static void RenderAllElementImages(this Project project, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
+        public static void RenderAllElementImages(this Project project, RenderTarget target, bool withDecorations = true)
         {
-            OglOffscreenScene.SetElementImages(project.Elements, target, withDecorations);
+            OglOffscreenScene.GenerateImagesOfElements(project.Elements, target, withDecorations);
         }
 
         public static void AssignAsParentToElements(this Project project)

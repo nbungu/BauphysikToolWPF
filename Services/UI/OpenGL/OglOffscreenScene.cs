@@ -28,7 +28,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <param name="zoom">Optional zoom factor to apply when rendering.</param>
         /// <param name="dpi">Output DPI (defaults to 96).</param>
         /// <returns>A frozen BitmapSource containing the rendered scene.</returns>
-        public static BitmapSource CaptureSceneImage(
+        public static BitmapSource GetOffscreenSceneImage(
             IOglSceneBuilder scene,
             int width,
             int height,
@@ -61,7 +61,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var sceneBuilder = scene;
             sceneBuilder.TextureManager = textureManager;
             sceneBuilder.ZoomFactor = (float)zoom;
-            
             sceneBuilder.RectVertices.Clear();
             sceneBuilder.LineVertices.Clear();
             sceneBuilder.RectBatches.Clear();
@@ -95,12 +94,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         /// <summary>
         /// Renders elements via offscreen capturing and assigns the resulting images to the elements.
         /// </summary>
-        public static void SetElementImages(IEnumerable<Element> elements, RenderTarget target, bool withDecorations)
+        public static void GenerateImagesOfElements(IEnumerable<Element> elements, RenderTarget target, bool withDecorations)
         {
             var elementScene = new ElementSceneBuilder();
             elementScene.ShowSceneDecoration = withDecorations;
             elementScene.CrossSectionBuilder.DrawingType = DrawingType.CrossSection;
-            elementScene.Dpi = target == RenderTarget.Screen ? 96 : 200;
+            elementScene.Dpi = target == RenderTarget.Screen ? 96 : 240; // TODO: as constants
 
             foreach (var element in elements)
             {
@@ -114,7 +113,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 if (withDecorations) element.AssignInternalIdsToLayers();
 
                 elementScene.CrossSectionBuilder.Element = element;
-                var bmp = CaptureSceneImage(
+                var bmp = GetOffscreenSceneImage(
                     elementScene,
                     (int)elementScene.CrossSectionBuilder.CanvasSize.Width * elementScene.DpiScaleFactor, // Width
                     (int)elementScene.CrossSectionBuilder.CanvasSize.Height * elementScene.DpiScaleFactor, // Height

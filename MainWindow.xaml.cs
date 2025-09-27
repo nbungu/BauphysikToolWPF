@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI.OpenGL;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
@@ -96,13 +97,13 @@ namespace BauphysikToolWPF
         {
             _dialogService.ShowLoadingDialog("Lädt, bitte warten...", minDurationMs: 400);
 
-            Session.SelectedElementId = -1;
+                Session.SelectedElementId = -1;
 
-            // Update InternalIds and render new images
-            Session.SelectedProject.AssignAsParentToElements();
-            Session.SelectedProject.AssignInternalIdsToElements(true);
-            Session.SelectedProject.AssignInternalIdsToEnvelopeItems(true);
-            Session.SelectedProject.RenderAllElementImages(withDecorations: false);
+                // Update InternalIds and render new images
+                Session.SelectedProject.AssignAsParentToElements();
+                Session.SelectedProject.AssignInternalIdsToElements(true);
+                Session.SelectedProject.AssignInternalIdsToEnvelopeItems(true);
+                Session.SelectedProject.RenderAllElementImages(RenderTarget.Screen, withDecorations: false);
 
             _dialogService.CloseLoadingDialog();
         }
