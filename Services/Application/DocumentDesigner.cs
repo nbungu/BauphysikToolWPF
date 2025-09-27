@@ -22,8 +22,6 @@ namespace BauphysikToolWPF.Services.Application
         private const int MarginOuter = 32; // the smaller margin
         private const int MarginInner = 48; // the larger margin
 
-
-
         private const int Padding = 8;
         private const int RowHeight = 14;
         private const string FontFamilyRegular = "Arial";
@@ -380,14 +378,6 @@ namespace BauphysikToolWPF.Services.Application
                 new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
             startY += RowHeight;
 
-            if (element.IsUserDefValuesEnabled)
-            {
-                startY += Padding; // Extra space
-                gfx.DrawString("* Hinweis: frei eingegebener Wert, der nicht aus der Berechnung stammt.", bodyFontItalic, XBrushes.Gray,
-                    new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
-                startY += RowHeight;
-            }
-            
             #endregion
 
             var startRightBlockLeft = marginLeft + 28 + maxTextWidth + Padding;
@@ -415,6 +405,14 @@ namespace BauphysikToolWPF.Services.Application
                 var textBlockHeight = DrawWrappedText(gfx, $"\"{element.Comment}\"", bodyFont, XBrushes.Black,
                     new XRect(marginLeft + textWidth, startY, contentWidth - textWidth, 80), bodyFont.GetHeight());
                 startY += textBlockHeight + RowHeight;
+            }
+
+            if (element.IsUserDefValuesEnabled)
+            {
+ 
+                gfx.DrawString("* Hinweis: frei eingegebener Wert, der nicht aus der Berechnung stammt.", bodyFontItalic, XBrushes.Gray,
+                    new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+                startY += RowHeight;
             }
 
             // Draw Layer Information

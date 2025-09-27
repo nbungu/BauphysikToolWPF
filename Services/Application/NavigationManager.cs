@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using BauphysikToolWPF.Models.Application;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Models.UI;
 
 namespace BauphysikToolWPF.Services.Application
 {
@@ -117,6 +117,26 @@ namespace BauphysikToolWPF.Services.Application
         {
             bool isProjectLoaded = !Session.SelectedProject?.IsNewEmptyProject ?? false;
             ParentPages.ForEach(p => p.IsEnabled = isProjectLoaded);
+        }
+
+        public static void DisablePage(NavigationPage page)
+        {
+            if (ParentPageDictionary.TryGetValue(page, out var navContent))
+            {
+                navContent.IsEnabled = false;
+                if (navContent.IsSelected)
+                {
+                    navContent.IsSelected = false;
+                    UnselectChildPages();
+                }
+            }
+        }
+        public static void EnablePage(NavigationPage page)
+        {
+            if (ParentPageDictionary.TryGetValue(page, out var navContent))
+            {
+                navContent.IsEnabled = true;
+            }
         }
 
         public static BitmapImage? GetBitmapImageFromAppResources(string resourceKey) => System.Windows.Application.Current.Resources[resourceKey] as BitmapImage;

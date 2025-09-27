@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using BauphysikToolWPF.Models.Application;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -172,6 +173,9 @@ namespace BauphysikToolWPF.UI.ViewModels
             if (NavigationManager.ParentPageDictionary.ContainsKey(target)) CurrentParentPage = target;
 
             NavigationManager.UpdateParentEnabledStates();
+            // TODO: Temporär:
+            NavigationManager.DisablePage(NavigationPage.BuildingEnvelope);
+            //
             target.UpdateParentSelectedState();
             target.UpdateChildSelectedState(AvailableChildGroups);
 
