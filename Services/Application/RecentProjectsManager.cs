@@ -4,10 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using BauphysikToolWPF.Models.Application;
-using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 
-namespace BauphysikToolWPF.Repositories
+namespace BauphysikToolWPF.Services.Application
 {
     public static class RecentProjectsManager
     {

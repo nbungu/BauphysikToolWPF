@@ -18,6 +18,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private Brush _bgColor = Brushes.Transparent;
         private readonly TextureManager _textureManager;
         private int SdfFontTextureId => _textureManager.SdfFont?.TextureId ?? -1;
+
         public BitmapSource LastCapturedImage { get; private set; }
 
         public OglRenderer(TextureManager texManager)

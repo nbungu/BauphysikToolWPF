@@ -1,22 +1,21 @@
-﻿using System;
+﻿using BauphysikToolWPF.Models.Application;
+using BT.Logging;
+using System;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using BauphysikToolWPF.Models.Application;
-using BauphysikToolWPF.Services.Application;
-using BT.Logging;
 
-namespace BauphysikToolWPF.Repositories
+namespace BauphysikToolWPF.Services.Application
 {
     public class UpdaterManager
     {
-        public static string InstalledUpdaterFilePath = GetInstalledUpdaterFilePath();
+        public static string InstalledUpdaterFilePath = GetInstalledUpdaterFilePath(forceReplace: false);
         public static string ServerUpdaterQuery = "https://bauphysik-tool.de/strapi/api/downloads?sort=publishedAt:desc&fields[0]=semanticVersion&fields[1]=versionTag";
         
         // HttpClient should be a singleton to avoid socket exhaustion
-        private static readonly HttpClient _client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
+        private static readonly HttpClient Client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
         // testing: curl -v "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields%5B0%5D=semanticVersion&fields%5B1%5D=versionTag"
 
@@ -39,7 +38,7 @@ namespace BauphysikToolWPF.Repositories
             // If server version is newer
             if (NewVersionAvailable)
             {
-                Logger.LogInfo($"Found new Version! Writing new Version to local updater file");
+                Logger.LogInfo("Found new Version! Writing new Version to local updater file");
                 // TODO:
             }
             updaterLocal.Latest = updaterServer.Latest;
@@ -56,7 +55,7 @@ namespace BauphysikToolWPF.Repositories
             {
                 return Task.Run(async () =>
                 {
-                    using var response = await _client.GetAsync(ServerUpdaterQuery);
+                    using var response = await Client.GetAsync(ServerUpdaterQuery);
                     return response.IsSuccessStatusCode;
                 }).GetAwaiter().GetResult();
             }
@@ -126,42 +125,6 @@ namespace BauphysikToolWPF.Repositories
 
             return new UpdaterManager();
         }
-
-        //public static UpdaterManager FetchLocalVersion(string filePath)
-        //{
-        //    string jsonString = File.ReadAllText(filePath);
-        //    var options = new JsonSerializerOptions
-        //    {
-        //        ReferenceHandler = ReferenceHandler.Preserve,
-        //        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-        //    };
-        //    UpdaterManager updater = JsonSerializer.Deserialize<UpdaterManager>(jsonString, options);
-        //    if (updater != null)
-        //    {
-        //        Logger.LogInfo($"Successfully fetched local version file: {filePath}");
-        //        return updater;
-        //    }
-        //    Logger.LogWarning($"Could not fetch local version file: {filePath}");
-        //    return new UpdaterManager();
-        //}
-
-        //public static bool GetServerStatus(string serverAddress)
-        //{
-        //    using (HttpClient client = new HttpClient())
-        //    {
-        //        client.Timeout = TimeSpan.FromSeconds(10);
-        //        try
-        //        {
-        //            var response = client.GetAsync(serverAddress).Result;  // Blocking call!
-        //            if (response.IsSuccessStatusCode) return true;
-        //        }
-        //        catch (Exception e)
-        //        {
-        //            return false;
-        //        }
-        //        return false;
-        //    }
-        //}
 
         private static async Task<UpdaterManager> FetchAndDeserializeUpdaterAsync(string url)
         {
@@ -270,7 +233,7 @@ namespace BauphysikToolWPF.Repositories
         {
             try
             {
-                if (filePath == "") filePath = GetInstalledUpdaterFilePath();
+                if (filePath == "") filePath = GetInstalledUpdaterFilePath(forceReplace: false);
                 var options = new JsonSerializerOptions
                 {
                     WriteIndented = true,

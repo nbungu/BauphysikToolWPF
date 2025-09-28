@@ -1,17 +1,21 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection.Metadata;
+using System.Windows.Controls;
 using System.Windows.Media;
+using ABI.Windows.Devices.Input;
 using static BauphysikToolWPF.Models.UI.Enums;
+using static OpenTK.Audio.OpenAL.ALC;
 
 namespace BauphysikToolWPF.Services.Application
 {
@@ -35,6 +39,8 @@ namespace BauphysikToolWPF.Services.Application
             project.RenderAllElementImages(target: RenderTarget.Document, withDecorations: true);
             
             XFont titleFont = new XFont(FontFamilyRegular, 10, XFontStyleEx.Bold);
+            XFont bodyFont = new XFont(FontFamilyRegular, 9, XFontStyleEx.Regular);
+            XFont bodyFontBold = new XFont(FontFamilyRegular, 9, XFontStyleEx.Bold);
             XFont tableHeaderFont = new XFont(FontFamilyRegular, 8, XFontStyleEx.Bold);
             XFont tableBodyFont = new XFont(FontFamilyForData, 8, XFontStyleEx.Regular);
             XFont tableBodyFontBold = new XFont(FontFamilyForData, 8, XFontStyleEx.Bold);
@@ -61,10 +67,62 @@ namespace BauphysikToolWPF.Services.Application
             double startX = marginLeft;
             double startY = headerBottom + 2 * Padding;
             double contentWidth = page.Width - marginLeft - marginRight;
+            double contentHeight = page.Height - MarginTop - MarginBottom;
 
-            gfx.DrawString("Liste: U- und R-Werte aller Bauteile", titleFont, XBrushes.Black,
+            // Bauteilkatalog Title
+            gfx.DrawString($"Bauteilkatalog - {project.Name}", titleFont, XBrushes.Black,
                 new XRect(startX, startY, contentWidth, titleFont.GetHeight()), XStringFormats.TopLeft);
             startY += RowHeight + Padding;
+
+            // Linker Block:
+            var startRightBlockTop = startY;
+            var text = "Projektname:";
+            var textWidth = gfx.MeasureString(text, bodyFont).Width;
+            var maxTextWidth = textWidth;
+            gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
+
+            text = "Bearbeiter:";
+            textWidth = gfx.MeasureString(text, bodyFont).Width;
+            maxTextWidth = Math.Max(maxTextWidth, textWidth);
+            gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
+
+            text = "Nutzungsart:";
+            textWidth = gfx.MeasureString(text, bodyFont).Width;
+            maxTextWidth = Math.Max(maxTextWidth, textWidth);
+            gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
+
+            text = "Art des Gebäudes:";
+            textWidth = gfx.MeasureString(text, bodyFont).Width;
+            maxTextWidth = Math.Max(maxTextWidth, textWidth);
+            gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
+
+            text = "Anzahl Bauteile:";
+            textWidth = gfx.MeasureString(text, bodyFont).Width;
+            maxTextWidth = Math.Max(maxTextWidth, textWidth);
+            gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
+
+            // Rechter Block:
+            gfx.DrawString($"{project.Name}", bodyFont, XBrushes.Black, new XRect(startX + maxTextWidth + Padding, startRightBlockTop, contentWidth / 2, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startRightBlockTop += RowHeight;
+            gfx.DrawString($"{project.UserName}", bodyFont, XBrushes.Black, new XRect(startX + maxTextWidth + Padding, startRightBlockTop, contentWidth / 2, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startRightBlockTop += RowHeight;
+            gfx.DrawString($"{Enums.BuildingUsageTypeMapping[project.BuildingUsage]}", bodyFont, XBrushes.Black, new XRect(startX + maxTextWidth + Padding, startRightBlockTop, contentWidth / 2, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startRightBlockTop += RowHeight;
+            gfx.DrawString($"{Enums.BuildingAgeTypeMapping[project.BuildingAge]}", bodyFont, XBrushes.Black, new XRect(startX + maxTextWidth + Padding, startRightBlockTop, contentWidth / 2, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startRightBlockTop += RowHeight;
+            gfx.DrawString($"{project.Elements.Count}", bodyFont, XBrushes.Black, new XRect(startX + maxTextWidth + Padding, startRightBlockTop, contentWidth / 2, bodyFont.GetHeight()), XStringFormats.TopLeft);
+            startRightBlockTop += RowHeight;
+            
+            //
+            startY += Padding; // extra space
+            gfx.DrawString("Liste: U- und R-Werte aller Bauteile", bodyFontBold, XBrushes.Black,
+                new XRect(startX, startY, contentWidth, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+            startY += RowHeight;
 
             project.SortElements(ElementSortingType.TypeNameAscending);
             var elements = project.Elements;
@@ -152,7 +210,7 @@ namespace BauphysikToolWPF.Services.Application
             }
 
             // Draw table data with centering and wrapping
-            double currentY = startY + (cellHeight * 3); // Move below both header rows
+            double currentY = startY + cellHeight * 3; // Move below both header rows
             for (int row = 0; row < data.GetLength(0); row++)
             {
                 currentX = startX;
@@ -187,33 +245,42 @@ namespace BauphysikToolWPF.Services.Application
                     }
                     else
                     {
+                        string cellText = data[row, col];
+
+                        // truncate to column width
+                        cellText = TruncateTextToWidth(gfx, cellText, tableBodyFont, columnWidths[col] - 8); // subtract padding
+
                         var contentRect = new XRect(currentX + 4, currentY + 4, columnWidths[col] - 8, rowHeight - 8);
                         if (col == 4) // U-Wert hervorheben mit anderer Font
                         {
-                            tf.DrawString(data[row, col], tableBodyFontBold, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                            tf.DrawString(cellText, tableBodyFontBold, XBrushes.Black, contentRect, XStringFormats.TopLeft);
                         }
                         else
                         {
-                            tf.DrawString(data[row, col], tableBodyFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                            tf.DrawString(cellText, tableBodyFont, XBrushes.Black, contentRect, XStringFormats.TopLeft);
                         }
-                        
                     }
-
                     currentX += columnWidths[col];
                 }
-
                 currentY += rowHeight;
 
                 // Page break
-                if (currentY + cellHeight > page.Height - 50)
+                if (currentY + cellHeight > page.Height - MarginBottom)
                 {
                     page = document.AddPage();
                     page.Size = PdfSharp.PageSize.A4;
                     gfx = XGraphics.FromPdfPage(page);
-                    currentY = startY;
+                    tf = new XTextFormatter(gfx);
+
+                    // Redraw table header if needed
+                    DrawHeader(out headerBottom, gfx, page, project.Name, marginLeft, marginRight);
+                    DrawFooter(gfx, page, project.UserName, document.PageCount);
+
+                    currentY = headerBottom + 2 * Padding;
                 }
             }
 
+            // TODO: parallelisieren?
             foreach (var element in project.Elements)
             {
                 AddElementPage(element, document);
@@ -223,6 +290,26 @@ namespace BauphysikToolWPF.Services.Application
 
             // Open the document with the default PDF viewer
             Process.Start(new ProcessStartInfo(pdfFilePath) { UseShellExecute = true });
+        }
+
+        private static string TruncateTextToWidth(XGraphics gfx, string text, XFont font, double maxWidth)
+        {
+            if (gfx.MeasureString(text, font).Width <= maxWidth)
+                return text;
+
+            const string ellipsis = "...";
+            double ellipsisWidth = gfx.MeasureString(ellipsis, font).Width;
+
+            int len = text.Length;
+            while (len > 0)
+            {
+                string sub = text.Substring(0, len);
+                if (gfx.MeasureString(sub, font).Width + ellipsisWidth <= maxWidth)
+                    return sub + ellipsis;
+                len--;
+            }
+
+            return ellipsis; // if nothing fits
         }
 
         public static void CreateSingleElementDocument(Element? element)
@@ -405,19 +492,20 @@ namespace BauphysikToolWPF.Services.Application
                 gfx.DrawString(text, bodyFont, XBrushes.Black, new XRect(startX, startY, textWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
                 var textBlockHeight = DrawWrappedText(gfx, $"\"{element.Comment}\"", bodyFont, XBrushes.Black,
                     new XRect(marginLeft + textWidth, startY, contentWidth - textWidth, 80), bodyFont.GetHeight());
-                startY += textBlockHeight + RowHeight;
+                startY += textBlockHeight;
             }
 
             if (element.IsUserDefValuesEnabled)
             {
  
+                startY += Padding; // extra space
                 gfx.DrawString("* Hinweis: frei eingegebener Wert, der nicht aus der Berechnung stammt.", bodyFontItalic, XBrushes.Gray,
                     new XRect(startX, startY, contentWidth, bodyFont.GetHeight()), XStringFormats.TopLeft);
                 startY += RowHeight;
             }
 
             // Draw Layer Information
-            startY += Padding; // Extra padding
+            startY += Padding; // extra space
             gfx.DrawString("Querschnitt", titleFontSm, XBrushes.Black,
                 new XRect(startX, startY, contentWidth, titleFontSm.GetHeight()), XStringFormats.TopLeft);
             startY += RowHeight;
@@ -437,7 +525,7 @@ namespace BauphysikToolWPF.Services.Application
                 startY += RowHeight;
                 gfx.DrawString("Keine Abbildung verfügbar", bodyFontItalic, XBrushes.Black,
                     new XRect(0, startY, page.Width, bodyFontItalic.GetHeight()), XStringFormats.TopCenter);
-                startY += RowHeight + Padding;
+                startY += RowHeight;
             }
             else
             {
@@ -450,12 +538,13 @@ namespace BauphysikToolWPF.Services.Application
                     6.0,            // target height in cm
                     240.0           // render DPI of offscreen renderer // TODO:
                 );
-                startY += imageHeight + Padding;
+                startY += imageHeight;
             }
-            
+
             #endregion
 
             // Draw Layer Information
+            startY += Padding; // extra space
             gfx.DrawString("Schichtaufbau", titleFontSm, XBrushes.Black,
                 new XRect(startX, startY, contentWidth, titleFontSm.GetHeight()), XStringFormats.TopLeft);
             startY += RowHeight;
@@ -577,7 +666,7 @@ namespace BauphysikToolWPF.Services.Application
             string[] leftLines =
             {
                 $"Bauphysik Tool {UpdaterManager.LocalUpdaterManagerFile.CurrentTag}",
-                "www.bauphysik-tool.de",
+                "https://bauphysik-tool.de",
                 ""
             };
 

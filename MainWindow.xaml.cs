@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using BauphysikToolWPF.UI.CustomControls;
@@ -12,6 +11,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF
 {
@@ -33,14 +33,14 @@ namespace BauphysikToolWPF
         public MainWindow()
         {
             InitializeComponent();
-
+            
             Session.NewProjectAdded += UpdateNewProjectAdded;
 
             _toastNotification = this.Toast;
             _mainWindowContent = this.MainWindowContent;
             _dialogService = new DialogService();
             _fileDialogService = new FileDialogService();
-
+            
             SetPage(NavigationPage.ProjectData);
 
             if (UpdaterManager.NewVersionAvailable)
@@ -97,13 +97,13 @@ namespace BauphysikToolWPF
         {
             _dialogService.ShowLoadingDialog("Lädt, bitte warten...", minDurationMs: 400);
 
-                Session.SelectedElementId = -1;
+            Session.SelectedElementId = -1;
 
-                // Update InternalIds and render new images
-                Session.SelectedProject.AssignAsParentToElements();
-                Session.SelectedProject.AssignInternalIdsToElements(true);
-                Session.SelectedProject.AssignInternalIdsToEnvelopeItems(true);
-                Session.SelectedProject.RenderAllElementImages(RenderTarget.Screen, withDecorations: false);
+            // Update InternalIds and render new images
+            Session.SelectedProject.AssignAsParentToElements();
+            Session.SelectedProject.AssignInternalIdsToElements(true);
+            Session.SelectedProject.AssignInternalIdsToEnvelopeItems(true);
+            Session.SelectedProject.RenderAllElementImages(RenderTarget.Screen, withDecorations: false);
 
             _dialogService.CloseLoadingDialog();
         }

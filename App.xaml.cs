@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 using System;
@@ -27,37 +26,66 @@ namespace BauphysikToolWPF
                 Logger.SetLogFilePath();
                 Logger.ClearLog();
             }
-            catch (Exception exception)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Error during Logging Setup: {exception}");
+                // Minimal console output; full exception goes to developer trace if configured
+                Console.WriteLine("Logging setup failed: " + ex.Message);
             }
 
             #endregion
 
             if (e.Args.Length > 0)
             {
-                Logger.LogInfo($"Opening Application with Arguments: {e.Args}");
+                // Mask args when writing to general info logs (don't print secrets/file contents).
+                Logger.LogInfo($"Opening Application with {e.Args.Length} argument(s).");
 
-                string filePath = e.Args[0];
-                if (File.Exists(filePath))
+                string rawFilePath = e.Args[0];
+
+                // Sanitize and validate path before using it
+                try
                 {
-                    try
+                    // Reject UNC / network paths by default (optional)
+                    if (PathService.IsUncPath(rawFilePath))
                     {
-                        // Load the project from the specified file
-                        Project loadedProject = ProjectSerializer.GetProjectFromFile(filePath);
-                        Session.SelectedProject = loadedProject;
-                        Session.ProjectFilePath = filePath;
-                        RecentProjectsManager.AddRecentProject(filePath);
-                        Logger.LogInfo($"Loaded Project: '{Session.SelectedProject}' from Arguments!");
+                        Logger.LogWarning("Rejected UNC/network path provided as startup argument.");
+                        return;
                     }
-                    catch (Exception ex)
+
+                    // Normalize and validate
+                    string fullPath = Path.GetFullPath(rawFilePath);
+
+                    if (!PathService.IsAllowedExtension(fullPath, new[] { ".btk", ".btkproj" }))
                     {
-                        Logger.LogError($"Error reading Project from Arguments: {ex.Message}");
+                        Logger.LogWarning($"Rejected file with disallowed extension: {PathService.MaskPath(fullPath)}");
+                        return;
                     }
+
+                    if (!File.Exists(fullPath))
+                    {
+                        Logger.LogWarning($"File does not exist: {PathService.MaskPath(fullPath)}");
+                        return;
+                    }
+
+                    if (!PathService.IsReasonableFileSize(fullPath, maxBytes: 10 * 1024 * 1024)) // 10 MB limit example
+                    {
+                        Logger.LogWarning($"Rejected file due to excessive size: {PathService.MaskPath(fullPath)}");
+                        return;
+                    }
+
+                    // Load the project from the specified file
+                    Project loadedProject = ProjectSerializer.GetProjectFromFile(rawFilePath);
+                    Session.SelectedProject = loadedProject;
+                    Session.ProjectFilePath = rawFilePath;
+                    RecentProjectsManager.AddRecentProject(rawFilePath);
+                    // TODO Testing:
+                    Session.SelectedProject.RenderMissingElementImages(withDecorations: false);
+                    Logger.LogInfo($"Loaded Project: '{Session.SelectedProject}'");
+                    
                 }
-                else
+                catch (Exception ex)
                 {
-                    Logger.LogWarning($"File does not exist: {filePath}");
+                    // Do not expose stack trace to general logs — log a short message and optionally a developer-only trace
+                    Logger.LogError($"Error processing startup argument: {ex.Message}");
                 }
             }
             else

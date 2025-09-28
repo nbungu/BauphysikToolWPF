@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Runtime.InteropServices;
 using BT.Logging;
 
@@ -88,6 +89,71 @@ namespace BauphysikToolWPF.Services.Application
             uint dwFlags,
             IntPtr hToken,
             out IntPtr pszPath);
+
+        public static bool IsUncPath(string path)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return false;
+            return path.StartsWith(@"\\") || path.StartsWith("//");
+        }
+
+        public static bool IsPathUnderRoot(string fullPath, string root)
+        {
+            try
+            {
+                var normalizedRoot = Path.GetFullPath(root).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar;
+                var normalizedPath = Path.GetFullPath(fullPath);
+                return normalizedPath.StartsWith(normalizedRoot, StringComparison.OrdinalIgnoreCase);
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        public static bool IsAllowedExtension(string path, string[] allowedExtensions)
+        {
+            string ext = Path.GetExtension(path);
+            return allowedExtensions.Any(a => string.Equals(a, ext, StringComparison.OrdinalIgnoreCase));
+        }
+
+        public static bool IsReasonableFileSize(string path, long maxBytes)
+        {
+            try
+            {
+                var fi = new FileInfo(path);
+                return fi.Length > 0 && fi.Length <= maxBytes;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Mask path for logs (keep filename but drop parent directories). Avoid printing full user/system paths to logs.
+        /// </summary>
+        public static string MaskPath(string fullPath)
+        {
+            try
+            {
+                string fileName = Path.GetFileName(fullPath);
+                return $"...{Path.DirectorySeparatorChar}{fileName}";
+            }
+            catch
+            {
+                return "<invalid-path>";
+            }
+        }
+
+        /// <summary>
+        /// Generic small sanitizer for small user-visible strings (example).
+        /// </summary>
+        public static string MaskForLog(string value)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            // Truncate long names to avoid leaking too much info
+            return value.Length <= 60 ? value : value.Substring(0, 57) + "...";
+        }
 
         #endregion
     }
