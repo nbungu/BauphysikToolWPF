@@ -410,6 +410,8 @@ namespace BauphysikToolWPF.Services.Application
             var maxTextWidth = textWidth;
             var infoAsterisk = "";
 
+            #region left block
+            
             // U-Value
             gfx.DrawString("U", bodyFontBold, XBrushes.Black, new XRect(startX, startY, startX + 28, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
             infoAsterisk = Math.Abs(element.UValueUserDef - element.UValue) > 1E-04 ? " *" : "";
@@ -468,21 +470,39 @@ namespace BauphysikToolWPF.Services.Application
 
             #endregion
 
+            #region right block
+
             var startRightBlockLeft = marginLeft + 28 + maxTextWidth + Padding;
 
-            var color = element.Requirements.IsUValueOk ? XBrushes.DarkGreen : XBrushes.Red;
-            gfx.DrawString($"→ {element.Requirements.UMaxCaption}:", bodyFont, XBrushes.Black,
-                new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            gfx.DrawString($"U ≤ {element.Requirements.UMax:0.000} W/m²K", bodyFontBold, color,
-                new XRect(startRightBlockLeft + contentWidth / 3 + 3 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
-            startRightBlockTop += RowHeight;
+            if (!element.Requirements.HasRequirements)
+            {
+                gfx.DrawString($"→ {element.Requirements.UMaxComparisonDescription}", bodyFont, XBrushes.Black,
+                    new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
+                startRightBlockTop += RowHeight;
+                gfx.DrawString($"→ {element.Requirements.RMinComparisonDescription}", bodyFont, XBrushes.Black,
+                    new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
+                startRightBlockTop += RowHeight;
+            }
+            else
+            {
+                var color = element.Requirements.IsUValueOk ? XBrushes.DarkGreen : XBrushes.Red;
+                gfx.DrawString($"→ {element.Requirements.UMaxCaption}:", bodyFont, XBrushes.Black,
+                    new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
+                gfx.DrawString($"U ≤ {element.Requirements.UMax:0.000} W/m²K", bodyFontBold, color,
+                    new XRect(startRightBlockLeft + contentWidth / 3 + 3 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+                startRightBlockTop += RowHeight;
 
-            color = element.Requirements.IsRValueOk ? XBrushes.DarkGreen : XBrushes.Red;
-            gfx.DrawString($"→ {element.Requirements.RMinCaption}:", bodyFont, XBrushes.Black,
-                new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            gfx.DrawString($"R ≥ {element.Requirements.RMin:0.00} m²K/W", bodyFontBold, color,
-                new XRect(startRightBlockLeft + contentWidth / 3 + 3 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
-            startRightBlockTop += RowHeight;
+                color = element.Requirements.IsRValueOk ? XBrushes.DarkGreen : XBrushes.Red;
+                gfx.DrawString($"→ {element.Requirements.RMinCaption}:", bodyFont, XBrushes.Black,
+                    new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
+                gfx.DrawString($"R ≥ {element.Requirements.RMin:0.00} m²K/W", bodyFontBold, color,
+                    new XRect(startRightBlockLeft + contentWidth / 3 + 3 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
+                startRightBlockTop += RowHeight;
+            }
+
+            #endregion
+
+            #endregion
 
 
             if (element.Comment != string.Empty)
