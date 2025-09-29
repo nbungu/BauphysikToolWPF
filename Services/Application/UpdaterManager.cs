@@ -11,43 +11,81 @@ namespace BauphysikToolWPF.Services.Application
 {
     public class UpdaterManager
     {
-        public static string InstalledUpdaterFilePath = GetInstalledUpdaterFilePath(forceReplace: false);
-        public static string ServerUpdaterQuery = "https://bauphysik-tool.de/strapi/api/downloads?sort=publishedAt:desc&fields[0]=semanticVersion&fields[1]=versionTag";
-        
         // HttpClient should be a singleton to avoid socket exhaustion
         private static readonly HttpClient Client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
         // testing: curl -v "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields%5B0%5D=semanticVersion&fields%5B1%5D=versionTag"
-
-        public static UpdaterManager LocalUpdaterManagerFile = FetchLocalVersion();
-
-        public string Latest { get; set; } = string.Empty;
-        public string LatestTag { get; set; } = string.Empty;
-        public string Current { get; set; } = string.Empty;
-        public string CurrentTag { get; set; } = string.Empty;
-        public long LastUpdateCheck { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-        public long LastNotification { get; set; } = TimeStamp.GetCurrentUnixTimestamp();
-        public static bool NewVersionAvailable => CompareSemanticVersions(LocalUpdaterManagerFile.Current, LocalUpdaterManagerFile.Latest) < 0;
-        public static bool IsServerAvailable => GetServerStatus();
+        
+        internal static readonly UpdaterJsonData ProgramVersionState = GetUpdaterJsonData();
+        internal static bool NewVersionAvailable => CompareSemanticVersions(ProgramVersionState.Current, ProgramVersionState.Latest) < 0;
+        internal static bool IsServerAvailable => GetServerStatus();
         
         public static void CheckForUpdates()
         {
-            var updaterLocal = LocalUpdaterManagerFile;
-            var updaterServer = FetchVersionFromServer(ServerUpdaterQuery).Result;
+            var serverData = FetchVersionFromServer(PathService.ServerUpdaterQuery).Result;
 
-            // If server version is newer
-            if (NewVersionAvailable)
+            ProgramVersionState.Latest = serverData.Latest;
+            ProgramVersionState.LatestTag = serverData.LatestTag;
+            ProgramVersionState.LastUpdateCheck = TimeStamp.GetCurrentUnixTimestamp();
+
+            UpdateUpdaterJson(ProgramVersionState);
+        }
+
+        public static void UpdateUpdaterJson(UpdaterJsonData content)
+        {
+            try
             {
-                Logger.LogInfo("Found new Version! Writing new Version to local updater file");
-                // TODO:
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    ReferenceHandler = ReferenceHandler.Preserve,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
+                };
+                string jsonString = JsonSerializer.Serialize(content, options);
+                File.WriteAllText(PathService.UserUpdaterFilePath, jsonString);
+                Logger.LogInfo($"Successfully saved content to local updater.json");
             }
-            updaterLocal.Latest = updaterServer.Latest;
-            updaterLocal.LatestTag = updaterServer.LatestTag;
-            updaterLocal.LastUpdateCheck = TimeStamp.GetCurrentUnixTimestamp();
-            WriteToLocalUpdaterFile(updaterLocal);
+            catch (Exception e)
+            {
+                Logger.LogError($"Error saving to local updater.json: {e.Message}");
+            }
         }
 
         #region private methods
+
+        private static void SetupFile(bool forceReplace = false)
+        {
+            // file under user-specific AppData folder
+            string userUpdaterJsonFilePath = PathService.UserUpdaterFilePath;
+            // file under installation directory folder
+            string sourceUpdaterJsonFilePath = PathService.BuildDirUpdaterFilePath;
+
+            try
+            {
+                // Ensure the directory exists
+                if (!Directory.Exists(PathService.UserProgramDataPath))
+                {
+                    Directory.CreateDirectory(PathService.UserProgramDataPath);
+                }
+
+                // Example: Copy the file from the output folder to ProgramData if it doesn't already exist
+                if (!File.Exists(userUpdaterJsonFilePath))
+                {
+                    Logger.LogInfo($"Copying updater.json from: {sourceUpdaterJsonFilePath} to {userUpdaterJsonFilePath}");
+                    File.Copy(sourceUpdaterJsonFilePath, userUpdaterJsonFilePath);
+                }
+                if (forceReplace)
+                {
+                    Logger.LogInfo($"Force replacing updater.json from: {sourceUpdaterJsonFilePath} to {userUpdaterJsonFilePath}");
+                    File.Delete(userUpdaterJsonFilePath);
+                    File.Copy(sourceUpdaterJsonFilePath, userUpdaterJsonFilePath);
+                }
+            }
+            catch (Exception e)
+            {
+                Logger.LogError($"Could not get installed updater.json: {e.Message}");
+            }
+        }
 
         private static bool GetServerStatus()
         {
@@ -55,7 +93,7 @@ namespace BauphysikToolWPF.Services.Application
             {
                 return Task.Run(async () =>
                 {
-                    using var response = await Client.GetAsync(ServerUpdaterQuery);
+                    using var response = await Client.GetAsync(PathService.ServerUpdaterQuery);
                     return response.IsSuccessStatusCode;
                 }).GetAwaiter().GetResult();
             }
@@ -69,9 +107,9 @@ namespace BauphysikToolWPF.Services.Application
             }
         }
 
-        private static async Task<UpdaterManager> FetchVersionFromServer(string serverAddress)
+        private static async Task<UpdaterJsonData> FetchVersionFromServer(string serverAddress)
         {
-            UpdaterManager updaterManager = new UpdaterManager();
+            UpdaterJsonData updaterManager = new UpdaterJsonData();
             try
             {
                 updaterManager = await FetchAndDeserializeUpdaterAsync(serverAddress);
@@ -83,16 +121,18 @@ namespace BauphysikToolWPF.Services.Application
             return updaterManager;
         }
 
-        private static UpdaterManager FetchLocalVersion()
+        private static UpdaterJsonData GetUpdaterJsonData()
         {
-            if (!File.Exists(InstalledUpdaterFilePath))
+            SetupFile(forceReplace: false);
+            
+            if (!File.Exists(PathService.UserUpdaterFilePath))
             {
-                Logger.LogWarning($"Local version file not found: {InstalledUpdaterFilePath}");
-                return new UpdaterManager();
+                Logger.LogWarning($"Local version file not found");
+                return new UpdaterJsonData();
             }
             try
             {
-                string jsonString = File.ReadAllText(InstalledUpdaterFilePath);
+                string jsonString = File.ReadAllText(PathService.UserUpdaterFilePath);
 
                 var options = new JsonSerializerOptions
                 {
@@ -100,33 +140,33 @@ namespace BauphysikToolWPF.Services.Application
                     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
                 };
 
-                var updater = JsonSerializer.Deserialize<UpdaterManager>(jsonString, options);
+                var updater = JsonSerializer.Deserialize<UpdaterJsonData>(jsonString, options);
 
                 if (updater != null)
                 {
-                    Logger.LogInfo($"Successfully fetched local version file: {InstalledUpdaterFilePath}");
+                    Logger.LogInfo($"Successfully fetched local updater.json");
                     return updater;
                 }
 
-                Logger.LogWarning($"Failed to deserialize local version file: {InstalledUpdaterFilePath}");
+                Logger.LogWarning($"Failed to deserialize local updater.json");
             }
             catch (IOException e)
             {
-                Logger.LogError($"I/O error while reading local version file: {e.Message}");
+                Logger.LogError($"I/O error while reading local updater.json: {e.Message}");
             }
             catch (JsonException e)
             {
-                Logger.LogError($"JSON deserialization error for local version file: {e.Message}");
+                Logger.LogError($"JSON deserialization error for local updater.json: {e.Message}");
             }
             catch (Exception e)
             {
-                Logger.LogError($"Unexpected error while fetching local version file: {e.Message}");
+                Logger.LogError($"Unexpected error while fetching local updater.json: {e.Message}");
             }
 
-            return new UpdaterManager();
+            return new UpdaterJsonData();
         }
 
-        private static async Task<UpdaterManager> FetchAndDeserializeUpdaterAsync(string url)
+        private static async Task<UpdaterJsonData> FetchAndDeserializeUpdaterAsync(string url)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -150,7 +190,7 @@ namespace BauphysikToolWPF.Services.Application
                     if (jsonResponse != null && jsonResponse.Data.Length > 0)
                     {
                         var data = jsonResponse.Data[0];
-                        var updater = new UpdaterManager
+                        var updater = new UpdaterJsonData
                         {
                             Latest = data.SemanticVersion,
                             LatestTag = data.VersionTag
@@ -160,46 +200,11 @@ namespace BauphysikToolWPF.Services.Application
                         return updater;
                     }
                     Logger.LogWarning($"Could not deserialize the fetched updater file");
-                    return new UpdaterManager();
+                    return new UpdaterJsonData();
                 }
                 var result = $"{(int)response.StatusCode} ({response.ReasonPhrase})";
                 Logger.LogWarning($"Received invalid Status Code from GET request: {result}");
-                return new UpdaterManager();
-            }
-        }
-
-        private static string GetInstalledUpdaterFilePath(bool forceReplace = false)
-        {
-            try
-            {
-                // User-specific AppData folder
-                string appFolder = PathService.LocalAppDataPath;
-                string updaterFilePath = Path.Combine(appFolder, "updater.json");
-
-                // Ensure the directory exists
-                if (!Directory.Exists(appFolder))
-                {
-                    Directory.CreateDirectory(appFolder);
-                }
-
-                // Example: Copy the file from the output folder to ProgramData if it doesn't already exist
-                string sourceUpdaterFile = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repositories\\updater.json"));
-
-                if (!File.Exists(updaterFilePath))
-                {
-                    File.Copy(sourceUpdaterFile, updaterFilePath);
-                }
-                if (forceReplace)
-                {
-                    File.Delete(updaterFilePath);
-                    File.Copy(sourceUpdaterFile, updaterFilePath);
-                }
-                return updaterFilePath;
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Could not get installed updater file: {e.Message}");
-                return Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repositories\\updater.json"));
+                return new UpdaterJsonData();
             }
         }
 
@@ -227,27 +232,5 @@ namespace BauphysikToolWPF.Services.Application
         }
 
         #endregion
-
-
-        public static void WriteToLocalUpdaterFile(UpdaterManager localUpdaterManagerFile, string filePath = "")
-        {
-            try
-            {
-                if (filePath == "") filePath = GetInstalledUpdaterFilePath(forceReplace: false);
-                var options = new JsonSerializerOptions
-                {
-                    WriteIndented = true,
-                    ReferenceHandler = ReferenceHandler.Preserve,
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault
-                };
-                string jsonString = JsonSerializer.Serialize(localUpdaterManagerFile, options);
-                File.WriteAllText(filePath, jsonString);
-                Logger.LogInfo($"Successfully saved local updater to file: {filePath}");
-            }
-            catch (Exception e)
-            {
-                Logger.LogError($"Error saving local updater file: {filePath}, {e.Message}");
-            }
-        }
     }
 }

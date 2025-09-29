@@ -335,7 +335,7 @@ namespace BauphysikToolWPF.Services.Application
         private static string SaveDoc(PdfDocument document, string fileName)
         {
             // Save the document
-            string downloadFolder = PathService.DownloadsFolderPath;
+            string downloadFolder = PathService.UserDownloadsFolderPath;
             string pdfFilePath = Path.Combine(downloadFolder, "BauphysikTool_export.pdf");
             if (TextInputValidation.IsValidWindowsFileName($"{fileName}.pdf"))
             {
@@ -665,7 +665,7 @@ namespace BauphysikToolWPF.Services.Application
             // Linke Spalte (3 Zeilen, linksbündig)
             string[] leftLines =
             {
-                $"Bauphysik Tool {UpdaterManager.LocalUpdaterManagerFile.CurrentTag}",
+                $"Bauphysik Tool {UpdaterManager.ProgramVersionState.CurrentTag}",
                 "https://bauphysik-tool.de",
                 ""
             };

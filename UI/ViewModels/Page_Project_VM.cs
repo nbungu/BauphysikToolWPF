@@ -132,7 +132,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 if (filePath.Contains("%appdata%", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    string programDataPath = PathService.LocalProgramDataPath;
+                    string programDataPath = PathService.UserApplicationDataPath;
                     filePath = filePath.Replace("%appdata%", programDataPath, StringComparison.InvariantCultureIgnoreCase);
                 }
                 Process.Start(new ProcessStartInfo(filePath) { UseShellExecute = true });
@@ -250,7 +250,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, not directly mutated by user input
          */
 
-        public List<RecentProjectItem> RecentProjects { get; set; } = RecentProjectsManager.LoadRecentProjects();
+        public List<RecentProjectItem> RecentProjects { get; set; } = RecentProjectsManager.GetRecentProjects();
         public Visibility ProjectDataVisibility => Session.SelectedProject != null && Session.SelectedProject.CreatedByUser ? Visibility.Visible : Visibility.Collapsed;
         public Visibility RecentProjectsListVisibility => ProjectDataVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         public Visibility RecentProjectEntriesVisibility => RecentProjects.Count > 0 ? Visibility.Visible : Visibility.Collapsed;

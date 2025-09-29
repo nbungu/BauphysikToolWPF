@@ -1,39 +1,70 @@
-﻿using System;
+﻿using BT.Logging;
+using System;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
-using BT.Logging;
 
 namespace BauphysikToolWPF.Services.Application
 {
     public static class PathService
     {
-
-        public static readonly string DownloadsFolderPath = GetDownloadsFolderPath();
-        public static readonly string LocalAppDataPath = GetLocalAppDataPath();
-        public static readonly string LocalProgramDataPath = GetLocalProgramDataPath();
+        #region Path Repo
         
-        #region Paths
+        public static readonly string UserDownloadsFolderPath = GetDownloadsFolderPath();
 
         /// <summary>
-        /// Path to: %appdata%
+        /// Directory Path: %appdata%
         /// </summary>
-        /// <returns></returns>
-        private static string GetLocalProgramDataPath()
-        {
-            return Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-        }
+        public static readonly string UserApplicationDataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
 
         /// <summary>
-        /// Path to: %appdata%/BauphysikTool
+        /// Directory Path: %appdata%/BauphysikTool
         /// </summary>
-        /// <returns></returns>
-        private static string GetLocalAppDataPath()
-        {
-            string programDataPath = GetLocalProgramDataPath();
-            string appFolder = Path.Combine(programDataPath, "BauphysikTool");
-            return appFolder;
-        }
+        public static readonly string UserProgramDataPath = Path.Combine(UserApplicationDataPath, "BauphysikTool");
+
+        /// <summary>
+        /// Directory Path: C:/ProgramData
+        /// </summary>
+        public static readonly string CommonApplicationDataPath = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+
+        /// <summary>
+        /// Initial file which is extracted to the installation/build directory. Serves as template and backup.
+        /// File path: Build Directory/Repositories/recent_projects.json
+        /// </summary>
+        public static readonly string BuildDirRecentProjectsFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repositories\\recent_projects.json"));
+
+        /// <summary>
+        /// User-Copy of the initial file which is stored in a user-writable location.
+        /// File path: %appdata%/BauphysikTool/recent_projects.json
+        /// </summary>
+        public static readonly string UserRecentProjectsFilePath = Path.Combine(UserProgramDataPath, "recent_projects.json");
+
+        /// <summary>
+        /// Initial file which is extracted to the installation/build directory. Serves as template and backup.
+        /// File path: Build Directory/Repositories/updater.json
+        /// </summary>
+        public static readonly string BuildDirUpdaterFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repositories\\updater.json"));
+
+        /// <summary>
+        /// User-Copy of the initial file which is stored in a user-writable location.
+        /// File path: %appdata%/BauphysikTool/updater.json
+        /// </summary>
+        public static readonly string UserUpdaterFilePath = Path.Combine(UserProgramDataPath, "updater.json");
+
+        // string literal can be const
+        public const string ServerUpdaterQuery = "https://bauphysik-tool.de/strapi/api/downloads?sort=publishedAt:desc&fields[0]=semanticVersion&fields[1]=versionTag";
+
+        /// <summary>
+        /// Initial file which is extracted to the installation/build directory. Serves as template and backup.
+        /// File path: Build Directory/Repositories/InitialDB.db
+        /// </summary>
+        public static readonly string BuildDirDatabaseFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repositories\\InitialDB.db"));
+
+        /// <summary>
+        /// User-Copy of the initial file which is stored in a user-writable location.
+        /// File path: %appdata%/BauphysikTool/BauphysikToolDB.db
+        /// </summary>
+        public static readonly string UserDatabaseFilePath = Path.Combine(UserProgramDataPath, "BauphysikToolDB.db");
 
         /// <summary>
         /// Retrieves the path to the user's Downloads folder.
@@ -81,14 +112,16 @@ namespace BauphysikToolWPF.Services.Application
             }
         }
 
-        
-        
+        #endregion
+
         [DllImport("shell32.dll", CharSet = CharSet.Unicode)]
         private static extern int SHGetKnownFolderPath(
             [MarshalAs(UnmanagedType.LPStruct)] Guid rfid,
             uint dwFlags,
             IntPtr hToken,
             out IntPtr pszPath);
+
+        #region Path Checks
 
         public static bool IsUncPath(string path)
         {

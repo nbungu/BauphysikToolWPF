@@ -8,9 +8,9 @@ using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Repositories
 {
-    public static class DatabaseAccess // publisher of e.g. 'LayersChanged' event
+    public static class DatabaseAccess
     {
-        public static readonly string ConnectionString = DatabaseInstaller.GetInstalledDatabase(forceReplace: true);
+        public static readonly string ConnectionString = DatabaseInstaller.SetupFile(forceReplace: true);
         public static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
 
         /*

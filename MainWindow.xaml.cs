@@ -11,7 +11,6 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF
 {
@@ -46,9 +45,9 @@ namespace BauphysikToolWPF
             if (UpdaterManager.NewVersionAvailable)
             {
                 Logger.LogInfo("Found new Version! Notifying User");
-                ShowToast($"Neue Version verfügbar: {UpdaterManager.LocalUpdaterManagerFile.LatestTag}. Besuchen Sie bauphysik-tool.de für ein kostenloses Update!", ToastType.Info, 6);
-                UpdaterManager.LocalUpdaterManagerFile.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
-                UpdaterManager.WriteToLocalUpdaterFile(UpdaterManager.LocalUpdaterManagerFile);
+                ShowToast($"Neue Version verfügbar: {UpdaterManager.ProgramVersionState.LatestTag}. Besuchen Sie bauphysik-tool.de für ein kostenloses Update!", ToastType.Info, 6);
+                UpdaterManager.ProgramVersionState.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
+                UpdaterManager.UpdateUpdaterJson(UpdaterManager.ProgramVersionState);
             }
         }
 

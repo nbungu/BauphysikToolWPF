@@ -73,21 +73,21 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public static void SaveToImage(this byte[] imageData, string fileName)
         {
-            string path = Path.Combine(PathService.LocalProgramDataPath, "BauphysikTool", fileName);
+            string path = Path.Combine(PathService.UserApplicationDataPath, "BauphysikTool", fileName);
             File.WriteAllBytes(path, imageData);
             Logger.LogInfo($"Image saved to {path}");
         }
 
         public static void SaveToImageInDownloadsFolder(this byte[] imageData, string fileName)
         {
-            string path = Path.Combine(PathService.DownloadsFolderPath, fileName);
+            string path = Path.Combine(PathService.UserDownloadsFolderPath, fileName);
             File.WriteAllBytes(path, imageData);
             Logger.LogInfo($"Image saved to {path}");
         }
 
         public static void SaveToImage(this BitmapSource bmp, string fileName)
         {
-            string path = Path.Combine(PathService.LocalProgramDataPath, "BauphysikTool", fileName);
+            string path = Path.Combine(PathService.UserApplicationDataPath, "BauphysikTool", fileName);
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(bmp));
             using (var fs = new FileStream(path, FileMode.Create))
@@ -99,7 +99,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public static void SaveToImageInDownloadsFolder(this BitmapSource bmp, string fileName)
         {
-            string path = Path.Combine(PathService.DownloadsFolderPath, fileName);
+            string path = Path.Combine(PathService.UserDownloadsFolderPath, fileName);
             var encoder = new PngBitmapEncoder();
             encoder.Frames.Add(BitmapFrame.Create(bmp));
             using (var fs = new FileStream(path, FileMode.Create))

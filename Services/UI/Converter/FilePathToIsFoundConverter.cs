@@ -14,7 +14,7 @@ namespace BauphysikToolWPF.Services.UI.Converter
             {
                 if (filePath.Contains("%appdata%", StringComparison.InvariantCultureIgnoreCase))
                 {
-                    string programDataPath = PathService.LocalProgramDataPath;
+                    string programDataPath = PathService.UserApplicationDataPath;
                     filePath = filePath.Replace("%appdata%", programDataPath, StringComparison.InvariantCultureIgnoreCase);
                 }
                 return File.Exists(filePath);

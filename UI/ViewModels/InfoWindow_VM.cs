@@ -102,8 +102,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string ServerStatusLabel => IsServerOnline ? "Server Online" : "Server nicht erreichbar";
         public string IsServerOnlineColorCode => IsServerOnline ? "#2cde00" : "#fc0303";
         public string LicensePath => "https://github.com/nbungu/BauphysikToolWPF?tab=GPL-3.0-1-ov-file#readme";
-        public string ProgramVersion => $"Aktuelle Version: {UpdaterManager.LocalUpdaterManagerFile.CurrentTag}";
-        public string LatestProgramVersion => $"Neueste Version: {UpdaterManager.LocalUpdaterManagerFile.LatestTag}";
+        public string ProgramVersion => $"Aktuelle Version: {UpdaterManager.ProgramVersionState.CurrentTag}";
+        public string LatestProgramVersion => $"Neueste Version: {UpdaterManager.ProgramVersionState.LatestTag}";
         public string Website => $"https://bauphysik-tool.de";
     }
 }
