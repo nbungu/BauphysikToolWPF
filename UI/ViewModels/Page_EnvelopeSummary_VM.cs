@@ -10,7 +10,6 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using BauphysikToolWPF.Repositories;
 using static BauphysikToolWPF.Models.Database.Enums;
 using static BauphysikToolWPF.Models.Domain.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
@@ -23,7 +22,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public Page_EnvelopeSummary_VM()
         {
-            var test = DatabaseAccess.GetClimateDataQuery().ToList();
+            var test = DatabaseManager.GetClimateDataQuery().ToList();
 
             //Session.EnvelopeItemsChanged += UpdateXamlBindings;
 

@@ -10,7 +10,6 @@ using BauphysikToolWPF.Models.Domain.Helper;
 using static BauphysikToolWPF.Models.Database.Enums;
 using static BauphysikToolWPF.Models.Domain.Enums;
 using System.Collections.ObjectModel;
-using BauphysikToolWPF.Repositories;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -29,7 +28,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             SelectedElementComment = _targetElement != null ? _targetElement.Comment : "";
             SelectedElementColor = _targetElement != null ? _targetElement.ColorCode : "#00FFFFFF";
 
-            var uniqueTypes = DatabaseAccess.GetConstructionsQuery()
+            var uniqueTypes = DatabaseManager.GetConstructionsQuery()
                 .Select(c => new ConstructionTypeViewModel
                 {
                     Type = (int)c.ConstructionType,

@@ -41,6 +41,18 @@ namespace BauphysikToolWPF.Services.Application
 
         /// <summary>
         /// Initial file which is extracted to the installation/build directory. Serves as template and backup.
+        /// File path: Build Directory/Repositories/recent_projects.json
+        /// </summary>
+        public static readonly string BuildDirDemoProjectFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repositories\\Demoprojekt.btk"));
+
+        /// <summary>
+        /// User-Copy of the initial file which is stored in a user-writable location.
+        /// File path: %appdata%/BauphysikTool/recent_projects.json
+        /// </summary>
+        public static readonly string UserDemoProjectFilePath = Path.Combine(UserProgramDataPath, "Demoprojekt.btk");
+
+        /// <summary>
+        /// Initial file which is extracted to the installation/build directory. Serves as template and backup.
         /// File path: Build Directory/Repositories/updater.json
         /// </summary>
         public static readonly string BuildDirUpdaterFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repositories\\updater.json"));
@@ -59,6 +71,8 @@ namespace BauphysikToolWPF.Services.Application
         /// File path: Build Directory/Repositories/InitialDB.db
         /// </summary>
         public static readonly string BuildDirDatabaseFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Repositories\\InitialDB.db"));
+
+        public static readonly string RootProjectDatabaseFile = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "..\\..\\..\\Repositories\\InitialDB.db"));
 
         /// <summary>
         /// User-Copy of the initial file which is stored in a user-writable location.

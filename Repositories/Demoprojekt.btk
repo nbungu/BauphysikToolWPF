@@ -1,0 +1,417 @@
+{
+  "Guid": "be16c5d3-da40-414c-b51c-e860334ccad4",
+  "Name": "EFH M\u00FCller, Burgstra\u00DFe 63, 73614 Schorndorf",
+  "UserName": "Max Mustermann",
+  "BuildingUsage": 1,
+  "BuildingAge": 1,
+  "BuildingTypeResidatial": 0,
+  "Comment": "Beschreibung des Projektes oder \u00C4hnliches...",
+  "LinkedFilePaths": "%appdata%\\BauphysikTool\\bauphysikTool.log",
+  "CreatedAt": 1721329185,
+  "UpdatedAt": 1739052208,
+  "Elements": [
+    {
+      "Name": "Holzst\u00E4nderwand_01",
+      "ShortName": "AW1",
+      "ColorCode": "#00FFFFFF",
+      "Tag": "EG",
+      "Comment": "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+      "CreatedAt": 1738504857,
+      "UpdatedAt": 1759169880,
+      "ConstructionId": 1,
+      "Layers": [
+        {
+          "LayerPosition": 0,
+          "Thickness": 1.48,
+          "CreatedAt": 1738504861,
+          "UpdatedAt": 1750518917,
+          "MaterialId": 5,
+          "SubConstruction": null,
+          "IsEffective": true
+        },
+        {
+          "LayerPosition": 1,
+          "Thickness": 12,
+          "CreatedAt": 1738504867,
+          "UpdatedAt": 1750355658,
+          "MaterialId": 3,
+          "SubConstruction": {
+            "Width": 8,
+            "Thickness": 12,
+            "Spacing": 28,
+            "Direction": 0,
+            "CreatedAt": 1750005182,
+            "UpdatedAt": 1750005182,
+            "MaterialId": 10,
+            "LayerNumber": 2
+          },
+          "IsEffective": true
+        },
+        {
+          "LayerPosition": 2,
+          "Thickness": 2,
+          "CreatedAt": 1738504862,
+          "UpdatedAt": 1738504862,
+          "MaterialId": 5,
+          "SubConstruction": null,
+          "IsEffective": true
+        },
+        {
+          "LayerPosition": 3,
+          "Thickness": 3.2,
+          "CreatedAt": 1738504879,
+          "UpdatedAt": 1750355658,
+          "MaterialId": 31,
+          "SubConstruction": {
+            "Width": 4,
+            "Thickness": 3.2,
+            "Spacing": 32,
+            "Direction": 0,
+            "CreatedAt": 1750005174,
+            "UpdatedAt": 1750005174,
+            "MaterialId": 10,
+            "LayerNumber": 4
+          },
+          "IsEffective": false
+        },
+        {
+          "LayerPosition": 4,
+          "Thickness": 1,
+          "CreatedAt": 1738504882,
+          "UpdatedAt": 1750355654,
+          "MaterialId": 5,
+          "SubConstruction": null,
+          "IsEffective": false
+        }
+      ],
+      "ThermalCalcConfig": {
+        "Ti": 20,
+        "Te": -10,
+        "Rsi": 0.13,
+        "Rse": 0.04,
+        "RelFi": 50,
+        "RelFe": 87
+      },
+      "EnvelopeCalcConfig": {
+        "IsEFH": false,
+        "IsResidential": false,
+        "BuildingUsageType": 0,
+        "BuildingTypeResidatial": 0,
+        "WithAirLeakTest": false
+      },
+      "IsUserDefValuesEnabled": false
+    },
+    {
+      "Name": "Kellerwand_01",
+      "ShortName": "AWE2",
+      "ColorCode": "#FF984806",
+      "Tag": "UG,Anpassungen n\u00F6tig",
+      "Comment": "Erdber\u00FChrte Au\u00DFenwand im Untergeschoss",
+      "CreatedAt": 1722797702,
+      "UpdatedAt": 1759259309,
+      "ConstructionId": 2,
+      "Layers": [
+        {
+          "LayerPosition": 0,
+          "Thickness": 1,
+          "CreatedAt": 1722800873,
+          "UpdatedAt": 1759176838,
+          "MaterialId": 16,
+          "SubConstruction": null,
+          "IsEffective": true
+        },
+        {
+          "LayerPosition": 1,
+          "Thickness": 24,
+          "CreatedAt": 1722800876,
+          "UpdatedAt": 1759176767,
+          "MaterialId": 12,
+          "SubConstruction": null,
+          "IsEffective": true
+        },
+        {
+          "LayerPosition": 2,
+          "Thickness": 0.15,
+          "CreatedAt": 1750518925,
+          "UpdatedAt": 1759259309,
+          "MaterialId": 22,
+          "SubConstruction": null,
+          "IsEffective": true
+        },
+        {
+          "LayerPosition": 3,
+          "Thickness": 16,
+          "CreatedAt": 1722800880,
+          "UpdatedAt": 1759169739,
+          "MaterialId": 3,
+          "SubConstruction": null,
+          "IsEffective": true
+        }
+      ],
+      "ThermalCalcConfig": {
+        "Ti": 20,
+        "Te": -10,
+        "Rsi": 0.13,
+        "Rse": 0.04,
+        "RelFi": 50,
+        "RelFe": 87
+      },
+      "EnvelopeCalcConfig": {
+        "IsEFH": false,
+        "IsResidential": false,
+        "BuildingUsageType": 0,
+        "BuildingTypeResidatial": 0,
+        "WithAirLeakTest": false
+      },
+      "IsUserDefValuesEnabled": false
+    },
+    {
+      "Name": "Trennwand, Innen",
+      "ShortName": "IW0",
+      "ColorCode": "#FF00FFFF",
+      "Tag": "UG",
+      "Comment": "",
+      "CreatedAt": 1722800996,
+      "UpdatedAt": 1759169880,
+      "ConstructionId": 3,
+      "Layers": [
+        {
+          "LayerPosition": 0,
+          "Thickness": 1,
+          "CreatedAt": 1722801095,
+          "UpdatedAt": 1722801095,
+          "MaterialId": 16,
+          "SubConstruction": null,
+          "IsEffective": true
+        },
+        {
+          "LayerPosition": 1,
+          "Thickness": 18,
+          "CreatedAt": 1722801023,
+          "UpdatedAt": 1759169739,
+          "MaterialId": 8,
+          "SubConstruction": null,
+          "IsEffective": true
+        },
+        {
+          "LayerPosition": 2,
+          "Thickness": 1,
+          "CreatedAt": 1759169729,
+          "UpdatedAt": 1759169729,
+          "MaterialId": 16,
+          "SubConstruction": null,
+          "IsEffective": true
+        }
+      ],
+      "ThermalCalcConfig": {
+        "Ti": 20,
+        "Te": -10,
+        "Rsi": 0.13,
+        "Rse": 0.04,
+        "RelFi": 50,
+        "RelFe": 87
+      },
+      "EnvelopeCalcConfig": {
+        "IsEFH": false,
+        "IsResidential": false,
+        "BuildingUsageType": 0,
+        "BuildingTypeResidatial": 0,
+        "WithAirLeakTest": false
+      },
+      "IsUserDefValuesEnabled": false
+    }
+  ],
+  "EnvelopeItems": [
+    {
+      "RoomName": "Wohnzimmer",
+      "RoomNumber": 1,
+      "FloorLevel": "EG",
+      "RoomHeightGross": 0,
+      "RoomAreaGross": 0,
+      "RoomVolumeGross": 0,
+      "RoomHeightNet": 0,
+      "RoomAreaNet": 0,
+      "RoomVolumeNet": 0,
+      "EnvelopeArea": 0,
+      "UValue": 0,
+      "ElementInternalId": -1,
+      "FxValue": 1,
+      "TransmissionTransferType": 0,
+      "ThermalBridge": {
+        "PsiValue": 0,
+        "Length": 0,
+        "DeltaUWB": 0
+      },
+      "Tag": "",
+      "Comment": "",
+      "OrientationType": 0,
+      "RoomUsageType": 0,
+      "CreatedAt": 1748181791,
+      "UpdatedAt": 1748181791
+    },
+    {
+      "RoomName": "Wohnzimmer",
+      "RoomNumber": 2,
+      "FloorLevel": "EG",
+      "RoomHeightGross": 0,
+      "RoomAreaGross": 0,
+      "RoomVolumeGross": 0,
+      "RoomHeightNet": 0,
+      "RoomAreaNet": 0,
+      "RoomVolumeNet": 0,
+      "EnvelopeArea": 0,
+      "UValue": 0,
+      "ElementInternalId": -1,
+      "FxValue": 1,
+      "TransmissionTransferType": 0,
+      "ThermalBridge": {
+        "PsiValue": 0,
+        "Length": 0,
+        "DeltaUWB": 0
+      },
+      "Tag": "",
+      "Comment": "",
+      "OrientationType": 0,
+      "RoomUsageType": 0,
+      "CreatedAt": 1748181793,
+      "UpdatedAt": 1748181793
+    },
+    {
+      "RoomName": "Wohnzimmer",
+      "RoomNumber": 3,
+      "FloorLevel": "EG",
+      "RoomHeightGross": 0,
+      "RoomAreaGross": 0,
+      "RoomVolumeGross": 0,
+      "RoomHeightNet": 0,
+      "RoomAreaNet": 0,
+      "RoomVolumeNet": 0,
+      "EnvelopeArea": 0,
+      "UValue": 0,
+      "ElementInternalId": -1,
+      "FxValue": 1,
+      "TransmissionTransferType": 0,
+      "ThermalBridge": {
+        "PsiValue": 0,
+        "Length": 0,
+        "DeltaUWB": 0
+      },
+      "Tag": "",
+      "Comment": "",
+      "OrientationType": 0,
+      "RoomUsageType": 0,
+      "CreatedAt": 1748181793,
+      "UpdatedAt": 1748181793
+    },
+    {
+      "RoomName": "Wohnzimmer",
+      "RoomNumber": 1,
+      "FloorLevel": "EG",
+      "RoomHeightGross": 0,
+      "RoomAreaGross": 0,
+      "RoomVolumeGross": 0,
+      "RoomHeightNet": 0,
+      "RoomAreaNet": 0,
+      "RoomVolumeNet": 0,
+      "EnvelopeArea": 0,
+      "UValue": 0,
+      "ElementInternalId": -1,
+      "FxValue": 1,
+      "TransmissionTransferType": 0,
+      "ThermalBridge": {
+        "PsiValue": 0,
+        "Length": 0,
+        "DeltaUWB": 0
+      },
+      "Tag": "",
+      "Comment": "",
+      "OrientationType": 0,
+      "RoomUsageType": 0,
+      "CreatedAt": 1748181802,
+      "UpdatedAt": 1748181802
+    },
+    {
+      "RoomName": "Wohnzimmer",
+      "RoomNumber": 1,
+      "FloorLevel": "EG",
+      "RoomHeightGross": 0,
+      "RoomAreaGross": 0,
+      "RoomVolumeGross": 0,
+      "RoomHeightNet": 0,
+      "RoomAreaNet": 0,
+      "RoomVolumeNet": 0,
+      "EnvelopeArea": 0,
+      "UValue": 0,
+      "ElementInternalId": -1,
+      "FxValue": 1,
+      "TransmissionTransferType": 0,
+      "ThermalBridge": {
+        "PsiValue": 0,
+        "Length": 0,
+        "DeltaUWB": 0
+      },
+      "Tag": "",
+      "Comment": "",
+      "OrientationType": 0,
+      "RoomUsageType": 0,
+      "CreatedAt": 1748181804,
+      "UpdatedAt": 1748181804
+    },
+    {
+      "RoomName": "Wohnzimmer",
+      "RoomNumber": 1,
+      "FloorLevel": "EG",
+      "RoomHeightGross": 0,
+      "RoomAreaGross": 0,
+      "RoomVolumeGross": 0,
+      "RoomHeightNet": 0,
+      "RoomAreaNet": 0,
+      "RoomVolumeNet": 0,
+      "EnvelopeArea": 0,
+      "UValue": 0,
+      "ElementInternalId": -1,
+      "FxValue": 1,
+      "TransmissionTransferType": 0,
+      "ThermalBridge": {
+        "PsiValue": 0,
+        "Length": 0,
+        "DeltaUWB": 0
+      },
+      "Tag": "",
+      "Comment": "",
+      "OrientationType": 0,
+      "RoomUsageType": 0,
+      "CreatedAt": 1748181806,
+      "UpdatedAt": 1748181806
+    },
+    {
+      "RoomName": "Wohnzimmer",
+      "RoomNumber": 2,
+      "FloorLevel": "EG",
+      "RoomHeightGross": 0,
+      "RoomAreaGross": 0,
+      "RoomVolumeGross": 0,
+      "RoomHeightNet": 0,
+      "RoomAreaNet": 0,
+      "RoomVolumeNet": 0,
+      "EnvelopeArea": 0,
+      "UValue": 0,
+      "ElementInternalId": -1,
+      "FxValue": 1,
+      "TransmissionTransferType": 0,
+      "ThermalBridge": {
+        "PsiValue": 0,
+        "Length": 0,
+        "DeltaUWB": 0
+      },
+      "Tag": "",
+      "Comment": "",
+      "OrientationType": 0,
+      "RoomUsageType": 0,
+      "CreatedAt": 1748181807,
+      "UpdatedAt": 1748181807
+    }
+  ],
+  "LastUsedSortingType": 0,
+  "LastUsedGroupingType": 0
+}

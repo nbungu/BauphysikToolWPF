@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;

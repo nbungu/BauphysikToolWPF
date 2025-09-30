@@ -1,7 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI.Converter;
 using BauphysikToolWPF.Services.UI.OpenGL;
@@ -219,12 +218,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedLayer?.SubConstruction != null ? Visibility.Visible : Visibility.Collapsed;
         public Visibility LayerPropertiesExpanderVisibility => IsLayerSelected ? Visibility.Visible : Visibility.Collapsed;
         public Visibility NoLayersVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
-        public List<string> TiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Select(e => e.Name).ToList();
-        public List<string> TeKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Select(e => e.Name).ToList();
-        public List<string> RsiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Select(e => e.Name).ToList();
-        public List<string> RseKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Select(e => e.Name).ToList();
-        public List<string> RelFiKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Select(e => e.Name).ToList();
-        public List<string> RelFeKeys { get; } = DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Select(e => e.Name).ToList();
+        public List<string> TiKeys { get; } = DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Select(e => e.Name).ToList();
+        public List<string> TeKeys { get; } = DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Select(e => e.Name).ToList();
+        public List<string> RsiKeys { get; } = DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Select(e => e.Name).ToList();
+        public List<string> RseKeys { get; } = DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Select(e => e.Name).ToList();
+        public List<string> RelFiKeys { get; } = DatabaseManager.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Select(e => e.Name).ToList();
+        public List<string> RelFeKeys { get; } = DatabaseManager.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Select(e => e.Name).ToList();
 
 
         private GaugeItem? _uValueGauge;
@@ -296,7 +295,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_tiIndex == -1) ? _element.ThermalCalcConfig.Ti : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Find(e => e.Name == TiKeys[_tiIndex])?.Value;
+                double? value = (_tiIndex == -1) ? _element.ThermalCalcConfig.Ti : DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior).Find(e => e.Name == TiKeys[_tiIndex])?.Value;
                 _element.ThermalCalcConfig.Ti = value ?? 0.0;
                 return NumberConverter.ConvertToString(_element.ThermalCalcConfig.Ti, 1);
             }
@@ -313,7 +312,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_teIndex == -1) ? _element.ThermalCalcConfig.Te : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Find(e => e.Name == TeKeys[_teIndex])?.Value;
+                double? value = (_teIndex == -1) ? _element.ThermalCalcConfig.Te : DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior).Find(e => e.Name == TeKeys[_teIndex])?.Value;
                 _element.ThermalCalcConfig.Te = value ?? 0.0;
                 return NumberConverter.ConvertToString(_element.ThermalCalcConfig.Te, 1);
             }
@@ -328,7 +327,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_rsiIndex == -1) ? _element.ThermalCalcConfig.Rsi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Name == RsiKeys[_rsiIndex])?.Value;
+                double? value = (_rsiIndex == -1) ? _element.ThermalCalcConfig.Rsi : DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior).Find(e => e.Name == RsiKeys[_rsiIndex])?.Value;
                 _element.ThermalCalcConfig.Rsi = value ?? 0.0;
                 return NumberConverter.ConvertToString(_element.ThermalCalcConfig.Rsi);
             }
@@ -348,7 +347,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_rseIndex == -1) ? _element.ThermalCalcConfig.Rse : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Name == RseKeys[_rseIndex])?.Value;
+                double? value = (_rseIndex == -1) ? _element.ThermalCalcConfig.Rse : DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Find(e => e.Name == RseKeys[_rseIndex])?.Value;
                 _element.ThermalCalcConfig.Rse = value ?? 0.0;
                 return NumberConverter.ConvertToString(_element.ThermalCalcConfig.Rse);
             }
@@ -368,7 +367,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_relFiIndex == -1) ? _element.ThermalCalcConfig.RelFi : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Name == RelFiKeys[_relFiIndex])?.Value;
+                double? value = (_relFiIndex == -1) ? _element.ThermalCalcConfig.RelFi : DatabaseManager.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Find(e => e.Name == RelFiKeys[_relFiIndex])?.Value;
                 _element.ThermalCalcConfig.RelFi = value ?? 0.0;
                 return NumberConverter.ConvertToString(_element.ThermalCalcConfig.RelFi, 1);
             }
@@ -387,7 +386,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             get
             {
-                double? value = (_relFeIndex == -1) ? _element.ThermalCalcConfig.RelFe : DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Name == RelFeKeys[_relFeIndex])?.Value;
+                double? value = (_relFeIndex == -1) ? _element.ThermalCalcConfig.RelFe : DatabaseManager.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Find(e => e.Name == RelFeKeys[_relFeIndex])?.Value;
                 _element.ThermalCalcConfig.RelFe = value ?? 0.0;
                 return NumberConverter.ConvertToString(_element.ThermalCalcConfig.RelFe, 1);
             }

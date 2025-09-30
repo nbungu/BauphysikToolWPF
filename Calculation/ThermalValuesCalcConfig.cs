@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.Repositories;
-using BauphysikToolWPF.Services.Application;
+﻿using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
 using static BauphysikToolWPF.Models.UI.Enums;
@@ -100,12 +99,12 @@ namespace BauphysikToolWPF.Calculation
         // Initialize with default values from the database
         private readonly Dictionary<Symbol, double> _userEnvVars = new Dictionary<Symbol, double>(6)
         {
-            {Symbol.TemperatureInterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior)[0].Value },
-            {Symbol.TemperatureExterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior)[0].Value },
-            {Symbol.TransferResistanceSurfaceInterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior)[0].Value },
-            {Symbol.TransferResistanceSurfaceExterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior)[0].Value },
-            {Symbol.RelativeHumidityInterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior)[0].Value },
-            {Symbol.RelativeHumidityExterior, DatabaseAccess.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior)[0].Value },
+            {Symbol.TemperatureInterior, DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TemperatureInterior)[0].Value },
+            {Symbol.TemperatureExterior, DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TemperatureExterior)[0].Value },
+            {Symbol.TransferResistanceSurfaceInterior, DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceInterior)[0].Value },
+            {Symbol.TransferResistanceSurfaceExterior, DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior)[0].Value },
+            {Symbol.RelativeHumidityInterior, DatabaseManager.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior)[0].Value },
+            {Symbol.RelativeHumidityExterior, DatabaseManager.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior)[0].Value },
         };
     }
 }

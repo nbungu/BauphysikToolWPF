@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BauphysikToolWPF.Repositories;
+using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.Models.Database
 {
@@ -35,7 +35,7 @@ namespace BauphysikToolWPF.Models.Database
                 .Cast<ConstructionType>()
                 .ToDictionary(
                     type => type,
-                    DatabaseAccess.QueryConstructionNameByConstructionType
+                    DatabaseManager.QueryConstructionNameByConstructionType
                 );
 
         public static readonly Dictionary<ConstructionType, string> ConstructionTypeShortNameMapping = new()
@@ -124,7 +124,7 @@ namespace BauphysikToolWPF.Models.Database
                 .Cast<DocumentSourceType>()
                 .ToDictionary(
                     type => type,
-                    DatabaseAccess.QueryDocumentSourceNameBySourceType
+                    DatabaseManager.QueryDocumentSourceNameBySourceType
                 );
 
         public enum MaterialCategory
@@ -219,7 +219,7 @@ namespace BauphysikToolWPF.Models.Database
                 .Cast<RoomUsageType>()
                 .ToDictionary(
                     type => type,
-                    DatabaseAccess.QueryRoomUsageProfileNameByRoomUsageType
+                    DatabaseManager.QueryRoomUsageProfileNameByRoomUsageType
                 );
 
         public enum ReferenceLocation

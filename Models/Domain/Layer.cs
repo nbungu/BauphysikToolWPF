@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
@@ -121,7 +120,7 @@ namespace BauphysikToolWPF.Models.Domain
             {
                 if (ReloadMaterial)
                 {
-                    _material = DatabaseAccess.QueryMaterialById(MaterialId);
+                    _material = DatabaseManager.QueryMaterialById(MaterialId);
                     ReloadMaterial = false;
                 }
                 return _material;

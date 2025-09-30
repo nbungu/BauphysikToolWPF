@@ -1,7 +1,6 @@
 ﻿using BauphysikToolWPF.Calculation;
 using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using System;
 using System.Collections.Generic;
@@ -47,7 +46,7 @@ namespace BauphysikToolWPF.Models.Domain
         public Project? ParentProject { get; set; }
 
         [JsonIgnore]
-        public Construction Construction => DatabaseAccess.QueryConstructionById(ConstructionId, recursive: true);
+        public Construction Construction => DatabaseManager.QueryConstructionById(ConstructionId, recursive: true);
 
         [JsonIgnore]
         public string CreatedAtString => TimeStamp.ConvertToNormalTime(CreatedAt);

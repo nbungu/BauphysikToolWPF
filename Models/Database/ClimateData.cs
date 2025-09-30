@@ -1,5 +1,4 @@
-﻿using BauphysikToolWPF.Repositories;
-using BauphysikToolWPF.Services.Application;
+﻿using BauphysikToolWPF.Services.Application;
 using SQLite;
 using SQLiteNetExtensions.Attributes;
 using static BauphysikToolWPF.Models.Database.Enums;
@@ -34,7 +33,7 @@ namespace BauphysikToolWPF.Models.Database
 
         // n:1 relationship with DocumentSource
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public DocumentSource DocumentSource => DatabaseAccess.QueryDocumentSourceById(DocumentSourceId);
+        public DocumentSource DocumentSource => DatabaseManager.QueryDocumentSourceById(DocumentSourceId);
         
         //------Konstruktor-----//
 

@@ -5,17 +5,12 @@ using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using PdfSharp.Pdf;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Windows.Controls;
 using System.Windows.Media;
-using ABI.Windows.Devices.Input;
 using static BauphysikToolWPF.Models.UI.Enums;
-using static OpenTK.Audio.OpenAL.ALC;
 
 namespace BauphysikToolWPF.Services.Application
 {
@@ -245,6 +240,11 @@ namespace BauphysikToolWPF.Services.Application
                     }
                     else
                     {
+                        // TODO: color R-Ist Wert
+                        //if (col == 5)
+                        //{
+                        //  tf.DrawString(cellText, tableBodyFontBold, XBrushes.Black, contentRect, XStringFormats.TopLeft);
+                        //}
                         string cellText = data[row, col];
 
                         // truncate to column width

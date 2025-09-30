@@ -4,6 +4,7 @@ using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 using System;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -15,6 +16,8 @@ namespace BauphysikToolWPF
     /// </summary>
     public partial class App : Application
     {
+        //
+        private bool _simulateFirstStart = false;
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -34,12 +37,31 @@ namespace BauphysikToolWPF
 
             #endregion
 
+            // Check for --simulateFirstStart in args
+            if (e.Args.Any(arg => arg.Equals("--simulateFirstStart", StringComparison.OrdinalIgnoreCase)))
+            {
+                _simulateFirstStart = true;
+                Logger.LogWarning("Simulating first start. Force replace all repository files with initial default files");
+            }
+
+            UpdaterManager.SetupFile(_simulateFirstStart);
+            RecentProjectsManager.SetupFile(_simulateFirstStart);
+            DatabaseManager.SetupFile(_simulateFirstStart);
+
+            // Only on the very first program start, add the Demoprojekt.btk to the recently used projects
+            if (UpdaterManager.ProgramVersionState.LastUpdateCheck == 0)
+            {
+                RecentProjectsManager.AddRecentProject(PathService.UserDemoProjectFilePath);
+            }
+
             if (e.Args.Length > 0)
             {
                 // Mask args when writing to general info logs (don't print secrets/file contents).
                 Logger.LogInfo($"Opening Application with {e.Args.Length} argument(s).");
 
                 string rawFilePath = e.Args[0];
+
+                if (rawFilePath == "--simulateFirstStart") return;
 
                 // Sanitize and validate path before using it
                 try
@@ -119,6 +141,6 @@ namespace BauphysikToolWPF
 
         // cmd test:
         //
-        // "C:\Users\arnes\source\repos\BauphysikToolWPF\bin\Debug\net8.0-windows10.0.22621.0\BauphysikToolWPF.exe" "C:\Users\arnes\Desktop\project.btk"
+        // "C:\Users\arnes\source\repos\BauphysikToolWPF\bin\Debug\net8.0-windows10.0.22621.0\BauphysikToolWPF.exe" "C:\Users\arnes\Desktop\debug_project.btk"
     }
 }

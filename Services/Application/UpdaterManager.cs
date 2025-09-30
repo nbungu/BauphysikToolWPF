@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.Services.Application
         private static readonly HttpClient Client = new HttpClient { Timeout = TimeSpan.FromSeconds(5) };
 
         // testing: curl -v "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields%5B0%5D=semanticVersion&fields%5B1%5D=versionTag"
-        
+
         internal static readonly UpdaterJsonData ProgramVersionState = GetUpdaterJsonData();
         internal static bool NewVersionAvailable => CompareSemanticVersions(ProgramVersionState.Current, ProgramVersionState.Latest) < 0;
         internal static bool IsServerAvailable => GetServerStatus();
@@ -53,7 +53,7 @@ namespace BauphysikToolWPF.Services.Application
 
         #region private methods
 
-        private static void SetupFile(bool forceReplace = false)
+        public static void SetupFile(bool forceReplace = false)
         {
             // file under user-specific AppData folder
             string userUpdaterJsonFilePath = PathService.UserUpdaterFilePath;
@@ -123,8 +123,6 @@ namespace BauphysikToolWPF.Services.Application
 
         private static UpdaterJsonData GetUpdaterJsonData()
         {
-            SetupFile(forceReplace: false);
-            
             if (!File.Exists(PathService.UserUpdaterFilePath))
             {
                 Logger.LogWarning($"Local version file not found");

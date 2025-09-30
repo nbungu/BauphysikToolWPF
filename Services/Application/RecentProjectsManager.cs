@@ -29,8 +29,6 @@ namespace BauphysikToolWPF.Services.Application
 
         public static List<RecentProjectItem> GetRecentProjects()
         {
-            SetupFile();
-
             if (File.Exists(PathService.UserRecentProjectsFilePath))
             {
                 string jsonString = File.ReadAllText(PathService.UserRecentProjectsFilePath);
@@ -49,12 +47,14 @@ namespace BauphysikToolWPF.Services.Application
             File.WriteAllText(PathService.UserRecentProjectsFilePath, jsonString);
         }
 
-        private static void SetupFile(bool forceReplace = false)
+        public static void SetupFile(bool forceReplace = false)
         {
             // file under user-specific AppData folder
             string userRecentProjectsFilePath = PathService.UserRecentProjectsFilePath;
+            string userDemoProjectFilePath = PathService.UserDemoProjectFilePath;
             // file under installation directory folder
             string sourceRecentProjectFilePath = PathService.BuildDirRecentProjectsFilePath;
+            string sourceDemoProjectFilePath = PathService.BuildDirDemoProjectFilePath;
 
             try
             {
@@ -74,6 +74,19 @@ namespace BauphysikToolWPF.Services.Application
                     Logger.LogInfo($"Force replacing recent_projects.json from: {sourceRecentProjectFilePath} to {userRecentProjectsFilePath}");
                     File.Delete(userRecentProjectsFilePath);
                     File.Copy(sourceRecentProjectFilePath, userRecentProjectsFilePath);
+                }
+
+                // Example: Copy the file from the output folder to ProgramData if it doesn't already exist
+                if (!File.Exists(userDemoProjectFilePath))
+                {
+                    Logger.LogInfo($"Copying Demoprojekt.btk from: {sourceDemoProjectFilePath} to {userDemoProjectFilePath}");
+                    File.Copy(sourceDemoProjectFilePath, userDemoProjectFilePath);
+                }
+                if (forceReplace)
+                {
+                    Logger.LogInfo($"Force replacing Demoprojekt.btk from: {sourceDemoProjectFilePath} to {userDemoProjectFilePath}");
+                    File.Delete(userDemoProjectFilePath);
+                    File.Copy(sourceDemoProjectFilePath, userDemoProjectFilePath);
                 }
             }
             catch (Exception e)

@@ -1,7 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Repositories;
 using BauphysikToolWPF.Services.Application;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -112,8 +111,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         public string Title => _targetLayer != null && _targetLayer.SubConstruction != null ? $"Balkenlage bearbeiten: {_targetLayer.SubConstruction} | Schicht: {_targetLayer}" : $"Neue Balkenlage erstellen | Schicht: {_targetLayer}";
         public List<Material> Materials => GetMaterials();
-        public string Tab0Header => $"Datenbank ({DatabaseAccess.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
-        public string Tab1Header => $"Eigene Materialien ({DatabaseAccess.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
+        public string Tab0Header => $"Datenbank ({DatabaseManager.GetMaterialsQuery().Count(m => !m.IsUserDefined)})";
+        public string Tab1Header => $"Eigene Materialien ({DatabaseManager.GetMaterialsQuery().Count(m => m.IsUserDefined)})";
         public string ButtonText => _targetLayer?.SubConstruction != null ? "Änderung übernehmen" : "Balkenlage hinzufügen";
         public List<IPropertyItem> SubConstructionProperties => new List<IPropertyItem>()
         {
@@ -137,21 +136,21 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 if (SearchString != "")
                 {
-                    return DatabaseAccess.GetMaterialsQuery().Where(m =>
+                    return DatabaseManager.GetMaterialsQuery().Where(m =>
                         m.IsUserDefined == (SelectedTabIndex == 1) &&
                         m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
                 }
-                return DatabaseAccess.GetMaterialsQuery().Where(m =>
+                return DatabaseManager.GetMaterialsQuery().Where(m =>
                     m.IsUserDefined == (SelectedTabIndex == 1)).ToList();
             }
             if (SearchString != "")
             {
-                return DatabaseAccess.GetMaterialsQuery().Where(m =>
+                return DatabaseManager.GetMaterialsQuery().Where(m =>
                     m.IsUserDefined == (SelectedTabIndex == 1) &&
                     m.MaterialCategory == (MaterialCategory)SelectedCategoryIndex &&
                     m.Name.Contains(SearchString, StringComparison.InvariantCultureIgnoreCase)).ToList();
             }
-            return DatabaseAccess.GetMaterialsQuery().Where(m =>
+            return DatabaseManager.GetMaterialsQuery().Where(m =>
                 m.IsUserDefined == (SelectedTabIndex == 1) &&
                 m.MaterialCategory == (MaterialCategory)SelectedCategoryIndex).ToList();
             
