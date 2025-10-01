@@ -3,7 +3,6 @@ using BauphysikToolWPF.Services.Application;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI
 {
@@ -21,10 +20,7 @@ namespace BauphysikToolWPF.UI
         private void InitializeElements()
         {
             if (Session.SelectedProject is null) return;
-            Session.SelectedProject.AssignInternalIdsToElements();
-            Session.SelectedProject.AssignAsParentToElements();
-            Session.SelectedProject.SortElements(ElementSortingType.DateDescending);
-            Session.SelectedProject.RenderMissingElementImages(withDecorations: false);
+            Session.SelectedProject.Init();
         }
 
         /// <summary>

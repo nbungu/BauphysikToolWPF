@@ -1,8 +1,7 @@
 {
   "profiles": {
     "BauphysikToolWPF": {
-      "commandName": "Project",
-      "commandLineArgs": "--simulateFirstStart"
+      "commandName": "Project"
     }
   }
 }

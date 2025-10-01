@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.Services.UI.OpenGL;
 using BauphysikToolWPF.UI.CustomControls;
 using BT.Logging;
 using System;
@@ -49,6 +48,16 @@ namespace BauphysikToolWPF
                 UpdaterManager.ProgramVersionState.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
                 UpdaterManager.UpdateUpdaterJson(UpdaterManager.ProgramVersionState);
             }
+
+            // Move this logic to the Loaded event instead
+            // (Current.MainWindow) has been constructed but not shown yet. Otherwise LoadingDialog would throw
+            Loaded += (s, e) =>
+            {
+                if (Session.SelectedProject != null)
+                {
+                    Session.OnNewProjectAdded(false);
+                }
+            };
         }
 
         public static void SetPage(NavigationPage targetPage, NavigationPage? originPage = null)
@@ -94,15 +103,12 @@ namespace BauphysikToolWPF
         
         private void UpdateNewProjectAdded()
         {
-            _dialogService.ShowLoadingDialog("Lädt, bitte warten...", minDurationMs: 400);
-
             Session.SelectedElementId = -1;
 
+            _dialogService.ShowLoadingDialog("Lädt, bitte warten...", minDurationMs: 400);
+
             // Update InternalIds and render new images
-            Session.SelectedProject.AssignAsParentToElements();
-            Session.SelectedProject.AssignInternalIdsToElements(true);
-            Session.SelectedProject.AssignInternalIdsToEnvelopeItems(true);
-            Session.SelectedProject.RenderAllElementImages(RenderTarget.Screen, withDecorations: false);
+            Session.SelectedProject?.Init();
 
             _dialogService.CloseLoadingDialog();
         }

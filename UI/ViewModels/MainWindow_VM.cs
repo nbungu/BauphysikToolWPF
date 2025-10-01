@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Models.Application;
-using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -122,12 +121,7 @@ namespace BauphysikToolWPF.UI.ViewModels
             string? filePath = _fileDialogService.ShowOpenFileDialog("BTK Files (*.btk)|*.btk|All Files (*.*)|*.*");
             if (filePath != null)
             {
-                Project loadedProject = ProjectSerializer.GetProjectFromFile(filePath);
-                Session.SelectedProject = loadedProject;
-                Session.SelectedProject.IsModified = false;
-                Session.ProjectFilePath = filePath;
-                RecentProjectsManager.AddRecentProject(filePath);
-
+                ProjectLoader.TryOpenProject(filePath, isModifiedState: false);
                 Session.OnNewProjectAdded(false);
                 MainWindow.SetPage(NavigationPage.ElementCatalogue);
             }

@@ -1,10 +1,6 @@
-﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Services.Application;
+﻿using BauphysikToolWPF.Services.Application;
 using BT.Logging;
 using System;
-using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,8 +12,6 @@ namespace BauphysikToolWPF
     /// </summary>
     public partial class App : Application
     {
-        //
-        private bool _simulateFirstStart = false;
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -37,16 +31,19 @@ namespace BauphysikToolWPF
 
             #endregion
 
-            // Check for --simulateFirstStart in args
-            if (e.Args.Any(arg => arg.Equals("--simulateFirstStart", StringComparison.OrdinalIgnoreCase)))
+            #region Handle Arguments
+            
+            var args = ArgumentParser.Parse(e.Args);
+            
+            // Handle first start simulation
+            if (args.SimulateFirstStart)
             {
-                _simulateFirstStart = true;
                 Logger.LogWarning("Simulating first start. Force replace all repository files with initial default files");
             }
 
-            UpdaterManager.SetupFile(_simulateFirstStart);
-            RecentProjectsManager.SetupFile(_simulateFirstStart);
-            DatabaseManager.SetupFile(_simulateFirstStart);
+            UpdaterManager.SetupFile(args.SimulateFirstStart);
+            RecentProjectsManager.SetupFile(args.SimulateFirstStart);
+            DatabaseManager.SetupFile(args.SimulateFirstStart);
 
             // Only on the very first program start, add the Demoprojekt.btk to the recently used projects
             if (UpdaterManager.ProgramVersionState.LastUpdateCheck == 0)
@@ -54,67 +51,17 @@ namespace BauphysikToolWPF
                 RecentProjectsManager.AddRecentProject(PathService.UserDemoProjectFilePath);
             }
 
-            if (e.Args.Length > 0)
+            if (!string.IsNullOrEmpty(args.ProjectPath))
             {
-                // Mask args when writing to general info logs (don't print secrets/file contents).
-                Logger.LogInfo($"Opening Application with {e.Args.Length} argument(s).");
-
-                string rawFilePath = e.Args[0];
-
-                if (rawFilePath == "--simulateFirstStart") return;
-
-                // Sanitize and validate path before using it
-                try
-                {
-                    // Reject UNC / network paths by default (optional)
-                    if (PathService.IsUncPath(rawFilePath))
-                    {
-                        Logger.LogWarning("Rejected UNC/network path provided as startup argument.");
-                        return;
-                    }
-
-                    // Normalize and validate
-                    string fullPath = Path.GetFullPath(rawFilePath);
-
-                    if (!PathService.IsAllowedExtension(fullPath, new[] { ".btk", ".btkproj" }))
-                    {
-                        Logger.LogWarning($"Rejected file with disallowed extension: {PathService.MaskPath(fullPath)}");
-                        return;
-                    }
-
-                    if (!File.Exists(fullPath))
-                    {
-                        Logger.LogWarning($"File does not exist: {PathService.MaskPath(fullPath)}");
-                        return;
-                    }
-
-                    if (!PathService.IsReasonableFileSize(fullPath, maxBytes: 10 * 1024 * 1024)) // 10 MB limit example
-                    {
-                        Logger.LogWarning($"Rejected file due to excessive size: {PathService.MaskPath(fullPath)}");
-                        return;
-                    }
-
-                    // Load the project from the specified file
-                    Project loadedProject = ProjectSerializer.GetProjectFromFile(rawFilePath);
-                    Session.SelectedProject = loadedProject;
-                    Session.ProjectFilePath = rawFilePath;
-                    RecentProjectsManager.AddRecentProject(rawFilePath);
-                    // TODO Testing:
-                    Session.SelectedProject.RenderMissingElementImages(withDecorations: false);
-                    Logger.LogInfo($"Loaded Project: '{Session.SelectedProject}'");
-                    
-                }
-                catch (Exception ex)
-                {
-                    // Do not expose stack trace to general logs — log a short message and optionally a developer-only trace
-                    Logger.LogError($"Error processing startup argument: {ex.Message}");
-                }
+                Logger.LogInfo("Startup with .btk file");
+                ProjectLoader.TryOpenProject(args.ProjectPath, isModifiedState: false);
             }
             else
             {
-                Logger.LogInfo("Opened Application without Arguments");
-                Logger.LogInfo("Startup without Project selected!");
+                Logger.LogInfo("Blank Startup (without .btk file)");
             }
+
+            #endregion
         }
 
         protected override void OnExit(ExitEventArgs e)

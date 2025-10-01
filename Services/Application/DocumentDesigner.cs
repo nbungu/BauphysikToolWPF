@@ -119,7 +119,8 @@ namespace BauphysikToolWPF.Services.Application
                 new XRect(startX, startY, contentWidth, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
             startY += RowHeight;
 
-            project.SortElements(ElementSortingType.TypeNameAscending);
+            // Keep them as last sorted
+            //project.SortElements(ElementSortingType.TypeNameAscending);
             var elements = project.Elements;
 
             double cellHeight = RowHeight + 0.5 * Padding;

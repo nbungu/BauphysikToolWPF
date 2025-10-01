@@ -1,5 +1,4 @@
 ﻿using BauphysikToolWPF.Models.Database;
-using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using System;
 using System.Linq;
@@ -9,6 +8,16 @@ namespace BauphysikToolWPF.Models.Domain.Helper
 {
     public static class ProjectExtensions
     {
+        public static void Init(this Project project)
+        {
+            if (project is null) return;
+            project.AssignInternalIdsToElements();
+            project.AssignInternalIdsToEnvelopeItems();
+            project.AssignAsParentToElements();
+            project.SortElements((ElementSortingType)project.LastUsedSortingType);
+            project.RenderMissingElementImages(withDecorations: true);
+        }
+        
         public static void AddElement(this Project project, Element newElement)
         {
             newElement.ParentProject = project;
