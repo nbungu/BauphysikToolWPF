@@ -239,7 +239,7 @@ namespace BauphysikToolWPF.UI.ViewModels
          * Not Observable, not directly mutated by user input
          */
 
-        public List<RecentProjectItem> RecentProjects { get; set; } = RecentProjectsManager.GetRecentProjects();
+        public List<RecentProjectItem> RecentProjects { get; set; } = RecentProjectsManager.ReadFromFile();
         public Visibility ProjectDataVisibility => Session.SelectedProject != null && Session.SelectedProject.CreatedByUser ? Visibility.Visible : Visibility.Collapsed;
         public Visibility RecentProjectsListVisibility => ProjectDataVisibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
         public Visibility RecentProjectEntriesVisibility => RecentProjects.Count > 0 ? Visibility.Visible : Visibility.Collapsed;

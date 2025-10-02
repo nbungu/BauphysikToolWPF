@@ -46,7 +46,7 @@ namespace BauphysikToolWPF
                 Logger.LogInfo("Found new Version! Notifying User");
                 ShowToast($"Neue Version verfügbar: {UpdaterManager.ProgramVersionState.LatestTag}. Besuchen Sie bauphysik-tool.de für ein kostenloses Update!", ToastType.Info, 6);
                 UpdaterManager.ProgramVersionState.LastNotification = TimeStamp.GetCurrentUnixTimestamp();
-                UpdaterManager.UpdateUpdaterJson(UpdaterManager.ProgramVersionState);
+                UpdaterManager.SaveToFile(UpdaterManager.ProgramVersionState);
             }
 
             // Move this logic to the Loaded event instead

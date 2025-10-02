@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.Services.Application
 
         // testing: curl -v "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields%5B0%5D=semanticVersion&fields%5B1%5D=versionTag"
 
-        internal static readonly UpdaterJsonData ProgramVersionState = GetUpdaterJsonData();
+        internal static readonly UpdaterJsonData ProgramVersionState = ReadFromFile();
         internal static bool NewVersionAvailable => CompareSemanticVersions(ProgramVersionState.Current, ProgramVersionState.Latest) < 0;
         internal static bool IsServerAvailable => GetServerStatus();
         
@@ -28,10 +28,10 @@ namespace BauphysikToolWPF.Services.Application
             ProgramVersionState.LatestTag = serverData.LatestTag;
             ProgramVersionState.LastUpdateCheck = TimeStamp.GetCurrentUnixTimestamp();
 
-            UpdateUpdaterJson(ProgramVersionState);
+            SaveToFile(ProgramVersionState);
         }
 
-        public static void UpdateUpdaterJson(UpdaterJsonData content)
+        public static void SaveToFile(UpdaterJsonData content)
         {
             try
             {
@@ -121,7 +121,7 @@ namespace BauphysikToolWPF.Services.Application
             return updaterManager;
         }
 
-        private static UpdaterJsonData GetUpdaterJsonData()
+        private static UpdaterJsonData ReadFromFile()
         {
             if (!File.Exists(PathService.UserUpdaterFilePath))
             {

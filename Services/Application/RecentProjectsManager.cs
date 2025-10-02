@@ -13,7 +13,7 @@ namespace BauphysikToolWPF.Services.Application
         public static void AddRecentProject(string projectFilePath)
         {
             var projectFileName = Path.GetFileName(projectFilePath);
-            var recentProjects = GetRecentProjects();
+            var recentProjects = ReadFromFile();
             var existingEntry = recentProjects.FirstOrDefault(p => p?.FilePath == projectFilePath, null);
             if (existingEntry != null)
             {
@@ -24,10 +24,10 @@ namespace BauphysikToolWPF.Services.Application
                 recentProjects.Insert(0, new RecentProjectItem { FileName = projectFileName, FilePath = projectFilePath, LastOpened = TimeStamp.GetCurrentUnixTimestamp() });
             }
             if (recentProjects.Count > 8) recentProjects.RemoveAt(5);
-            SaveRecentProjects(recentProjects);
+            SaveToFile(recentProjects);
         }
 
-        public static List<RecentProjectItem> GetRecentProjects()
+        public static List<RecentProjectItem> ReadFromFile()
         {
             if (File.Exists(PathService.UserRecentProjectsFilePath))
             {
@@ -41,9 +41,9 @@ namespace BauphysikToolWPF.Services.Application
 
         #region private methods
         
-        private static void SaveRecentProjects(List<RecentProjectItem> recentProjects)
+        private static void SaveToFile(List<RecentProjectItem> recentProjects)
         {
-            string jsonString = JsonSerializer.Serialize(recentProjects.ToList());
+            string jsonString = JsonSerializer.Serialize(recentProjects);
             File.WriteAllText(PathService.UserRecentProjectsFilePath, jsonString);
         }
 
