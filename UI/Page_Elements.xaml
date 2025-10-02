@@ -107,12 +107,17 @@
                         Command="{Binding DataContext.SelectElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         CommandParameter="{Binding InternalId}"
                         Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
+                    <Button.InputBindings>
+                        <KeyBinding Key="Return"
+                                    Command="{Binding DataContext.ElementDoubleClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                    </Button.InputBindings>
                     <!-- EventToCommand behavior to bind the double-click event to the command-->
                     <i:Interaction.Triggers>
+                        <!-- Double click support -->
                         <i:EventTrigger EventName="MouseDoubleClick">
                             <i:InvokeCommandAction Command="{Binding DataContext.ElementDoubleClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         </i:EventTrigger>
-                    </i:Interaction.Triggers>
+                    </i:Interaction.Triggers>   
 
                     <Button.ContextMenu>
                         <!--ContextMenu does not inherit the DataContext from its parent element-> DataContext is not available.

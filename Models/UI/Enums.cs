@@ -362,7 +362,6 @@ namespace BauphysikToolWPF.Models.UI
         {
             None,
             Type,
-            Orientation,
             Tag
         }
         public static readonly Dictionary<ElementGroupingType, string> ElementGroupingTypeMapping = new()

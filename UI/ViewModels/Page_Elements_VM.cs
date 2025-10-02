@@ -33,6 +33,10 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.NewElementAdded += UpdateOnNewElementAdded;
             Session.ElementRemoved += UpdateOnElementRemoved;
             Session.SelectedElementChanged += UpdateXamlBindings;
+
+            // In constructor and events:
+            _elements = new ObservableCollection<Element>(Session.SelectedProject.Elements);
+            _groupedElements = IsGroupingEnabled && HasItems ? GetGroupedItemsSource() : null;
         }
         
         /*
@@ -111,7 +115,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             Session.SelectedElementId = selectedInternalId;
             if (Session.SelectedElement != null) Session.SelectedElement.RefreshResults();
-            UpdateXamlBindings();
+            //UpdateXamlBindings();
+            UpdateXamlBindingsOnElementSelected();
         }
 
         [RelayCommand]
@@ -181,8 +186,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool ElementToolsAvailable => Session.SelectedElementId != -1;
         public bool HasItems => Elements.Count > 0;
 
-        public ObservableCollection<Element> Elements => new ObservableCollection<Element>(Session.SelectedProject.Elements);
-
         // Returns False if Index is 0. Index 0 means without Grouping, since "Ohne" is first entry in Combobox
         public bool IsGroupingEnabled => GroupingPropertyIndex > 0;
 
@@ -192,7 +195,23 @@ namespace BauphysikToolWPF.UI.ViewModels
         public Visibility ElementInfoVisibility => ElementToolsAvailable ? Visibility.Visible : Visibility.Collapsed;
         public IEnumerable<string> SortingProperties => ElementSortingTypeMapping.Values; // Has to match ElementSortingType enum values (+Order)
         public IEnumerable<string> GroupingProperties => ElementGroupingTypeMapping.Values; // Has to match ElementSortingType enum values (+Order)
-        public ICollectionView? GroupedElements => IsGroupingEnabled && HasItems ? GetGroupedItemsSource() : null;
+
+        // Cached 'Elements' collection
+        private ObservableCollection<Element> _elements;
+        public ObservableCollection<Element> Elements
+        {
+            get => _elements;
+            private set => SetProperty(ref _elements, value);
+        }
+
+        // Cached 'GroupedElements' collection
+        private ICollectionView? _groupedElements;
+        public ICollectionView? GroupedElements
+        {
+            get => _groupedElements;
+            private set => SetProperty(ref _groupedElements, value);
+        }
+
         public Visibility NoElementsVisibility => HasItems ? Visibility.Collapsed : Visibility.Visible;
         public List<IPropertyItem> ElementProperties => Session.SelectedElement != null ? new List<IPropertyItem>()
         {
@@ -221,8 +240,21 @@ namespace BauphysikToolWPF.UI.ViewModels
             UpdateXamlBindings();
         }
 
+        private void UpdateXamlBindingsOnElementSelected()
+        {
+            OnPropertyChanged(nameof(SelectedElement));
+            OnPropertyChanged(nameof(HasItems));
+            OnPropertyChanged(nameof(ElementToolsAvailable));
+            OnPropertyChanged(nameof(ElementInfoVisibility));
+            OnPropertyChanged(nameof(NoElementsVisibility));
+            OnPropertyChanged(nameof(ElementProperties));
+        }
+
         private void UpdateXamlBindings()
         {
+            Elements = new ObservableCollection<Element>(Session.SelectedProject.Elements);
+            GroupedElements = IsGroupingEnabled && HasItems ? GetGroupedItemsSource() : null;
+
             // For Updating MVVM Properties
             Session.SelectedProject.SortElements(SelectedSorting);
 
@@ -250,7 +282,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private ICollectionView GetGroupedItemsSource()
         {
-            var cvs = new CollectionViewSource { Source = Session.SelectedProject.Elements };
+            var cvs = new CollectionViewSource { Source = _elements };
             var pgd = new PropertyGroupDescription(".", new GroupingTypeToPropertyName(SelectedGrouping));
             cvs.GroupDescriptions.Add(pgd);
             return cvs.View;
