@@ -115,19 +115,42 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             Session.SelectedElementId = selectedInternalId;
             if (Session.SelectedElement != null) Session.SelectedElement.RefreshResults();
-            //UpdateXamlBindings();
             UpdateXamlBindingsOnElementSelected();
         }
 
         [RelayCommand]
-        private void ElementDoubleClick()
+        private void NextElement()
         {
-            if (SelectedElement is null) return;
-            MainWindow.SetPage(NavigationPage.LayerSetup, NavigationPage.ElementCatalogue);
+            if (SelectedElement == null || Elements.Count == 0)
+                return;
+
+            int index = Elements.IndexOf(SelectedElement);
+            if (index == -1)
+                return; // safety: element not found
+
+            int nextIndex = index + 1;
+            if (nextIndex < Elements.Count)
+            {
+                SelectElement(Elements[nextIndex].InternalId);
+            }
         }
 
         [RelayCommand]
-        private void SchichtaufbauClick()
+        private void PreviousElement()
+        {
+            if (SelectedElement == null || Elements.Count == 0)
+                return;
+
+            int index = Elements.IndexOf(SelectedElement);
+            if (index <= 0)
+                return; // either not found (-1) or already at first
+
+            int prevIndex = index - 1;
+            SelectElement(Elements[prevIndex].InternalId);
+        }
+
+        [RelayCommand]
+        private void OpenElement()
         {
             if (SelectedElement is null) return;
             MainWindow.SetPage(NavigationPage.LayerSetup, NavigationPage.ElementCatalogue);
@@ -252,11 +275,11 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateXamlBindings()
         {
-            Elements = new ObservableCollection<Element>(Session.SelectedProject.Elements);
-            GroupedElements = IsGroupingEnabled && HasItems ? GetGroupedItemsSource() : null;
-
             // For Updating MVVM Properties
             Session.SelectedProject.SortElements(SelectedSorting);
+
+            Elements = new ObservableCollection<Element>(Session.SelectedProject.Elements);
+            GroupedElements = IsGroupingEnabled && HasItems ? GetGroupedItemsSource() : null;
 
             // TODO: NotifyPropertyChangedFor einarbeiten,statt OnPropertyChanged(nameof(Elements));
             OnPropertyChanged(nameof(Elements));

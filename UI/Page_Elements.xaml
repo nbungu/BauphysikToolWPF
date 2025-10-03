@@ -109,13 +109,20 @@
                         Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">
                     <Button.InputBindings>
                         <KeyBinding Key="Return"
-                                    Command="{Binding DataContext.ElementDoubleClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                    Command="{Binding DataContext.OpenElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <KeyBinding Key="Delete"
+                                    Command="{Binding DataContext.DeleteElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding InternalId}"/>
+                        <KeyBinding Key="Left"
+                                    Command="{Binding DataContext.PreviousElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                        <KeyBinding Key="Right"
+                                    Command="{Binding DataContext.NextElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                     </Button.InputBindings>
+
                     <!-- EventToCommand behavior to bind the double-click event to the command-->
                     <i:Interaction.Triggers>
                         <!-- Double click support -->
                         <i:EventTrigger EventName="MouseDoubleClick">
-                            <i:InvokeCommandAction Command="{Binding DataContext.ElementDoubleClickCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
+                            <i:InvokeCommandAction Command="{Binding DataContext.OpenElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" />
                         </i:EventTrigger>
                     </i:Interaction.Triggers>   
 
@@ -322,7 +329,7 @@
                 Workaround: use a zero-width space character (&#8203;) before the opening curly brace in your format string-->
             </Border>
 
-            <Button Grid.Row="3" Content="Schichtaufbau" VerticalAlignment="Bottom" Command="{Binding SchichtaufbauClickCommand}" Style="{StaticResource ButtonHighlighted}" Tag="{StaticResource ButtonIcon_Layer_W}" IsEnabled="{Binding ElementToolsAvailable}" />
+            <Button Grid.Row="3" Content="Schichtaufbau" VerticalAlignment="Bottom" Command="{Binding OpenElementCommand}" Style="{StaticResource ButtonHighlighted}" Tag="{StaticResource ButtonIcon_Layer_W}" IsEnabled="{Binding ElementToolsAvailable}" />
 
         </Grid>
 
