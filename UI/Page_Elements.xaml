@@ -103,7 +103,7 @@
                 </Grid.RowDefinitions>
                 <!--'SelectElementCommand' is not in DataContext of this UIElement (Binding here is typeof 'Element' from ItemsSource Property).
                 Switch to correct DataContext. Using the 'Tag' Property as holder of our other DataContext. Tag is set by the ItemsControl.-->
-                <Button Style="{StaticResource ButtonStyleWrapPanel}"
+                <Button x:Name="ElementButton" Style="{StaticResource ButtonStyleWrapPanel}"
                         Command="{Binding DataContext.SelectElementCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                         CommandParameter="{Binding InternalId}"
                         Tag="{Binding DataContext, RelativeSource={RelativeSource AncestorType=UserControl}}">

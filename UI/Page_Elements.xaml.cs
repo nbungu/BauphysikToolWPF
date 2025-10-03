@@ -15,12 +15,37 @@ namespace BauphysikToolWPF.UI
             
             // UI Elements in backend only accessible AFTER InitializeComponent() was executed
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
+
+            // Hook Loaded event: by then the control is fully constructed and in the visual tree
+            this.Loaded += Page_Elements_Loaded;    
         }
 
         private void InitializeElements()
         {
             if (Session.SelectedProject is null) return;
             Session.SelectedProject.Init();
+        }
+
+        /// <summary>
+        /// Handles the UserControl's <see cref="FrameworkElement.Loaded"/> event.
+        /// Ensures that when the page is displayed, keyboard focus is set to the first
+        /// element's Button inside the <see cref="ElementsControl"/>, enabling immediate
+        /// keyboard navigation (arrow keys, Enter, Delete, etc.).
+        /// </summary>
+        private void Page_Elements_Loaded(object sender, RoutedEventArgs e)
+        {
+            ElementsControl.Focus();
+
+            if (ElementsControl.Items.Count == 0)
+                return;
+
+            // get the first container (ContentPresenter for the first item)
+            var container = ElementsControl.ItemContainerGenerator.ContainerFromIndex(0) as ContentPresenter;
+            if (container is null) return;
+
+            // access the Button defined in the DataTemplate by its x:Name
+            var button = container.ContentTemplate.FindName("ElementButton", container) as Button;
+            button?.Focus();
         }
 
         /// <summary>

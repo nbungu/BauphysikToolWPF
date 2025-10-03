@@ -254,11 +254,12 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         private void UpdateOnElementRemoved()
         {
-            // reset SelectedElement
-            Session.SelectedElementId = -1;
             // set selected element to last
-            if (Session.SelectedProject.Elements.Count > 0)
+            if (Session.SelectedProject?.Elements.Count > 0)
                 Session.SelectedElementId = Session.SelectedProject.Elements.Last().InternalId;
+            else
+                Session.SelectedElementId = -1;
+
             // update UI
             UpdateXamlBindings();
         }
