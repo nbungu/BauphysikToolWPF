@@ -17,11 +17,11 @@
                   Background="{Binding BackgroundColor}"
                   Opacity="{Binding Opacity}">
                 <Rectangle x:Name="LayerRectangle"
-                           StrokeDashArray="{Binding RectangleStrokeDashArray}"
-                           Fill="{Binding DrawingBrush}"
-                           Stroke="{Binding RectangleBorderColor}"
-                           StrokeThickness="{Binding RectangleBorderThickness}"/>
+                           Fill="{Binding TextureBrush}"
+                           Stroke="{Binding BorderPen.Brush}"
+                           StrokeThickness="{Binding BorderPen.Thickness}"/>
             </Grid>
+            <!--StrokeDashArray="{Binding RectangleStrokeDashArray}"-->
         </DataTemplate>
     </UserControl.Resources>
 

@@ -3,11 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:ui="clr-namespace:BauphysikToolWPF.Services.UI"
+             xmlns:application="clr-namespace:BauphysikToolWPF.Services.Application"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
              xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF"
-             xmlns:application="clr-namespace:BauphysikToolWPF.Services.Application"
              mc:Ignorable="d" 
              d:DesignHeight="900" d:DesignWidth="1200">
 
@@ -15,54 +14,6 @@
         <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
         <vm:Page_DynamicResults_VM/>
     </UserControl.DataContext>
-
-    <UserControl.Resources>
-
-        <!-- ListBoxItem Data Template for ItemsSource: 'DynamicThermalValues'-->
-        <DataTemplate x:Key="DTV_ItemDataTemplate">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="32"/>
-                    <ColumnDefinition Width="128"/>
-                    <ColumnDefinition Width="240"/>
-                </Grid.ColumnDefinitions>
-                <!--Here: Binding source are Items from the ItemsSource Property-->
-                <controls:SubscriptLabel Grid.Column="0" BaseText="{Binding SymbolBase}" SubscriptText="{Binding SymbolSubscript}" HorizontalAlignment="Left"/>
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Label Content="{Binding Value}" ContentStringFormat="= {0}" FontWeight="Bold"/>
-                    <Label Content="{Binding Unit}" HorizontalAlignment="Left" Margin="-4,0,0,0" FontWeight="Bold"/>
-                </StackPanel>
-                <Label Grid.Column="2" Content="{Binding Comment}" HorizontalAlignment="Left"/>
-            </Grid>
-        </DataTemplate>
-
-        <!-- Style and behaviour of the ListBoxItem Container, NOT the Data inside!-->
-        <Style x:Key="DTV_ItemContainerStyle" TargetType="{x:Type ListBoxItem}">
-            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-        </Style>
-
-        <!-- Defines the type of UIElement used in the ItemsPanel-->
-        <ItemsPanelTemplate x:Key="Canvas">
-            <!--Takes the Width and Height from TemplatedParent-->
-            <Canvas Width="Auto" Height="Auto" SnapsToDevicePixels="True"/>
-        </ItemsPanelTemplate>
-
-        <!-- Properties of a CanvasItem (LayerGeometry). Sets the Drawing Coordinates of the container holding a CanvasItem -->
-        <Style x:Key="CanvasContainerStyle" TargetType="ContentPresenter">
-            <Setter Property="Canvas.Left" Value="{Binding Rectangle.Left}"/>
-            <Setter Property="Canvas.Top" Value="{Binding Rectangle.Top}"/>
-        </Style>
-
-        <!-- Content and Styling of a Canvas Item (LayerGeometry) -->
-        <DataTemplate x:Key="CanvasLayerItemStyle">
-            <Grid Width="{Binding Rectangle.Width}" Height="{Binding Rectangle.Height}" Background="{Binding BackgroundColor}" Opacity="{Binding Opacity}">
-                <Rectangle Fill="{Binding HatchPattern}" Stroke="{Binding BorderStroke}" StrokeThickness="{Binding BorderThickness}"/>
-                <Ellipse Fill="White" Width="20" Height="20" Stroke="{Binding BorderStroke}" StrokeThickness="1" HorizontalAlignment="Center" Margin="-8"/>
-                <Label Content="{Binding LayerPosition}" Margin="-8"/>
-            </Grid>
-        </DataTemplate>
-
-    </UserControl.Resources>
 
     <!--Main Grid 2x2-->
     <Grid Background="{StaticResource PrimaryLightBrush}">
@@ -83,12 +34,10 @@
                     <Label Content="{Binding Title}" FontSize="18" FontWeight="Bold" FontStretch="Expanded"/>
                     <Label Content="{Binding SelectedElementConstructionName}" ContentStringFormat="({0})" FontSize="18" FontStyle="Italic" Margin="0,0,8,0"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <!--
+                <!--<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <Label Content="Weiter"/>
                     <Button Style="{StaticResource ButtonMiniTransparent}" Command="{Binding SwitchPageCommand}" CommandParameter="{x:Static local:NavigationContent.GlaserCurve}" Tag="{StaticResource ButtonIcon_Next_B}" Margin="4"/>
-                    -->
-                </StackPanel>
+                </StackPanel>-->
             </Grid>
         </Border>
 
