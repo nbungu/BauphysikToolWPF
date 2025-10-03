@@ -177,9 +177,6 @@ namespace BauphysikToolWPF.Models.Domain
 
         #endregion
 
-        #region ctors
-        #endregion
-
         #region Public Methods
 
         public LayerSubConstruction Copy()

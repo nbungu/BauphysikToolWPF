@@ -9,7 +9,7 @@ namespace BauphysikToolWPF.Services.UI.Converter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string tooltip = value as string;
+            string? tooltip = value as string;
             return string.IsNullOrWhiteSpace(tooltip) ? Visibility.Collapsed : Visibility.Visible;
         }
 

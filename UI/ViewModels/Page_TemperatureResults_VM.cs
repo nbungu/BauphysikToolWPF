@@ -26,7 +26,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Manually Trigger Calculation
         //private static TemperatureCurveCalc _tempCurve = new TemperatureCurveCalc();
 
-        private Element _element;
+        private Element _element = new Element();
         private static GlaserCalc _glaser = new GlaserCalc();
 
         public Page_TemperatureResults_VM()

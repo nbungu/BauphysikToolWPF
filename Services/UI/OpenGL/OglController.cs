@@ -33,7 +33,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private bool _disposed;
         private bool _dragging;
         private float _zoomFactor = 1.0f; // Used to track zoom changes
-        private float _scale = 1.0f; // Used to track scale changes for text rendering
+        //private float _scale = 1.0f; // Used to track scale changes for text rendering
         private Vector _pan = Vector.Empty;
         private Point _lastMousePos = Point.Empty;
         private DateTime _lastLeftClickTime = DateTime.MinValue;
@@ -48,7 +48,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public IOglSceneBuilder SceneBuilder { get; private set; }
         public GLWpfControl View { get; private set; }
-
         public bool ForceFlushTexturesOnRender { get; set; } = false; // Forces a flush of the OpenGL context on each render call
         public bool IsSceneInteractive { get; set; } = true;
         public bool IsViewConnected => View != null;

@@ -43,7 +43,11 @@ namespace BauphysikToolWPF.UI
 
         private void InitalizeLayers()
         {
-            if (Session.SelectedElement is null) return;
+            if (Session.SelectedElement is null)
+            {
+                MainWindow.SetPage(NavigationPage.ElementCatalogue, NavigationPage.LayerSetup);
+                return;
+            }
             _element = Session.SelectedElement;
             _element.SortLayers();
             _element.AssignEffectiveLayers();

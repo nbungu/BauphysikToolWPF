@@ -23,7 +23,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private Element _element;
+        private Element _element = new Element();
         private static GlaserCalc _glaser = new GlaserCalc();
 
         public Page_MoistureResults_VM()
@@ -196,7 +196,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-            _element = Session.SelectedElement;
+            _element = Session.SelectedElement ?? new Element();
         }
         
         private RectangularSection[] DrawLayerSections()
@@ -207,7 +207,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             //TODO: Round values of left and right
             double left = 0;
-            foreach (Layer layer in _glaser.Element.Layers)
+            foreach (var layer in _glaser.Element.Layers)
             {
                 double layerWidth = layer.Sd_Thickness;
                 double right = left + layerWidth; // start drawing from left side (beginning with INSIDE Layer, which is first list element)

@@ -270,8 +270,7 @@ namespace BauphysikToolWPF.Calculation
                 
             if (layer.SubConstruction != null)
             {
-                var newCombinationPath = new List<string>(currentCombination);
-                newCombinationPath.Add($"{layer.LayerPosition}b");
+                var newCombinationPath = new List<string>(currentCombination) { $"{layer.LayerPosition}b" };
                 CreateLayerPathCombinations(i + 1, newCombinationPath);
             }
 
@@ -316,10 +315,10 @@ namespace BauphysikToolWPF.Calculation
 
             if (subConstr.Count > 0)
             {
-                var vSubs = subConstr.Where(s => s.Direction == ConstructionDirection.Vertical).ToList();
+                var vSubs = subConstr.Where(s => s?.Direction == ConstructionDirection.Vertical).ToList();
                 if (vSubs.Count > 0) maxWidth = vSubs.Max(s => s.Width + s.Spacing);
 
-                var hSubs = subConstr.Where(s => s.Direction == ConstructionDirection.Horizontal).ToList();
+                var hSubs = subConstr.Where(s => s?.Direction == ConstructionDirection.Horizontal).ToList();
                 if (hSubs.Count > 0) maxHeight = hSubs.Max(s => s.Width + s.Spacing);
             }
             //  when exactly ONE of maxWidth or maxHeight is equal to zero

@@ -23,8 +23,8 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private Element _element;
-        private readonly CrossSectionBuilder _verticalCut;
+        private Element _element = new Element();
+        private readonly CrossSectionBuilder _verticalCut = new CrossSectionBuilder();
         private static DynamicTempCalc _dynamicTempCalc = new DynamicTempCalc();
 
         public Page_DynamicResults_VM()

@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
     }
     public class SdfFont
     {
-        public Dictionary<char, GlyphInfo> Glyphs { get; } = new();
+        public Dictionary<char, GlyphInfo> Glyphs { get; }
         public int TextureId { get; }
         public float LineHeight { get; }
         public float OffsetX { get; }
@@ -44,8 +44,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             int texWidth = 1, texHeight = 1;
 
             // See in Hiero Padding Settings:
-            float paddingTop = 12, paddingBottom = 12, paddingLeft = 12, paddingRight = 12; 
-            float paddingX = 0, paddingY = 0;
+            float paddingLeft = 12, paddingRight = 12;
+            //float paddingTop = 12, paddingBottom = 12;
+            //float paddingX = 0, paddingY = 0;
 
             string dir = Path.GetDirectoryName(fntPath)!;
             string[] lines = File.ReadAllLines(fntPath);
@@ -122,7 +123,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             if (i == -1) throw new Exception($"Key {key} not found in line: {line}");
             int start = i + key.Length + 1;
             int end = line.IndexOf(' ', start);
-            return (end == -1) ? line.Substring(start) : line.Substring(start, end - start);
+            return end == -1 ? line.Substring(start) : line.Substring(start, end - start);
         }
     }
 

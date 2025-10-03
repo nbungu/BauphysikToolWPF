@@ -12,7 +12,7 @@ namespace BauphysikToolWPF.Models.UI
         Rectangle Rectangle { get; set; } // in [px]
         Pen BorderPen { get; set; } // Pen for the rectangle border
         Brush BackgroundColor { get; set; }
-        Brush TextureBrush { get; set; }
+        Brush? TextureBrush { get; set; }
         double Opacity { get; set; }
         int ZIndex { get; set; }
         object Tag { get; set; }

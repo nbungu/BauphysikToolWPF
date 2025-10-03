@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public partial class Page_Summary_VM : ObservableObject
     {
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
-        private readonly Element _element;
+        private readonly Element _element = new Element();
         private readonly OglController _oglController;
 
         public Page_Summary_VM(OglController oglController)

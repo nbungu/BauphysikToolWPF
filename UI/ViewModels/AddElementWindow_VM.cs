@@ -1,15 +1,15 @@
 ﻿using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media;
-using BauphysikToolWPF.Models.Domain.Helper;
 using static BauphysikToolWPF.Models.Database.Enums;
 using static BauphysikToolWPF.Models.Domain.Enums;
-using System.Collections.ObjectModel;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
@@ -172,7 +172,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     public class ConstructionTypeViewModel
     {
         public int Type { get; set; }
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         public ConstructionGroup Group { get; set; }
         public string GroupName => ConstructionGroupMapping[Group];
     }

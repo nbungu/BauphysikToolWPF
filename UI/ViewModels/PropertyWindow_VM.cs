@@ -49,8 +49,9 @@ namespace BauphysikToolWPF.UI.ViewModels
         /*
          * MVVM Capsulated Properties or Triggered by other Properties
          */
-        public string Title { get; set; }
-        public string PropertyBagTitle { get; set; }
-        public IEnumerable<IPropertyItem> PropertyBag { get; set; }
+
+        public string Title { get; set; } = string.Empty;
+        public string PropertyBagTitle { get; set; } = string.Empty;
+        public IEnumerable<IPropertyItem> PropertyBag { get; set; } = new List<IPropertyItem>(0);
     }
 }

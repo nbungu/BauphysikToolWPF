@@ -7,13 +7,11 @@ namespace BauphysikToolWPF.Models.Domain.Helper
 {
     public static class ElementExtensions
     {
-        public static void AssignInternalIdsToLayers(this Element element)
+        public static void AssignInternalIdsToLayers(this Element? element)
         {
-            if (element.Layers.Count != 0)
-            {
-                int index = 0; // Start at 0
-                element.Layers.ForEach(e => e.InternalId = index++);
-            }
+            if (element is null || element.Layers.Count == 0) return;
+            int index = 0; // Start at 0
+            element.Layers.ForEach(e => e.InternalId = index++);
         }
 
         // Sets the 'LayerPosition' of a Layer List from 1 to N, without missing values inbetween
@@ -30,47 +28,46 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             return element;
         }
 
-        public static Layer? GetLayerByShapeId(this Element element, ShapeId shape)
+        public static Layer? GetLayerByShapeId(this Element? element, ShapeId shape)
         {
-            if (element.Layers.Count == 0) return null;
+            if (element is null || element.Layers.Count == 0) return null;
             return element.Layers.FirstOrDefault(l => l.ShapeId.Type == ShapeType.Layer && l.ShapeId.Index == shape.Index);
         }
 
-        public static void AssignEffectiveLayers(this Element element)
+        public static void AssignEffectiveLayers(this Element? element)
         {
-            if (element.Layers.Count != 0)
+            if (element is null || element.Layers.Count == 0) return;
+            bool foundAirLayer = false;
+            foreach (var layer in element.Layers)
             {
-                bool foundAirLayer = false;
-                foreach (Layer layer in element.Layers)
-                {
-                    if (layer.Material.MaterialCategory == MaterialCategory.Air) foundAirLayer = true;
+                if (layer.Material.MaterialCategory == MaterialCategory.Air) foundAirLayer = true;
 
-                    layer.IsEffective = !foundAirLayer;
-                    if (layer.SubConstruction != null) layer.SubConstruction.IsEffective = layer.IsEffective;
-                }
+                layer.IsEffective = !foundAirLayer;
+                if (layer.SubConstruction != null) layer.SubConstruction.IsEffective = layer.IsEffective;
             }
         }
 
-        public static void DuplicateLayer(this Element element, Layer layer)
+        public static void DuplicateLayer(this Element? element, Layer? layer)
         {
+            if (element is null || layer is null) return;
             var copy = layer.Copy();
             copy.LayerPosition = element.Layers.Count;
             copy.InternalId = element.Layers.Count;
             element.AddLayer(copy);
         }
 
-        public static void DuplicateLayerById(this Element element, int layerId)
+        public static void DuplicateLayerById(this Element? element, int layerId)
         {
-            if (element.Layers.Count == 0) return;
+            if (element is null || element.Layers.Count == 0) return;
             var copy = element.Layers.First(l => l.InternalId == layerId).Copy();
             copy.LayerPosition = element.Layers.Count;
             copy.InternalId = element.Layers.Count;
             element.AddLayer(copy);
         }
 
-        public static void MoveLayerPositionToInside(this Element element, int layerId)
+        public static void MoveLayerPositionToInside(this Element? element, int layerId)
         {
-            if (element.Layers.Count == 0) return;
+            if (element is null || element.Layers.Count == 0) return;
             var targetLayer = element.Layers.First(l => l.InternalId == layerId);
             // When Layer is already at the top of the List (first in the List)
             if (targetLayer.LayerPosition == 0) return;
@@ -84,9 +81,9 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             element.AssignEffectiveLayers();
         }
 
-        public static void MoveLayerPositionToOutside(this Element element, int layerId)
+        public static void MoveLayerPositionToOutside(this Element? element, int layerId)
         {
-            if (element.Layers.Count == 0) return;
+            if (element is null || element.Layers.Count == 0) return;
             var targetLayer = element.Layers.First(l => l.InternalId == layerId);
             // When Layer is already at the bottom of the List (last in the List)
             if (targetLayer.LayerPosition == element.Layers.Count - 1) return;
@@ -100,9 +97,9 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             element.AssignEffectiveLayers();
         }
 
-        public static void RemoveLayerById(this Element element, int layerId)
+        public static void RemoveLayerById(this Element? element, int layerId)
         {
-            if (element.Layers.Count == 0) return;
+            if (element is null || element.Layers.Count == 0) return;
             var targetLayer = element.Layers.First(l => l.InternalId == layerId);
             element.Layers.Remove(targetLayer);
             //
@@ -111,22 +108,31 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             element.AssignEffectiveLayers();
         }
 
-        public static void AddLayer(this Element element, Layer newLayer)
+        public static void AddLayer(this Element? element, Layer? newLayer)
         {
+            if (element is null || newLayer is null) return;
             element.Layers.Add(newLayer);
             element.SortLayers();
             element.AssignInternalIdsToLayers();
             element.AssignEffectiveLayers();
         }
 
-        public static void UnselectAllLayers(this Element element)
+        public static void UnselectAllLayers(this Element? element)
         {
+            if (element is null) return;
             element.Layers.ForEach(l => l.IsSelected = false);
         }
 
-        public static void RenderOffscreenImage(this Element element, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
+        public static void RenderOffscreenImage(this Element? element, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
         {
+            if (element is null) return;
             OglOffscreenScene.GenerateImagesOfElements(new List<Element>() { element }, target, withDecorations);
+        }
+
+        public static void RefreshResults(this Element? element)
+        {
+            if (element is null) return;
+            element.Recalculate = true;
         }
     }
 }

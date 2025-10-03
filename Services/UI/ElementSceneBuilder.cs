@@ -89,7 +89,7 @@ namespace BauphysikToolWPF.Services.UI
                 }
 
                 Point markerPos = geom.Rectangle.Center;
-                string layerNumber = CrossSectionBuilder.Element.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
+                string layerNumber = CrossSectionBuilder.Element?.GetLayerByShapeId(geom.ShapeId)?.LayerNumber.ToString() ?? "";
                 if (geom.ShapeId.Type == ShapeType.SubConstructionLayer)
                 {
                     if (geom.Rectangle.Height < elementBounds.Height)
@@ -159,7 +159,7 @@ namespace BauphysikToolWPF.Services.UI
 
             foreach (var geom in CrossSectionBuilder.DrawingGeometries)
             {
-                string layerNumber = CrossSectionBuilder.Element.GetLayerByShapeId(geom.ShapeId).LayerNumber.ToString();
+                string layerNumber = CrossSectionBuilder.Element?.GetLayerByShapeId(geom.ShapeId)?.LayerNumber.ToString() ?? "";
 
                 // Rectangle
                 if (geom.ShapeId.Type == ShapeType.Layer)
@@ -205,7 +205,7 @@ namespace BauphysikToolWPF.Services.UI
                 double[] intervals;
 
                 // Vertical full element
-                DrawSingleDimChain(elementBounds.RightLine, dimChainOffset * 3,
+                DrawSingleDimChain(elementBounds.RightLine, CrossSectionBuilder.DrawingGeometries.Count > 1 ? dimChainOffset * 3 : dimChainOffset,
                     NumberConverter.ConvertToString(elementBounds.Height / SizeOf1Cm),
                     alignment: TextAlignment.Left | TextAlignment.CenterV, fontSizePx: fontSizePx);
 

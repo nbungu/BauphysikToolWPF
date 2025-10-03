@@ -22,7 +22,11 @@ namespace BauphysikToolWPF.UI
 
         private void InitializeElements()
         {
-            if (Session.SelectedProject is null) return;
+            if (Session.SelectedProject is null)
+            {
+                MainWindow.SetPage(NavigationPage.ProjectData, NavigationPage.ElementCatalogue);
+                return;
+            }
             Session.SelectedProject.Init();
         }
 
@@ -36,8 +40,7 @@ namespace BauphysikToolWPF.UI
         {
             ElementsControl.Focus();
 
-            if (ElementsControl.Items.Count == 0)
-                return;
+            if (ElementsControl.Items.Count == 0) return;
 
             // get the first container (ContentPresenter for the first item)
             var container = ElementsControl.ItemContainerGenerator.ContainerFromIndex(0) as ContentPresenter;

@@ -26,10 +26,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM(OglController scene)
         {
-            if (Session.SelectedElement is null) return;
-
             _oglController = scene;
-            _element = Session.SelectedElement;
+            _element = Session.SelectedElement ?? new Element();
             _dialogService = new DialogService();
 
             // Allow child Windows to trigger UpdateAll of this Window

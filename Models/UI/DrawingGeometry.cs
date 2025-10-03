@@ -16,7 +16,7 @@ namespace BauphysikToolWPF.Models.UI
 
         // Appearance of the Layer as a 2D Rectangle
         public Brush BackgroundColor { get; set; } = Brushes.Transparent;
-        public Brush TextureBrush { get; set; } = new DrawingBrush();
+        public Brush? TextureBrush { get; set; } = new DrawingBrush();
         public Pen BorderPen { get; set; } = Pens.GetSolidPen(Brushes.Black, 1.0);
         public double Opacity { get; set; } = 1.0;
         public int ZIndex { get; set; }

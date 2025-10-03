@@ -18,7 +18,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     //ViewModel for AddLayerWindow.xaml: Used in xaml as "DataContext"
     public partial class AddLayerWindow_VM : ObservableObject
     {
-        private readonly Element _element;
+        private readonly Element _element = new Element();
         private readonly Layer? _targetLayer;
         
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext

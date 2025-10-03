@@ -10,7 +10,6 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
-using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Services.Application
 {
@@ -62,7 +61,7 @@ namespace BauphysikToolWPF.Services.Application
             double startX = marginLeft;
             double startY = headerBottom + 2 * Padding;
             double contentWidth = page.Width - marginLeft - marginRight;
-            double contentHeight = page.Height - MarginTop - MarginBottom;
+            //double contentHeight = page.Height - MarginTop - MarginBottom;
 
             // Bauteilkatalog Title
             gfx.DrawString($"Bauteilkatalog - {project.Name}", titleFont, XBrushes.Black,
@@ -111,8 +110,7 @@ namespace BauphysikToolWPF.Services.Application
             gfx.DrawString($"{Enums.BuildingAgeTypeMapping[project.BuildingAge]}", bodyFont, XBrushes.Black, new XRect(startX + maxTextWidth + Padding, startRightBlockTop, contentWidth / 2, bodyFont.GetHeight()), XStringFormats.TopLeft);
             startRightBlockTop += RowHeight;
             gfx.DrawString($"{project.Elements.Count}", bodyFont, XBrushes.Black, new XRect(startX + maxTextWidth + Padding, startRightBlockTop, contentWidth / 2, bodyFont.GetHeight()), XStringFormats.TopLeft);
-            startRightBlockTop += RowHeight;
-            
+
             //
             startY += Padding; // extra space
             gfx.DrawString("Liste: U- und R-Werte aller Bauteile", bodyFontBold, XBrushes.Black,
@@ -232,7 +230,10 @@ namespace BauphysikToolWPF.Services.Application
                     if (col == 1)
                     {
                         Color mediaColor = Colors.Transparent;
-                        try { mediaColor = elements[row].Color; } catch { }
+                        if (row >= 0 && row < elements.Count)
+                        {
+                            mediaColor = elements[row].Color;
+                        }
 
                         // Convert to PdfSharp XColor
                         XColor fillColor = XColor.FromArgb(mediaColor.A, mediaColor.R, mediaColor.G, mediaColor.B);
@@ -350,6 +351,7 @@ namespace BauphysikToolWPF.Services.Application
         private static void AddElementPage(Element element, PdfDocument document)
         {
             var project = element.ParentProject;
+            if (project == null) return;
 
             XFont titleFont = new XFont(FontFamilyRegular, 10, XFontStyleEx.Bold);
             XFont titleFontSm = new XFont(FontFamilyRegular, 9, XFontStyleEx.Bold);
@@ -374,7 +376,7 @@ namespace BauphysikToolWPF.Services.Application
             double startX = marginLeft;
             double startY = headerBottom + 2 * Padding;
             double contentWidth = page.Width - marginLeft - marginRight;
-            double contentHeight = page.Height - MarginTop - MarginBottom;
+            //double contentHeight = page.Height - MarginTop - MarginBottom;
 
             #region Title, Caption and Color Circle
 
@@ -385,10 +387,8 @@ namespace BauphysikToolWPF.Services.Application
                 circleDiameter = 10; // z. B. 12pt
                 double circleX = startX; // 5pt Abstand vom Rand
                 double circleY = startY; // vertikal mittig
-                Color mediaColor = Colors.Transparent;
-                try { mediaColor = element.Color; } catch { }
                 // Convert to PdfSharp XColor
-                XColor fillColor = XColor.FromArgb(mediaColor.A, mediaColor.R, mediaColor.G, mediaColor.B);
+                XColor fillColor = XColor.FromArgb(element.Color.A, element.Color.R, element.Color.G, element.Color.B);
                 gfx.DrawEllipse(new XSolidBrush(fillColor), circleX, circleY, circleDiameter, circleDiameter);
             }
             var titleX = circleDiameter > 0 ? startX + circleDiameter + Padding : startX;
@@ -482,7 +482,6 @@ namespace BauphysikToolWPF.Services.Application
                 startRightBlockTop += RowHeight;
                 gfx.DrawString($"→ {element.Requirements.RMinComparisonDescription}", bodyFont, XBrushes.Black,
                     new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
-                startRightBlockTop += RowHeight;
             }
             else
             {
@@ -498,7 +497,6 @@ namespace BauphysikToolWPF.Services.Application
                     new XRect(startRightBlockLeft, startRightBlockTop, contentWidth / 3 + 3 * Padding, bodyFont.GetHeight()), XStringFormats.TopLeft);
                 gfx.DrawString($"R ≥ {element.Requirements.RMin:0.00} m²K/W", bodyFontBold, color,
                     new XRect(startRightBlockLeft + contentWidth / 3 + 3 * Padding, startRightBlockTop, marginLeft + 32, bodyFontBold.GetHeight()), XStringFormats.TopLeft);
-                startRightBlockTop += RowHeight;
             }
 
             #endregion
@@ -782,7 +780,7 @@ namespace BauphysikToolWPF.Services.Application
             double renderDpi,
             double padding = 0)
         {
-            double imageHeight = 0;
+            double imageHeight;
 
             using (MemoryStream ms = new MemoryStream(imgBytes, 0, imgBytes.Length, false, true))
             {

@@ -170,7 +170,7 @@ namespace BauphysikToolWPF.Models.Domain
         /// which would require a re-calculation, are made there.
         /// </summary>
         [JsonIgnore]
-        public bool Recalculate { get; private set; } = true;
+        public bool Recalculate { get; set; } = true;
 
         // Use GlaserCalc as Collection for Results due to Polymorphism;
         // You can use GlaserCalc objects wherever ThermalValuesCalc and TemperatureCurveCalc objects are expected.
@@ -240,7 +240,7 @@ namespace BauphysikToolWPF.Models.Domain
             return Name + " - " + Construction.TypeName;
         }
 
-        public string ToShortName()
+        private string ToShortName()
         {
             if (ConstructionTypeShortNameMapping.TryGetValue(Construction.ConstructionType, out string mappedShort))
             {
@@ -253,11 +253,6 @@ namespace BauphysikToolWPF.Models.Domain
         public void UpdateTimestamp()
         {
             UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-        }
-
-        public void RefreshResults()
-        {
-            Recalculate = true;
         }
 
         #endregion

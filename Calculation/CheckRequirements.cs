@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
 using BT.Logging;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ namespace BauphysikToolWPF.Calculation
 
     public class CheckRequirements
     {
-        private readonly Element _element;
+        private readonly Element _element = new Element();
 
         public List<DocumentParameter> RelevantRequirements { get; private set; } = new List<DocumentParameter>();
         public List<DocumentSourceType> RelevantDocumentSources { get; set; } = new List<DocumentSourceType>(0);

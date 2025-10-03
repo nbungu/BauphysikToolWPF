@@ -28,7 +28,7 @@ namespace BauphysikToolWPF.Services.UI
         // Static, because globally valid for all Instances
         public static double SizeOf1Cm; // starting value
 
-        private Element _element;
+        private Element _element = new Element();
 
         public Element Element
         {
@@ -66,9 +66,9 @@ namespace BauphysikToolWPF.Services.UI
             DrawingGeometries = new List<IDrawingGeometry>();
         }
 
-        public CrossSectionBuilder(Element element, DrawingType type)
+        public CrossSectionBuilder(Element? element, DrawingType type)
         {
-            Element = element;
+            Element = element ?? new Element();
             DrawingType = type;
             Alignment = AlignmentVariant.EvenSpacingCentered;
             DrawingGeometries = GetDrawing();
@@ -76,7 +76,7 @@ namespace BauphysikToolWPF.Services.UI
 
         public CrossSectionBuilder(Element? element, Size canvasSize, DrawingType drawingType, AlignmentVariant variant = AlignmentVariant.EvenSpacingCentered)
         {
-            Element = element ?? throw new ArgumentNullException(nameof(element), "Element cannot be null.");
+            Element = element ?? new Element();
             DrawingType = drawingType;
             CanvasSize = canvasSize;
             Alignment = variant;

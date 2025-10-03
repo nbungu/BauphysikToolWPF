@@ -23,20 +23,16 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Called by 'InitializeComponent()' from Page_Elements.cs due to Class-Binding in xaml via DataContext
         public Page_Elements_VM()
         {
-            if (Session.SelectedProject is null) return;
-
             _dialogService = new DialogService();
-            
+            _elements = new ObservableCollection<Element>(Session.SelectedProject?.Elements ?? new List<Element>());
+            _groupedElements = IsGroupingEnabled && HasItems ? GetGroupedItemsSource() : null;
+
             // Subscribe to Event and Handle
             // Allow child Windows to trigger RefreshXamlBindings of this Window
             Session.NewProjectAdded += UpdateOnNewProjectAdded;
             Session.NewElementAdded += UpdateOnNewElementAdded;
             Session.ElementRemoved += UpdateOnElementRemoved;
             Session.SelectedElementChanged += UpdateXamlBindings;
-
-            // In constructor and events:
-            _elements = new ObservableCollection<Element>(Session.SelectedProject.Elements);
-            _groupedElements = IsGroupingEnabled && HasItems ? GetGroupedItemsSource() : null;
         }
         
         /*
@@ -70,6 +66,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void DeleteAllElements()
         {
+            if (Session.SelectedProject is null || Session.SelectedProject.Elements.Count == 0) return;
+
             MessageBoxResult result = _dialogService.ShowDeleteConfirmationDialog();
 
             switch (result)
@@ -87,6 +85,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         [RelayCommand]
         private void ShowExtendedProperties()
         {
+            if (Session.SelectedElement is null) return;
+
             var props = new List<IPropertyItem>()
             {
                 new PropertyItem<double>(Symbol.UValue, () => Session.SelectedElement.UValueUserDef, value => Session.SelectedElement.UValueUserDef = value) { DecimalPlaces = 3 },
@@ -104,8 +104,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void CopyElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
             Session.SelectedElementId = selectedInternalId;
-
-            if (Session.SelectedElement is null) return;
             Session.SelectedProject.DuplicateElement(Session.SelectedElement);
             Session.OnNewElementAdded();
         }
@@ -114,7 +112,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private void SelectElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
             Session.SelectedElementId = selectedInternalId;
-            if (Session.SelectedElement != null) Session.SelectedElement.RefreshResults();
+            Session.SelectedElement.RefreshResults();
             UpdateXamlBindingsOnElementSelected();
         }
 
@@ -177,12 +175,14 @@ namespace BauphysikToolWPF.UI.ViewModels
         // Workaround since Combobox has no Command or Click option
         partial void OnSortingPropertyIndexChanged(int value)
         {
+            if (Session.SelectedProject is null) return;
             Session.SelectedProject.LastUsedSortingType = value;
             UpdateXamlBindings();
         }
 
         partial void OnGroupingPropertyIndexChanged(int value)
         {
+            if (Session.SelectedProject is null) return;
             Session.SelectedProject.LastUsedGroupingType = value;
             UpdateXamlBindings();
         }
@@ -213,8 +213,8 @@ namespace BauphysikToolWPF.UI.ViewModels
         public bool IsGroupingEnabled => GroupingPropertyIndex > 0;
 
         // For Grouping and Sorting of WrapPanel: Expose as Static for 'GroupingTypeToPropertyName' Converter
-        public ElementSortingType SelectedSorting => (ElementSortingType)_sortingPropertyIndex;
-        public ElementGroupingType SelectedGrouping => (ElementGroupingType)_groupingPropertyIndex;
+        public ElementSortingType SelectedSorting => (ElementSortingType)SortingPropertyIndex;
+        public ElementGroupingType SelectedGrouping => (ElementGroupingType)GroupingPropertyIndex;
         public Visibility ElementInfoVisibility => ElementToolsAvailable ? Visibility.Visible : Visibility.Collapsed;
         public IEnumerable<string> SortingProperties => ElementSortingTypeMapping.Values; // Has to match ElementSortingType enum values (+Order)
         public IEnumerable<string> GroupingProperties => ElementGroupingTypeMapping.Values; // Has to match ElementSortingType enum values (+Order)
@@ -249,7 +249,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateOnNewElementAdded()
         {
-            Session.SelectedElementId = Session.SelectedProject.Elements.Last().InternalId;
+            Session.SelectedElementId = Session.SelectedProject?.Elements.Last().InternalId ?? -1;
             UpdateXamlBindings();
         }
         private void UpdateOnElementRemoved()
@@ -276,6 +276,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateXamlBindings()
         {
+            if (Session.SelectedProject is null) return;
+
             // For Updating MVVM Properties
             Session.SelectedProject.SortElements(SelectedSorting);
 
@@ -298,8 +300,8 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateOnNewProjectAdded()
         {
-            _sortingPropertyIndex = Session.SelectedProject?.LastUsedSortingType ?? 0;
-            _groupingPropertyIndex = Session.SelectedProject?.LastUsedGroupingType ?? 0;
+            SortingPropertyIndex = Session.SelectedProject?.LastUsedSortingType ?? 0;
+            GroupingPropertyIndex = Session.SelectedProject?.LastUsedGroupingType ?? 0;
 
             UpdateXamlBindings();
         }

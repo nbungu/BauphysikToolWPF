@@ -1,5 +1,5 @@
 ﻿using BauphysikToolWPF.Models.UI;
-using BauphysikToolWPF.Services.UI;
+using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.ViewModels;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -8,7 +8,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
-using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.UI
 {
@@ -52,8 +51,7 @@ namespace BauphysikToolWPF.UI
         /// <param name="e">The MouseWheelEventArgs containing event data.</param>
         private void ScrollViewer_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (e.Handled)
-                return;
+            if (e.Handled) return;
 
             DependencyObject current = e.OriginalSource as DependencyObject;
 
@@ -62,8 +60,7 @@ namespace BauphysikToolWPF.UI
                 // Check for ComboBox in visual/logical tree
                 if (current is FrameworkElement fe && fe.TemplatedParent is ComboBox comboBox)
                 {
-                    if (comboBox.IsDropDownOpen)
-                        return; // ComboBox should handle scrolling
+                    if (comboBox.IsDropDownOpen) return; // ComboBox should handle scrolling
                 }
 
                 current = current is Visual or Visual3D
