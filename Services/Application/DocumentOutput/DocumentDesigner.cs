@@ -1,17 +1,18 @@
-﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Models.Domain.Helper;
-using BauphysikToolWPF.Services.UI.OpenGL;
-using PdfSharp.Drawing;
-using PdfSharp.Drawing.Layout;
-using PdfSharp.Pdf;
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Windows.Media;
+using BauphysikToolWPF.Models.Domain;
+using BauphysikToolWPF.Models.Domain.Helper;
+using BauphysikToolWPF.Services.UI.OpenGL;
+using PdfSharp.Drawing;
+using PdfSharp.Drawing.Layout;
+using PdfSharp.Fonts;
+using PdfSharp.Pdf;
 
-namespace BauphysikToolWPF.Services.Application
+namespace BauphysikToolWPF.Services.Application.DocumentOutput
 {
     public class DocumentDesigner
     {
@@ -31,7 +32,9 @@ namespace BauphysikToolWPF.Services.Application
 
             // Force rendering of all element images
             project.RenderAllElementImages(target: RenderTarget.Document, withDecorations: true);
-            
+
+
+            GlobalFontSettings.FontResolver = new PdfFontResolver();
             XFont titleFont = new XFont(FontFamilyRegular, 10, XFontStyleEx.Bold);
             XFont bodyFont = new XFont(FontFamilyRegular, 9, XFontStyleEx.Regular);
             XFont bodyFontBold = new XFont(FontFamilyRegular, 9, XFontStyleEx.Bold);
@@ -353,6 +356,7 @@ namespace BauphysikToolWPF.Services.Application
             var project = element.ParentProject;
             if (project == null) return;
 
+            GlobalFontSettings.FontResolver = new PdfFontResolver();
             XFont titleFont = new XFont(FontFamilyRegular, 10, XFontStyleEx.Bold);
             XFont titleFontSm = new XFont(FontFamilyRegular, 9, XFontStyleEx.Bold);
             XFont bodyFont = new XFont(FontFamilyRegular, 9, XFontStyleEx.Regular);
