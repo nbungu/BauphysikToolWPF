@@ -1,7 +1,7 @@
 # BauphysikToolWPF
 
 
-Installer der neuestes Version: [v0.1.0-alpha](https://bauphysik-tool.de/strapi/uploads/Bauphysik_Tool_Installer_v0_1_0_alpha_be64462fbc.msi) oder auf [bauphysik-tool.de](https://bauphysik-tool.de/downloads)
+Installer der neuestes Version: [v0.3.1-alpha](https://bauphysik-tool.de/strapi/uploads/Bauphysik_Tool_Installer_v0_3_1_alpha_ae684b00e3.msi) oder auf [bauphysik-tool.de](https://bauphysik-tool.de/downloads)
 
 ## Bauteile organisieren
 - Alle projektbezogenen Elemente auf einen Blick
