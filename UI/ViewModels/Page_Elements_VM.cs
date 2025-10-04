@@ -3,6 +3,7 @@ using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI.Converter;
+using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.Generic;
@@ -33,6 +34,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             Session.NewElementAdded += UpdateOnNewElementAdded;
             Session.ElementRemoved += UpdateOnElementRemoved;
             Session.SelectedElementChanged += UpdateXamlBindings;
+
+            Logger.LogInfo("[VM] Success");
         }
         
         /*

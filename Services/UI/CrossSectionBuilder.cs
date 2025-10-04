@@ -86,7 +86,7 @@ namespace BauphysikToolWPF.Services.UI
         public void RebuildCrossSection()
         {
             DrawingGeometries = GetDrawing();
-            Logger.LogInfo($"Updated cross section drawing of element: {Element}.");
+            Logger.LogInfo($"Updated cross section drawing of element: {Element}. DrawingGeometries: {DrawingGeometries.Count}");
         }
 
         private void UpdateCanvasSize()

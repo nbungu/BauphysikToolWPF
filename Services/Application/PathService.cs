@@ -81,6 +81,24 @@ namespace BauphysikToolWPF.Services.Application
         public static readonly string UserDatabaseFilePath = Path.Combine(UserProgramDataPath, "BauphysikToolDB.db");
 
         /// <summary>
+        /// Initial file which is extracted to the installation/build directory. Serves as template and backup.
+        /// File path: Build Directory/Resources/Fonts/segoeUI.fnt
+        /// </summary>
+        public static readonly string BuildDirFontFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Resources\\Fonts\\segoeUI.fnt"));
+
+        /// <summary>
+        /// Initial file which is extracted to the installation/build directory. Serves as template and backup.
+        /// File path: Build Directory/Services/UI/OpenGL/layer.vert
+        /// </summary>
+        public static readonly string BuildDirVertexShaderFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Services\\UI\\OpenGL\\layer.vert"));
+
+        /// <summary>
+        /// Initial file which is extracted to the installation/build directory. Serves as template and backup.
+        /// File path: Build Directory/Services/UI/OpenGL/layer.vert
+        /// </summary>
+        public static readonly string BuildDirFragmentShaderFilePath = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".\\Services\\UI\\OpenGL\\layer.frag"));
+
+        /// <summary>
         /// Retrieves the path to the user's Downloads folder.
         /// </summary>
         /// <returns>

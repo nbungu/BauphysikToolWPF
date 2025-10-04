@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.IO;
+using BT.Logging;
 
 namespace BauphysikToolWPF.Services.UI.OpenGL
 {
@@ -48,6 +49,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             //float paddingTop = 12, paddingBottom = 12;
             //float paddingX = 0, paddingY = 0;
 
+            Logger.LogInfo($"[OGL] Trying to load SDF-Font from {fntPath}");
             string dir = Path.GetDirectoryName(fntPath)!;
             string[] lines = File.ReadAllLines(fntPath);
 
@@ -92,14 +94,18 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             }
 
             if (imageFile == null)
+            {
+                Logger.LogError("[OGL] No texture page defined in FNT file.");
                 throw new FileNotFoundException("No texture page defined in FNT file.");
-
+            }
+            
             string fontAtlasPath = Path.Combine(dir, imageFile);
 
             using var fontAtlasBitmap = new Bitmap(fontAtlasPath);
 
             int texId = texManager.CreateFontTextureFromBitmap(fontAtlasBitmap);
 
+            Logger.LogInfo("[OGL] Successfully created SdfFont");
             return new SdfFont(glyphs, texId, lineHeight, 0f, 0f, 12f);
         }
 

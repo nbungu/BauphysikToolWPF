@@ -4,6 +4,7 @@ using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.UI.Converter;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using BT.Geometry;
+using BT.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -46,11 +47,25 @@ namespace BauphysikToolWPF.Services.UI
             DebugMode = false;
             if (CrossSectionBuilder.DrawingType == DrawingType.CrossSection)
             {
-                DrawFullCrossSectionScene();
+                try
+                {
+                    DrawFullCrossSectionScene();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error while drawing full cross-section scene: {ex}");
+                }
             }
             else if (CrossSectionBuilder.DrawingType == DrawingType.VerticalCut)
             {
-                DrawFullVerticalCutScene();
+                try
+                {
+                    DrawFullVerticalCutScene();
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError($"Error while drawing full vertical cut scene: {ex}");
+                }
             }
         }
 
@@ -60,6 +75,7 @@ namespace BauphysikToolWPF.Services.UI
 
         private void DrawFullVerticalCutScene()
         {
+            Logger.LogInfo("Start drawing scene: Vertical-Cut");
             //var fontSizePx = 28;
             var elementBounds = GetContentBounds(CrossSectionBuilder.DrawingGeometries);
             
@@ -149,6 +165,8 @@ namespace BauphysikToolWPF.Services.UI
 
         private void DrawFullCrossSectionScene()
         {
+            Logger.LogInfo("Start drawing scene: Cross-Section");
+
             var fontSizePx = 32;
             var elementBounds = GetContentBounds(CrossSectionBuilder.DrawingGeometries);
             int dimChainOffset = (int)SizeOf1Cm * 3;

@@ -1,7 +1,8 @@
+using BauphysikToolWPF.Services.Application;
+using BT.Logging;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Windows.Media;
@@ -26,7 +27,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public void SetDefaultFont()
         {
-            SdfFont = FontLoader.LoadFromFntFile("Resources/Fonts/segoeUI.fnt", this);
+            SdfFont = FontLoader.LoadFromFntFile(PathService.BuildDirFontFilePath, this);
         }
 
         public int? GetTextureIdForBrush(DrawingBrush brush)
@@ -72,7 +73,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var err = GL.GetError();
             if (err != ErrorCode.NoError)
             {
-                Debug.WriteLine($"[OGL] TextureManager: Error in CreateTextureFromBitmap: {err}");
+                Logger.LogError($"[OGL] Failed to create texture from bitmap: {err}");
             }
             return texId;
         }
@@ -112,7 +113,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var err = GL.GetError();
             if (err != ErrorCode.NoError)
             {
-                Debug.WriteLine($"[OGL] TextureManager: Error in CreateTextTextureFromBitmap: {err}");
+                Logger.LogError($"[OGL] Failed to create font texture from bitmap: {err}");
             }
             return texId;
         }
@@ -143,6 +144,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             foreach (var texId in _hatchTextureCache.Values) GL.DeleteTexture(texId);
             _hatchTextureCache.Clear();
             _hatchTextureSizes.Clear();
+            Logger.LogInfo("[OGL] TextureManager disposed");
         }
     }
 }

@@ -56,6 +56,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var textureManager = new TextureManager();
             var renderer = new OglRenderer(textureManager);
             renderer.Initialize();
+            // no renderer.SetupFBOs needed, we read directly from the default framebuffer -> no MSAA
 
             // Build scene using same logic as OglController.Redraw()
             var sceneBuilder = scene;

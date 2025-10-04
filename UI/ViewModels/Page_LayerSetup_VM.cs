@@ -8,6 +8,7 @@ using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System;
+using BT.Logging;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -43,6 +44,8 @@ namespace BauphysikToolWPF.UI.ViewModels
             PropertyItem<double>.PropertyChanged += PropertyItemChanged;
             PropertyItem<int>.PropertyChanged += PropertyItemChanged;
             PropertyItem<bool>.PropertyChanged += PropertyItemChanged;
+
+            Logger.LogInfo("[VM] Success");
         }
 
         /*

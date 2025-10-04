@@ -1,5 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
+using BT.Logging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,7 +18,9 @@ namespace BauphysikToolWPF.UI
             InitializeComponent(); // Initializes xaml objects -> Calls constructors for all referenced Class Bindings in the xaml (from DataContext, ItemsSource etc.)
 
             // Hook Loaded event: by then the control is fully constructed and in the visual tree
-            this.Loaded += Page_Elements_Loaded;    
+            this.Loaded += Page_Elements_Loaded;
+
+            Logger.LogInfo("Success");
         }
 
         private void InitializeElements()

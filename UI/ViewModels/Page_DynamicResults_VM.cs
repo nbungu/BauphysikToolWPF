@@ -141,7 +141,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void RefreshXamlBindings()
         {
-            _element = Session.SelectedElement;
+            _element = Session.SelectedElement ?? new Element();
         }
 
         private ISeries[] GetDataPoints_e()

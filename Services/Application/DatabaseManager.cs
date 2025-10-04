@@ -13,15 +13,15 @@ namespace BauphysikToolWPF.Services.Application
 {
     public static class DatabaseManager
     {
-        public static readonly string ConnectionString = PathService.UserDatabaseFilePath; //SetupFile();
-        public static readonly SQLiteConnection Database = new SQLiteConnection(ConnectionString);
+        public static readonly string ConnectionString = PathService.UserDatabaseFilePath;
+        public static readonly SQLiteConnection Database = GetDatabase(ConnectionString);
 
         /// <summary>
         /// Moves and Installs the Initial Database from Installation/Output directory to C:\ProgramData or C:\Users\{current_user}\AppData.
         /// All Application Data should be stored where read/write access is not limited.
         /// </summary>
         /// <returns>Connection String to the new Database Location where the App has full read/write permissions</returns>
-        public static string SetupFile(bool forceReplace = false, bool copyFromBuildPath = true)
+        public static void SetupFile(bool forceReplace = false, bool copyFromBuildPath = true)
         {
             try
             {
@@ -49,36 +49,39 @@ namespace BauphysikToolWPF.Services.Application
                     File.Delete(userDatabaseFilePath);
                     File.Copy(sourceDatabasePath, userDatabaseFilePath);
                 }
-                Logger.LogInfo($"Connecting to Database: {userDatabaseFilePath}");
-
-                return userDatabaseFilePath;
+                
             }
             catch (Exception e)
             {
                 Logger.LogError($"Could not get installed Database: {e.Message}");
-                return PathService.BuildDirDatabaseFilePath;
             }
         }
 
-        /// <summary>
-        /// Original InitialDB.db file located in the root visual studio project folder /Repositories
-        /// </summary>
-        /// <returns>Connection string linked to the InitialDB.db file which is at the 'BauphysikToolWPF/Repositories' directory</returns>
-        public static string GetInitialDatabase()
-        {
-            Logger.LogInfo($"Connecting to Database: {PathService.RootProjectDatabaseFile}");
-            return PathService.RootProjectDatabaseFile;
-        }
+        ///// <summary>
+        ///// Original InitialDB.db file located in the root visual studio project folder /Repositories
+        ///// </summary>
+        ///// <returns>Connection string linked to the InitialDB.db file which is at the 'BauphysikToolWPF/Repositories' directory</returns>
+        //public static string GetInitialDatabase()
+        //{
+        //    Logger.LogInfo($"Connecting to Database: {PathService.RootProjectDatabaseFile}");
+        //    return PathService.RootProjectDatabaseFile;
+        //}
 
-        /// <summary>
-        /// Copy of original InitialDB.db which is located in the Build-Directory (bin/Debug/... build path).
-        /// Gets replaced every build: "Copy, if newer".
-        /// </summary>
-        /// <returns>Connection string linked to the InitialDB.db file which is at the 'BauphysikToolWPF/bin/Debug/net8.0-windows10.0.22621.0/Repositories' directory</returns>
-        public static string GetInitialDatabaseFromBuildDir()
+        ///// <summary>
+        ///// Copy of original InitialDB.db which is located in the Build-Directory (bin/Debug/... build path).
+        ///// Gets replaced every build: "Copy, if newer".
+        ///// </summary>
+        ///// <returns>Connection string linked to the InitialDB.db file which is at the 'BauphysikToolWPF/bin/Debug/net8.0-windows10.0.22621.0/Repositories' directory</returns>
+        //public static string GetInitialDatabaseFromBuildDir()
+        //{
+        //    Logger.LogInfo($"Connecting to Database: {PathService.BuildDirDatabaseFilePath}");
+        //    return PathService.BuildDirDatabaseFilePath;
+        //}
+
+        private static SQLiteConnection GetDatabase(string connectionString)
         {
-            Logger.LogInfo($"Connecting to Database: {PathService.BuildDirDatabaseFilePath}");
-            return PathService.BuildDirDatabaseFilePath;
+            Logger.LogInfo($"Connecting to Database: {connectionString}");
+            return new SQLiteConnection(connectionString);
         }
 
         /*
@@ -163,8 +166,31 @@ namespace BauphysikToolWPF.Services.Application
 
         public static List<DocumentParameter> QueryDocumentParameterBySymbol(Symbol symbol)
         {
-            //if (symbol == Symbol.None) return GetEnvVars();
-            return GetDocumentParametersQuery().Where(e => (int)e.Symbol == (int)symbol).ToList();
+            try
+            {
+                var query = GetDocumentParametersQuery();
+                if (query is null)
+                {
+                    Logger.LogError("GetDocumentParametersQuery() returned null.");
+                    return new List<DocumentParameter>();
+                }
+
+                // Defensive: ensure Symbol is valid enum value
+                if (!Enum.IsDefined(typeof(Symbol), symbol))
+                {
+                    Logger.LogError($"Invalid Symbol value: {symbol}");
+                    return new List<DocumentParameter>();
+                }
+
+                return query
+                    .Where(e => e.Symbol == symbol)
+                    .ToList();
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"Failed to query document parameters for symbol: {symbol}, {ex}");
+                return new List<DocumentParameter>();
+            }
         }
         public static List<DocumentParameter> QueryDocumentParameterByDocumentSourceType(DocumentSourceType sourceType)
         {

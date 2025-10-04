@@ -1,4 +1,5 @@
 using BT.Geometry;
+using BT.Logging;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Wpf;
@@ -7,6 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
 using Point = BT.Geometry.Point;
@@ -84,23 +86,26 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public OglController(GLWpfControl view, IOglSceneBuilder sceneBuilder)
         {
+            Logger.LogInfo("[OGL] Starting OglController");
+
             _textureManager = new TextureManager();
             _oglRenderer = new OglRenderer(_textureManager);
             // Order is relevant!
             ConnectToView(view);
             SetNewSceneBuilder(sceneBuilder);
+
+            Logger.LogInfo("[OGL] Successfully constructed OglController");
         }
 
         public void ConnectToView(GLWpfControl view, GLWpfControlSettings? settings = null)
         {
-            View = view ?? throw new InvalidOperationException("View not connected.");
+            View = view ?? throw new InvalidOperationException("No view was passed.");
             settings ??= new GLWpfControlSettings
             {
                 MajorVersion = 4,
                 MinorVersion = 3,
-                Profile = ContextProfile.Core,
-                ContextFlags = ContextFlags.Default,
                 RenderContinuously = false,
+                Samples = 0, // [0, 1] turns MSAA Off. Max = 16
             };
 
             view.Render += OnRender;
@@ -117,10 +122,19 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             view.SizeChanged += _sizeChangedHandler;
             view.MouseRightButtonUp += _resetViewHandler;
 
-            view.Start(settings);
+            try
+            {
+                view.Start(settings);
+            }
+            catch (Exception ex)
+            {
+                Logger.LogError($"[OGL] Failed to start the GLWpfControl view: {ex}");
+            }
+
+            Logger.LogInfo("[OGL] Successfully connected to GLWpfControl view");
 
             _oglRenderer.Initialize();
-            Console.WriteLine("[OGL] Renderer initialized");
+            //_oglRenderer.SetupFBOs((int)CurrentViewSize.Width, (int)CurrentViewSize.Height, settings.Samples);
         }
 
         /// <summary>
@@ -137,6 +151,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             sceneBuilder.TextureManager = _textureManager;
             SceneBuilder = sceneBuilder;
             SceneBuilder.Dpi = 96; // 96 DPI means 1 pt = 1 px at 100% zoom. (150/300 DPI for print quality)
+
+            Logger.LogInfo("[OGL] Successfully set new sceneBuilder");
         }
 
         public void Invalidate() => View.InvalidateVisual();
@@ -156,37 +172,10 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             else Redraw();
         }
 
-        //public void SetZoom(double zoom, Point? cursorPos = null)
-        //{
-        //    float newZoom = (float)Math.Clamp(zoom, 0.4, 6.0);
-
-        //    if (cursorPos.HasValue && View != null && SceneBuilder != null)
-        //    {
-        //        // 1. World position under cursor before zoom
-        //        var worldBefore = ConvertMouseToScene(cursorPos.Value);
-
-        //        // 2. Apply zoom
-        //        _zoomFactor = newZoom;
-
-        //        // 3. World position under cursor after zoom
-        //        var worldAfter = ConvertMouseToScene(cursorPos.Value);
-
-        //        // 4. Compute difference and adjust pan
-        //        var dx = (float)(worldBefore.X - worldAfter.X) / (float)SceneBuilder.SceneBounds.Width * 2f;
-        //        var dy = (float)(worldBefore.Y - worldAfter.Y) / (float)SceneBuilder.SceneBounds.Height * 2f;
-        //        _pan += new Vector(dx, dy);
-        //    }
-        //    else
-        //    {
-        //        _zoomFactor = newZoom;
-        //    }
-
-        //    if (SceneBuilder.IsTextSizeZoomable) Invalidate();
-        //    else Redraw();
-        //}
-
         public void Redraw()
         {
+            Logger.LogInfo("[OGL] Redrawing scene");
+
             if (ForceFlushTexturesOnRender) _textureManager.Dispose();
             SceneBuilder.ZoomFactor = ZoomFactor;
             SceneBuilder.WorldUnitsPerPixel = WorldUnitsPerPixel;
@@ -212,6 +201,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var bounds = SceneBuilder.SceneBounds;
             var proj = BuildProjection(size, bounds, ZoomFactor, _pan);
 
+            //_oglRenderer.RenderToScreen(
+            //    SceneBuilder.RectVertices.ToArray(),
+            //    SceneBuilder.LineVertices.ToArray(),
+            //    SceneBuilder.RectBatches,
+            //    SceneBuilder.LineBatches,
+            //    proj);
             _oglRenderer.Render(
                 SceneBuilder.RectVertices.ToArray(),
                 SceneBuilder.LineVertices.ToArray(),
@@ -274,13 +269,14 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                            Matrix4.CreateScale(scale) *
                            Matrix4.CreateTranslation(-1f + dx + (float)panVect.X, 1f - dy + (float)panVect.Y, 0);
 
-
             return Matrix4.CreateOrthographicOffCenter(0, ctrlW, ctrlH, 0, zIndexStart, zIndexEnd) * view;
         }
 
         public void Dispose()
         {
             if (_disposed) return;
+
+            Logger.LogInfo("[OGL] Disposing controller");
 
             _oglRenderer.Dispose();
             _textureManager.Dispose();
@@ -297,7 +293,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             View.MouseRightButtonUp -= _resetViewHandler;
 
             _disposed = true;
-            Console.WriteLine("[OGL] Renderer disposed");
         }
 
         #region Scene Image Capture
