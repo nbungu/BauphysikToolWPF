@@ -19,7 +19,7 @@ namespace BauphysikToolWPF.UI
 
         private OglController _oglController;
         private Element _element; // Selected Element from Session
-        private Page_LayerSetup_VM _viewModel; // Selected Element from Session
+        private readonly Page_LayerSetup_VM _viewModel; // Selected Element from Session
 
         #endregion
 

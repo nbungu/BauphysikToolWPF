@@ -121,15 +121,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             view.SizeChanged += _sizeChangedHandler;
             view.MouseRightButtonUp += _resetViewHandler;
-
-            try
-            {
-                view.Start(settings);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"[OGL] Failed to start the GLWpfControl view: {ex}");
-            }
+            view.Start(settings);
 
             Logger.LogInfo("[OGL] Successfully connected to GLWpfControl view");
 
