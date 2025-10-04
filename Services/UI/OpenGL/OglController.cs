@@ -1,14 +1,12 @@
 using BT.Geometry;
 using BT.Logging;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
 using OpenTK.Wpf;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
 using Point = BT.Geometry.Point;
@@ -86,15 +84,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public OglController(GLWpfControl view, IOglSceneBuilder sceneBuilder)
         {
-            Logger.LogInfo("[OGL] Starting OglController");
-
             _textureManager = new TextureManager();
             _oglRenderer = new OglRenderer(_textureManager);
             // Order is relevant!
             ConnectToView(view);
             SetNewSceneBuilder(sceneBuilder);
-
-            Logger.LogInfo("[OGL] Successfully constructed OglController");
         }
 
         public void ConnectToView(GLWpfControl view, GLWpfControlSettings? settings = null)
@@ -122,19 +116,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             view.SizeChanged += _sizeChangedHandler;
             view.MouseRightButtonUp += _resetViewHandler;
 
-            try
-            {
-                view.Start(settings);
-            }
-            catch (Exception ex)
-            {
-                Logger.LogError($"[OGL] Failed to start the GLWpfControl view: {ex}");
-            }
-
-            Logger.LogInfo("[OGL] Successfully connected to GLWpfControl view");
-
+            view.Start(settings);
+            
             _oglRenderer.Initialize();
-            //_oglRenderer.SetupFBOs((int)CurrentViewSize.Width, (int)CurrentViewSize.Height, settings.Samples);
+
+            Logger.LogInfo("[OGL] Success");
         }
 
         /// <summary>
@@ -144,15 +130,21 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public void SetNewSceneBuilder(IOglSceneBuilder sceneBuilder)
         {
             if (sceneBuilder is null)
+            {
+                Logger.LogError("[OGL] SceneBuilder cannot be null.");
                 throw new ArgumentNullException(nameof(sceneBuilder), "SceneBuilder cannot be null.");
+            }
             if (!IsViewConnected)
+            {
+                Logger.LogError("[OGL] View must be connected before setting a new SceneBuilder.");
                 throw new InvalidOperationException("View must be connected before setting a new SceneBuilder.");
+            }
 
             sceneBuilder.TextureManager = _textureManager;
             SceneBuilder = sceneBuilder;
             SceneBuilder.Dpi = 96; // 96 DPI means 1 pt = 1 px at 100% zoom. (150/300 DPI for print quality)
 
-            Logger.LogInfo("[OGL] Successfully set new sceneBuilder");
+            Logger.LogInfo("[OGL] Success");
         }
 
         public void Invalidate() => View.InvalidateVisual();
@@ -174,8 +166,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public void Redraw()
         {
-            Logger.LogInfo("[OGL] Redrawing scene");
-
             if (ForceFlushTexturesOnRender) _textureManager.Dispose();
             SceneBuilder.ZoomFactor = ZoomFactor;
             SceneBuilder.WorldUnitsPerPixel = WorldUnitsPerPixel;
@@ -201,19 +191,12 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var bounds = SceneBuilder.SceneBounds;
             var proj = BuildProjection(size, bounds, ZoomFactor, _pan);
 
-            //_oglRenderer.RenderToScreen(
-            //    SceneBuilder.RectVertices.ToArray(),
-            //    SceneBuilder.LineVertices.ToArray(),
-            //    SceneBuilder.RectBatches,
-            //    SceneBuilder.LineBatches,
-            //    proj);
             _oglRenderer.Render(
                 SceneBuilder.RectVertices.ToArray(),
                 SceneBuilder.LineVertices.ToArray(),
                 SceneBuilder.RectBatches,
                 SceneBuilder.LineBatches,
                 proj);
-            Console.WriteLine("[OGL] Render called");
         }
 
         /// <summary>
@@ -276,8 +259,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (_disposed) return;
 
-            Logger.LogInfo("[OGL] Disposing controller");
-
             _oglRenderer.Dispose();
             _textureManager.Dispose();
 
@@ -293,6 +274,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             View.MouseRightButtonUp -= _resetViewHandler;
 
             _disposed = true;
+
+            Logger.LogInfo("[OGL] Disposed");
         }
 
         #region Scene Image Capture

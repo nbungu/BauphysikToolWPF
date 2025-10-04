@@ -53,7 +53,7 @@ namespace BauphysikToolWPF.Services.UI
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while drawing full cross-section scene: {ex}");
+                    Logger.LogError($"[OGL] Error while drawing full cross-section scene: {ex}");
                 }
             }
             else if (CrossSectionBuilder.DrawingType == DrawingType.VerticalCut)
@@ -64,7 +64,7 @@ namespace BauphysikToolWPF.Services.UI
                 }
                 catch (Exception ex)
                 {
-                    Logger.LogError($"Error while drawing full vertical cut scene: {ex}");
+                    Logger.LogError($"[OGL] Error while drawing full vertical cut scene: {ex}");
                 }
             }
         }
@@ -75,7 +75,7 @@ namespace BauphysikToolWPF.Services.UI
 
         private void DrawFullVerticalCutScene()
         {
-            Logger.LogInfo("Start drawing scene: Vertical-Cut");
+            Logger.LogInfo("[OGL] Starting...");
             //var fontSizePx = 28;
             var elementBounds = GetContentBounds(CrossSectionBuilder.DrawingGeometries);
             
@@ -161,11 +161,12 @@ namespace BauphysikToolWPF.Services.UI
                 AddText("3", elementBounds.TopRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Top);
                 AddText("5", elementBounds.Center, Brushes.Black, 24, alignment: TextAlignment.Center);
             }
+            Logger.LogInfo("[OGL] Success");
         }
 
         private void DrawFullCrossSectionScene()
         {
-            Logger.LogInfo("Start drawing scene: Cross-Section");
+            Logger.LogInfo("[OGL] Starting...");
 
             var fontSizePx = 32;
             var elementBounds = GetContentBounds(CrossSectionBuilder.DrawingGeometries);
@@ -261,6 +262,8 @@ namespace BauphysikToolWPF.Services.UI
                 AddText("3", elementBounds.TopRight, Brushes.Black, 24, alignment: TextAlignment.Right | TextAlignment.Top);
                 AddText("5", elementBounds.Center, Brushes.Black, 24, alignment: TextAlignment.Center);
             }
+
+            Logger.LogInfo("[OGL] Success");
         }
 
         private Rectangle GetContentBounds(IEnumerable<IDrawingGeometry> drawingGeometries, double pad = 0.0)

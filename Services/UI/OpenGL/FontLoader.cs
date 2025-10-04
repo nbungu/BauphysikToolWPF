@@ -105,7 +105,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             int texId = texManager.CreateFontTextureFromBitmap(fontAtlasBitmap);
 
-            Logger.LogInfo("[OGL] Successfully created SdfFont");
+            Logger.LogInfo("[OGL] Success");
+
             return new SdfFont(glyphs, texId, lineHeight, 0f, 0f, 12f);
         }
 
@@ -126,7 +127,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private static string Extract(string line, string key)
         {
             int i = line.IndexOf(key + "=");
-            if (i == -1) throw new Exception($"Key {key} not found in line: {line}");
+            if (i == -1)
+            {
+                Logger.LogError($"[OGL] Key {key} not found in line: {line}");
+                throw new Exception($"Key {key} not found in line: {line}");
+            }
             int start = i + key.Length + 1;
             int end = line.IndexOf(' ', start);
             return end == -1 ? line.Substring(start) : line.Substring(start, end - start);

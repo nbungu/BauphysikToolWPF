@@ -144,7 +144,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             foreach (var texId in _hatchTextureCache.Values) GL.DeleteTexture(texId);
             _hatchTextureCache.Clear();
             _hatchTextureSizes.Clear();
-            Logger.LogInfo("[OGL] TextureManager disposed");
+
+            Logger.LogInfo("[OGL] Disposed");
         }
     }
 }

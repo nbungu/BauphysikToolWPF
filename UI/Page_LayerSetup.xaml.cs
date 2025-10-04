@@ -4,7 +4,6 @@ using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.Services.UI.OpenGL;
 using BauphysikToolWPF.UI.ViewModels;
-using BT.Logging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,7 +18,7 @@ namespace BauphysikToolWPF.UI
 
         private OglController _oglController;
         private Element _element; // Selected Element from Session
-        private Page_LayerSetup_VM _viewModel; // Selected Element from Session
+        private readonly Page_LayerSetup_VM _viewModel; // Selected Element from Session
 
         #endregion
 
@@ -39,8 +38,6 @@ namespace BauphysikToolWPF.UI
             // Event Handlers
             this.IsVisibleChanged += UserControl_IsVisibleChanged; // Save current canvas as image, just before closing Page_LayerSetup Page
             this.KeyDown += Page_LayerSetup_KeyDown; // Handle KeyDown events for this page
-
-            Logger.LogInfo("Success");
         }
 
         private void InitalizeLayers()
@@ -58,8 +55,6 @@ namespace BauphysikToolWPF.UI
 
         private void InitalizeOglView()
         {
-            Logger.LogInfo("[OGL] Starting OglController for LayerSetup-Page");
-
             _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
             _oglController.IsTextSizeZoomable = false;
             _oglController.Redraw(); // Initial render to display the scene
@@ -67,20 +62,7 @@ namespace BauphysikToolWPF.UI
             Session.SelectedElementChanged += _oglController.Redraw;
             Session.SelectedLayerChanged += _oglController.Redraw;
             Session.SelectedLayerIndexChanged += _oglController.Redraw;
-
-            Logger.LogInfo("[OGL] Successfully started OglController for LayerSetup-Page");
         }
-
-        //private void OnLoaded(object sender, RoutedEventArgs e)
-        //{
-        //    InitalizeOglView();
-
-        //    // View Model
-        //    _viewModel = new Page_LayerSetup_VM(_oglController);
-        //    this.DataContext = _viewModel;
-
-        //    Logger.LogInfo("Success");
-        //}
 
         // Save current canvas as image, just before closing Page_LayerSetup
         private void UserControl_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)

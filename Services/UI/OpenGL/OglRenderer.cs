@@ -21,12 +21,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private readonly TextureManager _textureManager;
         private int SdfFontTextureId => _textureManager.SdfFont?.TextureId ?? -1;
 
-        public BitmapSource LastCapturedImage { get; private set; }
+        public BitmapSource? LastCapturedImage { get; private set; }
 
         public OglRenderer(TextureManager texManager)
         {
             _textureManager = texManager ?? throw new ArgumentNullException(nameof(texManager));
-            Logger.LogInfo("[OGL] Success");
         }
 
         public void Initialize()
@@ -43,7 +42,6 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             _bgColor = (Brush)System.Windows.Application.Current.Resources["PrimaryLightBrush"];
 
             // Line Smoothing and Opacity
-            //GL.Enable(EnableCap.Multisample); don't request MSAA!
             GL.Enable(EnableCap.LineSmooth); // antialiased lines
             GL.Hint(HintTarget.LineSmoothHint, HintMode.Nicest);
             GL.Enable(EnableCap.Blend);
@@ -88,7 +86,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
             _initialized = true;
 
-            Logger.LogInfo("[OGL] Successfully initialized renderer");
+            Logger.LogInfo("[OGL] Success");
         }
 
         /// <summary>
@@ -186,127 +184,8 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.DeleteVertexArray(_lineVao);
             GL.DeleteProgram(_shaderProgram);
 
-            //// Delete FBOs and textures
-            //if (_msaaRbo != 0) GL.DeleteRenderbuffer(_msaaRbo);
-            //if (_msaaColor != 0) GL.DeleteRenderbuffer(_msaaColor);
-            //if (_msaaFbo != 0) GL.DeleteFramebuffer(_msaaFbo);
-            //if (_finalFbo != 0) GL.DeleteFramebuffer(_finalFbo);
-
-            Logger.LogInfo("[OGL] Renderer disposed");
+            Logger.LogInfo("[OGL] Disposed");
         }
-
-        /*
-        #region TESTING
-
-        public void RenderToScreen(
-            float[] rectVertices,
-            float[] lineVertices,
-            List<(int? TextureId, int Count)> rectBatches,
-            List<(float LineWidth, int Count)> lineBatches,
-            Matrix4 projectionMatrix,
-            Vector4? clearColorOverride = null)
-        {
-            var bg = clearColorOverride ?? _bgColor.ToVectorColor();
-
-            // 1. Bind target framebuffer
-            int targetFbo = _usingMSAA ? _msaaFbo : _finalFbo;
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, targetFbo);
-
-            GL.Viewport(0, 0, _width, _height);
-            GL.ClearColor(bg.X, bg.Y, bg.Z, bg.W);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            // 2. Draw content
-            Render(rectVertices, lineVertices, rectBatches, lineBatches, projectionMatrix, bg);
-
-            // 3. If using MSAA, resolve into final single-sample FBO
-            if (_usingMSAA)
-            {
-                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _msaaFbo);
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _finalFbo);
-                // TESTING
-                GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-                GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-                //
-                GL.BlitFramebuffer(0, 0, _width, _height, 0, 0, _width, _height, ClearBufferMask.ColorBufferBit, BlitFramebufferFilter.Linear);
-            }
-
-            // 4. Finally, render _finalFbo to GLWpfControl (or the screen)
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-            // Bind _finalFbo as texture and draw full-screen quad if needed
-            // Or GLWpfControl can automatically sample from the resolved texture
-        }
-
-        private int _msaaFbo = 0;
-        private int _msaaColor = 0;
-        private int _msaaRbo = 0;
-        private bool _usingMSAA = false;
-        private int _width, _height;
-        private int _finalFbo = 0; // single-sample FBO for display
-        public void SetupFBOs(int width, int height, int msaaSamples = 4)
-        {
-            _width = width;
-            _height = height;
-
-            // --- Try MSAA first ---
-            try
-            {
-                GL.GenFramebuffers(1, out _msaaFbo);
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, _msaaFbo);
-
-                // Color attachment
-                GL.GenRenderbuffers(1, out _msaaColor);
-                GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _msaaColor);
-                GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, msaaSamples, RenderbufferStorage.Rgba8, width, height);
-                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, RenderbufferTarget.Renderbuffer, _msaaColor);
-
-                // Depth-stencil attachment
-                GL.GenRenderbuffers(1, out _msaaRbo);
-                GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, _msaaRbo);
-                GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, msaaSamples, RenderbufferStorage.Depth24Stencil8, width, height);
-                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthStencilAttachment, RenderbufferTarget.Renderbuffer, _msaaRbo);
-
-                if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-                    throw new Exception("MSAA framebuffer incomplete");
-
-                _usingMSAA = true;
-                Logger.LogInfo("[OGL] MSAA framebuffer created successfully.");
-            }
-            catch (Exception ex)
-            {
-                Logger.LogWarning($"MSAA framebuffer creation failed, falling back to single-sample FBO: {ex}");
-                _usingMSAA = false;
-            }
-
-            // --- Single-sample FBO for final output ---
-            GL.GenFramebuffers(1, out _finalFbo);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, _finalFbo);
-
-            int colorTex;
-            GL.GenTextures(1, out colorTex);
-            GL.BindTexture(TextureTarget.Texture2D, colorTex);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, width, height, 0, PixelFormat.Bgra, PixelType.UnsignedByte, IntPtr.Zero);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, colorTex, 0);
-
-            // Depth for final FBO
-            int rbo;
-            GL.GenRenderbuffers(1, out rbo);
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, width, height);
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rbo);
-
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-                throw new Exception("Final single-sample framebuffer incomplete");
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        }
-
-        #endregion
-        */
 
         #region Image capturing
 
@@ -358,6 +237,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 if (tex != 0) GL.DeleteTexture(tex);
                 if (rbo != 0) GL.DeleteRenderbuffer(rbo);
                 if (fbo != 0) GL.DeleteFramebuffer(fbo);
+                Logger.LogError($"[OGL] Failed to create framebuffer: {status}");
                 throw new Exception($"Failed to create framebuffer: {status}");
             }
 
@@ -384,6 +264,9 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var bmp = BitmapSource.Create(width, height, dpi, dpi, PixelFormats.Bgra32, null, pixels, width * 4);
             bmp.Freeze();
             LastCapturedImage = FlipVertically(bmp);
+
+            Logger.LogInfo("[OGL] Success");
+
             return LastCapturedImage;
         }
 
@@ -449,7 +332,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             GL.DeleteShader(vertShader);
             GL.DeleteShader(fragShader);
 
-            Logger.LogInfo($"[OGL] Successfully compiled and linked shaders: {PathService.BuildDirVertexShaderFilePath}, {PathService.BuildDirFragmentShaderFilePath}");
+            Logger.LogInfo($"[OGL] Success");
 
             return program;
         }

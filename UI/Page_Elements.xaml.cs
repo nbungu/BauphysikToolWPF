@@ -1,6 +1,5 @@
 ﻿using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
-using BT.Logging;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -19,8 +18,6 @@ namespace BauphysikToolWPF.UI
 
             // Hook Loaded event: by then the control is fully constructed and in the visual tree
             this.Loaded += Page_Elements_Loaded;
-
-            Logger.LogInfo("Success");
         }
 
         private void InitializeElements()
