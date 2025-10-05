@@ -1,14 +1,12 @@
 using BT.Geometry;
 using BT.Logging;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
 using OpenTK.Wpf;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
 using Point = BT.Geometry.Point;

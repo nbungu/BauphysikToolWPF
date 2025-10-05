@@ -163,10 +163,10 @@
                     </Button>
                 </StackPanel>
 
-
                 <Grid Grid.Column="1" Margin="8">
                     <glWpfControl:GLWpfControl x:Name="OpenTkControl"/>
                 </Grid>
+
             </Grid>
 
             <!--Grid Splitter-->
