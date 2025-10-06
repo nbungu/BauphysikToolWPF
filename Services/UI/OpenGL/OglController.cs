@@ -24,7 +24,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public event Action<ShapeId>? ShapeHovered;
         public event Action<ShapeId>? ShapeClicked;
         public event Action<ShapeId>? ShapeDoubleClicked;
-        public event Action<ShapeId>? ShapeRightClicked;
+        public event Action<ShapeId, Point>? ShapeRightClicked;
         
         #region private fields
 
@@ -462,7 +462,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                 {
                     if (shp.Rectangle.Contains(pt))
                     {
-                        ShapeRightClicked?.Invoke(shp.ShapeId);
+                        ShapeRightClicked?.Invoke(shp.ShapeId, cur);
                         break;
                     }
                 }

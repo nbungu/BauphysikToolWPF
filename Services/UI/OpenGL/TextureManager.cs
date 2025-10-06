@@ -27,7 +27,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
         public void SetDefaultFont()
         {
-            SdfFont = FontLoader.LoadFromFntFile(PathService.BuildDirFontFilePath, this);
+            SdfFont = OglFontLoader.LoadFromFntFile(PathService.BuildDirFontFilePath, this);
         }
 
         public int? GetTextureIdForBrush(DrawingBrush brush)

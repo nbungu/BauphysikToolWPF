@@ -39,6 +39,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             _oglController.ShapeClicked += OnShapeClicked;
             _oglController.ShapeDoubleClicked += OnShapeDoubleClicked;
+            _oglController.ShapeRightClicked += OnShapeRightClicked;
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += PropertyItemChanged;
@@ -432,6 +433,26 @@ namespace BauphysikToolWPF.UI.ViewModels
             Console.WriteLine($"VM Shape double clicked: {shape}");
         }
 
+        private void OnShapeRightClicked(ShapeId shapeId, BT.Geometry.Point mousePos)
+        {
+            // First: Select OnShapeClicked to set SelectedLayer
+            OnShapeClicked(shapeId); // triggers SelectedLayerIndexChanged which is hooked to a Redraw event
+
+            // Second: provide context Menu
+            var items = new List<ContextMenuItemDefinition>
+            {
+                new() { Header = "Bearbeiten", IconSource = "pack://application:,,,/Resources/Icons/edit-2.png", Action = EditLayer },
+                new() { Header = "Schicht hinzufügen", IconSource = "pack://application:,,,/Resources/Icons/plus.png", Action = AddLayer },
+                new() { Header = "Duplizieren", IconSource = "pack://application:,,,/Resources/Icons/copy.png", Action = DuplicateLayer },
+                new() { Header = "Löschen", IconSource = "pack://application:,,,/Resources/Icons/delete-2.png", Action = DeleteLayer },
+                new() { IsSeparator = true },
+                new() { Header = "Balkenlage hinzufügen", IconSource = "pack://application:,,,/Resources/Icons/plus.png", Action = () => AddSubConstructionLayer(SelectedLayer?.InternalId ?? -1), IsVisible = !SelectedLayer?.HasSubConstruction},
+                new() { Header = "Balkenlage bearbeiten", IconSource = "pack://application:,,,/Resources/Icons/edit-2.png", Action = () => EditSubConstructionLayer(SelectedLayer?.InternalId ?? -1), IsVisible = SelectedLayer?.HasSubConstruction },
+                new() { Header = "Balkenlage löschen", IconSource = "pack://application:,,,/Resources/Icons/delete-2.png", Action = () => DeleteSubConstructionLayer(SelectedLayer?.InternalId ?? -1), IsVisible = SelectedLayer?.HasSubConstruction },
+            };
+            DynamicContextMenuService.ShowContextMenu(_oglController.View, mousePos, items);
+        }
+
         private void ProjectDataChanged()
         {
             RefreshGauges();
@@ -474,7 +495,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         {
             for (int i = 0; i < LayerList.Count; i++)
             {
-                LayerList[i].IsSelected = (i == value);
+                LayerList[i].IsSelected = i == value;
             }
             Session.OnSelectedLayerIndexChanged();
         }
