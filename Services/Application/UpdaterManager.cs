@@ -16,7 +16,9 @@ namespace BauphysikToolWPF.Services.Application
 
         // testing: curl -v "http://192.168.0.160:1337/api/downloads?sort=publishedAt:desc&fields%5B0%5D=semanticVersion&fields%5B1%5D=versionTag"
 
-        internal static readonly UpdaterJsonData ProgramVersionState = ReadFromFile();
+        internal static readonly UpdaterJsonData ProgramVersionState = ReadFromFile(PathService.UserUpdaterFilePath);
+
+        internal static readonly UpdaterJsonData BuildProgramVersionState = ReadFromFile(PathService.BuildDirUpdaterFilePath);
         internal static bool NewVersionAvailable => CompareSemanticVersions(ProgramVersionState.Current, ProgramVersionState.Latest) < 0;
         internal static bool IsServerAvailable => GetServerStatus();
         
@@ -27,6 +29,10 @@ namespace BauphysikToolWPF.Services.Application
             ProgramVersionState.Latest = serverData.Latest;
             ProgramVersionState.LatestTag = serverData.LatestTag;
             ProgramVersionState.LastUpdateCheck = TimeStamp.GetCurrentUnixTimestamp();
+
+            // Always update the current version from the build info
+            ProgramVersionState.Current = BuildProgramVersionState.Current;
+            ProgramVersionState.CurrentTag = BuildProgramVersionState.CurrentTag;
 
             SaveToFile(ProgramVersionState);
         }
@@ -80,6 +86,11 @@ namespace BauphysikToolWPF.Services.Application
                     File.Delete(userUpdaterJsonFilePath);
                     File.Copy(sourceUpdaterJsonFilePath, userUpdaterJsonFilePath);
                 }
+                // Extra: always replace the current version with the one from the build folder,
+                // Usecase: user updated the program, so the current version must be updated
+                ProgramVersionState.Current = BuildProgramVersionState.Current;
+                ProgramVersionState.CurrentTag = BuildProgramVersionState.CurrentTag;
+
             }
             catch (Exception e)
             {
@@ -121,16 +132,16 @@ namespace BauphysikToolWPF.Services.Application
             return updaterManager;
         }
 
-        private static UpdaterJsonData ReadFromFile()
+        private static UpdaterJsonData ReadFromFile(string filePath)
         {
-            if (!File.Exists(PathService.UserUpdaterFilePath))
+            if (!File.Exists(filePath))
             {
-                Logger.LogWarning($"Local version file not found");
+                Logger.LogWarning("updater.json not found");
                 return new UpdaterJsonData();
             }
             try
             {
-                string jsonString = File.ReadAllText(PathService.UserUpdaterFilePath);
+                string jsonString = File.ReadAllText(filePath);
 
                 var options = new JsonSerializerOptions
                 {
@@ -229,6 +240,8 @@ namespace BauphysikToolWPF.Services.Application
             return 0;
         }
 
+        
+        
         #endregion
     }
 }

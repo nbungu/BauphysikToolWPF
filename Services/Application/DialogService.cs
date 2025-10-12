@@ -46,7 +46,7 @@ namespace BauphysikToolWPF.Services.Application
             dialog.ShowDialog();
             return dialog.Result;
         }
-        public void ShowAddNewElementDialog()
+        public void ShowAddNewElementDialog(int atIndex = -1)
         {
             var dialog = new AddElementWindow
             {
@@ -67,13 +67,15 @@ namespace BauphysikToolWPF.Services.Application
             dialog.ShowDialog();
         }
 
-        public void ShowAddNewLayerDialog()
+        public void ShowAddNewLayerDialog(int atIndex = -1)
         {
             var dialog = new AddLayerWindow
             {
                 Owner = Current.MainWindow,
-                WindowStartupLocation = WindowStartupLocation.CenterOwner
+                WindowStartupLocation = WindowStartupLocation.CenterOwner,
             };
+            // TODO: Rework!
+            AddLayerWindow.AddAtIndex = atIndex;
             // Open as modal (Parent window pauses, waiting for the window to be closed)
             dialog.ShowDialog();
         }

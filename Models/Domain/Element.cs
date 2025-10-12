@@ -180,28 +180,16 @@ namespace BauphysikToolWPF.Models.Domain
         {
             get
             {
-                if (Recalculate)
-                {
-                    _thermalResults = new ThermalValuesCalc(this, ThermalCalcConfig);
-                    Recalculate = false;
-                }
+                if (!Recalculate) return _thermalResults;
+                _thermalResults = new ThermalValuesCalc(this, ThermalCalcConfig);
+                Recalculate = false;
                 return _thermalResults;
             }
         }
 
         private CheckRequirements? _requirements;
         [JsonIgnore]
-        public CheckRequirements Requirements
-        {
-            get
-            {
-                if (_requirements is null)
-                {
-                    _requirements = new CheckRequirements(this);
-                }
-                return _requirements;
-            }
-        }
+        public CheckRequirements Requirements => _requirements ??= new CheckRequirements(this);
 
         #endregion
 

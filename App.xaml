@@ -61,6 +61,8 @@
 
         <!--Button Icons source paths-->
         <BitmapImage x:Key="ButtonIcon_Add_B" UriSource="/Resources/Icons/plus.png"/>
+        <BitmapImage x:Key="ButtonIcon_Add_Below_B" UriSource="/Resources/Icons/plus_below.png"/>
+        <BitmapImage x:Key="ButtonIcon_Add_B_B" UriSource="/Resources/Icons/plus_B.png"/>
         <BitmapImage x:Key="ButtonIcon_Add_W" UriSource="/Resources/Icons/plus_w.png"/>
         <BitmapImage x:Key="ButtonIcon_AddLayer_B" UriSource="/Resources/Icons/add_layer.png"/>
         <BitmapImage x:Key="ButtonIcon_AddLayer_W" UriSource="/Resources/Icons/add_layer_w.png"/>
@@ -70,6 +72,7 @@
         <BitmapImage x:Key="ButtonIcon_AlignBottom_B" UriSource="/Resources/Icons/align-bottom.png"/>
         <BitmapImage x:Key="ButtonIcon_AddElement_W" UriSource="/Resources/Icons/add_element_w.png"/>
         <BitmapImage x:Key="ButtonIcon_Delete_B" UriSource="/Resources/Icons/delete-2.png"/>
+        <BitmapImage x:Key="ButtonIcon_Delete_B_B" UriSource="/Resources/Icons/delete_B.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteAll_B" UriSource="/Resources/Icons/delete.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteLayer_B" UriSource="/Resources/Icons/delete_layer.png"/>
         <BitmapImage x:Key="ButtonIcon_DeleteLayer_W" UriSource="/Resources/Icons/delete_layer_w.png"/>

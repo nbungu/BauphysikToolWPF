@@ -229,26 +229,17 @@ namespace BauphysikToolWPF.Models.Domain
             if (SubConstruction != null) this.SubConstruction.CopyToNewLayer(copy);
             return copy;
         }
-        public void CopyToElement(Element element)
-        {
-            var copy = Copy();
-            element.Layers.Add(copy);
-        }
+        public void CopyToElement(Element element) => element.Layers.Add(Copy());
 
-        public void UpdateTimestamp()
-        {
-            UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
-        }
-        
-        public override string ToString() // Überlagert vererbte standard ToString() Methode 
+        public void UpdateTimestamp() => UpdatedAt = TimeStamp.GetCurrentUnixTimestamp();
+
+        // Überlagert vererbte standard ToString() Methode 
+        public override string ToString() 
         {
             return Thickness + " cm, " + Material.Name + " (Pos.: " + LayerPosition + ")";
         }
 
-        public void RemoveSubConstruction()
-        {
-            this.SubConstruction = null;
-        }
+        public void RemoveSubConstruction() => SubConstruction = null;
 
         /// <summary>
         /// Forces re-initialization of the Material by querying the database using the current MaterialId.

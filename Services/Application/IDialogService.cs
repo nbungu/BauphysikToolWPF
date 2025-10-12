@@ -9,9 +9,9 @@ namespace BauphysikToolWPF.Services.Application
         MessageBoxResult ShowSaveConfirmationDialog();
         MessageBoxResult ShowExitSaveConfirmationDialog();
         MessageBoxResult ShowDeleteConfirmationDialog();
-        void ShowAddNewElementDialog();
+        void ShowAddNewElementDialog(int atIndex = -1);
         void ShowEditElementDialog(int targetElementInternalId);
-        void ShowAddNewLayerDialog();
+        void ShowAddNewLayerDialog(int atIndex = -1);
         void ShowEditLayerDialog(int targetLayerInternalId);
         void ShowAddNewSubconstructionDialog(int targetLayerInternalId);
         void ShowEditSubconstructionDialog(int targetLayerInternalId);

@@ -6,14 +6,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:converter="clr-namespace:BauphysikToolWPF.Services.UI.Converter"
              xmlns:controls="clr-namespace:BauphysikToolWPF.UI.CustomControls"
-             xmlns:vm="clr-namespace:BauphysikToolWPF.UI.ViewModels"
              mc:Ignorable="d" 
              d:DesignHeight="1200" d:DesignWidth="1200">
 
-    <UserControl.DataContext>
-        <!-- Sets the Data Reference (Source) for 'Binding' in this XAML -->
+    <!--<UserControl.DataContext>
+        --><!-- Sets the Data Reference (Source) for 'Binding' in this XAML --><!--
         <vm:Page_Project_VM/>
-    </UserControl.DataContext>
+    </UserControl.DataContext>-->
 
     <UserControl.Resources>
 

@@ -59,10 +59,13 @@
     <None Remove="Resources\Fonts\segoeUI_3.png" />
     <None Remove="Resources\Fonts\segoeUI_4.png" />
     <None Remove="Resources\Icons\books.png" />
+    <None Remove="Resources\Icons\delete_B.png" />
     <None Remove="Resources\Icons\error.png" />
     <None Remove="Resources\Icons\export-pdf-full_b.png" />
     <None Remove="Resources\Icons\floor-plan-128.png" />
     <None Remove="Resources\Icons\info_b.png" />
+    <None Remove="Resources\Icons\plus_B.png" />
+    <None Remove="Resources\Icons\plus_below.png" />
     <None Remove="Resources\Icons\triangle-warning.png" />
   </ItemGroup>
 
@@ -127,6 +130,7 @@
     <Resource Include="Resources\Icons\books.png" />
     <Resource Include="Resources\Icons\comment.png" />
     <Resource Include="Resources\Icons\comment_bold.png" />
+    <Resource Include="Resources\Icons\delete_B.png" />
     <Resource Include="Resources\Icons\error.png" />
     <Resource Include="Resources\Icons\export-pdf-full_b.png" />
     <Resource Include="Resources\Icons\favicon.png" />
@@ -213,6 +217,8 @@
     <Resource Include="Resources\Icons\open_project.png" />
     <Resource Include="Resources\Icons\open_project_w.png" />
     <Resource Include="Resources\Icons\plus.png" />
+    <Resource Include="Resources\Icons\plus_B.png" />
+    <Resource Include="Resources\Icons\plus_below.png" />
     <Resource Include="Resources\Icons\plus_w.png" />
     <Resource Include="Resources\Icons\haken.png" />
     <Resource Include="Resources\Icons\haken_g.png" />

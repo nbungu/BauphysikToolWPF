@@ -1,22 +1,35 @@
-﻿using BauphysikToolWPF.Services.UI;
+﻿using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.UI.CustomControls;
 using System;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.UI
 {
     public partial class AddLayerWindow : Window
     {
         private static ToastNotification? _toastNotification;
-        public static int TargetLayerInternalId;
+        
+        public static int TargetLayerInternalId { get; private set; }
+        public static int AddAtIndex { get; set; }
 
-        public AddLayerWindow(int targetLayerInternalId = -1)
+        // New Layer
+        public AddLayerWindow()
+        {
+            TargetLayerInternalId = -1;
+            AddAtIndex = -1;
+
+            InitializeComponent();
+            _toastNotification = this.Toast;
+        }
+
+        // Edit Layer
+        public AddLayerWindow(int targetLayerInternalId)
         {
             TargetLayerInternalId = targetLayerInternalId;
+            AddAtIndex = -1;
 
             InitializeComponent();
             _toastNotification = this.Toast;

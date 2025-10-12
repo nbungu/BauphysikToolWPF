@@ -17,29 +17,31 @@ using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
 {
-    //ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
+    // ViewModel for Page_LayerSetup.xaml: Used in xaml as "DataContext"
+    // Contains all page specific data models, commands and UI Refresh logic
     public partial class Page_LayerSetup_VM : ObservableObject
     {
-        private readonly IDialogService _dialogService;
+        private readonly IDialogService _dialogService; // TODO: make static
+
+        #region Source data models
+
         private readonly Element _element;
         private readonly OglController _oglController;
 
+        #endregion
+
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
-        public Page_LayerSetup_VM(OglController scene)
+        public Page_LayerSetup_VM(Page_LayerSetup parent)
         {
-            _oglController = scene;
+            _oglController = parent.OglController;
             _element = Session.SelectedElement ?? new Element();
             _dialogService = new DialogService();
 
-            // Allow child Windows to trigger UpdateAll of this Window
+            // Allow child Windows to trigger UI refreshs of this Window
             Session.SelectedProjectChanged += ProjectDataChanged;
             Session.SelectedLayerChanged += LayerChanged;
             Session.SelectedElementChanged += ElementChanged;
             Session.EnvVarsChanged += EnvVarsChanged;
-
-            _oglController.ShapeClicked += OnShapeClicked;
-            _oglController.ShapeDoubleClicked += OnShapeDoubleClicked;
-            _oglController.ShapeRightClicked += OnShapeRightClicked;
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += PropertyItemChanged;
@@ -49,30 +51,29 @@ namespace BauphysikToolWPF.UI.ViewModels
             Logger.LogInfo("[VM] Success");
         }
 
-        /*
-         * MVVM Commands - UI Interaction with Commands
-         * 
-         * Update ONLY UI-Used Values by fetching from Database!
-         */
-
+        #region MVVM Commands
+        
         [RelayCommand]
         private void SwitchPage(NavigationPage desiredPage) => MainWindow.SetPage(desiredPage);
 
         [RelayCommand]
-        private void AddLayer() => _dialogService.ShowAddNewLayerDialog();
+        public void AddLayer() => _dialogService.ShowAddNewLayerDialog();
 
+        [RelayCommand]
+        public void AddLayerBelow() => _dialogService.ShowAddNewLayerDialog(SelectedLayer?.LayerPosition ?? -1);
+        
         [RelayCommand]
         public void EditLayer() => _dialogService.ShowEditLayerDialog(SelectedLayer?.InternalId ?? -1);
 
         [RelayCommand]
-        private void AddSubConstructionLayer(int targetLayerInternalId = -1)
+        public void AddSubConstructionLayer(int targetLayerInternalId = -1)
         {
             if (targetLayerInternalId == -1) targetLayerInternalId = SelectedLayer?.InternalId ?? -1;
             _dialogService.ShowAddNewSubconstructionDialog(targetLayerInternalId);
         }
 
         [RelayCommand]
-        private void EditSubConstructionLayer(int targetLayerInternalId = -1)
+        public void EditSubConstructionLayer(int targetLayerInternalId = -1)
         {
             if (targetLayerInternalId == -1) targetLayerInternalId = SelectedLayer?.InternalId ?? -1;
             _dialogService.ShowEditSubconstructionDialog(targetLayerInternalId);
@@ -116,7 +117,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void DuplicateLayer()
+        public void DuplicateLayer()
         {
             if (SelectedLayer is null) return;
 
@@ -125,7 +126,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void MoveLayerDown()
+        public void MoveLayerDown()
         {
             if (SelectedLayer is null) return;
 
@@ -134,7 +135,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void MoveLayerUp()
+        public void MoveLayerUp()
         {
             if (SelectedLayer is null) return;
 
@@ -143,7 +144,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void LayerDoubleClick() => EditLayer();
+        public void LayerDoubleClick() => EditLayer();
 
         [RelayCommand]
         private void ToggleDecorationVisibility()
@@ -152,16 +153,16 @@ namespace BauphysikToolWPF.UI.ViewModels
            OnPropertyChanged(nameof(ShowDecoration));
         }
 
-        // This method will be called whenever SelectedLayer changes
-        //partial void OnSelectedListViewItemChanged(Layer? value) => SelectedLayerIndexChanged(value);
-        partial void OnSelectedLayerIndexChanged(int value) => SelectedLayerIndexChanged(value);
+        #endregion
+
+        #region MVVM Observable Properties
 
         /*
          * MVVM Properties: Observable, if user triggers the change of these properties via frontend
          * 
          * Everything the user can edit or change: All objects affected by user interaction.
          */
-
+        
         [ObservableProperty]
         private int _selectedLayerIndex;
 
@@ -199,12 +200,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         [NotifyPropertyChangedFor(nameof(RelFeValue))]
         private static int _relFeIndex;
 
-        /*
-        * MVVM Capsulated Properties + Triggered + Updated by other Properties (NotifyPropertyChangedFor)
-        * 
-        * Not Observable, not directly mutated by user input
-        */
+        #endregion
 
+        #region Regular Properties
+        
         public string Title => $"'{_element.Name}' - Schichtaufbau ";
         public bool ShowDecoration => _oglController.ShowSceneDecoration;
         public string PropertyHeader1 => $"Schicht: {SelectedLayer?.Material.Name}";
@@ -214,7 +213,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public ObservableCollection<Layer> LayerList => new ObservableCollection<Layer>(_element.Layers);
         public IEnumerable<IPropertyItem>? LayerPropertyBag => SelectedLayer?.PropertyBag;
         public IEnumerable<IPropertyItem>? LayerSubConstrPropertyBag => SelectedLayer?.SubConstruction?.PropertyBag;
-
         public bool IsLayerSelected => SelectedLayer != null;
         public bool HasItems => LayerList.Count > 0;
         public Visibility SubConstructionExpanderVisibility => IsLayerSelected && SelectedLayer?.SubConstruction != null ? Visibility.Visible : Visibility.Collapsed;
@@ -226,7 +224,6 @@ namespace BauphysikToolWPF.UI.ViewModels
         public List<string> RseKeys { get; } = DatabaseManager.QueryDocumentParameterBySymbol(Symbol.TransferResistanceSurfaceExterior).Select(e => e.Name).ToList();
         public List<string> RelFiKeys { get; } = DatabaseManager.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityInterior).Select(e => e.Name).ToList();
         public List<string> RelFeKeys { get; } = DatabaseManager.QueryDocumentParameterBySymbol(Symbol.RelativeHumidityExterior).Select(e => e.Name).ToList();
-
 
         private GaugeItem? _uValueGauge;
         /// <summary>
@@ -404,54 +401,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             }
         }
 
-        #region Who triggers: Event Handlers for UI Events
+        #endregion
 
-        private void OnShapeClicked(ShapeId shape)
-        {
-            var targetLayer = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null);
-            if (targetLayer != null)
-            {
-                var index = LayerList.IndexOf(targetLayer);
-                SelectedLayerIndex = index;
-            }
-            Console.WriteLine($"VM Shape clicked: {shape}");
-        }
+        #region Event Handlers
 
-        private void OnShapeDoubleClicked(ShapeId shape)
-        {
-            var layerShapeTarget = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null);
-            
-            if (layerShapeTarget != null)
-            {
-                var index = LayerList.IndexOf(layerShapeTarget);
-                SelectedLayerIndex = index;
-
-                if (shape.Type == ShapeType.SubConstructionLayer) EditSubConstructionLayer(SelectedLayer?.InternalId ?? -1);
-                else if (shape.Type == ShapeType.DimensionalChain) LayerDoubleClick(); // TODO: Put focus on thickness TextBox;
-                else LayerDoubleClick();
-            }
-            Console.WriteLine($"VM Shape double clicked: {shape}");
-        }
-
-        private void OnShapeRightClicked(ShapeId shapeId, BT.Geometry.Point mousePos)
-        {
-            // First: Select OnShapeClicked to set SelectedLayer
-            OnShapeClicked(shapeId); // triggers SelectedLayerIndexChanged which is hooked to a Redraw event
-
-            // Second: provide context Menu
-            var items = new List<ContextMenuItemDefinition>
-            {
-                new() { Header = "Bearbeiten", IconSource = "pack://application:,,,/Resources/Icons/edit-2.png", Action = EditLayer },
-                new() { Header = "Schicht hinzufügen", IconSource = "pack://application:,,,/Resources/Icons/plus.png", Action = AddLayer },
-                new() { Header = "Duplizieren", IconSource = "pack://application:,,,/Resources/Icons/copy.png", Action = DuplicateLayer },
-                new() { Header = "Löschen", IconSource = "pack://application:,,,/Resources/Icons/delete-2.png", Action = DeleteLayer },
-                new() { IsSeparator = true },
-                new() { Header = "Balkenlage hinzufügen", IconSource = "pack://application:,,,/Resources/Icons/plus.png", Action = () => AddSubConstructionLayer(SelectedLayer?.InternalId ?? -1), IsVisible = !SelectedLayer?.HasSubConstruction},
-                new() { Header = "Balkenlage bearbeiten", IconSource = "pack://application:,,,/Resources/Icons/edit-2.png", Action = () => EditSubConstructionLayer(SelectedLayer?.InternalId ?? -1), IsVisible = SelectedLayer?.HasSubConstruction },
-                new() { Header = "Balkenlage löschen", IconSource = "pack://application:,,,/Resources/Icons/delete-2.png", Action = () => DeleteSubConstructionLayer(SelectedLayer?.InternalId ?? -1), IsVisible = SelectedLayer?.HasSubConstruction },
-            };
-            DynamicContextMenuService.ShowContextMenu(_oglController.View, mousePos, items);
-        }
+        // This method will be called whenever SelectedLayer changes
+        //partial void OnSelectedListViewItemChanged(Layer? value) => SelectedLayerIndexChanged(value);
+        partial void OnSelectedLayerIndexChanged(int value) => SelectedLayerIndexChanged(value);
 
         private void ProjectDataChanged()
         {
@@ -502,7 +458,7 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         #endregion
 
-        #region What is refreshed: Refresh Methods for selected XAML Elements
+        #region UI Refresh Methods
 
         private void RefreshPropertyGrid()
         {

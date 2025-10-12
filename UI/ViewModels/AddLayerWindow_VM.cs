@@ -20,7 +20,7 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         private readonly Element _element = new Element();
         private readonly Layer? _targetLayer;
-        
+
         // Called by 'InitializeComponent()' from AddLayerWindow.cs due to Class-Binding in xaml via DataContext
         public AddLayerWindow_VM()
         {
@@ -112,7 +112,10 @@ namespace BauphysikToolWPF.UI.ViewModels
                     IsEffective = true,
                     MaterialId = materialId,
                 };
+                if (AddLayerWindow.AddAtIndex != -1) layer.LayerPosition = AddLayerWindow.AddAtIndex;
+                
                 _element.AddLayer(layer);
+               
                 // Trigger event to update LayerWindow and all subscriber windows
                 Session.OnSelectedElementChanged();
             }

@@ -117,11 +117,15 @@
                               CanContentScroll="False"
                               VerticalAlignment="Stretch"
                               PreviewMouseWheel="LayerListScrollViewer_PreviewMouseWheel">
-                    <controls:LayersListView Layers="{Binding LayerList}"
+                    <controls:LayersListView x:Name="LayerListView"
+                                             Layers="{Binding LayerList}"
                                              SelectedLayerIndex="{Binding SelectedLayerIndex, Mode=TwoWay}"
                                              SelectedLayer="{Binding SelectedLayer}"
                                              MinHeight="200"
-                                             MaxHeight="800"/>
+                                             MaxHeight="800"
+                                             MouseRightButtonUp="LayerListView_MouseRightButtonUp"
+                                             MouseDoubleClick="LayerListView_MouseDoubleClick"
+                                             MouseLeftButtonUp="LayerListView_MouseLeftButtonUp" />
                 </ScrollViewer>
                 <Label  Grid.Row="1" Visibility="{Binding NoLayersVisibility}"
                         Content="Keine Schichten vorhanden: Schicht hinzufügen!"

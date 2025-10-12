@@ -2,6 +2,7 @@
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.Application.DocumentOutput;
 using BauphysikToolWPF.Services.UI.Converter;
 using BT.Logging;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -12,7 +13,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
-using BauphysikToolWPF.Services.Application.DocumentOutput;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -46,29 +46,31 @@ namespace BauphysikToolWPF.UI.ViewModels
          */
 
         [RelayCommand]
-        private void AddNewElement()
+        public void AddNewElement()
         {
             Session.SelectedElementId = -1;
             _dialogService.ShowAddNewElementDialog();
         }
 
         [RelayCommand]
-        private void EditElement(int selectedInternalId) // CommandParameter is the Content Property of the Button which holds the ElementId
+        public void EditElement(int selectedInternalId) // CommandParameter is the Content Property of the Button which holds the ElementId
         {
             Session.SelectedElementId = selectedInternalId;
             _dialogService.ShowEditElementDialog(Session.SelectedElementId);
         }
 
         [RelayCommand]
-        private void DeleteElement(int selectedInternalId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
+        public void DeleteElement(int selectedInternalId) // CommandParameter is the 'Content' Property of the Button which holds the ElementId as string
         {
+            // Move to next Element before deleting
+            NextElement();
             // Delete selected Element
             Session.SelectedProject.RemoveElementById(selectedInternalId);
             Session.OnElementRemoved();
         }
 
         [RelayCommand]
-        private void DeleteAllElements()
+        public void DeleteAllElements()
         {
             if (Session.SelectedProject is null || Session.SelectedProject.Elements.Count == 0) return;
 
@@ -87,7 +89,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void ShowExtendedProperties()
+        public void ShowExtendedProperties()
         {
             if (Session.SelectedElement is null) return;
 
@@ -105,7 +107,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
         
         [RelayCommand]
-        private void CopyElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        public void CopyElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
             Session.SelectedElementId = selectedInternalId;
             Session.SelectedProject.DuplicateElement(Session.SelectedElement);
@@ -113,7 +115,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void SelectElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
+        public void SelectElement(int selectedInternalId) // CommandParameter is the Binding 'ElementId' of the Button inside the ItemsControl
         {
             Session.SelectedElementId = selectedInternalId;
             Session.SelectedElement.RefreshResults();
@@ -121,7 +123,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void NextElement()
+        public void NextElement()
         {
             if (SelectedElement == null || Elements.Count == 0)
                 return;
@@ -138,7 +140,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void PreviousElement()
+        public void PreviousElement()
         {
             if (SelectedElement == null || Elements.Count == 0)
                 return;
@@ -152,21 +154,21 @@ namespace BauphysikToolWPF.UI.ViewModels
         }
 
         [RelayCommand]
-        private void OpenElement()
+        public void OpenElement()
         {
             if (SelectedElement is null) return;
             MainWindow.SetPage(NavigationPage.LayerSetup, NavigationPage.ElementCatalogue);
         }
 
         [RelayCommand]
-        private void CreateSingleElementPdf(int selectedInternalId)
+        public void CreateSingleElementPdf(int selectedInternalId)
         {
             Session.SelectedElementId = selectedInternalId;
             DocumentDesigner.CreateSingleElementDocument(Session.SelectedElement);
         }
 
         [RelayCommand]
-        private void CreateFullPdf()
+        public void CreateFullPdf()
         {
             _dialogService.ShowLoadingDialog("Lädt, bitte warten...", minDurationMs: 400);
 
@@ -253,17 +255,15 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateOnNewElementAdded()
         {
-            Session.SelectedElementId = Session.SelectedProject?.Elements.Last().InternalId ?? -1;
+            // set selected element to most recently added
+            var lastElement = Session.SelectedProject?.Elements.MaxBy(e => e.CreatedAt);
+            SelectElement(lastElement?.InternalId ?? -1);
+
+            // update UI
             UpdateXamlBindings();
         }
         private void UpdateOnElementRemoved()
         {
-            // set selected element to last
-            if (Session.SelectedProject?.Elements.Count > 0)
-                Session.SelectedElementId = Session.SelectedProject.Elements.Last().InternalId;
-            else
-                Session.SelectedElementId = -1;
-
             // update UI
             UpdateXamlBindings();
         }
@@ -304,6 +304,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         private void UpdateOnNewProjectAdded()
         {
+            // Select First Element by default
+            SelectElement(Elements.FirstOrDefault()?.InternalId ?? -1);
+
             SortingPropertyIndex = Session.SelectedProject?.LastUsedSortingType ?? 0;
             GroupingPropertyIndex = Session.SelectedProject?.LastUsedGroupingType ?? 0;
 
