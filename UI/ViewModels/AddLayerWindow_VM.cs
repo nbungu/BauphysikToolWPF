@@ -128,13 +128,13 @@ namespace BauphysikToolWPF.UI.ViewModels
             {
                 if (IsMaterialInUse)
                 {
-                    AddLayerWindow.ShowToast($"Cannot delete custom Material: {SelectedListViewItem}. It is still being used!", ToastType.Warning);
+                    AddLayerWindow.ShowToast($"Löschen nicht möglich: {SelectedListViewItem} wird noch verwendet!", ToastType.Error);
                     Logger.LogWarning($"Cannot delete custom Material: {SelectedListViewItem}. It is still being used!");
                 }
                 else
                 {
                     DatabaseManager.DeleteMaterial(SelectedListViewItem);
-                    AddLayerWindow.ShowToast($"Deleted custom Material: {SelectedListViewItem}", ToastType.Success);
+                    AddLayerWindow.ShowToast($"Eigenes Material gelöscht: {SelectedListViewItem}", ToastType.Success);
                     Logger.LogInfo($"Deleted custom Material: {SelectedListViewItem}");
                     SelectedListViewItem = null;
                     SelectedTabIndex = -1;

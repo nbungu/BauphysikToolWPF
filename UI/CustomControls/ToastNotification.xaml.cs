@@ -1,7 +1,6 @@
-﻿using System;
+﻿using BauphysikToolWPF.Services.UI;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
 
 namespace BauphysikToolWPF.UI.CustomControls
 {
@@ -56,16 +55,16 @@ namespace BauphysikToolWPF.UI.CustomControls
             switch (ToastType)
             {
                 case ToastType.Info:
-                    ToastIcon.Source = Application.Current.Resources["ButtonIcon_Info_Flat"] as BitmapImage;
+                    ToastIcon.Source = Icons.ButtonIcon_Info_Flat;
                     break;
                 case ToastType.Success:
-                    ToastIcon.Source = Application.Current.Resources["ButtonIcon_OK_B"] as BitmapImage;
+                    ToastIcon.Source = Icons.ButtonIcon_OK_B;
                     break;
                 case ToastType.Warning:
-                    ToastIcon.Source = Application.Current.Resources["ButtonIcon_Warning_Flat"] as BitmapImage;
+                    ToastIcon.Source = Icons.ButtonIcon_Warning_Flat;
                     break;
                 case ToastType.Error:
-                    ToastIcon.Source = Application.Current.Resources["ButtonIcon_Error_Flat"] as BitmapImage;
+                    ToastIcon.Source = Icons.ButtonIcon_Error_Flat;
                     break;
             }
         }

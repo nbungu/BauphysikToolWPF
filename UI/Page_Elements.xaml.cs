@@ -6,6 +6,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using BauphysikToolWPF.Services.UI;
 
 namespace BauphysikToolWPF.UI
 {
@@ -105,11 +106,11 @@ namespace BauphysikToolWPF.UI
 
             var items = new List<ContextMenuItemDefinition>
             {
-                new() { Header = "Eigenschaften", IconSource = "pack://application:,,,/Resources/Icons/edit-2.png", Action = () => _vm.EditElement(internalId) },
-                new() { Header = "Kopie erstellen", IconSource = "pack://application:,,,/Resources/Icons/copy.png", Action = () => _vm.CopyElement(internalId) },
-                new() { Header = "Als PDF exportieren", IconSource = "pack://application:,,,/Resources/Icons/export.png", Action = () => _vm.CreateSingleElementPdf(internalId) },
+                new() { Header = "Eigenschaften", IconSource = Icons.ButtonIcon_Edit_B, Action = () => _vm.EditElement(internalId) },
+                new() { Header = "Kopie erstellen", IconSource = Icons.ButtonIcon_Copy_B, Action = () => _vm.CopyElement(internalId) },
+                new() { Header = "Als PDF exportieren", IconSource = Icons.ButtonIcon_Export_B, Action = () => _vm.CreateSingleElementPdf(internalId) },
                 new() { IsSeparator = true },
-                new() { Header = "Löschen", IconSource = "pack://application:,,,/Resources/Icons/delete-2.png", Action = () => _vm.DeleteElement(internalId) },
+                new() { Header = "Löschen", IconSource = Icons.ButtonIcon_Delete_B, Action = () => _vm.DeleteElement(internalId) },
             };
             DynamicContextMenuService.ShowContextMenu((Button)sender, mousePos, items);
         }

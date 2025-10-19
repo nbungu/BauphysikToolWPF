@@ -32,16 +32,17 @@ public static class DynamicContextMenuService
 
             var item = new MenuItem
             {
-                Header = def.Header,
-                Icon = string.IsNullOrEmpty(def.IconSource)
-                    ? null
-                    : new Image
-                    {
-                        Source = new ImageSourceConverter().ConvertFromString(def.IconSource) as ImageSource,
-                        Width = 16,
-                        Height = 16
-                    }
+                Header = def.Header
             };
+            if (def.IconSource != null)
+            {
+                item.Icon = new Image
+                {
+                    Source = def.IconSource,
+                    Width = 16,
+                    Height = 16
+                };
+            }
 
             item.Click += (_, _) => def.Action?.Invoke();
 
@@ -56,7 +57,7 @@ public static class DynamicContextMenuService
 public class ContextMenuItemDefinition
 {
     public string Header { get; set; } = string.Empty;
-    public string? IconSource { get; set; } // e.g. "pack://application:,,,/Resources/Icons/edit-2.png"
+    public ImageSource? IconSource { get; set; }
     public Action? Action { get; set; } // invoked method
     public bool IsSeparator { get; set; }
     public bool? IsVisible { get; set; } = true;

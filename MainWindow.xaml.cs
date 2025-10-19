@@ -75,22 +75,6 @@ namespace BauphysikToolWPF
             _toastNotification.ToastType = toastType;
             _toastNotification.Visibility = Visibility.Visible;
 
-            switch (toastType)
-            {
-                case ToastType.Info:
-                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Info_B"] as BitmapImage;
-                    break;
-                case ToastType.Success:
-                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_OK_B"] as BitmapImage;
-                    break;
-                case ToastType.Warning:
-                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Warning_B"] as BitmapImage;
-                    break;
-                case ToastType.Error:
-                    _toastNotification.ToastIcon.Source = Application.Current.Resources["ButtonIcon_Error_B"] as BitmapImage;
-                    break;
-            }
-
             // Hide the toast after 3 seconds
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(durationInSeconds) };
             timer.Tick += (s, e) =>

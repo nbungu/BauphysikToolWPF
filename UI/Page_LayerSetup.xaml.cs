@@ -118,14 +118,14 @@ namespace BauphysikToolWPF.UI
         {
             return new List<ContextMenuItemDefinition>
             {
-                new() { Header = "Bearbeiten", IconSource = "pack://application:,,,/Resources/Icons/edit-2.png", Action = _vm.EditLayer },
-                new() { Header = "Schicht", IconSource = "pack://application:,,,/Resources/Icons/plus.png", Action = _vm.AddLayerBelow },
-                new() { Header = "Duplizieren", IconSource = "pack://application:,,,/Resources/Icons/copy.png", Action = _vm.DuplicateLayer },
-                new() { Header = "Löschen", IconSource = "pack://application:,,,/Resources/Icons/delete-2.png", Action = _vm.DeleteLayer },
+                new() { Header = "Bearbeiten", IconSource = Icons.ButtonIcon_Edit_B, Action = _vm.EditLayer },
+                new() { Header = "Schicht", IconSource = Icons.ButtonIcon_Add_B, Action = _vm.AddLayerBelow },
+                new() { Header = "Duplizieren", IconSource = Icons.ButtonIcon_Copy_B, Action = _vm.DuplicateLayer },
+                new() { Header = "Löschen", IconSource = Icons.ButtonIcon_Delete_B, Action = _vm.DeleteLayer },
                 new() { IsSeparator = true },
-                new() { Header = "Balkenlage hinzufügen", IconSource = "pack://application:,,,/Resources/Icons/plus_B.png", Action = () => _vm.AddSubConstructionLayer(_vm.SelectedLayer?.InternalId ?? -1), IsVisible = !_vm.SelectedLayer?.HasSubConstruction},
-                new() { Header = "Balkenlage bearbeiten", IconSource = "pack://application:,,,/Resources/Icons/edit-2.png", Action = () => _vm.EditSubConstructionLayer(_vm.SelectedLayer?.InternalId ?? -1), IsVisible = _vm.SelectedLayer?.HasSubConstruction },
-                new() { Header = "Balkenlage löschen", IconSource = "pack://application:,,,/Resources/Icons/delete_B.png", Action = () => _vm.DeleteSubConstructionLayer(_vm.SelectedLayer?.InternalId ?? -1), IsVisible = _vm.SelectedLayer?.HasSubConstruction },
+                new() { Header = "Balkenlage hinzufügen", IconSource = Icons.ButtonIcon_Add_B_B, Action = () => _vm.AddSubConstructionLayer(_vm.SelectedLayer?.InternalId ?? -1), IsVisible = !_vm.SelectedLayer?.HasSubConstruction},
+                new() { Header = "Balkenlage bearbeiten", IconSource = Icons.ButtonIcon_Edit_B, Action = () => _vm.EditSubConstructionLayer(_vm.SelectedLayer?.InternalId ?? -1), IsVisible = _vm.SelectedLayer?.HasSubConstruction },
+                new() { Header = "Balkenlage löschen", IconSource = Icons.ButtonIcon_Delete_B_B, Action = () => _vm.DeleteSubConstructionLayer(_vm.SelectedLayer?.InternalId ?? -1), IsVisible = _vm.SelectedLayer?.HasSubConstruction },
             };
         }
 

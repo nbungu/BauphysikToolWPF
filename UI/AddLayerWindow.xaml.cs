@@ -3,7 +3,6 @@ using BauphysikToolWPF.UI.CustomControls;
 using System;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace BauphysikToolWPF.UI
@@ -40,7 +39,7 @@ namespace BauphysikToolWPF.UI
             e.Handled = TextInputValidation.NumericCurrentCulture.IsMatch(e.Text);
         }
 
-        // Example usage
+        // TODO: unify with MainWindow Toast
         public static void ShowToast(string message, ToastType toastType)
         {
             if (_toastNotification is null || _toastNotification.Visibility == Visibility.Visible) return;
@@ -48,22 +47,6 @@ namespace BauphysikToolWPF.UI
             _toastNotification.Message = message;
             _toastNotification.ToastType = toastType;
             _toastNotification.Visibility = Visibility.Visible;
-
-            switch (toastType)
-            {
-                case ToastType.Info:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/info.png"));
-                    break;
-                case ToastType.Success:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/success.png"));
-                    break;
-                case ToastType.Warning:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/warning.png"));
-                    break;
-                case ToastType.Error:
-                    _toastNotification.ToastIcon.Source = new BitmapImage(new Uri("pack://application:,,,/BauphysikToolWPF;component/Resources/Icons/Flat/error.png"));
-                    break;
-            }
 
             // Hide the toast after 3 seconds
             var timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(3) };

@@ -178,6 +178,7 @@
         <BitmapImage x:Key="ButtonIcon_Internet_Flat" UriSource="/Resources/Icons/Flat/internet.png"/>
 
         <!--Filetypes by https://www.flaticon.com/authors/Dimitry-Miroliubov -->
+        <BitmapImage x:Key="FiletypeIcon_BTK" UriSource="/Resources/Icons/Filetypes/btk.png"/>
         <BitmapImage x:Key="FiletypeIcon_CAD" UriSource="/Resources/Icons/Filetypes/cad.png"/>
         <BitmapImage x:Key="FiletypeIcon_DMG" UriSource="/Resources/Icons/Filetypes/dmg.png"/>
         <BitmapImage x:Key="FiletypeIcon_DOC" UriSource="/Resources/Icons/Filetypes/doc.png"/>
