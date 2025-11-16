@@ -1,14 +1,12 @@
 using BT.Geometry;
 using BT.Logging;
 using OpenTK.Mathematics;
-using OpenTK.Windowing.Common;
 using OpenTK.Wpf;
 using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
 using MouseButtonEventArgs = System.Windows.Input.MouseButtonEventArgs;
 using MouseWheelEventArgs = System.Windows.Input.MouseWheelEventArgs;
 using Point = BT.Geometry.Point;
@@ -27,13 +25,18 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         public event Action<ShapeId>? ShapeClicked;
         public event Action<ShapeId>? ShapeDoubleClicked;
         public event Action<ShapeId>? ShapeRightClicked;
-        
+        public event Action<ShapeId>? ShapeDragStarted;
+        public event Action<ShapeId>? ShapeDraggingOver;
+        public event Action<ShapeId>? ShapeDragCompleted;
+
         #region private fields
 
         private readonly OglRenderer _oglRenderer;
         private readonly TextureManager _textureManager;
         private bool _disposed;
-        private bool _dragging;
+        private bool _isDraggingScene;
+        private bool _isDraggingShape;
+        private ShapeId? _dragSourceShape;
         private float _zoomFactor = 1.0f; // Used to track zoom changes
         //private float _scale = 1.0f; // Used to track scale changes for text rendering
         private Vector _pan = Vector.Empty;
@@ -416,50 +419,70 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
             var now = DateTime.Now;
             var cur = e.GetPosition(View).ToPoint();
 
+            // ---------------------------------------
+            // 1) MIDDLE MOUSE = PAN
+            // ---------------------------------------
             if (e.ChangedButton == MouseButton.Middle)
             {
-                _dragging = true;
+                _isDraggingScene = true;
                 _lastMousePos = cur;
                 View.CaptureMouse();
                 Mouse.OverrideCursor = Cursors.ScrollAll;
+                return;
             }
 
-            if (!IsSceneInteractive) return;
+            // If not interactive, no object picking or dragging
+            if (!IsSceneInteractive)
+                return;
 
+            // Convert cursor to scene coordinates once
+            var pt = ConvertMouseToScene(cur);
+
+            // ---------------------------------------
+            // 2) LEFT MOUSE = CLICK or BEGIN DRAG
+            // ---------------------------------------
             if (e.ChangedButton == MouseButton.Left)
             {
-                var pt = ConvertMouseToScene(cur);
-                // Double click
-                if ((now - _lastLeftClickTime).TotalMilliseconds <= DoubleClickThresholdMs)
+                // Check double-click
+                bool isDoubleClick = (now - _lastLeftClickTime).TotalMilliseconds <= DoubleClickThresholdMs;
+
+                foreach (var shp in SceneBuilder.SceneShapes)
                 {
-                    foreach (var shp in SceneBuilder.SceneShapes)
+                    if (shp.Rectangle.Contains(pt))
                     {
-                        if (shp.Rectangle.Contains(pt))
+                        if (isDoubleClick)
                         {
-                            ShapeDoubleClicked?.Invoke(shp.ShapeId); // <-- Your new event
-                            break;
+                            // Send double click event
+                            ShapeDoubleClicked?.Invoke(shp.ShapeId);
                         }
-                    }
-                }
-                // Single Click
-                else
-                {
-                    foreach (var shp in SceneBuilder.SceneShapes)
-                    {
-                        if (shp.Rectangle.Contains(pt))
+                        else
                         {
+                            // Send single click event
                             ShapeClicked?.Invoke(shp.ShapeId);
-                            break;
+
+                            // ---------- DRAG START ----------
+                            _isDraggingShape = true;
+                            _dragSourceShape = shp.ShapeId;
+                            View.CaptureMouse();
+                            Mouse.OverrideCursor = Cursors.SizeAll;
+
+                            // Notify ViewModel that drag started
+                            ShapeDragStarted?.Invoke(shp.ShapeId);
                         }
+
+                        break;
                     }
                 }
 
                 _lastLeftClickTime = now;
+                return;
             }
 
+            // ---------------------------------------
+            // 3) RIGHT MOUSE = CONTEXT ACTION
+            // ---------------------------------------
             if (e.ChangedButton == MouseButton.Right)
             {
-                var pt = ConvertMouseToScene(cur);
                 foreach (var shp in SceneBuilder.SceneShapes)
                 {
                     if (shp.Rectangle.Contains(pt))
@@ -468,6 +491,7 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
                         break;
                     }
                 }
+                return;
             }
         }
 
@@ -475,7 +499,30 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         {
             if (e.ChangedButton == MouseButton.Middle)
             {
-                _dragging = false;
+                _isDraggingScene = false;
+                View.ReleaseMouseCapture();
+                Mouse.OverrideCursor = null;
+            }
+            if (e.ChangedButton == MouseButton.Left && _isDraggingShape)
+            {
+                var cur = e.GetPosition(View).ToPoint();
+                var pt = ConvertMouseToScene(cur);
+
+                foreach (var shp in SceneBuilder.SceneShapes)
+                {
+                    if (shp.Rectangle.Contains(pt))
+                    {
+                        if (_dragSourceShape != null)
+                        {
+                            ShapeDragCompleted?.Invoke(shp.ShapeId);
+                        }
+                        break;
+                    }
+                }
+
+                // reset drag state
+                _isDraggingShape = false;
+                _dragSourceShape = null;
                 View.ReleaseMouseCapture();
                 Mouse.OverrideCursor = null;
             }
@@ -484,7 +531,11 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
         private void OnMouseMove(object s, MouseEventArgs e)
         {
             var cur = e.GetPosition(View).ToPoint();
-            if (_dragging)
+
+            // ---------------------------------------
+            // 1) Middle-mouse panning
+            // ---------------------------------------
+            if (_isDraggingScene)
             {
                 Vector delta = cur - _lastMousePos;
                 _lastMousePos = cur;
@@ -494,26 +545,59 @@ namespace BauphysikToolWPF.Services.UI.OpenGL
 
                 _pan += new Vector(dx, dy);
                 Invalidate();
+                return;
             }
-            else
-            {
-                if (!IsSceneInteractive) return;
 
-                var pt = ConvertMouseToScene(cur);
-                foreach (var shape in SceneBuilder.SceneShapes)
+            // ---------------------------------------
+            // 2) If scene is not interactive, ignore
+            // ---------------------------------------
+            if (!IsSceneInteractive)
+                return;
+
+            var pt = ConvertMouseToScene(cur);
+
+            // ---------------------------------------
+            // 3) DRAGGING A LAYER (LEFT BUTTON HELD)
+            // ---------------------------------------
+            if (_isDraggingShape)
+            {
+                foreach (var shp in SceneBuilder.SceneShapes)
                 {
-                    if (shape.Rectangle.Contains(pt))
+                    if (shp.Rectangle.Contains(pt))
                     {
-                        ShapeHovered?.Invoke(shape.ShapeId);
-                        ToolTipService.SetToolTip(View, shape.ShapeId.ToString());
-                        Mouse.OverrideCursor = Cursors.Hand;
+                        // Notify ViewModel that we are hovering over a potential drop target
+                        ShapeDraggingOver?.Invoke(shp.ShapeId);
+
+                        Mouse.OverrideCursor = Cursors.SizeAll;
                         return;
                     }
                 }
 
-                ToolTipService.SetToolTip(View, null);
-                Mouse.OverrideCursor = null;
+                // Not over a layer -> neutral drag state
+                Mouse.OverrideCursor = Cursors.SizeAll;
+                return;
             }
+
+            // ---------------------------------------
+            // 4) NORMAL HOVER LOGIC (no drag)
+            // ---------------------------------------
+            foreach (var shape in SceneBuilder.SceneShapes)
+            {
+                if (shape.Rectangle.Contains(pt))
+                {
+                    ShapeHovered?.Invoke(shape.ShapeId);
+
+                    ToolTipService.SetToolTip(View, shape.ShapeId.ToString());
+                    Mouse.OverrideCursor = Cursors.Hand;
+                    return;
+                }
+            }
+
+            // ---------------------------------------
+            // 5) No hit -> clear hover state
+            // ---------------------------------------
+            ToolTipService.SetToolTip(View, null);
+            Mouse.OverrideCursor = null;
         }
 
         private void OnMouseLeave(object s, MouseEventArgs e)

@@ -23,6 +23,7 @@ namespace BauphysikToolWPF.UI.ViewModels
         private readonly IDialogService _dialogService;
         private readonly Element _element;
         private readonly OglController _oglController;
+        private int? _dragFrom;
 
         // Called by 'InitializeComponent()' from Page_LayerSetup.cs due to Class-Binding in xaml via DataContext
         public Page_LayerSetup_VM(OglController scene)
@@ -39,6 +40,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             _oglController.ShapeClicked += OnShapeClicked;
             _oglController.ShapeDoubleClicked += OnShapeDoubleClicked;
+            _oglController.ShapeDragStarted += OnShapeDragStarted;
+            _oglController.ShapeDraggingOver += OnShapeDraggingOver;
+            _oglController.ShapeDragCompleted += OnShapeDragCompleted;
 
             // For values changed in PropertyDataGrid TextBox
             PropertyItem<double>.PropertyChanged += PropertyItemChanged;
@@ -430,6 +434,32 @@ namespace BauphysikToolWPF.UI.ViewModels
                 else LayerDoubleClick();
             }
             Console.WriteLine($"VM Shape double clicked: {shape}");
+        }
+
+        private void OnShapeDragStarted(ShapeId shape)
+        {
+            _dragFrom = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null)?.LayerPosition;
+        }
+
+        private void OnShapeDraggingOver(ShapeId shape)
+        {
+            // optional: highlight target layer
+            //SelectedLayerIndex = LayerList.IndexOf(_element.Layers.First(l => l.InternalId == layerId));
+        }
+
+        private void OnShapeDragCompleted(ShapeId shape)
+        {
+            if (_dragFrom == null) return;
+
+            var dragTo = LayerList.FirstOrDefault(l => l?.InternalId == shape.Index, null)?.LayerPosition;
+
+            if (dragTo != _dragFrom)
+            {
+                _element.ReorderLayers(_dragFrom ?? -1, dragTo ?? -1);
+                Session.OnSelectedElementChanged();
+            }
+
+            _dragFrom = null;
         }
 
         private void ProjectDataChanged()

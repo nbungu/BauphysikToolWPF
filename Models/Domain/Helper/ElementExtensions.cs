@@ -81,6 +81,34 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             element.AssignEffectiveLayers();
         }
 
+        public static void ReorderLayers(this Element? element, int oldLayerPosition, int newLayerPosition)
+        {
+            if (element is null || oldLayerPosition == -1 || newLayerPosition == -1) return;
+            if (element.Layers is null || element.Layers.Count == 0) return;
+
+            // Bound checks
+            if (oldLayerPosition < 0 || oldLayerPosition >= element.Layers.Count) return;
+            if (newLayerPosition < 0 || newLayerPosition >= element.Layers.Count) return;
+            if (oldLayerPosition == newLayerPosition) return;
+
+            // Extract layer
+            Layer item = element.Layers.First(l => l.LayerPosition == oldLayerPosition);
+
+            // Remove and insert at new index
+            element.Layers.RemoveAt(oldLayerPosition);
+            element.Layers.Insert(newLayerPosition, item);
+
+            // Reassign LayerPosition values
+            for (int i = 0; i < element.Layers.Count; i++)
+            {
+                element.Layers[i].LayerPosition = i;
+            }
+
+            // Apply domain recalculations
+            element.SortLayers();
+            element.AssignEffectiveLayers();
+        }
+
         public static void MoveLayerPositionToOutside(this Element? element, int layerId)
         {
             if (element is null || element.Layers.Count == 0) return;
