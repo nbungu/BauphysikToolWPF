@@ -1,6 +1,6 @@
 ﻿using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
-using BT.Logging;
+using SharedLibrary.Services.Application;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -57,8 +57,6 @@ namespace BauphysikToolWPF.UI
         /// <summary>
         /// mouse wheel to be handled by a parent scrollable container instead of the inner ScrollViewer of the PropertyDataGrid
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
         private void ElementPropertiesDataGrid_OnPreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {
             // Pass the event to the parent instead of the ScrollViewer
@@ -66,7 +64,7 @@ namespace BauphysikToolWPF.UI
 
             var eventArg = new MouseWheelEventArgs(e.MouseDevice, e.Timestamp, e.Delta)
             {
-                RoutedEvent = UIElement.MouseWheelEvent,
+                RoutedEvent = MouseWheelEvent,
                 Source = sender
             };
 

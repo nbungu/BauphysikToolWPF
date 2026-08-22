@@ -1,7 +1,7 @@
 ﻿using BauphysikToolWPF.Models.Database;
-using BauphysikToolWPF.Services.UI.OpenGL;
 using System;
 using System.Linq;
+using SharedLibrary.OpenGL;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
@@ -106,7 +106,8 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             var elementsWithoutImage = project.Elements.Where(e => e.Image == Array.Empty<byte>()).ToList();
             if (elementsWithoutImage.Count == 0) return;
 
-            OglOffscreenScene.GenerateImagesOfElements(elementsWithoutImage, target, withDecorations);
+            // TODO:
+            //OglOffscreenScene.GenerateImagesOfElements(elementsWithoutImage, target, withDecorations);
         }
 
         /// <summary>
@@ -115,7 +116,9 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         public static void RenderAllElementImages(this Project? project, RenderTarget target, bool withDecorations = true)
         {
             if (project is null) return;
-            OglOffscreenScene.GenerateImagesOfElements(project.Elements, target, withDecorations);
+
+            // TODO:
+            //OglOffscreenScene.GenerateImagesOfElements(project.Elements, target, withDecorations);
         }
 
         public static void AssignAsParentToElements(this Project? project)

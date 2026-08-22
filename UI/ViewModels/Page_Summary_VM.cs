@@ -4,10 +4,10 @@ using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SharedLibrary.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Windows;
-using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.UI.Enums;
 
 namespace BauphysikToolWPF.UI.ViewModels
@@ -46,9 +46,9 @@ namespace BauphysikToolWPF.UI.ViewModels
 
         partial void OnIsCrossSectionCheckedChanged(bool value)
         {
-            if (_oglController.SceneBuilder is ElementSceneBuilder sceneBuilder)
+            if (_oglController.SceneBuilder is SceneBuilder sceneBuilder)
             {
-                sceneBuilder.CrossSectionBuilder.DrawingType = value ? DrawingType.CrossSection : DrawingType.VerticalCut;
+                sceneBuilder.DrawingType = value ? DrawingType.CrossSection : DrawingType.VerticalCut;
                 _oglController.Redraw();
             }
         }

@@ -18,6 +18,10 @@ namespace BauphysikToolWPF.Models.Application
             get => _isEnabled;
             set
             {
+                if (!value)
+                {
+
+                }
                 if (_isEnabled != value)
                 {
                     _isEnabled = value;

@@ -3,12 +3,12 @@ using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI.Converter;
-using BauphysikToolWPF.Services.UI.OpenGL;
 using BauphysikToolWPF.UI.CustomControls;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using SharedLibrary.OpenGL;
+using SharedLibrary.Services.Application;
 using System;
-using BT.Logging;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -429,7 +429,7 @@ namespace BauphysikToolWPF.UI.ViewModels
                 var index = LayerList.IndexOf(layerShapeTarget);
                 SelectedLayerIndex = index;
 
-                if (shape.Type == ShapeType.SubConstructionLayer) EditSubConstructionLayer(SelectedLayer?.InternalId ?? -1);
+                if (shape.Type == ShapeType.LayerSubConstruction) EditSubConstructionLayer(SelectedLayer?.InternalId ?? -1);
                 else if (shape.Type == ShapeType.DimensionalChain) LayerDoubleClick(); // TODO: Put focus on thickness TextBox;
                 else LayerDoubleClick();
             }

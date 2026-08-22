@@ -1,7 +1,7 @@
 ﻿using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.Domain.Helper;
-using BT.Geometry;
-using BT.Logging;
+using SharedLibrary.Models.Geometry;
+using SharedLibrary.Services.Application;
 using System;
 using System.Collections.Generic;
 using System.Linq;

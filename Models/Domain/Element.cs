@@ -2,13 +2,13 @@
 using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
+using SharedLibrary.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using BauphysikToolWPF.Services.UI.OpenGL;
 using static BauphysikToolWPF.Models.Database.Enums;
 
 namespace BauphysikToolWPF.Models.Domain

@@ -1,7 +1,5 @@
-﻿using BauphysikToolWPF.Services.UI.OpenGL;
-using System.Collections.Generic;
+﻿using SharedLibrary.OpenGL;
 using System.Linq;
-using static BauphysikToolWPF.Models.Database.Enums;
 
 namespace BauphysikToolWPF.Models.Domain.Helper
 {
@@ -40,7 +38,7 @@ namespace BauphysikToolWPF.Models.Domain.Helper
             bool foundAirLayer = false;
             foreach (var layer in element.Layers)
             {
-                if (layer.Material.MaterialCategory == MaterialCategory.Air) foundAirLayer = true;
+                if (layer.Material.MaterialCategory == Database.Enums.MaterialCategory.Air) foundAirLayer = true;
 
                 layer.IsEffective = !foundAirLayer;
                 if (layer.SubConstruction != null) layer.SubConstruction.IsEffective = layer.IsEffective;
@@ -154,7 +152,9 @@ namespace BauphysikToolWPF.Models.Domain.Helper
         public static void RenderOffscreenImage(this Element? element, RenderTarget target = RenderTarget.Screen, bool withDecorations = true)
         {
             if (element is null) return;
-            OglOffscreenScene.GenerateImagesOfElements(new List<Element>() { element }, target, withDecorations);
+
+            // TODO:
+            //OglOffscreenScene.GenerateImagesOfElements(new List<Element>() { element }, target, withDecorations);
         }
 
         public static void RefreshResults(this Element? element)

@@ -1,11 +1,11 @@
 ﻿using BauphysikToolWPF.Models.Domain;
-using BauphysikToolWPF.Services.UI.OpenGL;
+using BauphysikToolWPF.Services.Application;
+using BauphysikToolWPF.Services.UI;
 using BauphysikToolWPF.UI.ViewModels;
+using SharedLibrary.OpenGL;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using BauphysikToolWPF.Services.UI;
-using BauphysikToolWPF.Services.Application;
 
 namespace BauphysikToolWPF.UI
 {
@@ -15,7 +15,7 @@ namespace BauphysikToolWPF.UI
         //
 
         // Instance Variables - only for "MainPage" Instances. Variables get re-assigned on every 'new' Instance call.
-        private OglController _oglController;
+        private readonly OglController _oglController = new OglController();
         private readonly Element _element; // Selected Element from Session
 
         // (Instance-) Contructor - when 'new' Keyword is used to create class (e.g. when toggling pages via menu navigation)
@@ -37,8 +37,10 @@ namespace BauphysikToolWPF.UI
 
         private void InitalizeOglView()
         {
-            _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.VerticalCut));
-            _oglController.Redraw(); // Initial render to display the scene
+            var sceneBuilder = new SceneBuilder(_element);
+            sceneBuilder.DrawingType = DrawingType.VerticalCut;
+
+            _oglController.Initialize(OpenTkControl, sceneBuilder);
             _oglController.IsSceneInteractive = false; // Disable interaction with the scene
             _oglController.IsTextSizeZoomable = false; // Disable editing of the scene
 

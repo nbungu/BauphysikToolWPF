@@ -1,15 +1,12 @@
 ﻿using BauphysikToolWPF.Models.Database;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.Services.UI;
-using BauphysikToolWPF.Services.UI.OpenGL;
-using BT.Geometry;
+using SharedLibrary.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
-using System.Windows.Media;
 using static BauphysikToolWPF.Models.Database.Enums;
 using static BauphysikToolWPF.Models.UI.Enums;
 
@@ -18,7 +15,7 @@ namespace BauphysikToolWPF.Models.Domain
     /// <summary>
     /// Business logic of a LayerSubConstruction
     /// </summary>
-    public partial class LayerSubConstruction : IDomainObject<LayerSubConstruction>, IDrawingGeometry
+    public class LayerSubConstruction : IDomainObject<LayerSubConstruction>
     {
         #region Serialization Objects
 
@@ -48,6 +45,9 @@ namespace BauphysikToolWPF.Models.Domain
 
         [JsonIgnore]
         public int InternalId { get; set; } = -1;
+
+        [JsonIgnore]
+        public ShapeId ShapeId { get; set; }
 
         [JsonIgnore]
         public bool ReloadPropertyBag { get; private set; } = true;
@@ -219,41 +219,6 @@ namespace BauphysikToolWPF.Models.Domain
             ReloadPropertyBag = true;
         }
 
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Presentation logic of a LayerSubConstruction which can be drawn on a XAML Canvas
-    /// </summary>
-    public partial class LayerSubConstruction : IDrawingGeometry
-    {
-        #region IDrawingGeometry
-        [JsonIgnore]
-        public Rectangle Rectangle { get; set; } = Rectangle.Empty;
-        [JsonIgnore]
-        public Pen BorderPen { get; set; } = Pens.GetSolidPen(Brushes.Black, 1.0);
-        [JsonIgnore]
-        public Brush BackgroundColor { get; set; } = Brushes.Transparent;
-        [JsonIgnore]
-        public Brush? TextureBrush { get; set; } = new DrawingBrush();
-        [JsonIgnore]
-        public double Opacity { get; set; } = 1;
-        [JsonIgnore]
-        public int ZIndex { get; set; } = 1;
-        [JsonIgnore]
-        public object Tag { get; set; } = new object();
-        [JsonIgnore]
-        public int? TextureId { get; set; }
-        [JsonIgnore]
-        public ShapeId ShapeId { get; set; }
-        [JsonIgnore]
-        public HatchFitMode HatchFitMode { get; set; } = HatchFitMode.OriginalPixelSize;
-
-        public IDrawingGeometry CopyGeometry()
-        {
-            return new DrawingGeometry(this);
-        }
 
         #endregion
     }

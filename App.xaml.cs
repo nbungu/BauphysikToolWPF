@@ -1,6 +1,7 @@
 ﻿using BauphysikToolWPF.Services.Application;
-using BT.Logging;
+using SharedLibrary.Services.Application;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -20,7 +21,10 @@ namespace BauphysikToolWPF
 
             try
             {
-                Logger.SetLogFilePath();
+                Logger.SetLogFilePath(Path.Combine(
+                    Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "BauphysikTool",
+                    "bauphysikTool.log"));
                 Logger.ClearLog();
             }
             catch (Exception ex)

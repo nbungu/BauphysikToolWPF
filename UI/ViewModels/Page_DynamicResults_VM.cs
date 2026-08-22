@@ -2,8 +2,6 @@
 using BauphysikToolWPF.Models.Domain;
 using BauphysikToolWPF.Models.UI;
 using BauphysikToolWPF.Services.Application;
-using BauphysikToolWPF.Services.UI;
-using BT.Geometry;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LiveChartsCore;
@@ -11,6 +9,8 @@ using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
+using SharedLibrary.Models.Geometry;
+using SharedLibrary.OpenGL;
 using SkiaSharp;
 using System;
 using System.Collections.Generic;
@@ -23,8 +23,11 @@ namespace BauphysikToolWPF.UI.ViewModels
     {
         // Don't use Session.CalcResults: calculate TempCurve always homogeneous;
         // Manually Trigger Calculation
-        private Element _element = new Element();
-        private readonly CrossSectionBuilder _verticalCut = new CrossSectionBuilder();
+        private Element _element;
+
+        // Get drawing geometries from the OglSceneBuilder
+        //private readonly CrossSectionBuilder _verticalCut = new CrossSectionBuilder();
+
         private static DynamicTempCalc _dynamicTempCalc = new DynamicTempCalc();
 
         public Page_DynamicResults_VM()
@@ -33,7 +36,10 @@ namespace BauphysikToolWPF.UI.ViewModels
 
             _element = Session.SelectedElement;
 
-            _verticalCut = new CrossSectionBuilder(_element, new Size(360, 450), DrawingType.VerticalCut);
+            // Get drawing geometries from the OglSceneBuilder
+            //_verticalCut = new CrossSectionBuilder(_element, new Size(360, 450), DrawingType.VerticalCut);
+            
+            
             _dynamicTempCalc = new DynamicTempCalc(_element, _element.ThermalCalcConfig);
             _dynamicTempCalc.CalculateHomogeneous();
             _dynamicTempCalc.CalculateDynamicValues();
@@ -98,8 +104,10 @@ namespace BauphysikToolWPF.UI.ViewModels
         public string SelectedElementConstructionName => _element.Construction.TypeName;
 
         // Vertical Cut
-        public List<IDrawingGeometry> VerticalCutDrawing => _verticalCut.DrawingGeometries;
-        public Size CanvasSizeVerticalCut => _verticalCut.CanvasSize;
+
+        // Get drawing geometries from the OglSceneBuilder
+        //public List<IDrawingGeometry> VerticalCutDrawing => _verticalCut.DrawingGeometries;
+        //public Size CanvasSizeVerticalCut => _verticalCut.CanvasSize;
         public ISeries[] DataPoints_i => GetDataPoints_i();
         public ISeries[] DataPoints_e => GetDataPoints_e();
         public Axis[] YAxes_i => DrawYAxes();

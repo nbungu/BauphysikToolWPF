@@ -2,9 +2,9 @@
 using BauphysikToolWPF.Models.Domain.Helper;
 using BauphysikToolWPF.Services.Application;
 using BauphysikToolWPF.Services.UI;
-using BauphysikToolWPF.Services.UI.OpenGL;
 using BauphysikToolWPF.UI.ViewModels;
-using BT.Logging;
+using SharedLibrary.OpenGL;
+using SharedLibrary.Services.Application;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -17,7 +17,7 @@ namespace BauphysikToolWPF.UI
     {
         #region private Fields
 
-        private OglController _oglController;
+        private readonly OglController _oglController = new OglController();
         private Element _element; // Selected Element from Session
         private readonly Page_LayerSetup_VM _viewModel; // Selected Element from Session
 
@@ -60,9 +60,12 @@ namespace BauphysikToolWPF.UI
         {
             Logger.LogInfo("[OGL] Starting OglController for LayerSetup-Page");
 
-            _oglController = new OglController(OpenTkControl, new ElementSceneBuilder(_element, DrawingType.CrossSection));
+            var sceneBuilder = new SceneBuilder(_element);
+            sceneBuilder.DrawingType = DrawingType.CrossSection;
+
+            _oglController.Initialize(OpenTkControl, sceneBuilder);
             _oglController.IsTextSizeZoomable = false;
-            _oglController.Redraw(); // Initial render to display the scene
+            //_oglController.Redraw(); // Initial render to display the scene
             
             Session.SelectedElementChanged += _oglController.Redraw;
             Session.SelectedLayerChanged += _oglController.Redraw;
